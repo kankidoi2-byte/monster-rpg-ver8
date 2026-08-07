@@ -1,0 +1,299 @@
+
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:radial-gradient(circle at top,#1a2855,#050810 70%);color:#e8eaf6;text-align:center;min-height:100vh}
+button{padding:10px 16px;border:0;border-radius:12px;font-weight:700;margin:4px;background:linear-gradient(135deg,#6c63ff,#4e46d4);color:#fff;cursor:pointer;transition:transform .1s,opacity .1s}
+button:hover{opacity:.9;transform:scale(1.03)}
+button:active{transform:scale(.97)}
+.menu{position:sticky;top:0;z-index:10;padding:8px;background:#06091aee;backdrop-filter:blur(6px);border-bottom:1px solid #2a2f5a;display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.menu button{padding:7px 12px;font-size:13px;background:linear-gradient(135deg,#2a3060,#1a2040);border:1px solid #3a4080}
+.menu button:hover{background:linear-gradient(135deg,#3a4080,#2a3060)}
+.screen{display:none;padding:14px;min-height:calc(100vh - 56px)}
+.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:12px}
+.panel{background:#0f1630;border:1px solid #2a3060;border-radius:18px;padding:18px;max-width:780px;margin:16px auto;box-shadow:0 8px 32px #0009}
+.card{background:#111830;border:1px solid #2a3560;border-radius:16px;padding:14px;box-shadow:0 4px 16px #0006;transition:border-color .2s}
+.card:hover{border-color:#6c63ff}
+.arena{display:flex;gap:12px}
+.box{width:50%;padding:12px;background:#0d1428;border:1px solid #2a3060;border-radius:16px}
+.cmd{padding:14px;margin-top:12px;background:#0d1428;border:1px solid #2a3060;border-radius:16px}
+.log{padding:14px;min-height:110px;text-align:left;line-height:1.8;margin:12px auto;max-width:780px;background:#05080f;border:1px solid #1a2040;border-radius:14px;font-size:14px}
+.emoji{font-size:72px;min-height:130px;display:grid;place-items:center;filter:drop-shadow(0 0 12px rgba(108,99,255,.4))}
+.bar{height:16px;background:#1a2040;border-radius:999px;overflow:hidden;margin:4px 0}
+.hp{height:100%;background:linear-gradient(90deg,#22c55e,#4ade80);transition:width .3s;border-radius:999px}
+.exp{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);transition:width .3s;border-radius:999px}
+.hidden{display:none!important}
+.fire{color:#ff7043}.water{color:#42a5f5}.grass{color:#66bb6a}.dark{color:#ce93d8}
+.thunder{color:#ffee58}.light{color:#fff9c4;text-shadow:0 0 8px #ffd740}.star{color:#80cbc4;text-shadow:0 0 8px #4db6ac}.dragon{color:#f48fb1}.wind{color:#b2dfdb}.normal{color:#cdd3e0}
+.small{color:#8892b0;font-size:13px}
+.rarity{color:#ffd740;font-size:15px;letter-spacing:1px}
+h1{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:clamp(18px,4vw,28px)}
+h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
+.dex-detail{background:#0f1630;border:1px solid #6c63ff44;border-radius:18px;padding:18px;max-width:540px;margin:0 auto 20px;text-align:left}
+.move-box{background:#0d1428;border:1px solid #2a3060;border-radius:10px;padding:10px;margin:6px 0}
+.move-name{font-weight:700;color:#c7d2fe;margin-bottom:4px}
+.instance-badge{background:#6c63ff33;border:1px solid #6c63ff;border-radius:999px;padding:2px 8px;font-size:12px;color:#a78bfa}
+#evolution .grid{justify-content:center}
+.fusion-card{cursor:pointer}
+.fusion-card.locked{opacity:.5;cursor:default}
+.fusion-recipe{background:#0a0e1f;border-radius:10px;padding:8px;margin-top:8px;font-size:13px;text-align:left}
+.visual-wrap{position:relative;display:inline-block;width:100%}
+.defeat-overlay{position:absolute;inset:0;background:#0009;border-radius:14px;display:none;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#ffd740;text-shadow:0 0 12px #ff8f00}
+.hp-danger{background:linear-gradient(90deg,#ef4444,#f87171)!important}
+.hp-warn{background:linear-gradient(90deg,#f59e0b,#fbbf24)!important}
+.type-chart-section{max-width:820px;margin:12px auto;text-align:left}
+.chart-group{background:#0f1630;border:1px solid #2a3060;border-radius:16px;padding:14px;margin:10px 0}
+.chart-group h2{margin:0 0 10px;font-size:16px}
+.type-wheel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:10px 0}
+.tw-item{display:flex;align-items:center;gap:4px;font-size:13px}
+.tw-adv{color:#67e8f9;font-weight:900;font-size:16px}
+.tw-bad{color:#fb7185;font-weight:900;font-size:16px}
+.tw-type{padding:3px 9px;border-radius:999px;background:#0a0e1f;border:1px solid #2a3060;font-size:12px;font-weight:700}
+.history-entry{background:#0d1428;border:1px solid #2a3060;border-radius:10px;padding:10px;margin:6px 0;text-align:left;font-size:13px}
+.map-img{width:100%;height:130px;object-fit:cover;border-radius:14px;border:1px solid #3b4a78;margin-bottom:8px}
+.enemy-choice-card{cursor:pointer;transition:.15s transform}
+.enemy-choice-card:active{transform:scale(.98)}
+.map-name{font-size:20px;font-weight:900;color:#facc15}
+#battleMapBanner .map-img{height:170px}
+.mini{padding:8px;margin:6px 0;border:1px solid #3b4a78;border-radius:12px;background:rgba(255,255,255,.04)}
+.item-card{background:#111830;border:1px solid #2a3560;border-radius:16px;padding:16px;margin:8px auto;max-width:380px;text-align:left}
+@media(max-width:650px){
+  .arena{gap:6px}
+  .box{padding:8px}
+  .emoji{font-size:52px;min-height:100px}
+  .grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:.3}}
+.hit-anim{animation:shake .3s ease,flash .3s ease}
+@keyframes levelup{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.levelup-anim{animation:levelup .5s ease}
+
+.enemy-choice-card .map-img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:14px;
+  border:1px solid #3b4a78;
+  background:#0d1428;
+}
+#battleMapBanner .map-img{
+  width:100%;
+  max-width:780px;
+  height:180px;
+  object-fit:cover;
+  border-radius:16px;
+  border:1px solid #3b4a78;
+}
+
+
+/* ===== Ver5.3 技カード属性カラー（Ver5.4継承） ===== */
+.skill-card{position:relative;overflow:hidden;text-align:left;border-width:2px;background:linear-gradient(145deg,#151b32,#0c1224)}
+.skill-card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;background:radial-gradient(circle at top right,var(--skill-glow),transparent 58%)}
+.skill-card>*{position:relative;z-index:1}
+.skill-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.skill-card-title{margin:0;color:#f8fafc;font-size:17px;line-height:1.3;text-shadow:0 1px 5px #000}
+.skill-type-line{font-weight:800;margin:5px 0}
+.skill-cost-badge{display:inline-grid;place-items:center;min-width:38px;height:30px;padding:0 9px;border-radius:999px;background:#050810cc;border:1px solid var(--skill-glow);color:#fff;font-size:12px;font-weight:900;box-shadow:0 0 10px rgba(255,255,255,.12);white-space:nowrap}
+.skill-card.skill-fire{--skill-glow:#ff7043;border-color:#b7472d;background:linear-gradient(145deg,#3a1715,#14101a)}
+.skill-card.skill-water{--skill-glow:#42a5f5;border-color:#236aa5;background:linear-gradient(145deg,#102b49,#101423)}
+.skill-card.skill-thunder{--skill-glow:#ffee58;border-color:#aa9c19;background:linear-gradient(145deg,#3b3510,#17150b)}
+.skill-card.skill-wind{--skill-glow:#80deea;border-color:#3a929c;background:linear-gradient(145deg,#113137,#0d171b)}
+.skill-card.skill-grass{--skill-glow:#66bb6a;border-color:#37793b;background:linear-gradient(145deg,#12351a,#0d1711)}
+.skill-card.skill-light{--skill-glow:#ffd740;border-color:#ad8710;background:linear-gradient(145deg,#3b300d,#18150c)}
+.skill-card.skill-dark{--skill-glow:#ce93d8;border-color:#7d4d88;background:linear-gradient(145deg,#30153a,#15101b)}
+.skill-card.skill-star{--skill-glow:#64ffda;border-color:#2e9985;background:linear-gradient(145deg,#103830,#0c1717)}
+.skill-card.skill-dragon{--skill-glow:#f48fb1;border-color:#9f4d69;background:linear-gradient(145deg,#3a1424,#190e14)}
+.skill-card.skill-normal{--skill-glow:#cdd3e0;border-color:#626b7c;background:linear-gradient(145deg,#252b36,#12151c)}
+.skill-card.skill-dual-thunder-wind{--skill-glow:#b8f3ff;border-color:#a8cf49;background:linear-gradient(135deg,#3b3510 0%,#242f19 48%,#113137 100%)}
+.skill-card.is-disabled{filter:saturate(.55);opacity:.55}
+.skill-card button:disabled{cursor:not-allowed;filter:grayscale(.35)}
+.skill-button{border:1px solid currentColor;background:linear-gradient(135deg,#242b4f,#151a32)}
+.skill-button.fire{background:linear-gradient(135deg,#6b241a,#35120e)}
+.skill-button.water{background:linear-gradient(135deg,#174d77,#0d2941)}
+.skill-button.thunder{background:linear-gradient(135deg,#6b5f0a,#343005);color:#fffde7}
+.skill-button.wind{background:linear-gradient(135deg,#205b62,#11343a)}
+.skill-button.grass{background:linear-gradient(135deg,#245f2a,#123417)}
+.skill-button.light{background:linear-gradient(135deg,#75620c,#3a3106);color:#fffde7}
+.skill-button.dark{background:linear-gradient(135deg,#63306c,#321836)}
+.skill-button.star{background:linear-gradient(135deg,#176b5d,#0b382f)}
+.skill-button.dragon{background:linear-gradient(135deg,#74334b,#3c1927)}
+.skill-button.dual-thunder-wind{background:linear-gradient(135deg,#6c5d0d 0%,#3e5724 50%,#17606a 100%);border-color:#b8f3ff}
+.skill-button.normal{background:linear-gradient(135deg,#4b5563,#252b35)}
+@media(max-width:650px){.skill-card-title{font-size:15px}.skill-cost-badge{min-width:34px;height:28px;padding:0 7px}.skill-card{padding:12px}}
+
+
+/* ===== Ver7.6 タイトル画面 ===== */
+body.title-mode{overflow:hidden}
+body.title-mode>.menu,body.title-mode>.screen{visibility:hidden;pointer-events:none}
+#titleScreen{
+  position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;background:#02040a;cursor:pointer;touch-action:manipulation;user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+#titleScreen.title-leaving{animation:titleFadeOut .65s ease forwards;pointer-events:none}
+.title-bg{position:absolute;inset:-4%;background-position:center;background-size:cover;filter:brightness(.42) saturate(1.12);animation:titleBgDrift 14s ease-in-out infinite alternate;will-change:transform}
+.title-vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 43%,transparent 0 22%,rgba(0,4,14,.35) 52%,rgba(0,0,0,.9) 100%),linear-gradient(180deg,rgba(0,0,0,.38),transparent 24%,transparent 72%,rgba(0,0,0,.72));}
+.title-monster{position:absolute;left:50%;top:48%;width:min(68vw,520px);height:min(55vh,520px);transform:translate(-50%,-50%);object-fit:contain;opacity:.48;filter:drop-shadow(0 0 28px rgba(76,175,255,.45));animation:titleMonsterFloat 6s ease-in-out infinite;}
+.title-content{position:relative;z-index:3;width:min(96vw,1020px);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:max(2vh,env(safe-area-inset-top) + 6px) 12px 4vh}
+.title-logo{width:min(94vw,980px);max-height:36vh;object-fit:contain;filter:drop-shadow(0 8px 18px #000) drop-shadow(0 0 14px rgba(41,157,255,.35));animation:titleLogoIn 1.15s cubic-bezier(.2,.85,.25,1) both,titleLogoFloat 5s ease-in-out 1.15s infinite}
+.title-spacer{flex:1 1 auto;min-height:12px}
+.title-touch{width:min(78vw,720px);max-height:18vh;object-fit:contain;filter:drop-shadow(0 4px 10px #000);animation:titleTouchIn 1s ease .7s both,titleTouchPulse 2.1s ease-in-out 1.7s infinite}
+.title-version{position:absolute;right:14px;bottom:max(10px,env(safe-area-inset-bottom));font-size:12px;letter-spacing:.18em;color:#d8e6ff;text-shadow:0 1px 5px #000;opacity:.78}
+.title-scene-name{position:absolute;left:14px;bottom:max(10px,env(safe-area-inset-bottom));font-size:11px;letter-spacing:.08em;color:#b9c6df;text-shadow:0 1px 5px #000;opacity:.55}
+.title-skip-hint{position:absolute;top:max(10px,env(safe-area-inset-top));right:13px;font-size:10px;color:#aebad3;opacity:.45}
+@keyframes titleBgDrift{from{transform:scale(1.08) translate3d(-1.2%,0,0)}to{transform:scale(1.14) translate3d(1.2%,-1%,0)}}
+@keyframes titleMonsterFloat{0%,100%{transform:translate(-50%,-49%) scale(.98)}50%{transform:translate(-50%,-52%) scale(1.02)}}
+@keyframes titleLogoIn{from{opacity:0;transform:translateY(-20px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes titleLogoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes titleTouchIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes titleTouchPulse{0%,100%{opacity:.58;transform:scale(.985)}50%{opacity:1;transform:scale(1.018)}}
+@keyframes titleFadeOut{0%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media(max-width:650px){
+  .title-logo{width:98vw;max-height:30vh}
+  .title-touch{width:88vw;max-height:15vh}
+  .title-monster{width:82vw;height:48vh;top:49%}
+  .title-spacer{min-height:8px}
+}
+@media(orientation:landscape) and (max-height:560px){
+  .title-content{justify-content:flex-start;padding:1vh 8px}
+  .title-logo{width:min(72vw,850px);max-height:50vh}
+  .title-touch{width:min(52vw,570px);max-height:18vh}
+  .title-spacer{flex:1 1 auto;min-height:1vh}
+  .title-monster{height:72vh;width:48vw}
+}
+@media(prefers-reduced-motion:reduce){.title-bg,.title-monster,.title-logo,.title-touch{animation:none!important}}
+
+
+/* ===== Ver7.8 アイテム図鑑 ===== */
+.item-dex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:12px}
+.item-dex-card{background:#111830;border:1px solid #2a3560;border-radius:16px;padding:12px;cursor:pointer;transition:.15s;text-align:center;min-height:205px}
+.item-dex-card:hover{border-color:#6c63ff;transform:translateY(-2px)}
+.item-dex-card.locked{opacity:.58;filter:saturate(.4)}
+.item-dex-image{width:100%;height:112px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:#080d1d;border:1px dashed #3b4a78;overflow:hidden;margin-bottom:9px}
+.item-dex-image img,.item-dex-detail-image img{width:100%;height:100%;object-fit:contain}
+.item-dex-placeholder{font-size:52px;line-height:1}
+.item-dex-detail{background:#0f1630;border:1px solid #6c63ff66;border-radius:18px;padding:18px;max-width:620px;margin:0 auto 18px;text-align:left}
+.item-dex-detail-image{width:180px;height:180px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:#080d1d;border:1px dashed #3b4a78;overflow:hidden}
+.item-category{display:inline-block;padding:3px 9px;border-radius:999px;background:#6c63ff33;border:1px solid #6c63ff;color:#c7d2fe;font-size:12px}
+
+
+/* ===== Ver7.9 水鏡画像 ===== */
+.item-inline-image{
+  width:1.55em;
+  height:1.55em;
+  object-fit:contain;
+  vertical-align:-0.38em;
+  margin-right:.18em;
+  border-radius:.18em;
+}
+.item-material-image{
+  width:2.15em;
+  height:2.15em;
+  object-fit:contain;
+  vertical-align:-0.68em;
+  margin-right:.22em;
+  border-radius:.25em;
+}
+
+
+/* ===== Ver8.0 ボス戦 CAUTION演出 ===== */
+#bossCautionOverlay{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at center,rgba(150,0,0,.34),rgba(0,0,0,.96) 67%),
+    repeating-linear-gradient(-45deg,rgba(255,32,32,.05) 0 12px,transparent 12px 24px);
+  pointer-events:auto;
+}
+#bossCautionOverlay.active{
+  display:flex;
+  animation:cautionScreenPulse .35s steps(2,end) infinite;
+}
+#bossCautionOverlay::before,
+#bossCautionOverlay::after{
+  content:"";
+  position:absolute;
+  left:-10%;
+  width:120%;
+  height:13px;
+  background:#ff2020;
+  box-shadow:0 0 24px #ff2020,0 0 55px rgba(255,0,0,.85);
+  animation:cautionBarMove .65s linear infinite alternate;
+}
+#bossCautionOverlay::before{top:22%}
+#bossCautionOverlay::after{bottom:22%;animation-direction:alternate-reverse}
+.caution-frame{
+  position:relative;
+  width:min(92vw,860px);
+  padding:34px 12px;
+  text-align:center;
+  border-top:3px solid #ff3030;
+  border-bottom:3px solid #ff3030;
+  background:linear-gradient(90deg,transparent,rgba(90,0,0,.72),transparent);
+  box-shadow:0 0 45px rgba(255,0,0,.42);
+  animation:cautionFrameIn .42s cubic-bezier(.18,.8,.2,1) both;
+}
+.caution-main{
+  color:#fff;
+  font-size:clamp(52px,14vw,132px);
+  line-height:.9;
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:.07em;
+  text-shadow:
+    4px 4px 0 #8b0000,
+    -2px -2px 0 #ff3b3b,
+    0 0 18px #ff0000,
+    0 0 52px #ff0000;
+  animation:cautionTextFlash .22s steps(2,end) infinite;
+}
+.caution-sub{
+  margin-top:18px;
+  color:#ffb0b0;
+  font-size:clamp(15px,4vw,25px);
+  font-weight:800;
+  letter-spacing:.22em;
+  text-shadow:0 0 12px #f00;
+}
+.caution-enemy{
+  margin-top:11px;
+  color:#fff;
+  font-size:clamp(18px,5vw,32px);
+  font-weight:900;
+}
+.caution-class{
+  display:inline-block;
+  margin-top:8px;
+  padding:5px 15px;
+  color:#ffd2d2;
+  border:1px solid #ff3434;
+  background:rgba(80,0,0,.7);
+  border-radius:999px;
+  font-weight:800;
+}
+@keyframes cautionScreenPulse{
+  0%,100%{filter:brightness(.78)}
+  50%{filter:brightness(1.15)}
+}
+@keyframes cautionBarMove{
+  from{transform:translateX(-4%)}
+  to{transform:translateX(4%)}
+}
+@keyframes cautionFrameIn{
+  from{opacity:0;transform:scaleX(.25) scaleY(.75)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes cautionTextFlash{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.55;transform:scale(1.035)}
+}
+@media (prefers-reduced-motion:reduce){
+  #bossCautionOverlay.active,.caution-frame,.caution-main,
+  #bossCautionOverlay::before,#bossCautionOverlay::after{animation:none}
+}
+

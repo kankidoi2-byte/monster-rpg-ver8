@@ -1,0 +1,45 @@
+function setupBattle() {
+  if (selectedMap && document.getElementById('battleMapBanner')) {
+    document.getElementById('battleMapBanner').innerHTML =
+      `<div class="panel"><img class="map-img" src="${selectedMap.image}"><h2>${selectedMap.name}</h2></div>`;
+  }
+  document.getElementById('pName').textContent = player.name;
+  document.getElementById('pVis').innerHTML = vis(player);
+  document.getElementById('eName').textContent = enemy.name;
+  document.getElementById('eVis').innerHTML =
+    `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
+  // 技ボタン
+  renderSkillButtons();
+  updateItemText();
+  update();
+}
+function statusHtml(status, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false) {
+  const parts = [];
+  if (status === 'poison') parts.push('<span style="color:#bbf7d0">☠️毒</span>');
+  if (sleepTurns > 0) parts.push(`<span style="color:#93c5fd">💤ねむり(${sleepTurns})</span>`);
+  if (paralysisTurns > 0) parts.push(`<span style="color:#fde047">⚡麻痺(${paralysisTurns})</span>`);
+  if (confusionTurns > 0) parts.push(`<span style="color:#c4b5fd">🌀こんらん(${confusionTurns})</span>`);
+  if (flareCharge) parts.push('<span style="color:#fb923c">🔥攻撃強化(次の攻撃)</span>');
+  if (aquaShield) parts.push('<span style="color:#60a5fa">💧アクアシールド</span>');
+  return parts.length ? ' / 状態:' + parts.join('・') : '';
+}
+function update() {
+  if (!player || !enemy) return;
+  pHp = Math.max(0,pHp); eHp = Math.max(0,eHp);
+  const pm = playerMaxHp(), em = enemyMaxHp();
+  const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
+  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player)}${statusHtml(pStatus,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
+  document.getElementById('eInfo').innerHTML = `${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
+  const pBar = document.getElementById('pHpBar');
+  const pp = pHp/pm*100;
+  pBar.style.width = pp+'%';
+  pBar.className = 'hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');
+  const eBar = document.getElementById('eHpBar');
+  const ep = eHp/em*100;
+  eBar.style.width = ep+'%';
+  eBar.className = 'hp'+(ep<25?' hp-danger':ep<50?' hp-warn':'');
+  document.getElementById('pHpText').textContent = `${pHp} / ${pm}`;
+  document.getElementById('eHpText').textContent = `${eHp} / ${em}`;
+  document.getElementById('pExpBar').style.width = xp/nd*100+'%';
+  document.getElementById('pExpText').textContent = `EXP ${xp} / ${nd}`;
+}
