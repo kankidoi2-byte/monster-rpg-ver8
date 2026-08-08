@@ -188,7 +188,8 @@ function win() {
     const dropRate = Number.isFinite(enemy.dropRate) ? enemy.dropRate : 1;
     if (Math.random() < dropRate) {
       save.items[enemy.dropItem] = (save.items[enemy.dropItem]||0)+1;
-      msg += `<br>🎁 ${enemy.dropItemName||enemy.dropItem}を入手！`;
+      const dropVisual = enemy.dropItem === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : '';
+      msg += `<br>🎁 ${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`;
     }
   }
   save.history.wins = (save.history.wins||0)+1;

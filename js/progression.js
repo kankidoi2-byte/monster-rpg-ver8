@@ -3,18 +3,18 @@ function renderFusion() {
   const itemText = document.getElementById('fusionItemText');
   if (itemText) {
     const fusionItems = [...new Map(FUSIONS.map(r => [r.item, r])).values()];
-    itemText.textContent = '所持アイテム：' + fusionItems.map(r => `${r.itemName} × ${save.items[r.item]||0}`).join(' / ');
+    itemText.innerHTML = '所持アイテム：' + fusionItems.map(r => `${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${save.items[r.item]||0}`).join(' / ');
   }
   document.getElementById('fusionList').innerHTML = FUSIONS.map((r,idx) => {
     const from = by(r.from), to = by(r.to);
     const hasM = caughtHas(r.from), hasI = (save.items[r.item]||0) >= r.count, done = caughtHas(r.to);
     const can = hasM && hasI && (r.repeatable || !done);
     return `<div class="card fusion-card ${can?'':'locked'}" onclick="${can?`tryFusion(${idx})`:''}">
-      ${vis(to)}<h3>${from.name} + ${r.itemName}</h3>
+      ${vis(to)}<h3>${from.name} + ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName}</h3>
       <p>進化先：<b>${to.name}</b></p>
       <div class="fusion-recipe">
         <p>${hasM?'✅':'❌'} ${from.name}</p>
-        <p>${hasI?'✅':'❌'} ${r.itemName} × ${r.count}</p>
+        <p>${hasI?'✅':'❌'} ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${r.count}</p>
         <p style="color:${can?'#4ade80':'#f87171'}">${(!r.repeatable && done)?'✨合成済み':can?'タップで合成':'条件不足'}</p>
       </div></div>`;
   }).join('');
