@@ -63,7 +63,7 @@ function tryConfusionAction(isPlayer) {
   } else if (roll < 0.75) {
     result = {canAct:false, selfHit:false, message:`🌀 ${actor.name}はこんらんして動けない！`};
   } else {
-    const atkMultiplier = isPlayer ? pAtk : eAtk;
+    const atkMultiplier = isPlayer ? pAtk : eAtk * enemyDifficultyAttackMultiplier();
     const damage = Math.max(1, Math.floor(24 * atkMultiplier * 0.5));
     if (isPlayer) {
       pHp = Math.max(0, pHp - damage);
@@ -219,9 +219,10 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const hasFlareCharge = effect !== 'flare_charge' && power > 0 && (isPlayer ? pFlareCharge : eFlareCharge);
   const baseAtk = isPlayer ? pAtk : eAtk;
   const atk = baseAtk * (hasFlareCharge ? 1.20 : 1);
+  const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
-  const dmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const dmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
   if (isPlayer) {
     eHp -= dmg;
     eGuard = false;
@@ -268,7 +269,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (effect === 'repeat_attack' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.30)) {
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
-    const secondDmg = Math.max(1, Math.floor(power * atk * r + Math.random()*9));
+    const secondDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier));
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
   }

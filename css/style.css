@@ -50,10 +50,17 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .tw-type{padding:3px 9px;border-radius:999px;background:#0a0e1f;border:1px solid #2a3060;font-size:12px;font-weight:700}
 .history-entry{background:#0d1428;border:1px solid #2a3060;border-radius:10px;padding:10px;margin:6px 0;text-align:left;font-size:13px}
 .map-img{width:100%;height:130px;object-fit:cover;border-radius:14px;border:1px solid #3b4a78;margin-bottom:8px}
-.enemy-choice-card{cursor:pointer;transition:.15s transform}
-.enemy-choice-card:active{transform:scale(.98)}
+.enemy-choice-card{transition:.15s transform}
+.enemy-choice-card button:active{transform:scale(.98)}
 .map-name{font-size:20px;font-weight:900;color:#facc15}
 #battleMapBanner .map-img{height:170px}
+.hunt-request-info{margin:10px 0;padding:10px;border-radius:12px;background:#080d1dcc;border:1px solid #33416f;text-align:left}
+.hunt-difficulty{display:inline-block;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:900;letter-spacing:.04em;border:1px solid currentColor}
+.difficulty-easy{color:#86efac;background:#14532d55}.difficulty-normal{color:#93c5fd;background:#1e3a8a55}.difficulty-hard{color:#fbbf24;background:#78350f55}.difficulty-extreme{color:#fda4af;background:#88133766;box-shadow:0 0 12px #fb718555}
+.hunt-danger{margin:8px 0;color:#cbd5e1;font-size:12px;line-height:1.5}
+.hunt-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;font-size:12px;color:#e2e8f0}
+.hunt-stats span{padding:6px;border-radius:8px;background:#111830}
+.battle-hunt-summary{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;color:#e2e8f0;font-weight:800}
 .mini{padding:8px;margin:6px 0;border:1px solid #3b4a78;border-radius:12px;background:rgba(255,255,255,.04)}
 .item-card{background:#111830;border:1px solid #2a3560;border-radius:16px;padding:16px;margin:8px auto;max-width:380px;text-align:left}
 @media(max-width:650px){
@@ -296,4 +303,3 @@ body.title-mode>.menu,body.title-mode>.screen{visibility:hidden;pointer-events:n
   #bossCautionOverlay.active,.caution-frame,.caution-main,
   #bossCautionOverlay::before,#bossCautionOverlay::after{animation:none}
 }
-

@@ -17,6 +17,7 @@ function startBattleFromParty() {
   showBattleChoices();
 }
 function showBattleChoices() {
+  activeHuntRequest = null;
   show('battleChoices');
   const list = document.getElementById('battleChoiceList');
   const normal = MAPS.filter(m => !m.bossOnly && !m.rareOnly);
@@ -35,7 +36,9 @@ function showBattleChoices() {
     const candidates = (map.enemyIds||[]).map(id=>by(id)).filter(Boolean);
     const m = candidates[Math.floor(Math.random()*candidates.length)];
     if (!m) return '';
-    return `<div class="card enemy-choice-card" onclick="startChosenBattle('${map.id}','${m.id}')">
+    const difficulty = rollHuntDifficulty(map);
+    const request = createHuntRequest(map, m, difficulty.id);
+    return `<div class="card enemy-choice-card difficulty-card-${difficulty.id}">
       <img class="map-img" src="${map.image}" alt="${map.name}">
       <div class="map-name">${map.name}</div>
       ${vis(m)}<h2>${m.name}</h2>
@@ -43,7 +46,15 @@ function showBattleChoices() {
       ${m.bossClass?`<p class="small">🔥 ${m.bossClass}</p>`:''}
       ${map.rareOnly?`<p class="small">✨ 特殊マップ</p>`:''}
       <p style="font-size:12px;color:#8892b0">${m.desc}</p>
-      <button>この敵と戦う</button></div>`;
+      <div class="hunt-request-info">
+        <span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span>
+        <p class="hunt-danger">${difficulty.danger}</p>
+        <div class="hunt-stats">
+          <span>敵Lv.${request.enemyLevel}</span><span>推定HP ${request.enemyHp}</span>
+          <span>攻撃 ×${request.attackText}</span><span>EXP・コイン ×${request.rewardText}</span>
+        </div>
+      </div>
+      <button onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}')">この討伐依頼を受ける</button></div>`;
   }).join('');
 }
 function isBossClassMonster(mon){
@@ -80,28 +91,30 @@ function playBossCaution(mon, onComplete){
     onComplete();
   }, 1800);
 }
-function startChosenBattle(mapId, enemyId){
+function startChosenBattle(mapId, enemyId, difficultyId='normal'){
   if(bossCautionPlaying) return;
   const chosenEnemy = by(enemyId);
   if(!chosenEnemy) return;
+  const normalizedDifficultyId = huntDifficulty(difficultyId).id;
 
   if(isBossClassMonster(chosenEnemy)){
-    playBossCaution(chosenEnemy, () => beginChosenBattle(mapId, enemyId));
+    playBossCaution(chosenEnemy, () => beginChosenBattle(mapId, enemyId, normalizedDifficultyId));
   }else{
-    beginChosenBattle(mapId, enemyId);
+    beginChosenBattle(mapId, enemyId, normalizedDifficultyId);
   }
 }
-function beginChosenBattle(mapId, enemyId) {
+function beginChosenBattle(mapId, enemyId, difficultyId='normal') {
   selectedMap = MAPS.find(m => m.id === mapId) || MAPS[0];
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
+  activeHuntRequest = createHuntRequest(selectedMap, enemy, difficultyId);
   if (!partyBattle.length) prepareBattleParty();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
   if (activePartyIdx < 0) activePartyIdx = 0;
   activeInstance = partyBattle[activePartyIdx].inst;
   player = partyBattle[activePartyIdx].mon;
   pHp = partyBattle[activePartyIdx].hp;
-  eHp = maxHp(enemy, 1); // 野生の敵は常に基礎HP（Lv1相当）で固定
+  eHp = enemyMaxHp();
   pAtk = eAtk = 1; pGuard = eGuard = false;
   pStatus = null; eStatus = null;
   pParalysisTurns = 0; eParalysisTurns = 0;
@@ -114,7 +127,7 @@ function beginChosenBattle(mapId, enemyId) {
   document.getElementById('next').classList.add('hidden');
   setupBattle();
   document.getElementById('log').innerHTML =
-    `${selectedMap.name}で<b>${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;
+    `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;
 }
 function afterBattleNext() {
   endPartyRecovery();
@@ -178,8 +191,11 @@ function win() {
   pAquaShield = false; eAquaShield = false;
   const ov = document.getElementById('enemyDefeatOverlay');
   if (ov) ov.style.display = 'flex';
-  const expGain = enemy.expBonus || (35 + Math.floor(Math.random()*25));
-  const coinGain = enemy.coinBonus || (8 + Math.floor(Math.random()*10));
+  const rewardMultiplier = Number(activeHuntRequest?.rewardMultiplier) || 1;
+  const baseExpGain = enemy.expBonus || (35 + Math.floor(Math.random()*25));
+  const baseCoinGain = enemy.coinBonus || (8 + Math.floor(Math.random()*10));
+  const expGain = Math.max(1, Math.round(baseExpGain * rewardMultiplier));
+  const coinGain = Math.max(1, Math.round(baseCoinGain * rewardMultiplier));
   save.coins += coinGain;
   let msg = `🏆 ${enemy.name}を倒した！<br>`;
   msg += grantPartyExp(expGain);

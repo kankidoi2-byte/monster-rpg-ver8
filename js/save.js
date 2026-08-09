@@ -41,7 +41,10 @@ function saveGame() {
 
 function uid()    { return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function playerMaxHp() { return maxHp(player, activeInstance?.level || 1); }
-function enemyMaxHp()  { return maxHp(enemy, 1); }
+function enemyMaxHp()  {
+  if (Number.isFinite(activeHuntRequest?.enemyHp)) return activeHuntRequest.enemyHp;
+  return maxHp(enemy, 1);
+}
 function insLevel(id) {
   if (activeInstance?.id === id) return activeInstance.level || 1;
   const ins = save.instances.find(x => x.id === id);

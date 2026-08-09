@@ -1,7 +1,10 @@
 function setupBattle() {
   if (selectedMap && document.getElementById('battleMapBanner')) {
+    const request = activeHuntRequest || createHuntRequest(selectedMap, enemy, 'normal');
     document.getElementById('battleMapBanner').innerHTML =
-      `<div class="panel"><img class="map-img" src="${selectedMap.image}"><h2>${selectedMap.name}</h2></div>`;
+      `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>
+        <div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span>
+        <span>敵Lv.${request.enemyLevel}</span><span>報酬 ×${request.rewardText}</span></div></div>`;
   }
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
@@ -29,7 +32,8 @@ function update() {
   const pm = playerMaxHp(), em = enemyMaxHp();
   const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
   document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player)}${statusHtml(pStatus,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
-  document.getElementById('eInfo').innerHTML = `${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
+  const enemyLevel = activeHuntRequest?.enemyLevel || 1;
+  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
   const pBar = document.getElementById('pHpBar');
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';
