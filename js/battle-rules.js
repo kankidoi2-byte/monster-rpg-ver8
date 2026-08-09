@@ -127,6 +127,7 @@ function applyPoisonEndTurn() {
 }
 function finishTurnWithPoison() {
   const logEl = document.getElementById('log');
+  completeBattleTurn();
   const poisonMsg = applyPoisonEndTurn();
   if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;
   if (eHp <= 0) { win(); return; }
@@ -138,6 +139,7 @@ function finishTurnWithPoison() {
 function turn(i) {
   if (busy) return;
   busy = true;
+  startBattleTurn();
 
   const playerMove = getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
   const enemyMove = enemy.moves[Math.floor(Math.random()*enemy.moves.length)];
@@ -154,6 +156,7 @@ function turn(i) {
       if (eHp <= 0) { win(); return; }
       if (pHp <= 0) {
         if (!switchPartyMember()) return;
+        completeBattleTurn();
         busy = false;
         return;
       }
@@ -164,6 +167,7 @@ function turn(i) {
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
+      completeBattleTurn();
       busy = false;
       return;
     }
@@ -184,10 +188,13 @@ function doAttack(attacker, defender, mv, isPlayer) {
     logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`; update(); return;
   }
   if (effect === 'heal') {
-    const h = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
-    if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+h);
-    else eHp = Math.min(enemyMaxHp(), eHp+h);
-    logEl.innerHTML = `💚 ${attacker.name}はHPを${h}回復した！`; update(); return;
+    const baseHealing = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
+    const healing = adjustedBattleHealing(baseHealing);
+    const before = isPlayer ? pHp : eHp;
+    if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
+    else eHp = Math.min(enemyMaxHp(), eHp+healing);
+    const healed = (isPlayer ? pHp : eHp) - before;
+    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`; update(); return;
   }
   if (effect === 'buff') {
     isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
@@ -220,9 +227,10 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const baseAtk = isPlayer ? pAtk : eAtk;
   const atk = baseAtk * (hasFlareCharge ? 1.20 : 1);
   const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
+  const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
-  const dmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const dmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
   if (isPlayer) {
     eHp -= dmg;
     eGuard = false;
@@ -234,6 +242,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
 
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
+  if (mapAttackMultiplier > 1) msg += `<br>🗺️ マップ属性強化！（×1.2）`;
   if (shield) msg += `<br>💧 ${defender.name}のアクアシールドがダメージを半減し、消えた！`;
   if (hasFlareCharge) {
     if (isPlayer) pFlareCharge = false; else eFlareCharge = false;
@@ -246,10 +255,12 @@ function doAttack(attacker, defender, mv, isPlayer) {
   if (r > 1) msg += `<br>🔥 効果はバツグン！（属性倍率×${Number(r.toFixed(2))}）`;
   if (r < 1) msg += `<br>💧 効果はいまひとつ……（属性倍率×${Number(r.toFixed(2))}）`;
   if (effect === 'drain') {
-    const h = Math.floor(dmg/2);
-    if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+h);
-    else eHp = Math.min(enemyMaxHp(), eHp+h);
-    msg += `<br>🌱 HPを${h}吸収した！`;
+    const healing = adjustedBattleHealing(Math.floor(dmg/2));
+    const before = isPlayer ? pHp : eHp;
+    if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
+    else eHp = Math.min(enemyMaxHp(), eHp+healing);
+    const healed = (isPlayer ? pHp : eHp) - before;
+    msg += `<br>🌱 HPを${healed}吸収した！`;
   }
   if (effect === 'recoil') {
     if (isPlayer) pHp -= 8; else eHp -= 8;
@@ -269,7 +280,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (effect === 'repeat_attack' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.30)) {
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
-    const secondDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier));
+    const secondDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
   }

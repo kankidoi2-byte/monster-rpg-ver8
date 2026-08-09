@@ -4,7 +4,8 @@ function setupBattle() {
     document.getElementById('battleMapBanner').innerHTML =
       `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>
         <div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span>
-        <span>敵Lv.${request.enemyLevel}</span><span>報酬 ×${request.rewardText}</span></div></div>`;
+        <span>敵Lv.${request.enemyLevel}</span><span>報酬 ×${request.rewardText}</span></div>
+        <div class="battle-hunt-conditions"><h3>特殊条件</h3>${huntConditionsHtml(request, true)}</div></div>`;
   }
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
@@ -15,6 +16,21 @@ function setupBattle() {
   renderSkillButtons();
   updateItemText();
   update();
+}
+function huntConditionsHtml(request, inBattle=false) {
+  const conditions = Array.isArray(request?.conditions) ? request.conditions : [];
+  if (!conditions.length) return '<p class="hunt-no-conditions">特殊条件なし</p>';
+  return `<ul class="hunt-condition-list">${conditions.map(condition => {
+    const turnStatus = inBattle && condition.id === 'swift_clear'
+      ? ` <strong id="huntTurnRemaining">残り${huntTurnRemaining()}ターン</strong>`
+      : '';
+    return `<li><b>${condition.name}</b><span>${condition.effectText}${turnStatus}</span></li>`;
+  }).join('')}</ul>`;
+}
+function updateHuntTurnDisplay() {
+  const el = document.getElementById('huntTurnRemaining');
+  if (!el) return;
+  el.textContent = battleTurnCount > 8 ? '残り0ターン（制限超過）' : `残り${huntTurnRemaining()}ターン`;
 }
 function statusHtml(status, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false) {
   const parts = [];

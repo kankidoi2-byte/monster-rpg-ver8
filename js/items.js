@@ -155,17 +155,19 @@ function useBattleItem(id) {
 
   let msg = '';
   if (id === 'potion') {
-    const h = Math.min(50, playerMaxHp()-pHp);
+    const healing = adjustedBattleHealing(50);
+    const h = Math.min(healing, playerMaxHp()-pHp);
     if (h <= 0) { alert('HPは満タンです。'); return; }
     save.items[id]--;
-    pHp = Math.min(playerMaxHp(), pHp+50);
+    pHp = Math.min(playerMaxHp(), pHp+healing);
     if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
     msg = `💊 回復薬を使った！ HPが${h}回復した！`;
   } else if (id === 'upper_potion') {
-    const h = Math.min(120, playerMaxHp()-pHp);
+    const healing = adjustedBattleHealing(120);
+    const h = Math.min(healing, playerMaxHp()-pHp);
     if (h <= 0) { alert('HPは満タンです。'); return; }
     save.items[id]--;
-    pHp = Math.min(playerMaxHp(), pHp+120);
+    pHp = Math.min(playerMaxHp(), pHp+healing);
     if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
     msg = `💉 上回復薬を使った！ HPが${h}回復した！`;
   } else if (id === 'attack_potion') {

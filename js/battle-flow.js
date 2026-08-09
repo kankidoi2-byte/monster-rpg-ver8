@@ -18,6 +18,8 @@ function startBattleFromParty() {
 }
 function showBattleChoices() {
   activeHuntRequest = null;
+  resetHuntRequestChoices();
+  resetBattleTurnCounter();
   show('battleChoices');
   const list = document.getElementById('battleChoiceList');
   const normal = MAPS.filter(m => !m.bossOnly && !m.rareOnly);
@@ -37,7 +39,8 @@ function showBattleChoices() {
     const m = candidates[Math.floor(Math.random()*candidates.length)];
     if (!m) return '';
     const difficulty = rollHuntDifficulty(map);
-    const request = createHuntRequest(map, m, difficulty.id);
+    const conditionIds = rollHuntConditionIds(difficulty.id);
+    const request = registerHuntRequest(createHuntRequest(map, m, difficulty.id, conditionIds));
     return `<div class="card enemy-choice-card difficulty-card-${difficulty.id}">
       <img class="map-img" src="${map.image}" alt="${map.name}">
       <div class="map-name">${map.name}</div>
@@ -53,8 +56,9 @@ function showBattleChoices() {
           <span>敵Lv.${request.enemyLevel}</span><span>推定HP ${request.enemyHp}</span>
           <span>攻撃 ×${request.attackText}</span><span>EXP・コイン ×${request.rewardText}</span>
         </div>
+        ${huntConditionsHtml(request)}
       </div>
-      <button onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}')">この討伐依頼を受ける</button></div>`;
+      <button onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この討伐依頼を受ける</button></div>`;
   }).join('');
 }
 function isBossClassMonster(mon){
@@ -91,23 +95,25 @@ function playBossCaution(mon, onComplete){
     onComplete();
   }, 1800);
 }
-function startChosenBattle(mapId, enemyId, difficultyId='normal'){
+function startChosenBattle(mapId, enemyId, difficultyId='normal', requestId=null){
   if(bossCautionPlaying) return;
   const chosenEnemy = by(enemyId);
   if(!chosenEnemy) return;
   const normalizedDifficultyId = huntDifficulty(difficultyId).id;
+  const request = preparedHuntRequest(requestId, mapId, enemyId, normalizedDifficultyId);
 
   if(isBossClassMonster(chosenEnemy)){
-    playBossCaution(chosenEnemy, () => beginChosenBattle(mapId, enemyId, normalizedDifficultyId));
+    playBossCaution(chosenEnemy, () => beginChosenBattle(mapId, enemyId, normalizedDifficultyId, request));
   }else{
-    beginChosenBattle(mapId, enemyId, normalizedDifficultyId);
+    beginChosenBattle(mapId, enemyId, normalizedDifficultyId, request);
   }
 }
-function beginChosenBattle(mapId, enemyId, difficultyId='normal') {
+function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) {
   selectedMap = MAPS.find(m => m.id === mapId) || MAPS[0];
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
-  activeHuntRequest = createHuntRequest(selectedMap, enemy, difficultyId);
+  activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
+  resetBattleTurnCounter();
   if (!partyBattle.length) prepareBattleParty();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
   if (activePartyIdx < 0) activePartyIdx = 0;
@@ -153,6 +159,7 @@ function switchPartyMember() {
   return true;
 }
 function losePartyBattle() {
+  completeBattleTurn();
   document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';
   endPartyRecovery();
   document.getElementById('next').classList.remove('hidden');
@@ -168,6 +175,7 @@ function endPartyRecovery() {
   pSleepTurns = 0; eSleepTurns = 0;
   pFlareCharge = false; eFlareCharge = false;
   pAquaShield = false; eAquaShield = false;
+  resetBattleTurnCounter();
 }
 function runAway() {
   if (busy) return;
@@ -177,11 +185,13 @@ function runAway() {
   pSleepTurns = 0; eSleepTurns = 0;
   pFlareCharge = false; eFlareCharge = false;
   pAquaShield = false; eAquaShield = false;
+  resetBattleTurnCounter();
   document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';
   document.getElementById('next').classList.remove('hidden');
   busy = true;
 }
 function win() {
+  completeBattleTurn();
   eHp = 0;
   pStatus = null; eStatus = null;
   pParalysisTurns = 0; eParalysisTurns = 0;
@@ -191,13 +201,19 @@ function win() {
   pAquaShield = false; eAquaShield = false;
   const ov = document.getElementById('enemyDefeatOverlay');
   if (ov) ov.style.display = 'flex';
-  const rewardMultiplier = Number(activeHuntRequest?.rewardMultiplier) || 1;
+  const turnBonusActive = hasHuntCondition('swift_clear');
+  const turnBonusSucceeded = huntTurnBonusSucceeded();
   const baseExpGain = enemy.expBonus || (35 + Math.floor(Math.random()*25));
   const baseCoinGain = enemy.coinBonus || (8 + Math.floor(Math.random()*10));
-  const expGain = Math.max(1, Math.round(baseExpGain * rewardMultiplier));
-  const coinGain = Math.max(1, Math.round(baseCoinGain * rewardMultiplier));
+  const expGain = huntRewardAmount(baseExpGain, turnBonusSucceeded);
+  const coinGain = huntRewardAmount(baseCoinGain, turnBonusSucceeded);
   save.coins += coinGain;
   let msg = `🏆 ${enemy.name}を倒した！<br>`;
+  if (turnBonusActive) {
+    msg += turnBonusSucceeded
+      ? `⏱️ ${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`
+      : `⌛ ${battleTurnCount}ターンで撃破。迅速討伐失敗（8ターン以内）<br>`;
+  }
   msg += grantPartyExp(expGain);
   msg += `<br>🪙 コイン${coinGain}枚獲得！`;
   if (enemy.dropItem) {
