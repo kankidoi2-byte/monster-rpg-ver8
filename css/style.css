@@ -101,6 +101,7 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .alchemy-result-card.success{border-color:#a78bfa;box-shadow:0 0 24px #7c3aed55}.alchemy-result-card.fallback{border-color:#60a5fa}
 @keyframes alchemyPulse{from{transform:scale(.88) rotate(-4deg);opacity:.65}to{transform:scale(1.1) rotate(4deg);opacity:1}}
 @media(max-width:650px){
+  .menu{position:static;top:auto;z-index:auto}
   .menu button{min-height:42px;padding:9px 12px}
   .arena{gap:6px}
   .box{padding:8px}
