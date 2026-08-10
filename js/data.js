@@ -47,7 +47,8 @@ const IMG={
   freigal:"images/monsters/freigal.webp",
   goddess:"images/monsters/hikari.webp",
   tsubaki:'images/monsters/tsubaki.webp',
-  elnaKaen:'images/monsters/elna_kaen.webp'
+  elnaKaen:'images/monsters/elna_kaen.webp',
+  alchemion:'images/monsters/錬核獣アルケミオン.png'
 };
 const MAPIMG={
   magic_academy:'images/maps/magic_academy.webp',
@@ -319,7 +320,11 @@ const M = [
   {id:'elna_kaen',imgKey:'elnaKaen',no:46,name:'華炎の剣士エルナ',rarity:'★★★★',types:['fire','normal'],
    hp:235,spd:102,catchRate:.05,bossClass:'ボス級',
    desc:'炎玉の力を受け、華炎を剣に宿したエルナの新たな姿。舞う花弁のような炎で敵を斬り裂く。',
-   moves:[['華炎斬り',58,'fire'],['炎花の構え',0,'fire','guard'],['紅蓮連閃',80,'fire']]}
+   moves:[['華炎斬り',58,'fire'],['炎花の構え',0,'fire','guard'],['紅蓮連閃',80,'fire']]},
+  {id:'alchemion',imgKey:'alchemion',no:47,name:'錬核獣アルケミオン',rarity:'★★★',types:['normal'],
+   hp:180,spd:75,catchRate:0,alchemyExclusive:true,
+   desc:'錬成核から生まれる無属性の錬成限定モンスター。個体ごとに異なる能力傾向を持つ。',
+   moves:[['錬核崩砕',140,'normal','alchemy_recoil',null,5,'攻撃後、実際に与えたダメージの25％を反動として受ける。','alchemion']]}
 
 ];
 
@@ -342,9 +347,49 @@ const SHOP_ITEMS = [
   {id:'kilo_data', name:'キロデータ', icon:'💾', price:0, desc:'モンスターに与えるとEXPが20増える経験値アイテム。アイテムガチャで入手できる。', expItem:true, expAmount:20, shop:false},
   {id:'mega_data', name:'メガデータ', icon:'💿', price:0, desc:'モンスターに与えるとEXPが100増える経験値アイテム。アイテムガチャで入手できる。', expItem:true, expAmount:100, shop:false},
   {id:'giga_data', name:'ギガデータ', icon:'🧠', price:0, desc:'モンスターに与えるとEXPが500増える経験値アイテム。アイテムガチャで入手できる。', expItem:true, expAmount:500, shop:false},
-  {id:'fire_orb', name:'炎玉', icon:'🔥', price:0, desc:'ツバキが落とす炎の力を宿した結晶。将来の合成・特殊進化素材として使用できる。', shop:false}
+  {id:'fire_orb', name:'炎玉', icon:'🔥', price:0, desc:'ツバキが落とす炎の力を宿した結晶。将来の合成・特殊進化素材として使用できる。', shop:false},
+  {id:'monster_bone', name:'魔物の骨', icon:'🦴', price:25, desc:'魔物から得られる丈夫な骨。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
+  {id:'fine_monster_bone', name:'上質な魔物の骨', icon:'✨🦴', price:70, desc:'傷が少なく魔力の通りが良い上質な魔物の骨。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'magic_crystal', name:'魔晶石', icon:'💎', price:40, desc:'魔力が結晶化した石。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
+  {id:'fine_magic_crystal', name:'上質な魔晶石', icon:'✨💎', price:110, desc:'高密度の魔力を蓄えた上質な魔晶石。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'metal_ore', name:'金属鉱石', icon:'⛏️', price:35, desc:'錬成加工に適した金属を含む鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
+  {id:'fine_metal_ore', name:'上質な金属鉱石', icon:'✨⛏️', price:95, desc:'不純物が少なく加工しやすい上質な金属鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'unstable_alchemy_matter', name:'不安定錬成物質', icon:'🧪', price:50, desc:'性質が定まらない反応性の高い錬成素材。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
+  {id:'fine_unstable_alchemy_matter', name:'上質な不安定錬成物質', icon:'✨🧪', price:140, desc:'不安定さの中に高密度の錬成力を保つ上質な物質。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'}
 
 ];
+const ALCHEMY_MATERIAL_DROPS = Object.freeze([
+  Object.freeze({id:'monster_bone', rate:.10}),
+  Object.freeze({id:'magic_crystal', rate:.08}),
+  Object.freeze({id:'metal_ore', rate:.09}),
+  Object.freeze({id:'unstable_alchemy_matter', rate:.07}),
+  Object.freeze({id:'fine_monster_bone', rate:.03}),
+  Object.freeze({id:'fine_magic_crystal', rate:.025}),
+  Object.freeze({id:'fine_metal_ore', rate:.025}),
+  Object.freeze({id:'fine_unstable_alchemy_matter', rate:.02})
+]);
+const ALCHEMY_RECIPE = Object.freeze({
+  materialChoices:Object.freeze([
+    Object.freeze({label:'魔物の骨', normal:'monster_bone', fine:'fine_monster_bone'}),
+    Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
+    Object.freeze({label:'金属鉱石', normal:'metal_ore', fine:'fine_metal_ore'}),
+    Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'})
+  ]),
+  coinOptions:Object.freeze([
+    Object.freeze({id:'low', amount:50, bonus:-10, label:'少額'}),
+    Object.freeze({id:'standard', amount:100, bonus:0, label:'標準'}),
+    Object.freeze({id:'high', amount:250, bonus:15, label:'高額'})
+  ])
+});
+const ALCHEMY_FAILURE_MONSTER_IDS = Object.freeze([
+  'freigal','aquaron','grassbeat','rikasheef','nightmare','volteck','icegolem',
+  'proto_icegolem','nemes','suiren','slime','slime_gold','goblin','volmoog','orcana'
+]);
+const ALCHEMION_ARCHETYPES = Object.freeze([
+  Object.freeze({id:'attack', label:'攻撃型', modifiers:Object.freeze({hp:.90, attack:1.15, speed:1})}),
+  Object.freeze({id:'durability', label:'耐久型', modifiers:Object.freeze({hp:1.15, attack:1, speed:.90})}),
+  Object.freeze({id:'speed', label:'速度型', modifiers:Object.freeze({hp:1, attack:.90, speed:1.15})})
+]);
 const ITEM_DEX_EXTRA = [
   {id:'water_mirror', name:'水鏡', icon:'🪞', price:0, desc:'水の力を映し出す神秘的な鏡。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'},
   {id:'doom_fragment', name:'滅亡のカケラ', icon:'🔻', price:0, desc:'滅亡の力が凝縮された危険なカケラ。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'}

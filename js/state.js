@@ -28,6 +28,7 @@ let huntRequestChoices = Object.create(null);
 let huntRequestSerial = 0;
 let battleTurnCount = 0;
 let battleTurnInProgress = false;
+let battleRewardGranted = false;
 
 function huntDifficulty(id='normal') {
   return HUNT_DIFFICULTIES[id] || HUNT_DIFFICULTIES.normal;

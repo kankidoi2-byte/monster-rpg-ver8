@@ -4,6 +4,9 @@ function typeEff(atkTypeOrTypes, defTypes) {
     (defTypes || []).reduce((r,t) => ADV[atkType]?.[t] ? r * ADV[atkType][t] : r, total)
   , 1);
 }
+function alchemyRecoilDamage(actualDamage){
+  return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
+}
 function applySleepToTarget(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
   const current = targetIsPlayer ? pSleepTurns : eSleepTurns;
@@ -63,7 +66,7 @@ function tryConfusionAction(isPlayer) {
   } else if (roll < 0.75) {
     result = {canAct:false, selfHit:false, message:`🌀 ${actor.name}はこんらんして動けない！`};
   } else {
-    const atkMultiplier = isPlayer ? pAtk : eAtk * enemyDifficultyAttackMultiplier();
+    const atkMultiplier = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk * enemyDifficultyAttackMultiplier();
     const damage = Math.max(1, Math.floor(24 * atkMultiplier * 0.5));
     if (isPlayer) {
       pHp = Math.max(0, pHp - damage);
@@ -143,7 +146,7 @@ function turn(i) {
 
   const playerMove = getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
   const enemyMove = enemy.moves[Math.floor(Math.random()*enemy.moves.length)];
-  const pSpeed = monSpd(player);
+  const pSpeed = monSpd(player, activeInstance);
   const eSpeed = monSpd(enemy);
   const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
 
@@ -224,13 +227,14 @@ function doAttack(attacker, defender, mv, isPlayer) {
   // ダメージ計算
   const r = typeEff(type, defender.types);
   const hasFlareCharge = effect !== 'flare_charge' && power > 0 && (isPlayer ? pFlareCharge : eFlareCharge);
-  const baseAtk = isPlayer ? pAtk : eAtk;
+  const baseAtk = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk;
   const atk = baseAtk * (hasFlareCharge ? 1.20 : 1);
   const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
   const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
   const dmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const defenderHpBefore = isPlayer ? eHp : pHp;
   if (isPlayer) {
     eHp -= dmg;
     eGuard = false;
@@ -240,6 +244,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
     pGuard = false;
     if (shield) pAquaShield = false;
   }
+  const actualDamage = Math.min(dmg, Math.max(0, defenderHpBefore));
 
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
   if (mapAttackMultiplier > 1) msg += `<br>🗺️ マップ属性強化！（×1.2）`;
@@ -265,6 +270,11 @@ function doAttack(attacker, defender, mv, isPlayer) {
   if (effect === 'recoil') {
     if (isPlayer) pHp -= 8; else eHp -= 8;
     msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;
+  }
+  if (effect === 'alchemy_recoil') {
+    const recoilDamage = alchemyRecoilDamage(actualDamage);
+    if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;
+    msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;
   }
   if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.5)) {
     msg += applyPoisonToTarget(!isPlayer);

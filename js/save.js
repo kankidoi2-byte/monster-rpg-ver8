@@ -2,13 +2,13 @@
 function initSave() {
   return {
     caught:[], instances:[], levels:{}, exp:{},
-    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0},
+    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0},
     coins:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[]
   };
 }
 let save = JSON.parse(localStorage.getItem('mb_v95c') || 'null') || initSave();
 // マイグレーション
-['potion','water_mirror','attack_potion','upper_potion','contract_scroll','silver_contract_scroll','gold_contract_scroll','rainbow_contract_scroll','kilo_data','mega_data','giga_data','doom_fragment','fire_orb'].forEach(k => {
+['potion','water_mirror','attack_potion','upper_potion','contract_scroll','silver_contract_scroll','gold_contract_scroll','rainbow_contract_scroll','kilo_data','mega_data','giga_data','doom_fragment','fire_orb','monster_bone','fine_monster_bone','magic_crystal','fine_magic_crystal','metal_ore','fine_metal_ore','unstable_alchemy_matter','fine_unstable_alchemy_matter'].forEach(k => {
   if (!save.items) save.items = {};
   if (save.items[k] === undefined) save.items[k] = k === 'potion' ? 3 : 0;
 });
@@ -18,6 +18,7 @@ if (!save.instances) save.instances = [];
 if (!save.skillCards) save.skillCards = {};
 if (!save.equippedSkills) save.equippedSkills = {};
 if (!Array.isArray(save.itemDex)) save.itemDex = [];
+save.instances.forEach(ins => normalizeInstanceSaveFields(ins));
 
 /* Ver7.8: ここからはすべてグローバル関数 */
 function registerItemDex(itemId){
@@ -40,7 +41,7 @@ function saveGame() {
 }
 
 function uid()    { return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-function playerMaxHp() { return maxHp(player, activeInstance?.level || 1); }
+function playerMaxHp() { return activeInstance ? instanceMaxHp(activeInstance) : maxHp(player, 1); }
 function enemyMaxHp()  {
   if (Number.isFinite(activeHuntRequest?.enemyHp)) return activeHuntRequest.enemyHp;
   return maxHp(enemy, 1);
@@ -56,12 +57,30 @@ function insExp(id) {
   return ins?.exp || save.exp?.[id] || 0;
 }
 function caughtHas(id) { return save.instances.some(x => x.id === id) || save.caught.includes(id); }
-function addInstance(id, level=1, exp=0) {
-  const ins = {uid:uid(), id, level, exp};
+function addInstance(id, level=1, exp=0, extraFields=null) {
+  const ins = {uid:uid(), id, level, exp, locked:false};
+  if(extraFields && typeof extraFields === 'object') Object.assign(ins, extraFields);
+  normalizeInstanceSaveFields(ins);
   save.instances.push(ins);
   if (!save.caught.includes(id)) save.caught.push(id);
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
   return ins;
+}
+function normalizeInstanceSaveFields(ins){
+  if(!ins || typeof ins !== 'object') return;
+  if(typeof ins.locked !== 'boolean') ins.locked = false;
+  if(ins.id !== 'alchemion') return;
+  const fallback = ALCHEMION_ARCHETYPES[0];
+  const archetype = ALCHEMION_ARCHETYPES.find(type => type.id === ins.alchemy?.archetypeId) || fallback;
+  const move = by('alchemion')?.moves?.[0];
+  ins.alchemy = {
+    archetypeId:archetype.id,
+    archetypeLabel:archetype.label,
+    statModifiers:{...archetype.modifiers},
+    exclusiveSkillIds:Array.isArray(ins.alchemy?.exclusiveSkillIds) && ins.alchemy.exclusiveSkillIds.length
+      ? [...ins.alchemy.exclusiveSkillIds]
+      : (move ? [skillIdFromMove(move)] : [])
+  };
 }
 function getInstance(u) { return save.instances.find(x => x.uid === u) || null; }
 function getPartyInstances() {
@@ -74,6 +93,7 @@ function initStarters() {
       if (!ins.uid)   ins.uid   = uid();
       if (!ins.level) ins.level = 1;
       if (ins.exp === undefined) ins.exp = 0;
+      normalizeInstanceSaveFields(ins);
     });
     return;
   }

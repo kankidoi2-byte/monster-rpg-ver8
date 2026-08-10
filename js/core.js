@@ -40,14 +40,15 @@ M.forEach(mon => (mon.moves || []).forEach(mv => {
   const types=moveTypes(mv);
   MOVE_CARDS.push({
     id, name:mv[0], power:mv[1] || 0, type:types[0] || 'normal', types, effect:mv[3] || null,
-    chance:Number.isFinite(mv[4]) ? Number(mv[4]) : null, cost:skillCostFromMove(mv), customDesc:mv[6] || '', desc:moveEffectText ? moveEffectText(mv) : ''
+    chance:Number.isFinite(mv[4]) ? Number(mv[4]) : null, cost:skillCostFromMove(mv), customDesc:mv[6] || '',
+    exclusiveMonsterId:mv[7] || null, desc:moveEffectText ? moveEffectText(mv) : ''
   });
 }));
 const SKILL_BY_ID = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id, sk]));
 function skillToMove(skillId){
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return ['通常攻撃',24,'normal'];
-  return [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc];
+  return [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId];
 }
 function rarityCount(m){ return (m?.rarity || '★').length || 1; }
 function skillCostLimitFor(mon, ins){
@@ -58,6 +59,7 @@ function skillCostLimitFor(mon, ins){
 function isSkillAllowedForMonster(skillId, mon){
   const sk = SKILL_BY_ID[skillId];
   if (!sk || !mon) return false;
+  if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id) return false;
   const types=skillTypes(sk);
   return types.includes('normal') || types.some(t => (mon.types || []).includes(t));
 }
@@ -120,7 +122,21 @@ function maxHp(m, level) {
   const lv = (typeof level === 'number' && level > 0) ? level : 1;
   return m.hp + (lv - 1) * 12;
 }
-function monSpd(m) { return Number(m?.spd ?? 50); }
+function instanceStatModifier(ins, stat){
+  const value = Number(ins?.alchemy?.statModifiers?.[stat]);
+  return Number.isFinite(value) && value > 0 ? value : 1;
+}
+function instanceMaxHp(ins){
+  const mon = by(ins?.id);
+  if(!mon) return 1;
+  return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp')));
+}
+function monSpd(m, ins=null) {
+  return Math.max(1, Math.round(Number(m?.spd ?? 50) * instanceStatModifier(ins, 'speed')));
+}
+function playerAttackInstanceMultiplier(){
+  return instanceStatModifier(activeInstance, 'attack');
+}
 function moveEffectText(mv) {
   const [,power,type,effect,chance,,customDesc] = mv;
   const typeText = moveTypes(mv).map(t=>TN[t]||t).join(' / ');
@@ -128,6 +144,7 @@ function moveEffectText(mv) {
   const percent = Number.isFinite(chance) ? Math.round(chance * 100) : null;
   const fx = {
     heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'強力だが反動ダメージあり',
+    alchemy_recoil:'攻撃後、実際に与えたダメージの25％を反動として受ける',
     guard:'次のダメージを軽減', buff:'自分の攻撃力を上げる', debuff:'相手の攻撃力を下げる',
     poison:`${percent ?? 50}%で相手を毒状態にする`,
     paralysis:`${percent ?? 30}%で相手を麻痺状態にする`,

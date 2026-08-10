@@ -41,6 +41,24 @@ function itemCount(id){
   ensureContractScrollItem();
   return save.items[id] || 0;
 }
+function rollAlchemyMaterialDrop(randomFn=Math.random){
+  let roll = randomFn();
+  for(const entry of ALCHEMY_MATERIAL_DROPS){
+    if(roll < entry.rate) return entry.id;
+    roll -= entry.rate;
+  }
+  return null;
+}
+function grantAlchemyMaterialReward(randomFn=Math.random){
+  const itemId = rollAlchemyMaterialDrop(randomFn);
+  if(!itemId) return null;
+  const item = ITEM_BY_ID[itemId];
+  if(!item?.alchemyMaterial) return null;
+  ensureContractScrollItem();
+  save.items[itemId] = (save.items[itemId]||0) + 1;
+  registerItemDex(itemId);
+  return item;
+}
 function itemCountText(){
   ensureContractScrollItem();
   return `💊 回復薬 ${itemCount('potion')}個 / 💉 上回復薬 ${itemCount('upper_potion')}個 / ⚡ 力の薬 ${itemCount('attack_potion')}個 / 📜 契約書 ${itemCount('contract_scroll')}枚 / 📃 銀の契約書 ${itemCount('silver_contract_scroll')}枚 / 📒 金の契約書 ${itemCount('gold_contract_scroll')}枚 / 🌈 虹の契約書 ${itemCount('rainbow_contract_scroll')}枚`;

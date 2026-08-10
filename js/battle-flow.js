@@ -3,7 +3,7 @@ function prepareBattleParty() {
   partyBattle = party.map(ins => ({
     uid:ins.uid, inst:ins,
     mon:structuredClone(by(ins.id)),
-    hp:maxHp(by(ins.id), ins.level), fainted:false
+    hp:instanceMaxHp(ins), fainted:false
   }));
   activePartyIdx = 0;
   activeInstance = partyBattle[0].inst;
@@ -113,6 +113,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
   activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
+  battleRewardGranted = false;
   resetBattleTurnCounter();
   if (!partyBattle.length) prepareBattleParty();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
@@ -167,7 +168,7 @@ function losePartyBattle() {
   busy = true;
 }
 function endPartyRecovery() {
-  partyBattle.forEach(p => { p.hp = maxHp(by(p.inst.id), p.inst.level); p.fainted = false; });
+  partyBattle.forEach(p => { p.hp = instanceMaxHp(p.inst); p.fainted = false; });
   partyBattle = []; activePartyIdx = 0;
   pStatus = null; eStatus = null;
   pParalysisTurns = 0; eParalysisTurns = 0;
@@ -191,6 +192,8 @@ function runAway() {
   busy = true;
 }
 function win() {
+  if (battleRewardGranted) return;
+  battleRewardGranted = true;
   completeBattleTurn();
   eHp = 0;
   pStatus = null; eStatus = null;
@@ -223,6 +226,10 @@ function win() {
       const dropVisual = enemy.dropItem === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : '';
       msg += `<br>🎁 ${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`;
     }
+  }
+  const alchemyMaterial = grantAlchemyMaterialReward();
+  if (alchemyMaterial) {
+    msg += `<br>⚗️ ${itemInlineVisual(alchemyMaterial)} ${alchemyMaterial.name}を入手！`;
   }
   save.history.wins = (save.history.wins||0)+1;
   save.history.logs = save.history.logs||[];

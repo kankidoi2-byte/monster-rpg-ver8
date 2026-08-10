@@ -47,7 +47,7 @@ function update() {
   pHp = Math.max(0,pHp); eHp = Math.max(0,eHp);
   const pm = playerMaxHp(), em = enemyMaxHp();
   const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
-  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player)}${statusHtml(pStatus,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
+  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}${statusHtml(pStatus,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
   const enemyLevel = activeHuntRequest?.enemyLevel || 1;
   document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
   const pBar = document.getElementById('pHpBar');

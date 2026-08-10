@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>モンスターバトル Ver8.0 Claude</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css?v=alchemy-prototype-2">
 </head>
 <body class="title-mode">
 <div id="bossCautionOverlay" aria-hidden="true">
@@ -43,6 +44,7 @@
   <button onclick="show('party')">📦手持ち</button>
   <button onclick="show('partySet')">👥パーティー</button>
   <button onclick="showFusion()">⚗️合成</button>
+  <button onclick="showAlchemy()" aria-label="錬成を開く">⚗ 錬成</button>
   <button onclick="showShop()">🛒ショップ</button>
   <button onclick="showItemGacha()">🎰アイテムガチャ</button>
   <button onclick="show('dex')">📖図鑑</button>
@@ -58,6 +60,7 @@
     <p style="color:#8892b0;font-size:14px">Ver8.0 Claude修正版。<br>モンスターと契約し、育て、図鑑を完成させよう！<br><span style="color:#67e8f9">※レア/ボスマップ抽選の取りこぼしバグを修正</span></p>
     <br>
     <button onclick="show('partySet')" style="font-size:16px;padding:14px 32px">🌟 パーティーを組む</button>
+    <button onclick="showAlchemy()" style="font-size:16px;padding:14px 32px" aria-label="錬成を開く">⚗ 錬成を始める</button>
     <br><br>
     <div style="text-align:left;font-size:13px;color:#8892b0;background:#0d1428;border-radius:12px;padding:12px">
       <b style="color:#c7d2fe">遊び方</b><br>
@@ -163,6 +166,29 @@
   </div>
 </section>
 
+<!-- 錬成 -->
+<section id="alchemy" class="screen">
+  <div class="panel alchemy-panel">
+    <h1>⚗ 錬核錬成</h1>
+    <p class="small">モンスター1体、4種類の素材、コインを錬成核へ投入します。</p>
+    <button onclick="show('home')" class="secondary-button alchemy-home-button">← ホームへ戻る</button>
+    <div id="alchemyForm"></div>
+  </div>
+</section>
+
+<section id="alchemyConfirm" class="screen">
+  <div class="panel alchemy-panel">
+    <h1>⚠️ 錬成内容の最終確認</h1>
+    <div id="alchemyConfirmContent"></div>
+  </div>
+</section>
+
+<section id="alchemyResult" class="screen">
+  <div class="panel alchemy-panel">
+    <div id="alchemyResultContent"></div>
+  </div>
+</section>
+
 <!-- ショップ -->
 <section id="shop" class="screen">
   <h1>🛒 アイテムショップ</h1>
@@ -259,20 +285,21 @@
   <div id="itemDexList" class="item-dex-grid"></div>
 </section>
 
-<script src="js/data.js"></script>
-<script src="js/bootstrap-guard.js"></script>
-<script src="js/core.js"></script>
-<script src="js/state.js"></script>
-<script src="js/save.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/skills.js"></script>
-<script src="js/dex.js"></script>
-<script src="js/party.js"></script>
-<script src="js/progression.js"></script>
-<script src="js/items.js"></script>
-<script src="js/battle-view.js"></script>
-<script src="js/battle-rules.js"></script>
-<script src="js/battle-flow.js"></script>
-<script src="js/init.js"></script>
+<script src="js/data.js?v=alchemy-prototype-2"></script>
+<script src="js/bootstrap-guard.js?v=alchemy-prototype-2"></script>
+<script src="js/core.js?v=alchemy-prototype-2"></script>
+<script src="js/state.js?v=alchemy-prototype-2"></script>
+<script src="js/save.js?v=alchemy-prototype-2"></script>
+<script src="js/ui.js?v=alchemy-prototype-2"></script>
+<script src="js/skills.js?v=alchemy-prototype-2"></script>
+<script src="js/dex.js?v=alchemy-prototype-2"></script>
+<script src="js/party.js?v=alchemy-prototype-2"></script>
+<script src="js/progression.js?v=alchemy-prototype-2"></script>
+<script src="js/items.js?v=alchemy-prototype-2"></script>
+<script src="js/alchemy.js?v=alchemy-prototype-2"></script>
+<script src="js/battle-view.js?v=alchemy-prototype-2"></script>
+<script src="js/battle-rules.js?v=alchemy-prototype-2"></script>
+<script src="js/battle-flow.js?v=alchemy-prototype-2"></script>
+<script src="js/init.js?v=alchemy-prototype-2"></script>
 </body>
 </html>
