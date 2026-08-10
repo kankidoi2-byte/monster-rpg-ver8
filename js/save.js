@@ -69,18 +69,29 @@ function addInstance(id, level=1, exp=0, extraFields=null) {
 function normalizeInstanceSaveFields(ins){
   if(!ins || typeof ins !== 'object') return;
   if(typeof ins.locked !== 'boolean') ins.locked = false;
-  if(ins.id !== 'alchemion') return;
-  const fallback = ALCHEMION_ARCHETYPES[0];
-  const archetype = ALCHEMION_ARCHETYPES.find(type => type.id === ins.alchemy?.archetypeId) || fallback;
-  const move = by('alchemion')?.moves?.[0];
-  ins.alchemy = {
-    archetypeId:archetype.id,
-    archetypeLabel:archetype.label,
-    statModifiers:{...archetype.modifiers},
-    exclusiveSkillIds:Array.isArray(ins.alchemy?.exclusiveSkillIds) && ins.alchemy.exclusiveSkillIds.length
-      ? [...ins.alchemy.exclusiveSkillIds]
-      : (move ? [skillIdFromMove(move)] : [])
-  };
+  const config = ALCHEMY_MONSTER_CONFIGS[ins.id];
+  if(!config) return;
+  if(!ins.alchemy || typeof ins.alchemy !== 'object' || Array.isArray(ins.alchemy)) ins.alchemy = {};
+  const fallback = config.archetypes?.[0];
+  const archetype = config.archetypes?.find(type => type.id === ins.alchemy.archetypeId) || fallback;
+  if(archetype){
+    if(!ins.alchemy.archetypeId) ins.alchemy.archetypeId = archetype.id;
+    if(!ins.alchemy.archetypeLabel) ins.alchemy.archetypeLabel = archetype.label;
+    if(!ins.alchemy.statModifiers || typeof ins.alchemy.statModifiers !== 'object' || Array.isArray(ins.alchemy.statModifiers)){
+      ins.alchemy.statModifiers = {...archetype.modifiers};
+    }else{
+      Object.entries(archetype.modifiers).forEach(([stat, value]) => {
+        if(ins.alchemy.statModifiers[stat] === undefined) ins.alchemy.statModifiers[stat] = value;
+      });
+    }
+  }
+  if(!Array.isArray(ins.alchemy.exclusiveSkillIds) || !ins.alchemy.exclusiveSkillIds.length){
+    const mon = by(ins.id);
+    ins.alchemy.exclusiveSkillIds = (config.exclusiveMoveIndexes || [])
+      .map(index => mon?.moves?.[index])
+      .filter(Boolean)
+      .map(skillIdFromMove);
+  }
 }
 function getInstance(u) { return save.instances.find(x => x.uid === u) || null; }
 function getPartyInstances() {

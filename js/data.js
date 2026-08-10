@@ -368,28 +368,67 @@ const ALCHEMY_MATERIAL_DROPS = Object.freeze([
   Object.freeze({id:'fine_metal_ore', rate:.025}),
   Object.freeze({id:'fine_unstable_alchemy_matter', rate:.02})
 ]);
-const ALCHEMY_RECIPE = Object.freeze({
-  materialChoices:Object.freeze([
-    Object.freeze({label:'魔物の骨', normal:'monster_bone', fine:'fine_monster_bone'}),
-    Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
-    Object.freeze({label:'金属鉱石', normal:'metal_ore', fine:'fine_metal_ore'}),
-    Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'})
-  ]),
-  coinOptions:Object.freeze([
-    Object.freeze({id:'low', amount:50, bonus:-10, label:'少額'}),
-    Object.freeze({id:'standard', amount:100, bonus:0, label:'標準'}),
-    Object.freeze({id:'high', amount:250, bonus:15, label:'高額'})
-  ])
-});
-const ALCHEMY_FAILURE_MONSTER_IDS = Object.freeze([
-  'freigal','aquaron','grassbeat','rikasheef','nightmare','volteck','icegolem',
-  'proto_icegolem','nemes','suiren','slime','slime_gold','goblin','volmoog','orcana'
-]);
 const ALCHEMION_ARCHETYPES = Object.freeze([
   Object.freeze({id:'attack', label:'攻撃型', modifiers:Object.freeze({hp:.90, attack:1.15, speed:1})}),
   Object.freeze({id:'durability', label:'耐久型', modifiers:Object.freeze({hp:1.15, attack:1, speed:.90})}),
   Object.freeze({id:'speed', label:'速度型', modifiers:Object.freeze({hp:1, attack:.90, speed:1.15})})
 ]);
+const ALCHEMY_MONSTER_CONFIGS = Object.freeze({
+  alchemion:Object.freeze({
+    monsterId:'alchemion',
+    archetypes:ALCHEMION_ARCHETYPES,
+    exclusiveMoveIndexes:Object.freeze([0])
+  })
+});
+const ALCHEMY_SUCCESS_CANDIDATES = Object.freeze([
+  Object.freeze({
+    monsterId:'alchemion', weight:1, alchemyInstance:true,
+    conditions:Object.freeze({}),
+    unlockConditions:Object.freeze([]),
+    requiredCoinOptionIds:Object.freeze([]),
+    guaranteeConditions:Object.freeze([])
+  })
+]);
+const ALCHEMY_FAILURE_CANDIDATES = Object.freeze([
+  'freigal','aquaron','grassbeat','rikasheef','nightmare','volteck','icegolem',
+  'proto_icegolem','nemes','suiren','slime','slime_gold','goblin','volmoog','orcana'
+].map(monsterId => Object.freeze({
+  monsterId, weight:1, alchemyInstance:false,
+  conditions:Object.freeze({
+    requiresNormalWildMap:true,
+    excludeBossClass:true,
+    excludeEvolutionOnly:true,
+    excludeAlchemyExclusive:true
+  }),
+  unlockConditions:Object.freeze([]),
+  requiredCoinOptionIds:Object.freeze([]),
+  guaranteeConditions:Object.freeze([])
+})));
+const ALCHEMY_RECIPES = Object.freeze([
+  Object.freeze({
+    recipeId:'alchemion_standard',
+    materialChoices:Object.freeze([
+      Object.freeze({label:'魔物の骨', normal:'monster_bone', fine:'fine_monster_bone'}),
+      Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
+      Object.freeze({label:'金属鉱石', normal:'metal_ore', fine:'fine_metal_ore'}),
+      Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'})
+    ]),
+    coinOptions:Object.freeze([
+      Object.freeze({id:'low', amount:50, bonus:-10, label:'少額'}),
+      Object.freeze({id:'standard', amount:100, bonus:0, label:'標準'}),
+      Object.freeze({id:'high', amount:250, bonus:15, label:'高額'})
+    ]),
+    defaultCoinOptionId:'standard',
+    baseSuccessRate:30,
+    fineMaterialBonus:5,
+    minSuccessRate:10,
+    maxSuccessRate:70,
+    successCandidates:ALCHEMY_SUCCESS_CANDIDATES,
+    failureCandidates:ALCHEMY_FAILURE_CANDIDATES
+  })
+]);
+const ALCHEMY_RECIPE_BY_ID = Object.freeze(Object.fromEntries(ALCHEMY_RECIPES.map(recipe => [recipe.recipeId, recipe])));
+const DEFAULT_ALCHEMY_RECIPE_ID = 'alchemion_standard';
 const ITEM_DEX_EXTRA = [
   {id:'water_mirror', name:'水鏡', icon:'🪞', price:0, desc:'水の力を映し出す神秘的な鏡。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'},
   {id:'doom_fragment', name:'滅亡のカケラ', icon:'🔻', price:0, desc:'滅亡の力が凝縮された危険なカケラ。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'}
