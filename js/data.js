@@ -414,9 +414,9 @@ const ALCHEMY_RECIPES = Object.freeze([
       Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'})
     ]),
     coinOptions:Object.freeze([
-      Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null}),
-      Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2}),
-      Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3})
+      Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null, resonanceOnFailure:1}),
+      Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2, resonanceOnFailure:3}),
+      Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3, resonanceOnFailure:8})
     ]),
     defaultCoinOptionId:'standard',
     baseSuccessRate:30,

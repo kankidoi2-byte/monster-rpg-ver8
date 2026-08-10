@@ -73,6 +73,7 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .alchemy-panel>h1,.alchemy-panel>p{text-align:center}
 .alchemy-home-button{display:block;min-height:44px;margin:8px auto 14px}
 .alchemy-balance{text-align:center;padding:10px;border-radius:12px;background:#0a0e1f;color:#fde68a}
+.alchemy-resonance,.alchemy-resonance-status,.alchemy-resonance-gain{display:grid;gap:4px;margin:10px 0;padding:10px;border:1px solid #22d3ee;border-radius:12px;background:#08334466;color:#cffafe;overflow-wrap:anywhere}.alchemy-resonance span,.alchemy-resonance-status span{font-size:12px;color:#a5f3fc}.alchemy-resonance-gain{border-color:#67e8f9;background:#164e6366}
 .alchemy-step,.alchemy-preview-card,.alchemy-confirm-card,.alchemy-result-card{margin:14px 0;padding:14px;border:1px solid #33416f;border-radius:14px;background:#0b1124}
 .alchemy-step h2,.alchemy-preview-card h2{margin-top:0}
 .alchemy-step select{display:block;width:100%;max-width:100%;padding:11px;margin-top:6px;border:1px solid #46578f;border-radius:10px;background:#111830;color:#e8eaf6;font-size:16px}

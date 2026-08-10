@@ -45,6 +45,13 @@ function alchemyFailureGuaranteeText(coinOption){
   const minimum = alchemyMinimumFailureRarity(coinOption);
   return minimum ? `外れ結果は★${minimum}以上` : '最低レアリティ保証なし';
 }
+function alchemyResonanceOnFailure(coinOption){
+  const value = Number(coinOption?.resonanceOnFailure);
+  return Number.isInteger(value) && value >= 0 ? value : 0;
+}
+function alchemyResonanceStatus(plan){
+  return `<div class="alchemy-resonance-status"><b>錬成残響：${save.alchemyResonance}</b><span>失敗時の獲得予定量：+${alchemyResonanceOnFailure(plan.coinOption)}（成功時は獲得なし）</span></div>`;
+}
 function isAlchemyCandidateEligible(candidate, context={}){
   const mon = by(candidate?.monsterId);
   if(!mon) return false;
@@ -182,6 +189,7 @@ function renderAlchemy(){
   const unavailable = (save.instances || []).filter(ins => !eligible.includes(ins));
   root.innerHTML = `
     <div class="alchemy-balance">💰 所持コイン：<b>${save.coins || 0}</b>枚</div>
+    <div class="alchemy-resonance"><b>錬成残響：${save.alchemyResonance}</b><span>残響100で錬成限定種の指定錬成に使用予定（指定錬成は未実装）</span></div>
     <div class="alchemy-step">
       <h2>1. 投入モンスター</h2>
       <p class="alchemy-warning">⚠️ 投入した個体は結果にかかわらず失われ、元に戻せません。</p>
@@ -207,7 +215,7 @@ function renderAlchemy(){
       <div class="alchemy-coin-options">${recipe.coinOptions.map(option => {
         const failureCount = eligibleAlchemyCandidates(recipe, false, option).length;
         return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="updateAlchemyPreview()" ${option.id===recipe.defaultCoinOptionId?'checked':''} ${failureCount?'':'disabled'}>
-          <span>${option.label}<b>${option.amount}枚</b><small>成功率 ${option.bonus>0?'+':''}${option.bonus}%</small><small>${alchemyFailureGuaranteeText(option)}</small>${failureCount?'':`<small class="alchemy-unavailable">候補0体のため選択不可</small>`}</span>
+          <span>${option.label}<b>${option.amount}枚</b><small>成功率 ${option.bonus>0?'+':''}${option.bonus}%</small><small>${alchemyFailureGuaranteeText(option)}</small><small>失敗時 残響+${alchemyResonanceOnFailure(option)}</small>${failureCount?'':`<small class="alchemy-unavailable">候補0体のため選択不可</small>`}</span>
         </label>`;
       }).join('')}</div>
     </div>
@@ -226,6 +234,7 @@ function updateAlchemyPreview(){
     <p><b>使用素材：</b>${materialNames.join(' / ')}</p>
     <p><b>選択中コイン帯：</b>${plan.coinOption.label}（${plan.coinOption.amount}枚）</p>
     <p class="alchemy-guarantee"><b>最低レアリティ保証：</b>${alchemyFailureGuaranteeText(plan.coinOption)}</p>
+    ${alchemyResonanceStatus(plan)}
     <div class="alchemy-rate"><span>アルケミオン成功率</span><strong>${plan.rate}%</strong></div>
     <div class="alchemy-breakdown">基礎${plan.recipe.baseSuccessRate}% / 素材品質 +${plan.fineCount*plan.recipe.fineMaterialBonus}% / レベル +${plan.monsterBonus.levelBonus}% / 進化段階 +${plan.monsterBonus.evolutionBonus}% / コイン ${plan.coinOption.bonus>0?'+':''}${plan.coinOption.bonus}%</div>
     ${alchemyCandidateDisplay(plan)}
@@ -246,6 +255,7 @@ function openAlchemyConfirmation(){
     <p><b>選択中コイン帯：</b>${plan.coinOption.label}（${plan.coinOption.amount}枚）</p>
     <p><b>アルケミオン成功率：</b>${plan.rate}%</p>
     <p class="alchemy-guarantee"><b>最低レアリティ保証：</b>${alchemyFailureGuaranteeText(plan.coinOption)}</p>
+    ${alchemyResonanceStatus(plan)}
     ${alchemyCandidateDisplay(plan, true)}
     <p class="alchemy-warning">この操作を確定すると、投入モンスター・素材4個・コインは結果にかかわらず消費されます。元には戻せません。</p>
     <button id="alchemyExecuteButton" onclick="executeAlchemyConfirmed()">消費して錬成を実行</button>
@@ -282,6 +292,8 @@ function finalizeAlchemy(originalPlan){
 
     const success = rollAlchemySuccess(plan);
     const candidate = rollAlchemyResultCandidate(plan.recipe, success, plan.coinOption);
+    const resonanceGain = !success && candidate?.alchemyInstance === false ? alchemyResonanceOnFailure(plan.coinOption) : 0;
+    if(resonanceGain > 0) save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance) + resonanceGain;
     const {resultMonster, resultInstance, archetype} = createAlchemyResultInstance(candidate);
     saveGame();
 
@@ -293,6 +305,7 @@ function finalizeAlchemy(originalPlan){
       <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${String(resultInstance.uid).slice(-8)}</p>
       ${modifierHtml}
       ${success?`<p><b>専用技：</b>⚪ 錬核崩砕（威力140・実ダメージの25%反動）</p>`:''}
+      ${resonanceGain>0?`<p class="alchemy-resonance-gain"><b>錬成残響を${resonanceGain}獲得</b><br>残響合計：${save.alchemyResonance}</p>`:''}
       <button onclick="show('party')">完成個体を手持ちで確認</button>
       <button onclick="showAlchemy()" class="secondary-button">もう一度錬成する</button>
     </div>`;

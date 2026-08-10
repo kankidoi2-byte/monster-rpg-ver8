@@ -3,8 +3,11 @@ function initSave() {
   return {
     caught:[], instances:[], levels:{}, exp:{},
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0},
-    coins:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[]
+    coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[]
   };
+}
+function normalizeAlchemyResonance(value){
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
 }
 let save = JSON.parse(localStorage.getItem('mb_v95c') || 'null') || initSave();
 // マイグレーション
@@ -18,6 +21,7 @@ if (!save.instances) save.instances = [];
 if (!save.skillCards) save.skillCards = {};
 if (!save.equippedSkills) save.equippedSkills = {};
 if (!Array.isArray(save.itemDex)) save.itemDex = [];
+save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance);
 save.instances.forEach(ins => normalizeInstanceSaveFields(ins));
 
 /* Ver7.8: ここからはすべてグローバル関数 */
@@ -37,6 +41,7 @@ syncItemDexFromInventory();
 function saveGame() {
   ensureContractScrollItem();
   syncItemDexFromInventory();
+  save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance);
   localStorage.setItem('mb_v95c', JSON.stringify(save));
 }
 
