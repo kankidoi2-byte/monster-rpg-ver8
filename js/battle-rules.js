@@ -1,8 +1,10 @@
 function typeEff(atkTypeOrTypes, defTypes) {
   const attackTypes=normalizeMoveTypes(atkTypeOrTypes);
-  return attackTypes.reduce((total,atkType) =>
-    (defTypes || []).reduce((r,t) => ADV[atkType]?.[t] ? r * ADV[atkType][t] : r, total)
-  , 1);
+  const defenseTypes=normalizeMoveTypes(defTypes);
+  const multipliers = attackTypes.flatMap(atkType =>
+    defenseTypes.map(defType => ADV[atkType]?.[defType] ?? 1)
+  );
+  return multipliers.length ? Math.max(...multipliers) : 1;
 }
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
@@ -103,27 +105,35 @@ function performAction(attacker, defender, move, isPlayer) {
   return true;
 }
 function applyPoisonToTarget(targetIsPlayer) {
+  const poison = BATTLE_STATUS_EFFECTS.poison;
+  const actor = targetIsPlayer ? player : enemy;
+  const wasPoisoned = targetIsPlayer ? pPoisonTurns > 0 : ePoisonTurns > 0;
   if (targetIsPlayer) {
-    if (pStatus === 'poison') return '';
     pStatus = 'poison';
-    return `<br>☠️ ${player.name}は毒状態になった！`;
+    pPoisonTurns = poison.duration;
+  } else {
+    eStatus = 'poison';
+    ePoisonTurns = poison.duration;
   }
-  if (eStatus === 'poison') return '';
-  eStatus = 'poison';
-  return `<br>☠️ ${enemy.name}は毒状態になった！`;
+  return `<br>☠️ ${actor.name}の毒は${wasPoisoned ? '更新され' : '付与され'}、残り${poison.duration}ターンになった！`;
 }
 function applyPoisonEndTurn() {
+  const poison = BATTLE_STATUS_EFFECTS.poison;
   const msgs = [];
-  if (pStatus === 'poison' && pHp > 0) {
-    const dmg = Math.max(1, Math.floor(playerMaxHp() * 0.10));
+  if (pStatus === 'poison' && pPoisonTurns > 0 && pHp > 0) {
+    const dmg = Math.max(1, Math.floor(playerMaxHp() * poison.maxHpDamageRate));
     pHp = Math.max(0, pHp - dmg);
+    pPoisonTurns--;
     if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
-    msgs.push(`☠️ ${player.name}は毒で${dmg}ダメージ！`);
+    msgs.push(`☠️ ${player.name}は毒で${dmg}ダメージ！ 残り${pPoisonTurns}ターン${pHp <= 0 ? '<br>💀 '+player.name+'は毒で戦闘不能になった！' : ''}`);
+    if(pPoisonTurns <= 0){ pStatus = null; if(pHp > 0) msgs.push(`✨ ${player.name}の毒が治った！`); }
   }
-  if (eStatus === 'poison' && eHp > 0) {
-    const dmg = Math.max(1, Math.floor(enemyMaxHp() * 0.10));
+  if (eStatus === 'poison' && ePoisonTurns > 0 && eHp > 0) {
+    const dmg = Math.max(1, Math.floor(enemyMaxHp() * poison.maxHpDamageRate));
     eHp = Math.max(0, eHp - dmg);
-    msgs.push(`☠️ ${enemy.name}は毒で${dmg}ダメージ！`);
+    ePoisonTurns--;
+    msgs.push(`☠️ ${enemy.name}は毒で${dmg}ダメージ！ 残り${ePoisonTurns}ターン${eHp <= 0 ? '<br>💀 '+enemy.name+'は毒で戦闘不能になった！' : ''}`);
+    if(ePoisonTurns <= 0){ eStatus = null; if(eHp > 0) msgs.push(`✨ ${enemy.name}の毒が治った！`); }
   }
   update();
   return msgs.join('<br>');

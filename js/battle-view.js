@@ -32,9 +32,9 @@ function updateHuntTurnDisplay() {
   if (!el) return;
   el.textContent = battleTurnCount > 8 ? '残り0ターン（制限超過）' : `残り${huntTurnRemaining()}ターン`;
 }
-function statusHtml(status, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false) {
+function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false) {
   const parts = [];
-  if (status === 'poison') parts.push('<span style="color:#bbf7d0">☠️毒</span>');
+  if (status === 'poison' && poisonTurns > 0) parts.push(`<span style="color:#bbf7d0">☠️毒(${poisonTurns})</span>`);
   if (sleepTurns > 0) parts.push(`<span style="color:#93c5fd">💤ねむり(${sleepTurns})</span>`);
   if (paralysisTurns > 0) parts.push(`<span style="color:#fde047">⚡麻痺(${paralysisTurns})</span>`);
   if (confusionTurns > 0) parts.push(`<span style="color:#c4b5fd">🌀こんらん(${confusionTurns})</span>`);
@@ -47,9 +47,9 @@ function update() {
   pHp = Math.max(0,pHp); eHp = Math.max(0,eHp);
   const pm = playerMaxHp(), em = enemyMaxHp();
   const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
-  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}${statusHtml(pStatus,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
+  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}${statusHtml(pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
   const enemyLevel = activeHuntRequest?.enemyLevel || 1;
-  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
+  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,ePoisonTurns,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
   const pBar = document.getElementById('pHpBar');
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';

@@ -48,7 +48,8 @@ const IMG={
   goddess:"images/monsters/hikari.webp",
   tsubaki:'images/monsters/tsubaki.webp',
   elnaKaen:'images/monsters/elna_kaen.webp',
-  alchemion:'images/monsters/錬核獣アルケミオン.png'
+  alchemion:'images/monsters/錬核獣アルケミオン.png',
+  kimeragna:'images/monsters/混成翼竜キメラグナ.png'
 };
 const MAPIMG={
   magic_academy:'images/maps/magic_academy.webp',
@@ -133,6 +134,9 @@ const ADV = {
   star:    {light:1.5, dark:.7},
   dragon:  {dragon:1.2}
 };
+const BATTLE_STATUS_EFFECTS = Object.freeze({
+  poison:Object.freeze({duration:3, maxHpDamageRate:.10})
+});
 
 /* ===== モンスターデータ ===== */
 const M = [
@@ -324,7 +328,11 @@ const M = [
   {id:'alchemion',imgKey:'alchemion',no:47,name:'錬核獣アルケミオン',rarity:'★★★',types:['normal'],
    hp:180,spd:75,catchRate:0,alchemyExclusive:true,
    desc:'錬成核から生まれる無属性の錬成限定モンスター。個体ごとに異なる能力傾向を持つ。',
-   moves:[['錬核崩砕',140,'normal','alchemy_recoil',null,5,'攻撃後、実際に与えたダメージの25％を反動として受ける。','alchemion']]}
+   moves:[['錬核崩砕',140,'normal','alchemy_recoil',null,5,'攻撃後、実際に与えたダメージの25％を反動として受ける。','alchemion']]},
+  {id:'kimeragna',imgKey:'kimeragna',no:48,name:'混成翼竜キメラグナ',rarity:'★★★',types:['wind','dragon'],
+   hp:150,spd:100,catchRate:0,alchemyExclusive:true,
+   desc:'風と竜の性質を併せ持つ錬成限定の翼竜。猛毒を帯びた翼で獲物を追い詰める。',
+   moves:[['猛毒翔破',110,'wind','poison',.40,4,'40％の確率で相手を3ターンの毒状態にする。','kimeragna']]}
 
 ];
 
@@ -355,20 +363,28 @@ const SHOP_ITEMS = [
   {id:'metal_ore', name:'金属鉱石', icon:'⛏️', price:35, desc:'錬成加工に適した金属を含む鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
   {id:'fine_metal_ore', name:'上質な金属鉱石', icon:'✨⛏️', price:95, desc:'不純物が少なく加工しやすい上質な金属鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'unstable_alchemy_matter', name:'不安定錬成物質', icon:'🧪', price:50, desc:'性質が定まらない反応性の高い錬成素材。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_unstable_alchemy_matter', name:'上質な不安定錬成物質', icon:'✨🧪', price:140, desc:'不安定さの中に高密度の錬成力を保つ上質な物質。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'}
+  {id:'fine_unstable_alchemy_matter', name:'上質な不安定錬成物質', icon:'✨🧪', price:140, desc:'不安定さの中に高密度の錬成力を保つ上質な物質。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'raptor_feather', name:'猛禽の羽', icon:'🪶', price:45, desc:'空を駆ける猛禽から得られる、風の力を帯びた羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
+  {id:'fine_raptor_feather', name:'上質な猛禽の羽', icon:'✨🪶', price:120, desc:'強い風の魔力を保った傷のない猛禽の羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'venom_carapace', name:'毒虫の甲殻', icon:'🪲', price:50, desc:'毒性を残した硬い虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
+  {id:'fine_venom_carapace', name:'上質な毒虫の甲殻', icon:'✨🪲', price:140, desc:'毒性と強度を高い水準で保つ上質な虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'}
 
 ];
 const ALCHEMY_MATERIAL_DROPS = Object.freeze([
-  Object.freeze({id:'monster_bone', rate:.10}),
-  Object.freeze({id:'magic_crystal', rate:.08}),
-  Object.freeze({id:'metal_ore', rate:.09}),
-  Object.freeze({id:'unstable_alchemy_matter', rate:.07}),
-  Object.freeze({id:'fine_monster_bone', rate:.03}),
-  Object.freeze({id:'fine_magic_crystal', rate:.025}),
-  Object.freeze({id:'fine_metal_ore', rate:.025}),
-  Object.freeze({id:'fine_unstable_alchemy_matter', rate:.02})
+  Object.freeze({id:'monster_bone', rate:.06}),
+  Object.freeze({id:'magic_crystal', rate:.055}),
+  Object.freeze({id:'metal_ore', rate:.055}),
+  Object.freeze({id:'unstable_alchemy_matter', rate:.06}),
+  Object.freeze({id:'raptor_feather', rate:.055}),
+  Object.freeze({id:'venom_carapace', rate:.055}),
+  Object.freeze({id:'fine_monster_bone', rate:.018}),
+  Object.freeze({id:'fine_magic_crystal', rate:.017}),
+  Object.freeze({id:'fine_metal_ore', rate:.017}),
+  Object.freeze({id:'fine_unstable_alchemy_matter', rate:.018}),
+  Object.freeze({id:'fine_raptor_feather', rate:.015}),
+  Object.freeze({id:'fine_venom_carapace', rate:.015})
 ]);
-const ALCHEMION_ARCHETYPES = Object.freeze([
+const ALCHEMY_ARCHETYPES = Object.freeze([
   Object.freeze({id:'attack', label:'攻撃型', modifiers:Object.freeze({hp:.90, attack:1.15, speed:1})}),
   Object.freeze({id:'durability', label:'耐久型', modifiers:Object.freeze({hp:1.15, attack:1, speed:.90})}),
   Object.freeze({id:'speed', label:'速度型', modifiers:Object.freeze({hp:1, attack:.90, speed:1.15})})
@@ -376,13 +392,27 @@ const ALCHEMION_ARCHETYPES = Object.freeze([
 const ALCHEMY_MONSTER_CONFIGS = Object.freeze({
   alchemion:Object.freeze({
     monsterId:'alchemion',
-    archetypes:ALCHEMION_ARCHETYPES,
+    archetypes:ALCHEMY_ARCHETYPES,
+    exclusiveMoveIndexes:Object.freeze([0])
+  }),
+  kimeragna:Object.freeze({
+    monsterId:'kimeragna',
+    archetypes:ALCHEMY_ARCHETYPES,
     exclusiveMoveIndexes:Object.freeze([0])
   })
 });
-const ALCHEMY_SUCCESS_CANDIDATES = Object.freeze([
+const ALCHEMION_SUCCESS_CANDIDATES = Object.freeze([
   Object.freeze({
     monsterId:'alchemion', weight:1, alchemyInstance:true,
+    conditions:Object.freeze({}),
+    unlockConditions:Object.freeze([]),
+    requiredCoinOptionIds:Object.freeze([]),
+    guaranteeConditions:Object.freeze([])
+  })
+]);
+const KIMERAGNA_SUCCESS_CANDIDATES = Object.freeze([
+  Object.freeze({
+    monsterId:'kimeragna', weight:1, alchemyInstance:true,
     conditions:Object.freeze({}),
     unlockConditions:Object.freeze([]),
     requiredCoinOptionIds:Object.freeze([]),
@@ -404,27 +434,49 @@ const ALCHEMY_FAILURE_CANDIDATES = Object.freeze([
   requiredCoinOptionIds:Object.freeze([]),
   guaranteeConditions:Object.freeze([])
 })));
+const ALCHEMY_COIN_OPTIONS = Object.freeze([
+  Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null, resonanceOnFailure:1}),
+  Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2, resonanceOnFailure:3}),
+  Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3, resonanceOnFailure:8})
+]);
 const ALCHEMY_RECIPES = Object.freeze([
   Object.freeze({
     recipeId:'alchemion_standard',
+    displayName:'錬核獣アルケミオン',
     materialChoices:Object.freeze([
       Object.freeze({label:'魔物の骨', normal:'monster_bone', fine:'fine_monster_bone'}),
       Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
       Object.freeze({label:'金属鉱石', normal:'metal_ore', fine:'fine_metal_ore'}),
       Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'})
     ]),
-    coinOptions:Object.freeze([
-      Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null, resonanceOnFailure:1}),
-      Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2, resonanceOnFailure:3}),
-      Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3, resonanceOnFailure:8})
-    ]),
+    coinOptions:ALCHEMY_COIN_OPTIONS,
     defaultCoinOptionId:'standard',
     baseSuccessRate:30,
     fineMaterialBonus:5,
     minSuccessRate:10,
     maxSuccessRate:70,
-    successCandidates:ALCHEMY_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_FAILURE_CANDIDATES
+    successCandidates:ALCHEMION_SUCCESS_CANDIDATES,
+    failureCandidates:ALCHEMY_FAILURE_CANDIDATES,
+    designation:Object.freeze({enabled:true, resonanceCost:100, coinAmount:100})
+  }),
+  Object.freeze({
+    recipeId:'kimeragna_standard',
+    displayName:'混成翼竜キメラグナ',
+    materialChoices:Object.freeze([
+      Object.freeze({label:'魔物の骨', normal:'monster_bone', fine:'fine_monster_bone'}),
+      Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'}),
+      Object.freeze({label:'猛禽の羽', normal:'raptor_feather', fine:'fine_raptor_feather'}),
+      Object.freeze({label:'毒虫の甲殻', normal:'venom_carapace', fine:'fine_venom_carapace'})
+    ]),
+    coinOptions:ALCHEMY_COIN_OPTIONS,
+    defaultCoinOptionId:'standard',
+    baseSuccessRate:30,
+    fineMaterialBonus:5,
+    minSuccessRate:10,
+    maxSuccessRate:70,
+    successCandidates:KIMERAGNA_SUCCESS_CANDIDATES,
+    failureCandidates:ALCHEMY_FAILURE_CANDIDATES,
+    designation:Object.freeze({enabled:true, resonanceCost:100, coinAmount:100})
   })
 ]);
 const ALCHEMY_RECIPE_BY_ID = Object.freeze(Object.fromEntries(ALCHEMY_RECIPES.map(recipe => [recipe.recipeId, recipe])));

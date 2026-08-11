@@ -259,6 +259,7 @@ function tryContractWithScroll(itemId='contract_scroll'){
 
   if(ok){
     pStatus = null; eStatus = null;
+    pPoisonTurns = 0; ePoisonTurns = 0;
     pParalysisTurns = 0; eParalysisTurns = 0;
   pConfusionTurns = 0; eConfusionTurns = 0;
   pSleepTurns = 0; eSleepTurns = 0;

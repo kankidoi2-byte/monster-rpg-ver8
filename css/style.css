@@ -87,6 +87,7 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .alchemy-coin-options input:disabled+span{cursor:not-allowed;border-color:#4b5563;background:#111827;color:#6b7280;box-shadow:none}
 .alchemy-coin-options small{color:#a5b4fc}
 .alchemy-coin-options input:disabled+span small{color:#6b7280}.alchemy-coin-options .alchemy-unavailable{color:#fca5a5}
+.alchemy-mode-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}.alchemy-mode-options label{cursor:pointer}.alchemy-mode-options input{position:absolute;opacity:0;pointer-events:none}.alchemy-mode-options span{display:grid;gap:4px;min-height:58px;padding:10px;border:1px solid #3b4a78;border-radius:12px;background:#111830;text-align:center}.alchemy-mode-options input:checked+span{border-color:#22d3ee;background:#164e6355;box-shadow:0 0 12px #22d3ee44}.alchemy-mode-options small{color:#a5f3fc}
 .alchemy-warning{padding:10px;border-left:4px solid #f59e0b;background:#78350f44;color:#fde68a;line-height:1.6}
 .alchemy-restrictions{padding-left:20px;color:#94a3b8;font-size:13px;line-height:1.6}
 .alchemy-rate{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(135deg,#312e81,#4c1d95)}
@@ -110,6 +111,7 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
   .grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
   .alchemy-material-grid{grid-template-columns:1fr}
   .alchemy-coin-options{grid-template-columns:1fr}
+  .alchemy-mode-options{grid-template-columns:1fr}
   .alchemy-coin-options span{min-height:58px;grid-template-columns:1fr;place-items:start stretch;text-align:left}
   .alchemy-step,.alchemy-preview-card,.alchemy-confirm-card,.alchemy-result-card{padding:11px}
 }

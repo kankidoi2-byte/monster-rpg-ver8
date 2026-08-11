@@ -2,6 +2,7 @@ let editingSkillUid = null;
 let player, enemy, pHp, eHp;
 let busy = false, pAtk = 1, eAtk = 1, pGuard = false, eGuard = false;
 let pStatus = null, eStatus = null;
+let pPoisonTurns = 0, ePoisonTurns = 0;
 let pParalysisTurns = 0, eParalysisTurns = 0;
 let pConfusionTurns = 0, eConfusionTurns = 0;
 let pSleepTurns = 0, eSleepTurns = 0;

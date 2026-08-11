@@ -124,6 +124,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   eHp = enemyMaxHp();
   pAtk = eAtk = 1; pGuard = eGuard = false;
   pStatus = null; eStatus = null;
+  pPoisonTurns = 0; ePoisonTurns = 0;
   pParalysisTurns = 0; eParalysisTurns = 0;
   pConfusionTurns = 0; eConfusionTurns = 0;
   pSleepTurns = 0; eSleepTurns = 0;
@@ -150,7 +151,7 @@ function switchPartyMember() {
   activeInstance = partyBattle[next].inst;
   player = partyBattle[next].mon;
   pHp = partyBattle[next].hp;
-  pAtk = 1; pGuard = false; pStatus = null; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
+  pAtk = 1; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
   document.getElementById('log').innerHTML += `<br><b>${player.name}</b>に交代した！`;
   // ② 名前・画像・技ボタンを全更新
   document.getElementById('pName').textContent = player.name;
@@ -171,6 +172,7 @@ function endPartyRecovery() {
   partyBattle.forEach(p => { p.hp = instanceMaxHp(p.inst); p.fainted = false; });
   partyBattle = []; activePartyIdx = 0;
   pStatus = null; eStatus = null;
+  pPoisonTurns = 0; ePoisonTurns = 0;
   pParalysisTurns = 0; eParalysisTurns = 0;
   pConfusionTurns = 0; eConfusionTurns = 0;
   pSleepTurns = 0; eSleepTurns = 0;
@@ -181,6 +183,7 @@ function endPartyRecovery() {
 function runAway() {
   if (busy) return;
   pStatus = null; eStatus = null;
+  pPoisonTurns = 0; ePoisonTurns = 0;
   pParalysisTurns = 0; eParalysisTurns = 0;
   pConfusionTurns = 0; eConfusionTurns = 0;
   pSleepTurns = 0; eSleepTurns = 0;
@@ -197,6 +200,7 @@ function win() {
   completeBattleTurn();
   eHp = 0;
   pStatus = null; eStatus = null;
+  pPoisonTurns = 0; ePoisonTurns = 0;
   pParalysisTurns = 0; eParalysisTurns = 0;
   pConfusionTurns = 0; eConfusionTurns = 0;
   pSleepTurns = 0; eSleepTurns = 0;
