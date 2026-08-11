@@ -69,6 +69,8 @@ function isAlchemyCandidateEligible(candidate, context={}){
   const mon = by(candidate?.monsterId);
   if(!mon) return false;
   const conditions = candidate.conditions || {};
+  const requiredCoinOptionIds = Array.isArray(candidate.requiredCoinOptionIds) ? candidate.requiredCoinOptionIds : [];
+  if(requiredCoinOptionIds.length && !requiredCoinOptionIds.includes(context.coinOptionId)) return false;
   if(conditions.requiresNormalWildMap){
     const wildIds = new Set(MAPS.filter(map => !map.bossOnly && !map.rareOnly).flatMap(map => map.enemyIds || []));
     if(!wildIds.has(mon.id)) return false;
@@ -76,12 +78,18 @@ function isAlchemyCandidateEligible(candidate, context={}){
   if(conditions.excludeBossClass && mon.bossClass) return false;
   if(conditions.excludeEvolutionOnly && mon.evolutionOnly) return false;
   if(conditions.excludeAlchemyExclusive && mon.alchemyExclusive) return false;
+  if(conditions.requiresEvolutionDefinition && alchemyEvolutionStage(mon.id) < 1) return false;
+  const exactRarity = Number(conditions.exactRarity);
+  if(Number.isInteger(exactRarity) && alchemyMonsterRarity(mon) !== exactRarity) return false;
   const minimumRarity = Number(context.minimumRarity);
   if(Number.isInteger(minimumRarity) && minimumRarity > 0 && alchemyMonsterRarity(mon) < minimumRarity) return false;
   return true;
 }
 function eligibleAlchemyCandidates(recipe, success, coinOption=null){
-  const context = {minimumRarity:success ? null : alchemyMinimumFailureRarity(coinOption)};
+  const context = {
+    minimumRarity:success ? null : alchemyMinimumFailureRarity(coinOption),
+    coinOptionId:coinOption?.id || null
+  };
   return alchemyCandidatePool(recipe, success).filter(candidate => isAlchemyCandidateEligible(candidate, context));
 }
 function designatedAlchemyCandidates(recipe){

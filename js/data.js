@@ -357,17 +357,17 @@ const SHOP_ITEMS = [
   {id:'giga_data', name:'ギガデータ', icon:'🧠', price:0, desc:'モンスターに与えるとEXPが500増える経験値アイテム。アイテムガチャで入手できる。', expItem:true, expAmount:500, shop:false},
   {id:'fire_orb', name:'炎玉', icon:'🔥', price:0, desc:'ツバキが落とす炎の力を宿した結晶。将来の合成・特殊進化素材として使用できる。', shop:false},
   {id:'monster_bone', name:'魔物の骨', icon:'🦴', price:25, desc:'魔物から得られる丈夫な骨。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_monster_bone', name:'上質な魔物の骨', icon:'✨🦴', price:70, desc:'傷が少なく魔力の通りが良い上質な魔物の骨。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'fine_monster_bone', name:'上質な魔物の骨', icon:'✨🦴', price:60, desc:'傷が少なく魔力の通りが良い上質な魔物の骨。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'magic_crystal', name:'魔晶石', icon:'💎', price:40, desc:'魔力が結晶化した石。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_magic_crystal', name:'上質な魔晶石', icon:'✨💎', price:110, desc:'高密度の魔力を蓄えた上質な魔晶石。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'fine_magic_crystal', name:'上質な魔晶石', icon:'✨💎', price:90, desc:'高密度の魔力を蓄えた上質な魔晶石。錬成素材として使用する。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'metal_ore', name:'金属鉱石', icon:'⛏️', price:35, desc:'錬成加工に適した金属を含む鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_metal_ore', name:'上質な金属鉱石', icon:'✨⛏️', price:95, desc:'不純物が少なく加工しやすい上質な金属鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'fine_metal_ore', name:'上質な金属鉱石', icon:'✨⛏️', price:80, desc:'不純物が少なく加工しやすい上質な金属鉱石。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'unstable_alchemy_matter', name:'不安定錬成物質', icon:'🧪', price:50, desc:'性質が定まらない反応性の高い錬成素材。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_unstable_alchemy_matter', name:'上質な不安定錬成物質', icon:'✨🧪', price:140, desc:'不安定さの中に高密度の錬成力を保つ上質な物質。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'fine_unstable_alchemy_matter', name:'上質な不安定錬成物質', icon:'✨🧪', price:110, desc:'不安定さの中に高密度の錬成力を保つ上質な物質。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'raptor_feather', name:'猛禽の羽', icon:'🪶', price:45, desc:'空を駆ける猛禽から得られる、風の力を帯びた羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_raptor_feather', name:'上質な猛禽の羽', icon:'✨🪶', price:120, desc:'強い風の魔力を保った傷のない猛禽の羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'fine_raptor_feather', name:'上質な猛禽の羽', icon:'✨🪶', price:100, desc:'強い風の魔力を保った傷のない猛禽の羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'venom_carapace', name:'毒虫の甲殻', icon:'🪲', price:50, desc:'毒性を残した硬い虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_venom_carapace', name:'上質な毒虫の甲殻', icon:'✨🪲', price:140, desc:'毒性と強度を高い水準で保つ上質な虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'}
+  {id:'fine_venom_carapace', name:'上質な毒虫の甲殻', icon:'✨🪲', price:110, desc:'毒性と強度を高い水準で保つ上質な虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'}
 
 ];
 const ALCHEMY_MATERIAL_DROPS = Object.freeze([
@@ -434,10 +434,29 @@ const ALCHEMY_FAILURE_CANDIDATES = Object.freeze([
   requiredCoinOptionIds:Object.freeze([]),
   guaranteeConditions:Object.freeze([])
 })));
+const ALCHEMY_HIGH_EVOLUTION_FAILURE_CANDIDATES = Object.freeze([
+  'shenhairon','tienhairon','granbeat','seralphia','voltax','nemesia',
+  'elna_advanced','gran_volmoog','stella_wizard','lumina_wizard','orca_stream'
+].map(monsterId => Object.freeze({
+  monsterId, weight:1, alchemyInstance:false,
+  conditions:Object.freeze({
+    requiresEvolutionDefinition:true,
+    exactRarity:3,
+    excludeBossClass:true,
+    excludeAlchemyExclusive:true
+  }),
+  unlockConditions:Object.freeze([]),
+  requiredCoinOptionIds:Object.freeze(['high']),
+  guaranteeConditions:Object.freeze([])
+})));
+const ALCHEMY_ALL_FAILURE_CANDIDATES = Object.freeze([
+  ...ALCHEMY_FAILURE_CANDIDATES,
+  ...ALCHEMY_HIGH_EVOLUTION_FAILURE_CANDIDATES
+]);
 const ALCHEMY_COIN_OPTIONS = Object.freeze([
-  Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null, resonanceOnFailure:1}),
-  Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2, resonanceOnFailure:3}),
-  Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3, resonanceOnFailure:8})
+  Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null, resonanceOnFailure:2}),
+  Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2, resonanceOnFailure:5}),
+  Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3, resonanceOnFailure:12})
 ]);
 const ALCHEMY_RECIPES = Object.freeze([
   Object.freeze({
@@ -456,7 +475,7 @@ const ALCHEMY_RECIPES = Object.freeze([
     minSuccessRate:10,
     maxSuccessRate:70,
     successCandidates:ALCHEMION_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_FAILURE_CANDIDATES,
+    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES,
     designation:Object.freeze({enabled:true, resonanceCost:100, coinAmount:100})
   }),
   Object.freeze({
@@ -475,7 +494,7 @@ const ALCHEMY_RECIPES = Object.freeze([
     minSuccessRate:10,
     maxSuccessRate:70,
     successCandidates:KIMERAGNA_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_FAILURE_CANDIDATES,
+    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES,
     designation:Object.freeze({enabled:true, resonanceCost:100, coinAmount:100})
   })
 ]);
