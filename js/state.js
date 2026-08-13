@@ -34,9 +34,24 @@ let multiBattle = null;
 let pendingMultiBattleContractId = null;
 
 const THREE_WAY_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
+const INVASION_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
 
 function rollThreeWayBattle(difficultyId, randomFn=Math.random) {
   return randomFn() < (THREE_WAY_RATES[huntDifficulty(difficultyId).id] || 0);
+}
+
+function rollHuntBattleMode(difficultyId, randomFn=Math.random) {
+  const id = huntDifficulty(difficultyId).id;
+  const roll = randomFn();
+  const threeWayRate = THREE_WAY_RATES[id] || 0;
+  const invasionRate = INVASION_RATES[id] || 0;
+  if (roll < threeWayRate) return 'three_way';
+  if (roll < threeWayRate + invasionRate) return 'invasion_pending';
+  return 'single';
+}
+
+function rollInvasionTurn(randomFn=Math.random) {
+  return 2 + Math.min(2, Math.floor(randomFn() * 3));
 }
 
 function chooseSecondHuntEnemy(map, firstEnemyId, randomFn=Math.random) {
@@ -97,8 +112,9 @@ function createHuntRequest(map, mon, difficultyId='normal', conditionIds=[]) {
   const enemyLevel = Math.max(1, Math.round(partyAverageLevel) + difficulty.levelOffset);
   const enemyHp = Math.max(1, Math.round(maxHp(mon, enemyLevel) * difficulty.hpMultiplier));
   const conditions = [...new Set(conditionIds)].map(id => createHuntCondition(map, id)).filter(Boolean);
-  const threeWay = rollThreeWayBattle(difficulty.id);
-  const secondEnemy = threeWay ? chooseSecondHuntEnemy(map, mon?.id) : null;
+  const rolledMode = rollHuntBattleMode(difficulty.id);
+  const secondEnemy = rolledMode !== 'single' ? chooseSecondHuntEnemy(map, mon?.id) : null;
+  const battleMode = secondEnemy ? rolledMode : 'single';
   return {
     difficultyId:difficulty.id,
     difficultyLabel:difficulty.label,
@@ -113,8 +129,10 @@ function createHuntRequest(map, mon, difficultyId='normal', conditionIds=[]) {
     conditions,
     mapId:map?.id || null,
     enemyId:mon?.id || null,
-    battleMode:secondEnemy ? 'three_way' : 'single',
-    secondEnemyId:secondEnemy?.id || null
+    battleMode,
+    secondEnemyId:battleMode === 'three_way' ? secondEnemy?.id || null : null,
+    invasionEnemyId:battleMode === 'invasion_pending' ? secondEnemy?.id || null : null,
+    invasionTurn:battleMode === 'invasion_pending' ? rollInvasionTurn() : null
   };
 }
 function resetHuntRequestChoices() {

@@ -42,6 +42,7 @@ function showBattleChoices() {
     const conditionIds = rollHuntConditionIds(difficulty.id);
     const request = registerHuntRequest(createHuntRequest(map, m, difficulty.id, conditionIds));
     const secondEnemy = request.secondEnemyId ? by(request.secondEnemyId) : null;
+    const hasInvasion = request.battleMode === 'invasion_pending' && request.invasionEnemyId;
     return `<div class="card enemy-choice-card difficulty-card-${difficulty.id}">
       <img class="map-img" src="${map.image}" alt="${map.name}">
       <div class="map-name">${map.name}</div>
@@ -59,6 +60,7 @@ function showBattleChoices() {
         </div>
         ${huntConditionsHtml(request)}
         ${secondEnemy ? `<div class="three-way-preview"><b>⚔️ 三つ巴バトル</b><span>${m.name}と${secondEnemy.name}も互いに争う</span></div>` : ''}
+        ${hasInvasion ? '<div class="three-way-preview"><b>❗ 不穏な気配</b><span>戦闘中、別の何かが現れる可能性がある</span></div>' : ''}
       </div>
       <button onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この討伐依頼を受ける</button></div>`;
   }).join('');

@@ -47,6 +47,44 @@ function beginThreeWayBattle() {
     `⚔️ <b>${multiBattle.enemies[0].mon.name}</b>と<b>${multiBattle.enemies[1].mon.name}</b>が互いを警戒している！<br>${player.name}、三つ巴を制せ！`;
 }
 
+function createExistingMultiEnemy() {
+  const entry = createMultiEnemy(enemy, 'enemy_a');
+  entry.hp = Math.max(0, eHp);
+  entry.attack = eAtk;
+  entry.guard = eGuard;
+  entry.status = eStatus;
+  entry.poisonTurns = ePoisonTurns;
+  entry.paralysisTurns = eParalysisTurns;
+  entry.confusionTurns = eConfusionTurns;
+  entry.sleepTurns = eSleepTurns;
+  entry.flareCharge = eFlareCharge;
+  entry.aquaShield = eAquaShield;
+  return entry;
+}
+
+function triggerInvasionIfDue() {
+  if (multiBattle?.active || activeHuntRequest?.battleMode !== 'invasion_pending') return false;
+  if (battleTurnCount < Number(activeHuntRequest.invasionTurn || 0)) return false;
+  const invader = by(activeHuntRequest.invasionEnemyId);
+  if (!invader || eHp <= 0 || pHp <= 0) return false;
+  ensureMultiBattleDom();
+  multiBattle = {
+    active:true, finished:false, pendingMoveIndex:null, invasion:true,
+    enemies:[createExistingMultiEnemy(), createMultiEnemy(invader, 'enemy_b')],
+    contractAttempts:Object.create(null)
+  };
+  activeHuntRequest.battleMode = 'invasion_active';
+  pendingMultiBattleContractId = null;
+  document.getElementById('singleEnemyBox').classList.add('hidden');
+  document.getElementById('multiEnemyGrid').classList.remove('hidden');
+  document.getElementById('multiTargetSelect').classList.add('hidden');
+  document.getElementById('multiContractPanel').classList.add('hidden');
+  setupMultiBattle();
+  appendMultiLog(`❗ 不穏な気配の正体は<b>${invader.name}</b>だった！<br>乱入した${invader.name}は周囲を警戒している。次のターンから行動する！`);
+  busy = false;
+  return true;
+}
+
 function setupMultiBattle() {
   setupBattle();
   document.getElementById('singleEnemyBox').classList.add('hidden');
@@ -54,7 +92,7 @@ function setupMultiBattle() {
   const request = activeHuntRequest;
   document.getElementById('battleMapBanner').innerHTML =
     `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>`+
-    `<div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span><span>⚔️ 三つ巴</span><span>敵Lv.${request.enemyLevel}</span><span>報酬：2体分</span></div>`+
+    `<div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span><span>${multiBattle?.invasion?'❗ 乱入戦':'⚔️ 三つ巴'}</span><span>敵Lv.${request.enemyLevel}</span><span>報酬：2体分</span></div>`+
     `<div class="battle-hunt-conditions"><h3>特殊条件</h3>${huntConditionsHtml(request, true)}</div></div>`;
   renderSkillButtons();
   updateMultiBattleView();
@@ -210,9 +248,9 @@ function grantMultiEnemyReward(entry,turnBonus){
 function winMultiBattle(){
   if(battleRewardGranted)return;battleRewardGranted=true;completeBattleTurn();multiBattle.finished=true;busy=true;
   const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus));
-  const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg='🏆 三つ巴バトルに勝利！<br>'+rewards.map(r=>r.message).join('<br>');
+  const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
-  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との三つ巴に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);saveGame();
+  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);saveGame();
   document.getElementById('log').innerHTML=msg;renderMultiContractPanel();document.getElementById('next').classList.remove('hidden');document.getElementById('next').textContent='➡️ 次のバトルへ';renderParty();setTimeout(processNextEvolution,300);
 }
 
@@ -227,4 +265,4 @@ function useMultiBattleContractScroll(itemId){
   save.items[itemId]--;const rate=Math.min(.95,(entry.mon.catchRate??.25)*(it.catchMultiplier||1)),ok=Math.random()<rate;multiBattle.contractAttempts[entry.id]=true;pendingMultiBattleContractId=null;
   if(ok){addInstance(entry.mon.id);alert(`${entry.mon.name}と契約した！`);appendMultiLog(`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`);}else{alert('契約できなかった……');appendMultiLog(`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);}saveGame();updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();
 }
-function runAwayFromMultiBattle(){multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML='🏃 三つ巴の戦場から逃げきった！';document.getElementById('next').classList.remove('hidden');document.getElementById('next').textContent='➡️ 次のバトルへ';busy=true;}
+function runAwayFromMultiBattle(){multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;document.getElementById('next').classList.remove('hidden');document.getElementById('next').textContent='➡️ 次のバトルへ';busy=true;}

@@ -7,7 +7,7 @@ function typeEff(atkTypeOrTypes, defTypes) {
   return multipliers.length ? Math.max(...multipliers) : 1;
 }
 // index.html contains large embedded title assets, so load the optional battle module here.
-document.write('<script src="js/multi-battle.js?v=three-way-foundation-1"><\\/script>');
+document.write('<script src="js/multi-battle.js?v=multi-faction-2"><\\/script>');
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
 }
@@ -149,6 +149,7 @@ function finishTurnWithPoison() {
   if (pHp <= 0) {
     if (!switchPartyMember()) return;
   }
+  if (triggerInvasionIfDue()) return;
   busy = false;
 }
 function turn(i) {
@@ -173,6 +174,7 @@ function turn(i) {
       if (pHp <= 0) {
         if (!switchPartyMember()) return;
         completeBattleTurn();
+        if (triggerInvasionIfDue()) return;
         busy = false;
         return;
       }
@@ -184,6 +186,7 @@ function turn(i) {
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
       completeBattleTurn();
+      if (triggerInvasionIfDue()) return;
       busy = false;
       return;
     }

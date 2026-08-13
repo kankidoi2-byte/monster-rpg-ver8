@@ -208,7 +208,7 @@ function chooseDefaultContractItem(){
 }
 function askUseContractScroll(itemId){
   if(multiBattle?.active && !multiBattle.finished){
-    alert('三つ巴バトルでは、戦闘終了後に倒した相手と契約できます。');
+    alert('複数陣営バトルでは、戦闘終了後に倒した相手と契約できます。');
     show('battle');
     return;
   }
