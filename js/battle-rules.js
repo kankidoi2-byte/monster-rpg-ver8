@@ -6,8 +6,15 @@ function typeEff(atkTypeOrTypes, defTypes) {
   );
   return multipliers.length ? Math.max(...multipliers) : 1;
 }
-// index.html contains large embedded title assets, so load the optional battle module here.
-document.write('<script src="js/multi-battle.js?v=multi-faction-2"><\\/script>');
+// Load the optional battle module without document.write, which can remove the
+// following parser script on preview CDNs and leave battle-flow.js unloaded.
+(function loadMultiBattleModule() {
+  if (document.querySelector('script[data-multi-battle]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/multi-battle.js?v=multi-faction-3';
+  script.dataset.multiBattle = 'true';
+  document.head.appendChild(script);
+})();
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
 }
