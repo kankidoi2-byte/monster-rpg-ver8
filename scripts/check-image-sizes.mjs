@@ -10,12 +10,8 @@ const budgets = {
   maps: 700 * kib
 };
 
-// These files predate the budget. They may be compressed later, but must not grow.
-const legacyAllowlist = new Map([
-  ['images/monsters/錬核獣アルケミオン.png', 3393421],
-  ['images/monsters/混成翼竜キメラグナ.png', 3578655],
-  ['images/items/炎玉.png', 1912099]
-]);
+// Keep this map available only for assets that genuinely cannot meet the budgets.
+const legacyAllowlist = new Map();
 
 const allowedExtensions = new Set(['.webp', '.png', '.jpg', '.jpeg', '.gif']);
 const errors = [];

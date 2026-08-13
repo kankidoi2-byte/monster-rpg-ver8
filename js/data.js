@@ -48,8 +48,8 @@ const IMG={
   goddess:"images/monsters/hikari.webp",
   tsubaki:'images/monsters/tsubaki.webp',
   elnaKaen:'images/monsters/elna_kaen.webp',
-  alchemion:'images/monsters/錬核獣アルケミオン.png',
-  kimeragna:'images/monsters/混成翼竜キメラグナ.png'
+  alchemion:'images/monsters/alchemion.webp',
+  kimeragna:'images/monsters/kimeragna.webp'
 };
 const MAPIMG={
   magic_academy:'images/maps/magic_academy.webp',
@@ -506,7 +506,7 @@ const ITEM_DEX_EXTRA = [
 ];
 const ITEM_IMG = {
   water_mirror: 'images/items/water_mirror.webp',
-  fire_orb: 'images/items/炎玉.png'
+  fire_orb: 'images/items/fire_orb.webp'
 };
 /* ===== アイテムガチャ・経験値データ ===== */
 const ITEM_GACHA_COST = 100;
