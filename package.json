@@ -1,0 +1,13 @@
+{
+  "name": "monster-rpg-ver8",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "npm run check:data && npm run check:images",
+    "check:data": "node scripts/validate-data.mjs",
+    "check:images": "node scripts/check-image-sizes.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
