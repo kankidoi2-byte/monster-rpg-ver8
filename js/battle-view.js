@@ -1,4 +1,14 @@
 function setupBattle() {
+  const targetSelect = document.getElementById('multiTargetSelect');
+  if (targetSelect) {
+    targetSelect.classList.add('hidden');
+    targetSelect.innerHTML = '';
+  }
+  const contractPanel = document.getElementById('multiContractPanel');
+  if (contractPanel) {
+    contractPanel.classList.add('hidden');
+    contractPanel.innerHTML = '';
+  }
   if (selectedMap && document.getElementById('battleMapBanner')) {
     const request = activeHuntRequest || createHuntRequest(selectedMap, enemy, 'normal');
     document.getElementById('battleMapBanner').innerHTML =

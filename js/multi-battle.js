@@ -35,11 +35,16 @@ function beginThreeWayBattle() {
     enemies:[createMultiEnemy(enemy, 'enemy_a'), createMultiEnemy(second, 'enemy_b')],
     contractAttempts:Object.create(null)
   };
+  busy = false;
   pendingMultiBattleContractId = null;
   document.getElementById('singleEnemyBox').classList.add('hidden');
   document.getElementById('multiEnemyGrid').classList.remove('hidden');
-  document.getElementById('multiTargetSelect').classList.add('hidden');
-  document.getElementById('multiContractPanel').classList.add('hidden');
+  const targetSelect = document.getElementById('multiTargetSelect');
+  targetSelect.classList.add('hidden');
+  targetSelect.innerHTML = '';
+  const contractPanel = document.getElementById('multiContractPanel');
+  contractPanel.classList.add('hidden');
+  contractPanel.innerHTML = '';
   show('battle');
   setupMultiBattle();
   document.getElementById('log').innerHTML =
