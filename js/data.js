@@ -506,7 +506,8 @@ const ITEM_DEX_EXTRA = [
 ];
 const ITEM_IMG = {
   water_mirror: 'images/items/water_mirror.webp',
-  fire_orb: 'images/items/fire_orb.webp'
+  fire_orb: 'images/items/fire_orb.webp',
+  doom_fragment: 'images/items/doom_fragment.webp'
 };
 /* ===== アイテムガチャ・経験値データ ===== */
 const ITEM_GACHA_COST = 100;
