@@ -9,6 +9,8 @@ function setupBattle() {
   }
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
+  document.getElementById('singleEnemyBox').classList.remove('hidden');
+  document.getElementById('multiEnemyGrid').classList.add('hidden');
   document.getElementById('eName').textContent = enemy.name;
   document.getElementById('eVis').innerHTML =
     `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
@@ -43,6 +45,7 @@ function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, s
   return parts.length ? ' / 状態:' + parts.join('・') : '';
 }
 function update() {
+  if (multiBattle?.active) { updateMultiBattleView(); return; }
   if (!player || !enemy) return;
   pHp = Math.max(0,pHp); eHp = Math.max(0,eHp);
   const pm = playerMaxHp(), em = enemyMaxHp();

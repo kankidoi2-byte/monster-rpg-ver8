@@ -207,6 +207,11 @@ function chooseDefaultContractItem(){
   return 'contract_scroll';
 }
 function askUseContractScroll(itemId){
+  if(multiBattle?.active && !multiBattle.finished){
+    alert('三つ巴バトルでは、戦闘終了後に倒した相手と契約できます。');
+    show('battle');
+    return;
+  }
   ensureContractScrollItem();
   // ① 契約書0枚チェック
   const hasAny = SHOP_ITEMS.filter(it => it.contract).some(it => (save.items[it.id]||0) > 0);
@@ -227,6 +232,10 @@ function useContractScrollConfirmed(){
   ensureContractScrollItem();
   const itemId = ITEM_BY_ID[pendingContractItemId]?.contract ? pendingContractItemId : chooseDefaultContractItem();
   const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
+  if(multiBattle?.active && multiBattle.finished && pendingMultiBattleContractId){
+    useMultiBattleContractScroll(itemId);
+    return;
+  }
   if(!enemy){
     alert('契約できる相手がいません。');
     show('battle');

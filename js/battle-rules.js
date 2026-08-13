@@ -151,6 +151,7 @@ function finishTurnWithPoison() {
 }
 function turn(i) {
   if (busy) return;
+  if (multiBattle?.active) { chooseMultiBattleTarget(i); return; }
   busy = true;
   startBattleTurn();
 

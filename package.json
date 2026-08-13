@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "npm run check:data && npm run check:images",
+    "check": "npm run check:data && npm run check:images && npm run check:three-way",
     "check:data": "node scripts/validate-data.mjs",
-    "check:images": "node scripts/check-image-sizes.mjs"
+    "check:images": "node scripts/check-image-sizes.mjs",
+    "check:three-way": "node scripts/test-three-way.mjs"
   },
   "engines": {
     "node": ">=20"
