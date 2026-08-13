@@ -6,6 +6,15 @@ function typeEff(atkTypeOrTypes, defTypes) {
   );
   return multipliers.length ? Math.max(...multipliers) : 1;
 }
+// Load the optional battle module without document.write, which can remove the
+// following parser script on preview CDNs and leave battle-flow.js unloaded.
+(function loadMultiBattleModule() {
+  if (document.querySelector('script[data-multi-battle]')) return;
+  const script = document.createElement('script');
+  script.src = 'js/multi-battle.js?v=multi-faction-3';
+  script.dataset.multiBattle = 'true';
+  document.head.appendChild(script);
+})();
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
 }
@@ -147,10 +156,12 @@ function finishTurnWithPoison() {
   if (pHp <= 0) {
     if (!switchPartyMember()) return;
   }
+  if (triggerInvasionIfDue()) return;
   busy = false;
 }
 function turn(i) {
   if (busy) return;
+  if (multiBattle?.active) { chooseMultiBattleTarget(i); return; }
   busy = true;
   startBattleTurn();
 
@@ -170,6 +181,7 @@ function turn(i) {
       if (pHp <= 0) {
         if (!switchPartyMember()) return;
         completeBattleTurn();
+        if (triggerInvasionIfDue()) return;
         busy = false;
         return;
       }
@@ -181,6 +193,7 @@ function turn(i) {
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
       completeBattleTurn();
+      if (triggerInvasionIfDue()) return;
       busy = false;
       return;
     }

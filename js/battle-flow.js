@@ -41,6 +41,8 @@ function showBattleChoices() {
     const difficulty = rollHuntDifficulty(map);
     const conditionIds = rollHuntConditionIds(difficulty.id);
     const request = registerHuntRequest(createHuntRequest(map, m, difficulty.id, conditionIds));
+    const secondEnemy = request.secondEnemyId ? by(request.secondEnemyId) : null;
+    const hasInvasion = request.battleMode === 'invasion_pending' && request.invasionEnemyId;
     return `<div class="card enemy-choice-card difficulty-card-${difficulty.id}">
       <img class="map-img" src="${map.image}" alt="${map.name}">
       <div class="map-name">${map.name}</div>
@@ -57,6 +59,8 @@ function showBattleChoices() {
           <span>攻撃 ×${request.attackText}</span><span>EXP・コイン ×${request.rewardText}</span>
         </div>
         ${huntConditionsHtml(request)}
+        ${secondEnemy ? `<div class="three-way-preview"><b>⚔️ 三つ巴バトル</b><span>${m.name}と${secondEnemy.name}も互いに争う</span></div>` : ''}
+        ${hasInvasion ? '<div class="three-way-preview"><b>❗ 不穏な気配</b><span>戦闘中、別の何かが現れる可能性がある</span></div>' : ''}
       </div>
       <button onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この討伐依頼を受ける</button></div>`;
   }).join('');
@@ -130,6 +134,12 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   pSleepTurns = 0; eSleepTurns = 0;
   pFlareCharge = false; eFlareCharge = false;
   pAquaShield = false; eAquaShield = false;
+  if (activeHuntRequest.battleMode === 'three_way' && activeHuntRequest.secondEnemyId) {
+    beginThreeWayBattle();
+    return;
+  }
+  multiBattle = null;
+  pendingMultiBattleContractId = null;
   busy = false;
   show('battle');
   document.getElementById('next').classList.add('hidden');
@@ -178,10 +188,13 @@ function endPartyRecovery() {
   pSleepTurns = 0; eSleepTurns = 0;
   pFlareCharge = false; eFlareCharge = false;
   pAquaShield = false; eAquaShield = false;
+  multiBattle = null;
+  pendingMultiBattleContractId = null;
   resetBattleTurnCounter();
 }
 function runAway() {
   if (busy) return;
+  if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
   pStatus = null; eStatus = null;
   pPoisonTurns = 0; ePoisonTurns = 0;
   pParalysisTurns = 0; eParalysisTurns = 0;
