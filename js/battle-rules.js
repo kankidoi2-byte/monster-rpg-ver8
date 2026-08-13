@@ -6,6 +6,8 @@ function typeEff(atkTypeOrTypes, defTypes) {
   );
   return multipliers.length ? Math.max(...multipliers) : 1;
 }
+// index.html contains large embedded title assets, so load the optional battle module here.
+document.write('<script src="js/multi-battle.js?v=three-way-foundation-1"><\\/script>');
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
 }

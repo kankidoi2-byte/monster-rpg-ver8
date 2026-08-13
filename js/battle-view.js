@@ -9,8 +9,8 @@ function setupBattle() {
   }
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
-  document.getElementById('singleEnemyBox').classList.remove('hidden');
-  document.getElementById('multiEnemyGrid').classList.add('hidden');
+  document.getElementById('singleEnemyBox')?.classList.remove('hidden');
+  document.getElementById('multiEnemyGrid')?.classList.add('hidden');
   document.getElementById('eName').textContent = enemy.name;
   document.getElementById('eVis').innerHTML =
     `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;

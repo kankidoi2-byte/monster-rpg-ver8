@@ -1,4 +1,16 @@
 /* Three-way battle foundation. The combatant array is intentionally open-ended. */
+function ensureMultiBattleDom() {
+  const enemyName=document.getElementById('eName');
+  const singleBox=enemyName?.closest?.('.box');
+  if(singleBox&&!singleBox.id)singleBox.id='singleEnemyBox';
+  const arena=singleBox?.parentElement;
+  if(arena&&!document.getElementById('multiEnemyGrid'))arena.insertAdjacentHTML('beforeend','<div id="multiEnemyGrid" class="multi-enemy-grid hidden"></div>');
+  const commands=document.getElementById('commands');
+  if(commands&&!document.getElementById('multiTargetSelect'))commands.insertAdjacentHTML('afterend','<div id="multiTargetSelect" class="multi-target-select hidden"></div>');
+  const itemText=document.getElementById('itemText');
+  if(itemText&&!document.getElementById('multiContractPanel'))itemText.insertAdjacentHTML('afterend','<div id="multiContractPanel" class="multi-contract-panel hidden"></div>');
+}
+
 function createMultiEnemy(mon, factionId) {
   const level = activeHuntRequest?.enemyLevel || 1;
   const max = Math.max(1, Math.round(maxHp(mon, level) * (Number(huntDifficulty(activeHuntRequest?.difficultyId).hpMultiplier) || 1)));
@@ -11,6 +23,7 @@ function createMultiEnemy(mon, factionId) {
 }
 
 function beginThreeWayBattle() {
+  ensureMultiBattleDom();
   const second = by(activeHuntRequest.secondEnemyId);
   if (!second) {
     activeHuntRequest.battleMode = 'single';
