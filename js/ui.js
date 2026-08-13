@@ -1,9 +1,10 @@
 function typesHtml(ts) {
   return ts.map(t => `<span class="${t}">${TN[t]}</span>`).join(' / ');
 }
-function vis(m) {
+function vis(m, imageAttributes = '') {
   if (m.imgKey && IMG[m.imgKey]) {
-    return `<img src="${IMG[m.imgKey]}" alt="${m.name}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
+    const attributes = imageAttributes ? ` ${imageAttributes}` : '';
+    return `<img${attributes} src="${IMG[m.imgKey]}" alt="${m.name}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
   }
   return `<div class="emoji">${m.icon || '❓'}</div>`;
 }

@@ -3,7 +3,6 @@ initStarters();
 migrateSkillSystem();
 saveGame();
 renderParty();
-renderDex();
 
 
 function chooseDifferentTitleMap(){
@@ -71,4 +70,3 @@ try{ initTitleScreen(); }catch(err){
   if(screen) screen.remove();
   if (typeof show === 'function') show('home');
 }
-

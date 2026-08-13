@@ -57,11 +57,13 @@ function showDexDetail(id) {
   document.getElementById('dexDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderDex() {
+  const screen = document.getElementById('dex');
+  if(!screen?.classList.contains('active')) return;
   document.getElementById('dexDetail').innerHTML = '';
   document.getElementById('dexList').innerHTML =
     [...M].sort((a,b)=>(a.no||999)-(b.no||999)).map(m => `
       <div class="card" onclick="showDexDetail('${m.id}')" style="cursor:pointer">
-        ${vis(m)}<h3>No.${m.no} ${m.name}</h3>
+        ${vis(m, 'loading="lazy" decoding="async"')}<h3>No.${m.no} ${m.name}</h3>
         <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p>
         <p style="font-size:12px;color:#8892b0">${m.desc}</p>
         <p class="small">タップで技を確認</p></div>`).join('');
