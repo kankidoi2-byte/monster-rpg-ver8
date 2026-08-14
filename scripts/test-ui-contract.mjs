@@ -47,6 +47,10 @@ expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command 
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
 expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
 expect(read('js/multi-battle.js').includes('function handleMultiTargetKey'), 'accessible multi-target selection is missing');
+expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), 'quest recommendation scoring is missing');
+expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
+expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
+expect(read('js/dex.js').includes('monster-dex-card'), 'monster-first dex cards are missing');
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',

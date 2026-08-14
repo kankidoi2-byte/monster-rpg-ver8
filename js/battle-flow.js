@@ -16,6 +16,17 @@ function startBattleFromParty() {
   prepareBattleParty();
   showBattleChoices();
 }
+function huntRecommendationScore(request, monster) {
+  const party = getPartyInstances();
+  if (!party.length || !monster) return -Infinity;
+  const bestMatchup = Math.max(...party.map(ins => {
+    const moves = getEquippedMovesForInstance(ins).filter(move => Number(move[1]) > 0);
+    return moves.length ? Math.max(...moves.map(move => typeEff(moveTypes(move), monster.types))) : 1;
+  }));
+  const averageLevel = party.reduce((sum, ins) => sum + (ins.level || 1), 0) / party.length;
+  const levelMargin = Math.max(-1, Math.min(1, (averageLevel - request.enemyLevel) / 5));
+  return bestMatchup * 10 + levelMargin - (request.difficultyId === 'extreme' ? .5 : 0);
+}
 function showBattleChoices() {
   activeHuntRequest = null;
   resetHuntRequestChoices();
@@ -46,37 +57,41 @@ function showBattleChoices() {
     const chosenSpecial = triggeredSpecials[Math.floor(Math.random()*triggeredSpecials.length)];
     if (entries.length >= 3) entries[2] = chosenSpecial; else entries.push(chosenSpecial);
   }
-  list.innerHTML = entries.map(({map,difficulty,goldenLandMapEntry=false}) => {
+  const preparedEntries = entries.map(({map,difficulty,goldenLandMapEntry=false}) => {
     const candidates = (map.enemyIds||[]).map(id=>by(id)).filter(Boolean);
     const m = candidates[Math.floor(Math.random()*candidates.length)];
-    if (!m) return '';
+    if (!m) return null;
     const conditionIds = rollHuntConditionIds(difficulty.id);
     const request = registerHuntRequest(createHuntRequest(map, m, difficulty.id, conditionIds));
     request.goldenLandMapEntry = goldenLandMapEntry;
+    return {map,difficulty,goldenLandMapEntry,m,request};
+  }).filter(Boolean);
+  const recommended = preparedEntries.reduce((best, entry) => {
+    const score = huntRecommendationScore(entry.request, entry.m);
+    return !best || score > best.score ? {requestId:entry.request.requestId,score} : best;
+  }, null)?.requestId;
+  list.innerHTML = preparedEntries.map(({map,difficulty,goldenLandMapEntry,m,request}) => {
     const secondEnemy = request.secondEnemyId ? by(request.secondEnemyId) : null;
     const hasInvasion = request.battleMode === 'invasion_pending' && request.invasionEnemyId;
-    return `<div class="card enemy-choice-card difficulty-card-${difficulty.id}">
-      <img class="map-img" src="${map.image}" alt="${map.name}">
-      <div class="map-name">${map.name}</div>
-      ${vis(m)}<h2>${m.name}</h2>
-      <p>${m.rarity} ${typesHtml(m.types)}</p>
-      ${m.bossClass?`<p class="small">🔥 ${m.bossClass}</p>`:''}
-      ${map.rareOnly?`<p class="small">✨ 特殊マップ</p>`:''}
-      ${map.goldenLand?`<p class="small">💰 ゴールド系モンスター限定</p>`:''}
-      ${goldenLandMapEntry?`<p class="small">🗺️ 地図により出現確定（出発時に1枚消費）</p>`:''}
-      <p style="font-size:12px;color:#8892b0">${m.desc}</p>
-      <div class="hunt-request-info">
-        <span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span>
-        <p class="hunt-danger">${difficulty.danger}</p>
-        <div class="hunt-stats">
-          <span>敵Lv.${request.enemyLevel}</span><span>推定HP ${request.enemyHp}</span>
-          <span>攻撃 ×${request.attackText}</span><span>EXP・コイン ×${request.rewardText}</span>
-        </div>
-        ${huntConditionsHtml(request)}
-        ${secondEnemy ? `<div class="three-way-preview"><b>⚔️ 三つ巴バトル</b><span>${m.name}と${secondEnemy.name}も互いに争う</span></div>` : ''}
-        ${hasInvasion ? '<div class="three-way-preview"><b>❗ 不穏な気配</b><span>戦闘中、別の何かが現れる可能性がある</span></div>' : ''}
+    const isRecommended = request.requestId === recommended;
+    return `<article class="enemy-choice-card difficulty-card-${difficulty.id}${isRecommended?' is-recommended':''}">
+      <div class="hunt-card-visual"><img class="map-img" src="${map.image}" alt="${map.name}"><div class="hunt-card-shade"></div>${vis(m)}
+        <div class="hunt-card-badges">${isRecommended?'<span class="hunt-recommended">おすすめ</span>':''}<span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span></div>
+        <div class="hunt-card-title"><small>${map.name}</small><h2>${m.name}</h2><p>${m.rarity} ${typesHtml(m.types)}</p></div>
       </div>
-      <button onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この討伐依頼を受ける</button></div>`;
+      <div class="hunt-card-body">
+        <div class="hunt-primary-rewards"><span><small>ENEMY</small><strong>Lv.${request.enemyLevel}</strong></span><span><small>REWARD</small><strong>×${request.rewardText}</strong></span></div>
+        ${secondEnemy ? `<div class="three-way-preview"><b>⚔️ 三つ巴バトル</b><span>敵2体分の報酬を獲得できる</span></div>` : ''}
+        ${hasInvasion ? '<div class="three-way-preview"><b>❗ 不穏な気配</b><span>戦闘中に別の敵が現れる可能性あり</span></div>' : ''}
+        ${goldenLandMapEntry?'<p class="hunt-map-notice">🗺️ 地図で出現確定・出発時に1枚消費</p>':''}
+        <details class="hunt-card-details"><summary>依頼の詳細を見る</summary>
+          <p class="hunt-danger">${difficulty.danger}</p><p>${m.desc}</p>
+          <div class="hunt-stats"><span>推定HP ${request.enemyHp}</span><span>攻撃 ×${request.attackText}</span></div>
+          ${m.bossClass?`<p>🔥 ${m.bossClass}</p>`:''}${map.rareOnly?'<p>✨ 特殊マップ</p>':''}${map.goldenLand?'<p>💰 ゴールド系モンスター限定</p>':''}
+          ${huntConditionsHtml(request)}
+        </details>
+        <button class="hunt-accept-button" onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この依頼へ出発 ›</button>
+      </div></article>`;
   }).join('');
 }
 function isBossClassMonster(mon){

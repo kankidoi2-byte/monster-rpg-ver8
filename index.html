@@ -116,21 +116,18 @@
 
 <!-- パーティー設定 -->
 <section id="partySet" class="screen">
-  <h1>👥 パーティー設定</h1>
-  <p class="small">手持ちから最大3体まで選べます。同じモンスターでも別個体なら選択できます。</p>
-  <div class="card" style="max-width:780px;margin:12px auto">
+  <div class="ui-page-heading"><span class="ui-eyebrow">PARTY EDIT</span><h1>パーティー編成</h1><p>最大3体。画像を見ながら冒険へ連れていく仲間を選べます。</p></div>
+  <div class="party-current-card">
     <h2>現在のパーティー</h2>
     <div id="currentPartyView"></div>
-    <br>
-    <button onclick="startBattleFromParty()" style="font-size:16px;padding:12px 28px">このパーティーでバトルへ</button>
+    <button onclick="startBattleFromParty()">このパーティーでバトルへ ›</button>
   </div>
   <div id="partySelectList" class="grid"></div>
 </section>
 
 <!-- 敵選択 -->
 <section id="battleChoices" class="screen">
-  <h1>⚔️ 戦う敵を選べ</h1>
-  <p class="small">マップと敵が3つランダムに表示されます。</p>
+  <div class="ui-page-heading hunt-choice-heading"><span class="ui-eyebrow">SELECT QUEST</span><h1>討伐依頼を選ぶ</h1><p>画像と報酬を見て、次の冒険を決めよう。</p></div>
   <div id="battleChoiceList" class="grid"></div>
 </section>
 
@@ -254,7 +251,7 @@
 
 <!-- 手持ち -->
 <section id="party" class="screen">
-  <h1>📦 手持ち</h1>
+  <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1><p>育てる仲間を選び、技や個体情報を確認できます。</p></div>
   <div id="partyList" class="grid"></div>
 
 </section>
@@ -316,8 +313,7 @@
 
 <!-- 図鑑 -->
 <section id="dex" class="screen">
-  <h1>📖 図鑑</h1>
-  <p class="small">カードをタップすると技の詳細を確認できます</p>
+  <div class="ui-page-heading"><span class="ui-eyebrow">MONSTER DEX</span><h1>モンスター図鑑</h1><p>カードをタップすると技と詳しい情報を確認できます。</p></div>
   <div id="dexDetail"></div>
   <div id="dexList" class="grid"></div>
 </section>
