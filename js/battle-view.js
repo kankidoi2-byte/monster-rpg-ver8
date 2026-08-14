@@ -81,7 +81,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, note=''}) {
   };
   const [eyebrow, icon] = labels[kind] || labels.victory;
   battle.classList.add('is-finished');
-  outcome.className = `battle-outcome is-${kind}`;
+  outcome.className = `battle-outcome is-${kind} is-revealing`;
   document.getElementById('battleOutcomeIcon').textContent = icon;
   document.getElementById('battleOutcomeEyebrow').textContent = eyebrow;
   document.getElementById('battleOutcomeTitle').textContent = title;
@@ -92,6 +92,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, note=''}) {
   const next = document.getElementById('next');
   next.classList.remove('hidden');
   next.textContent = victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
+  setTimeout(() => outcome.classList.remove('is-revealing'), 850);
   if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
 }
 function huntConditionsHtml(request, inBattle=false) {

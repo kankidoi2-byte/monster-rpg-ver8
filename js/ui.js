@@ -8,12 +8,34 @@ function vis(m, imageAttributes = '') {
   }
   return `<div class="emoji">${m.icon || '❓'}</div>`;
 }
+function replayUiMotion(element, className, duration=700) {
+  if (!element) return;
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+  setTimeout(() => element.classList.remove(className), duration);
+}
+function showUiNotice(message, kind='success') {
+  let notice = document.getElementById('uiNotice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'uiNotice';
+    notice.className = 'ui-notice';
+    notice.setAttribute('role', 'status');
+    notice.setAttribute('aria-live', 'polite');
+    document.body.appendChild(notice);
+  }
+  notice.className = `ui-notice is-${kind}`;
+  notice.textContent = message;
+  replayUiMotion(notice, 'is-visible', 2200);
+}
 function show(id) {
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
   if (!target) return;
   target.classList.add('active');
+  replayUiMotion(target, 'ui-screen-enter', 320);
   updateAppNavigation(id);
   updateAppResourceBar();
   if (id === 'home') renderHome();

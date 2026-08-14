@@ -54,6 +54,9 @@ expect(read('js/dex.js').includes('monster-dex-card'), 'monster-first dex cards 
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
 expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');
 expect(read('js/items.js').includes('shop-item-card'), 'shared shop item cards are missing');
+expect(read('js/ui.js').includes('function showUiNotice'), 'shared reward notice is missing');
+expect(read('js/ui.js').includes('function replayUiMotion'), 'shared UI motion helper is missing');
+expect(read('js/battle-view.js').includes('is-revealing'), 'staged battle reward reveal is missing');
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',

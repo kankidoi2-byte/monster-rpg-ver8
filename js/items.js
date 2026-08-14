@@ -131,7 +131,8 @@ function rollItemGacha(){
   save.items[itemId] = (save.items[itemId]||0) + 1;
   saveGame();
   const result = document.getElementById('gachaResult');
-  if(result) result.innerHTML = `🎰 ガチャを回した！<br>✨ ${itemInlineVisual(it)} ${it.name}を入手！`;
+  if(result){result.innerHTML = `🎰 ガチャを回した！<br>✨ ${itemInlineVisual(it)} ${it.name}を入手！`;if(typeof replayUiMotion==='function')replayUiMotion(result,'ui-reward-pop',850);}
+  if(typeof showUiNotice==='function')showUiNotice(`${it.name}を入手！`);
   updateItems();
   renderItemGacha();
 }

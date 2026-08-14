@@ -372,6 +372,8 @@ function finalizeAlchemy(originalPlan){
       <button onclick="show('party')">完成個体を手持ちで確認</button>
       <button onclick="showAlchemy()" class="secondary-button">もう一度錬成する</button>
     </div>`;
+    if(typeof replayUiMotion==='function')replayUiMotion(content.firstElementChild,'ui-reward-pop',1000);
+    if(typeof showUiNotice==='function')showUiNotice(`${resultMonster.name}が完成！`);
     renderParty();
     renderDex();
     if(typeof renderPartySetup === 'function') renderPartySetup();
