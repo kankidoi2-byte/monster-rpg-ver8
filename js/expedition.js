@@ -5,6 +5,7 @@ const EXPEDITION_DISTANCES=Object.freeze({
   long:Object.freeze({id:'long',label:'長距離',wins:5,rewardMultiplier:3,rareMultiplier:2})
 });
 const EXPEDITION_GREAT_RATES=Object.freeze({S:.30,A:.20,B:.10,C:.05,D:0});
+const EXPEDITION_GOLDEN_MAP_RATES=Object.freeze({short:.01,medium:.03,long:.05});
 const EXPEDITION_MAP_REWARDS=Object.freeze({
   grassland:['monster_bone','raptor_feather'], volcano:['unstable_alchemy_matter','fire_orb'],
   lake:['magic_crystal','water_mirror'], seikai_irie:['magic_crystal','water_mirror'],
@@ -26,7 +27,7 @@ function normalizeExpeditionSave(){
 }
 function expeditionUnlockedSlots(){const n=save.expeditions?.completedCount||0;return n>=15?3:n>=5?2:1;}
 function isInstanceOnExpedition(uidValue){return !!save.expeditions?.active?.some(entry=>entry.memberUids.includes(uidValue));}
-function expeditionDestinations(){return MAPS.filter(map=>!(map.enemyIds||[]).some(id=>by(id)?.bossClass==='超ボス級'));}
+function expeditionDestinations(){return MAPS.filter(map=>!map.expeditionExcluded&&!(map.enemyIds||[]).some(id=>by(id)?.bossClass==='超ボス級'));}
 function expeditionPreferredType(map){return HUNT_MAP_BOOST_TYPES[map?.id]||'normal';}
 function expeditionRegionLabel(map){const type=expeditionPreferredType(map);return `${TYPE_ICONS[type]||'⚪'} ${TN[type]||'無'}地域`;}
 function expeditionMemberScore(ins,map){
@@ -60,6 +61,7 @@ function expeditionRewardPlan(map,distance,suitability,randomFn=Math.random,comp
   const itemCount=Math.max(0,Math.floor(distance.rewardMultiplier*boost*completionFactor));
   const items=itemCount?{[itemId]:itemCount}:{};
   if(secondary&&randomFn()<rareChance*.65)items[secondary]=(items[secondary]||0)+1;
+  if(completionFactor>=1&&randomFn()<(EXPEDITION_GOLDEN_MAP_RATES[distance.id]||0))items.golden_land_map=(items.golden_land_map||0)+1;
   return {great,coins,exp,items,rareFound:Object.keys(items).some(id=>id.startsWith('fine_')||id===secondary)};
 }
 function ensureExpeditionDom(){

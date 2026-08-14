@@ -2,9 +2,9 @@
 function initSave() {
   return {
     caught:[], instances:[], levels:{}, exp:{},
-    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0},
+    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[],
-    expeditions:{completedCount:0, active:[]}
+    expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false
   };
 }
 function normalizeAlchemyResonance(value){
@@ -12,7 +12,7 @@ function normalizeAlchemyResonance(value){
 }
 let save = JSON.parse(localStorage.getItem('mb_v95c') || 'null') || initSave();
 // マイグレーション
-['potion','water_mirror','attack_potion','upper_potion','contract_scroll','silver_contract_scroll','gold_contract_scroll','rainbow_contract_scroll','kilo_data','mega_data','giga_data','doom_fragment','fire_orb','monster_bone','fine_monster_bone','magic_crystal','fine_magic_crystal','metal_ore','fine_metal_ore','unstable_alchemy_matter','fine_unstable_alchemy_matter','raptor_feather','fine_raptor_feather','venom_carapace','fine_venom_carapace'].forEach(k => {
+['potion','water_mirror','attack_potion','upper_potion','contract_scroll','silver_contract_scroll','gold_contract_scroll','rainbow_contract_scroll','kilo_data','mega_data','giga_data','doom_fragment','fire_orb','monster_bone','fine_monster_bone','magic_crystal','fine_magic_crystal','metal_ore','fine_metal_ore','unstable_alchemy_matter','fine_unstable_alchemy_matter','raptor_feather','fine_raptor_feather','venom_carapace','fine_venom_carapace','golden_land_map'].forEach(k => {
   if (!save.items) save.items = {};
   if (save.items[k] === undefined) save.items[k] = k === 'potion' ? 3 : 0;
 });
@@ -22,6 +22,7 @@ if (!save.instances) save.instances = [];
 if (!save.skillCards) save.skillCards = {};
 if (!save.equippedSkills) save.equippedSkills = {};
 if (!Array.isArray(save.itemDex)) save.itemDex = [];
+save.goldenLandMapReady = save.goldenLandMapReady === true && Number(save.items?.golden_land_map || 0) > 0;
 if (!save.expeditions || typeof save.expeditions !== 'object' || Array.isArray(save.expeditions)) save.expeditions = {completedCount:0, active:[]};
 save.expeditions.completedCount = Math.max(0, Math.floor(Number(save.expeditions.completedCount) || 0));
 if (!Array.isArray(save.expeditions.active)) save.expeditions.active = [];

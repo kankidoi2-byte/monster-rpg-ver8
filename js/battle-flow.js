@@ -22,25 +22,37 @@ function showBattleChoices() {
   resetBattleTurnCounter();
   show('battleChoices');
   const list = document.getElementById('battleChoiceList');
-  const normal = MAPS.filter(m => !m.bossOnly && !m.rareOnly);
-  const special = MAPS.filter(m => m.bossOnly || m.rareOnly);
-  let maps = [...normal].sort(()=>Math.random()-.5).slice(0,3);
+  const normal = MAPS.filter(m => !m.bossOnly && !m.rareOnly && !m.goldenLand);
+  const special = MAPS.filter(m => (m.bossOnly || m.rareOnly) && !m.goldenLand);
+  const goldenLand = MAPS.find(m => m.goldenLand);
+  let entries = [...normal].sort(()=>Math.random()-.5).slice(0,3)
+    .map(map => ({map, difficulty:rollHuntDifficulty(map)}));
   // Ver8.0 Claude修正: 複数のレア/ボスマップが同時に抽選成功すると、
   // forEachの上書きにより最後に処理された1つ以外の当選チャンスが
   // 静かに消えていたバグを修正。当選した候補を全て集めてから
   // その中でランダムに1つを選んで反映する。
-  const triggeredSpecials = special.filter(sm => Math.random() < (sm.appearRate||0.1));
-  if (triggeredSpecials.length) {
-    const chosenSpecial = triggeredSpecials[Math.floor(Math.random()*triggeredSpecials.length)];
-    if (maps.length >= 3) maps[2] = chosenSpecial; else maps.push(chosenSpecial);
+  const mapEntryReady = goldenLandMapIsReady();
+  const triggeredSpecials = special.filter(sm => Math.random() < (sm.appearRate||0.1))
+    .map(map => ({map, difficulty:rollHuntDifficulty(map)}));
+  const lastDifficulty = entries[2]?.difficulty || HUNT_DIFFICULTIES.normal;
+  if (!mapEntryReady && goldenLand && rollGoldenLand(lastDifficulty.id)) {
+    triggeredSpecials.push({map:goldenLand, difficulty:lastDifficulty});
   }
-  list.innerHTML = maps.map(map => {
+  if (mapEntryReady && goldenLand) {
+    const forcedDifficulty = ['hard','extreme'].includes(lastDifficulty.id) ? lastDifficulty : HUNT_DIFFICULTIES.hard;
+    const forcedEntry = {map:goldenLand, difficulty:forcedDifficulty, goldenLandMapEntry:true};
+    if (entries.length >= 3) entries[2] = forcedEntry; else entries.push(forcedEntry);
+  } else if (triggeredSpecials.length) {
+    const chosenSpecial = triggeredSpecials[Math.floor(Math.random()*triggeredSpecials.length)];
+    if (entries.length >= 3) entries[2] = chosenSpecial; else entries.push(chosenSpecial);
+  }
+  list.innerHTML = entries.map(({map,difficulty,goldenLandMapEntry=false}) => {
     const candidates = (map.enemyIds||[]).map(id=>by(id)).filter(Boolean);
     const m = candidates[Math.floor(Math.random()*candidates.length)];
     if (!m) return '';
-    const difficulty = rollHuntDifficulty(map);
     const conditionIds = rollHuntConditionIds(difficulty.id);
     const request = registerHuntRequest(createHuntRequest(map, m, difficulty.id, conditionIds));
+    request.goldenLandMapEntry = goldenLandMapEntry;
     const secondEnemy = request.secondEnemyId ? by(request.secondEnemyId) : null;
     const hasInvasion = request.battleMode === 'invasion_pending' && request.invasionEnemyId;
     return `<div class="card enemy-choice-card difficulty-card-${difficulty.id}">
@@ -50,6 +62,8 @@ function showBattleChoices() {
       <p>${m.rarity} ${typesHtml(m.types)}</p>
       ${m.bossClass?`<p class="small">🔥 ${m.bossClass}</p>`:''}
       ${map.rareOnly?`<p class="small">✨ 特殊マップ</p>`:''}
+      ${map.goldenLand?`<p class="small">💰 ゴールド系モンスター限定</p>`:''}
+      ${goldenLandMapEntry?`<p class="small">🗺️ 地図により出現確定（出発時に1枚消費）</p>`:''}
       <p style="font-size:12px;color:#8892b0">${m.desc}</p>
       <div class="hunt-request-info">
         <span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span>
@@ -117,6 +131,15 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
   activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
+  if (activeHuntRequest.goldenLandMapEntry) {
+    if (!consumeReservedGoldenLandMap()) {
+      alert('黄金郷への地図が見つかりません。討伐依頼を選び直してください。');
+      showBattleChoices();
+      return;
+    }
+    saveGame();
+    updateItems();
+  }
   battleRewardGranted = false;
   resetBattleTurnCounter();
   if (!partyBattle.length) prepareBattleParty();
@@ -236,6 +259,15 @@ function win() {
   }
   msg += grantPartyExp(expGain);
   msg += `<br>🪙 コイン${coinGain}枚獲得！`;
+  if (selectedMap?.goldenLand) {
+    const bonus = goldenLandCoinBonus(activeHuntRequest?.difficultyId);
+    save.coins += bonus;
+    msg += `<br>💰 黄金郷ボーナス：コイン${bonus}枚獲得！`;
+  } else if (rollGoldenLandMapFromHunt(activeHuntRequest?.difficultyId)) {
+    save.items.golden_land_map = (save.items.golden_land_map || 0) + 1;
+    registerItemDex('golden_land_map');
+    msg += '<br>🗺️ 黄金郷への地図を入手！';
+  }
   if (enemy.dropItem) {
     const dropRate = Number.isFinite(enemy.dropRate) ? enemy.dropRate : 1;
     if (Math.random() < dropRate) {

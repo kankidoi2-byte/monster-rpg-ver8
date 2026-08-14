@@ -63,6 +63,16 @@ function itemCountText(){
   ensureContractScrollItem();
   return `💊 回復薬 ${itemCount('potion')}個 / 💉 上回復薬 ${itemCount('upper_potion')}個 / ⚡ 力の薬 ${itemCount('attack_potion')}個 / 📜 契約書 ${itemCount('contract_scroll')}枚 / 📃 銀の契約書 ${itemCount('silver_contract_scroll')}枚 / 📒 金の契約書 ${itemCount('gold_contract_scroll')}枚 / 🌈 虹の契約書 ${itemCount('rainbow_contract_scroll')}枚`;
 }
+function useGoldenLandMap(){
+  ensureContractScrollItem();
+  if(goldenLandMapIsReady()){alert('すでに黄金郷への地図を使用しています。黄金郷へ出発するまで追加では使えません。');return;}
+  if((save.items.golden_land_map||0)<=0){alert('黄金郷への地図を持っていません。');return;}
+  if(!reserveGoldenLandMap())return;
+  saveGame();
+  alert('黄金郷への地図を使用した！\n次の討伐依頼候補に黄金郷が確定で出現します。\n地図は黄金郷へ出発した時に消費されます。');
+  if(typeof renderItemDex==='function')renderItemDex();
+  if(typeof showItemDexDetail==='function')showItemDexDetail('golden_land_map');
+}
 function updateItemText() {
   const el = document.getElementById('itemText');
   if (el) el.textContent = itemCountText();

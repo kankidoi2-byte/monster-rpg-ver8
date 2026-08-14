@@ -35,6 +35,34 @@ let pendingMultiBattleContractId = null;
 
 const THREE_WAY_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
 const INVASION_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
+const GOLDEN_LAND_RATES = Object.freeze({easy:0, normal:.03, hard:.05, extreme:.08});
+const GOLDEN_LAND_COIN_BONUSES = Object.freeze({easy:0, normal:300, hard:600, extreme:1000});
+const GOLDEN_LAND_MAP_HUNT_RATES = Object.freeze({easy:0, normal:0, hard:.01, extreme:.03});
+
+function rollGoldenLand(difficultyId, randomFn=Math.random) {
+  return randomFn() < (GOLDEN_LAND_RATES[huntDifficulty(difficultyId).id] || 0);
+}
+function goldenLandCoinBonus(difficultyId) {
+  return GOLDEN_LAND_COIN_BONUSES[huntDifficulty(difficultyId).id] || 0;
+}
+function rollGoldenLandMapFromHunt(difficultyId, randomFn=Math.random) {
+  return randomFn() < (GOLDEN_LAND_MAP_HUNT_RATES[huntDifficulty(difficultyId).id] || 0);
+}
+function goldenLandMapIsReady() {
+  return save.goldenLandMapReady === true && Number(save.items?.golden_land_map || 0) > 0;
+}
+function reserveGoldenLandMap() {
+  if (goldenLandMapIsReady()) return false;
+  if (Number(save.items?.golden_land_map || 0) <= 0) return false;
+  save.goldenLandMapReady = true;
+  return true;
+}
+function consumeReservedGoldenLandMap() {
+  if (!goldenLandMapIsReady()) return false;
+  save.items.golden_land_map--;
+  save.goldenLandMapReady = false;
+  return true;
+}
 
 function rollThreeWayBattle(difficultyId, randomFn=Math.random) {
   return randomFn() < (THREE_WAY_RATES[huntDifficulty(difficultyId).id] || 0);
@@ -112,7 +140,7 @@ function createHuntRequest(map, mon, difficultyId='normal', conditionIds=[]) {
   const enemyLevel = Math.max(1, Math.round(partyAverageLevel) + difficulty.levelOffset);
   const enemyHp = Math.max(1, Math.round(maxHp(mon, enemyLevel) * difficulty.hpMultiplier));
   const conditions = [...new Set(conditionIds)].map(id => createHuntCondition(map, id)).filter(Boolean);
-  const rolledMode = rollHuntBattleMode(difficulty.id);
+  const rolledMode = map?.goldenLand ? 'single' : rollHuntBattleMode(difficulty.id);
   const secondEnemy = rolledMode !== 'single' ? chooseSecondHuntEnemy(map, mon?.id) : null;
   const battleMode = secondEnemy ? rolledMode : 'single';
   return {
@@ -132,7 +160,8 @@ function createHuntRequest(map, mon, difficultyId='normal', conditionIds=[]) {
     battleMode,
     secondEnemyId:battleMode === 'three_way' ? secondEnemy?.id || null : null,
     invasionEnemyId:battleMode === 'invasion_pending' ? secondEnemy?.id || null : null,
-    invasionTurn:battleMode === 'invasion_pending' ? rollInvasionTurn() : null
+    invasionTurn:battleMode === 'invasion_pending' ? rollInvasionTurn() : null,
+    goldenLandMapEntry:false
   };
 }
 function resetHuntRequestChoices() {

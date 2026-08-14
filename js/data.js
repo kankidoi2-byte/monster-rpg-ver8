@@ -72,7 +72,8 @@ const MAPIMG={
   seikai_irie:'images/maps/seikai_irie.webp',
   kaiyu_kaiiki:'images/maps/kaiyu_kaiiki.webp',
   deep_sea_end:'images/maps/deep_sea_end.webp',
-  kaen_village:'images/maps/kaen_village.webp'
+  kaen_village:'images/maps/kaen_village.webp',
+  golden_land:'images/maps/golden_land.webp'
 };
 
 /* ===== マップデータ ===== */
@@ -112,7 +113,9 @@ const MAPS = [
   {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between,
    enemyIds:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], bossOnly:true, appearRate:0.08},
   {id:'kaen_village', name:'華炎の里', image:MAPIMG.kaen_village,
-   enemyIds:['tsubaki','tsubaki','tsubaki','elna_kaen']}
+   enemyIds:['tsubaki','tsubaki','tsubaki','elna_kaen']},
+  {id:'golden_land', name:'黄金郷', image:MAPIMG.golden_land,
+   enemyIds:['slime_gold'], rareOnly:true, goldenLand:true, expeditionExcluded:true}
 
 ];
 
@@ -367,7 +370,8 @@ const SHOP_ITEMS = [
   {id:'raptor_feather', name:'猛禽の羽', icon:'🪶', price:45, desc:'空を駆ける猛禽から得られる、風の力を帯びた羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
   {id:'fine_raptor_feather', name:'上質な猛禽の羽', icon:'✨🪶', price:100, desc:'強い風の魔力を保った傷のない猛禽の羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'venom_carapace', name:'毒虫の甲殻', icon:'🪲', price:50, desc:'毒性を残した硬い虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_venom_carapace', name:'上質な毒虫の甲殻', icon:'✨🪲', price:110, desc:'毒性と強度を高い水準で保つ上質な虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'}
+  {id:'fine_venom_carapace', name:'上質な毒虫の甲殻', icon:'✨🪲', price:110, desc:'毒性と強度を高い水準で保つ上質な虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
+  {id:'golden_land_map', name:'黄金郷への地図', icon:'🗺️', price:0, desc:'使用すると、次の討伐依頼候補に黄金郷が確定で出現する。黄金郷へ出発した時に1枚消費する。', category:'特殊アイテム', obtain:'遠征の希少報酬／Hard・Extreme討伐依頼の勝利報酬', shop:false, usableFromDex:true}
 
 ];
 const ALCHEMY_MATERIAL_DROPS = Object.freeze([
