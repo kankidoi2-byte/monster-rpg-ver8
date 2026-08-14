@@ -45,6 +45,7 @@
   <button onclick="show('partySet')">👥パーティー</button>
   <button onclick="showFusion()">⚗️合成</button>
   <button onclick="showAlchemy()" aria-label="錬成を開く">⚗ 錬成</button>
+  <button id="expeditionNav" onclick="showExpedition()">🧭遠征</button>
   <button onclick="showShop()">🛒ショップ</button>
   <button onclick="showItemGacha()">🎰アイテムガチャ</button>
   <button onclick="show('dex')">📖図鑑</button>
@@ -72,6 +73,12 @@
       ⑥ 合成所でアイテム進化も可能
     </div>
   </div>
+</section>
+
+<!-- 遠征 -->
+<section id="expedition" class="screen">
+  <h1>🧭 遠征</h1>
+  <div id="expeditionContent"></div>
 </section>
 
 <!-- 進化画面 -->
@@ -300,6 +307,7 @@
 <script src="js/battle-view.js?v=alchemy-prototype-2"></script>
 <script src="js/battle-rules.js?v=alchemy-prototype-2"></script>
 <script src="js/battle-flow.js?v=alchemy-prototype-2"></script>
+<script src="js/expedition.js?v=expedition-prototype-1"></script>
 <script src="js/init.js?v=alchemy-prototype-2"></script>
 </body>
 </html>

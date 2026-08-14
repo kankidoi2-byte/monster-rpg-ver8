@@ -252,6 +252,7 @@ function win() {
   save.history.logs = save.history.logs||[];
   save.history.logs.push(`${enemy.name}に勝利`);
   if (save.history.logs.length > 30) save.history.logs = save.history.logs.slice(-30);
+  if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
   saveGame();
   document.getElementById('log').innerHTML = msg;
   // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）

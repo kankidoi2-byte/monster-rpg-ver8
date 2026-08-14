@@ -7,13 +7,14 @@ function renderFusion() {
   }
   document.getElementById('fusionList').innerHTML = FUSIONS.map((r,idx) => {
     const from = by(r.from), to = by(r.to);
-    const hasM = caughtHas(r.from), hasI = (save.items[r.item]||0) >= r.count, done = caughtHas(r.to);
+    const hasM = save.instances.some(ins => ins.id === r.from && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)));
+    const hasI = (save.items[r.item]||0) >= r.count, done = caughtHas(r.to);
     const can = hasM && hasI && (r.repeatable || !done);
     return `<div class="card fusion-card ${can?'':'locked'}" onclick="${can?`tryFusion(${idx})`:''}">
       ${vis(to)}<h3>${from.name} + ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName}</h3>
       <p>進化先：<b>${to.name}</b></p>
       <div class="fusion-recipe">
-        <p>${hasM?'✅':'❌'} ${from.name}</p>
+        <p>${hasM?'✅':'❌'} ${from.name}${!hasM&&caughtHas(r.from)?'（遠征中）':''}</p>
         <p>${hasI?'✅':'❌'} ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${r.count}</p>
         <p style="color:${can?'#4ade80':'#f87171'}">${(!r.repeatable && done)?'✨合成済み':can?'タップで合成':'条件不足'}</p>
       </div></div>`;
@@ -22,9 +23,9 @@ function renderFusion() {
 function tryFusion(idx) {
   const r = FUSIONS[idx], from = by(r.from), to = by(r.to);
   const log = document.getElementById('fusionLog');
-  const candidates = save.instances.filter(x => x.id === r.from);
+  const candidates = save.instances.filter(x => x.id === r.from && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(x.uid)));
 
-  if (!candidates.length) { log.innerHTML = `${from.name}を所持していない！`; return; }
+  if (!candidates.length) { log.innerHTML = `${from.name}を所持していない、または対象個体が遠征中です！`; return; }
   if ((save.items[r.item]||0) < r.count) { log.innerHTML = `${r.itemName}が足りない！`; return; }
   if (!r.repeatable && caughtHas(r.to)) { log.innerHTML = `${to.name}はすでに合成済み！`; return; }
 

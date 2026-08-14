@@ -16,7 +16,7 @@ function selectAlchemyMode(mode){
 }
 function alchemyEligibleInstances(){
   return (save.instances || []).filter(ins =>
-    !ins.locked && !(save.party || []).includes(ins.uid) && save.instances.length > 1 && by(ins.id)
+    !ins.locked && !(save.party || []).includes(ins.uid) && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)) && save.instances.length > 1 && by(ins.id)
   );
 }
 function alchemyInstanceLabel(ins){
@@ -197,6 +197,7 @@ function validateAlchemyPlan(plan){
   if(!ins) errors.push('投入モンスターが選択されていません。');
   if((save.instances || []).length <= 1) errors.push('最後の所持モンスターは投入できません。');
   if(ins && (save.party || []).includes(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}はパーティー編成中です。`);
+  if(ins && typeof isInstanceOnExpedition==='function' && isInstanceOnExpedition(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}は遠征中です。`);
   if(ins?.locked) errors.push(`${by(ins.id)?.name || ins.id}はロック中です。`);
   if(!plan.designated && !plan.coinOptionSelectionValid) errors.push('投入コイン帯が正しく選択されていません。再選択してください。');
   plan.recipe.materialChoices.forEach((choice, index) => {
@@ -255,6 +256,7 @@ function renderAlchemy(){
       ${unavailable.length ? `<details><summary>選択できない個体（${unavailable.length}体）</summary><ul class="alchemy-restrictions">${unavailable.map(ins => {
         const reasons=[];
         if((save.party||[]).includes(ins.uid)) reasons.push('パーティー編成中');
+        if(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)) reasons.push('遠征中');
         if(ins.locked) reasons.push('ロック中');
         if(save.instances.length<=1) reasons.push('最後の所持モンスター');
         return `<li>${alchemyInstanceLabel(ins)}：${reasons.join('・')}</li>`;

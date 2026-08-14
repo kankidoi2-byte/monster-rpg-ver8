@@ -3,7 +3,8 @@ function initSave() {
   return {
     caught:[], instances:[], levels:{}, exp:{},
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0},
-    coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[]
+    coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[],
+    expeditions:{completedCount:0, active:[]}
   };
 }
 function normalizeAlchemyResonance(value){
@@ -21,6 +22,10 @@ if (!save.instances) save.instances = [];
 if (!save.skillCards) save.skillCards = {};
 if (!save.equippedSkills) save.equippedSkills = {};
 if (!Array.isArray(save.itemDex)) save.itemDex = [];
+if (!save.expeditions || typeof save.expeditions !== 'object' || Array.isArray(save.expeditions)) save.expeditions = {completedCount:0, active:[]};
+save.expeditions.completedCount = Math.max(0, Math.floor(Number(save.expeditions.completedCount) || 0));
+if (!Array.isArray(save.expeditions.active)) save.expeditions.active = [];
+save.expeditions.active = save.expeditions.active.filter(entry => entry && typeof entry === 'object' && Array.isArray(entry.memberUids));
 save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance);
 save.instances.forEach(ins => normalizeInstanceSaveFields(ins));
 
@@ -42,6 +47,7 @@ function saveGame() {
   ensureContractScrollItem();
   syncItemDexFromInventory();
   save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance);
+  if (typeof normalizeExpeditionSave === 'function') normalizeExpeditionSave();
   localStorage.setItem('mb_v95c', JSON.stringify(save));
 }
 

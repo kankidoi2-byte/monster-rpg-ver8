@@ -255,7 +255,7 @@ function winMultiBattle(){
   const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus));
   const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
-  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);saveGame();
+  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();saveGame();
   document.getElementById('log').innerHTML=msg;renderMultiContractPanel();document.getElementById('next').classList.remove('hidden');document.getElementById('next').textContent='➡️ 次のバトルへ';renderParty();setTimeout(processNextEvolution,300);
 }
 
