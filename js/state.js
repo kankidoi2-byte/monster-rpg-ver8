@@ -48,6 +48,13 @@ function goldenLandCoinBonus(difficultyId) {
 function rollGoldenLandMapFromHunt(difficultyId, randomFn=Math.random) {
   return randomFn() < (GOLDEN_LAND_MAP_HUNT_RATES[huntDifficulty(difficultyId).id] || 0);
 }
+function grantGoldenLandMapFromHuntWin(difficultyId, randomFn=Math.random) {
+  if (!rollGoldenLandMapFromHunt(difficultyId, randomFn)) return false;
+  if (!save.items || typeof save.items !== 'object') save.items = {};
+  save.items.golden_land_map = (save.items.golden_land_map || 0) + 1;
+  if (typeof registerItemDex === 'function') registerItemDex('golden_land_map');
+  return true;
+}
 function goldenLandMapIsReady() {
   return save.goldenLandMapReady === true && Number(save.items?.golden_land_map || 0) > 0;
 }
