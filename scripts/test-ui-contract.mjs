@@ -34,8 +34,8 @@ screenIds.forEach(id => {
 
 const criticalDomIds = [
   'titleScreen', 'currentPartyView', 'partySelectList', 'battleChoiceList',
-  'battleMapBanner', 'pName', 'pVis', 'pHpBar', 'pHpText', 'pExpBar',
-  'eName', 'eVis', 'eHpBar', 'eHpText', 'commands', 'itemText', 'log', 'battleOutcome', 'next'
+  'battleMapBanner', 'pName', 'pVis', 'pHpBar', 'pHpTrail', 'pHpText', 'pExpBar',
+  'eName', 'eVis', 'eHpBar', 'eHpTrail', 'eHpText', 'commands', 'itemText', 'log', 'battleOutcome', 'next'
 ];
 criticalDomIds.forEach(id => expect(index.includes(`id="${id}"`), `required UI contract is missing: #${id}`));
 

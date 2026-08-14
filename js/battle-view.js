@@ -34,8 +34,10 @@ function playBattleImpact(targetId, damage, effectiveness=1) {
   const stage = document.querySelector('#battle .battle-arena');
   if (!target || !stage) return;
   target.classList.remove('battle-hit-impact');
+  stage.classList.remove('battle-impact-stop');
   void target.offsetWidth;
   target.classList.add('battle-hit-impact');
+  stage.classList.add('battle-impact-stop');
   const burst = document.createElement('strong');
   burst.className = `battle-damage-burst${effectiveness > 1 ? ' is-critical' : ''}`;
   burst.textContent = `${effectiveness > 1 ? 'WEAK! ' : ''}-${damage}`;
@@ -44,6 +46,7 @@ function playBattleImpact(targetId, damage, effectiveness=1) {
   burst.style.left = `${targetRect.left - stageRect.left + targetRect.width * .62}px`;
   burst.style.top = `${targetRect.top - stageRect.top + targetRect.height * .28}px`;
   stage.appendChild(burst);
+  setTimeout(() => stage.classList.remove('battle-impact-stop'), 130);
   setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); }, 650);
 }
 function hideBattleOutcome() {
@@ -116,6 +119,7 @@ function update() {
   const pBar = document.getElementById('pHpBar');
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';
+  document.getElementById('pHpTrail').style.width = pp+'%';
   pBar.className = 'hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');
   pBar.setAttribute('aria-valuemin', '0');
   pBar.setAttribute('aria-valuemax', String(pm));
@@ -123,6 +127,7 @@ function update() {
   const eBar = document.getElementById('eHpBar');
   const ep = eHp/em*100;
   eBar.style.width = ep+'%';
+  document.getElementById('eHpTrail').style.width = ep+'%';
   eBar.className = 'hp'+(ep<25?' hp-danger':ep<50?' hp-warn':'');
   eBar.setAttribute('aria-valuemin', '0');
   eBar.setAttribute('aria-valuemax', String(em));

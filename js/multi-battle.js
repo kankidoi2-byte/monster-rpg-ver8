@@ -113,7 +113,7 @@ function updateMultiBattleView() {
   pHp = Math.max(0,pHp);
   const pm=playerMaxHp(), lv=activeInstance?.level||1, xp=activeInstance?.exp||0, nd=needExp(lv);
   document.getElementById('pInfo').innerHTML=`Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player,activeInstance)}${statusHtml(pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
-  const pp=pHp/pm*100, pBar=document.getElementById('pHpBar'); pBar.style.width=pp+'%'; pBar.className='hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');
+  const pp=pHp/pm*100, pBar=document.getElementById('pHpBar'); pBar.style.width=pp+'%'; pBar.className='hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');document.getElementById('pHpTrail').style.width=pp+'%';
   document.getElementById('pHpText').textContent=`${pHp} / ${pm}`; document.getElementById('pExpBar').style.width=xp/nd*100+'%'; document.getElementById('pExpText').textContent=`EXP ${xp} / ${nd}`;
   document.getElementById('multiEnemyGrid').innerHTML=multiBattle.enemies.map(entry=>{
     const pct=Math.max(0,entry.hp)/entry.maxHp*100;
