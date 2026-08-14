@@ -4,28 +4,6 @@ migrateSkillSystem();
 saveGame();
 renderParty();
 
-function grantGoldenLandVerificationMapFromUrl(){
-  try{
-    const params=new URLSearchParams(window.location.search);
-    if(params.get('verify')!=='golden-land')return false;
-    save.items.golden_land_map=(save.items.golden_land_map||0)+1;
-    if(typeof registerItemDex==='function')registerItemDex('golden_land_map');
-    saveGame();
-    if(typeof updateItems==='function')updateItems();
-    params.delete('verify');
-    const query=params.toString();
-    const cleanUrl=`${window.location.pathname}${query?`?${query}`:''}${window.location.hash}`;
-    window.history.replaceState(null,'',cleanUrl);
-    setTimeout(()=>alert('動作確認用の「黄金郷への地図」を1枚追加しました。\nアイテム図鑑から使用してください。'),50);
-    return true;
-  }catch(error){
-    console.error('Golden Land verification setup failed:',error);
-    return false;
-  }
-}
-grantGoldenLandVerificationMapFromUrl();
-
-
 function chooseDifferentTitleMap(){
   const candidates=MAPS.filter(map=>map && map.image);
   if(!candidates.length) return null;

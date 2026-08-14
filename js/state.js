@@ -37,7 +37,8 @@ const THREE_WAY_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30
 const INVASION_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
 const GOLDEN_LAND_RATES = Object.freeze({easy:0, normal:.03, hard:.05, extreme:.08});
 const GOLDEN_LAND_COIN_BONUSES = Object.freeze({easy:0, normal:300, hard:600, extreme:1000});
-const GOLDEN_LAND_MAP_HUNT_RATES = Object.freeze({easy:0, normal:0, hard:.01, extreme:.03});
+// TEMP: Android verification rates. Restore Hard 1% / Extreme 3% after hands-on validation.
+const GOLDEN_LAND_MAP_HUNT_RATES = Object.freeze({easy:0, normal:0, hard:.20, extreme:.40});
 
 function rollGoldenLand(difficultyId, randomFn=Math.random) {
   return randomFn() < (GOLDEN_LAND_RATES[huntDifficulty(difficultyId).id] || 0);
