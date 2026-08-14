@@ -69,5 +69,12 @@ assert.equal(save.expeditions.active[0].progress, 1);
 const fixedReward=JSON.stringify(save.expeditions.active[0].reward);
 vm.runInContext('progressActiveExpeditions(()=>0)', context);
 assert.equal(JSON.stringify(save.expeditions.active[0].reward), fixedReward, 'completed rewards must not reroll');
+assert.equal(vm.runInContext('EXPEDITION_GOLDEN_MAP_RATES.short', context), .01, 'short map rate must be 1%');
+assert.equal(vm.runInContext('EXPEDITION_GOLDEN_MAP_RATES.medium', context), .03, 'medium map rate must be 3%');
+assert.equal(vm.runInContext('EXPEDITION_GOLDEN_MAP_RATES.long', context), .05, 'long map rate must be 5%');
+const mapReward = vm.runInContext("expeditionRewardPlan(MAPS[0],EXPEDITION_DISTANCES.long,{grade:'D',greatRate:0},()=>0,1)", context);
+assert.equal(mapReward.items.golden_land_map, 1, 'a successful long-distance map roll must add one map');
+const recallReward = vm.runInContext("expeditionRewardPlan(MAPS[0],EXPEDITION_DISTANCES.long,{grade:'D',greatRate:0},()=>0,.5)", context);
+assert.equal(recallReward.items.golden_land_map, undefined, 'recall rewards must not contain a Golden Land map');
 
-console.log('Expedition validation passed (destinations, slots, suitability, locks, and saved completion rewards).');
+console.log('Expedition validation passed (destinations, slots, suitability, locks, rewards, and map rates).');
