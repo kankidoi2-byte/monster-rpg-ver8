@@ -100,7 +100,7 @@
 
 <!-- 遠征 -->
 <section id="expedition" class="screen">
-  <h1>🧭 遠征</h1>
+  <div class="ui-page-heading"><span class="ui-eyebrow">EXPEDITION</span><h1>遠征</h1><p>待機中のモンスターを派遣し、バトル勝利で探索を進めます。</p></div>
   <div id="expeditionContent"></div>
 </section>
 
@@ -198,9 +198,8 @@
 
 <!-- 合成所 -->
 <section id="fusion" class="screen">
-  <div class="panel">
-    <h1>⚗️ 合成所</h1>
-    <p class="small">モンスターとアイテムを合成して特殊進化させます。</p>
+  <div class="panel ui-feature-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">FUSION</span><h1>合成所</h1><p>モンスターとアイテムを組み合わせて特殊進化させます。</p></div>
     <p id="fusionItemText" style="color:#a78bfa"></p>
     <div id="fusionList" class="grid"></div>
     <div id="fusionLog" class="log"></div>
@@ -209,9 +208,8 @@
 
 <!-- 錬成 -->
 <section id="alchemy" class="screen">
-  <div class="panel alchemy-panel">
-    <h1>⚗ 錬核錬成</h1>
-    <p class="small">モンスター1体、4種類の素材、コインを錬成核へ投入します。</p>
+  <div class="panel alchemy-panel ui-feature-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">ALCHEMY</span><h1>錬核錬成</h1><p>モンスター1体、4種類の素材、コインから新たな個体を生み出します。</p></div>
     <button onclick="show('home')" class="secondary-button alchemy-home-button">← ホームへ戻る</button>
     <div id="alchemyForm"></div>
   </div>
@@ -232,16 +230,15 @@
 
 <!-- ショップ -->
 <section id="shop" class="screen">
-  <h1>🛒 アイテムショップ</h1>
-  <p>所持コイン：<span id="coinView"></span>枚</p>
+  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1><p>冒険と育成に必要なアイテムを購入できます。</p></div>
+  <p class="ui-coin-balance">所持コイン <strong id="coinView"></strong>枚</p>
   <div id="shopList" class="grid"></div>
 </section>
 
 <!-- アイテムガチャ -->
 <section id="itemGacha" class="screen">
-  <div class="panel">
-    <h1>🎰 アイテムガチャ</h1>
-    <p class="small">コイン100枚で1回ガチャを回せます。回復薬、契約書、データ系経験値アイテムなどが手に入ります。</p>
+  <div class="panel ui-feature-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">ITEM DRAW</span><h1>アイテムガチャ</h1><p>コイン100枚で、回復薬や契約書、育成アイテムを獲得できます。</p></div>
     <p>所持コイン：<span id="gachaCoinView"></span>枚</p>
     <button onclick="rollItemGacha()" style="font-size:16px;padding:14px 32px">🎰 100コインで回す</button>
     <div id="gachaResult" class="log"></div>
@@ -258,16 +255,14 @@
 
 <!-- 技変更 -->
 <section id="skillEdit" class="screen">
-  <div class="panel">
-    <h1>🃏 技カード変更</h1>
-    <p class="small">所持している技カードを、モンスターごとのコスト上限内で最大3つまで装備できます。同じ技カードは複数枚所持できます。</p>
+  <div class="panel ui-feature-panel skill-edit-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">SKILL DECK</span><h1>技カード変更</h1><p>コスト上限内で最大3枚。戦い方を短く組み替えられます。</p></div>
     <div id="skillEditTarget"></div>
     <div id="skillEditCurrent" class="grid"></div>
     <h2>所持技カード</h2>
-    <div class="card" style="text-align:left;max-width:760px;margin:10px auto">
-      <b style="color:#c7d2fe">検索・絞り込み</b><br>
-      <input id="skillSearchInput" type="search" placeholder="技名で検索" oninput="renderSkillEdit()" style="width:100%;padding:10px;border-radius:10px;border:1px solid #3b4a78;background:#0d1428;color:#e8eaf6;margin:8px 0">
-      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <details class="skill-filter-panel"><summary>検索・絞り込み</summary>
+      <input id="skillSearchInput" type="search" placeholder="技名で検索" oninput="renderSkillEdit()">
+      <div class="skill-filter-controls">
         <label class="small">属性
           <select id="skillTypeFilter" onchange="renderSkillEdit()" style="padding:8px;border-radius:10px;border:1px solid #3b4a78;background:#0d1428;color:#e8eaf6">
             <option value="all">全て</option>
@@ -297,8 +292,7 @@
           <input id="skillEquipableOnly" type="checkbox" onchange="renderSkillEdit()">装備可能のみ
         </label>
         <button onclick="resetSkillFilters()" style="background:linear-gradient(135deg,#374151,#4b5563)">条件リセット</button>
-      </div>
-    </div>
+      </div></details>
     <div id="skillCardList" class="grid"></div>
     <button onclick="show('party')" style="margin-top:12px;background:linear-gradient(135deg,#374151,#4b5563)">← 手持ちに戻る</button>
   </div>
@@ -319,8 +313,7 @@
 </section>
 
 <section id="itemDex" class="screen">
-  <h1>🎒 アイテム図鑑</h1>
-  <p class="small">入手したアイテムは、使い切っても図鑑に記録されます。</p>
+  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM DEX</span><h1>アイテム図鑑</h1><p>入手したアイテムは、使い切った後も記録されます。</p></div>
   <div id="itemDexDetail"></div>
   <div id="itemDexList" class="item-dex-grid"></div>
 </section>

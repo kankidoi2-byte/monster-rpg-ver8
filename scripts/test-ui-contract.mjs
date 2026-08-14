@@ -51,6 +51,9 @@ expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), '
 expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
 expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
 expect(read('js/dex.js').includes('monster-dex-card'), 'monster-first dex cards are missing');
+expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
+expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');
+expect(read('js/items.js').includes('shop-item-card'), 'shared shop item cards are missing');
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',
