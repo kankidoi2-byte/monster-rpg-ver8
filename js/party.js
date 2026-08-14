@@ -49,6 +49,7 @@ function togglePartyMember(u) {
   if (idx >= 0) {
     save.party.splice(idx, 1);
   } else {
+    if (typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(u)) { alert('遠征中のモンスターはパーティーに編成できません。'); return; }
     if (save.party.length >= 3) { alert('パーティーは最大3体まで！'); return; }
     if (getInstance(u)) save.party.push(u);
   }
@@ -65,11 +66,12 @@ function renderPartySetup() {
   list.innerHTML = save.instances.map(ins => {
     const m = by(ins.id); if (!m) return '';
     const inParty = (save.party||[]).includes(ins.uid);
+    const onExpedition = typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(ins.uid);
     return `<div class="card">
       ${vis(m)}<h2>${m.name}</h2>
       <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p>
       <p>Lv.${ins.level} EXP ${ins.exp}/${needExp(ins.level)}</p>
-      <button onclick="togglePartyMember('${ins.uid}')">${inParty?'パーティーから外す':'パーティーに入れる'}</button>
+      <button onclick="togglePartyMember('${ins.uid}')" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
     </div>`;
   }).join('');
 }
