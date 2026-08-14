@@ -46,6 +46,39 @@ function playBattleImpact(targetId, damage, effectiveness=1) {
   stage.appendChild(burst);
   setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); }, 650);
 }
+function hideBattleOutcome() {
+  const battle = document.getElementById('battle');
+  const outcome = document.getElementById('battleOutcome');
+  battle?.classList.remove('is-finished');
+  if (outcome) {
+    outcome.className = 'battle-outcome hidden';
+    document.getElementById('battleOutcomeActions').innerHTML = '';
+  }
+  document.getElementById('next')?.classList.add('hidden');
+}
+function showBattleOutcome({kind='victory', title, exp=0, coins=0, note=''}) {
+  const battle = document.getElementById('battle');
+  const outcome = document.getElementById('battleOutcome');
+  if (!battle || !outcome) return;
+  const victory = kind === 'victory';
+  const labels = {
+    victory:['BATTLE CLEAR','★'], defeat:['BATTLE LOST','×'], retreat:['RETREAT','↩']
+  };
+  const [eyebrow, icon] = labels[kind] || labels.victory;
+  battle.classList.add('is-finished');
+  outcome.className = `battle-outcome is-${kind}`;
+  document.getElementById('battleOutcomeIcon').textContent = icon;
+  document.getElementById('battleOutcomeEyebrow').textContent = eyebrow;
+  document.getElementById('battleOutcomeTitle').textContent = title;
+  document.getElementById('battleOutcomeRewards').innerHTML = victory
+    ? `<span><small>EXP</small><strong>+${exp}</strong></span><span><small>COIN</small><strong>+${coins}</strong></span>`
+    : '<span class="battle-outcome-empty">報酬なし</span>';
+  document.getElementById('battleOutcomeNote').textContent = note;
+  const next = document.getElementById('next');
+  next.classList.remove('hidden');
+  next.textContent = victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
+  if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
+}
 function huntConditionsHtml(request, inBattle=false) {
   const conditions = Array.isArray(request?.conditions) ? request.conditions : [];
   if (!conditions.length) return '<p class="hunt-no-conditions">特殊条件なし</p>';

@@ -35,7 +35,7 @@ screenIds.forEach(id => {
 const criticalDomIds = [
   'titleScreen', 'currentPartyView', 'partySelectList', 'battleChoiceList',
   'battleMapBanner', 'pName', 'pVis', 'pHpBar', 'pHpText', 'pExpBar',
-  'eName', 'eVis', 'eHpBar', 'eHpText', 'commands', 'itemText', 'log', 'next'
+  'eName', 'eVis', 'eHpBar', 'eHpText', 'commands', 'itemText', 'log', 'battleOutcome', 'next'
 ];
 criticalDomIds.forEach(id => expect(index.includes(`id="${id}"`), `required UI contract is missing: #${id}`));
 
@@ -45,6 +45,7 @@ expect(index.includes('class="home-adventure"'), 'new battle-first home entry is
 expect(index.includes('class="screen battle-screen"'), 'portrait-first battle screen is missing');
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
+expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',

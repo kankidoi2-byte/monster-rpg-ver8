@@ -176,7 +176,17 @@
     </div>
   </div>
   <details class="battle-log-panel" open><summary>バトルログ</summary><div id="log" class="log" aria-live="polite" aria-atomic="true"></div></details>
-  <button id="next" class="hidden battle-next-button" onclick="afterBattleNext()">次の冒険へ ›</button>
+  <section id="battleOutcome" class="battle-outcome hidden" aria-live="assertive" aria-labelledby="battleOutcomeTitle">
+    <div id="battleOutcomeIcon" class="battle-outcome-icon" aria-hidden="true">★</div>
+    <div class="battle-outcome-copy">
+      <span id="battleOutcomeEyebrow">BATTLE CLEAR</span>
+      <h2 id="battleOutcomeTitle">討伐成功！</h2>
+      <div id="battleOutcomeRewards" class="battle-outcome-rewards"></div>
+      <p id="battleOutcomeNote"></p>
+    </div>
+    <div id="battleOutcomeActions" class="battle-outcome-actions"></div>
+    <button id="next" class="hidden battle-next-button" onclick="afterBattleNext()">次の冒険へ ›</button>
+  </section>
   <div class="cmd battle-command-dock">
     <div class="battle-command-title"><span>YOUR TURN</span><h2>技を選ぶ</h2></div>
     <div id="commands"></div>

@@ -164,15 +164,15 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   multiBattle = null;
   pendingMultiBattleContractId = null;
   busy = false;
+  hideBattleOutcome();
   show('battle');
-  document.getElementById('next').classList.add('hidden');
   setupBattle();
   document.getElementById('log').innerHTML =
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;
 }
 function afterBattleNext() {
   endPartyRecovery();
-  document.getElementById('next').classList.add('hidden');
+  hideBattleOutcome();
   showBattleChoices();
 }
 function switchPartyMember() {
@@ -197,8 +197,7 @@ function losePartyBattle() {
   completeBattleTurn();
   document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';
   endPartyRecovery();
-  document.getElementById('next').classList.remove('hidden');
-  document.getElementById('next').textContent = '➡️ 次のバトルへ';
+  showBattleOutcome({kind:'defeat',title:'パーティー全滅',note:'編成や相性を見直して、もう一度挑もう。'});
   busy = true;
 }
 function endPartyRecovery() {
@@ -227,7 +226,7 @@ function runAway() {
   pAquaShield = false; eAquaShield = false;
   resetBattleTurnCounter();
   document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';
-  document.getElementById('next').classList.remove('hidden');
+  showBattleOutcome({kind:'retreat',title:'撤退成功',note:'態勢を整えてから再挑戦できる。'});
   busy = true;
 }
 function win() {
@@ -250,6 +249,7 @@ function win() {
   const baseCoinGain = enemy.coinBonus || (8 + Math.floor(Math.random()*10));
   const expGain = huntRewardAmount(baseExpGain, turnBonusSucceeded);
   const coinGain = huntRewardAmount(baseCoinGain, turnBonusSucceeded);
+  let displayedCoinGain = coinGain;
   save.coins += coinGain;
   let msg = `🏆 ${enemy.name}を倒した！<br>`;
   if (turnBonusActive) {
@@ -262,6 +262,7 @@ function win() {
   if (selectedMap?.goldenLand) {
     const bonus = goldenLandCoinBonus(activeHuntRequest?.difficultyId);
     save.coins += bonus;
+    displayedCoinGain += bonus;
     msg += `<br>💰 黄金郷ボーナス：コイン${bonus}枚獲得！`;
   } else if (grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId)) {
     msg += '<br>🗺️ 黄金郷への地図を入手！';
@@ -286,8 +287,10 @@ function win() {
   saveGame();
   document.getElementById('log').innerHTML = msg;
   // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）
-  document.getElementById('next').classList.remove('hidden');
-  document.getElementById('next').textContent = '➡️ 次の敵へ';
+  showBattleOutcome({
+    kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
+    note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
+  });
   busy = true;
   renderParty();
   setTimeout(processNextEvolution, 300);
