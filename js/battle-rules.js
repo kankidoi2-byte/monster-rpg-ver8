@@ -320,7 +320,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
   logEl.innerHTML = msg;
   // ヒットアニメとダメージ表示
   const targetId = isPlayer ? 'eVis' : 'pVis';
-  if (typeof playBattleImpact === 'function') playBattleImpact(targetId, dmg, r);
+  if (typeof playBattleImpact === 'function') playBattleImpact(targetId, dmg, r, moveTypes(mv), power);
   else {
     const el = document.getElementById(targetId);
     el.classList.remove('hit-anim'); void el.offsetWidth; el.classList.add('hit-anim');

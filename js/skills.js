@@ -46,7 +46,12 @@ function availableSkillCount(skillId, exceptUid=null){
 function renderSkillButtons(){
   const moves = getEquippedMovesForInstance(activeInstance);
   const el = document.getElementById('commands');
-  if (el) el.innerHTML = moves.map((mv,i) => `<button onclick="turn(${i})" class="skill-button ${skillButtonClass(moveTypes(mv))}">${skillTypeLabel(moveTypes(mv))} ${mv[0]}</button>`).join('');
+  if (el) el.innerHTML = moves.map((mv,i) => {
+    const power = Number(mv[1]) || 0;
+    const role = power > 0 ? `威力 ${power}` : '補助';
+    const strength = power >= 50 ? ' is-strong-skill' : '';
+    return `<button onclick="turn(${i})" class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role}</small></button>`;
+  }).join('');
 }
 function openSkillEdit(uid){
   editingSkillUid = uid;

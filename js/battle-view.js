@@ -29,25 +29,37 @@ function setupBattle() {
   updateItemText();
   update();
 }
-function playBattleImpact(targetId, damage, effectiveness=1) {
+function battleImpactType(typeOrTypes) {
+  const type = normalizeMoveTypes(typeOrTypes)[0] || 'normal';
+  return /^[a-z_]+$/.test(type) ? type : 'normal';
+}
+function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal', power=0) {
   const target = document.getElementById(targetId);
   const stage = document.querySelector('#battle .battle-arena');
   if (!target || !stage) return;
+  const impactType = battleImpactType(typeOrTypes);
+  const isStrong = Number(power) >= 50;
   target.classList.remove('battle-hit-impact');
   stage.classList.remove('battle-impact-stop');
+  stage.classList.remove('battle-impact-strong');
   void target.offsetWidth;
   target.classList.add('battle-hit-impact');
   stage.classList.add('battle-impact-stop');
+  if (isStrong) stage.classList.add('battle-impact-strong');
   const burst = document.createElement('strong');
-  burst.className = `battle-damage-burst${effectiveness > 1 ? ' is-critical' : ''}`;
+  burst.className = `battle-damage-burst is-${impactType}${effectiveness > 1 ? ' is-critical' : ''}${isStrong ? ' is-strong' : ''}`;
   burst.textContent = `${effectiveness > 1 ? 'WEAK! ' : ''}-${damage}`;
   const targetRect = target.getBoundingClientRect();
   const stageRect = stage.getBoundingClientRect();
   burst.style.left = `${targetRect.left - stageRect.left + targetRect.width * .62}px`;
   burst.style.top = `${targetRect.top - stageRect.top + targetRect.height * .28}px`;
   stage.appendChild(burst);
-  setTimeout(() => stage.classList.remove('battle-impact-stop'), 130);
-  setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); }, 650);
+  const flash = document.createElement('i');
+  flash.className = `battle-element-flash is-${impactType}${isStrong ? ' is-strong' : ''}`;
+  flash.setAttribute('aria-hidden', 'true');
+  stage.appendChild(flash);
+  setTimeout(() => stage.classList.remove('battle-impact-stop', 'battle-impact-strong'), isStrong ? 190 : 130);
+  setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); flash.remove(); }, isStrong ? 820 : 650);
 }
 function hideBattleOutcome() {
   const battle = document.getElementById('battle');
