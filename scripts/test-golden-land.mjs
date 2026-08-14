@@ -20,6 +20,13 @@ assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .0099), true, 'Hard
 assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .01), false, 'Hard must exclude 1% or above');
 assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .0299), true, 'Extreme map rate must be 3%');
 assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .03), false, 'Extreme must exclude 3% or above');
+context.save = {items:{golden_land_map:0},goldenLandMapReady:false};
+context.registerItemDex = id => { context.registeredItemId = id; };
+assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .0099), true, 'a winning Hard hunt must grant the map on a successful roll');
+assert.equal(context.save.items.golden_land_map, 1, 'the shared hunt reward path must add exactly one map');
+assert.equal(context.registeredItemId, 'golden_land_map', 'the granted map must be registered in the item encyclopedia');
+assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .01), false, 'a failed hunt roll must not grant another map');
+assert.equal(context.save.items.golden_land_map, 1, 'a failed hunt roll must leave inventory unchanged');
 context.save = {items:{golden_land_map:2},goldenLandMapReady:false};
 assert.equal(context.reserveGoldenLandMap(), true, 'a held map must be reservable');
 assert.equal(context.save.items.golden_land_map, 2, 'reserving must not consume the map');
@@ -29,4 +36,13 @@ assert.equal(context.save.items.golden_land_map, 1, 'departure must consume exac
 assert.equal(context.save.goldenLandMapReady, false, 'departure must clear the reservation');
 assert.equal(context.consumeReservedGoldenLandMap(), false, 'the same departure must not consume twice');
 
-console.log('Golden Land validation passed (appearance, bonuses, drops, reservation, and consumption).');
+const singleBattleSource = fs.readFileSync(new URL('../js/battle-flow.js', import.meta.url), 'utf8');
+const multiBattleSource = fs.readFileSync(new URL('../js/multi-battle.js', import.meta.url), 'utf8');
+const initSource = fs.readFileSync(new URL('../js/init.js', import.meta.url), 'utf8');
+const indexSource = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+assert.match(singleBattleSource, /grantGoldenLandMapFromHuntWin\(activeHuntRequest\?\.difficultyId\)/, 'single battles must use the shared map reward path');
+assert.match(multiBattleSource, /grantGoldenLandMapFromHuntWin\(activeHuntRequest\?\.difficultyId\)/, 'three-way and invasion battles must use the shared map reward path');
+assert.match(initSource, /params\.get\('verify'\)!=='golden-land'/, 'the smartphone verification URL must be available');
+assert.match(indexSource, /js\/state\.js\?v=golden-land-fix-1/, 'the public page must invalidate cached Golden Land scripts');
+
+console.log('Golden Land validation passed (appearance, bonuses, all hunt rewards, verification, reservation, and consumption).');
