@@ -263,9 +263,7 @@ function win() {
     const bonus = goldenLandCoinBonus(activeHuntRequest?.difficultyId);
     save.coins += bonus;
     msg += `<br>💰 黄金郷ボーナス：コイン${bonus}枚獲得！`;
-  } else if (rollGoldenLandMapFromHunt(activeHuntRequest?.difficultyId)) {
-    save.items.golden_land_map = (save.items.golden_land_map || 0) + 1;
-    registerItemDex('golden_land_map');
+  } else if (grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId)) {
     msg += '<br>🗺️ 黄金郷への地図を入手！';
   }
   if (enemy.dropItem) {
