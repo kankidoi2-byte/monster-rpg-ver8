@@ -29,6 +29,72 @@ function setupBattle() {
   updateItemText();
   update();
 }
+function battleImpactType(typeOrTypes) {
+  const type = normalizeMoveTypes(typeOrTypes)[0] || 'normal';
+  return /^[a-z_]+$/.test(type) ? type : 'normal';
+}
+function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal', power=0) {
+  const target = document.getElementById(targetId);
+  const stage = document.querySelector('#battle .battle-arena');
+  if (!target || !stage) return;
+  const impactType = battleImpactType(typeOrTypes);
+  const isStrong = Number(power) >= 50;
+  target.classList.remove('battle-hit-impact');
+  stage.classList.remove('battle-impact-stop');
+  stage.classList.remove('battle-impact-strong');
+  void target.offsetWidth;
+  target.classList.add('battle-hit-impact');
+  stage.classList.add('battle-impact-stop');
+  if (isStrong) stage.classList.add('battle-impact-strong');
+  const burst = document.createElement('strong');
+  burst.className = `battle-damage-burst is-${impactType}${effectiveness > 1 ? ' is-critical' : ''}${isStrong ? ' is-strong' : ''}`;
+  burst.textContent = `${effectiveness > 1 ? 'WEAK! ' : ''}-${damage}`;
+  const targetRect = target.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+  burst.style.left = `${targetRect.left - stageRect.left + targetRect.width * .62}px`;
+  burst.style.top = `${targetRect.top - stageRect.top + targetRect.height * .28}px`;
+  stage.appendChild(burst);
+  const flash = document.createElement('i');
+  flash.className = `battle-element-flash is-${impactType}${isStrong ? ' is-strong' : ''}`;
+  flash.setAttribute('aria-hidden', 'true');
+  stage.appendChild(flash);
+  setTimeout(() => stage.classList.remove('battle-impact-stop', 'battle-impact-strong'), isStrong ? 190 : 130);
+  setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); flash.remove(); }, isStrong ? 820 : 650);
+}
+function hideBattleOutcome() {
+  const battle = document.getElementById('battle');
+  const outcome = document.getElementById('battleOutcome');
+  battle?.classList.remove('is-finished');
+  if (outcome) {
+    outcome.className = 'battle-outcome hidden';
+    document.getElementById('battleOutcomeActions').innerHTML = '';
+  }
+  document.getElementById('next')?.classList.add('hidden');
+}
+function showBattleOutcome({kind='victory', title, exp=0, coins=0, note=''}) {
+  const battle = document.getElementById('battle');
+  const outcome = document.getElementById('battleOutcome');
+  if (!battle || !outcome) return;
+  const victory = kind === 'victory';
+  const labels = {
+    victory:['BATTLE CLEAR','★'], defeat:['BATTLE LOST','×'], retreat:['RETREAT','↩']
+  };
+  const [eyebrow, icon] = labels[kind] || labels.victory;
+  battle.classList.add('is-finished');
+  outcome.className = `battle-outcome is-${kind} is-revealing`;
+  document.getElementById('battleOutcomeIcon').textContent = icon;
+  document.getElementById('battleOutcomeEyebrow').textContent = eyebrow;
+  document.getElementById('battleOutcomeTitle').textContent = title;
+  document.getElementById('battleOutcomeRewards').innerHTML = victory
+    ? `<span><small>EXP</small><strong>+${exp}</strong></span><span><small>COIN</small><strong>+${coins}</strong></span>`
+    : '<span class="battle-outcome-empty">報酬なし</span>';
+  document.getElementById('battleOutcomeNote').textContent = note;
+  const next = document.getElementById('next');
+  next.classList.remove('hidden');
+  next.textContent = victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
+  setTimeout(() => outcome.classList.remove('is-revealing'), 850);
+  if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
+}
 function huntConditionsHtml(request, inBattle=false) {
   const conditions = Array.isArray(request?.conditions) ? request.conditions : [];
   if (!conditions.length) return '<p class="hunt-no-conditions">特殊条件なし</p>';
@@ -66,11 +132,19 @@ function update() {
   const pBar = document.getElementById('pHpBar');
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';
+  document.getElementById('pHpTrail').style.width = pp+'%';
   pBar.className = 'hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');
+  pBar.setAttribute('aria-valuemin', '0');
+  pBar.setAttribute('aria-valuemax', String(pm));
+  pBar.setAttribute('aria-valuenow', String(pHp));
   const eBar = document.getElementById('eHpBar');
   const ep = eHp/em*100;
   eBar.style.width = ep+'%';
+  document.getElementById('eHpTrail').style.width = ep+'%';
   eBar.className = 'hp'+(ep<25?' hp-danger':ep<50?' hp-warn':'');
+  eBar.setAttribute('aria-valuemin', '0');
+  eBar.setAttribute('aria-valuemax', String(em));
+  eBar.setAttribute('aria-valuenow', String(eHp));
   document.getElementById('pHpText').textContent = `${pHp} / ${pm}`;
   document.getElementById('eHpText').textContent = `${eHp} / ${em}`;
   document.getElementById('pExpBar').style.width = xp/nd*100+'%';

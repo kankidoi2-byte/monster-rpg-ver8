@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "npm run check:data && npm run check:images && npm run check:three-way && npm run check:expedition && npm run check:golden-land",
+    "dev": "node scripts/dev-server.mjs",
+    "check": "npm run check:data && npm run check:images && npm run check:ui-contract && npm run check:three-way && npm run check:expedition && npm run check:golden-land",
     "check:data": "node scripts/validate-data.mjs",
     "check:images": "node scripts/check-image-sizes.mjs",
+    "check:ui-contract": "node scripts/test-ui-contract.mjs",
     "check:three-way": "node scripts/test-three-way.mjs",
     "check:expedition": "node scripts/test-expedition.mjs",
     "check:golden-land": "node scripts/test-golden-land.mjs"

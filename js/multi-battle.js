@@ -37,6 +37,7 @@ function beginThreeWayBattle() {
   };
   busy = false;
   pendingMultiBattleContractId = null;
+  hideBattleOutcome();
   document.getElementById('singleEnemyBox').classList.add('hidden');
   document.getElementById('multiEnemyGrid').classList.remove('hidden');
   const targetSelect = document.getElementById('multiTargetSelect');
@@ -112,18 +113,20 @@ function updateMultiBattleView() {
   pHp = Math.max(0,pHp);
   const pm=playerMaxHp(), lv=activeInstance?.level||1, xp=activeInstance?.exp||0, nd=needExp(lv);
   document.getElementById('pInfo').innerHTML=`Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player,activeInstance)}${statusHtml(pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
-  const pp=pHp/pm*100, pBar=document.getElementById('pHpBar'); pBar.style.width=pp+'%'; pBar.className='hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');
+  const pp=pHp/pm*100, pBar=document.getElementById('pHpBar'); pBar.style.width=pp+'%'; pBar.className='hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');document.getElementById('pHpTrail').style.width=pp+'%';
   document.getElementById('pHpText').textContent=`${pHp} / ${pm}`; document.getElementById('pExpBar').style.width=xp/nd*100+'%'; document.getElementById('pExpText').textContent=`EXP ${xp} / ${nd}`;
   document.getElementById('multiEnemyGrid').innerHTML=multiBattle.enemies.map(entry=>{
     const pct=Math.max(0,entry.hp)/entry.maxHp*100;
     const targetable=multiBattle.pendingMoveIndex!==null&&entry.alive;
-    return `<div class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" ${targetable?`onclick="startMultiBattleTurn('${entry.id}')"`:''}>`+
+    return `<div class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" ${targetable?`role="button" tabindex="0" aria-label="${entry.mon.name}を攻撃対象にする" onclick="startMultiBattleTurn('${entry.id}')" onkeydown="handleMultiTargetKey(event,'${entry.id}')"`:''}>`+
       `<h2>${entry.mon.name}</h2><div id="${entry.id}Vis">${vis(entry.mon)}</div>`+
+      `${targetable?'<span class="multi-target-cue">照準　この敵を狙う</span>':''}`+
       `<p class="small">Lv.${entry.level} ${typesHtml(entry.mon.types)} / 素早さ:${monSpd(entry.mon)}${multiStatusHtml(entry)}</p>`+
       `<p class="multi-warning">${entry.alive?'⚠️ 誰を狙うか分からない':'💀 撃破済み'}</p>`+
       `<div class="bar"><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div><p class="small">${Math.max(0,entry.hp)} / ${entry.maxHp}</p></div>`;
   }).join('');
 }
+function handleMultiTargetKey(event,targetId){if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();startMultiBattleTurn(targetId);}
 
 function chooseMultiBattleTarget(moveIndex) {
   if (busy || !multiBattle?.active || multiBattle.finished) return;
@@ -131,7 +134,7 @@ function chooseMultiBattleTarget(moveIndex) {
   if (!living.length) return;
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
-  picker.innerHTML=`<p>攻撃対象を選んでください</p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
   updateMultiBattleView();
 }
@@ -209,6 +212,8 @@ function performMultiAttack(actor,target,move) {
   const damage=Math.max(1,Math.floor((power*atk*r+Math.random()*9)*difficulty*map*(guard?.55:1)*(shield?.5:1)));
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
   else{targetEntry.hp=Math.max(0,targetEntry.hp-damage);targetEntry.guard=false;targetEntry.aquaShield=false;}
+  const impactTargetId=defenderIsPlayer?'pVis':`${targetEntry.id}Vis`;
+  if(typeof playBattleImpact==='function')playBattleImpact(impactTargetId,damage,r,moveTypes(move),power);
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
   if(r>1)msg+='<br>🔥 効果はバツグン！';if(r<1)msg+='<br>💧 効果はいまひとつ……';if(map>1)msg+='<br>🗺️ マップ属性強化！（×1.2）';
   if(effect==='drain'){const heal=adjustedBattleHealing(Math.floor(damage/2));if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+heal);else actor.hp=Math.min(actor.maxHp,actor.hp+heal);msg+=`<br>🌱 HPを${heal}吸収した！`;}
@@ -257,11 +262,14 @@ function winMultiBattle(){
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
   if(!selectedMap?.goldenLand&&grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId))msg+='<br>🗺️ 黄金郷への地図を入手！';
   msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();saveGame();
-  document.getElementById('log').innerHTML=msg;renderMultiContractPanel();document.getElementById('next').classList.remove('hidden');document.getElementById('next').textContent='➡️ 次のバトルへ';renderParty();setTimeout(processNextEvolution,300);
+  document.getElementById('log').innerHTML=msg;
+  showBattleOutcome({kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`});
+  renderMultiContractPanel();renderParty();setTimeout(processNextEvolution,300);
 }
 
 function renderMultiContractPanel(){
   const panel=document.getElementById('multiContractPanel');if(!panel||!multiBattle?.finished)return;
+  const outcomeActions=document.getElementById('battleOutcomeActions');if(outcomeActions&&panel.parentElement!==outcomeActions)outcomeActions.appendChild(panel);
   const candidates=multiBattle.enemies.filter(entry=>entry.defeatedByPlayer&&!multiBattle.contractAttempts[entry.id]);
   panel.classList.remove('hidden');panel.innerHTML=`<h3>🤝 契約候補</h3>${candidates.length?candidates.map(entry=>`<button onclick="selectMultiBattleContractTarget('${entry.id}')">${entry.mon.name}と契約</button>`).join(''):'<p class="small">契約できる相手はいません（プレイヤーが倒した相手のみ）。</p>'}`;
 }
@@ -271,4 +279,4 @@ function useMultiBattleContractScroll(itemId){
   save.items[itemId]--;const rate=Math.min(.95,(entry.mon.catchRate??.25)*(it.catchMultiplier||1)),ok=Math.random()<rate;multiBattle.contractAttempts[entry.id]=true;pendingMultiBattleContractId=null;
   if(ok){addInstance(entry.mon.id);alert(`${entry.mon.name}と契約した！`);appendMultiLog(`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`);}else{alert('契約できなかった……');appendMultiLog(`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);}saveGame();updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();
 }
-function runAwayFromMultiBattle(){multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;document.getElementById('next').classList.remove('hidden');document.getElementById('next').textContent='➡️ 次のバトルへ';busy=true;}
+function runAwayFromMultiBattle(){multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;}

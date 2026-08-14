@@ -49,7 +49,7 @@ function showItemDexDetail(itemId){
 }
 function showDexDetail(id) {
   const m = by(id); if (!m) return;
-  document.getElementById('dexDetail').innerHTML = `<div class="dex-detail">
+  document.getElementById('dexDetail').innerHTML = `<div class="dex-detail ui-dex-detail">
     ${vis(m)}<h2>${m.name}</h2>
     <p>No.${m.no} / <span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p>
     <p style="color:#8892b0">${m.desc}</p><h3>技一覧</h3>
@@ -63,9 +63,7 @@ function renderDex() {
   document.getElementById('dexDetail').innerHTML = '';
   document.getElementById('dexList').innerHTML =
     [...M].sort((a,b)=>(a.no||999)-(b.no||999)).map(m => `
-      <div class="card" onclick="showDexDetail('${m.id}')" style="cursor:pointer">
-        ${vis(m, 'loading="lazy" decoding="async"')}<h3>No.${m.no} ${m.name}</h3>
-        <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p>
-        <p style="font-size:12px;color:#8892b0">${m.desc}</p>
-        <p class="small">タップで技を確認</p></div>`).join('');
+      <button class="monster-dex-card" onclick="showDexDetail('${m.id}')">
+        <span class="monster-dex-no">No.${m.no}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
+        <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
 }

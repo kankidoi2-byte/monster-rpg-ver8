@@ -6,6 +6,7 @@
 <title>モンスターバトル Ver8.0 Claude</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/style.css?v=alchemy-prototype-2">
+<link rel="stylesheet" href="css/ui-redesign.css?v=ui-foundation-1">
 </head>
 <body class="title-mode">
 <div id="bossCautionOverlay" aria-hidden="true">
@@ -39,45 +40,67 @@
 </div>
 
 
-<div class="menu">
-  <button onclick="show('home')">🏠ホーム</button>
-  <button onclick="show('party')">📦手持ち</button>
-  <button onclick="show('partySet')">👥パーティー</button>
-  <button onclick="showFusion()">⚗️合成</button>
-  <button onclick="showAlchemy()" aria-label="錬成を開く">⚗ 錬成</button>
-  <button id="expeditionNav" onclick="showExpedition()">🧭遠征</button>
-  <button onclick="showShop()">🛒ショップ</button>
-  <button onclick="showItemGacha()">🎰アイテムガチャ</button>
-  <button onclick="show('dex')">📖図鑑</button>
-  <button onclick="show('itemDex')">🎒アイテム図鑑</button>
-  <button onclick="showTypeChart()">🌐属性相性</button>
-  <button onclick="resetSave()" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">🗑️リセット</button>
-</div>
+<header class="app-topbar">
+  <div class="contractor-rank"><span>契約者ランク</span><strong>Rank 1</strong></div>
+  <div class="app-brand">MONSTER BATTLE</div>
+  <div class="app-resource" aria-label="所持コイン"><span>●</span><strong id="appCoinView">0</strong></div>
+</header>
 
 <!-- ホーム -->
 <section id="home" class="screen active">
-  <div class="panel">
-    <h1>⚔️ モンスターバトル Ver8.0 Claude</h1>
-    <p style="color:#8892b0;font-size:14px">Ver8.0 Claude修正版。<br>モンスターと契約し、育て、図鑑を完成させよう！<br><span style="color:#67e8f9">※レア/ボスマップ抽選の取りこぼしバグを修正</span></p>
-    <br>
-    <button onclick="show('partySet')" style="font-size:16px;padding:14px 32px">🌟 パーティーを組む</button>
-    <button onclick="showAlchemy()" style="font-size:16px;padding:14px 32px" aria-label="錬成を開く">⚗ 錬成を始める</button>
-    <br><br>
-    <div style="text-align:left;font-size:13px;color:#8892b0;background:#0d1428;border-radius:12px;padding:12px">
-      <b style="color:#c7d2fe">遊び方</b><br>
-      ① パーティーを組んでバトルへ<br>
-      ② マップと敵を3択から選んで戦う<br>
-      ③ 勝利で経験値とコインを獲得<br>
-      ④ レベルアップで進化！分岐進化もあり<br>
-      ⑤ モンスターと契約して手持ちを増やそう<br>
-      ⑥ 合成所でアイテム進化も可能
-    </div>
+  <div class="home-welcome">
+    <p class="ui-eyebrow">新しい冒険が待っている</p>
+    <h1>冒険の拠点</h1>
   </div>
+  <button class="home-adventure" onclick="openBattleHub()">
+    <img src="images/maps/grassland.webp" alt="草原のマップ">
+    <span class="home-adventure-shade"></span>
+    <span class="home-adventure-copy">
+      <small>おすすめ討伐</small>
+      <strong>次の冒険へ</strong>
+      <span>3つの討伐依頼から相手を選ぶ</span>
+    </span>
+    <span class="home-adventure-action">冒険へ ›</span>
+  </button>
+  <section class="home-block" aria-labelledby="homePartyTitle">
+    <div class="ui-section-heading">
+      <div><span class="ui-eyebrow">CURRENT PARTY</span><h2 id="homePartyTitle">現在のパーティー</h2></div>
+      <button class="ui-text-button" onclick="show('partySet')">編成</button>
+    </div>
+    <div id="homePartyPreview" class="home-party-preview"></div>
+  </section>
+  <section id="homeGrowthPreview" class="home-next-card"></section>
+  <section id="homeExpeditionPreview" class="home-expedition-card"></section>
+</section>
+
+<!-- 育成ハブ -->
+<section id="growthHub" class="screen ui-hub-screen">
+  <div class="ui-page-heading"><span class="ui-eyebrow">GROWTH</span><h1>育成</h1><p>モンスターを強くする方法を選んでください。</p></div>
+  <div class="ui-hub-grid">
+    <button onclick="show('party')"><span>♙</span><strong>モンスター育成</strong><small>経験値・技・個体詳細</small></button>
+    <button onclick="showFusion()"><span>✦</span><strong>合成・特殊進化</strong><small>条件を満たして進化</small></button>
+    <button onclick="showAlchemy()" aria-label="錬成を開く"><span>⚗</span><strong>錬核錬成</strong><small>素材から新たな個体を生む</small></button>
+    <button onclick="show('partySet')"><span>♜</span><strong>パーティー編成</strong><small>最大3体を編成</small></button>
+  </div>
+</section>
+
+<!-- その他メニュー -->
+<section id="moreMenu" class="screen ui-hub-screen">
+  <div class="ui-page-heading"><span class="ui-eyebrow">MENU</span><h1>メニュー</h1><p>冒険を支える機能と記録を確認できます。</p></div>
+  <div class="ui-menu-list">
+    <button id="expeditionNav" onclick="showExpedition()"><span>🧭</span><div><strong>遠征</strong><small>控えのモンスターを派遣</small></div><b>›</b></button>
+    <button onclick="showShop()"><span>🛒</span><div><strong>ショップ</strong><small>アイテムを購入</small></div><b>›</b></button>
+    <button onclick="showItemGacha()"><span>🎰</span><div><strong>アイテムガチャ</strong><small>コインで報酬を抽選</small></div><b>›</b></button>
+    <button onclick="show('dex')"><span>📖</span><div><strong>モンスター図鑑</strong><small>出会ったモンスターの記録</small></div><b>›</b></button>
+    <button onclick="show('itemDex')"><span>🎒</span><div><strong>アイテム図鑑</strong><small>入手したアイテムの記録</small></div><b>›</b></button>
+    <button onclick="showTypeChart()"><span>🌐</span><div><strong>属性相性</strong><small>有利・不利を確認</small></div><b>›</b></button>
+  </div>
+  <button class="ui-danger-button" onclick="resetSave()">セーブデータをリセット</button>
 </section>
 
 <!-- 遠征 -->
 <section id="expedition" class="screen">
-  <h1>🧭 遠征</h1>
+  <div class="ui-page-heading"><span class="ui-eyebrow">EXPEDITION</span><h1>遠征</h1><p>待機中のモンスターを派遣し、バトル勝利で探索を進めます。</p></div>
   <div id="expeditionContent"></div>
 </section>
 
@@ -93,21 +116,18 @@
 
 <!-- パーティー設定 -->
 <section id="partySet" class="screen">
-  <h1>👥 パーティー設定</h1>
-  <p class="small">手持ちから最大3体まで選べます。同じモンスターでも別個体なら選択できます。</p>
-  <div class="card" style="max-width:780px;margin:12px auto">
+  <div class="ui-page-heading"><span class="ui-eyebrow">PARTY EDIT</span><h1>パーティー編成</h1><p>最大3体。画像を見ながら冒険へ連れていく仲間を選べます。</p></div>
+  <div class="party-current-card">
     <h2>現在のパーティー</h2>
     <div id="currentPartyView"></div>
-    <br>
-    <button onclick="startBattleFromParty()" style="font-size:16px;padding:12px 28px">このパーティーでバトルへ</button>
+    <button onclick="startBattleFromParty()">このパーティーでバトルへ ›</button>
   </div>
   <div id="partySelectList" class="grid"></div>
 </section>
 
 <!-- 敵選択 -->
 <section id="battleChoices" class="screen">
-  <h1>⚔️ 戦う敵を選べ</h1>
-  <p class="small">マップと敵が3つランダムに表示されます。</p>
+  <div class="ui-page-heading hunt-choice-heading"><span class="ui-eyebrow">SELECT QUEST</span><h1>討伐依頼を選ぶ</h1><p>画像と報酬を見て、次の冒険を決めよう。</p></div>
   <div id="battleChoiceList" class="grid"></div>
 </section>
 
@@ -129,44 +149,57 @@
     <button onclick="show('battleItemSelect')" style="background:linear-gradient(135deg,#374151,#4b5563)">いいえ</button>
   </div>
 </section>
-<section id="battle" class="screen">
+<section id="battle" class="screen battle-screen">
   <div id="battleMapBanner"></div>
-  <div class="arena">
-    <div class="box">
-      <h2 id="pName"></h2>
+  <div class="arena battle-arena">
+    <div class="box battle-combatant battle-player" id="singlePlayerBox">
+      <div class="battle-nameplate"><span class="battle-side-label">YOUR MONSTER</span><h2 id="pName"></h2></div>
       <div id="pVis"></div>
-      <p id="pInfo" class="small"></p>
-      <div class="bar"><div id="pHpBar" class="hp"></div></div>
-      <p id="pHpText" class="small"></p>
-      <div class="bar"><div id="pExpBar" class="exp"></div></div>
-      <p id="pExpText" class="small"></p>
+      <div class="battle-vitals">
+        <div class="battle-hp-line"><strong>HP</strong><span id="pHpText"></span></div>
+        <div class="bar"><div id="pHpTrail" class="hp-trail" aria-hidden="true"></div><div id="pHpBar" class="hp" role="progressbar" aria-label="味方のHP"></div></div>
+        <details class="battle-detail"><summary>状態・成長</summary><p id="pInfo" class="small"></p><div class="bar battle-exp"><div id="pExpBar" class="exp"></div></div><p id="pExpText" class="small"></p></details>
+      </div>
     </div>
-    <div class="box">
-      <h2 id="eName"></h2>
+    <div class="battle-versus" aria-hidden="true">VS</div>
+    <div class="box battle-combatant battle-enemy" id="singleEnemyBox">
+      <div class="battle-nameplate"><span class="battle-side-label">ENEMY</span><h2 id="eName"></h2></div>
       <div id="eVis"></div>
-      <p id="eInfo" class="small"></p>
-      <div class="bar"><div id="eHpBar" class="hp"></div></div>
-      <p id="eHpText" class="small"></p>
+      <div class="battle-vitals">
+        <div class="battle-hp-line"><strong>HP</strong><span id="eHpText"></span></div>
+        <div class="bar"><div id="eHpTrail" class="hp-trail" aria-hidden="true"></div><div id="eHpBar" class="hp" role="progressbar" aria-label="敵のHP"></div></div>
+        <details class="battle-detail"><summary>状態を見る</summary><p id="eInfo" class="small"></p></details>
+      </div>
     </div>
   </div>
-  <div class="cmd">
-    <h2>⚔️ コマンド</h2>
+  <details class="battle-log-panel" open><summary>バトルログ</summary><div id="log" class="log" aria-live="polite" aria-atomic="true"></div></details>
+  <section id="battleOutcome" class="battle-outcome hidden" aria-live="assertive" aria-labelledby="battleOutcomeTitle">
+    <div id="battleOutcomeIcon" class="battle-outcome-icon" aria-hidden="true">★</div>
+    <div class="battle-outcome-copy">
+      <span id="battleOutcomeEyebrow">BATTLE CLEAR</span>
+      <h2 id="battleOutcomeTitle">討伐成功！</h2>
+      <div id="battleOutcomeRewards" class="battle-outcome-rewards"></div>
+      <p id="battleOutcomeNote"></p>
+    </div>
+    <div id="battleOutcomeActions" class="battle-outcome-actions"></div>
+    <button id="next" class="hidden battle-next-button" onclick="afterBattleNext()">次の冒険へ ›</button>
+  </section>
+  <div class="cmd battle-command-dock">
+    <div class="battle-command-title"><span>YOUR TURN</span><h2>技を選ぶ</h2></div>
     <div id="commands"></div>
-    <hr style="border-color:#2a3060;margin:8px 0">
-    <button onclick="askUseContractScroll()" style="background:linear-gradient(135deg,#065f46,#047857)">🤝 契約する</button>
-    <button onclick="openBattleItemSelect()">🎒 アイテム</button>
-    <button onclick="runAway()" style="background:linear-gradient(135deg,#374151,#4b5563)">🏃 逃げる</button>
+    <div class="battle-subcommands">
+      <button onclick="askUseContractScroll()">🤝 契約</button>
+      <button onclick="openBattleItemSelect()">🎒 道具</button>
+      <button onclick="runAway()">🏃 逃走</button>
+    </div>
     <p id="itemText" class="small"></p>
   </div>
-  <div id="log" class="log"></div>
-  <button id="next" class="hidden" onclick="afterBattleNext()" style="margin:10px;font-size:16px;padding:12px 28px">➡️ 次の敵へ</button>
 </section>
 
 <!-- 合成所 -->
 <section id="fusion" class="screen">
-  <div class="panel">
-    <h1>⚗️ 合成所</h1>
-    <p class="small">モンスターとアイテムを合成して特殊進化させます。</p>
+  <div class="panel ui-feature-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">FUSION</span><h1>合成所</h1><p>モンスターとアイテムを組み合わせて特殊進化させます。</p></div>
     <p id="fusionItemText" style="color:#a78bfa"></p>
     <div id="fusionList" class="grid"></div>
     <div id="fusionLog" class="log"></div>
@@ -175,9 +208,8 @@
 
 <!-- 錬成 -->
 <section id="alchemy" class="screen">
-  <div class="panel alchemy-panel">
-    <h1>⚗ 錬核錬成</h1>
-    <p class="small">モンスター1体、4種類の素材、コインを錬成核へ投入します。</p>
+  <div class="panel alchemy-panel ui-feature-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">ALCHEMY</span><h1>錬核錬成</h1><p>モンスター1体、4種類の素材、コインから新たな個体を生み出します。</p></div>
     <button onclick="show('home')" class="secondary-button alchemy-home-button">← ホームへ戻る</button>
     <div id="alchemyForm"></div>
   </div>
@@ -198,16 +230,15 @@
 
 <!-- ショップ -->
 <section id="shop" class="screen">
-  <h1>🛒 アイテムショップ</h1>
-  <p>所持コイン：<span id="coinView"></span>枚</p>
+  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1><p>冒険と育成に必要なアイテムを購入できます。</p></div>
+  <p class="ui-coin-balance">所持コイン <strong id="coinView"></strong>枚</p>
   <div id="shopList" class="grid"></div>
 </section>
 
 <!-- アイテムガチャ -->
 <section id="itemGacha" class="screen">
-  <div class="panel">
-    <h1>🎰 アイテムガチャ</h1>
-    <p class="small">コイン100枚で1回ガチャを回せます。回復薬、契約書、データ系経験値アイテムなどが手に入ります。</p>
+  <div class="panel ui-feature-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">ITEM DRAW</span><h1>アイテムガチャ</h1><p>コイン100枚で、回復薬や契約書、育成アイテムを獲得できます。</p></div>
     <p>所持コイン：<span id="gachaCoinView"></span>枚</p>
     <button onclick="rollItemGacha()" style="font-size:16px;padding:14px 32px">🎰 100コインで回す</button>
     <div id="gachaResult" class="log"></div>
@@ -217,23 +248,21 @@
 
 <!-- 手持ち -->
 <section id="party" class="screen">
-  <h1>📦 手持ち</h1>
+  <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1><p>育てる仲間を選び、技や個体情報を確認できます。</p></div>
   <div id="partyList" class="grid"></div>
 
 </section>
 
 <!-- 技変更 -->
 <section id="skillEdit" class="screen">
-  <div class="panel">
-    <h1>🃏 技カード変更</h1>
-    <p class="small">所持している技カードを、モンスターごとのコスト上限内で最大3つまで装備できます。同じ技カードは複数枚所持できます。</p>
+  <div class="panel ui-feature-panel skill-edit-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">SKILL DECK</span><h1>技カード変更</h1><p>コスト上限内で最大3枚。戦い方を短く組み替えられます。</p></div>
     <div id="skillEditTarget"></div>
     <div id="skillEditCurrent" class="grid"></div>
     <h2>所持技カード</h2>
-    <div class="card" style="text-align:left;max-width:760px;margin:10px auto">
-      <b style="color:#c7d2fe">検索・絞り込み</b><br>
-      <input id="skillSearchInput" type="search" placeholder="技名で検索" oninput="renderSkillEdit()" style="width:100%;padding:10px;border-radius:10px;border:1px solid #3b4a78;background:#0d1428;color:#e8eaf6;margin:8px 0">
-      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <details class="skill-filter-panel"><summary>検索・絞り込み</summary>
+      <input id="skillSearchInput" type="search" placeholder="技名で検索" oninput="renderSkillEdit()">
+      <div class="skill-filter-controls">
         <label class="small">属性
           <select id="skillTypeFilter" onchange="renderSkillEdit()" style="padding:8px;border-radius:10px;border:1px solid #3b4a78;background:#0d1428;color:#e8eaf6">
             <option value="all">全て</option>
@@ -263,8 +292,7 @@
           <input id="skillEquipableOnly" type="checkbox" onchange="renderSkillEdit()">装備可能のみ
         </label>
         <button onclick="resetSkillFilters()" style="background:linear-gradient(135deg,#374151,#4b5563)">条件リセット</button>
-      </div>
-    </div>
+      </div></details>
     <div id="skillCardList" class="grid"></div>
     <button onclick="show('party')" style="margin-top:12px;background:linear-gradient(135deg,#374151,#4b5563)">← 手持ちに戻る</button>
   </div>
@@ -279,18 +307,24 @@
 
 <!-- 図鑑 -->
 <section id="dex" class="screen">
-  <h1>📖 図鑑</h1>
-  <p class="small">カードをタップすると技の詳細を確認できます</p>
+  <div class="ui-page-heading"><span class="ui-eyebrow">MONSTER DEX</span><h1>モンスター図鑑</h1><p>カードをタップすると技と詳しい情報を確認できます。</p></div>
   <div id="dexDetail"></div>
   <div id="dexList" class="grid"></div>
 </section>
 
 <section id="itemDex" class="screen">
-  <h1>🎒 アイテム図鑑</h1>
-  <p class="small">入手したアイテムは、使い切っても図鑑に記録されます。</p>
+  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM DEX</span><h1>アイテム図鑑</h1><p>入手したアイテムは、使い切った後も記録されます。</p></div>
   <div id="itemDexDetail"></div>
   <div id="itemDexList" class="item-dex-grid"></div>
 </section>
+
+<nav class="app-bottom-nav" aria-label="主要メニュー">
+  <button type="button" data-nav="home" onclick="show('home')"><span>⌂</span><small>ホーム</small></button>
+  <button type="button" data-nav="monsters" onclick="show('party')"><span>♙</span><small>モンスター</small></button>
+  <button type="button" data-nav="battle" class="app-battle-nav" onclick="openBattleHub()"><span>⚔</span><small>バトル</small></button>
+  <button type="button" data-nav="growth" onclick="show('growthHub')"><span>✦</span><small>育成</small></button>
+  <button type="button" data-nav="more" onclick="show('moreMenu')"><span>≡</span><small>メニュー</small></button>
+</nav>
 
 <script src="js/data.js?v=golden-land-release-1"></script>
 <script src="js/bootstrap-guard.js?v=golden-land-release-1"></script>

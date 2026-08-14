@@ -55,6 +55,8 @@ function tryFusion(idx) {
   renderDex();
   if (typeof renderPartySetup === 'function') renderPartySetup();
   log.innerHTML = `✨ 合成成功！${from.name}は${to.name}に進化した！`;
+  if(typeof replayUiMotion==='function')replayUiMotion(log,'ui-reward-pop',850);
+  if(typeof showUiNotice==='function')showUiNotice(`${to.name}への合成成功！`);
 }
 function grantPartyExp(baseExp) {
   const targets = getPartyInstances();

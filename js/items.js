@@ -6,21 +6,20 @@ function renderShop() {
   const section = document.getElementById('shop');
   if (!section) return;
   section.innerHTML = `
-    <h1>🛒 アイテムショップ</h1>
-    <p>所持コイン：<span id="coinView">${save.coins||0}</span>枚</p>
+    <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1><p>冒険と育成に必要なアイテムを購入できます。</p></div>
+    <p class="ui-coin-balance">所持コイン <strong id="coinView">${save.coins||0}</strong>枚</p>
     <div id="shopList" class="grid">
       ${SHOP_ITEMS.filter(it => it.shop !== false).map(it => `
-        <div class="card">
+        <article class="shop-item-card">
           <h2>${itemInlineVisual(it)} ${it.name}</h2>
-          <p style="font-size:13px;color:#8892b0">${it.desc}</p>
-          <p style="color:#ffd740">💰 コイン${it.price}枚</p>
+          <p>${it.desc}</p>
+          <strong>💰 ${it.price}枚</strong>
           <p class="small">所持数：${save.items[it.id]||0}個</p>
           <button onclick="buyItem('${it.id}')">購入</button>
-        </div>`).join('')}
-      <div class="card"><h2>📊 バトル履歴</h2>
-        <p style="color:#ffd740">通算勝利数：${save.history.wins||0}勝</p>
+        </article>`).join('')}
+      <details class="shop-history"><summary>📊 バトル履歴・通算${save.history.wins||0}勝</summary>
         <div>${(save.history.logs||[]).slice(-5).reverse().map(l=>`<div class="history-entry">${l}</div>`).join('') || '<p class="small">まだ履歴がありません。</p>'}</div>
-      </div>
+      </details>
     </div>`;
 }
 function buyItem(id){
@@ -132,7 +131,8 @@ function rollItemGacha(){
   save.items[itemId] = (save.items[itemId]||0) + 1;
   saveGame();
   const result = document.getElementById('gachaResult');
-  if(result) result.innerHTML = `🎰 ガチャを回した！<br>✨ ${itemInlineVisual(it)} ${it.name}を入手！`;
+  if(result){result.innerHTML = `🎰 ガチャを回した！<br>✨ ${itemInlineVisual(it)} ${it.name}を入手！`;if(typeof replayUiMotion==='function')replayUiMotion(result,'ui-reward-pop',850);}
+  if(typeof showUiNotice==='function')showUiNotice(`${it.name}を入手！`);
   updateItems();
   renderItemGacha();
 }
