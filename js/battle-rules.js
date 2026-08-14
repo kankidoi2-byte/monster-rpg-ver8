@@ -318,10 +318,14 @@ function doAttack(attacker, defender, mv, isPlayer) {
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
   }
   logEl.innerHTML = msg;
-  // ヒットアニメ
-  const el = document.getElementById(isPlayer ? 'eVis' : 'pVis');
-  el.classList.remove('hit-anim'); void el.offsetWidth; el.classList.add('hit-anim');
-  setTimeout(() => el.classList.remove('hit-anim'), 300);
+  // ヒットアニメとダメージ表示
+  const targetId = isPlayer ? 'eVis' : 'pVis';
+  if (typeof playBattleImpact === 'function') playBattleImpact(targetId, dmg, r);
+  else {
+    const el = document.getElementById(targetId);
+    el.classList.remove('hit-anim'); void el.offsetWidth; el.classList.add('hit-anim');
+    setTimeout(() => el.classList.remove('hit-anim'), 300);
+  }
   if (partyBattle[activePartyIdx] && !isPlayer) partyBattle[activePartyIdx].hp = Math.max(0, pHp);
   update();
 }

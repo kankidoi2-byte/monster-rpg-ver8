@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>モンスターバトル UI再設計プロトタイプ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="prototype-shell" aria-label="モンスターバトル UIプロトタイプ">
+    <section id="prototype-home" class="prototype-screen is-active" aria-labelledby="home-title">
+      <header class="top-status">
+        <div>
+          <span class="eyebrow">契約者ランク</span>
+          <strong>Rank 1</strong>
+        </div>
+        <div class="resource-pill" aria-label="所持コイン">● <strong>1,280</strong></div>
+      </header>
+
+      <div class="home-heading">
+        <div>
+          <p class="eyebrow">新しい冒険が待っている</p>
+          <h1 id="home-title">冒険の拠点</h1>
+        </div>
+        <button class="round-button" type="button" aria-label="お知らせ">!</button>
+      </div>
+
+      <button class="adventure-banner" type="button" data-open="hunt">
+        <img src="../../images/maps/grassland.webp" alt="草原のマップ">
+        <span class="banner-shade"></span>
+        <span class="banner-copy">
+          <span class="banner-kicker">おすすめ討伐</span>
+          <strong>風渡る草原へ</strong>
+          <small>次の報酬　回復薬 ×1・コイン ×24</small>
+        </span>
+        <span class="banner-action">冒険へ <b>›</b></span>
+      </button>
+
+      <section class="home-section" aria-labelledby="party-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">CURRENT PARTY</span>
+            <h2 id="party-title">現在のパーティー</h2>
+          </div>
+          <button type="button" class="text-button">編成</button>
+        </div>
+        <div class="party-strip">
+          <article class="party-member is-leader">
+            <span class="member-role">LEADER</span>
+            <img src="../../images/monsters/elna_beginner.webp" alt="初級剣士エルナ">
+            <strong>エルナ</strong>
+            <small>Lv.1</small>
+          </article>
+          <article class="party-member">
+            <img src="../../images/monsters/freigal.webp" alt="フレイガル">
+            <strong>フレイガル</strong>
+            <small>Lv.1</small>
+          </article>
+          <article class="party-member">
+            <img src="../../images/monsters/aquaron.webp" alt="アクアロン">
+            <strong>アクアロン</strong>
+            <small>Lv.1</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="next-goal" aria-labelledby="goal-title">
+        <div class="goal-icon">★</div>
+        <div class="goal-copy">
+          <span class="eyebrow">NEXT GROWTH</span>
+          <h2 id="goal-title">エルナのレベルアップまで</h2>
+          <div class="progress-track"><span style="width:72%"></span></div>
+          <small>あと17 EXP</small>
+        </div>
+      </section>
+
+      <section class="expedition-note">
+        <div><span class="eyebrow">EXPEDITION</span><strong>遠征枠が空いています</strong></div>
+        <button type="button" class="compact-button">派遣する</button>
+      </section>
+    </section>
+
+    <section id="prototype-hunt" class="prototype-screen" aria-labelledby="hunt-title">
+      <header class="page-header">
+        <button class="round-button" type="button" data-open="home" aria-label="ホームへ戻る">‹</button>
+        <div><span class="eyebrow">HUNT REQUEST</span><h1 id="hunt-title">討伐依頼を選ぶ</h1></div>
+        <button class="round-button" type="button" aria-label="依頼の説明">?</button>
+      </header>
+      <p class="page-lead">気になる依頼を選ぶだけ。詳しい条件は、カードを開いてから確認できます。</p>
+
+      <div class="hunt-list">
+        <article class="hunt-card is-recommended">
+          <div class="hunt-art">
+            <img src="../../images/maps/grassland.webp" alt="風渡る草原">
+            <span class="difficulty normal">NORMAL</span>
+            <span class="recommended">おすすめ</span>
+          </div>
+          <div class="hunt-body">
+            <img class="hunt-monster" src="../../images/monsters/grassbeat.webp" alt="グラスビート">
+            <div class="hunt-copy">
+              <span class="eyebrow">風渡る草原</span>
+              <h2>グラスビート</h2>
+              <p><span class="type grass">森</span>　敵Lv.1</p>
+              <div class="reward-row"><span>報酬</span><strong>EXP 42・コイン 16</strong></div>
+            </div>
+          </div>
+          <button type="button" class="primary-button" data-open="battle">この依頼へ</button>
+          <details><summary>特殊条件と詳しい情報</summary><p>マップ属性強化：森属性の技威力が1.2倍になります。</p></details>
+        </article>
+
+        <article class="hunt-card">
+          <div class="hunt-art">
+            <img src="../../images/maps/lake.webp" alt="水鏡の湖">
+            <span class="difficulty easy">EASY</span>
+          </div>
+          <div class="hunt-body">
+            <img class="hunt-monster" src="../../images/monsters/aquaron.webp" alt="アクアロン">
+            <div class="hunt-copy">
+              <span class="eyebrow">水鏡の湖</span>
+              <h2>アクアロン</h2>
+              <p><span class="type water">水・竜</span>　敵Lv.1</p>
+              <div class="reward-row"><span>報酬</span><strong>EXP 28・コイン 10</strong></div>
+            </div>
+          </div>
+          <button type="button" class="secondary-button" data-open="battle">この依頼へ</button>
+        </article>
+
+        <article class="hunt-card">
+          <div class="hunt-art">
+            <img src="../../images/maps/volcano.webp" alt="炎熱火山">
+            <span class="difficulty hard">HARD</span>
+          </div>
+          <div class="hunt-body">
+            <img class="hunt-monster" src="../../images/monsters/freiwolf.webp" alt="フライヴォルフ">
+            <div class="hunt-copy">
+              <span class="eyebrow">炎熱火山</span>
+              <h2>フライヴォルフ</h2>
+              <p><span class="type fire">火</span>　敵Lv.2</p>
+              <div class="reward-row"><span>報酬</span><strong>EXP 76・コイン 31</strong></div>
+            </div>
+          </div>
+          <button type="button" class="secondary-button" data-open="battle">この依頼へ</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="prototype-battle" class="prototype-screen battle-screen" aria-labelledby="enemy-name">
+      <div class="battle-stage">
+        <img class="battle-bg" src="../../images/maps/grassland.webp" alt="">
+        <div class="battle-skywash"></div>
+        <header class="battle-header">
+          <button class="battle-icon-button" type="button" data-open="hunt" aria-label="依頼選択へ戻る">‹</button>
+          <div><span>風渡る草原</span><strong>TURN 1</strong></div>
+          <button class="battle-icon-button" type="button" aria-label="戦闘メニュー">•••</button>
+        </header>
+
+        <div class="enemy-status">
+          <div class="name-line"><div><span class="type grass">森</span><h1 id="enemy-name">グラスビート</h1></div><strong>Lv.1</strong></div>
+          <div class="battle-hp enemy-hp"><span style="width:100%"></span></div>
+          <small><b id="enemy-hp-text">98</b> / 98</small>
+        </div>
+        <div class="enemy-visual" id="enemy-visual">
+          <img src="../../images/monsters/grassbeat.webp" alt="グラスビート">
+          <strong id="damage-number" class="damage-number" aria-live="polite"></strong>
+        </div>
+
+        <div class="player-visual">
+          <img src="../../images/monsters/elna_beginner.webp" alt="初級剣士エルナ">
+        </div>
+        <div class="player-status">
+          <div><strong>初級剣士エルナ</strong><span>Lv.1　無</span></div>
+          <div class="battle-hp"><span style="width:100%"></span></div>
+          <small>115 / 115</small>
+        </div>
+      </div>
+
+      <div class="battle-command" aria-label="戦闘コマンド">
+        <div class="battle-prompt"><span>技を選んでください</span><button type="button" aria-label="詳細を表示">詳細</button></div>
+        <div class="skill-grid">
+          <button type="button" class="skill-action normal" data-attack="28"><span>無</span><strong>斬りつけ</strong><small>威力 28</small></button>
+          <button type="button" class="skill-action support"><span>補助</span><strong>見習いの構え</strong><small>攻撃力アップ</small></button>
+        </div>
+        <div class="sub-command">
+          <button type="button"><span>◇</span>契約</button>
+          <button type="button"><span>▣</span>アイテム</button>
+          <button type="button" data-open="hunt"><span>↩</span>逃げる</button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" aria-label="主要メニュー">
+      <button type="button" class="is-active" data-open="home"><span>⌂</span><small>ホーム</small></button>
+      <button type="button" data-placeholder="モンスター"><span>♙</span><small>モンスター</small></button>
+      <button type="button" class="battle-nav" data-open="hunt"><span>⚔</span><small>バトル</small></button>
+      <button type="button" data-placeholder="育成"><span>✦</span><small>育成</small></button>
+      <button type="button" data-placeholder="メニュー"><span>≡</span><small>メニュー</small></button>
+    </nav>
+    <div id="prototype-toast" class="prototype-toast" aria-live="polite"></div>
+  </main>
+  <script src="prototype.js"></script>
+</body>
+</html>

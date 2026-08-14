@@ -209,6 +209,8 @@ function performMultiAttack(actor,target,move) {
   const damage=Math.max(1,Math.floor((power*atk*r+Math.random()*9)*difficulty*map*(guard?.55:1)*(shield?.5:1)));
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
   else{targetEntry.hp=Math.max(0,targetEntry.hp-damage);targetEntry.guard=false;targetEntry.aquaShield=false;}
+  const impactTargetId=defenderIsPlayer?'pVis':`${targetEntry.id}Vis`;
+  if(typeof playBattleImpact==='function')playBattleImpact(impactTargetId,damage,r);
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
   if(r>1)msg+='<br>🔥 効果はバツグン！';if(r<1)msg+='<br>💧 効果はいまひとつ……';if(map>1)msg+='<br>🗺️ マップ属性強化！（×1.2）';
   if(effect==='drain'){const heal=adjustedBattleHealing(Math.floor(damage/2));if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+heal);else actor.hp=Math.min(actor.maxHp,actor.hp+heal);msg+=`<br>🌱 HPを${heal}吸収した！`;}

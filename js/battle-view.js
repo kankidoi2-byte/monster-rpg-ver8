@@ -29,6 +29,23 @@ function setupBattle() {
   updateItemText();
   update();
 }
+function playBattleImpact(targetId, damage, effectiveness=1) {
+  const target = document.getElementById(targetId);
+  const stage = document.querySelector('#battle .battle-arena');
+  if (!target || !stage) return;
+  target.classList.remove('battle-hit-impact');
+  void target.offsetWidth;
+  target.classList.add('battle-hit-impact');
+  const burst = document.createElement('strong');
+  burst.className = `battle-damage-burst${effectiveness > 1 ? ' is-critical' : ''}`;
+  burst.textContent = `${effectiveness > 1 ? 'WEAK! ' : ''}-${damage}`;
+  const targetRect = target.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+  burst.style.left = `${targetRect.left - stageRect.left + targetRect.width * .62}px`;
+  burst.style.top = `${targetRect.top - stageRect.top + targetRect.height * .28}px`;
+  stage.appendChild(burst);
+  setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); }, 650);
+}
 function huntConditionsHtml(request, inBattle=false) {
   const conditions = Array.isArray(request?.conditions) ? request.conditions : [];
   if (!conditions.length) return '<p class="hunt-no-conditions">特殊条件なし</p>';
@@ -67,10 +84,16 @@ function update() {
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';
   pBar.className = 'hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');
+  pBar.setAttribute('aria-valuemin', '0');
+  pBar.setAttribute('aria-valuemax', String(pm));
+  pBar.setAttribute('aria-valuenow', String(pHp));
   const eBar = document.getElementById('eHpBar');
   const ep = eHp/em*100;
   eBar.style.width = ep+'%';
   eBar.className = 'hp'+(ep<25?' hp-danger':ep<50?' hp-warn':'');
+  eBar.setAttribute('aria-valuemin', '0');
+  eBar.setAttribute('aria-valuemax', String(em));
+  eBar.setAttribute('aria-valuenow', String(eHp));
   document.getElementById('pHpText').textContent = `${pHp} / ${pm}`;
   document.getElementById('eHpText').textContent = `${eHp} / ${em}`;
   document.getElementById('pExpBar').style.width = xp/nd*100+'%';

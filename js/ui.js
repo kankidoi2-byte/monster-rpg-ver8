@@ -11,7 +11,12 @@ function vis(m, imageAttributes = '') {
 function show(id) {
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const target = document.getElementById(id);
+  if (!target) return;
+  target.classList.add('active');
+  updateAppNavigation(id);
+  updateAppResourceBar();
+  if (id === 'home') renderHome();
   if (id === 'party')    renderParty();
   if (id === 'dex')      renderDex();
   if (id === 'itemDex')  renderItemDex();
@@ -20,6 +25,59 @@ function show(id) {
   if (id === 'itemGacha') renderItemGacha();
   if (id === 'battleItemSelect') renderBattleItemSelect();
   if (id === 'skillEdit') renderSkillEdit();
+}
+function openBattleHub(){
+  const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
+  if(party.length && typeof startBattleFromParty === 'function'){
+    startBattleFromParty();
+    return;
+  }
+  show('partySet');
+}
+function updateAppResourceBar(){
+  const coinView = document.getElementById('appCoinView');
+  if(coinView) coinView.textContent = Number(save?.coins || 0).toLocaleString('ja-JP');
+}
+function appNavigationSection(screenId){
+  if(['party','partySet','skillEdit','dex','itemDex'].includes(screenId)) return 'monsters';
+  if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
+  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
+  if(['moreMenu','expedition','shop','itemGacha','typeChart'].includes(screenId)) return 'more';
+  return 'home';
+}
+function updateAppNavigation(screenId){
+  const nav = document.querySelector('.app-bottom-nav');
+  if(!nav) return;
+  const battleActive = ['battle','battleItemSelect','contractConfirm'].includes(screenId);
+  nav.classList.toggle('is-battle-hidden', battleActive);
+  const section = appNavigationSection(screenId);
+  nav.querySelectorAll('[data-nav]').forEach(button => button.classList.toggle('is-current', button.dataset.nav === section));
+}
+function renderHome(){
+  const partyPreview = document.getElementById('homePartyPreview');
+  const growthPreview = document.getElementById('homeGrowthPreview');
+  const expeditionPreview = document.getElementById('homeExpeditionPreview');
+  const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
+  if(partyPreview){
+    partyPreview.innerHTML = party.length ? party.map((ins,index)=>{
+      const mon=by(ins.id);
+      if(!mon) return '';
+      return `<button class="home-party-member ${index===0?'is-leader':''}" onclick="show('partySet')">${index===0?'<span>LEADER</span>':''}${vis(mon)}<strong>${mon.name}</strong><small>Lv.${ins.level||1}</small></button>`;
+    }).join('') : `<button class="home-empty-party" onclick="show('partySet')"><strong>パーティーを編成する</strong><small>最初の仲間を選びましょう</small></button>`;
+  }
+  if(growthPreview){
+    const lead=party[0];
+    const mon=lead ? by(lead.id) : null;
+    const needed=lead ? needExp(lead.level||1) : 0;
+    const current=Number(lead?.exp||0);
+    const rate=needed ? Math.max(0,Math.min(100,current/needed*100)) : 0;
+    growthPreview.innerHTML = mon ? `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>${mon.name}のレベルアップまで</strong><div class="home-progress"><span style="width:${rate}%"></span></div><small>あと${Math.max(0,needed-current)} EXP</small></div><button onclick="show('party')">確認</button>` : `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>仲間を選ぶと成長目標が表示されます</strong></div>`;
+  }
+  if(expeditionPreview){
+    const active=Array.isArray(save?.expeditions?.active) ? save.expeditions.active : [];
+    const completed=active.filter(entry=>entry?.status==='complete').length;
+    expeditionPreview.innerHTML = completed ? `<div><span class="ui-eyebrow">EXPEDITION</span><strong>${completed}件の遠征報酬を受け取れます</strong></div><button onclick="showExpedition()">受け取る</button>` : `<div><span class="ui-eyebrow">EXPEDITION</span><strong>${active.length?'遠征が進行中です':'遠征枠が空いています'}</strong></div><button onclick="showExpedition()">${active.length?'確認':'派遣する'}</button>`;
+  }
 }
 function showTypeChart() {
   show('typeChart');
