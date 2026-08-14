@@ -118,13 +118,15 @@ function updateMultiBattleView() {
   document.getElementById('multiEnemyGrid').innerHTML=multiBattle.enemies.map(entry=>{
     const pct=Math.max(0,entry.hp)/entry.maxHp*100;
     const targetable=multiBattle.pendingMoveIndex!==null&&entry.alive;
-    return `<div class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" ${targetable?`onclick="startMultiBattleTurn('${entry.id}')"`:''}>`+
+    return `<div class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" ${targetable?`role="button" tabindex="0" aria-label="${entry.mon.name}を攻撃対象にする" onclick="startMultiBattleTurn('${entry.id}')" onkeydown="handleMultiTargetKey(event,'${entry.id}')"`:''}>`+
       `<h2>${entry.mon.name}</h2><div id="${entry.id}Vis">${vis(entry.mon)}</div>`+
+      `${targetable?'<span class="multi-target-cue">照準　この敵を狙う</span>':''}`+
       `<p class="small">Lv.${entry.level} ${typesHtml(entry.mon.types)} / 素早さ:${monSpd(entry.mon)}${multiStatusHtml(entry)}</p>`+
       `<p class="multi-warning">${entry.alive?'⚠️ 誰を狙うか分からない':'💀 撃破済み'}</p>`+
       `<div class="bar"><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div><p class="small">${Math.max(0,entry.hp)} / ${entry.maxHp}</p></div>`;
   }).join('');
 }
+function handleMultiTargetKey(event,targetId){if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();startMultiBattleTurn(targetId);}
 
 function chooseMultiBattleTarget(moveIndex) {
   if (busy || !multiBattle?.active || multiBattle.finished) return;
@@ -132,7 +134,7 @@ function chooseMultiBattleTarget(moveIndex) {
   if (!living.length) return;
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
-  picker.innerHTML=`<p>攻撃対象を選んでください</p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
   updateMultiBattleView();
 }

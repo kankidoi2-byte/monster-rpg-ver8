@@ -46,6 +46,7 @@ expect(index.includes('class="screen battle-screen"'), 'portrait-first battle sc
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
 expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
+expect(read('js/multi-battle.js').includes('function handleMultiTargetKey'), 'accessible multi-target selection is missing');
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',
