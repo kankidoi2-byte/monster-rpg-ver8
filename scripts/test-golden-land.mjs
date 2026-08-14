@@ -16,16 +16,16 @@ assert.equal(context.goldenLandCoinBonus('normal'), 300, 'Normal bonus must be 3
 assert.equal(context.goldenLandCoinBonus('hard'), 600, 'Hard bonus must be 600 coins');
 assert.equal(context.goldenLandCoinBonus('extreme'), 1000, 'Extreme bonus must be 1,000 coins');
 assert.equal(context.rollGoldenLandMapFromHunt('normal', () => 0), false, 'Normal must not drop a map');
-assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .1999), true, 'Hard verification map rate must be 20%');
-assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .20), false, 'Hard verification rate must exclude 20% or above');
-assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .3999), true, 'Extreme verification map rate must be 40%');
-assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .40), false, 'Extreme verification rate must exclude 40% or above');
+assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .0099), true, 'Hard map rate must be 1%');
+assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .01), false, 'Hard must exclude 1% or above');
+assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .0299), true, 'Extreme map rate must be 3%');
+assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .03), false, 'Extreme must exclude 3% or above');
 context.save = {items:{golden_land_map:0},goldenLandMapReady:false};
 context.registerItemDex = id => { context.registeredItemId = id; };
-assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .1999), true, 'a winning Hard hunt must grant the map on a successful verification roll');
+assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .0099), true, 'a winning Hard hunt must grant the map on a successful roll');
 assert.equal(context.save.items.golden_land_map, 1, 'the shared hunt reward path must add exactly one map');
 assert.equal(context.registeredItemId, 'golden_land_map', 'the granted map must be registered in the item encyclopedia');
-assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .20), false, 'a failed hunt roll must not grant another map');
+assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .01), false, 'a failed hunt roll must not grant another map');
 assert.equal(context.save.items.golden_land_map, 1, 'a failed hunt roll must leave inventory unchanged');
 context.save = {items:{golden_land_map:2},goldenLandMapReady:false};
 assert.equal(context.reserveGoldenLandMap(), true, 'a held map must be reservable');
@@ -44,7 +44,7 @@ const indexSource = fs.readFileSync(new URL('../index.html', import.meta.url), '
 assert.match(singleBattleSource, /grantGoldenLandMapFromHuntWin\(activeHuntRequest\?\.difficultyId\)/, 'single battles must use the shared map reward path');
 assert.match(multiBattleSource, /grantGoldenLandMapFromHuntWin\(activeHuntRequest\?\.difficultyId\)/, 'three-way and invasion battles must use the shared map reward path');
 assert.doesNotMatch(initSource, /grantGoldenLandVerificationMapFromUrl/, 'the failed URL verification route must be removed');
-assert.match(dataSource, /id:'golden_land_map'.*price:100.*shop:true/, 'the map must be available from the validation shop for 100 coins');
-assert.match(indexSource, /js\/state\.js\?v=golden-land-validation-1/, 'the public page must invalidate cached validation scripts');
+assert.match(dataSource, /id:'golden_land_map'.*price:0.*shop:false/, 'the map must not remain in the release shop');
+assert.match(indexSource, /js\/state\.js\?v=golden-land-release-1/, 'the public page must invalidate cached validation scripts');
 
-console.log('Golden Land validation passed (appearance, bonuses, validation shop, boosted hunt rewards, reservation, and consumption).');
+console.log('Golden Land validation passed (appearance, bonuses, release rewards, reservation, and consumption).');
