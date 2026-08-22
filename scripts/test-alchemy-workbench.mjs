@@ -9,6 +9,7 @@ function assert(condition, message){
 }
 
 assert(alchemy.includes('selectedAlchemyMaterialCounts = []'), 'material quantity state is missing');
+assert(alchemy.includes('if(!ins) return {levelBonus:0, evolutionBonus:0, total:0}'), 'empty catalyst still receives a bonus');
 assert(alchemy.includes('changeAlchemyMaterialCount(index, delta)'), 'material quantity controls are missing');
 assert(alchemy.includes("<option value=\"\">使用しない</option>"), 'optional catalyst choice is missing');
 assert(!alchemy.includes("if(!ins) errors.push('投入モンスターが選択されていません。')"), 'catalyst is still mandatory');
