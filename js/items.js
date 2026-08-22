@@ -263,7 +263,7 @@ function useContractScrollConfirmed(){
   refreshContractScrollDisplay();
   tryContractWithScroll(itemId);
 }
-function tryContractWithScroll(itemId='contract_scroll'){
+async function tryContractWithScroll(itemId='contract_scroll'){
   ensureContractScrollItem();
   const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
   if(!enemy){
@@ -273,8 +273,13 @@ function tryContractWithScroll(itemId='contract_scroll'){
   }
   const baseRate = enemy.catchRate ?? 0.25;
   const rate = Math.min(0.95, baseRate * (it.catchMultiplier || 1));
-  const ok = Math.random() < rate;
+  const roll = Math.random();
+  const animationStage = contractAnimationStage(roll, rate);
+  const ok = animationStage === 3;
   const logBox = document.getElementById('log');
+
+  show('battle');
+  busy = true;
 
   if(ok){
     pStatus = null; eStatus = null;
@@ -286,21 +291,23 @@ function tryContractWithScroll(itemId='contract_scroll'){
     pAquaShield = false; eAquaShield = false;
     addInstance(enemy.id);
     saveGame();
+    await playContractAnimation({monsterName:enemy.name, stage:animationStage});
     updateItems();
     renderParty();
     renderDex();
     if(logBox)logBox.innerHTML=`${it.name}を使用した！<br>${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！<br>次のバトルへ進みます。`;
-    alert(`${enemy.name}と契約した！`);
     refreshContractScrollDisplay();
+    busy = false;
     goNextBattleAfterContract();
     return;
   }
 
   saveGame();
+  await playContractAnimation({monsterName:enemy.name, stage:animationStage});
   if(logBox)logBox.innerHTML=`${it.name}を使用した！<br>しかし、${enemy.name}との契約には失敗した……`;
-  alert('契約できなかった……');
   updateItems();
   refreshContractScrollDisplay();
+  busy = false;
   show('battle');
 }
 function tryCatch(){ askUseContractScroll(); }

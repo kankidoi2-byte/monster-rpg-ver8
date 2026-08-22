@@ -1,0 +1,33 @@
+.contract-animation{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:20px;background:rgba(3,6,15,.76);backdrop-filter:blur(5px);overflow:hidden}
+.contract-animation-stage{display:grid;place-items:center;width:min(100%,430px);perspective:900px}
+.contract-paper{position:relative;width:min(76vw,290px);aspect-ratio:3/4;border:2px solid #9a6a32;border-radius:5px;background:linear-gradient(100deg,rgba(103,61,24,.12),transparent 16% 84%,rgba(103,61,24,.13)),radial-gradient(circle at 28% 18%,#fff5cf,#ead29a 70%,#c99b5f);color:#4f321d;box-shadow:0 20px 50px #000b,inset 0 0 22px #80511f55;transform-origin:center;isolation:isolate}
+.contract-paper::before,.contract-paper::after{content:"";position:absolute;z-index:4;inset:-2px;border:2px solid #9a6a32;border-radius:5px;background:linear-gradient(100deg,rgba(103,61,24,.12),transparent 16% 84%,rgba(103,61,24,.13)),radial-gradient(circle at 28% 18%,#fff5cf,#ead29a 70%,#c99b5f);box-shadow:0 20px 35px #0009;opacity:0;pointer-events:none}
+.contract-paper::before{clip-path:polygon(0 0,53% 0,47% 12%,55% 22%,46% 34%,54% 45%,45% 57%,53% 69%,46% 82%,52% 100%,0 100%)}
+.contract-paper::after{clip-path:polygon(53% 0,100% 0,100% 100%,52% 100%,46% 82%,53% 69%,45% 57%,54% 45%,46% 34%,55% 22%,47% 12%)}
+.contract-paper-content{position:absolute;inset:9%;display:flex;flex-direction:column;align-items:center;border:1px solid #78512d99;padding:13% 8%;transition:opacity .1s}
+.contract-paper-kicker{font-family:Georgia,serif;font-size:8px;font-weight:800;letter-spacing:.19em;color:#765333}
+.contract-paper-content>strong{margin-top:5%;font-family:Georgia,"Noto Serif JP",serif;font-size:clamp(23px,8vw,34px);letter-spacing:.18em}
+.contract-paper-rule{width:82%;height:1px;margin:10% 0;background:#74502d99}
+.contract-paper-lines{display:grid;width:86%;gap:17px;margin-top:3%}
+.contract-paper-lines i{display:block;border-bottom:1px solid #76533355}
+.contract-paper-sign{position:absolute;right:8%;bottom:7%;font-family:"Noto Serif JP",serif;font-size:11px;font-weight:800;letter-spacing:.14em;color:#6e472a}
+.contract-paw{position:absolute;z-index:5;right:11%;bottom:9%;width:42%;height:auto;overflow:visible;fill:#a82020;filter:drop-shadow(0 2px 0 #6f1515aa);opacity:0;transform:translate3d(0,-90px,0) rotate(-7deg) scale(1.7)}
+.contract-pop{position:absolute;z-index:6;right:-2%;bottom:28%;color:#4b2a18;font-size:17px;font-weight:1000;text-shadow:0 2px #f5dfaa;opacity:0;transform:rotate(8deg) scale(.5)}
+.contract-animation-message{min-height:34px;margin:18px 0 0;color:#fff7dc;font-size:18px;font-weight:900;letter-spacing:.04em;text-shadow:0 2px 8px #000}
+.contract-paper.is-entering{animation:contractEnter .42s cubic-bezier(.18,.82,.3,1.1) both}
+.contract-paper.is-pulsing{animation:contractPulse .58s ease-in-out both}
+.contract-paper.is-stamping .contract-paw{animation:contractStamp .5s cubic-bezier(.18,.82,.25,1.05) forwards}
+.contract-paper.is-stamping .contract-pop{animation:contractPop .42s .22s ease-out forwards}
+.contract-paper.is-tearing{border-color:transparent;background:transparent;box-shadow:none;animation:contractTearJolt .12s linear both}
+.contract-paper.is-tearing .contract-paper-content{opacity:0}
+.contract-paper.is-tearing::before{animation:contractTearLeft .68s cubic-bezier(.4,0,.8,.4) forwards}
+.contract-paper.is-tearing::after{animation:contractTearRight .68s cubic-bezier(.4,0,.8,.4) forwards}
+@keyframes contractEnter{from{opacity:0;transform:translateY(32px) rotateX(18deg) scale(.72)}to{opacity:1;transform:none}}
+@keyframes contractPulse{0%,100%{transform:scale(1);filter:brightness(1)}45%{transform:scale(1.12);filter:brightness(1.16);box-shadow:0 24px 58px #000c,0 0 25px #f5d69077,inset 0 0 22px #80511f55}}
+@keyframes contractStamp{0%{opacity:0;transform:translate3d(0,-90px,0) rotate(-7deg) scale(1.7)}58%{opacity:1;transform:translate3d(0,3px,0) rotate(-7deg) scale(.92)}72%{opacity:1;transform:translate3d(0,0,0) rotate(-7deg) scale(1.08)}100%{opacity:.94;transform:translate3d(0,0,0) rotate(-7deg) scale(1)}}
+@keyframes contractPop{0%{opacity:0;transform:rotate(8deg) scale(.5)}55%{opacity:1;transform:rotate(8deg) scale(1.15)}100%{opacity:1;transform:rotate(8deg) scale(1)}}
+@keyframes contractTearJolt{0%,100%{transform:translateX(0)}35%{transform:translateX(-4px)}70%{transform:translateX(4px)}}
+@keyframes contractTearLeft{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(-78%,-8%) rotate(-21deg)}}
+@keyframes contractTearRight{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(78%,7%) rotate(19deg)}}
+@media(max-width:430px){.contract-animation{padding:14px}.contract-animation-message{font-size:16px}.contract-pop{right:-5%;font-size:15px}}
+@media(prefers-reduced-motion:reduce){.contract-paper.is-entering,.contract-paper.is-pulsing,.contract-paper.is-stamping .contract-paw,.contract-paper.is-stamping .contract-pop,.contract-paper.is-tearing,.contract-paper.is-tearing::before,.contract-paper.is-tearing::after{animation-duration:.12s!important;animation-delay:0s!important}}

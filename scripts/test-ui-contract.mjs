@@ -67,7 +67,7 @@ expect(read('js/battle-view.js').includes('is-revealing'), 'staged battle reward
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',
-  'skills.js', 'dex.js', 'party.js', 'progression.js', 'items.js', 'alchemy.js',
+  'skills.js', 'dex.js', 'party.js', 'progression.js', 'contract-animation.js', 'items.js', 'alchemy.js',
   'battle-view.js', 'battle-rules.js', 'battle-flow.js', 'expedition.js', 'init.js'
 ];
 let previousIndex = -1;
