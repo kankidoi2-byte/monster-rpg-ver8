@@ -11,6 +11,11 @@ function ensureMultiBattleDom() {
   if(itemText&&!document.getElementById('multiContractPanel'))itemText.insertAdjacentHTML('afterend','<div id="multiContractPanel" class="multi-contract-panel hidden"></div>');
 }
 
+function setMultiBattleLayout(active) {
+  const battleScreen = document.getElementById('battle');
+  if (battleScreen) battleScreen.classList.toggle('is-multi-battle', !!active);
+}
+
 function createMultiEnemy(mon, factionId) {
   const level = activeHuntRequest?.enemyLevel || 1;
   const max = Math.max(1, Math.round(maxHp(mon, level) * (Number(huntDifficulty(activeHuntRequest?.difficultyId).hpMultiplier) || 1)));
@@ -37,6 +42,7 @@ function beginThreeWayBattle() {
   };
   busy = false;
   pendingMultiBattleContractId = null;
+  setMultiBattleLayout(true);
   hideBattleOutcome();
   document.getElementById('singleEnemyBox').classList.add('hidden');
   document.getElementById('multiEnemyGrid').classList.remove('hidden');
@@ -81,6 +87,7 @@ function triggerInvasionIfDue() {
   };
   activeHuntRequest.battleMode = 'invasion_active';
   pendingMultiBattleContractId = null;
+  setMultiBattleLayout(true);
   document.getElementById('singleEnemyBox').classList.add('hidden');
   document.getElementById('multiEnemyGrid').classList.remove('hidden');
   document.getElementById('multiTargetSelect').classList.add('hidden');
@@ -107,6 +114,15 @@ function setupMultiBattle() {
 function aliveMultiEnemies() { return multiBattle?.enemies?.filter(entry => entry.alive && entry.hp > 0) || []; }
 function multiEnemy(id) { return multiBattle?.enemies?.find(entry => entry.id === id) || null; }
 function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield); }
+function multiStatChangeHtml(entry) {
+  const changes=[];
+  if(entry.attack>1)changes.push('攻撃↑');
+  if(entry.attack<1)changes.push('攻撃↓');
+  if(entry.guard)changes.push('防御中');
+  if(entry.flareCharge)changes.push('攻撃強化');
+  if(entry.aquaShield)changes.push('水の盾');
+  return changes.length?changes.map(text=>`<span>${text}</span>`).join(''):'<span>変化なし</span>';
+}
 
 function updateMultiBattleView() {
   if (!multiBattle?.active) return;
@@ -115,23 +131,36 @@ function updateMultiBattleView() {
   document.getElementById('pInfo').innerHTML=`Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player,activeInstance)}${statusHtml(pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}`;
   const pp=pHp/pm*100, pBar=document.getElementById('pHpBar'); pBar.style.width=pp+'%'; pBar.className='hp'+(pp<25?' hp-danger':pp<50?' hp-warn':'');document.getElementById('pHpTrail').style.width=pp+'%';
   document.getElementById('pHpText').textContent=`${pHp} / ${pm}`; document.getElementById('pExpBar').style.width=xp/nd*100+'%'; document.getElementById('pExpText').textContent=`EXP ${xp} / ${nd}`;
-  document.getElementById('multiEnemyGrid').innerHTML=multiBattle.enemies.map(entry=>{
+  document.getElementById('multiEnemyGrid').innerHTML=multiBattle.enemies.map((entry,index)=>{
     const pct=Math.max(0,entry.hp)/entry.maxHp*100;
     const targetable=multiBattle.pendingMoveIndex!==null&&entry.alive;
-    return `<div class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" ${targetable?`role="button" tabindex="0" aria-label="${entry.mon.name}を攻撃対象にする" onclick="startMultiBattleTurn('${entry.id}')" onkeydown="handleMultiTargetKey(event,'${entry.id}')"`:''}>`+
-      `<h2>${entry.mon.name}</h2><div id="${entry.id}Vis">${vis(entry.mon)}</div>`+
-      `${targetable?'<span class="multi-target-cue">照準　この敵を狙う</span>':''}`+
-      `<p class="small">Lv.${entry.level} ${typesHtml(entry.mon.types)} / 素早さ:${monSpd(entry.mon)}${multiStatusHtml(entry)}</p>`+
-      `<p class="multi-warning">${entry.alive?'⚠️ 誰を狙うか分からない':'💀 撃破済み'}</p>`+
-      `<div class="bar"><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div><p class="small">${Math.max(0,entry.hp)} / ${entry.maxHp}</p></div>`;
+    const enemyLabel = index === 0 ? '敵A' : '敵B';
+    const cardLabel=targetable?`${entry.mon.name}を攻撃対象にする`:`${entry.mon.name}の詳細を開く`;
+    return `<article class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" role="button" tabindex="0" aria-label="${cardLabel}" aria-expanded="${entry.detailsOpen?'true':'false'}" onclick="handleMultiEnemyCard('${entry.id}')" onkeydown="handleMultiEnemyCardKey(event,'${entry.id}')">`+
+      `<div class="multi-enemy-label">${enemyLabel}</div>`+
+      `<div class="multi-enemy-visual" id="${entry.id}Vis">${vis(entry.mon)}</div>`+
+      `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?'<span class="multi-target-cue">照準中</span>':''}</div>`+
+      `<div class="multi-enemy-state"><span>${multiStatusHtml(entry) || '状態正常'}</span><b>${multiStatChangeHtml(entry)}</b></div>`+
+      `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+
+      `<p class="multi-warning">${targetable?'タップして攻撃':entry.alive?'タップで詳細':'💀 撃破済み'}</p>`+
+      `${entry.detailsOpen?`<div class="multi-enemy-details"><span>Lv.${entry.level}</span><span>${typesHtml(entry.mon.types)}</span><span>素早さ ${monSpd(entry.mon)}</span><small>もう一方の敵とプレイヤーの両方を攻撃対象にする。</small></div>`:''}</div></article>`;
   }).join('');
 }
 function handleMultiTargetKey(event,targetId){if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();startMultiBattleTurn(targetId);}
+function handleMultiEnemyCard(targetId){
+  const entry=multiEnemy(targetId);if(!entry||busy)return;
+  const action=multiEnemyCardAction(entry,multiBattle?.pendingMoveIndex);
+  if(action==='target'){startMultiBattleTurn(targetId);return;}
+  if(action!=='details')return;
+  entry.detailsOpen=!entry.detailsOpen;updateMultiBattleView();
+}
+function handleMultiEnemyCardKey(event,targetId){if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();handleMultiEnemyCard(targetId);}
 
 function chooseMultiBattleTarget(moveIndex) {
   if (busy || !multiBattle?.active || multiBattle.finished) return;
   const living=aliveMultiEnemies();
   if (!living.length) return;
+  multiBattle.enemies.forEach(entry=>{entry.detailsOpen=false;});
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
   picker.innerHTML=`<p><b>攻撃対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
@@ -164,8 +193,8 @@ function runMultiActions(actions,index) {
       if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${player.name}はこんらんして動けない！`);runMultiActions(actions,index+1);return;}
       if(roll>=.75){const dmg=Math.max(1,Math.floor(12*pAtk*playerAttackInstanceMultiplier()));pHp=Math.max(0,pHp-dmg);appendMultiLog(`🌀 ${player.name}はこんらんして自分に${dmg}ダメージ！`);runMultiActions(actions,index+1);return;}
     }
-    let target=multiEnemy(action.targetId);
-    if (!target?.alive) target=aliveMultiEnemies()[0];
+    const resolvedTargetId=resolveLivingMultiTargetId(multiBattle.enemies,action.targetId);
+    const target=multiEnemy(resolvedTargetId);
     if (target) performMultiAttack({kind:'player'},target,action.move);
   } else {
     const actor=multiEnemy(action.actorId);
