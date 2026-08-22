@@ -50,8 +50,8 @@ expect(read('js/multi-battle.js').includes('function handleMultiTargetKey'), 'ac
 expect(read('js/multi-battle.js').includes('function setMultiBattleLayout'), 'three-way layout state helper is missing');
 expect(read('js/multi-battle.js').includes('multi-enemy-label'), 'three-way enemy labels are missing');
 expect(read('css/ui-redesign.css').includes('.battle-screen.is-multi-battle .battle-arena'), 'three-way battle layout state is missing');
-expect(read('css/ui-redesign.css').includes('.battle-screen:not(.is-multi-battle) .battle-arena'), 'single battles must use the shared vertical battle flow');
-expect(read('css/ui-redesign.css').includes('#singleEnemyBox{order:1}') && read('css/ui-redesign.css').includes('#singlePlayerBox{order:2}'), 'single battle enemy/player vertical order is missing');
+expect(read('css/ui-redesign.css').includes('.battle-arena{position:relative;display:grid;grid-template-columns:1fr 1fr'), 'single battles must retain the confirmed side-by-side battle flow');
+expect(index.includes('id="singleEnemyBox"') && index.includes('id="singlePlayerBox"'), 'single battle enemy/player panels are missing');
 expect(read('js/multi-battle.js').includes('function handleMultiEnemyCard'), 'three-way enemy detail interaction is missing');
 expect(read('css/ui-redesign.css').includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'side-by-side three-way enemy layout is missing');
 expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), 'quest recommendation scoring is missing');
