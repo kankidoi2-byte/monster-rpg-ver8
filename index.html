@@ -7,6 +7,7 @@
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/style.css?v=alchemy-prototype-2">
 <link rel="stylesheet" href="css/ui-redesign.css?v=alchemy-workbench-1">
+<link rel="stylesheet" href="css/contract-animation.css?v=contract-animation-1">
 </head>
 <body class="title-mode">
 <div id="bossCautionOverlay" aria-hidden="true">
@@ -326,6 +327,29 @@
   <button type="button" data-nav="more" onclick="show('moreMenu')"><span>≡</span><small>メニュー</small></button>
 </nav>
 
+<div id="contractAnimation" class="contract-animation hidden" role="dialog" aria-modal="true" aria-labelledby="contractAnimationMessage">
+  <div class="contract-animation-stage">
+    <div id="contractPaper" class="contract-paper" aria-hidden="true">
+      <div class="contract-paper-content">
+        <span class="contract-paper-kicker">MONSTER CONTRACT</span>
+        <strong>契 約 書</strong>
+        <div class="contract-paper-rule"></div>
+        <div class="contract-paper-lines"><i></i><i></i><i></i></div>
+        <span class="contract-paper-sign">契約印</span>
+      </div>
+      <svg class="contract-paw" viewBox="0 0 160 150" aria-hidden="true">
+        <ellipse cx="30" cy="39" rx="17" ry="24" transform="rotate(-24 30 39)"></ellipse>
+        <ellipse cx="65" cy="25" rx="17" ry="25" transform="rotate(-8 65 25)"></ellipse>
+        <ellipse cx="101" cy="27" rx="17" ry="25" transform="rotate(9 101 27)"></ellipse>
+        <ellipse cx="132" cy="45" rx="16" ry="23" transform="rotate(25 132 45)"></ellipse>
+        <path d="M35 113c0-27 18-54 45-54s48 28 48 55c0 22-18 29-47 29-28 0-46-8-46-30Z"></path>
+      </svg>
+      <span class="contract-pop" aria-hidden="true">ポンッ！</span>
+    </div>
+    <p id="contractAnimationMessage" class="contract-animation-message">契約を試みている……</p>
+  </div>
+</div>
+
 <script src="js/data.js?v=golden-land-release-1"></script>
 <script src="js/bootstrap-guard.js?v=golden-land-release-1"></script>
 <script src="js/core.js?v=golden-land-release-1"></script>
@@ -336,6 +360,7 @@
 <script src="js/dex.js?v=golden-land-release-1"></script>
 <script src="js/party.js?v=golden-land-release-1"></script>
 <script src="js/progression.js?v=golden-land-release-1"></script>
+<script src="js/contract-animation.js?v=contract-animation-1"></script>
 <script src="js/items.js?v=golden-land-release-1"></script>
 <script src="js/alchemy.js?v=alchemy-workbench-1"></script>
 <script src="js/battle-view.js?v=golden-land-release-1"></script>

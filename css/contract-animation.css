@@ -1,0 +1,33 @@
+.contract-animation{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:20px;background:rgba(3,6,15,.76);backdrop-filter:blur(5px);overflow:hidden}
+.contract-animation-stage{display:grid;place-items:center;width:min(100%,430px);perspective:900px}
+.contract-paper{--contract-zoom:1;--contract-zoom-from:1;--contract-zoom-to:1;--contract-pan-x:0px;--contract-pan-y:0px;--contract-pan-from-x:0px;--contract-pan-from-y:0px;--contract-pan-to-x:0px;--contract-pan-to-y:0px;position:relative;width:min(76vw,290px);aspect-ratio:3/4;border:2px solid #9a6a32;border-radius:5px;background:linear-gradient(100deg,rgba(103,61,24,.12),transparent 16% 84%,rgba(103,61,24,.13)),radial-gradient(circle at 28% 18%,#fff5cf,#ead29a 70%,#c99b5f);color:#4f321d;box-shadow:0 20px 50px #000b,inset 0 0 22px #80511f55;transform:translate(var(--contract-pan-x),var(--contract-pan-y)) scale(var(--contract-zoom));transform-origin:center;isolation:isolate;will-change:transform,filter}
+.contract-paper::before,.contract-paper::after{content:"";position:absolute;z-index:4;inset:-2px;border:2px solid #9a6a32;border-radius:5px;background:linear-gradient(100deg,rgba(103,61,24,.12),transparent 16% 84%,rgba(103,61,24,.13)),radial-gradient(circle at 28% 18%,#fff5cf,#ead29a 70%,#c99b5f);box-shadow:0 20px 35px #0009;opacity:0;pointer-events:none}
+.contract-paper::before{clip-path:polygon(0 0,53% 0,47% 12%,55% 22%,46% 34%,54% 45%,45% 57%,53% 69%,46% 82%,52% 100%,0 100%)}
+.contract-paper::after{clip-path:polygon(53% 0,100% 0,100% 100%,52% 100%,46% 82%,53% 69%,45% 57%,54% 45%,46% 34%,55% 22%,47% 12%)}
+.contract-paper-content{position:absolute;inset:9%;display:flex;flex-direction:column;align-items:center;border:1px solid #78512d99;padding:13% 8%;transition:opacity .1s}
+.contract-paper-kicker{font-family:Georgia,serif;font-size:8px;font-weight:800;letter-spacing:.19em;color:#765333}
+.contract-paper-content>strong{margin-top:5%;font-family:Georgia,"Noto Serif JP",serif;font-size:clamp(23px,8vw,34px);letter-spacing:.18em}
+.contract-paper-rule{width:82%;height:1px;margin:10% 0;background:#74502d99}
+.contract-paper-lines{display:grid;width:86%;gap:17px;margin-top:3%}
+.contract-paper-lines i{display:block;border-bottom:1px solid #76533355}
+.contract-paper-sign{position:absolute;right:8%;bottom:7%;font-family:"Noto Serif JP",serif;font-size:11px;font-weight:800;letter-spacing:.14em;color:#6e472a}
+.contract-paw{position:absolute;z-index:5;right:11%;bottom:9%;width:42%;height:auto;overflow:visible;fill:#a82020;filter:drop-shadow(0 2px 0 #6f1515aa);opacity:0;transform:translate3d(0,-90px,0) rotate(-7deg) scale(1.7)}
+.contract-pop{position:absolute;z-index:6;right:4%;bottom:28%;color:#4b2a18;font-size:17px;font-weight:1000;white-space:nowrap;text-shadow:0 2px #f5dfaa;opacity:0;transform:rotate(8deg) scale(.5)}
+.contract-animation-message{position:fixed;z-index:12;right:50%;bottom:calc(22px + env(safe-area-inset-bottom));width:min(calc(100vw - 28px),430px);min-height:44px;margin:0;transform:translateX(50%);padding:10px 14px;border:1px solid #fff3;border-radius:14px;background:#090b13d9;color:#fff7dc;font-size:18px;font-weight:900;line-height:1.35;letter-spacing:.04em;overflow-wrap:anywhere;text-shadow:0 2px 8px #000;box-shadow:0 8px 24px #0008}
+.contract-paper.is-entering{animation:contractEnter .42s cubic-bezier(.18,.82,.3,1.1) both}
+.contract-paper.is-zooming{animation:contractZoom .38s cubic-bezier(.12,.72,.2,1) both}
+.contract-paper.is-stamping .contract-paw{animation:contractStamp .5s cubic-bezier(.18,.82,.25,1.05) forwards}
+.contract-paper.is-stamping .contract-pop{animation:contractPop .42s .22s ease-out forwards}
+.contract-paper.is-tearing{border-color:transparent;background:transparent;box-shadow:none;animation:contractTearJolt .12s linear both}
+.contract-paper.is-tearing .contract-paper-content{opacity:0}
+.contract-paper.is-tearing::before{animation:contractTearLeft .68s cubic-bezier(.4,0,.8,.4) forwards}
+.contract-paper.is-tearing::after{animation:contractTearRight .68s cubic-bezier(.4,0,.8,.4) forwards}
+@keyframes contractEnter{from{opacity:0;transform:translate(0,32px) rotateX(18deg) scale(.72)}to{opacity:1;transform:translate(var(--contract-pan-x),var(--contract-pan-y)) scale(var(--contract-zoom))}}
+@keyframes contractZoom{0%{transform:translate(var(--contract-pan-from-x),var(--contract-pan-from-y)) scale(var(--contract-zoom-from));filter:brightness(1)}62%{transform:translate(var(--contract-pan-to-x),var(--contract-pan-to-y)) scale(var(--contract-zoom-to));filter:brightness(1.24);box-shadow:0 25px 62px #000d,0 0 32px #f5d69099,inset 0 0 22px #80511f55}100%{transform:translate(var(--contract-pan-to-x),var(--contract-pan-to-y)) scale(var(--contract-zoom-to));filter:brightness(1)}}
+@keyframes contractStamp{0%{opacity:0;transform:translate3d(0,-90px,0) rotate(-7deg) scale(1.7)}58%{opacity:1;transform:translate3d(0,3px,0) rotate(-7deg) scale(.92)}72%{opacity:1;transform:translate3d(0,0,0) rotate(-7deg) scale(1.08)}100%{opacity:.94;transform:translate3d(0,0,0) rotate(-7deg) scale(1)}}
+@keyframes contractPop{0%{opacity:0;transform:rotate(8deg) scale(.5)}55%{opacity:1;transform:rotate(8deg) scale(1.15)}100%{opacity:1;transform:rotate(8deg) scale(1)}}
+@keyframes contractTearJolt{0%,100%{transform:translate(var(--contract-pan-x),var(--contract-pan-y)) scale(var(--contract-zoom))}35%{transform:translate(calc(var(--contract-pan-x) - 4px),var(--contract-pan-y)) scale(var(--contract-zoom))}70%{transform:translate(calc(var(--contract-pan-x) + 4px),var(--contract-pan-y)) scale(var(--contract-zoom))}}
+@keyframes contractTearLeft{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(-78%,-8%) rotate(-21deg)}}
+@keyframes contractTearRight{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(78%,7%) rotate(19deg)}}
+@media(max-width:430px){.contract-animation{padding:14px}.contract-animation-message{bottom:calc(12px + env(safe-area-inset-bottom));font-size:16px}.contract-pop{right:3%;font-size:15px}}
+@media(prefers-reduced-motion:reduce){.contract-paper.is-entering,.contract-paper.is-zooming,.contract-paper.is-stamping .contract-paw,.contract-paper.is-stamping .contract-pop,.contract-paper.is-tearing,.contract-paper.is-tearing::before,.contract-paper.is-tearing::after{animation-duration:.12s!important;animation-delay:0s!important}}
