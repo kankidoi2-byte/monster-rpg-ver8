@@ -177,6 +177,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     return;
   }
   multiBattle = null;
+  if (typeof setMultiBattleLayout === 'function') setMultiBattleLayout(false);
   pendingMultiBattleContractId = null;
   busy = false;
   hideBattleOutcome();
@@ -227,6 +228,7 @@ function endPartyRecovery() {
   pAquaShield = false; eAquaShield = false;
   multiBattle = null;
   pendingMultiBattleContractId = null;
+  if (typeof setMultiBattleLayout === 'function') setMultiBattleLayout(false);
   resetBattleTurnCounter();
 }
 function runAway() {
