@@ -20,7 +20,7 @@ orderedMarkers.forEach(marker => {
 
 assert.match(source, /alchemy-consumption-summary/, 'Preview must summarize irreversible costs');
 assert.match(source, /alchemy-final-warning/, 'Confirmation must retain a final irreversible-cost warning');
-assert.match(source, /確認画面で最終確認するまで消費されません/, 'Preview must state that selection is not yet consumed');
+assert.match(source, /次の画面で最終確認するまで消費されません/, 'Preview must state that selection is not yet consumed');
 assert.match(source, /validateAlchemyPlan\(plan\)/, 'Alchemy validation must remain in the confirmation flow');
 assert.match(source, /const snapshot = JSON\.stringify\(save\)/, 'Alchemy rollback snapshot must remain intact');
 assert.match(source, /localStorage\.setItem\('mb_v95c', snapshot\)/, 'Alchemy rollback must preserve the existing save key');
