@@ -21,33 +21,48 @@ async function playContractAnimation({monsterName, stage}) {
   if (!overlay || !paper || !message) return;
 
   const pulseCount = Math.max(0, Math.min(3, Number(stage) || 0));
+  const zoomLevels = [1.16, 1.32, 1.48];
   overlay.classList.remove('hidden');
+  paper.style.setProperty('--contract-zoom', '1');
+  paper.style.setProperty('--contract-zoom-from', '1');
+  paper.style.setProperty('--contract-zoom-to', '1');
   paper.className = 'contract-paper is-entering';
   message.textContent = '契約を試みている……';
-  await contractAnimationDelay(470);
+  await contractAnimationDelay(620);
   paper.classList.remove('is-entering');
+  await contractAnimationDelay(650);
 
   for (let index = 0; index < pulseCount; index++) {
-    paper.classList.remove('is-pulsing');
+    const from = index === 0 ? 1 : zoomLevels[index - 1];
+    const to = zoomLevels[index];
+    paper.style.setProperty('--contract-zoom-from', String(from));
+    paper.style.setProperty('--contract-zoom-to', String(to));
+    paper.classList.remove('is-zooming');
     void paper.offsetWidth;
-    paper.classList.add('is-pulsing');
-    await contractAnimationDelay(650);
-    paper.classList.remove('is-pulsing');
+    paper.classList.add('is-zooming');
+    await contractAnimationDelay(400);
+    paper.classList.remove('is-zooming');
+    paper.style.setProperty('--contract-zoom', String(to));
+    if (index < pulseCount - 1) await contractAnimationDelay(780);
   }
 
   if (pulseCount === 3) {
-    await contractAnimationDelay(260);
+    await contractAnimationDelay(850);
     paper.classList.add('is-stamping');
-    await contractAnimationDelay(540);
+    await contractAnimationDelay(560);
     message.textContent = `${monsterName}と契約しました`;
-    await contractAnimationDelay(1050);
+    await contractAnimationDelay(1100);
   } else {
+    await contractAnimationDelay(pulseCount === 0 ? 420 : 800);
     paper.classList.add('is-tearing');
-    await contractAnimationDelay(700);
+    await contractAnimationDelay(740);
     message.textContent = '契約できなかった……';
-    await contractAnimationDelay(780);
+    await contractAnimationDelay(850);
   }
 
   overlay.classList.add('hidden');
   paper.className = 'contract-paper';
+  paper.style.removeProperty('--contract-zoom');
+  paper.style.removeProperty('--contract-zoom-from');
+  paper.style.removeProperty('--contract-zoom-to');
 }
