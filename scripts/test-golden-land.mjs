@@ -45,6 +45,6 @@ assert.match(singleBattleSource, /grantGoldenLandMapFromHuntWin\(activeHuntReque
 assert.match(multiBattleSource, /grantGoldenLandMapFromHuntWin\(activeHuntRequest\?\.difficultyId\)/, 'three-way and invasion battles must use the shared map reward path');
 assert.doesNotMatch(initSource, /grantGoldenLandVerificationMapFromUrl/, 'the failed URL verification route must be removed');
 assert.match(dataSource, /id:'golden_land_map'.*price:0.*shop:false/, 'the map must not remain in the release shop');
-assert.match(indexSource, /js\/state\.js\?v=golden-land-release-1/, 'the public page must invalidate cached validation scripts');
+assert.match(indexSource, /js\/state\.js\?v=tutorial-phase1-1/, 'the public page must invalidate cached validation scripts');
 
 console.log('Golden Land validation passed (appearance, bonuses, release rewards, reservation, and consumption).');
