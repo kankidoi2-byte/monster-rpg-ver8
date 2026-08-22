@@ -99,6 +99,19 @@ function chooseSecondHuntEnemy(map, firstEnemyId, randomFn=Math.random) {
   return pool[Math.min(pool.length - 1, Math.floor(randomFn() * pool.length))];
 }
 
+function resolveLivingMultiTargetId(entries, requestedId) {
+  const living = (entries || []).filter(entry => entry?.alive && entry.hp > 0);
+  return living.find(entry => entry.id === requestedId)?.id || living[0]?.id || null;
+}
+
+function multiEnemyCardAction(entry, pendingMoveIndex) {
+  if (!entry) return 'none';
+  if (pendingMoveIndex !== null && pendingMoveIndex !== undefined) {
+    return entry.alive && entry.hp > 0 ? 'target' : 'none';
+  }
+  return 'details';
+}
+
 function huntDifficulty(id='normal') {
   return HUNT_DIFFICULTIES[id] || HUNT_DIFFICULTIES.normal;
 }
