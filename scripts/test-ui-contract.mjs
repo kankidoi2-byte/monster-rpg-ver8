@@ -47,6 +47,11 @@ expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command 
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
 expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
 expect(read('js/multi-battle.js').includes('function handleMultiTargetKey'), 'accessible multi-target selection is missing');
+expect(read('js/multi-battle.js').includes('function setMultiBattleLayout'), 'three-way layout state helper is missing');
+expect(read('js/multi-battle.js').includes('multi-enemy-label'), 'three-way enemy labels are missing');
+expect(read('css/ui-redesign.css').includes('.battle-screen.is-multi-battle .battle-arena'), 'three-way battle layout state is missing');
+expect(read('js/multi-battle.js').includes('function handleMultiEnemyCard'), 'three-way enemy detail interaction is missing');
+expect(read('css/ui-redesign.css').includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'side-by-side three-way enemy layout is missing');
 expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), 'quest recommendation scoring is missing');
 expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
 expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
