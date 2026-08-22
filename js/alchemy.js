@@ -95,6 +95,7 @@ function alchemyEvolutionStage(monsterId, visited=new Set()){
   return 1 + Math.max(...parents.map(mon => alchemyEvolutionStage(mon.id, new Set(visited))));
 }
 function alchemyMonsterBonus(ins){
+  if(!ins) return {levelBonus:0, evolutionBonus:0, total:0};
   const levelBonus = Math.min(6, Math.max(0, (Number(ins?.level) || 1) - 1) * 2);
   const evolutionBonus = Math.min(4, alchemyEvolutionStage(ins?.id) * 2);
   return {levelBonus, evolutionBonus, total:Math.min(10, levelBonus + evolutionBonus)};
