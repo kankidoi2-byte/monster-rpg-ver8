@@ -96,3 +96,23 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .battle-screen .multi-enemy-grid .multi-enemy-details>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .battle-screen .multi-enemy-grid .multi-enemy-details>small{grid-column:1/-1;color:#806633;font-size:8px;line-height:1.35}
 @media(max-width:430px){.battle-screen .multi-enemy-grid .multi-enemy-card{grid-template-columns:none;min-height:226px;padding:8px 6px}.battle-screen .multi-enemy-grid .multi-enemy-visual{min-height:98px}.battle-screen .multi-enemy-grid .multi-enemy-visual img{width:100%!important;height:96px!important;max-height:96px!important}.battle-screen .multi-enemy-grid .multi-enemy-heading h2{font-size:13px}.battle-screen .multi-enemy-grid .multi-enemy-label{left:10px;min-width:45px;padding-right:7px;padding-left:7px}}
+
+
+/* Phase 1 follow-up: single battles use the same top-to-bottom flow. */
+.battle-screen:not(.is-multi-battle) .battle-arena{display:flex;flex-direction:column;gap:12px}
+.battle-screen:not(.is-multi-battle) .battle-versus{display:none}
+.battle-screen:not(.is-multi-battle) #singleEnemyBox{order:1}
+.battle-screen:not(.is-multi-battle) #singlePlayerBox{order:2}
+.battle-screen:not(.is-multi-battle) .battle-combatant{min-height:218px}
+.battle-screen:not(.is-multi-battle) .battle-combatant>#pVis,.battle-screen:not(.is-multi-battle) .battle-combatant>#eVis{min-height:120px}
+.battle-screen:not(.is-multi-battle) .battle-combatant img{max-height:150px!important}
+@media(max-height:740px){
+  .battle-screen:not(.is-multi-battle) .battle-combatant{min-height:185px}
+  .battle-screen:not(.is-multi-battle) .battle-combatant>#pVis,.battle-screen:not(.is-multi-battle) .battle-combatant>#eVis{min-height:82px}
+  .battle-screen:not(.is-multi-battle) .battle-combatant img{max-height:110px!important}
+}
+@media(max-height:620px){
+  .battle-screen:not(.is-multi-battle) .battle-combatant{min-height:160px}
+  .battle-screen:not(.is-multi-battle) .battle-combatant>#pVis,.battle-screen:not(.is-multi-battle) .battle-combatant>#eVis{min-height:62px}
+  .battle-screen:not(.is-multi-battle) .battle-combatant img{max-height:90px!important}
+}
