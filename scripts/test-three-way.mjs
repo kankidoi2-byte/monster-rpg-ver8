@@ -4,6 +4,9 @@ import vm from 'node:vm';
 
 const context = vm.createContext({console});
 vm.runInContext(fs.readFileSync(new URL('../js/state.js', import.meta.url), 'utf8'), context);
+const multiBattleSource = fs.readFileSync(new URL('../js/multi-battle.js', import.meta.url), 'utf8');
+const battleFlowSource = fs.readFileSync(new URL('../js/battle-flow.js', import.meta.url), 'utf8');
+const battleCss = fs.readFileSync(new URL('../css/ui-redesign.css', import.meta.url), 'utf8');
 
 assert.equal(context.rollThreeWayBattle('easy', () => 0), false, 'Easy must never roll a three-way battle');
 assert.equal(context.rollThreeWayBattle('normal', () => 0.099), true, 'Normal rate must include rolls below 10%');
@@ -36,4 +39,23 @@ const only = context.chooseSecondHuntEnemy({enemyIds:['a']}, 'a', () => 0);
 assert.equal(only.id, 'a', 'A same species fallback must remain possible on a one-enemy map');
 assert.equal(context.chooseSecondHuntEnemy({enemyIds:['missing']}, 'a', () => 0), null, 'Missing enemy references must not create a battle');
 
-console.log('Multi-faction battle validation passed (rates, invasion timing, and same-map selection).');
+const targetEntries = [
+  {id:'enemy_a', alive:true, hp:30},
+  {id:'enemy_b', alive:true, hp:40}
+];
+assert.equal(context.resolveLivingMultiTargetId(targetEntries, 'enemy_b'), 'enemy_b', 'A living requested target must remain selected');
+assert.equal(context.resolveLivingMultiTargetId([{...targetEntries[0], alive:false, hp:0}, targetEntries[1]], 'enemy_a'), 'enemy_b', 'A defeated target must fall back to the first living enemy');
+assert.equal(context.resolveLivingMultiTargetId(targetEntries.map(entry => ({...entry, alive:false, hp:0})), 'enemy_a'), null, 'No target may be returned after every enemy is defeated');
+
+assert.equal(context.multiEnemyCardAction(targetEntries[0], null), 'details', 'A normal enemy-card tap must open details');
+assert.equal(context.multiEnemyCardAction(targetEntries[0], 0), 'target', 'A card tap after skill selection must choose the target');
+assert.equal(context.multiEnemyCardAction({...targetEntries[0], alive:false, hp:0}, 0), 'none', 'A defeated enemy must not be targetable');
+
+assert.match(battleCss, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/, 'Enemy cards must remain side by side');
+assert.match(multiBattleSource, /function handleMultiEnemyCard\(/, 'Enemy cards must retain the detail/target tap handler');
+assert.match(multiBattleSource, /resolveLivingMultiTargetId\(multiBattle\.enemies,action\.targetId\)/, 'Player actions must resolve a living target at execution time');
+assert.match(multiBattleSource, /function triggerInvasionIfDue\([\s\S]*?setMultiBattleLayout\(true\)/, 'An invasion must switch into the shared multi-battle layout');
+assert.match(multiBattleSource, /targets=\[\{kind:'player'[\s\S]*?kind:'enemy'/, 'Enemies must be able to attack the player or the other enemy');
+assert.match(battleFlowSource, /function endPartyRecovery\([\s\S]*?setMultiBattleLayout\(false\)/, 'Leaving battle must restore the normal single-enemy layout');
+
+console.log('Multi-faction battle validation passed (rates, invasion, side-by-side UI, card actions, and living-target fallback).');
