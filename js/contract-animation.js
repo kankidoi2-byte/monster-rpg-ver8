@@ -22,10 +22,17 @@ async function playContractAnimation({monsterName, stage}) {
 
   const pulseCount = Math.max(0, Math.min(3, Number(stage) || 0));
   const zoomLevels = [1.16, 1.32, 1.48];
+  const panLevels = [{x:-20,y:-40},{x:-48,y:-95},{x:-77,y:-149}];
   overlay.classList.remove('hidden');
   paper.style.setProperty('--contract-zoom', '1');
   paper.style.setProperty('--contract-zoom-from', '1');
   paper.style.setProperty('--contract-zoom-to', '1');
+  paper.style.setProperty('--contract-pan-x', '0px');
+  paper.style.setProperty('--contract-pan-y', '0px');
+  paper.style.setProperty('--contract-pan-from-x', '0px');
+  paper.style.setProperty('--contract-pan-from-y', '0px');
+  paper.style.setProperty('--contract-pan-to-x', '0px');
+  paper.style.setProperty('--contract-pan-to-y', '0px');
   paper.className = 'contract-paper is-entering';
   message.textContent = '契約を試みている……';
   await contractAnimationDelay(620);
@@ -35,14 +42,22 @@ async function playContractAnimation({monsterName, stage}) {
   for (let index = 0; index < pulseCount; index++) {
     const from = index === 0 ? 1 : zoomLevels[index - 1];
     const to = zoomLevels[index];
+    const fromPan = index === 0 ? {x:0,y:0} : panLevels[index - 1];
+    const toPan = panLevels[index];
     paper.style.setProperty('--contract-zoom-from', String(from));
     paper.style.setProperty('--contract-zoom-to', String(to));
+    paper.style.setProperty('--contract-pan-from-x', `${fromPan.x}px`);
+    paper.style.setProperty('--contract-pan-from-y', `${fromPan.y}px`);
+    paper.style.setProperty('--contract-pan-to-x', `${toPan.x}px`);
+    paper.style.setProperty('--contract-pan-to-y', `${toPan.y}px`);
     paper.classList.remove('is-zooming');
     void paper.offsetWidth;
     paper.classList.add('is-zooming');
     await contractAnimationDelay(400);
     paper.classList.remove('is-zooming');
     paper.style.setProperty('--contract-zoom', String(to));
+    paper.style.setProperty('--contract-pan-x', `${toPan.x}px`);
+    paper.style.setProperty('--contract-pan-y', `${toPan.y}px`);
     if (index < pulseCount - 1) await contractAnimationDelay(780);
   }
 
@@ -65,4 +80,10 @@ async function playContractAnimation({monsterName, stage}) {
   paper.style.removeProperty('--contract-zoom');
   paper.style.removeProperty('--contract-zoom-from');
   paper.style.removeProperty('--contract-zoom-to');
+  paper.style.removeProperty('--contract-pan-x');
+  paper.style.removeProperty('--contract-pan-y');
+  paper.style.removeProperty('--contract-pan-from-x');
+  paper.style.removeProperty('--contract-pan-from-y');
+  paper.style.removeProperty('--contract-pan-to-x');
+  paper.style.removeProperty('--contract-pan-to-y');
 }
