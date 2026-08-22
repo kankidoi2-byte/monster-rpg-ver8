@@ -235,10 +235,15 @@ function renderAlchemy(){
   selectedAlchemyRecipeId = recipe.recipeId;
   const unavailable = (save.instances || []).filter(ins => !eligible.includes(ins));
   root.innerHTML = `
-    <div class="alchemy-balance">💰 所持コイン：<b>${save.coins || 0}</b>枚</div>
-    <div class="alchemy-resonance"><b>錬成残響：${save.alchemyResonance}</b><span>残響${recipe.designation.resonanceCost}で錬成限定種を確定で指定錬成できます。</span></div>
-    <div class="alchemy-step">
-      <h2>1. 錬成方法と対象</h2>
+    <nav class="alchemy-flow" aria-label="錬成の手順">
+      <span class="is-current"><b>1</b><small>対象</small></span><span><b>2</b><small>個体</small></span><span><b>3</b><small>素材</small></span><span><b>4</b><small>コスト</small></span><span><b>5</b><small>予測</small></span><span><b>6</b><small>確認</small></span>
+    </nav>
+    <div class="alchemy-wallet-grid">
+      <div class="alchemy-balance"><span>所持コイン</span><b>💰 ${save.coins || 0}枚</b></div>
+      <div class="alchemy-resonance"><span>錬成残響</span><b>✦ ${save.alchemyResonance}</b><small>指定錬成には${recipe.designation.resonanceCost}必要</small></div>
+    </div>
+    <div class="alchemy-step" data-alchemy-step="target">
+      <div class="alchemy-step-heading"><span>1</span><div><h2>狙う錬成を決める</h2><p>完成させたい対象と錬成方法を選びます。</p></div></div>
       <div class="alchemy-mode-options">
         <label><input type="radio" name="alchemyMode" value="normal" onchange="selectAlchemyMode(this.value)" ${selectedAlchemyMode==='normal'?'checked':''}><span><b>通常錬成</b><small>成功率に応じて錬成</small></span></label>
         <label><input type="radio" name="alchemyMode" value="designated" onchange="selectAlchemyMode(this.value)" ${selectedAlchemyMode==='designated'?'checked':''}><span><b>指定錬成</b><small>残響${recipe.designation.resonanceCost}で確定成功</small></span></label>
@@ -247,8 +252,8 @@ function renderAlchemy(){
         ${ALCHEMY_RECIPES.map(entry=>`<option value="${entry.recipeId}" ${entry.recipeId===recipe.recipeId?'selected':''}>${entry.displayName}</option>`).join('')}
       </select></label>
     </div>
-    <div class="alchemy-step">
-      <h2>2. 投入モンスター</h2>
+    <div class="alchemy-step" data-alchemy-step="monster">
+      <div class="alchemy-step-heading"><span>2</span><div><h2>消費するモンスター</h2><p>成長状態に応じて成功率が上がります。</p></div></div>
       <p class="alchemy-warning">⚠️ 投入した個体は結果にかかわらず失われ、元に戻せません。</p>
       <select id="alchemyMonsterSelect" onchange="updateAlchemyPreview()" ${eligible.length?'':'disabled'}>
         ${eligible.length ? eligible.map(ins => `<option value="${ins.uid}">${alchemyInstanceLabel(ins)}</option>`).join('') : '<option value="">投入可能な個体がいません</option>'}
@@ -262,22 +267,25 @@ function renderAlchemy(){
         return `<li>${alchemyInstanceLabel(ins)}：${reasons.join('・')}</li>`;
       }).join('')}</ul></details>` : ''}
     </div>
-    <div class="alchemy-step">
-      <h2>3. 素材品質（各1個）</h2>
+    <div class="alchemy-step" data-alchemy-step="materials">
+      <div class="alchemy-step-heading"><span>3</span><div><h2>素材を選ぶ</h2><p>4種類を各1個消費します。上質素材は成功率を高めます。</p></div></div>
       <div class="alchemy-material-grid">${recipe.materialChoices.map((choice,index) => `
         <label>${choice.label}<select id="alchemyMaterial${index}" onchange="updateAlchemyPreview()">${alchemyMaterialOption(choice.normal)}${alchemyMaterialOption(choice.fine)}</select></label>
       `).join('')}</div>
     </div>
-    ${selectedAlchemyMode==='normal' ? `<div class="alchemy-step">
-      <h2>4. 投入コイン</h2>
+    ${selectedAlchemyMode==='normal' ? `<div class="alchemy-step" data-alchemy-step="cost">
+      <div class="alchemy-step-heading"><span>4</span><div><h2>投入コインを決める</h2><p>成功率・最低保証・失敗時の残響が変化します。</p></div></div>
       <div class="alchemy-coin-options">${recipe.coinOptions.map(option => {
         const failureCount = eligibleAlchemyCandidates(recipe, false, option).length;
         return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="updateAlchemyPreview()" ${option.id===recipe.defaultCoinOptionId?'checked':''} ${failureCount?'':'disabled'}>
           <span>${option.label}<b>${option.amount}枚</b><small>成功率 ${option.bonus>0?'+':''}${option.bonus}%</small><small>${alchemyFailureGuaranteeText(option)}</small><small>失敗時 残響+${alchemyResonanceOnFailure(option)}</small>${failureCount?'':`<small class="alchemy-unavailable">候補0体のため選択不可</small>`}</span>
         </label>`;
       }).join('')}</div>
-    </div>` : `<div class="alchemy-step"><h2>4. 指定錬成の消費</h2><p><b>錬成残響${recipe.designation.resonanceCost} / コイン${recipe.designation.coinAmount}枚</b></p><p class="alchemy-guarantee">成功率抽選・外れ抽選なしで${recipe.displayName}が確定します。</p></div>`}
-    <div id="alchemyPreview"></div>`;
+    </div>` : `<div class="alchemy-step" data-alchemy-step="cost"><div class="alchemy-step-heading"><span>4</span><div><h2>指定錬成の消費</h2><p>残響とコインを使い、抽選なしで完成させます。</p></div></div><div class="alchemy-fixed-cost"><span>錬成残響<b>${recipe.designation.resonanceCost}</b></span><span>コイン<b>${recipe.designation.coinAmount}枚</b></span></div><p class="alchemy-guarantee">成功率抽選・外れ抽選なしで${recipe.displayName}が確定します。</p></div>`}
+    <section class="alchemy-step alchemy-review-step" data-alchemy-step="preview">
+      <div class="alchemy-step-heading"><span>5</span><div><h2>結果予測と消費内容</h2><p>実行前に、失うものと起こり得る結果を確認します。</p></div></div>
+      <div id="alchemyPreview"></div>
+    </section>`;
   updateAlchemyPreview();
 }
 function updateAlchemyPreview(){
@@ -287,9 +295,13 @@ function updateAlchemyPreview(){
   const materialNames = plan.selection.materialIds.map(id => ITEM_BY_ID[id]?.name || '未選択');
   const errors = validateAlchemyPlan(plan);
   preview.innerHTML = `<div class="alchemy-preview-card">
-    <h2>${plan.designated?'指定錬成':'通常錬成'}予定：${plan.recipe.displayName}</h2>
-    <p><b>投入個体：</b>${plan.instance ? alchemyInstanceLabel(plan.instance) : '未選択'}</p>
-    <p><b>使用素材：</b>${materialNames.join(' / ')}</p>
+    <div class="alchemy-preview-title"><span>${plan.designated?'DESIGNATED':'NORMAL'}</span><h2>${plan.recipe.displayName}</h2></div>
+    <div class="alchemy-consumption-summary">
+      <p><small>消費モンスター</small><b>${plan.instance ? alchemyInstanceLabel(plan.instance) : '未選択'}</b></p>
+      <p><small>消費素材</small><b>${materialNames.join(' / ')}</b></p>
+      <p><small>消費コイン</small><b>${plan.coinCost}枚</b></p>
+      <p><small>残響</small><b>${plan.designated ? `-${plan.resonanceCost}` : `失敗時 +${alchemyResonanceOnFailure(plan.coinOption)}`}</b></p>
+    </div>
     ${plan.designated
       ? `<p><b>指定対象：</b>${plan.recipe.displayName}</p><p><b>投入コイン：</b>${plan.coinCost}枚</p><p class="alchemy-guarantee"><b>確定成功：</b>成功率抽選なし / 外れ・残響獲得なし</p>`
       : `<p><b>選択中コイン帯：</b>${plan.coinOption.label}（${plan.coinOption.amount}枚）</p><p class="alchemy-guarantee"><b>最低レアリティ保証：</b>${alchemyFailureGuaranteeText(plan.coinOption)}</p>`}
@@ -298,7 +310,7 @@ function updateAlchemyPreview(){
       ? `<div class="alchemy-rate"><span>${plan.recipe.displayName}</span><strong>確定</strong></div><p><b>個体型：</b>${(ALCHEMY_MONSTER_CONFIGS[designatedAlchemyCandidates(plan.recipe)[0]?.monsterId]?.archetypes||[]).map(type=>type.label).join('・')}から等確率</p>`
       : `<div class="alchemy-rate"><span>${plan.recipe.displayName}成功率</span><strong>${plan.rate}%</strong></div><div class="alchemy-breakdown">基礎${plan.recipe.baseSuccessRate}% / 素材品質 +${plan.fineCount*plan.recipe.fineMaterialBonus}% / レベル +${plan.monsterBonus.levelBonus}% / 進化段階 +${plan.monsterBonus.evolutionBonus}% / コイン ${plan.coinOption.bonus>0?'+':''}${plan.coinOption.bonus}%</div>${alchemyCandidateDisplay(plan)}`}
     ${errors.length ? `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div>` : ''}
-    <button onclick="openAlchemyConfirmation()" ${errors.length || alchemyBusy?'disabled':''}>確認画面へ</button>
+    <div class="alchemy-preview-action"><p>次の画面で最終確認するまで消費されません。</p><button onclick="openAlchemyConfirmation()" ${errors.length || alchemyBusy?'disabled':''}>最終確認へ進む</button></div>
   </div>`;
 }
 function openAlchemyConfirmation(){
@@ -308,17 +320,18 @@ function openAlchemyConfirmation(){
   const target = document.getElementById('alchemyConfirmContent');
   if(!target) return;
   target.innerHTML = `<div class="alchemy-confirm-card">
-    ${vis(by(plan.instance.id))}
+    <nav class="alchemy-flow is-confirm" aria-label="錬成の手順"><span><b>1</b><small>対象</small></span><span><b>2</b><small>個体</small></span><span><b>3</b><small>素材</small></span><span><b>4</b><small>コスト</small></span><span><b>5</b><small>予測</small></span><span class="is-current"><b>6</b><small>確認</small></span></nav>
+    <p class="alchemy-confirm-eyebrow">FINAL CHECK</p>
     <h2>${plan.designated?'指定錬成':'通常錬成'}：${plan.recipe.displayName}</h2>
-    <p><b>投入個体：</b>${alchemyInstanceLabel(plan.instance)}</p>
-    <p>${plan.selection.materialIds.map(id=>ITEM_BY_ID[id].name).join(' / ')}</p>
+    <div class="alchemy-confirm-monster">${vis(by(plan.instance.id))}<p><small>消費モンスター</small><b>${alchemyInstanceLabel(plan.instance)}</b></p></div>
+    <div class="alchemy-confirm-consumption"><p><small>素材4個</small><b>${plan.selection.materialIds.map(id=>ITEM_BY_ID[id].name).join(' / ')}</b></p><p><small>コイン</small><b>${plan.coinCost}枚</b></p>${plan.designated?`<p><small>錬成残響</small><b>${plan.resonanceCost}</b></p>`:''}</div>
     ${plan.designated
       ? `<p><b>指定対象：</b>${plan.recipe.displayName}</p><p><b>投入コイン：</b>${plan.coinCost}枚</p><p><b>結果：</b>確定成功</p><p><b>個体型：</b>${(ALCHEMY_MONSTER_CONFIGS[designatedAlchemyCandidates(plan.recipe)[0]?.monsterId]?.archetypes||[]).map(type=>type.label).join('・')}から等確率</p>`
       : `<p><b>選択中コイン帯：</b>${plan.coinOption.label}（${plan.coinOption.amount}枚）</p><p><b>${plan.recipe.displayName}成功率：</b>${plan.rate}%</p><p class="alchemy-guarantee"><b>最低レアリティ保証：</b>${alchemyFailureGuaranteeText(plan.coinOption)}</p>`}
     ${alchemyResonanceStatus(plan)}
     ${plan.designated ? '' : alchemyCandidateDisplay(plan, true)}
-    <p class="alchemy-warning">この操作を確定すると、投入モンスター・素材4個・コイン${plan.designated?'・錬成残響':''}を消費します。元には戻せません。</p>
-    <button id="alchemyExecuteButton" onclick="executeAlchemyConfirmed()">消費して錬成を実行</button>
+    <p class="alchemy-warning alchemy-final-warning"><b>ここから先は取り消せません。</b><span>投入モンスター・素材4個・コイン${plan.designated?'・錬成残響':''}を消費します。</span></p>
+    <button id="alchemyExecuteButton" class="alchemy-execute-button" onclick="executeAlchemyConfirmed()">内容を確定して錬成を実行</button>
     <button onclick="showAlchemy()" class="secondary-button">内容を修正する</button>
   </div>`;
   show('alchemyConfirm');
