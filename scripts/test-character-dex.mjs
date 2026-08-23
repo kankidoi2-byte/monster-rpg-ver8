@@ -27,7 +27,8 @@ assert.match(dexSource, /M\.filter\(isCharacterUnit\)/);
 assert.match(coreSource, /function isContractableUnit/);
 assert.match(itemsSource, /!isContractableUnit\(enemy\)/);
 assert.match(multiSource, /isContractableUnit\(entry\.mon\)/);
-assert.match(saveSource, /localStorage\.getItem\('mb_v95c'\)/);
-assert.match(saveSource, /localStorage\.setItem\('mb_v95c'/);
+assert.match(saveSource, /const SAVE_KEY = 'mb_v95c'/);
+assert.match(saveSource, /safeStorageGet\(SAVE_KEY\)/);
+assert.match(saveSource, /safeStorageSet\(SAVE_KEY,raw\)/);
 
 console.log('Elna character dex validation passed (5 forms, stable IDs/numbers, contract guards, and save key).');

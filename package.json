@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "check": "npm run check:data && npm run check:images && npm run check:ui-contract && npm run check:character-dex && npm run check:contract-animation && npm run check:three-way && npm run check:alchemy && npm run check:expedition && npm run check:golden-land",
+    "check": "npm run check:data && npm run check:images && npm run check:ui-contract && npm run check:character-dex && npm run check:contract-animation && npm run check:three-way && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save",
     "check:data": "node scripts/validate-data.mjs",
     "check:images": "node scripts/check-image-sizes.mjs",
     "check:ui-contract": "node scripts/test-ui-contract.mjs",
@@ -13,7 +13,8 @@
     "check:three-way": "node scripts/test-three-way.mjs",
     "check:alchemy": "node scripts/test-alchemy-workbench.mjs",
     "check:expedition": "node scripts/test-expedition.mjs",
-    "check:golden-land": "node scripts/test-golden-land.mjs"
+    "check:golden-land": "node scripts/test-golden-land.mjs",
+    "check:save": "node scripts/test-save-migrations.mjs"
   },
   "engines": {
     "node": ">=20"

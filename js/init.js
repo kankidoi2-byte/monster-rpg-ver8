@@ -1,4 +1,23 @@
 /* ===== 初期化 ===== */
+function initSaveManagementUi(){
+  const resetButton=document.querySelector('#moreMenu .ui-danger-button');
+  if(!resetButton||document.querySelector('#moreMenu .save-management'))return;
+  const panel=document.createElement('details');
+  panel.className='save-management';
+  panel.innerHTML=`<summary>💾 セーブ管理</summary>
+    <p>機種変更や破損に備えて、セーブデータを端末へ保存できます。</p>
+    <div class="save-management-actions">
+      <button type="button" onclick="exportSaveData()">セーブを書き出す</button>
+      <button type="button" onclick="openSaveImport()">セーブを読み込む</button>
+      <button type="button" onclick="restoreLastKnownGood()">直前のバックアップへ戻す</button>
+      <button type="button" onclick="showSaveRecoveryReport()">修復・移行記録を見る</button>
+      <button type="button" onclick="copySaveText('current')">現在の内容をコピー</button>
+      <button type="button" onclick="copySaveText('corrupt')">破損内容をコピー</button>
+    </div>
+    <input id="saveImportInput" type="file" accept="application/json,.json" hidden onchange="importSaveData(this)">`;
+  resetButton.before(panel);
+}
+initSaveManagementUi();
 initStarters();
 migrateSkillSystem();
 saveGame();
