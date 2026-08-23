@@ -67,7 +67,7 @@ function selectAlchemyCoin(optionId){
 }
 function alchemyEligibleInstances(){
   return (save.instances || []).filter(ins =>
-    !ins.locked && !(save.party || []).includes(ins.uid) && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)) && save.instances.length > 1 && by(ins.id)
+    !ins.locked && !(save.party || []).includes(ins.uid) && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)) && save.instances.length > 1 && isAlchemyCatalystUnit(by(ins.id))
   );
 }
 function alchemyInstanceLabel(ins){
@@ -117,6 +117,7 @@ function alchemyResonanceStatus(plan){
 function isAlchemyCandidateEligible(candidate, context={}){
   const mon = by(candidate?.monsterId);
   if(!mon) return false;
+  if(!isAlchemyResultEligible(mon, context.resultKind)) return false;
   const conditions = candidate.conditions || {};
   const requiredCoinOptionIds = Array.isArray(candidate.requiredCoinOptionIds) ? candidate.requiredCoinOptionIds : [];
   if(requiredCoinOptionIds.length && !requiredCoinOptionIds.includes(context.coinOptionId)) return false;
@@ -136,6 +137,7 @@ function isAlchemyCandidateEligible(candidate, context={}){
 }
 function eligibleAlchemyCandidates(recipe, success, coinOption=null){
   const context = {
+    resultKind:success ? 'success' : 'failure',
     minimumRarity:success ? null : alchemyMinimumFailureRarity(coinOption),
     coinOptionId:coinOption?.id || null
   };
@@ -143,7 +145,7 @@ function eligibleAlchemyCandidates(recipe, success, coinOption=null){
 }
 function designatedAlchemyCandidates(recipe){
   return eligibleAlchemyCandidates(recipe, true).filter(candidate =>
-    candidate.alchemyInstance === true && by(candidate.monsterId)?.alchemyExclusive === true
+    candidate.alchemyInstance === true && isAlchemyResultEligible(by(candidate.monsterId),'success')
   );
 }
 function alchemyFailureCandidates(recipe=resolveAlchemyRecipe(), coinOption=null){
