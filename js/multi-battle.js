@@ -299,12 +299,12 @@ function winMultiBattle(){
 function renderMultiContractPanel(){
   const panel=document.getElementById('multiContractPanel');if(!panel||!multiBattle?.finished)return;
   const outcomeActions=document.getElementById('battleOutcomeActions');if(outcomeActions&&panel.parentElement!==outcomeActions)outcomeActions.appendChild(panel);
-  const candidates=multiBattle.enemies.filter(entry=>entry.defeatedByPlayer&&!multiBattle.contractAttempts[entry.id]);
+  const candidates=multiBattle.enemies.filter(entry=>entry.defeatedByPlayer&&isContractableUnit(entry.mon)&&!multiBattle.contractAttempts[entry.id]);
   panel.classList.remove('hidden');panel.innerHTML=`<h3>🤝 契約候補</h3>${candidates.length?candidates.map(entry=>`<button onclick="selectMultiBattleContractTarget('${entry.id}')">${entry.mon.name}と契約</button>`).join(''):'<p class="small">契約できる相手はいません（プレイヤーが倒した相手のみ）。</p>'}`;
 }
-function selectMultiBattleContractTarget(id){const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
+function selectMultiBattleContractTarget(id){const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
 async function useMultiBattleContractScroll(itemId){
-  const entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;if(!entry||multiBattle.contractAttempts[entry.id]){show('battle');return;}if((save.items[itemId]||0)<=0){alert(`${it.name}を持っていない！`);show('battle');return;}
+  const entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;if(!entry||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[entry.id]){show('battle');return;}if((save.items[itemId]||0)<=0){alert(`${it.name}を持っていない！`);show('battle');return;}
   save.items[itemId]--;const rate=Math.min(.95,(entry.mon.catchRate??.25)*(it.catchMultiplier||1)),roll=Math.random(),animationStage=contractAnimationStage(roll,rate),ok=animationStage===3;multiBattle.contractAttempts[entry.id]=true;pendingMultiBattleContractId=null;
   if(ok)addInstance(entry.mon.id);saveGame();show('battle');busy=true;await playContractAnimation({monsterName:entry.mon.name,stage:animationStage});
   if(ok){appendMultiLog(`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`);}else{appendMultiLog(`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);}busy=false;updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();

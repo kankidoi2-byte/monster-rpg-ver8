@@ -222,6 +222,11 @@ function askUseContractScroll(itemId){
     show('battle');
     return;
   }
+  if(enemy && !isContractableUnit(enemy)){
+    alert(`${enemy.name}はキャラクターのため、バトル中の契約対象ではありません。`);
+    show('battle');
+    return;
+  }
   ensureContractScrollItem();
   // ① 契約書0枚チェック
   const hasAny = SHOP_ITEMS.filter(it => it.contract).some(it => (save.items[it.id]||0) > 0);
@@ -246,7 +251,7 @@ function useContractScrollConfirmed(){
     useMultiBattleContractScroll(itemId);
     return;
   }
-  if(!enemy){
+  if(!isContractableUnit(enemy)){
     alert('契約できる相手がいません。');
     show('battle');
     return;
@@ -266,7 +271,7 @@ function useContractScrollConfirmed(){
 async function tryContractWithScroll(itemId='contract_scroll'){
   ensureContractScrollItem();
   const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
-  if(!enemy){
+  if(!isContractableUnit(enemy)){
     alert('契約できる相手がいません。');
     show('battle');
     return;

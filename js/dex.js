@@ -47,23 +47,43 @@ function showItemDexDetail(itemId){
     ${it.usableFromDex ? `<button onclick="useGoldenLandMap()" ${goldenLandMapIsReady()?'disabled':''}>${goldenLandMapIsReady()?'地図使用中（黄金郷を予約済み）':'この地図を使う'}</button>` : ''}
   </div>`;
 }
-function showDexDetail(id) {
+function renderUnitDexDetail(id, targetId, numberLabel) {
   const m = by(id); if (!m) return;
-  document.getElementById('dexDetail').innerHTML = `<div class="dex-detail ui-dex-detail">
+  const detail = document.getElementById(targetId); if (!detail) return;
+  detail.innerHTML = `<div class="dex-detail ui-dex-detail">
     ${vis(m)}<h2>${m.name}</h2>
-    <p>No.${m.no} / <span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p>
+    <p>${numberLabel(m)} / <span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p>
     <p style="color:#8892b0">${m.desc}</p><h3>技一覧</h3>
     ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<div class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</div><div style="font-size:12px;color:#aab3cc">${moveEffectText(mv)}</div></div>`;}).join('')}
   </div>`;
-  document.getElementById('dexDetail').scrollIntoView({behavior:'smooth',block:'start'});
+  detail.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function characterDexNumber(m) {
+  return `C-${String(m.characterNo).padStart(3,'0')}`;
+}
+function showDexDetail(id) {
+  renderUnitDexDetail(id, 'dexDetail', m => `No.${m.no}`);
+}
+function showCharacterDexDetail(id) {
+  renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber);
 }
 function renderDex() {
   const screen = document.getElementById('dex');
   if(!screen?.classList.contains('active')) return;
   document.getElementById('dexDetail').innerHTML = '';
   document.getElementById('dexList').innerHTML =
-    [...M].sort((a,b)=>(a.no||999)-(b.no||999)).map(m => `
+    M.filter(m=>!isCharacterUnit(m)).sort((a,b)=>(a.no||999)-(b.no||999)).map(m => `
       <button class="monster-dex-card" onclick="showDexDetail('${m.id}')">
         <span class="monster-dex-no">No.${m.no}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
+        <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
+}
+function renderCharacterDex() {
+  const screen = document.getElementById('characterDex');
+  if(!screen?.classList.contains('active')) return;
+  document.getElementById('characterDexDetail').innerHTML = '';
+  document.getElementById('characterDexList').innerHTML =
+    M.filter(isCharacterUnit).sort((a,b)=>(a.characterNo||999)-(b.characterNo||999)).map(m => `
+      <button class="monster-dex-card character-dex-card" onclick="showCharacterDexDetail('${m.id}')">
+        <span class="monster-dex-no character-dex-no">${characterDexNumber(m)}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
         <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
 }

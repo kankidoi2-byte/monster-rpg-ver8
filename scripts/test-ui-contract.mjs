@@ -25,7 +25,7 @@ const screenIds = [
   'home', 'growthHub', 'moreMenu', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
   'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'party',
-  'skillEdit', 'typeChart', 'dex', 'itemDex'
+  'skillEdit', 'typeChart', 'dex', 'characterDex', 'itemDex'
 ];
 screenIds.forEach(id => {
   const pattern = new RegExp(`<section\\s+id=["']${id}["'][^>]*class=["'][^"']*screen`);
@@ -58,6 +58,11 @@ expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), '
 expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
 expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
 expect(read('js/dex.js').includes('monster-dex-card'), 'monster-first dex cards are missing');
+expect(index.includes('<strong>キャラクター図鑑</strong>'), 'character dex menu entry is missing');
+expect(read('js/dex.js').includes('function renderCharacterDex'), 'character dex renderer is missing');
+expect(read('js/dex.js').includes('M.filter(m=>!isCharacterUnit(m))'), 'characters are not excluded from the monster dex');
+expect(read('js/items.js').includes('!isContractableUnit(enemy)'), 'single-battle character contract guard is missing');
+expect(read('js/multi-battle.js').includes('isContractableUnit(entry.mon)'), 'multi-battle character contract guard is missing');
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
 expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');
 expect(read('js/items.js').includes('shop-item-card'), 'shared shop item cards are missing');
