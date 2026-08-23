@@ -18,7 +18,7 @@ function skillCardHeader(sk){const types=skillTypes(sk);return `<div class="skil
 
 /* ===== 属性相性 ===== */
 /* ===== 技カード定義・技装備システム ===== */
-function skillIdFromMove(mv){
+function legacySkillIdFromMove(mv){
   const name = String(mv[0] || 'skill');
   const code = Array.from(name).map(ch => ch.charCodeAt(0).toString(36)).join('_');
   return `sk_${code}_${moveTypes(mv).join('-')}_${mv[1] || 0}_${mv[3] || 'none'}`;
@@ -33,8 +33,14 @@ function skillCostFromMove(mv){
 }
 const MOVE_CARDS = [];
 const _skillSeen = new Set();
-M.forEach(mon => (mon.moves || []).forEach(mv => {
-  const id = skillIdFromMove(mv);
+const _skillIdByMove = new WeakMap();
+const LEGACY_SKILL_ID_ALIASES = Object.create(null);
+M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
+  const id = mv?.[8];
+  if (typeof id !== 'string' || !id) throw new Error(`固定skillIdがありません: ${mon.id} moves[${index}]`);
+  _skillIdByMove.set(mv,id);
+  const legacyId = legacySkillIdFromMove(mv);
+  if (!LEGACY_SKILL_ID_ALIASES[legacyId]) LEGACY_SKILL_ID_ALIASES[legacyId] = id;
   if (_skillSeen.has(id)) return;
   _skillSeen.add(id);
   const types=moveTypes(mv);
@@ -45,6 +51,12 @@ M.forEach(mon => (mon.moves || []).forEach(mv => {
   });
 }));
 const SKILL_BY_ID = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id, sk]));
+function skillIdFromMove(mv){
+  return (typeof mv?.[8] === 'string' && mv[8]) || _skillIdByMove.get(mv) || legacySkillIdFromMove(mv);
+}
+function normalizeSkillId(skillId){
+  return SKILL_BY_ID[skillId] ? skillId : (LEGACY_SKILL_ID_ALIASES[skillId] || skillId);
+}
 function skillToMove(skillId){
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return ['通常攻撃',24,'normal'];
@@ -113,8 +125,17 @@ function itemInlineVisual(it, className='item-inline-image'){
     : (it.icon || '📦');
 }
 function by(id)   { return M.find(x => x.id === id); }
-function isCharacterUnit(unit) { return unit?.unitType === 'character'; }
-function isContractableUnit(unit) { return Boolean(unit) && !isCharacterUnit(unit) && unit.contractable !== false; }
+function isCharacterUnit(unit) { return unit?.entityKind === 'character' || (!unit?.entityKind && unit?.unitType === 'character'); }
+function entityEligibility(unit, key, legacyFallback=false) {
+  if (!unit) return false;
+  if (typeof unit.eligibility?.[key] === 'boolean') return unit.eligibility[key];
+  return typeof legacyFallback === 'function' ? Boolean(legacyFallback(unit)) : Boolean(legacyFallback);
+}
+function isContractableUnit(unit) { return entityEligibility(unit,'contract',value => !isCharacterUnit(value) && value.contractable !== false); }
+function isAlchemyCatalystUnit(unit) { return entityEligibility(unit,'alchemyCatalyst',value => !isCharacterUnit(value)); }
+function isAlchemyResultEligible(unit, resultKind) {
+  return entityEligibility(unit,resultKind === 'success' ? 'alchemySuccess' : 'alchemyFailure',false);
+}
 function needExp(lv) { return lv * 60; }
 function maxHp(m, level) {
   // Ver5.1 Claude修正: 種族IDだけで検索するinsLevel()に頼ると、

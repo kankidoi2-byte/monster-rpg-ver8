@@ -45,6 +45,7 @@ function migrateSave(payload,report=[]){
   return payload;
 }
 function nonNegativeInteger(value,fallback=0){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.floor(n):fallback;}
+function repairSkillId(value){return typeof value==='string'&&typeof normalizeSkillId==='function'?normalizeSkillId(value):value;}
 function repairSave(payload,report=[]){
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
   if(!isSaveObject(payload.saveMeta))payload.saveMeta=defaults.saveMeta;
@@ -58,7 +59,9 @@ function repairSave(payload,report=[]){
     if(canValidateMonsters&&!knownMonsterIds.has(entry.id)){report.push(`未知のモンスターID ${entry.id} を隔離`);payload.quarantine.unknownInstances.push(entry);return;}
     let instanceUid=typeof entry.uid==='string'&&entry.uid?entry.uid:'';
     if(!instanceUid||seenUids.has(instanceUid)){instanceUid=`repair_${Date.now().toString(36)}_${index.toString(36)}`;report.push('欠損・重複した個体UIDを再発行');}
-    seenUids.add(instanceUid);entry.uid=instanceUid;entry.level=Math.max(1,nonNegativeInteger(entry.level,1));entry.exp=nonNegativeInteger(entry.exp);entry.locked=entry.locked===true;payload.instances.push(entry);
+    seenUids.add(instanceUid);entry.uid=instanceUid;entry.level=Math.max(1,nonNegativeInteger(entry.level,1));entry.exp=nonNegativeInteger(entry.exp);entry.locked=entry.locked===true;
+    if(Array.isArray(entry.alchemy?.exclusiveSkillIds))entry.alchemy.exclusiveSkillIds=entry.alchemy.exclusiveSkillIds.map(repairSkillId).filter(x=>typeof x==='string');
+    payload.instances.push(entry);
   });
   const rawCaught=Array.isArray(payload.caught)?payload.caught:[];
   payload.caught=[...new Set(rawCaught.filter(id=>{const valid=typeof id==='string'&&(!canValidateMonsters||knownMonsterIds.has(id));if(!valid&&typeof id==='string')payload.quarantine.unknownCaughtIds.push(id);return valid;}).concat(payload.instances.map(entry=>entry.id)))];
@@ -69,7 +72,9 @@ function repairSave(payload,report=[]){
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
   payload.history=isSaveObject(payload.history)?payload.history:defaults.history;payload.history.wins=nonNegativeInteger(payload.history.wins);payload.history.logs=Array.isArray(payload.history.logs)?payload.history.logs.filter(x=>typeof x==='string').slice(-30):[];
   payload.skillCards=isSaveObject(payload.skillCards)?payload.skillCards:{};payload.equippedSkills=isSaveObject(payload.equippedSkills)?payload.equippedSkills:{};
-  Object.keys(payload.equippedSkills).forEach(key=>{if(!seenUids.has(key))delete payload.equippedSkills[key];else payload.equippedSkills[key]=Array.isArray(payload.equippedSkills[key])?payload.equippedSkills[key].filter(x=>typeof x==='string'):[];});
+  let migratedSkillIds=false;const normalizedSkillCards={};Object.entries(payload.skillCards).forEach(([id,count])=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;normalizedSkillCards[normalizedId]=Math.max(nonNegativeInteger(normalizedSkillCards[normalizedId]),nonNegativeInteger(count));});payload.skillCards=normalizedSkillCards;
+  Object.keys(payload.equippedSkills).forEach(key=>{if(!seenUids.has(key))delete payload.equippedSkills[key];else payload.equippedSkills[key]=Array.isArray(payload.equippedSkills[key])?payload.equippedSkills[key].filter(x=>typeof x==='string').map(id=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;return normalizedId;}):[];});
+  if(migratedSkillIds&&!payload.saveMeta.migrations.includes('fixed_skill_ids_v1')){payload.saveMeta.migrations.push('fixed_skill_ids_v1');report.push('旧技IDを固定skillIdへ移行');}
   payload.itemDex=Array.isArray(payload.itemDex)?[...new Set(payload.itemDex.filter(x=>typeof x==='string'))]:[];payload.goldenLandMapReady=payload.goldenLandMapReady===true&&payload.items.golden_land_map>0;
   const knownMapIds=new Set((typeof MAPS!=='undefined'&&Array.isArray(MAPS)?MAPS:[]).map(map=>map.id));const validDistances=new Set(['short','medium','long']);
   payload.expeditions=isSaveObject(payload.expeditions)?payload.expeditions:defaults.expeditions;payload.expeditions.completedCount=nonNegativeInteger(payload.expeditions.completedCount);

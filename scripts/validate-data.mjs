@@ -78,10 +78,14 @@ if (data) {
 
   checkUnique('Monster IDs', monsterIds);
   checkUnique('Monster encyclopedia numbers', data.M.map(monster => monster.no));
-  const characterRecords = data.M.filter(monster => monster.unitType === 'character');
+  const characterRecords = data.M.filter(monster => monster.entityKind === 'character');
   checkUnique('Character encyclopedia numbers', characterRecords.map(character => character.characterNo));
   checkUnique('Map IDs', data.MAPS.map(map => map.id));
   checkUnique('Item IDs', itemIds);
+
+  const allowedEntityKinds = new Set(['monster','character']);
+  const requiredEligibilityKeys = ['contract','alchemyCatalyst','alchemySuccess','alchemyFailure'];
+  const skillDefinitions = new Map();
 
   for (const monster of data.M) {
     if (!monster.id || !monster.name || !Number.isInteger(monster.no)) {
@@ -96,8 +100,38 @@ if (data) {
     if (!Array.isArray(monster.moves) || !monster.moves.length) {
       fail(`Monster ${monster.id} has no moves`);
     }
-    if (monster.unitType === 'character' && (!Number.isInteger(monster.characterNo) || monster.contractable !== false)) {
-      fail(`Character ${monster.id} requires an integer characterNo and contractable:false`);
+    if (!allowedEntityKinds.has(monster.entityKind)) {
+      fail(`Entity ${monster.id} has an invalid entityKind: ${monster.entityKind}`);
+    }
+    if (!monster.eligibility || requiredEligibilityKeys.some(key => typeof monster.eligibility[key] !== 'boolean')) {
+      fail(`Entity ${monster.id} requires boolean eligibility fields: ${requiredEligibilityKeys.join(', ')}`);
+    }
+    if (Array.isArray(monster.moves)) {
+      monster.moves.forEach((move,index) => {
+        const skillId = move?.[8];
+        if (!/^skill_[a-z0-9_]+$/.test(skillId)) {
+          fail(`Entity ${monster.id} move ${index + 1} has an invalid fixed skillId: ${skillId}`);
+          return;
+        }
+        const definition = JSON.stringify(move.slice(0,8));
+        if (skillDefinitions.has(skillId) && skillDefinitions.get(skillId) !== definition) {
+          fail(`Fixed skillId ${skillId} is reused with a different move definition`);
+        } else {
+          skillDefinitions.set(skillId, definition);
+        }
+      });
+    }
+    if (monster.entityKind === 'character' && (!Number.isInteger(monster.characterNo) || monster.contractable !== false || monster.unitType !== 'character')) {
+      fail(`Character ${monster.id} requires characterNo, legacy unitType:character, and contractable:false`);
+    }
+    if (monster.entityKind === 'character' && (monster.eligibility.contract || monster.eligibility.alchemyCatalyst || monster.eligibility.alchemySuccess || monster.eligibility.alchemyFailure)) {
+      fail(`Character ${monster.id} cannot be contract or alchemy eligible`);
+    }
+    if (monster.entityKind === 'monster' && monster.eligibility.contract !== (monster.contractable !== false)) {
+      fail(`Monster ${monster.id} contract eligibility conflicts with contractable`);
+    }
+    if (monster.alchemyExclusive === true && monster.eligibility.alchemySuccess !== true) {
+      fail(`Alchemy-exclusive monster ${monster.id} must be success eligible`);
     }
     if (monster.evolution && !monsterIdSet.has(monster.evolution)) {
       fail(`Monster ${monster.id} evolves to unknown monster ${monster.evolution}`);
@@ -150,6 +184,8 @@ if (data) {
   for (const candidate of data.ALCHEMY_ALL_FAILURE_CANDIDATES) {
     if (!monsterIdSet.has(candidate.monsterId)) {
       fail(`Alchemy candidate uses unknown monster ID ${candidate.monsterId}`);
+    } else if (!data.M.find(monster => monster.id === candidate.monsterId)?.eligibility?.alchemyFailure) {
+      fail(`Alchemy failure candidate ${candidate.monsterId} is not failure eligible`);
     }
   }
   for (const recipe of data.ALCHEMY_RECIPES) {
@@ -158,9 +194,18 @@ if (data) {
         if (!itemIdSet.has(itemId)) fail(`Alchemy recipe ${recipe.recipeId} uses unknown item ${itemId}`);
       }
     }
-    for (const candidate of [...(recipe.successCandidates || []), ...(recipe.failureCandidates || [])]) {
+    for (const candidate of recipe.successCandidates || []) {
       if (!monsterIdSet.has(candidate.monsterId)) {
         fail(`Alchemy recipe ${recipe.recipeId} uses unknown monster ${candidate.monsterId}`);
+      } else if (!data.M.find(monster => monster.id === candidate.monsterId)?.eligibility?.alchemySuccess) {
+        fail(`Alchemy recipe ${recipe.recipeId} success candidate ${candidate.monsterId} is not success eligible`);
+      }
+    }
+    for (const candidate of recipe.failureCandidates || []) {
+      if (!monsterIdSet.has(candidate.monsterId)) {
+        fail(`Alchemy recipe ${recipe.recipeId} uses unknown monster ${candidate.monsterId}`);
+      } else if (!data.M.find(monster => monster.id === candidate.monsterId)?.eligibility?.alchemyFailure) {
+        fail(`Alchemy recipe ${recipe.recipeId} failure candidate ${candidate.monsterId} is not failure eligible`);
       }
     }
   }
@@ -186,6 +231,7 @@ if (data) {
   notes.push(`${itemRecords.length} items`);
   notes.push(`${data.FUSIONS.length} fusions`);
   notes.push(`${data.ALCHEMY_RECIPES.length} alchemy recipes`);
+  notes.push(`${skillDefinitions.size} fixed skills`);
 }
 
 if (errors.length) {
