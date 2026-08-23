@@ -78,6 +78,8 @@ if (data) {
 
   checkUnique('Monster IDs', monsterIds);
   checkUnique('Monster encyclopedia numbers', data.M.map(monster => monster.no));
+  const characterRecords = data.M.filter(monster => monster.unitType === 'character');
+  checkUnique('Character encyclopedia numbers', characterRecords.map(character => character.characterNo));
   checkUnique('Map IDs', data.MAPS.map(map => map.id));
   checkUnique('Item IDs', itemIds);
 
@@ -94,6 +96,9 @@ if (data) {
     if (!Array.isArray(monster.moves) || !monster.moves.length) {
       fail(`Monster ${monster.id} has no moves`);
     }
+    if (monster.unitType === 'character' && (!Number.isInteger(monster.characterNo) || monster.contractable !== false)) {
+      fail(`Character ${monster.id} requires an integer characterNo and contractable:false`);
+    }
     if (monster.evolution && !monsterIdSet.has(monster.evolution)) {
       fail(`Monster ${monster.id} evolves to unknown monster ${monster.evolution}`);
     }
@@ -105,6 +110,12 @@ if (data) {
     if (monster.dropItem && !itemIdSet.has(monster.dropItem)) {
       fail(`Monster ${monster.id} drops unknown item ${monster.dropItem}`);
     }
+  }
+
+  const expectedElnaCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'];
+  const actualCharacterIds = characterRecords.map(character => character.id);
+  if (actualCharacterIds.length !== expectedElnaCharacters.length || expectedElnaCharacters.some(id => !actualCharacterIds.includes(id))) {
+    fail(`Elna-only character dex mismatch: ${actualCharacterIds.join(', ')}`);
   }
 
   for (const [key, imagePath] of Object.entries(data.IMG)) {

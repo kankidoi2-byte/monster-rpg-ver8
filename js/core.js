@@ -113,6 +113,8 @@ function itemInlineVisual(it, className='item-inline-image'){
     : (it.icon || '📦');
 }
 function by(id)   { return M.find(x => x.id === id); }
+function isCharacterUnit(unit) { return unit?.unitType === 'character'; }
+function isContractableUnit(unit) { return Boolean(unit) && !isCharacterUnit(unit) && unit.contractable !== false; }
 function needExp(lv) { return lv * 60; }
 function maxHp(m, level) {
   // Ver5.1 Claude修正: 種族IDだけで検索するinsLevel()に頼ると、
