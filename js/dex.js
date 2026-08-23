@@ -61,8 +61,11 @@ function renderUnitDexDetail(id, targetId, numberLabel) {
 function characterDexNumber(m) {
   return `C-${String(m.characterNo).padStart(3,'0')}`;
 }
+function monsterDexNumber(m) {
+  return m.dexNo ?? m.no;
+}
 function showDexDetail(id) {
-  renderUnitDexDetail(id, 'dexDetail', m => `No.${m.no}`);
+  renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`);
 }
 function showCharacterDexDetail(id) {
   renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber);
@@ -72,9 +75,9 @@ function renderDex() {
   if(!screen?.classList.contains('active')) return;
   document.getElementById('dexDetail').innerHTML = '';
   document.getElementById('dexList').innerHTML =
-    M.filter(m=>!isCharacterUnit(m)).sort((a,b)=>(a.no||999)-(b.no||999)).map(m => `
+    M.filter(m=>!isCharacterUnit(m)).sort((a,b)=>monsterDexNumber(a)-monsterDexNumber(b)).map(m => `
       <button class="monster-dex-card" onclick="showDexDetail('${m.id}')">
-        <span class="monster-dex-no">No.${m.no}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
+        <span class="monster-dex-no">No.${monsterDexNumber(m)}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
         <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
 }
 function renderCharacterDex() {

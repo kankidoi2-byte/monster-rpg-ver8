@@ -72,13 +72,16 @@ const data = context.__GAME_DATA__;
 if (data) {
   const monsterIds = data.M.map(monster => monster.id);
   const monsterIdSet = new Set(monsterIds);
+  const monsterRecords = data.M.filter(monster => monster.entityKind === 'monster');
+  const characterRecords = data.M.filter(monster => monster.entityKind === 'character');
+  const monsterDexNumbers = monsterRecords.map(monster => monster.dexNo ?? monster.no);
   const itemRecords = [...data.SHOP_ITEMS, ...data.ITEM_DEX_EXTRA];
   const itemIds = itemRecords.map(item => item.id);
   const itemIdSet = new Set(itemIds);
 
   checkUnique('Monster IDs', monsterIds);
-  checkUnique('Monster encyclopedia numbers', data.M.map(monster => monster.no));
-  const characterRecords = data.M.filter(monster => monster.entityKind === 'character');
+  checkUnique('Legacy entity record numbers', data.M.map(monster => monster.no));
+  checkUnique('Monster encyclopedia numbers', monsterDexNumbers);
   checkUnique('Character encyclopedia numbers', characterRecords.map(character => character.characterNo));
   checkUnique('Map IDs', data.MAPS.map(map => map.id));
   checkUnique('Item IDs', itemIds);
@@ -91,6 +94,9 @@ if (data) {
     if (!monster.id || !monster.name || !Number.isInteger(monster.no)) {
       fail(`Monster record is missing id, name, or integer no: ${JSON.stringify(monster)}`);
       continue;
+    }
+    if (monster.entityKind === 'monster' && !Number.isInteger(monster.dexNo ?? monster.no)) {
+      fail(`Monster ${monster.id} requires an integer encyclopedia number`);
     }
     if (!monster.imgKey || !data.IMG[monster.imgKey]) {
       fail(`Monster ${monster.id} has an unknown imgKey: ${monster.imgKey}`);
@@ -130,7 +136,7 @@ if (data) {
     if (monster.entityKind === 'monster' && monster.eligibility.contract !== (monster.contractable !== false)) {
       fail(`Monster ${monster.id} contract eligibility conflicts with contractable`);
     }
-    if (monster.alchemyExclusive === true && monster.eligibility.alchemySuccess !== true) {
+    if (monster.alchemyExclusive === true && monster.evolutionOnly !== true && monster.eligibility.alchemySuccess !== true) {
       fail(`Alchemy-exclusive monster ${monster.id} must be success eligible`);
     }
     if (monster.evolution && !monsterIdSet.has(monster.evolution)) {
@@ -146,10 +152,15 @@ if (data) {
     }
   }
 
-  const expectedElnaCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'];
+  const expectedCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer'];
   const actualCharacterIds = characterRecords.map(character => character.id);
-  if (actualCharacterIds.length !== expectedElnaCharacters.length || expectedElnaCharacters.some(id => !actualCharacterIds.includes(id))) {
-    fail(`Elna-only character dex mismatch: ${actualCharacterIds.join(', ')}`);
+  if (actualCharacterIds.length !== expectedCharacters.length || expectedCharacters.some(id => !actualCharacterIds.includes(id))) {
+    fail(`Character dex mismatch: ${actualCharacterIds.join(', ')}`);
+  }
+  const sortedMonsterDexNumbers = [...monsterDexNumbers].sort((a,b) => a - b);
+  const expectedMonsterDexNumbers = Array.from({length:50}, (_,index) => index + 1);
+  if (JSON.stringify(sortedMonsterDexNumbers) !== JSON.stringify(expectedMonsterDexNumbers)) {
+    fail(`Prologue monster dex must be continuous No.1-50: ${sortedMonsterDexNumbers.join(', ')}`);
   }
 
   for (const [key, imagePath] of Object.entries(data.IMG)) {
@@ -226,7 +237,7 @@ if (data) {
   const primarySaveKey = saveSource.match(/const SAVE_KEY\s*=\s*['"]([^'"]+)['"]/ )?.[1];
   if (primarySaveKey !== 'mb_v95c') fail(`Unexpected primary save key: ${primarySaveKey || 'none'}`);
 
-  notes.push(`${data.M.length} monsters`);
+  notes.push(`${data.M.length} entities (${monsterRecords.length} monsters, ${characterRecords.length} characters)`);
   notes.push(`${data.MAPS.length} maps`);
   notes.push(`${itemRecords.length} items`);
   notes.push(`${data.FUSIONS.length} fusions`);
