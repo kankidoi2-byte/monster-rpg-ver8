@@ -167,31 +167,19 @@ if (data) {
 
   const saveSource = read('js/save.js');
   const initialItemsMatch = saveSource.match(/items:\{([^}]*)\}/s);
-  const migrationMatch = saveSource.match(/\/\/ マイグレーション\s*\n(\[[\s\S]*?\])\.forEach/);
   const initialItemIds = initialItemsMatch
     ? [...initialItemsMatch[1].matchAll(/([A-Za-z_$][\w$]*)\s*:/g)].map(match => match[1])
     : [];
-  let migrationItemIds = [];
-  if (migrationMatch) {
-    try {
-      migrationItemIds = vm.runInNewContext(migrationMatch[1]);
-    } catch (error) {
-      fail(`Could not read the save item migration list: ${error.message}`);
-    }
-  }
+  const migratesItemsFromDefaults = /Object\.entries\(defaults\.items\)\.forEach/.test(saveSource);
   if (!initialItemsMatch) fail('Could not find initSave().items in js/save.js');
-  if (!migrationMatch) fail('Could not find the additive item migration list in js/save.js');
+  if (!migratesItemsFromDefaults) fail('Could not find additive item migration from initSave defaults in js/save.js');
 
   for (const itemId of itemIds) {
     if (!initialItemIds.includes(itemId)) fail(`Item ${itemId} is missing from initSave().items`);
-    if (!migrationItemIds.includes(itemId)) fail(`Item ${itemId} is missing from the save migration list`);
   }
 
-  const saveKeys = [...saveSource.matchAll(/localStorage\.(?:getItem|setItem)\(\s*['"]([^'"]+)/g)]
-    .map(match => match[1]);
-  if (!saveKeys.length || saveKeys.some(key => key !== 'mb_v95c')) {
-    fail(`Unexpected save key(s): ${saveKeys.join(', ') || 'none'}`);
-  }
+  const primarySaveKey = saveSource.match(/const SAVE_KEY\s*=\s*['"]([^'"]+)['"]/ )?.[1];
+  if (primarySaveKey !== 'mb_v95c') fail(`Unexpected primary save key: ${primarySaveKey || 'none'}`);
 
   notes.push(`${data.M.length} monsters`);
   notes.push(`${data.MAPS.length} maps`);

@@ -14,9 +14,10 @@ const expect = (condition, message) => {
 };
 
 const saveKey = 'mb_v95c';
-expect(save.includes(`localStorage.getItem('${saveKey}')`), `save loader must keep ${saveKey}`);
-expect(save.includes(`localStorage.setItem('${saveKey}'`), `save writer must keep ${saveKey}`);
-expect(save.includes(`localStorage.removeItem('${saveKey}')`), `save reset must keep ${saveKey}`);
+expect(save.includes(`const SAVE_KEY = '${saveKey}'`), `primary save key must keep ${saveKey}`);
+expect(save.includes('safeStorageGet(SAVE_KEY)'), `save loader must use protected ${saveKey} access`);
+expect(save.includes('safeStorageSet(SAVE_KEY,raw)'), `save writer must use protected ${saveKey} access`);
+expect(save.includes('safeStorageRemove(SAVE_KEY)'), `save reset must use protected ${saveKey} access`);
 
 const starterIds = ['elna_beginner', 'freigal', 'aquaron', 'grassbeat', 'volteck'];
 starterIds.forEach(id => expect(data.includes(`id:'${id}'`) || data.includes(`id: '${id}'`), `starter id is missing: ${id}`));
