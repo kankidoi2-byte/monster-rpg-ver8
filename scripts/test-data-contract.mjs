@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 const dataSource = fs.readFileSync(new URL('../js/data.js', import.meta.url), 'utf8');
 const coreSource = fs.readFileSync(new URL('../js/core.js', import.meta.url), 'utf8');
+const skillsSource = fs.readFileSync(new URL('../js/skills.js', import.meta.url), 'utf8');
 const fullSaveSource = fs.readFileSync(new URL('../js/save.js', import.meta.url), 'utf8');
 const htmlSource = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const saveSource = fullSaveSource.slice(0, fullSaveSource.indexOf('/* Ver7.8:'));
@@ -30,6 +31,8 @@ const contract = vm.runInContext(`({
   firstLegacyId:legacySkillIdFromMove(M[0].moves[0]),
   normalizeSkillId,
   skillIdFromMove,
+  skillCostLimitFor,
+  defaultSkillIdsForMonster,
   isCharacterUnit,
   isContractableUnit,
   isAlchemyCatalystUnit,
@@ -65,6 +68,9 @@ assert.equal(contract.isContractableUnit(elna),false);
 assert.equal(contract.isAlchemyCatalystUnit(elna),false);
 assert.equal(contract.isAlchemyCatalystUnit(freigal),true);
 assert.equal(kimeragnaApex.evolutionOnly,true);
+assert.equal(kimeragnaApex.rarity,'★★★★','Kimeragna Apex must be a four-star monster');
+assert.equal(contract.skillCostLimitFor(kimeragnaApex,{level:1}),8,'four-star Kimeragna Apex must use the four-star skill-cost limit');
+assert.deepEqual([...contract.defaultSkillIdsForMonster(kimeragnaApex,{level:1})],['skill_kimeragna_apex_01'],'level-1 default skills must fit the four-star cost limit');
 assert.equal(kimeragnaApex.eligibility.alchemySuccess,false,'Kimeragna Apex must only be reached by evolution');
 assert(!contract.failureIds.includes('elna_advanced'),'characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('stella_wizard'),'Stella characters must not enter alchemy failure results');
@@ -85,7 +91,18 @@ const migrated = vm.runInContext('save', context);
 assert.equal(migrated.skillCards[contract.firstFixedId],3);
 assert.deepEqual([...migrated.equippedSkills.u1],[contract.firstFixedId]);
 assert(migrated.saveMeta.migrations.includes('fixed_skill_ids_v1'));
-assert(htmlSource.includes('js/data.js?v=monster-obtain-2'),'data.js cache key must be updated for the shared initial-party definition');
+vm.runInContext(`
+  save.instances.push({uid:'apex-u1',id:'kimeragna_apex',level:1,exp:0});
+  save.equippedSkills['apex-u1']=['skill_kimeragna_apex_01','skill_kimeragna_apex_02'];
+`, context);
+vm.runInContext(skillsSource, context, {filename:'js/skills.js'});
+vm.runInContext("ensureInstanceSkills(save.instances.find(instance => instance.uid === 'apex-u1'))", context);
+assert.deepEqual(
+  [...migrated.equippedSkills['apex-u1']],
+  ['skill_kimeragna_apex_01'],
+  'existing Kimeragna Apex skill loadouts must be safely trimmed to the four-star cost limit'
+);
+assert(htmlSource.includes('js/data.js?v=apex-star4-1'),'data.js cache key must be updated for the Kimeragna Apex rarity change');
 assert(htmlSource.includes('js/save.js?v=monster-obtain-2'),'save.js cache key must be updated for the shared initial-party definition');
 assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');

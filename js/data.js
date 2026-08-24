@@ -396,7 +396,7 @@ const M = [
    hp:150,spd:110,catchRate:.16,
    desc:'星空を軽やかに跳ぶ蒼い兎獣。長い耳で星の魔力を集め、尾に輝きを蓄える。',
    moves:[["星兎跳",38,"star",null,null,null,null,null,"skill_astralepis_01"],["アストラルステップ",0,"star","buff",null,null,null,null,"skill_astralepis_02"],["流星蹴り",60,"star",null,null,null,null,null,"skill_astralepis_03"]]},
-  {id:'kimeragna_apex',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'kimeragna_apex',no:49,dexNo:49,name:'キメラグナ・アペクス',rarity:'★★★★★',types:['wind','dragon'],
+  {id:'kimeragna_apex',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'kimeragna_apex',no:49,dexNo:49,name:'キメラグナ・アペクス',rarity:'★★★★',types:['wind','dragon'],
    evolutionOnly:true,hp:315,spd:132,catchRate:0,contractable:false,alchemyExclusive:true,
    desc:'キメラグナが混成魔力の極点へ到達した姿。雷光と猛毒をまとい、巨翼で戦場を制圧する。',
    moves:[["猛毒天翔破",82,"wind","poison",0.6,4,"60％の確率で相手を3ターンの毒状態にする。",null,"skill_kimeragna_apex_01"],["混成竜雷",72,["thunder","dragon"],null,null,6,"雷と竜気を重ねた混成魔力を放つ。",null,"skill_kimeragna_apex_02"],["アペクスストーム",108,["wind","dragon"],"recoil",null,7,"極限の嵐を解放する代わりに反動を受ける。",null,"skill_kimeragna_apex_03"]]},
