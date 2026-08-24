@@ -161,7 +161,13 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .skill-card.skill-star{--skill-glow:#64ffda;border-color:#2e9985;background:linear-gradient(145deg,#103830,#0c1717)}
 .skill-card.skill-dragon{--skill-glow:#f48fb1;border-color:#9f4d69;background:linear-gradient(145deg,#3a1424,#190e14)}
 .skill-card.skill-normal{--skill-glow:#cdd3e0;border-color:#626b7c;background:linear-gradient(145deg,#252b36,#12151c)}
-.skill-card.skill-dual-thunder-wind{--skill-glow:#b8f3ff;border-color:#a8cf49;background:linear-gradient(135deg,#3b3510 0%,#242f19 48%,#113137 100%)}
+.skill-card[class*="skill-dual-"]{background:linear-gradient(135deg,var(--dual-a) 0 49%,rgba(255,255,255,.28) 49.4% 50.6%,var(--dual-b) 51% 100%);text-shadow:0 1px 5px #000}
+.skill-card.skill-dual-thunder-wind{--dual-a:#3b3510;--dual-b:#113137;--skill-glow:#b8f3ff;border-color:#a8cf49}
+.skill-card.skill-dual-dark-dragon{--dual-a:#30153a;--dual-b:#3a1424;--skill-glow:#e2a8ff;border-color:#a85f91}
+.skill-card.skill-dual-light-dragon{--dual-a:#3b300d;--dual-b:#3a1424;--skill-glow:#ffe58b;border-color:#c58a45}
+.skill-card.skill-dual-thunder-dragon{--dual-a:#3b3510;--dual-b:#3a1424;--skill-glow:#ffe878;border-color:#bc8242}
+.skill-card.skill-dual-wind-dragon{--dual-a:#113137;--dual-b:#3a1424;--skill-glow:#b8f3ff;border-color:#6390a0}
+.skill-card.skill-dual-fire-water{--dual-a:#3a1715;--dual-b:#102b49;--skill-glow:#b7dfff;border-color:#8b6370}
 .skill-card.is-disabled{filter:saturate(.55);opacity:.55}
 .skill-card button:disabled{cursor:not-allowed;filter:grayscale(.35)}
 .skill-button{border:1px solid currentColor;background:linear-gradient(135deg,#242b4f,#151a32)}
@@ -174,7 +180,13 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .skill-button.dark{background:linear-gradient(135deg,#63306c,#321836)}
 .skill-button.star{background:linear-gradient(135deg,#176b5d,#0b382f)}
 .skill-button.dragon{background:linear-gradient(135deg,#74334b,#3c1927)}
-.skill-button.dual-thunder-wind{background:linear-gradient(135deg,#6c5d0d 0%,#3e5724 50%,#17606a 100%);border-color:#b8f3ff}
+.skill-button[class*="dual-"]{background:linear-gradient(135deg,var(--dual-a) 0 49%,rgba(255,255,255,.38) 49.4% 50.6%,var(--dual-b) 51% 100%);text-shadow:0 1px 4px #000}
+.skill-button.dual-thunder-wind{--dual-a:#6b5f0a;--dual-b:#205b62;border-color:#b8f3ff}
+.skill-button.dual-dark-dragon{--dual-a:#63306c;--dual-b:#74334b;border-color:#e2a8ff}
+.skill-button.dual-light-dragon{--dual-a:#75620c;--dual-b:#74334b;border-color:#ffe58b}
+.skill-button.dual-thunder-dragon{--dual-a:#6b5f0a;--dual-b:#74334b;border-color:#ffe878}
+.skill-button.dual-wind-dragon{--dual-a:#205b62;--dual-b:#74334b;border-color:#b8f3ff}
+.skill-button.dual-fire-water{--dual-a:#6b241a;--dual-b:#174d77;border-color:#d6d9f0}
 .skill-button.normal{background:linear-gradient(135deg,#4b5563,#252b35)}
 @media(max-width:650px){.skill-card-title{font-size:15px}.skill-cost-badge{min-width:34px;height:28px;padding:0 7px}.skill-card{padding:12px}}
 
