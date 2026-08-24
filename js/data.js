@@ -139,6 +139,7 @@ const TN = {
 };
 
 const TYPE_ICONS={fire:'🔥',water:'💧',thunder:'⚡',wind:'🌪️',grass:'🌳',light:'✨',dark:'🌑',star:'⭐',dragon:'🐉',normal:'⚪'};
+const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron','grassbeat','volteck']);
 const ADV = {
   fire:    {grass:1.5, water:.7},
   water:   {fire:1.5, thunder:.7},

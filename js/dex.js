@@ -60,6 +60,9 @@ function monsterMapEncounterNote(map) {
 }
 function monsterObtainEntries(m) {
   const entries = [];
+  if (INITIAL_PARTY_IDS.includes(m.id)) entries.push({
+    kind:'initial',icon:'🎒',title:'初期メンバー',note:'ゲーム開始時から仲間'
+  });
   MAPS.filter(map=>(map.enemyIds||[]).includes(m.id)).forEach(map=>entries.push({
     kind:'map', image:map.image, title:map.name, note:monsterMapEncounterNote(map)
   }));

@@ -22,6 +22,8 @@ expect(save.includes('safeStorageRemove(SAVE_KEY)'), `save reset must use protec
 
 const starterIds = ['elna_beginner', 'freigal', 'aquaron', 'grassbeat', 'volteck'];
 starterIds.forEach(id => expect(data.includes(`id:'${id}'`) || data.includes(`id: '${id}'`), `starter id is missing: ${id}`));
+expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron','grassbeat','volteck'])"), 'shared initial-party definition is missing');
+expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
 const screenIds = [
   'home', 'growthHub', 'moreMenu', 'expedition', 'evolution', 'partySet', 'battleChoices',
@@ -61,8 +63,10 @@ expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive que
 expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
 expect(dex.includes('monster-dex-card'), 'monster-first dex cards are missing');
 expect(dex.includes('function monsterObtainEntries'), 'monster dex acquisition-source renderer is missing');
+expect(dex.includes('INITIAL_PARTY_IDS.includes(m.id)'), 'monster dex must derive initial acquisition from the shared initial-party definition');
 expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection)"), 'monster dex must show acquisition sources instead of skills');
 expect(dex.includes('detailSection=renderUnitSkillList'), 'character dex must retain its skill list');
+expect(index.includes('カードをタップすると出現マップと入手方法を確認できます。'), 'monster dex guidance still describes the removed skill list');
 expect(index.includes('<strong>キャラクター図鑑</strong>'), 'character dex menu entry is missing');
 expect(dex.includes('function renderCharacterDex'), 'character dex renderer is missing');
 expect(dex.includes('M.filter(m=>!isCharacterUnit(m))'), 'characters are not excluded from the monster dex');
