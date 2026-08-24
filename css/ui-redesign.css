@@ -111,3 +111,23 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 @media(max-height:700px){#alchemy{padding-top:4px}.alchemy-workbench{gap:4px}.alchemy-material-board{padding:5px}.alchemy-material-row{padding:4px}.alchemy-material-icon{height:32px}.alchemy-catalyst,.alchemy-coin-compact{padding-top:4px;padding-bottom:4px}.alchemy-lumina-advisor{min-height:57px}.alchemy-lumina-advisor img{height:57px}.alchemy-lumina-bubble{min-height:51px;padding-top:5px;padding-bottom:5px}.alchemy-start-button{min-height:43px;font-size:16px}.alchemy-forecast details:not([open]){height:11px}}
 .character-dex-card{background:linear-gradient(180deg,#fff,#fff8e8);box-shadow:0 7px 20px #9a6b1924}.character-dex-no{background:#fff0bf;color:#8a5b00}
 .save-management{width:min(100%,780px);margin:18px auto 0;padding:13px;border:1px solid var(--ui-line);border-radius:17px;background:#fff;color:var(--ui-ink);text-align:left;box-shadow:0 4px 13px rgba(43,96,128,.08)}.save-management summary{cursor:pointer;color:var(--ui-sky-700);font-weight:900}.save-management p{color:var(--ui-muted);font-size:11px}.save-management-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.save-management-actions button{min-height:46px;margin:0;padding:9px;background:linear-gradient(135deg,#35b8dc,#176fae);font-size:11px}.save-management-actions button:nth-child(3),.save-management-actions button:nth-child(4){background:linear-gradient(135deg,#697b91,#42546b)}.save-management-actions button:nth-child(5),.save-management-actions button:nth-child(6){background:linear-gradient(135deg,#8b6bb3,#654797)}
+
+/* Keep elemental skill-card colors inside the light skill-edit panel. */
+.skill-edit-panel .skill-card{color:#fff}
+.skill-edit-panel .skill-card.skill-fire{border-color:#b7472d;background:linear-gradient(145deg,#3a1715,#14101a)}
+.skill-edit-panel .skill-card.skill-water{border-color:#236aa5;background:linear-gradient(145deg,#102b49,#101423)}
+.skill-edit-panel .skill-card.skill-thunder{border-color:#aa9c19;background:linear-gradient(145deg,#3b3510,#17150b)}
+.skill-edit-panel .skill-card.skill-wind{border-color:#3a929c;background:linear-gradient(145deg,#113137,#0d171b)}
+.skill-edit-panel .skill-card.skill-grass{border-color:#37793b;background:linear-gradient(145deg,#12351a,#0d1711)}
+.skill-edit-panel .skill-card.skill-light{border-color:#ad8710;background:linear-gradient(145deg,#3b300d,#18150c)}
+.skill-edit-panel .skill-card.skill-dark{border-color:#7d4d88;background:linear-gradient(145deg,#30153a,#15101b)}
+.skill-edit-panel .skill-card.skill-star{border-color:#2e9985;background:linear-gradient(145deg,#103830,#0c1717)}
+.skill-edit-panel .skill-card.skill-dragon{border-color:#9f4d69;background:linear-gradient(145deg,#3a1424,#190e14)}
+.skill-edit-panel .skill-card.skill-normal{border-color:#626b7c;background:linear-gradient(145deg,#252b36,#12151c)}
+.skill-edit-panel .skill-card[class*="skill-dual-"]{background:linear-gradient(135deg,var(--dual-a) 0 50%,var(--dual-b) 50% 100%)}
+.skill-edit-panel .skill-card.skill-dual-thunder-wind{border-color:#a8cf49}
+.skill-edit-panel .skill-card.skill-dual-dark-dragon{border-color:#a85f91}
+.skill-edit-panel .skill-card.skill-dual-light-dragon{border-color:#c58a45}
+.skill-edit-panel .skill-card.skill-dual-thunder-dragon{border-color:#bc8242}
+.skill-edit-panel .skill-card.skill-dual-wind-dragon{border-color:#6390a0}
+.skill-edit-panel .skill-card.skill-dual-fire-water{border-color:#8b6370}
