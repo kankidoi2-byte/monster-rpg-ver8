@@ -204,9 +204,9 @@ body.title-mode>.menu,body.title-mode>.screen{visibility:hidden;pointer-events:n
 .title-vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 43%,transparent 0 22%,rgba(0,4,14,.35) 52%,rgba(0,0,0,.9) 100%),linear-gradient(180deg,rgba(0,0,0,.38),transparent 24%,transparent 72%,rgba(0,0,0,.72));}
 .title-monster{position:absolute;left:50%;top:48%;width:min(68vw,520px);height:min(55vh,520px);transform:translate(-50%,-50%);object-fit:contain;opacity:.48;filter:drop-shadow(0 0 28px rgba(76,175,255,.45));animation:titleMonsterFloat 6s ease-in-out infinite;}
 .title-content{position:relative;z-index:3;width:min(96vw,1020px);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:max(2vh,env(safe-area-inset-top) + 6px) 12px 4vh}
-.title-logo{width:min(94vw,980px);max-height:36vh;object-fit:contain;filter:drop-shadow(0 8px 18px #000) drop-shadow(0 0 14px rgba(41,157,255,.35));animation:titleLogoIn 1.15s cubic-bezier(.2,.85,.25,1) both,titleLogoFloat 5s ease-in-out 1.15s infinite}
+.title-logo{width:min(94vw,980px);height:auto;max-height:36vh;object-fit:contain;filter:drop-shadow(0 8px 18px #000) drop-shadow(0 0 14px rgba(41,157,255,.35));animation:titleLogoIn 1.15s cubic-bezier(.2,.85,.25,1) both,titleLogoFloat 5s ease-in-out 1.15s infinite}
 .title-spacer{flex:1 1 auto;min-height:12px}
-.title-touch{width:min(78vw,720px);max-height:18vh;object-fit:contain;filter:drop-shadow(0 4px 10px #000);animation:titleTouchIn 1s ease .7s both,titleTouchPulse 2.1s ease-in-out 1.7s infinite}
+.title-touch{width:min(78vw,720px);height:auto;max-height:18vh;object-fit:contain;filter:drop-shadow(0 4px 10px #000);animation:titleTouchIn 1s ease .7s both,titleTouchPulse 2.1s ease-in-out 1.7s infinite}
 .title-version{position:absolute;right:14px;bottom:max(10px,env(safe-area-inset-bottom));font-size:12px;letter-spacing:.18em;color:#d8e6ff;text-shadow:0 1px 5px #000;opacity:.78}
 .title-scene-name{position:absolute;left:14px;bottom:max(10px,env(safe-area-inset-bottom));font-size:11px;letter-spacing:.08em;color:#b9c6df;text-shadow:0 1px 5px #000;opacity:.55}
 .title-skip-hint{position:absolute;top:max(10px,env(safe-area-inset-top));right:13px;font-size:10px;color:#aebad3;opacity:.45}

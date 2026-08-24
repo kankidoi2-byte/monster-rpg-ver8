@@ -7,7 +7,8 @@ const kib = 1024;
 const budgets = {
   monsters: 600 * kib,
   items: 300 * kib,
-  maps: 700 * kib
+  maps: 700 * kib,
+  ui: 100 * kib
 };
 
 // Keep this map available only for assets that genuinely cannot meet the budgets.
