@@ -49,7 +49,20 @@ const IMG={
   tsubaki:'images/monsters/tsubaki.webp',
   elnaKaen:'images/monsters/elna_kaen.webp',
   alchemion:'images/monsters/alchemion.webp',
-  kimeragna:'images/monsters/kimeragna.webp'
+  kimeragna:'images/monsters/kimeragna.webp',
+  sylphin:'images/monsters/sylphin.webp',
+  zephyray:'images/monsters/zephyray.webp',
+  tempestray:'images/monsters/tempestray.webp',
+  ignaros:'images/monsters/ignaros.webp',
+  nocle:'images/monsters/nocle.webp',
+  noclaid:'images/monsters/noclaid.webp',
+  noxvelg:'images/monsters/noxvelg.webp',
+  luxseed:'images/monsters/luxseed.webp',
+  luxiard:'images/monsters/luxiard.webp',
+  lux_galdion:'images/monsters/lux_galdion.webp',
+  astralepis:'images/monsters/astralepis.webp',
+  kimeragna_apex:'images/monsters/kimeragna_apex.webp',
+  elixion:'images/monsters/elixion.webp'
 };
 const MAPIMG={
   magic_academy:'images/maps/magic_academy.webp',
@@ -79,9 +92,9 @@ const MAPIMG={
 /* ===== マップデータ ===== */
 const MAPS = [
   {id:'grassland', name:'草原', image:MAPIMG.grassland,
-   enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia']},
+   enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray']},
   {id:'volcano', name:'火山', image:MAPIMG.volcano,
-   enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin']},
+   enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin','ignaros']},
   {id:'lake', name:'湖', image:MAPIMG.lake,
    enemyIds:['aquaron','highaquaron','suiren','goblin','proto_icegolem']},
   {id:'seikai_irie', name:'蒼海の入り江', image:MAPIMG.seikai_irie,
@@ -95,17 +108,17 @@ const MAPS = [
   {id:'forest', name:'森林', image:MAPIMG.forest,
    enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare']},
   {id:'light_plain', name:'光の平原', image:MAPIMG.light_plain,
-   enemyIds:['hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','slime','slime','slime','goblin','goblin','suiren','aquaron']},
+   enemyIds:['hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','slime','slime','slime','goblin','goblin','suiren','aquaron','luxseed','luxseed','luxseed','luxiard']},
   {id:'starry_plain', name:'星空の平原', image:MAPIMG.starry_plain,
-   enemyIds:['nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemesia','nemesia','nemesia','nemesia','nemesion','slime','slime','goblin','goblin','volteck','spaquinn','nightmare']},
+   enemyIds:['nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemesia','nemesia','nemesia','nemesia','nemesion','slime','slime','goblin','goblin','volteck','spaquinn','nightmare','astralepis']},
   {id:'highland_ruins', name:'高原遺跡', image:MAPIMG.highland_ruins,
-   enemyIds:['volteck','volteck','volteck','volteck','volteck','volteck','volteck','volteck','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','volmoog','volmoog','volmoog','voltax','voltax','slime','goblin']},
+   enemyIds:['volteck','volteck','volteck','volteck','volteck','volteck','volteck','volteck','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','volmoog','volmoog','volmoog','voltax','voltax','slime','goblin','sylphin','sylphin','zephyray','tempestray']},
   {id:'arena', name:'闘技場', image:MAPIMG.arena,
    enemyIds:['elna_beginner','elna_beginner','elna_beginner','elna_beginner','elna_beginner','elna_middle','elna_middle','elna_middle','elna_advanced']},
   {id:'magic_academy', name:'魔導学園', image:MAPIMG.magic_academy,
    enemyIds:['stella_apprentice','stella_apprentice','stella_apprentice','stella_apprentice','stella_wizard','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_apprentice','lumina_apprentice','lumina_wizard','lumina_wizard','lumina_sorcerer']},
   {id:'ruined_village', name:'廃村跡', image:MAPIMG.ruined_village,
-   enemyIds:['nightmare','nightmare','nightmare','nightmare','goblin','slime']},
+   enemyIds:['nightmare','nightmare','nightmare','nightmare','goblin','slime','nocle','nocle','nocle','noclaid','noxvelg']},
   {id:'starsea', name:'遥かなる星の海', image:MAPIMG.starsea,
    enemyIds:['nemesion','doom_nemesion'], bossOnly:true, appearRate:0.10},
   {id:'water_secret', name:'流水の秘境', image:MAPIMG.water_secret,
@@ -284,27 +297,27 @@ const M = [
    hp:245,spd:66,catchRate:.12,
    desc:'ボルモーグが進化した雷獣の巨体。結晶化した装甲と巨大な爪に雷をまとい、大地を割るほどの一撃を放つ。',
    moves:[["雷岩砕き",48,"thunder",null,null,null,null,null,"skill_gran_volmoog_01"],["帯電結晶鎧",0,"thunder","guard",null,null,null,null,"skill_gran_volmoog_02"],["グランボルトクロー",78,"thunder",null,null,null,null,null,"skill_gran_volmoog_03"]]},
-  {id:'stella_apprentice',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_apprentice',no:36,name:'見習い魔法使いステラ',rarity:'★★',types:['star','light'],
+  {id:'stella_apprentice',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_apprentice',no:36,name:'見習い魔法使いステラ',rarity:'★★',types:['star','light'],unitType:'character',characterNo:6,contractable:false,
    hp:115,spd:90,catchRate:.20,evolution:'stella_wizard',evolutionLevel:2,
    desc:'魔導学園で星魔法を学ぶ見習い魔法使い。明るい笑顔と未完成ながら鋭い魔力で戦う。',
    moves:[["星屑弾",30,"star",null,null,null,null,null,"skill_stella_apprentice_01"],["マジックショット",24,"normal",null,null,null,null,null,"skill_stella_apprentice_02"],["スターブースト",0,"star","buff",null,null,null,null,"skill_stella_apprentice_03"]]},
-  {id:'stella_wizard',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'stella_wizard',no:37,name:'魔法使いステラ',rarity:'★★★',types:['star','light'],
+  {id:'stella_wizard',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_wizard',no:37,name:'魔法使いステラ',rarity:'★★★',types:['star','light'],unitType:'character',characterNo:7,contractable:false,
    evolutionOnly:true,evolution:'stella_sorcerer',evolutionLevel:3,hp:155,spd:102,catchRate:.10,
    desc:'見習い魔法使いステラが成長した姿。星の魔力を自在に操り、軽やかな詠唱で戦場を照らす魔法使い。',
    moves:[["スターライトレイ",42,"star",null,null,null,null,null,"skill_stella_wizard_01"],["マジックバースト",36,"normal",null,null,null,null,null,"skill_stella_wizard_02"],["アストラルフレア",64,"star",null,null,null,null,null,"skill_stella_wizard_03"]]},
-  {id:'stella_sorcerer',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_sorcerer',no:38,name:'魔導師ステラ',rarity:'★★★★',types:['star','light'],
+  {id:'stella_sorcerer',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_sorcerer',no:38,name:'魔導師ステラ',rarity:'★★★★',types:['star','light'],unitType:'character',characterNo:8,contractable:false,
    evolutionOnly:true,hp:205,spd:112,catchRate:.06,
    desc:'魔法使いステラがさらに成長した姿。星辰の知識と高位魔術を操る魔導師。幾つもの魔導書を従え、戦場を星の光で支配する。',
    moves:[["星天の裁き",56,"star",null,null,null,null,null,"skill_stella_sorcerer_01"],["グランドマジック",44,"normal",null,null,null,null,null,"skill_stella_sorcerer_02"],["コスモスアーク",86,"star",null,null,null,null,null,"skill_stella_sorcerer_03"]]},
-  {id:'lumina_apprentice',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_apprentice',no:39,name:'見習い魔法使いルミナ',rarity:'★★',types:['star','dark'],
+  {id:'lumina_apprentice',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_apprentice',no:39,name:'見習い魔法使いルミナ',rarity:'★★',types:['star','dark'],unitType:'character',characterNo:9,contractable:false,
    hp:110,spd:88,catchRate:.20,evolution:'lumina_wizard',evolutionLevel:2,
    desc:'魔導学園で星魔法を学ぶ内気な見習い魔法使い。魔導書を大切に抱え、静かな詠唱で星の力を呼び出す。',
    moves:[["星光弾",28,"star",null,null,null,null,null,"skill_lumina_apprentice_01"],["マジックノート",24,"normal",null,null,null,null,null,"skill_lumina_apprentice_02"],["ルミナスチャージ",0,"star","buff",null,null,null,null,"skill_lumina_apprentice_03"]]},
-  {id:'lumina_wizard',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'lumina_wizard',no:40,name:'魔法使いルミナ',rarity:'★★★',types:['star','dark'],
+  {id:'lumina_wizard',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_wizard',no:40,name:'魔法使いルミナ',rarity:'★★★',types:['star','dark'],unitType:'character',characterNo:10,contractable:false,
    evolutionOnly:true,evolution:'lumina_sorcerer',evolutionLevel:3,hp:155,spd:98,catchRate:.10,
    desc:'見習い魔法使いルミナが成長した姿。星の術式を丁寧に編み上げる魔法使いで、静かな魔力から鋭い星光魔法を放つ。',
    moves:[["星月の光弾",40,"star",null,null,null,null,null,"skill_lumina_wizard_01"],["マジックブルーム",34,"normal",null,null,null,null,null,"skill_lumina_wizard_02"],["ルミナスレイ",62,"star",null,null,null,null,null,"skill_lumina_wizard_03"]]},
-  {id:'lumina_sorcerer',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_sorcerer',no:41,name:'魔導師ルミナ',rarity:'★★★★',types:['star','dark'],
+  {id:'lumina_sorcerer',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_sorcerer',no:41,name:'魔導師ルミナ',rarity:'★★★★',types:['star','dark'],unitType:'character',characterNo:11,contractable:false,
    evolutionOnly:true,hp:205,spd:108,catchRate:.06,
    desc:'魔法使いルミナがさらに成長した姿。静謐な星術と高位魔法を操る魔導師。青白い星の結晶と術式で戦場を包み込む。',
    moves:[["星晶の裁き",54,"star",null,null,null,null,null,"skill_lumina_sorcerer_01"],["ルミナスマジック",46,"normal",null,null,null,null,null,"skill_lumina_sorcerer_02"],["セレスティアルレイ",84,"star",null,null,null,null,null,"skill_lumina_sorcerer_03"]]},
@@ -333,9 +346,63 @@ const M = [
    desc:'錬成核から生まれる無属性の錬成限定モンスター。個体ごとに異なる能力傾向を持つ。',
    moves:[["錬核崩砕",140,"normal","alchemy_recoil",null,5,"攻撃後、実際に与えたダメージの25％を反動として受ける。","alchemion","skill_alchemion_01"]]},
   {id:'kimeragna',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'kimeragna',no:48,name:'混成翼竜キメラグナ',rarity:'★★★',types:['wind','dragon'],
-   hp:150,spd:100,catchRate:0,contractable:false,alchemyExclusive:true,
+   hp:150,spd:100,catchRate:0,contractable:false,alchemyExclusive:true,evolution:'kimeragna_apex',evolutionLevel:5,
    desc:'風と竜の性質を併せ持つ錬成限定の翼竜。猛毒を帯びた翼で獲物を追い詰める。',
-   moves:[["猛毒翔破",110,"wind","poison",0.4,4,"40％の確率で相手を3ターンの毒状態にする。","kimeragna","skill_kimeragna_01"]]}
+   moves:[["猛毒翔破",110,"wind","poison",0.4,4,"40％の確率で相手を3ターンの毒状態にする。","kimeragna","skill_kimeragna_01"]]},
+
+  // no は旧セーブ互換用の不変レコード番号。dexNo がモンスター図鑑の表示番号。
+  {id:'sylphin',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'sylphin',no:51,dexNo:21,name:'シルフィン',rarity:'★',types:['wind'],
+   hp:100,spd:90,catchRate:.40,evolution:'zephyray',evolutionLevel:2,
+   desc:'風を受けて草原を泳ぐ、小さな空翔けマンタ。胸びれで穏やかな気流を生み出す。',
+   moves:[["そよ風のひれ",26,"wind",null,null,null,null,null,"skill_sylphin_01"],["エアスライド",22,"wind",null,null,null,null,null,"skill_sylphin_02"],["風まとう",0,"wind","buff",null,null,null,null,"skill_sylphin_03"]]},
+  {id:'zephyray',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'zephyray',no:52,dexNo:22,name:'ゼファーレイ',rarity:'★★',types:['wind'],
+   evolutionOnly:true,evolution:'tempestray',evolutionLevel:3,hp:155,spd:108,catchRate:.18,
+   desc:'シルフィンが成長した風翼マンタ。鋭い翼で大気を切り、渓谷を滑るように飛ぶ。',
+   moves:[["ゼファーカッター",38,"wind",null,null,null,null,null,"skill_zephyray_01"],["旋風回避",0,"wind","guard",null,null,null,null,"skill_zephyray_02"],["スカイランページ",56,"wind",null,null,null,null,null,"skill_zephyray_03"]]},
+  {id:'tempestray',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'tempestray',no:53,dexNo:23,name:'テンペストレイ',rarity:'★★★',types:['wind'],
+   evolutionOnly:true,hp:220,spd:125,catchRate:.08,
+   desc:'ゼファーレイが嵐の力を得た姿。巨大な風翼で雷雲をかき回し、暴風を支配する。',
+   moves:[["テンペストフィン",50,"wind",null,null,null,null,null,"skill_tempestray_01"],["嵐翼の守り",0,"wind","guard",null,null,null,null,"skill_tempestray_02"],["天嵐大旋回",76,"wind",null,null,null,null,null,"skill_tempestray_03"]]},
+  {id:'ignaros',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'ignaros',no:54,dexNo:25,name:'イグナロス',rarity:'★★',types:['fire'],
+   hp:180,spd:52,catchRate:.16,
+   desc:'火口の熱を鎧に変える灼熱獣。重い甲殻の内側で絶えず溶岩が脈打つ。',
+   moves:[["溶岩角",40,"fire",null,null,null,null,null,"skill_ignaros_01"],["灼熱装甲",0,"fire","guard",null,null,null,null,"skill_ignaros_02"],["火口崩し",62,"fire","recoil",null,null,null,null,"skill_ignaros_03"]]},
+  {id:'nocle',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nocle',no:55,dexNo:36,name:'ノクル',rarity:'★',types:['dark','dragon'],
+   hp:112,spd:74,catchRate:.38,evolution:'noclaid',evolutionLevel:2,
+   desc:'月影の洞窟に潜む小さな夜竜。光を避け、闇の中を音もなく進む。',
+   moves:[["影牙",28,"dark",null,null,null,null,null,"skill_nocle_01"],["夜滑り",24,"dragon",null,null,null,null,null,"skill_nocle_02"],["月蝕の気配",0,"dark","buff",null,null,null,null,"skill_nocle_03"]]},
+  {id:'noclaid',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'noclaid',no:56,dexNo:37,name:'ノクレイド',rarity:'★★',types:['dark','dragon'],
+   evolutionOnly:true,evolution:'noxvelg',evolutionLevel:3,hp:160,spd:88,catchRate:.17,
+   desc:'ノクルが月影をまとって成長した幼竜。滑空しながら闇の刃を放つ。',
+   moves:[["ムーンシャドウ",38,"dark",null,null,null,null,null,"skill_noclaid_01"],["夜竜爪",36,"dragon",null,null,null,null,null,"skill_noclaid_02"],["暗月障壁",0,"dark","guard",null,null,null,null,"skill_noclaid_03"]]},
+  {id:'noxvelg',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'noxvelg',no:57,dexNo:38,name:'ノクスヴェルグ',rarity:'★★★',types:['dark','dragon'],
+   evolutionOnly:true,hp:230,spd:104,catchRate:.07,
+   desc:'ノクレイドが月光さえ呑み込む夜竜へ進化した姿。深い闇で獲物の感覚を奪う。',
+   moves:[["夜天竜牙",50,"dark",null,null,null,null,null,"skill_noxvelg_01"],["蝕月咆哮",46,"dragon","debuff",null,null,null,null,"skill_noxvelg_02"],["ノクスエクリプス",78,["dark","dragon"],null,null,6,"闇と竜気を重ね、月光を呑む一撃を放つ。",null,"skill_noxvelg_03"]]},
+  {id:'luxseed',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'luxseed',no:58,dexNo:39,name:'ルクシード',rarity:'★',types:['light','dragon'],
+   hp:118,spd:68,catchRate:.38,evolution:'luxiard',evolutionLevel:2,
+   desc:'陽だまりの森に生まれる小さな光竜。体内に集めた朝の光を分け与える。',
+   moves:[["光芽弾",28,"light",null,null,null,null,null,"skill_luxseed_01"],["幼竜の尾",24,"dragon",null,null,null,null,null,"skill_luxseed_02"],["朝光の息吹",0,"light","heal",null,null,null,null,"skill_luxseed_03"]]},
+  {id:'luxiard',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'luxiard',no:59,dexNo:40,name:'ルクシアード',rarity:'★★',types:['light','dragon'],
+   evolutionOnly:true,evolution:'lux_galdion',evolutionLevel:3,hp:168,spd:80,catchRate:.17,
+   desc:'ルクシードが朝光を蓄えて成長した幼竜。輝く角で仲間を導く。',
+   moves:[["ルクスホーン",38,"light",null,null,null,null,null,"skill_luxiard_01"],["光竜爪",36,"dragon",null,null,null,null,null,"skill_luxiard_02"],["黎明障壁",0,"light","guard",null,null,null,null,"skill_luxiard_03"]]},
+  {id:'lux_galdion',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'lux_galdion',no:60,dexNo:41,name:'ルクスガルディオン',rarity:'★★★',types:['light','dragon'],
+   evolutionOnly:true,hp:245,spd:92,catchRate:.07,
+   desc:'ルクシアードが守護の光を極めた姿。黄金の光翼で大地を覆い、邪気を退ける。',
+   moves:[["守光竜牙",50,"light",null,null,null,null,null,"skill_lux_galdion_01"],["聖竜の庇護",0,"light","guard",null,null,null,null,"skill_lux_galdion_02"],["ガルディオンレイ",78,["light","dragon"],null,null,6,"光と竜気を束ねた守護竜の奔流を放つ。",null,"skill_lux_galdion_03"]]},
+  {id:'astralepis',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'astralepis',no:61,dexNo:46,name:'アストラレピス',rarity:'★★',types:['star'],
+   hp:150,spd:110,catchRate:.16,
+   desc:'星空を軽やかに跳ぶ蒼い兎獣。長い耳で星の魔力を集め、尾に輝きを蓄える。',
+   moves:[["星兎跳",38,"star",null,null,null,null,null,"skill_astralepis_01"],["アストラルステップ",0,"star","buff",null,null,null,null,"skill_astralepis_02"],["流星蹴り",60,"star",null,null,null,null,null,"skill_astralepis_03"]]},
+  {id:'kimeragna_apex',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'kimeragna_apex',no:49,dexNo:49,name:'キメラグナ・アペクス',rarity:'★★★★★',types:['wind','dragon'],
+   evolutionOnly:true,hp:315,spd:132,catchRate:0,contractable:false,alchemyExclusive:true,
+   desc:'キメラグナが混成魔力の極点へ到達した姿。雷光と猛毒をまとい、巨翼で戦場を制圧する。',
+   moves:[["猛毒天翔破",82,"wind","poison",0.6,4,"60％の確率で相手を3ターンの毒状態にする。",null,"skill_kimeragna_apex_01"],["混成竜雷",72,["thunder","dragon"],null,null,6,"雷と竜気を重ねた混成魔力を放つ。",null,"skill_kimeragna_apex_02"],["アペクスストーム",108,["wind","dragon"],"recoil",null,7,"極限の嵐を解放する代わりに反動を受ける。",null,"skill_kimeragna_apex_03"]]},
+  {id:'elixion',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'elixion',no:50,dexNo:50,name:'賢金神竜エリクシオン',rarity:'★★★★★',types:['light','dragon'],
+   hp:330,spd:112,catchRate:0,contractable:false,alchemyExclusive:true,
+   desc:'星宮の賢金から錬成される神竜。白銀の一尾に光と知識を宿す、最高位の錬成限定種。',
+   moves:[["賢金光輪",76,"light",null,null,null,null,null,"skill_elixion_01"],["神竜錬壁",0,"dragon","guard",null,null,null,null,"skill_elixion_02"],["エリクシオン・ノヴァ",112,["light","dragon"],null,null,8,"賢金の光と神竜の力を束ねた大爆発を起こす。",null,"skill_elixion_03"]]}
 
 ];
 
@@ -403,6 +470,11 @@ const ALCHEMY_MONSTER_CONFIGS = Object.freeze({
     monsterId:'kimeragna',
     archetypes:ALCHEMY_ARCHETYPES,
     exclusiveMoveIndexes:Object.freeze([0])
+  }),
+  elixion:Object.freeze({
+    monsterId:'elixion',
+    archetypes:ALCHEMY_ARCHETYPES,
+    exclusiveMoveIndexes:Object.freeze([0, 2])
   })
 });
 const ALCHEMION_SUCCESS_CANDIDATES = Object.freeze([
@@ -423,9 +495,19 @@ const KIMERAGNA_SUCCESS_CANDIDATES = Object.freeze([
     guaranteeConditions:Object.freeze([])
   })
 ]);
+const ELIXION_SUCCESS_CANDIDATES = Object.freeze([
+  Object.freeze({
+    monsterId:'elixion', weight:1, alchemyInstance:true,
+    conditions:Object.freeze({}),
+    unlockConditions:Object.freeze([]),
+    requiredCoinOptionIds:Object.freeze([]),
+    guaranteeConditions:Object.freeze([])
+  })
+]);
 const ALCHEMY_FAILURE_CANDIDATES = Object.freeze([
   'freigal','aquaron','grassbeat','rikasheef','nightmare','volteck','icegolem',
-  'proto_icegolem','nemes','suiren','slime','slime_gold','goblin','volmoog','orcana'
+  'proto_icegolem','nemes','suiren','slime','slime_gold','goblin','volmoog','orcana',
+  'sylphin','ignaros','nocle','luxseed','astralepis'
 ].map(monsterId => Object.freeze({
   monsterId, weight:1, alchemyInstance:false,
   conditions:Object.freeze({
@@ -440,7 +522,7 @@ const ALCHEMY_FAILURE_CANDIDATES = Object.freeze([
 })));
 const ALCHEMY_HIGH_EVOLUTION_FAILURE_CANDIDATES = Object.freeze([
   'shenhairon','tienhairon','granbeat','seralphia','voltax','nemesia',
-  'gran_volmoog','stella_wizard','lumina_wizard','orca_stream'
+  'gran_volmoog','orca_stream','tempestray','noxvelg','lux_galdion'
 ].map(monsterId => Object.freeze({
   monsterId, weight:1, alchemyInstance:false,
   conditions:Object.freeze({
@@ -458,9 +540,9 @@ const ALCHEMY_ALL_FAILURE_CANDIDATES = Object.freeze([
   ...ALCHEMY_HIGH_EVOLUTION_FAILURE_CANDIDATES
 ]);
 const ALCHEMY_COIN_OPTIONS = Object.freeze([
-  Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null, resonanceOnFailure:2}),
-  Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2, resonanceOnFailure:5}),
-  Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3, resonanceOnFailure:12})
+  Object.freeze({id:'low', amount:50, bonus:-10, label:'少額', minimumFailureRarity:null}),
+  Object.freeze({id:'standard', amount:100, bonus:0, label:'標準', minimumFailureRarity:2}),
+  Object.freeze({id:'high', amount:250, bonus:15, label:'高額', minimumFailureRarity:3})
 ]);
 const ALCHEMY_RECIPES = Object.freeze([
   Object.freeze({
@@ -479,8 +561,7 @@ const ALCHEMY_RECIPES = Object.freeze([
     minSuccessRate:10,
     maxSuccessRate:70,
     successCandidates:ALCHEMION_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES,
-    designation:Object.freeze({enabled:true, resonanceCost:100, coinAmount:100})
+    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
   }),
   Object.freeze({
     recipeId:'kimeragna_standard',
@@ -498,8 +579,25 @@ const ALCHEMY_RECIPES = Object.freeze([
     minSuccessRate:10,
     maxSuccessRate:70,
     successCandidates:KIMERAGNA_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES,
-    designation:Object.freeze({enabled:true, resonanceCost:100, coinAmount:100})
+    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
+  }),
+  Object.freeze({
+    recipeId:'elixion_standard',
+    displayName:'賢金神竜エリクシオン',
+    materialChoices:Object.freeze([
+      Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
+      Object.freeze({label:'金属鉱石', normal:'metal_ore', fine:'fine_metal_ore'}),
+      Object.freeze({label:'猛禽の羽', normal:'raptor_feather', fine:'fine_raptor_feather'}),
+      Object.freeze({label:'毒虫の甲殻', normal:'venom_carapace', fine:'fine_venom_carapace'})
+    ]),
+    coinOptions:ALCHEMY_COIN_OPTIONS,
+    defaultCoinOptionId:'high',
+    baseSuccessRate:20,
+    fineMaterialBonus:5,
+    minSuccessRate:10,
+    maxSuccessRate:70,
+    successCandidates:ELIXION_SUCCESS_CANDIDATES,
+    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
   })
 ]);
 const ALCHEMY_RECIPE_BY_ID = Object.freeze(Object.fromEntries(ALCHEMY_RECIPES.map(recipe => [recipe.recipeId, recipe])));
