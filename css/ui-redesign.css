@@ -140,6 +140,6 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .dex-obtain-card>div{display:grid;gap:3px;min-width:0;padding:8px 9px 8px 0}
 .dex-obtain-card strong{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
 .dex-obtain-card small{color:var(--ui-muted);font-size:10px;line-height:1.35}
-.dex-obtain-map{border-color:#9ed3e8;background:#f2fbff}.dex-obtain-evolution{border-color:#e8cf83;background:#fffaf0}.dex-obtain-fusion{border-color:#c9b5e8;background:#faf7ff}.dex-obtain-alchemy{border-color:#a7d9c1;background:#f3fcf7}
+.dex-obtain-initial{border-color:#efc566;background:#fff9e8}.dex-obtain-map{border-color:#9ed3e8;background:#f2fbff}.dex-obtain-evolution{border-color:#e8cf83;background:#fffaf0}.dex-obtain-fusion{border-color:#c9b5e8;background:#faf7ff}.dex-obtain-alchemy{border-color:#a7d9c1;background:#f3fcf7}
 .dex-obtain-empty{grid-column:1/-1;margin:0;padding:14px;border:1px dashed #b7cbd5;border-radius:14px;background:#f7fafb;color:var(--ui-muted);font-size:11px}
 @media(max-width:480px){.dex-obtain-grid{grid-template-columns:1fr}}

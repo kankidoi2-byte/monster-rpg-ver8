@@ -228,7 +228,7 @@ function initStarters() {
     return;
   }
   // 初回
-  ['elna_beginner','freigal','aquaron','grassbeat','volteck'].forEach(id => addInstance(id, 1, 0));
+  INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0));
 }
 function ensureContractScrollItem(){
   if(!save.items)save.items={};

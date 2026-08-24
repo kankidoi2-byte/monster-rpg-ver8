@@ -36,10 +36,12 @@ const contract = vm.runInContext(`({
   monsterDexNumbers:M.filter(monster=>monster.entityKind==='monster').map(monster=>monster.dexNo??monster.no),
   characterCount:M.filter(monster=>monster.entityKind==='character').length,
   recipeIds:ALCHEMY_RECIPES.map(recipe=>recipe.recipeId),
-  failureIds:ALCHEMY_ALL_FAILURE_CANDIDATES.map(entry=>entry.monsterId)
+  failureIds:ALCHEMY_ALL_FAILURE_CANDIDATES.map(entry=>entry.monsterId),
+  initialPartyIds:INITIAL_PARTY_IDS
 })`, context);
 
 assert.equal(contract.monsters.length,61);
+assert.deepEqual([...contract.initialPartyIds],['elna_beginner','freigal','aquaron','grassbeat','volteck']);
 assert.equal(contract.characterCount,11);
 assert.equal(contract.monsterDexNumbers.length,50);
 assert.deepEqual([...contract.monsterDexNumbers].sort((a,b)=>a-b),Array.from({length:50},(_,index)=>index+1));
@@ -83,7 +85,9 @@ const migrated = vm.runInContext('save', context);
 assert.equal(migrated.skillCards[contract.firstFixedId],3);
 assert.deepEqual([...migrated.equippedSkills.u1],[contract.firstFixedId]);
 assert(migrated.saveMeta.migrations.includes('fixed_skill_ids_v1'));
-for (const file of ['data','alchemy']) assert(htmlSource.includes(`js/${file}.js?v=phase3-prologue-1`),`${file}.js cache key must be updated for Phase 3`);
-assert(htmlSource.includes('js/dex.js?v=monster-obtain-1'),'dex.js cache key must be updated for the monster acquisition display');
+assert(htmlSource.includes('js/data.js?v=monster-obtain-2'),'data.js cache key must be updated for the shared initial-party definition');
+assert(htmlSource.includes('js/save.js?v=monster-obtain-2'),'save.js cache key must be updated for the shared initial-party definition');
+assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
+assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
 
 console.log('Canonical data contract validation passed (61 entities, 50-number monster dex, 11-character dex, 191 fixed skills, eligibility separation, and legacy skill-ID migration).');
