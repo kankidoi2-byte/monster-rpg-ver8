@@ -7,6 +7,7 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const index = read('index.html');
 const save = read('js/save.js');
 const data = read('js/data.js');
+const dex = read('js/dex.js');
 
 const errors = [];
 const expect = (condition, message) => {
@@ -58,10 +59,13 @@ expect(read('css/ui-redesign.css').includes('grid-template-columns:repeat(2,minm
 expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), 'quest recommendation scoring is missing');
 expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
 expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
-expect(read('js/dex.js').includes('monster-dex-card'), 'monster-first dex cards are missing');
+expect(dex.includes('monster-dex-card'), 'monster-first dex cards are missing');
+expect(dex.includes('function monsterObtainEntries'), 'monster dex acquisition-source renderer is missing');
+expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection)"), 'monster dex must show acquisition sources instead of skills');
+expect(dex.includes('detailSection=renderUnitSkillList'), 'character dex must retain its skill list');
 expect(index.includes('<strong>キャラクター図鑑</strong>'), 'character dex menu entry is missing');
-expect(read('js/dex.js').includes('function renderCharacterDex'), 'character dex renderer is missing');
-expect(read('js/dex.js').includes('M.filter(m=>!isCharacterUnit(m))'), 'characters are not excluded from the monster dex');
+expect(dex.includes('function renderCharacterDex'), 'character dex renderer is missing');
+expect(dex.includes('M.filter(m=>!isCharacterUnit(m))'), 'characters are not excluded from the monster dex');
 expect(read('js/items.js').includes('!isContractableUnit(enemy)'), 'single-battle character contract guard is missing');
 expect(read('js/multi-battle.js').includes('isContractableUnit(entry.mon)'), 'multi-battle character contract guard is missing');
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
