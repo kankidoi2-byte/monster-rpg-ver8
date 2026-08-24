@@ -131,3 +131,15 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .skill-edit-panel .skill-card.skill-dual-thunder-dragon{border-color:#bc8242}
 .skill-edit-panel .skill-card.skill-dual-wind-dragon{border-color:#6390a0}
 .skill-edit-panel .skill-card.skill-dual-fire-water{border-color:#8b6370}
+
+/* Monster dex: map and acquisition sources. */
+.dex-obtain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px;margin-top:10px}
+.dex-obtain-card{display:grid;grid-template-columns:66px minmax(0,1fr);align-items:center;gap:10px;min-width:0;overflow:hidden;border:1px solid #d8e8ef;border-radius:15px;background:#f7fcff;color:var(--ui-ink);text-align:left}
+.dex-obtain-card>img{width:66px!important;height:66px!important;object-fit:cover!important;border-radius:0!important}
+.dex-obtain-icon{display:grid;width:66px;height:66px;place-items:center;background:linear-gradient(145deg,#e7f7ff,#fff4c9);font-size:27px}
+.dex-obtain-card>div{display:grid;gap:3px;min-width:0;padding:8px 9px 8px 0}
+.dex-obtain-card strong{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+.dex-obtain-card small{color:var(--ui-muted);font-size:10px;line-height:1.35}
+.dex-obtain-map{border-color:#9ed3e8;background:#f2fbff}.dex-obtain-evolution{border-color:#e8cf83;background:#fffaf0}.dex-obtain-fusion{border-color:#c9b5e8;background:#faf7ff}.dex-obtain-alchemy{border-color:#a7d9c1;background:#f3fcf7}
+.dex-obtain-empty{grid-column:1/-1;margin:0;padding:14px;border:1px dashed #b7cbd5;border-radius:14px;background:#f7fafb;color:var(--ui-muted);font-size:11px}
+@media(max-width:480px){.dex-obtain-grid{grid-template-columns:1fr}}

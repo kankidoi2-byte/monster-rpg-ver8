@@ -84,6 +84,6 @@ assert.equal(migrated.skillCards[contract.firstFixedId],3);
 assert.deepEqual([...migrated.equippedSkills.u1],[contract.firstFixedId]);
 assert(migrated.saveMeta.migrations.includes('fixed_skill_ids_v1'));
 for (const file of ['data','alchemy']) assert(htmlSource.includes(`js/${file}.js?v=phase3-prologue-1`),`${file}.js cache key must be updated for Phase 3`);
-assert(htmlSource.includes('js/dex.js?v=phase3-prologue-1'),'dex.js cache key must be updated for Phase 3');
+assert(htmlSource.includes('js/dex.js?v=monster-obtain-1'),'dex.js cache key must be updated for the monster acquisition display');
 
 console.log('Canonical data contract validation passed (61 entities, 50-number monster dex, 11-character dex, 191 fixed skills, eligibility separation, and legacy skill-ID migration).');
