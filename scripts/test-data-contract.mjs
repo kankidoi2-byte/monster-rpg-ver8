@@ -107,6 +107,9 @@ assert(htmlSource.includes('js/core.js?v=skill-taxonomy-1'),'core.js cache key m
 assert(htmlSource.includes('js/skills.js?v=evolution-skill-cards-1'),'skills.js cache key must be updated for evolution skill-card grants');
 assert(htmlSource.includes('js/save.js?v=skill-inventory-1'),'save.js cache key must be updated for skill cards granted with new instances');
 assert(htmlSource.includes('js/progression.js?v=evolution-skill-cards-1'),'progression.js cache key must be updated for evolution skill-card grants');
+assert(htmlSource.includes('js/skill-gacha.js?v=skill-gacha-1'),'skill-gacha.js must be loaded with its release cache key');
+assert(htmlSource.includes('js/ui.js?v=skill-gacha-1'),'ui.js cache key must be updated for the skill-gacha screen');
+assert(htmlSource.includes('css/ui-redesign.css?v=skill-gacha-1'),'UI stylesheet cache key must be updated for the skill-gacha layout');
 assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
 
