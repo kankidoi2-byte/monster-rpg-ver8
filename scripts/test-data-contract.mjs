@@ -104,8 +104,8 @@ assert.deepEqual(
 );
 assert(htmlSource.includes('js/data.js?v=skill-taxonomy-1'),'data.js cache key must be updated for unit tags');
 assert(htmlSource.includes('js/core.js?v=skill-taxonomy-1'),'core.js cache key must be updated for skill requirements and consolidation');
-assert(htmlSource.includes('js/skills.js?v=skill-taxonomy-1'),'skills.js cache key must be updated for separated skill pools');
-assert(htmlSource.includes('js/save.js?v=monster-obtain-2'),'save.js cache key must be updated for the shared initial-party definition');
+assert(htmlSource.includes('js/skills.js?v=skill-inventory-1'),'skills.js cache key must be updated for finite skill-card inventory');
+assert(htmlSource.includes('js/save.js?v=skill-inventory-1'),'save.js cache key must be updated for skill cards granted with new instances');
 assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
 

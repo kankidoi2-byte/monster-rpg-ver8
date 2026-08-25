@@ -1,10 +1,40 @@
+const SKILL_CARD_INVENTORY_MIGRATION = 'equipped_skill_cards_v1';
+
 function migrateSkillSystem(){
-  if (!save.skillCards) save.skillCards = {};
-  MOVE_CARDS.forEach(sk => {
-    if (save.skillCards[sk.id] == null) save.skillCards[sk.id] = 99;
-  });
+  if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
+  if (!Array.isArray(save.saveMeta.migrations)) save.saveMeta.migrations = [];
   if (!save.equippedSkills) save.equippedSkills = {};
   (save.instances || []).forEach(ins => ensureInstanceSkills(ins));
+  const equippedCounts = equippedSkillCardCounts();
+  if (!save.saveMeta.migrations.includes(SKILL_CARD_INVENTORY_MIGRATION)) {
+    // 旧仕様の全技99枚を廃止し、現在装備している1枠をカード1枚として引き継ぐ。
+    save.skillCards = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id,equippedCounts[sk.id] || 0]));
+    save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
+    if (typeof saveRecoveryReport !== 'undefined' && Array.isArray(saveRecoveryReport)) saveRecoveryReport.push('技カード所持数を現在の装備内容から再構築');
+    return;
+  }
+  if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
+  MOVE_CARDS.forEach(sk => {
+    const owned = Math.max(0,Math.floor(Number(save.skillCards[sk.id]) || 0));
+    save.skillCards[sk.id] = Math.max(owned,equippedCounts[sk.id] || 0);
+  });
+}
+function equippedSkillCardCounts(){
+  const counts=Object.create(null);
+  Object.values(save.equippedSkills || {}).forEach(ids => {
+    if (!Array.isArray(ids)) return;
+    ids.forEach(id => { if (SKILL_BY_ID[id]) counts[id]=(counts[id] || 0)+1; });
+  });
+  return counts;
+}
+function grantEquippedSkillCardsForInstance(ins){
+  if (!ins?.uid) return;
+  if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
+  ensureInstanceSkills(ins);
+  (save.equippedSkills?.[ins.uid] || []).forEach(id => {
+    if (!SKILL_BY_ID[id]) return;
+    save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
+  });
 }
 function ensureInstanceSkills(ins){
   if (!ins || !ins.uid) return;
