@@ -36,6 +36,18 @@ function grantEquippedSkillCardsForInstance(ins){
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
   });
 }
+function grantDefaultSkillCardsForInstance(ins){
+  if (!ins?.uid) return [];
+  const mon = by(ins.id);
+  if (!mon) return [];
+  if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
+  const ids = defaultSkillIdsForMonster(mon, ins);
+  ids.forEach(id => {
+    if (!SKILL_BY_ID[id]) return;
+    save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
+  });
+  return ids;
+}
 function ensureInstanceSkills(ins){
   if (!ins || !ins.uid) return;
   if (!save.equippedSkills) save.equippedSkills = {};

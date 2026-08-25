@@ -47,6 +47,7 @@ function tryFusion(idx) {
   save.items[r.item] -= r.count;
   ins.id = r.to;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
+  if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
   if (!save.caught.includes(r.to)) save.caught.push(r.to);
 
   saveGame();
@@ -113,6 +114,7 @@ function confirmEvolution(toId) {
   const from = by(ins.id), to = by(toId);
   ins.id = toId;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
+  if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
   if (!save.caught.includes(toId)) save.caught.push(toId);
   saveGame(); renderParty(); renderDex();
   currentEvolution = null;

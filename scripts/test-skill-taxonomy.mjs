@@ -108,4 +108,19 @@ const newUnitIds=context.save.equippedSkills['new-unit'];
 assert(newUnitIds.length > 0);
 for (const id of newUnitIds) assert(context.save.skillCards[id] >= 1,'new instances must own every default equipped card');
 
-console.log(`Skill taxonomy validation passed (61 tagged units, 191 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory).`);
+const evolving={uid:'evolving-unit',id:'freigal',level:20};
+context.save.instances.push(evolving);
+vm.runInContext("ensureInstanceSkills(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
+const equippedBeforeEvolution=[...context.save.equippedSkills[evolving.uid]];
+evolving.id='freiwolf';
+const expectedEvolutionCards=taxonomy.defaultSkillIdsForMonster(freiwolf,evolving);
+const countsBeforeEvolution=Object.fromEntries(expectedEvolutionCards.map(id => [id,context.save.skillCards[id] || 0]));
+const grantedEvolutionCards=vm.runInContext("grantDefaultSkillCardsForInstance(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
+assert.deepEqual([...grantedEvolutionCards],[...expectedEvolutionCards],'evolution must grant the evolved form default skill cards');
+assert.deepEqual([...context.save.equippedSkills[evolving.uid]],equippedBeforeEvolution,'granting evolution cards must not change the equipped loadout');
+for (const id of expectedEvolutionCards) assert.equal(context.save.skillCards[id],countsBeforeEvolution[id]+1,`evolution must grant one ${id} card`);
+
+const progressionSource=read('js/progression.js');
+assert.equal((progressionSource.match(/grantDefaultSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant default skill cards');
+
+console.log(`Skill taxonomy validation passed (61 tagged units, 191 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
