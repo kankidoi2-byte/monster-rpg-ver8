@@ -77,20 +77,35 @@ for (const unit of taxonomy.units) {
 }
 
 context.save = {
+  saveMeta:{migrations:[]},
   instances:[
     {uid:'legacy-ok',id:deprecatedSkill.sourceUnitId,level:99},
+    {uid:'legacy-copy',id:deprecatedSkill.sourceUnitId,level:99},
     {uid:'cross-kind',id:'slime',level:99}
   ],
   skillCards:Object.fromEntries(taxonomy.cards.map(card => [card.id,99])),
   equippedSkills:{
     'legacy-ok':[deprecatedSkill.id],
+    'legacy-copy':[deprecatedSkill.id],
     'cross-kind':['skill_elna_middle_03']
   }
 };
 vm.runInContext(read('js/skills.js'), context, {filename:'js/skills.js'});
-vm.runInContext("ensureInstanceSkills(save.instances.find(instance => instance.uid === 'legacy-ok'))", context);
+vm.runInContext('migrateSkillSystem()', context);
 assert.deepEqual([...context.save.equippedSkills['legacy-ok']],[deprecatedSkill.id]);
-vm.runInContext("ensureInstanceSkills(save.instances.find(instance => instance.uid === 'cross-kind'))", context);
 assert(!context.save.equippedSkills['cross-kind'].includes('skill_elna_middle_03'),'invalid cross-kind skills must be removed from old loadouts');
+assert.equal(context.save.skillCards[deprecatedSkill.id],2,'each equipped slot must be backed by one owned card');
+assert.equal(context.save.skillCards.skill_elna_middle_03,0,'unequipped cards must migrate from 99 to zero');
+assert(context.save.saveMeta.migrations.includes('equipped_skill_cards_v1'));
 
-console.log(`Skill taxonomy validation passed (61 tagged units, 191 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices).`);
+context.save.skillCards[deprecatedSkill.id]=5;
+vm.runInContext('migrateSkillSystem()', context);
+assert.equal(context.save.skillCards[deprecatedSkill.id],5,'subsequent loads must preserve cards obtained after migration');
+
+context.save.instances.push({uid:'new-unit',id:deprecatedSkill.sourceUnitId,level:99});
+vm.runInContext("grantEquippedSkillCardsForInstance(save.instances.find(instance => instance.uid === 'new-unit'))", context);
+const newUnitIds=context.save.equippedSkills['new-unit'];
+assert(newUnitIds.length > 0);
+for (const id of newUnitIds) assert(context.save.skillCards[id] >= 1,'new instances must own every default equipped card');
+
+console.log(`Skill taxonomy validation passed (61 tagged units, 191 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory).`);

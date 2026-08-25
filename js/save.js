@@ -177,7 +177,10 @@ function addInstance(id, level=1, exp=0, extraFields=null) {
   normalizeInstanceSaveFields(ins);
   save.instances.push(ins);
   if (!save.caught.includes(id)) save.caught.push(id);
-  if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
+  if (typeof ensureInstanceSkills === 'function') {
+    ensureInstanceSkills(ins);
+    if (typeof grantEquippedSkillCardsForInstance === 'function') grantEquippedSkillCardsForInstance(ins);
+  }
   return ins;
 }
 function normalizeInstanceSaveFields(ins){
