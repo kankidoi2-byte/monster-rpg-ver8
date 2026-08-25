@@ -15,7 +15,9 @@ function ensureInstanceSkills(ins){
     save.equippedSkills[ins.uid] = defaultSkillIdsForMonster(mon, ins);
     return;
   }
-  arr = arr.filter(id => SKILL_BY_ID[id] && isSkillAllowedForMonster(id, mon)).slice(0,3);
+  // 旧セーブで装備中の統合前技は使用可能なまま保持する。
+  // キャラクター／モンスター区分や武器・身体条件に違反する技だけを安全に外す。
+  arr = arr.filter(id => SKILL_BY_ID[id] && isEquippedSkillUsableForMonster(id, mon)).slice(0,3);
   let total = 0, kept = [];
   const limit = skillCostLimitFor(mon, ins);
   arr.forEach(id => {
@@ -78,7 +80,8 @@ function renderSkillEdit(){
     const sk = SKILL_BY_ID[id];
     return `<div class="card ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">${moveEffectText(skillToMove(id))}</p><button onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
   }).join('') || '<div class="card">技が未装備です。</div>';
-  const filteredCards = MOVE_CARDS.filter(sk => {
+  const skillPool = mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS;
+  const filteredCards = skillPool.filter(sk => {
     const allowed = isSkillAllowedForMonster(sk.id, mon);
     const slotOk = equipped.length < 3;
     const costOk = used + sk.cost <= limit;
@@ -102,7 +105,7 @@ function renderSkillEdit(){
     const costOk = used + sk.cost <= limit;
     const avail = availableSkillCount(sk.id);
     const can = allowed && slotOk && costOk && avail > 0;
-    const reason = !allowed ? '属性不一致' : !slotOk ? '技枠上限' : !costOk ? 'コスト超過' : avail <= 0 ? '所持枚数不足' : '装備可能';
+    const reason = !allowed ? '区分・属性・タグ条件不一致' : !slotOk ? '技枠上限' : !costOk ? 'コスト超過' : avail <= 0 ? '所持枚数不足' : '装備可能';
     return `<div class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}">${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p><p class="small">${moveEffectText(skillToMove(sk.id))}</p><button onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
   }).join('') || '<div class="card">条件に合う技カードがありません。</div>';
 }
@@ -125,7 +128,7 @@ function equipSkill(skillId){
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return;
   if (arr.length >= 3) { alert('技は最大3つまでです。'); return; }
-  if (!isSkillAllowedForMonster(skillId, mon)) { alert('このモンスターの属性では装備できません。'); return; }
+  if (!isSkillAllowedForMonster(skillId, mon)) { alert('このユニットは区分・属性・タグ条件を満たしていません。'); return; }
   if (equippedSkillCost(ins) + sk.cost > skillCostLimitFor(mon, ins)) { alert('コスト上限を超えています。'); return; }
   if (availableSkillCount(skillId) <= 0) { alert('この技カードの未使用分がありません。'); return; }
   arr.push(skillId);

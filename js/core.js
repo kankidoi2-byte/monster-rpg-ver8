@@ -35,6 +35,65 @@ const MOVE_CARDS = [];
 const _skillSeen = new Set();
 const _skillIdByMove = new WeakMap();
 const LEGACY_SKILL_ID_ALIASES = Object.create(null);
+
+const SKILL_FORM_RULES = Object.freeze([
+  Object.freeze({tag:'anatomy:fang', form:'fang', pattern:/牙/}),
+  Object.freeze({tag:'anatomy:claw', form:'claw', pattern:/(爪|クロー|ひっかき)/}),
+  Object.freeze({tag:'anatomy:horn', form:'horn', pattern:/(角|ホーン)/}),
+  Object.freeze({tag:'anatomy:tail', form:'tail', pattern:/(尾撃|テイル|しっぽ|幼竜の尾)/}),
+  Object.freeze({tag:'anatomy:fin', form:'fin', pattern:/(フィン|ひれ)/}),
+  Object.freeze({tag:'anatomy:wing', form:'wing', pattern:/(翼撃|光翼)/}),
+  Object.freeze({tag:'anatomy:fist', form:'fist', pattern:/拳/}),
+  Object.freeze({tag:'anatomy:beak', form:'beak', pattern:/つつき/}),
+  Object.freeze({tag:'anatomy:leg', form:'leg', pattern:/(蹴り|兎跳)/}),
+  Object.freeze({tag:'capability:breath', form:'breath', pattern:/(ブレス|息吹)/}),
+  Object.freeze({tag:'capability:roar', form:'roar', pattern:/咆哮/}),
+  Object.freeze({tag:'weapon:club', form:'club', pattern:/棍棒/}),
+  Object.freeze({tag:'weapon:dagger', form:'dagger', pattern:/短剣/}),
+  Object.freeze({tag:null, form:'strike', pattern:/(クラッシュ|崩し|崩砕|砕き|一撃)/}),
+  Object.freeze({tag:'capability:charge', form:'charge', pattern:/(突進|急降下|ダイブ|ラッシュ|ランページ|チャージ)/}),
+  Object.freeze({tag:'anatomy:body', form:'body', pattern:/(たいあたり|アタック)/}),
+  Object.freeze({tag:null, form:'blade', pattern:/(水刃|風刃)/}),
+  Object.freeze({tag:'capability:beam', form:'beam', pattern:/(光砲|断界光|コード・)/}),
+  Object.freeze({tag:null, form:'magic', pattern:/(弾|波動|波紋|ウェーブ|瀑流|奔流|スパイラル|ノヴァ|アーク|レイ|ストーム|召喚|裁き|光輪|エクリプス)/})
+]);
+
+function skillFormFor(sourceUnit,mv){
+  if (sourceUnit?.entityKind === 'character') {
+    if ((sourceUnit.tags || []).includes('class:swordsman')) return 'sword';
+    if ((sourceUnit.tags || []).includes('class:mage')) return 'magic';
+  }
+  const name=String(mv?.[0] || '');
+  return SKILL_FORM_RULES.find(rule => rule.pattern.test(name))?.form || 'generic';
+}
+function skillRequirementsFor(sourceUnit,mv,form){
+  const requiredAll=[];
+  if (sourceUnit?.entityKind === 'character') {
+    if ((sourceUnit.tags || []).includes('class:swordsman')) requiredAll.push('class:swordsman','weapon:sword');
+    if ((sourceUnit.tags || []).includes('class:mage')) requiredAll.push('class:mage','weapon:staff');
+  } else {
+    const name=String(mv?.[0] || '');
+    const matched=SKILL_FORM_RULES.find(rule => rule.tag && rule.pattern.test(name));
+    if (matched?.tag && (sourceUnit?.tags || []).includes(matched.tag)) requiredAll.push(matched.tag);
+    if (form === 'magic' && (sourceUnit?.tags || []).includes('capability:magic')) requiredAll.push('capability:magic');
+  }
+  return Object.freeze({
+    entityKinds:Object.freeze([sourceUnit?.entityKind || 'monster']),
+    requiredAll:Object.freeze([...new Set(requiredAll)])
+  });
+}
+function skillTagsFor(sourceUnit,mv,form){
+  const power=Number(mv?.[1]) || 0;
+  const effect=mv?.[3] || null;
+  return Object.freeze([...new Set([
+    `source:${sourceUnit?.entityKind || 'monster'}`,
+    `role:${power > 0 ? 'damage' : 'support'}`,
+    `form:${form}`,
+    ...moveTypes(mv).map(type => `element:${type}`),
+    ...(effect ? [`effect:${effect}`] : [])
+  ])]);
+}
+
 M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
   const id = mv?.[8];
   if (typeof id !== 'string' || !id) throw new Error(`固定skillIdがありません: ${mon.id} moves[${index}]`);
@@ -44,18 +103,80 @@ M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
   if (_skillSeen.has(id)) return;
   _skillSeen.add(id);
   const types=moveTypes(mv);
+  const form=skillFormFor(mon,mv);
   MOVE_CARDS.push({
     id, name:mv[0], power:mv[1] || 0, type:types[0] || 'normal', types, effect:mv[3] || null,
     chance:Number.isFinite(mv[4]) ? Number(mv[4]) : null, cost:skillCostFromMove(mv), customDesc:mv[6] || '',
-    exclusiveMonsterId:mv[7] || null, desc:moveEffectText ? moveEffectText(mv) : ''
+    exclusiveMonsterId:mv[7] || null, desc:moveEffectText ? moveEffectText(mv) : '',
+    sourceUnitId:mon.id, sourceEntityKind:mon.entityKind, form,
+    tags:skillTagsFor(mon,mv,form), requirements:skillRequirementsFor(mon,mv,form)
   });
 }));
+
+function skillPowerBand(power){
+  const value=Number(power) || 0;
+  if (value <= 0) return 'support';
+  if (value <= 30) return 'basic';
+  if (value <= 45) return 'standard';
+  if (value <= 60) return 'advanced';
+  if (value <= 80) return 'master';
+  return 'signature';
+}
+function skillConsolidationKey(sk){
+  const source=by(sk.sourceUnitId);
+  const consolidatableEffect=!sk.effect || ['guard','heal','buff','debuff'].includes(sk.effect);
+  if (!consolidatableEffect || sk.exclusiveMonsterId || source?.bossClass || source?.alchemyExclusive || sk.types.length !== 1 || sk.power > 80) return `keep:${sk.id}`;
+  const requirements=(sk.requirements?.requiredAll || []).join(',');
+  const elementalFamily=sk.types.includes('dragon') && ['fang','claw','horn','tail','wing','breath'].includes(sk.form)
+    ? (source?.types || []).filter(type => type !== 'dragon').sort().join('+')
+    : '';
+  return [sk.sourceEntityKind,sk.types.join('+'),sk.effect || 'damage',sk.form,requirements,elementalFamily,skillPowerBand(sk.power)].join('|');
+}
+function preferredPowerForBand(band){
+  return {basic:28,standard:42,advanced:60,master:78,support:0}[band] ?? 0;
+}
+const _skillConsolidationGroups = new Map();
+MOVE_CARDS.forEach(sk => {
+  const key=skillConsolidationKey(sk);
+  if (!_skillConsolidationGroups.has(key)) _skillConsolidationGroups.set(key,[]);
+  _skillConsolidationGroups.get(key).push(sk);
+});
+const SKILL_CANONICAL_BY_ID = Object.create(null);
+const SKILL_CANONICAL_PRIORITY = Object.freeze([
+  'skill_icegolem_02','skill_suiren_02','skill_thornbeat_02','skill_rikasheef_02',
+  'skill_tsubaki_03','skill_zephyray_02','skill_luxiard_03','skill_slime_01',
+  'skill_aquaron_03','skill_highaquaron_03','skill_orca_abyss_02',
+  'skill_rikasheef_03','skill_elna_middle_01','skill_elna_beginner_02','skill_elna_middle_03',
+  'skill_stella_apprentice_01','skill_stella_apprentice_02','skill_stella_apprentice_03',
+  'skill_stella_wizard_01','skill_stella_wizard_02','skill_stella_wizard_03','skill_stella_sorcerer_01'
+]);
+function canonicalPriority(skillId){
+  const index=SKILL_CANONICAL_PRIORITY.indexOf(skillId);
+  return index < 0 ? Number.MAX_SAFE_INTEGER : index;
+}
+_skillConsolidationGroups.forEach(cards => {
+  const target=preferredPowerForBand(skillPowerBand(cards[0]?.power));
+  const canonical=[...cards].sort((a,b) => canonicalPriority(a.id)-canonicalPriority(b.id) || Math.abs(a.power-target)-Math.abs(b.power-target) || a.id.localeCompare(b.id))[0];
+  cards.forEach(card => { SKILL_CANONICAL_BY_ID[card.id]=canonical.id; });
+});
+MOVE_CARDS.forEach(card => {
+  card.canonicalId=SKILL_CANONICAL_BY_ID[card.id] || card.id;
+  card.deprecated=card.canonicalId !== card.id;
+});
+Object.freeze(SKILL_CANONICAL_BY_ID);
+const EQUIPPABLE_MOVE_CARDS = Object.freeze(MOVE_CARDS.filter(card => !card.deprecated));
+const MONSTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'monster'));
+const CHARACTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'character'));
 const SKILL_BY_ID = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id, sk]));
 function skillIdFromMove(mv){
   return (typeof mv?.[8] === 'string' && mv[8]) || _skillIdByMove.get(mv) || legacySkillIdFromMove(mv);
 }
 function normalizeSkillId(skillId){
   return SKILL_BY_ID[skillId] ? skillId : (LEGACY_SKILL_ID_ALIASES[skillId] || skillId);
+}
+function canonicalSkillId(skillId){
+  const normalized=normalizeSkillId(skillId);
+  return SKILL_CANONICAL_BY_ID[normalized] || normalized;
 }
 function skillToMove(skillId){
   const sk = SKILL_BY_ID[skillId];
@@ -68,15 +189,23 @@ function skillCostLimitFor(mon, ins){
   const lvBonus = Math.max(0, Math.floor(((ins?.level || 1) - 1) / 3));
   return base + lvBonus;
 }
-function isSkillAllowedForMonster(skillId, mon){
+function isSkillAllowedForMonster(skillId, mon, options={}){
   const sk = SKILL_BY_ID[skillId];
   if (!sk || !mon) return false;
+  if (sk.deprecated && !options.allowDeprecated) return false;
+  if (sk.sourceEntityKind && sk.sourceEntityKind !== mon.entityKind) return false;
   if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id) return false;
+  const unitTags=new Set(mon.tags || []);
+  if ((sk.requirements?.entityKinds || []).length && !sk.requirements.entityKinds.includes(mon.entityKind)) return false;
+  if ((sk.requirements?.requiredAll || []).some(tag => !unitTags.has(tag))) return false;
   const types=skillTypes(sk);
   return types.includes('normal') || types.some(t => (mon.types || []).includes(t));
 }
+function isEquippedSkillUsableForMonster(skillId,mon){
+  return isSkillAllowedForMonster(skillId,mon,{allowDeprecated:true});
+}
 function defaultSkillIdsForMonster(mon, ins){
-  const ids = (mon?.moves || []).map(skillIdFromMove).filter(id => SKILL_BY_ID[id]);
+  const ids = [...new Set((mon?.moves || []).map(skillIdFromMove).map(canonicalSkillId).filter(id => SKILL_BY_ID[id]))];
   const limit = skillCostLimitFor(mon, ins);
   const chosen = [];
   let cost = 0;
