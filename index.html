@@ -6,7 +6,7 @@
 <title>モンスターバトル Ver8.0 Claude</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/style.css?v=mobile-load-phase2-1">
-<link rel="stylesheet" href="css/ui-redesign.css?v=monster-obtain-2">
+<link rel="stylesheet" href="css/ui-redesign.css?v=skill-gacha-1">
 <link rel="stylesheet" href="css/contract-animation.css?v=contract-animation-1">
 </head>
 <body class="title-mode">
@@ -91,6 +91,7 @@
     <button id="expeditionNav" onclick="showExpedition()"><span>🧭</span><div><strong>遠征</strong><small>控えのモンスターを派遣</small></div><b>›</b></button>
     <button onclick="showShop()"><span>🛒</span><div><strong>ショップ</strong><small>アイテムを購入</small></div><b>›</b></button>
     <button onclick="showItemGacha()"><span>🎰</span><div><strong>アイテムガチャ</strong><small>コインで報酬を抽選</small></div><b>›</b></button>
+    <button onclick="showSkillGacha()"><span>🃏</span><div><strong>技ガチャ</strong><small>コインで技カードを獲得</small></div><b>›</b></button>
     <button onclick="show('dex')"><span>📖</span><div><strong>モンスター図鑑</strong><small>出会ったモンスターの記録</small></div><b>›</b></button>
     <button onclick="show('characterDex')"><span>👤</span><div><strong>キャラクター図鑑</strong><small>仲間と成長形態の記録</small></div><b>›</b></button>
     <button onclick="show('itemDex')"><span>🎒</span><div><strong>アイテム図鑑</strong><small>入手したアイテムの記録</small></div><b>›</b></button>
@@ -247,6 +248,16 @@
   </div>
 </section>
 
+<!-- 技ガチャ -->
+<section id="skillGacha" class="screen">
+  <div class="panel ui-feature-panel skill-gacha-panel">
+    <div class="ui-page-heading"><span class="ui-eyebrow">SKILL DRAW</span><h1>技ガチャ</h1><p>技コストがレアリティ。モンスター技とキャラクター技を選んで獲得できます。</p></div>
+    <p class="ui-coin-balance">所持コイン <strong id="skillGachaCoinView">0</strong>枚</p>
+    <div id="skillGachaResult" class="log">🃏 ガチャを選んで技カードを獲得しよう。</div>
+    <div id="skillGachaRateList" class="skill-gacha-pools"></div>
+  </div>
+</section>
+
 <!-- 手持ち -->
 <section id="party" class="screen">
   <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1><p>育てる仲間を選び、技や個体情報を確認できます。</p></div>
@@ -361,8 +372,9 @@
 <script src="js/core.js?v=skill-taxonomy-1"></script>
 <script src="js/state.js?v=tutorial-phase1-1"></script>
 <script src="js/save.js?v=skill-inventory-1"></script>
-<script src="js/ui.js?v=elna-character-dex-1"></script>
+<script src="js/ui.js?v=skill-gacha-1"></script>
 <script src="js/skills.js?v=evolution-skill-cards-1"></script>
+<script src="js/skill-gacha.js?v=skill-gacha-1"></script>
 <script src="js/dex.js?v=monster-obtain-2"></script>
 <script src="js/party.js?v=golden-land-release-1"></script>
 <script src="js/progression.js?v=evolution-skill-cards-1"></script>

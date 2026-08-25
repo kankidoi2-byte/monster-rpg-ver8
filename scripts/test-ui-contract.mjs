@@ -28,7 +28,7 @@ expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 
 const screenIds = [
   'home', 'growthHub', 'moreMenu', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
-  'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'party',
+  'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
   'skillEdit', 'typeChart', 'dex', 'characterDex', 'itemDex'
 ];
 screenIds.forEach(id => {
@@ -75,13 +75,15 @@ expect(read('js/multi-battle.js').includes('isContractableUnit(entry.mon)'), 'mu
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
 expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');
 expect(read('js/items.js').includes('shop-item-card'), 'shared shop item cards are missing');
+expect(index.includes('onclick="showSkillGacha()"'), 'skill-gacha menu entry is missing');
+expect(read('js/skill-gacha.js').includes('function performSkillGacha'), 'skill-gacha draw logic is missing');
 expect(read('js/ui.js').includes('function showUiNotice'), 'shared reward notice is missing');
 expect(read('js/ui.js').includes('function replayUiMotion'), 'shared UI motion helper is missing');
 expect(read('js/battle-view.js').includes('is-revealing'), 'staged battle reward reveal is missing');
 
 const requiredScripts = [
   'data.js', 'bootstrap-guard.js', 'core.js', 'state.js', 'save.js', 'ui.js',
-  'skills.js', 'dex.js', 'party.js', 'progression.js', 'contract-animation.js', 'items.js', 'alchemy.js',
+  'skills.js', 'skill-gacha.js', 'dex.js', 'party.js', 'progression.js', 'contract-animation.js', 'items.js', 'alchemy.js',
   'battle-view.js', 'battle-rules.js', 'battle-flow.js', 'expedition.js', 'init.js'
 ];
 let previousIndex = -1;

@@ -46,6 +46,7 @@ function show(id) {
   if (id === 'partySet') renderPartySetup();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
+  if (id === 'skillGacha') renderSkillGacha();
   if (id === 'battleItemSelect') renderBattleItemSelect();
   if (id === 'skillEdit') renderSkillEdit();
 }
@@ -65,7 +66,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit','dex','characterDex','itemDex'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
-  if(['moreMenu','expedition','shop','itemGacha','typeChart'].includes(screenId)) return 'more';
+  if(['moreMenu','expedition','shop','itemGacha','skillGacha','typeChart'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
