@@ -39,6 +39,7 @@ function show(id) {
   updateAppNavigation(id);
   updateAppResourceBar();
   if (id === 'home') renderHome();
+  if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
   if (id === 'party')    renderParty();
   if (id === 'dex')      renderDex();
   if (id === 'characterDex') renderCharacterDex();
@@ -66,7 +67,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit','dex','characterDex','itemDex'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
-  if(['moreMenu','expedition','shop','itemGacha','skillGacha','typeChart'].includes(screenId)) return 'more';
+  if(['moreMenu','notices','expedition','shop','itemGacha','skillGacha','typeChart'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
@@ -81,6 +82,7 @@ function renderHome(){
   const partyPreview = document.getElementById('homePartyPreview');
   const growthPreview = document.getElementById('homeGrowthPreview');
   const expeditionPreview = document.getElementById('homeExpeditionPreview');
+  if (typeof renderNoticePreview === 'function') renderNoticePreview();
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
   if(partyPreview){
     partyPreview.innerHTML = party.length ? party.map((ins,index)=>{

@@ -26,7 +26,7 @@ expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','fr
 expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
 const screenIds = [
-  'home', 'growthHub', 'moreMenu', 'expedition', 'evolution', 'partySet', 'battleChoices',
+  'home', 'growthHub', 'moreMenu', 'notices', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
   'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
   'skillEdit', 'typeChart', 'dex', 'characterDex', 'itemDex'
@@ -46,6 +46,8 @@ criticalDomIds.forEach(id => expect(index.includes(`id="${id}"`), `required UI c
 expect(index.includes('class="title-logo"') && index.includes('class="title-touch"'), 'preserved title artwork hooks are missing');
 expect(index.includes('class="app-bottom-nav"'), 'new five-item navigation is missing');
 expect(index.includes('class="home-adventure"'), 'new battle-first home entry is missing');
+expect(index.includes('id="homeNoticePreview"'), 'home notice preview is missing');
+expect(index.includes('id="noticeList"'), 'notice history list is missing');
 expect(index.includes('class="screen battle-screen"'), 'portrait-first battle screen is missing');
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
