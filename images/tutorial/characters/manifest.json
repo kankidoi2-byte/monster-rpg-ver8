@@ -1,0 +1,217 @@
+{
+  "purpose": "future-prologue-tutorial",
+  "runtimeReferenced": false,
+  "format": "png-alpha",
+  "maxEdgePx": 576,
+  "characters": [
+    {
+      "id": "elna_beginner",
+      "characterNo": 1,
+      "name": "初級剣士エルナ",
+      "source": "images/monsters/elna_beginner.webp",
+      "cutout": "images/tutorial/characters/elna_beginner.png",
+      "sourceSha256": "74641f5f474fe23a488769294f07eeac5a0f597aa6caba2372bd6a3174d6d8ae",
+      "cutoutSha256": "bc69b1e04dd3c87df325778dd21dbe9b5cd5bef9789f2237609fd81e8d30f120",
+      "width": 576,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 243706,
+        "opaquePixels": 78825,
+        "partialAlphaPixels": 9245
+      }
+    },
+    {
+      "id": "elna_middle",
+      "characterNo": 2,
+      "name": "中級剣士エルナ",
+      "source": "images/monsters/elna_middle.webp",
+      "cutout": "images/tutorial/characters/elna_middle.png",
+      "sourceSha256": "7b2ee27d3aa50c9be6e31fce2bb2768b6daeafa2dd1d18aa2a38cbfa5bb08333",
+      "cutoutSha256": "ea8a51012156a3f41a88dbf0f2e0bad7f657f3c242d569713b5448c3046a0c89",
+      "width": 576,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 178605,
+        "opaquePixels": 148438,
+        "partialAlphaPixels": 4733
+      }
+    },
+    {
+      "id": "elna_advanced",
+      "characterNo": 3,
+      "name": "上級剣士エルナ",
+      "source": "images/monsters/elna_advanced.webp",
+      "cutout": "images/tutorial/characters/elna_advanced.png",
+      "sourceSha256": "06dce26708ef391e7fa4702c926d6e7f4ff1f5972afbabf733ebbf610113309c",
+      "cutoutSha256": "4650cd95f8ca9015d2a365987b57978dae48f1cd157545a6d573362572a362e4",
+      "width": 576,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 168092,
+        "opaquePixels": 151786,
+        "partialAlphaPixels": 11898
+      }
+    },
+    {
+      "id": "elna_water",
+      "characterNo": 4,
+      "name": "流水の剣士エルナ",
+      "source": "images/monsters/elna_water.webp",
+      "cutout": "images/tutorial/characters/elna_water.png",
+      "sourceSha256": "d7986766921daf948a831d6378836e28aef51ff99470305f2d9d4c9cd34a615b",
+      "cutoutSha256": "3a4f4b9e019caeacda887bd7900b4c3b1bc3becec8dce6438dfda216d81fa584",
+      "width": 576,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 188197,
+        "opaquePixels": 130179,
+        "partialAlphaPixels": 13400
+      }
+    },
+    {
+      "id": "elna_kaen",
+      "characterNo": 5,
+      "name": "華炎の剣士エルナ",
+      "source": "images/monsters/elna_kaen.webp",
+      "cutout": "images/tutorial/characters/elna_kaen.png",
+      "sourceSha256": "fd5cb5c6a71458e64db100437c1d78af6c6a11155fcaa9c71096e8ac40eee9e1",
+      "cutoutSha256": "b7cc7ff085321ce5d2788d7a39d04fd40b53c07ea87754a128341656ad7ff7e9",
+      "width": 461,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 133273,
+        "opaquePixels": 118118,
+        "partialAlphaPixels": 14145
+      }
+    },
+    {
+      "id": "stella_apprentice",
+      "characterNo": 6,
+      "name": "見習い魔法使いステラ",
+      "source": "images/monsters/stella_apprentice.webp",
+      "cutout": "images/tutorial/characters/stella_apprentice.png",
+      "sourceSha256": "1ff6f45f2da1d763cc0f10721ba6e0bd8182a9321bf322a50ee11fb183c8296b",
+      "cutoutSha256": "f524874d5e5c7d3429065e3397230d6f808b46cb8d00a902119bf90c294bcb17",
+      "width": 576,
+      "height": 383,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 102890,
+        "opaquePixels": 110585,
+        "partialAlphaPixels": 7133
+      }
+    },
+    {
+      "id": "stella_wizard",
+      "characterNo": 7,
+      "name": "魔法使いステラ",
+      "source": "images/monsters/stella_wizard.webp",
+      "cutout": "images/tutorial/characters/stella_wizard.png",
+      "sourceSha256": "c5849b164f36d8c677168bca12cf3c5646285ca99d63954122b8da6b8b020bea",
+      "cutoutSha256": "2e829de2ac6367e4e6f8275635823414b5fa429e36e75973c4ae1b2954471769",
+      "width": 576,
+      "height": 383,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 90209,
+        "opaquePixels": 123081,
+        "partialAlphaPixels": 7318
+      }
+    },
+    {
+      "id": "stella_sorcerer",
+      "characterNo": 8,
+      "name": "魔導師ステラ",
+      "source": "images/monsters/stella_sorcerer.webp",
+      "cutout": "images/tutorial/characters/stella_sorcerer.png",
+      "sourceSha256": "15d601c25c93b83bcee70eb332df36aa416ad55849ecaf2a6053723b9386bdb2",
+      "cutoutSha256": "22119ba2d32a25bb72ae5089d19fd43122c2e47a20fc311f77da8a36e90ef496",
+      "width": 383,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 113741,
+        "opaquePixels": 97858,
+        "partialAlphaPixels": 9009
+      }
+    },
+    {
+      "id": "lumina_apprentice",
+      "characterNo": 9,
+      "name": "見習い魔法使いルミナ",
+      "source": "images/monsters/lumina_apprentice.webp",
+      "cutout": "images/tutorial/characters/lumina_apprentice.png",
+      "sourceSha256": "fca0652f7ef8ee0f7709f1b21bb46e972ac8e7694111b87e58dc4f7ff454e7ed",
+      "cutoutSha256": "b33a2011e7f098f9183de5f3e706d881d4af59f0efa2dfc35e5407eef917d073",
+      "width": 523,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 187190,
+        "opaquePixels": 109565,
+        "partialAlphaPixels": 4493
+      }
+    },
+    {
+      "id": "lumina_wizard",
+      "characterNo": 10,
+      "name": "魔法使いルミナ",
+      "source": "images/monsters/lumina_wizard.webp",
+      "cutout": "images/tutorial/characters/lumina_wizard.png",
+      "sourceSha256": "91cf52753306de91b77699e54d7de106a6ae0cf5c106c8e7557b30fc06ecacdc",
+      "cutoutSha256": "6f7063e24de47e37bd3346fe9d10b72c03bd9cd4a0a0f26c6a4085b7a7fc5571",
+      "width": 384,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 145260,
+        "opaquePixels": 68425,
+        "partialAlphaPixels": 7499
+      }
+    },
+    {
+      "id": "lumina_sorcerer",
+      "characterNo": 11,
+      "name": "魔導師ルミナ",
+      "source": "images/monsters/lumina_sorcerer.webp",
+      "cutout": "images/tutorial/characters/lumina_sorcerer.png",
+      "sourceSha256": "ea74583e707ea78f1b47274c6061f83d03859c7ad2f54093d8248934159406bb",
+      "cutoutSha256": "e29942bce182f690477fc825c81acaa56e3e854f7818170bd277772926ffe082",
+      "width": 407,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "sourcePixelsRecomposed": true,
+        "transparentPixels": 132448,
+        "opaquePixels": 95238,
+        "partialAlphaPixels": 6746
+      }
+    }
+  ]
+}
