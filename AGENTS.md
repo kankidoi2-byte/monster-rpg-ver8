@@ -53,6 +53,15 @@
 - For gameplay changes, smoke-test title screen, home, party selection, hunt selection, battle start, affected feature, save, and reload.
 - Report the files changed, checks run, and anything that still needs manual Android or Chromebook verification.
 
+## Player-facing notices
+
+- Player-facing notices live in `js/notices-data.js` and must remain newest first.
+- Every feature, balance change, content addition, player-visible performance improvement, or bug fix must add or update a concise notice in the same branch.
+- Do not announce refactors, test-only changes, future unused assets, documentation-only work, or other changes players cannot observe.
+- Use a new stable notice `id`; never rename or reuse a published notice ID.
+- Write the title and body for players rather than copying commit messages or implementation details.
+- Run `npm run check:notices` as part of `npm run check`. If no notice is needed, state why in the pull request.
+
 ## Git workflow
 
 - Work on a feature branch. Do not write directly to `main`.
