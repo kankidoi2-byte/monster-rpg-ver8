@@ -109,6 +109,17 @@ if (data) {
     if (!allowedEntityKinds.has(monster.entityKind)) {
       fail(`Entity ${monster.id} has an invalid entityKind: ${monster.entityKind}`);
     }
+    if (!Array.isArray(monster.tags) || !monster.tags.length) {
+      fail(`Entity ${monster.id} requires unit tags`);
+    } else {
+      checkUnique(`Entity ${monster.id} tags`, monster.tags);
+      if (!monster.tags.includes(`entity:${monster.entityKind}`)) {
+        fail(`Entity ${monster.id} is missing its entity tag`);
+      }
+      for (const type of monster.types || []) {
+        if (!monster.tags.includes(`element:${type}`)) fail(`Entity ${monster.id} is missing element:${type}`);
+      }
+    }
     if (!monster.eligibility || requiredEligibilityKeys.some(key => typeof monster.eligibility[key] !== 'boolean')) {
       fail(`Entity ${monster.id} requires boolean eligibility fields: ${requiredEligibilityKeys.join(', ')}`);
     }
@@ -237,7 +248,7 @@ if (data) {
   const primarySaveKey = saveSource.match(/const SAVE_KEY\s*=\s*['"]([^'"]+)['"]/ )?.[1];
   if (primarySaveKey !== 'mb_v95c') fail(`Unexpected primary save key: ${primarySaveKey || 'none'}`);
 
-  notes.push(`${data.M.length} entities (${monsterRecords.length} monsters, ${characterRecords.length} characters)`);
+  notes.push(`${data.M.length} tagged entities (${monsterRecords.length} monsters, ${characterRecords.length} characters)`);
   notes.push(`${data.MAPS.length} maps`);
   notes.push(`${itemRecords.length} items`);
   notes.push(`${data.FUSIONS.length} fusions`);

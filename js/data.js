@@ -407,6 +407,53 @@ const M = [
 
 ];
 
+/* ===== ユニット能力タグ =====
+ * 技の装備条件は属性だけでなく、キャラクター職・武器・モンスターの身体構造も参照する。
+ * 既存のユニットIDや技IDは変更せず、タグは既存データへ加算する。
+ */
+const UNIT_TAG_GROUPS = Object.freeze([
+  Object.freeze({ids:['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'], tags:['class:swordsman','weapon:sword']}),
+  Object.freeze({ids:['stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer'], tags:['class:mage','weapon:staff','capability:magic']}),
+  Object.freeze({ids:['freigal','freiwolf'], tags:['species:beast','anatomy:fang','anatomy:claw','capability:roar','capability:charge']}),
+  Object.freeze({ids:['aquaron','highaquaron','shenhairon','tienhairon'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:tail','capability:breath','capability:roar','capability:magic']}),
+  Object.freeze({ids:['grassbeat','thornbeat','granbeat'], tags:['species:insect','anatomy:horn','armor:shell','capability:spore','capability:charge']}),
+  Object.freeze({ids:['rikasheef','seralphia'], tags:['species:beast','anatomy:horn','capability:magic','capability:charge']}),
+  Object.freeze({ids:['seralphia'], tags:['anatomy:wing']}),
+  Object.freeze({ids:['nightmare'], tags:['species:spirit','capability:magic']}),
+  Object.freeze({ids:['volteck','spaquinn','voltax'], tags:['species:avian','anatomy:beak','anatomy:wing','capability:magic','capability:charge']}),
+  Object.freeze({ids:['icegolem','proto_icegolem'], tags:['species:construct','anatomy:fist','armor:heavy','capability:charge']}),
+  Object.freeze({ids:['hikari'], tags:['origin:divine','species:spirit','capability:magic']}),
+  Object.freeze({ids:['nemes','nemesia','nemesion','doom_nemesion'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:wing','capability:breath','capability:magic']}),
+  Object.freeze({ids:['suiren','tsubaki'], tags:['origin:spirit','species:spirit','capability:magic']}),
+  Object.freeze({ids:['tsubaki'], tags:['anatomy:wing']}),
+  Object.freeze({ids:['slime','slime_gold'], tags:['species:slime','anatomy:body','capability:charge']}),
+  Object.freeze({ids:['goblin'], tags:['species:humanoid','weapon:club','weapon:dagger','capability:roar']}),
+  Object.freeze({ids:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], tags:['species:dragon','origin:construct','anatomy:claw','anatomy:wing','capability:beam','capability:roar','capability:magic']}),
+  Object.freeze({ids:['volmoog','gran_volmoog'], tags:['species:beast','anatomy:claw','armor:heavy','capability:roar','capability:charge']}),
+  Object.freeze({ids:['orcana','orca_stream','orca_abyss'], tags:['species:aquatic','anatomy:fin','anatomy:tail','capability:magic','capability:charge']}),
+  Object.freeze({ids:['alchemion'], tags:['origin:alchemy','species:construct','anatomy:body']}),
+  Object.freeze({ids:['kimeragna','kimeragna_apex'], tags:['origin:alchemy','species:dragon','anatomy:claw','anatomy:wing','capability:breath','capability:charge']}),
+  Object.freeze({ids:['sylphin','zephyray','tempestray'], tags:['species:aquatic','anatomy:fin','anatomy:wing','capability:charge','capability:magic']}),
+  Object.freeze({ids:['ignaros'], tags:['species:beast','anatomy:horn','armor:heavy','capability:charge']}),
+  Object.freeze({ids:['nocle','noclaid','noxvelg'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:wing','capability:breath','capability:roar','capability:magic']}),
+  Object.freeze({ids:['luxseed','luxiard','lux_galdion','elixion'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:tail','anatomy:wing','capability:breath','capability:magic']}),
+  Object.freeze({ids:['elixion'], tags:['origin:alchemy','origin:divine']}),
+  Object.freeze({ids:['astralepis'], tags:['species:beast','anatomy:leg','anatomy:tail','capability:magic','capability:charge']})
+]);
+const UNIT_TAGS_BY_ID = Object.create(null);
+UNIT_TAG_GROUPS.forEach(group => group.ids.forEach(id => {
+  if (!UNIT_TAGS_BY_ID[id]) UNIT_TAGS_BY_ID[id] = [];
+  UNIT_TAGS_BY_ID[id].push(...group.tags);
+}));
+M.forEach(unit => {
+  const baseTags = [
+    `entity:${unit.entityKind}`,
+    ...(unit.types || []).map(type => `element:${type}`)
+  ];
+  unit.tags = Object.freeze([...new Set([...baseTags, ...(UNIT_TAGS_BY_ID[unit.id] || [])])]);
+});
+Object.freeze(UNIT_TAGS_BY_ID);
+
 /* ===== 合成レシピ ===== */
 const FUSIONS = [
   {from:'elna_advanced', item:'water_mirror', itemName:'水鏡', count:1, to:'elna_water'},

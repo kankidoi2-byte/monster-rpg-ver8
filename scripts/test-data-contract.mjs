@@ -102,7 +102,9 @@ assert.deepEqual(
   ['skill_kimeragna_apex_01'],
   'existing Kimeragna Apex skill loadouts must be safely trimmed to the four-star cost limit'
 );
-assert(htmlSource.includes('js/data.js?v=apex-star4-1'),'data.js cache key must be updated for the Kimeragna Apex rarity change');
+assert(htmlSource.includes('js/data.js?v=skill-taxonomy-1'),'data.js cache key must be updated for unit tags');
+assert(htmlSource.includes('js/core.js?v=skill-taxonomy-1'),'core.js cache key must be updated for skill requirements and consolidation');
+assert(htmlSource.includes('js/skills.js?v=skill-taxonomy-1'),'skills.js cache key must be updated for separated skill pools');
 assert(htmlSource.includes('js/save.js?v=monster-obtain-2'),'save.js cache key must be updated for the shared initial-party definition');
 assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
