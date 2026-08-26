@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "check": "npm run check:data && npm run check:data-contract && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:monster-dex && npm run check:character-dex && npm run check:contract-animation && npm run check:three-way && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save",
+    "check": "npm run check:data && npm run check:data-contract && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-complete && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:monster-dex && npm run check:character-dex && npm run check:contract-animation && npm run check:three-way && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save",
     "check:data": "node scripts/validate-data.mjs",
     "check:data-contract": "node scripts/test-data-contract.mjs",
     "check:skill-taxonomy": "node scripts/test-skill-taxonomy.mjs",
@@ -14,6 +14,7 @@
     "check:kokoro-link-power": "node scripts/test-kokoro-link-power-abilities.mjs",
     "check:kokoro-link-status": "node scripts/test-kokoro-link-status-abilities.mjs",
     "check:kokoro-link-tactics": "node scripts/test-kokoro-link-tactics-abilities.mjs",
+    "check:kokoro-link-complete": "node scripts/test-kokoro-link-phase4-complete.mjs",
     "check:kokoro-link-party": "node scripts/test-kokoro-link-party-state.mjs",
     "check:kokoro-link-battle": "node scripts/test-kokoro-link-battle.mjs",
     "check:kokoro-link-analysis": "node scripts/test-kokoro-link-analysis.mjs",
