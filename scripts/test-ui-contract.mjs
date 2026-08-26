@@ -40,7 +40,8 @@ const criticalDomIds = [
   'titleScreen', 'currentPartyView', 'partySelectList', 'battleChoiceList',
   'battleMapBanner', 'pName', 'pVis', 'pHpBar', 'pHpTrail', 'pHpText', 'pExpBar',
   'eName', 'eVis', 'eHpBar', 'eHpTrail', 'eHpText', 'commands', 'multiTargetSelect',
-  'battleSwitchButton', 'itemText', 'log', 'battleOutcome', 'next'
+  'battleSwitchButton', 'kokoroLinkButton', 'battleSkillButton', 'battleItemButton',
+  'battleCommandTitle', 'itemText', 'log', 'battleOutcome', 'next'
 ];
 criticalDomIds.forEach(id => expect(index.includes(`id="${id}"`), `required UI contract is missing: #${id}`));
 
@@ -51,6 +52,11 @@ expect(index.includes('id="homeNoticePreview"'), 'home notice preview is missing
 expect(index.includes('id="noticeList"'), 'notice history list is missing');
 expect(index.includes('class="screen battle-screen"'), 'portrait-first battle screen is missing');
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
+expect(index.includes('class="battle-command-pad"'), 'five-way battle command pad is missing');
+expect(!index.includes('onclick="askUseContractScroll()">🤝 契約</button>'), 'contract must not remain as an independent battle command');
+expect(index.includes('回復薬や契約書など、使う道具を選んでください。'), 'battle item guidance must include contract scrolls');
+expect(read('js/battle-view.js').includes('function toggleBattleSkillPanel'), 'collapsible battle skill panel is missing');
+expect(read('js/battle-view.js').includes("class=\"battle-command-badge${contractReady?'':' hidden'}\">契約可"), 'contract-ready item badge is missing');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
 expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
 expect(read('js/battle-view.js').includes('function openBattleSwitchPicker'), 'manual battle-switch picker is missing');

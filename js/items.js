@@ -79,6 +79,7 @@ function updateItemText() {
 function updateItems(){
   ensureContractScrollItem();
   updateItemText();
+  if(typeof renderBattleItemButton==='function')renderBattleItemButton();
   const itemScreen = document.getElementById('battleItemSelect');
   if(itemScreen && itemScreen.classList.contains('active')) renderBattleItemSelect();
   const partyScreen = document.getElementById('party');
@@ -158,7 +159,12 @@ function useExpItemOnInstance(itemId, uidValue){
   alert(msg);
   if(pendingEvolutions.length) processNextEvolution();
 }
-function openBattleItemSelect() { updateItems(); show('battleItemSelect'); }
+function openBattleItemSelect() {
+  if(typeof closeBattleSkillPanel==='function')closeBattleSkillPanel();
+  document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
+  updateItems();
+  show('battleItemSelect');
+}
 function renderBattleItemSelect(){
   ensureContractScrollItem();
   const list=document.getElementById('battleItemList');

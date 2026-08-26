@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-command-pad',
+    date: '2026-08-26',
+    category: 'update',
+    title: 'バトルコマンドを見やすく整理しました',
+    body: '技・交代・リンク・道具・逃走を十字型の操作盤にまとめました。契約書は道具から使用でき、契約可能なときは道具ボタンに表示されます。'
+  }),
+  Object.freeze({
     id: '20260826-battle-switch',
     date: '2026-08-26',
     category: 'update',
