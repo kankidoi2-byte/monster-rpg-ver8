@@ -284,6 +284,7 @@ function finishTurnWithPoison() {
 }
 function turn(i) {
   if (busy) return;
+  if (typeof closeBattleSkillPanel === 'function') closeBattleSkillPanel();
   if (multiBattle?.active) { chooseMultiBattleTarget(i); return; }
   busy = true;
   startBattleTurn();

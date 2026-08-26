@@ -28,20 +28,56 @@ function setupBattle() {
     `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
   // 技ボタン
   renderSkillButtons();
+  closeBattleSkillPanel();
   renderKokoroLinkPanel();
   renderBattleSwitchButton();
+  renderBattleItemButton();
   updateItemText();
   update();
+}
+function closeBattleSkillPanel(){
+  const commands=document.getElementById('commands');
+  const button=document.getElementById('battleSkillButton');
+  const title=document.getElementById('battleCommandTitle');
+  commands?.classList.add('hidden');
+  button?.setAttribute('aria-expanded','false');
+  if(button)button.innerHTML='<span aria-hidden="true">✨</span><strong>技</strong><small>決定</small>';
+  if(title)title.textContent='コマンドを選ぶ';
+}
+function toggleBattleSkillPanel(){
+  if(busy)return;
+  if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
+  if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
+  if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
+  document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
+  const commands=document.getElementById('commands');
+  const button=document.getElementById('battleSkillButton');
+  const title=document.getElementById('battleCommandTitle');
+  if(!commands||!button)return;
+  const opening=commands.classList.contains('hidden');
+  commands.classList.toggle('hidden',!opening);
+  button.setAttribute('aria-expanded',String(opening));
+  button.innerHTML=opening?'<span aria-hidden="true">×</span><strong>閉じる</strong><small>戻る</small>':'<span aria-hidden="true">✨</span><strong>技</strong><small>決定</small>';
+  if(title)title.textContent=opening?'技を選ぶ':'コマンドを選ぶ';
 }
 function renderBattleSwitchButton(){
   const button=document.getElementById('battleSwitchButton');
   if(!button)return;
   const count=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates().length:0;
   button.disabled=count===0;
-  button.innerHTML='🔄 交代';
+  button.innerHTML='<span aria-hidden="true">🔄</span><strong>交代</strong>';
+}
+function renderBattleItemButton(){
+  const button=document.getElementById('battleItemButton');
+  if(!button)return;
+  const hasScroll=typeof SHOP_ITEMS!=='undefined'&&SHOP_ITEMS.some(item=>item.contract&&(save.items[item.id]||0)>0);
+  const contractReady=!multiBattle?.active&&!!enemy&&isContractableUnit(enemy)&&hasScroll;
+  button.innerHTML=`<span aria-hidden="true">🎒</span><strong>道具</strong><small id="battleItemBadge" class="battle-command-badge${contractReady?'':' hidden'}">契約可</small>`;
 }
 function openBattleSwitchPicker(){
   if(busy)return;
+  closeBattleSkillPanel();
+  document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
   if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
@@ -217,6 +253,7 @@ function renderKokoroLinkPanel(){
 }
 function toggleKokoroLinkPanel(){
   if(busy)return;
+  closeBattleSkillPanel();
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
   if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
