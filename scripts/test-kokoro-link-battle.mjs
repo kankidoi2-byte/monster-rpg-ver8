@@ -64,6 +64,7 @@ assert(viewSource.includes('★2リンク能力：')&&viewSource.includes('begin
 assert(viewSource.includes('★3リンク能力：')&&viewSource.includes('beginKokoroLinkOriginChoice')&&viewSource.includes('beginKokoroLinkFreeSwitch')&&viewSource.includes('kokoroLinkSourceNeedsEnemyTarget'),'battle UI must preview three-star abilities and expose tactical and enemy-target choices');
 assert(coreSource.includes('kokoroLinkAttackMultiplierFor')&&coreSource.includes('kokoroLinkSpeedBonusFor'),'combat stats must include link effects');
 assert(viewSource.includes('activateKokoroLinkFromBattle')&&viewSource.includes('行動を消費せず発動'),'battle UI must activate links as a free subcommand');
+assert(viewSource.includes("button.disabled=!targetEligible||(!current&&available===0)"),'active links must remain inspectable from the battle command');
 assert(rulesSource.includes('resolvePlayerIncomingDamage'),'single battle damage must pass through the link barrier');
 assert(rulesSource.includes('kokoroLinkMovePowerMultiplierFor')&&rulesSource.includes('playerKokoroLinkChance')&&rulesSource.includes('applyPlayerKokoroLinkRegeneration'),'single battle must consume active one-star abilities');
 assert(rulesSource.includes('applyKokoroLinkStatusAbilityForBattle')&&rulesSource.includes('tickSingleEnemyKokoroLinkEffects'),'single battle must apply and expire two-star enemy effects');
