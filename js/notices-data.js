@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-anatomy-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: '身体攻撃・武器攻撃の演出を追加しました',
+    body: '尻尾・翼・ひれ・蹴り・角・くちばし・拳・棍棒・短剣を使う攻撃に、薙ぎ払い・突き・打撃の専用演出を追加しました。技の属性に応じて演出の色も変化します。'
+  }),
+  Object.freeze({
     id: '20260826-battle-impact-motion',
     date: '2026-08-26',
     category: 'update',
