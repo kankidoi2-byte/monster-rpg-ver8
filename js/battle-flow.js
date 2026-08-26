@@ -67,6 +67,9 @@ function showBattleChoices() {
     request.goldenLandMapEntry = goldenLandMapEntry;
     return {map,difficulty,goldenLandMapEntry,m,request};
   }).filter(Boolean);
+  let discoveredNewMap=false;
+  preparedEntries.forEach(({map})=>{if(typeof registerMapDex==='function'&&registerMapDex(map.id))discoveredNewMap=true;});
+  if(discoveredNewMap)saveGame();
   const recommended = preparedEntries.reduce((best, entry) => {
     const score = huntRecommendationScore(entry.request, entry.m);
     return !best || score > best.score ? {requestId:entry.request.requestId,score} : best;

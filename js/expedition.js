@@ -91,6 +91,7 @@ function startExpedition(){
   if(!distance){alert('距離を選んでください。');return;}if(!members.length){alert('派遣するモンスターを1～3体選んでください。');return;}
   if(save.expeditions.active.length>=expeditionUnlockedSlots()){alert('使用できる遠征枠がありません。');return;}
   const suitability=expeditionSuitability(members.map(x=>x.uid),map);
+  if(typeof registerMapDex==='function')registerMapDex(map.id);
   save.expeditions.active.push({id:`exp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`,mapId:map.id,distanceId:distance.id,memberUids:members.map(x=>x.uid),progress:0,requiredWins:distance.wins,status:'active',suitability,reward:null});
   expeditionSelectedUids=[];saveGame();renderExpedition();renderParty();if(typeof renderPartySetup==='function')renderPartySetup();
 }

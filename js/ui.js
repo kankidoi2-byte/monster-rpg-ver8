@@ -41,8 +41,10 @@ function show(id) {
   if (id === 'home') renderHome();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
   if (id === 'party')    renderParty();
+  if (id === 'dexHub')   renderDexHub();
   if (id === 'dex')      renderDex();
   if (id === 'characterDex') renderCharacterDex();
+  if (id === 'mapDex')   renderMapDex();
   if (id === 'itemDex')  renderItemDex();
   if (id === 'partySet') renderPartySetup();
   if (id === 'shop')     renderShop();
@@ -64,10 +66,10 @@ function updateAppResourceBar(){
   if(coinView) coinView.textContent = Number(save?.coins || 0).toLocaleString('ja-JP');
 }
 function appNavigationSection(screenId){
-  if(['party','partySet','skillEdit','dex','characterDex','itemDex'].includes(screenId)) return 'monsters';
+  if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
-  if(['moreMenu','notices','expedition','shop','itemGacha','skillGacha','typeChart'].includes(screenId)) return 'more';
+  if(['moreMenu','notices','expedition','shop','itemGacha','skillGacha','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){

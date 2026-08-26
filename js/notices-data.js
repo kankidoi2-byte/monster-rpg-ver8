@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-dex-hub-map-dex',
+    date: '2026-08-26',
+    category: 'update',
+    title: '図鑑をまとめ、マップ図鑑を追加しました',
+    body: 'メニューの図鑑から、モンスター・キャラクター・マップ・アイテムの記録を選べるようになりました。マップ図鑑では土地の特徴、出現する相手、難易度、特殊イベントを確認できます。'
+  }),
+  Object.freeze({
     id: '20260826-battle-support-motion',
     date: '2026-08-26',
     category: 'update',
