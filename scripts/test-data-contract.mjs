@@ -103,7 +103,7 @@ assert.deepEqual(
   'existing Kimeragna Apex skill loadouts must be safely trimmed to the four-star cost limit'
 );
 assert(htmlSource.includes('js/data.js?v=skill-taxonomy-1'),'data.js cache key must be updated for unit tags');
-assert(htmlSource.includes('js/core.js?v=kokoro-link-scaling-1'),'core.js cache key must include the Kokoro Link combat modifiers');
+assert(htmlSource.includes('js/core.js?v=kokoro-link-phase4-1'),'core.js cache key must include the current Kokoro Link combat modifiers');
 assert(htmlSource.includes('js/skills.js?v=evolution-skill-cards-1'),'skills.js cache key must be updated for evolution skill-card grants');
 assert(htmlSource.includes('js/save.js?v=skill-inventory-1'),'save.js cache key must be updated for skill cards granted with new instances');
 assert(htmlSource.includes('js/progression.js?v=evolution-skill-cards-1'),'progression.js cache key must be updated for evolution skill-card grants');

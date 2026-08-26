@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link-one-star-abilities',
+    date: '2026-08-26',
+    category: 'update',
+    title: '★1モンスターのリンク能力を追加しました',
+    body: '★1モンスターが主属性ごとの追加能力を発動するようになりました。攻撃・障壁・素早さ強化のほか、継続回復、回避、初撃軽減、HP吸収、確率補正、技威力強化が使えます。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link-scaling',
     date: '2026-08-26',
     category: 'fix',
