@@ -59,9 +59,11 @@ const rulesSource=fs.readFileSync(new URL('../js/battle-rules.js',import.meta.ur
 const multiSource=fs.readFileSync(new URL('../js/multi-battle.js',import.meta.url),'utf8');
 assert(indexSource.includes('id="kokoroLinkButton"')&&indexSource.includes('id="kokoroLinkPanel"'),'battle UI must expose the link command and source panel');
 assert(viewSource.includes('レアリティ補正 ×')&&viewSource.includes('（適用済み）')&&viewSource.includes('最終効果：'),'battle UI must distinguish the applied rarity modifier from final effects');
+assert(viewSource.includes('★1リンク能力：')&&viewSource.includes('kokoroLinkPowerAbilityStatus'),'battle UI must preview and track one-star ability state');
 assert(coreSource.includes('kokoroLinkAttackMultiplierFor')&&coreSource.includes('kokoroLinkSpeedBonusFor'),'combat stats must include link effects');
 assert(viewSource.includes('activateKokoroLinkFromBattle')&&viewSource.includes('行動を消費せず発動'),'battle UI must activate links as a free subcommand');
 assert(rulesSource.includes('resolvePlayerIncomingDamage'),'single battle damage must pass through the link barrier');
-assert(multiSource.includes('resolvePlayerIncomingDamage')&&multiSource.includes('kokoroLinkStatusHtml'),'multi battle must share link effects and display');
+assert(rulesSource.includes('kokoroLinkMovePowerMultiplierFor')&&rulesSource.includes('playerKokoroLinkChance')&&rulesSource.includes('applyPlayerKokoroLinkRegeneration'),'single battle must consume active one-star abilities');
+assert(multiSource.includes('resolvePlayerIncomingDamage')&&multiSource.includes('kokoroLinkStatusHtml')&&multiSource.includes('applyPlayerKokoroLinkLifeSteal'),'multi battle must share link effects, abilities, and display');
 
-console.log('Kokoro Link battle validation passed (activation UI, target binding, no stacking, attack/speed boosts, barrier absorption, switch reuse, and lifecycle reset).');
+console.log('Kokoro Link battle validation passed (activation UI, target binding, no stacking, base boosts, one-star abilities, switch reuse, and lifecycle reset).');

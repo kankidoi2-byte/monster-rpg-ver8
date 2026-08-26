@@ -191,7 +191,7 @@ function runMultiActions(actions,index) {
       pConfusionTurns--;
       const roll=Math.random();
       if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${player.name}はこんらんして動けない！`);runMultiActions(actions,index+1);return;}
-      if(roll>=.75){const raw=Math.max(1,Math.floor(12*pAtk*playerAttackInstanceMultiplier())),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage;pHp=Math.max(0,pHp-dmg);appendMultiLog(`🌀 ${player.name}はこんらんして自分に${dmg}ダメージ！${barrier.absorbed?`<br>💞 ココロ障壁が${barrier.absorbed}ダメージを防いだ！`:''}`);runMultiActions(actions,index+1);return;}
+      if(roll>=.75){const raw=Math.max(1,Math.floor(12*pAtk*playerAttackInstanceMultiplier())),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage,defense=kokoroLinkDefenseMessage(barrier);pHp=Math.max(0,pHp-dmg);appendMultiLog(`🌀 ${player.name}はこんらんして自分に${dmg}ダメージ！${defense?`<br>${defense}`:''}`);runMultiActions(actions,index+1);return;}
     }
     const resolvedTargetId=resolveLivingMultiTargetId(multiBattle.enemies,action.targetId);
     const target=multiEnemy(resolvedTargetId);
@@ -232,40 +232,53 @@ function performMultiAttack(actor,target,move) {
   if(effect==='debuff'){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return;}
   if(effect==='aqua_shield'){if(actorIsPlayer)pAquaShield=true;else actor.aquaShield=true;appendMultiLog(`💧 ${a.name}は水の盾を展開した！`);return;}
   if(effect==='sleep'&&power<=0){
-    if(Math.random()<(effectChance??.7)){if(defenderIsPlayer)pSleepTurns=2;else targetEntry.sleepTurns=2;appendMultiLog(`🌿 ${a.name}の「${name}」！<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！ しかし効かなかった！`);
+    const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.7):{chance:effectChance??.7,boosted:false};
+    const boostMsg=chance.boosted?'<br>⭐ 星運上昇で成功率アップ！':'';
+    if(Math.random()<chance.chance){if(defenderIsPlayer)pSleepTurns=2;else targetEntry.sleepTurns=2;appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
     updateMultiBattleView();return;
   }
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack)*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
+  const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
+  const effectivePower=power*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
   const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
-  const rawDamage=Math.max(1,Math.floor((power*atk*r+Math.random()*9)*difficulty*map*(guard?.55:1)*(shield?.5:1)));
+  const rawDamage=Math.max(1,Math.floor((effectivePower*atk*r+Math.random()*9)*difficulty*map*(guard?.55:1)*(shield?.5:1)));
   const linkBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawDamage):{hpDamage:rawDamage,absorbed:0,barrierRemaining:0};
   const damage=linkBarrier.hpDamage;
+  const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
   else{targetEntry.hp=Math.max(0,targetEntry.hp-damage);targetEntry.guard=false;targetEntry.aquaShield=false;}
   const impactTargetId=defenderIsPlayer?'pVis':`${targetEntry.id}Vis`;
   if(typeof playBattleImpact==='function')playBattleImpact(impactTargetId,damage,r,moveTypes(move),power);
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
-  if(linkBarrier.absorbed)msg+=`<br>💞 ココロ障壁が${linkBarrier.absorbed}ダメージを防いだ！（残り${linkBarrier.barrierRemaining}）`;
+  const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
+  if(powerBoost.boosted)msg+='<br>🐉 竜威増幅で技威力アップ！';
   if(r>1)msg+='<br>🔥 効果はバツグン！';if(r<1)msg+='<br>💧 効果はいまひとつ……';if(map>1)msg+='<br>🗺️ マップ属性強化！（×1.2）';
   if(effect==='drain'){const heal=adjustedBattleHealing(Math.floor(damage/2));if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+heal);else actor.hp=Math.min(actor.maxHp,actor.hp+heal);msg+=`<br>🌱 HPを${heal}吸収した！`;}
-  if(effect==='repeat_attack'&&(defenderIsPlayer?pHp:targetEntry.hp)>0&&Math.random()<(effectChance??.3)){
-    const rawSecond=Math.max(1,Math.floor((power*atk*r+Math.random()*9)*difficulty*map));
+  if(actorIsPlayer){const linkHeal=applyPlayerKokoroLinkLifeSteal(Math.min(damage,Math.max(0,defenderHpBefore)));if(linkHeal)msg+=`<br>${linkHeal}`;}
+  if(effect==='repeat_attack'&&(defenderIsPlayer?pHp:targetEntry.hp)>0){
+    const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.3):{chance:effectChance??.3,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if(Math.random()<chance.chance){
+    const rawSecond=Math.max(1,Math.floor((effectivePower*atk*r+Math.random()*9)*difficulty*map));
     const secondBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawSecond):{hpDamage:rawSecond,absorbed:0,barrierRemaining:0};
     const second=secondBarrier.hpDamage;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
     msg+=`<br>⚡ 電撃が連鎖した！ 追加で<b>${second}</b>ダメージ！`;
-    if(secondBarrier.absorbed)msg+=`<br>💞 ココロ障壁が${secondBarrier.absorbed}ダメージを防いだ！（残り${secondBarrier.barrierRemaining}）`;
+    const secondDefense=kokoroLinkDefenseMessage(secondBarrier);if(secondDefense)msg+=`<br>${secondDefense}`;
+    }
   }
   if(effect==='recoil'||effect==='alchemy_recoil'){const recoil=effect==='recoil'?8:alchemyRecoilDamage(damage);if(actorIsPlayer)pHp=Math.max(0,pHp-recoil);else actor.hp=Math.max(0,actor.hp-recoil);msg+=`<br>💥 ${a.name}は反動で${recoil}ダメージ！`;}
   if(effect==='flare_charge'){if(actorIsPlayer)pFlareCharge=true;else actor.flareCharge=true;}else if(power>0){if(actorIsPlayer)pFlareCharge=false;else actor.flareCharge=false;}
   if((defenderIsPlayer?pHp:targetEntry.hp)>0){
-    if(effect==='poison'&&Math.random()<(effectChance??.5)){
+    if(effect==='poison'){
+      const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.5):{chance:effectChance??.5,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(Math.random()<chance.chance){
       if(defenderIsPlayer){pStatus='poison';pPoisonTurns=BATTLE_STATUS_EFFECTS.poison.duration;}else{targetEntry.status='poison';targetEntry.poisonTurns=BATTLE_STATUS_EFFECTS.poison.duration;targetEntry.poisonSourceIsPlayer=actorIsPlayer;}
       msg+='<br>☠️ 毒状態になった！';
+      }
     }
-    if(effect==='paralysis'&&Math.random()<(effectChance??.3)){if(defenderIsPlayer)pParalysisTurns=3;else targetEntry.paralysisTurns=3;msg+='<br>⚡ 麻痺状態になった！';}
-    if(effect==='confusion'&&Math.random()<(effectChance??.6)){const turns=2+Math.floor(Math.random()*2);if(defenderIsPlayer)pConfusionTurns=turns;else targetEntry.confusionTurns=turns;msg+='<br>🌀 こんらんした！';}
+    if(effect==='paralysis'){const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.3):{chance:effectChance??.3,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(Math.random()<chance.chance){if(defenderIsPlayer)pParalysisTurns=3;else targetEntry.paralysisTurns=3;msg+='<br>⚡ 麻痺状態になった！';}}
+    if(effect==='confusion'){const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.6):{chance:effectChance??.6,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(Math.random()<chance.chance){const turns=2+Math.floor(Math.random()*2);if(defenderIsPlayer)pConfusionTurns=turns;else targetEntry.confusionTurns=turns;msg+='<br>🌀 こんらんした！';}}
   }
   appendMultiLog(msg);
   if(!defenderIsPlayer&&targetEntry.hp<=0){targetEntry.alive=false;targetEntry.defeatedByPlayer=actorIsPlayer;appendMultiLog(`💀 ${targetEntry.mon.name}は${a.name}に倒された！`);}
@@ -279,6 +292,7 @@ function finishMultiBattleTurn(){
   const poison=BATTLE_STATUS_EFFECTS.poison;
   if(pStatus==='poison'&&pPoisonTurns>0&&pHp>0){const dmg=Math.max(1,Math.floor(playerMaxHp()*poison.maxHpDamageRate));pHp=Math.max(0,pHp-dmg);pPoisonTurns--;appendMultiLog(`☠️ ${player.name}は毒で${dmg}ダメージ！`);if(!pPoisonTurns)pStatus=null;}
   aliveMultiEnemies().forEach(entry=>{if(entry.status==='poison'&&entry.poisonTurns>0){const dmg=Math.max(1,Math.floor(entry.maxHp*poison.maxHpDamageRate));entry.hp=Math.max(0,entry.hp-dmg);entry.poisonTurns--;appendMultiLog(`☠️ ${entry.mon.name}は毒で${dmg}ダメージ！`);if(!entry.poisonTurns)entry.status=null;if(entry.hp<=0){entry.alive=false;entry.defeatedByPlayer=entry.poisonSourceIsPlayer;appendMultiLog(`💀 ${entry.mon.name}は毒で倒れた！`);}}});
+  if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)appendMultiLog(regenMsg);}
   updateMultiBattleView(); if(pHp<=0&&!switchPartyMember())return;if(!aliveMultiEnemies().length){winMultiBattle();return;} busy=false;
 }
 

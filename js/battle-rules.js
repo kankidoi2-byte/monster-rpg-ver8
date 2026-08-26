@@ -11,7 +11,7 @@ function typeEff(atkTypeOrTypes, defTypes) {
 (function loadMultiBattleModule() {
   if (document.querySelector('script[data-multi-battle]')) return;
   const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=kokoro-link-scaling-1';
+  script.src = 'js/multi-battle.js?v=kokoro-link-phase4-1';
   script.dataset.multiBattle = 'true';
   document.head.appendChild(script);
 })();
@@ -21,7 +21,35 @@ function alchemyRecoilDamage(actualDamage){
 function resolvePlayerIncomingDamage(damage){
   if(typeof absorbKokoroLinkDamage==='function')return absorbKokoroLinkDamage(activeInstance,damage);
   const incoming=Math.max(0,Math.floor(Number(damage)||0));
-  return {incoming,hpDamage:incoming,absorbed:0,barrierRemaining:0};
+  return {incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,evaded:false,barrierRemaining:0};
+}
+function kokoroLinkDefenseMessage(result){
+  if(!result)return '';
+  const messages=[];
+  if(result.evaded)messages.push('🌪️ 風渡りで攻撃を回避！');
+  if(result.reduced)messages.push(`✨ 光護の一閃が${result.reduced}ダメージを軽減！`);
+  if(result.absorbed)messages.push(`💞 ココロ障壁が${result.absorbed}ダメージを防いだ！（残り${result.barrierRemaining}）`);
+  return messages.join('<br>');
+}
+function applyPlayerKokoroLinkRegeneration(){
+  if(typeof tickKokoroLinkRegeneration!=='function')return '';
+  const result=tickKokoroLinkRegeneration(activeInstance,pHp,playerMaxHp());
+  pHp=result.hp;
+  if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
+  return result.healed?`🌿 森命再生でHPを${result.healed}回復！（残り${result.remainingTurns}ターン）`:'';
+}
+function applyPlayerKokoroLinkLifeSteal(actualDamage){
+  if(typeof consumeKokoroLinkLifeSteal!=='function')return '';
+  const result=consumeKokoroLinkLifeSteal(activeInstance,actualDamage,playerMaxHp());
+  if(!result.consumed)return '';
+  const before=pHp;
+  pHp=Math.min(playerMaxHp(),pHp+result.healing);
+  if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
+  return `🌑 闇命吸収でHPを${pHp-before}回復！`;
+}
+function playerKokoroLinkChance(baseChance){
+  if(typeof kokoroLinkChanceFor!=='function')return {chance:baseChance,boosted:false};
+  return kokoroLinkChanceFor(activeInstance,baseChance);
 }
 function applySleepToTarget(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
@@ -160,6 +188,7 @@ function finishTurnWithPoison() {
   const poisonMsg = applyPoisonEndTurn();
   if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;
   if (eHp <= 0) { win(); return; }
+  if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;}
   if (pHp <= 0) {
     if (!switchPartyMember()) return;
   }
@@ -245,7 +274,9 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (effect === 'sleep') {
     let msg = `🌿 ${attacker.name}の「${name}」！`;
-    if (Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.70)) {
+    const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.70):{chance:Number.isFinite(effectChance)?effectChance:0.70,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if (Math.random() < chance.chance) {
       msg += applySleepToTarget(!isPlayer);
     } else {
       msg += `<br>しかし、${defender.name}には効かなかった！`;
@@ -261,9 +292,11 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const atk = baseAtk * (hasFlareCharge ? 1.20 : 1);
   const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
   const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
+  const powerBoost=isPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
+  const effectivePower=power*powerBoost.multiplier;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
-  const rawDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const rawDmg = Math.max(1, Math.floor((effectivePower * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
   const linkBarrier = isPlayer ? {hpDamage:rawDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawDmg);
   const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
@@ -279,7 +312,8 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const actualDamage = Math.min(dmg, Math.max(0, defenderHpBefore));
 
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
-  if (linkBarrier.absorbed) msg += `<br>💞 ココロ障壁が${linkBarrier.absorbed}ダメージを防いだ！（残り${linkBarrier.barrierRemaining}）`;
+  const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
+  if(powerBoost.boosted)msg+='<br>🐉 竜威増幅で技威力アップ！';
   if (mapAttackMultiplier > 1) msg += `<br>🗺️ マップ属性強化！（×1.2）`;
   if (shield) msg += `<br>💧 ${defender.name}のアクアシールドがダメージを半減し、消えた！`;
   if (hasFlareCharge) {
@@ -300,6 +334,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
     const healed = (isPlayer ? pHp : eHp) - before;
     msg += `<br>🌱 HPを${healed}吸収した！`;
   }
+  if(isPlayer){const linkHeal=applyPlayerKokoroLinkLifeSteal(actualDamage);if(linkHeal)msg+=`<br>${linkHeal}`;}
   if (effect === 'recoil') {
     if (isPlayer) pHp -= 8; else eHp -= 8;
     msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;
@@ -309,26 +344,42 @@ function doAttack(attacker, defender, mv, isPlayer) {
     if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;
     msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;
   }
-  if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.5)) {
+  if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0)) {
+    const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.5):{chance:Number.isFinite(effectChance)?effectChance:0.5,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if(Math.random()<chance.chance)
     msg += applyPoisonToTarget(!isPlayer);
   }
-  if (effect === 'paralysis' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.30)) {
+  if (effect === 'paralysis' && (isPlayer ? eHp > 0 : pHp > 0)) {
+    const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.30):{chance:Number.isFinite(effectChance)?effectChance:0.30,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if(Math.random()<chance.chance)
     msg += applyParalysisToTarget(!isPlayer);
   }
-  if (effect === 'sleep' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.70)) {
+  if (effect === 'sleep' && (isPlayer ? eHp > 0 : pHp > 0)) {
+    const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.70):{chance:Number.isFinite(effectChance)?effectChance:0.70,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if(Math.random()<chance.chance)
     msg += applySleepToTarget(!isPlayer);
   }
-  if (effect === 'confusion' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.60)) {
+  if (effect === 'confusion' && (isPlayer ? eHp > 0 : pHp > 0)) {
+    const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.60):{chance:Number.isFinite(effectChance)?effectChance:0.60,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if(Math.random()<chance.chance)
     msg += applyConfusionToTarget(!isPlayer);
   }
-  if (effect === 'repeat_attack' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.30)) {
+  if (effect === 'repeat_attack' && (isPlayer ? eHp > 0 : pHp > 0)) {
+    const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.30):{chance:Number.isFinite(effectChance)?effectChance:0.30,boosted:false};
+    if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
+    if(Math.random()<chance.chance){
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
-    const rawSecondDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
+    const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
     const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
     const secondDmg = secondBarrier.hpDamage;
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
-    if (secondBarrier.absorbed) msg += `<br>💞 ココロ障壁が${secondBarrier.absorbed}ダメージを防いだ！（残り${secondBarrier.barrierRemaining}）`;
+    const secondDefenseMsg=kokoroLinkDefenseMessage(secondBarrier);if(secondDefenseMsg)msg+=`<br>${secondDefenseMsg}`;
+    }
   }
   logEl.innerHTML = msg;
   // ヒットアニメとダメージ表示

@@ -58,12 +58,12 @@ assert(resolved?.profile && resolved?.effects);
 assert.equal(JSON.stringify(target),targetBefore,'Kokoro Link calculation must not mutate target stats');
 assert.deepEqual(plain(resolved.effects),{
   effectRate:0.35,
-  barrier:126,
-  barrierCap:126,
-  attackBonus:0.35,
-  attackMultiplier:1.35,
-  speedBonus:32,
-  speedCap:32,
+  barrier:144,
+  barrierCap:144,
+  attackBonus:0.4,
+  attackMultiplier:1.4,
+  speedBonus:37,
+  speedCap:37,
   capsApplied:{barrier:false,attack:false,speed:false}
 });
 
@@ -72,7 +72,8 @@ const alternateOneStar=contract.resolveKokoroLink(
   {uid:'alternate',level:99,alchemy:{statModifiers:{hp:5,speed:5,attack:5}}},
   target
 );
-assert.deepEqual(plain(alternateOneStar.effects),plain(resolved.effects),'same-rarity sources must produce the same effect on the same active monster');
+assert.equal(alternateOneStar.effects.effectRate,resolved.effects.effectRate,'same-rarity sources must share the same base link rate');
+assert.equal(alternateOneStar.effects.attackBonus,.5,'one-star primary attributes may add a fixed power ability after rarity scaling');
 
 const malformed=contract.buildKokoroLinkProfile(
   {id:'malformed',name:'malformed',entityKind:'monster',rarity:'★',types:[],hp:Infinity,spd:'bad',moves:[['bad',Infinity,'normal']]},
