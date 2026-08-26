@@ -61,11 +61,13 @@ assert(indexSource.includes('id="kokoroLinkButton"')&&indexSource.includes('id="
 assert(viewSource.includes('レアリティ補正 ×')&&viewSource.includes('（適用済み）')&&viewSource.includes('最終効果：'),'battle UI must distinguish the applied rarity modifier from final effects');
 assert(viewSource.includes('★1リンク能力：')&&viewSource.includes('kokoroLinkPowerAbilityStatus'),'battle UI must preview and track one-star ability state');
 assert(viewSource.includes('★2リンク能力：')&&viewSource.includes('beginKokoroLinkStatusTargetSelection'),'battle UI must preview two-star abilities and select a multi-battle target');
+assert(viewSource.includes('★3リンク能力：')&&viewSource.includes('beginKokoroLinkOriginChoice')&&viewSource.includes('beginKokoroLinkFreeSwitch')&&viewSource.includes('kokoroLinkSourceNeedsEnemyTarget'),'battle UI must preview three-star abilities and expose tactical and enemy-target choices');
 assert(coreSource.includes('kokoroLinkAttackMultiplierFor')&&coreSource.includes('kokoroLinkSpeedBonusFor'),'combat stats must include link effects');
 assert(viewSource.includes('activateKokoroLinkFromBattle')&&viewSource.includes('行動を消費せず発動'),'battle UI must activate links as a free subcommand');
 assert(rulesSource.includes('resolvePlayerIncomingDamage'),'single battle damage must pass through the link barrier');
 assert(rulesSource.includes('kokoroLinkMovePowerMultiplierFor')&&rulesSource.includes('playerKokoroLinkChance')&&rulesSource.includes('applyPlayerKokoroLinkRegeneration'),'single battle must consume active one-star abilities');
 assert(rulesSource.includes('applyKokoroLinkStatusAbilityForBattle')&&rulesSource.includes('tickSingleEnemyKokoroLinkEffects'),'single battle must apply and expire two-star enemy effects');
+assert(rulesSource.includes('applyKokoroLinkTacticsAbilityForBattle')&&rulesSource.includes('nextEnemyMoveWithKokoroLinkForesight')&&rulesSource.includes('kokoroLinkPenetratedMultiplier'),'single battle must apply three-star tactical support');
 assert(multiSource.includes('resolvePlayerIncomingDamage')&&multiSource.includes('kokoroLinkStatusHtml')&&multiSource.includes('applyPlayerKokoroLinkLifeSteal'),'multi battle must share link effects, abilities, and display');
 
-console.log('Kokoro Link battle validation passed (activation UI, target binding, no stacking, base boosts, one-star abilities, switch reuse, and lifecycle reset).');
+console.log('Kokoro Link battle validation passed (activation UI, target binding, no stacking, base boosts, ★1–★3 abilities, switch reuse, and lifecycle reset).');

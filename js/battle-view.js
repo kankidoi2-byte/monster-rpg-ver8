@@ -1,5 +1,6 @@
 function setupBattle() {
   pendingKokoroLinkStatusSourceUid=null;
+  pendingKokoroLinkTacticsMode=null;
   const targetSelect = document.getElementById('multiTargetSelect');
   if (targetSelect) {
     targetSelect.classList.add('hidden');
@@ -126,6 +127,7 @@ function kokoroLinkTargetStats(){
   return {maxHp:playerMaxHp(),speed:Math.max(1,Math.round(Number(player?.spd ?? 50)*instanceStatModifier(activeInstance,'speed')))};
 }
 let pendingKokoroLinkStatusSourceUid=null;
+let pendingKokoroLinkTacticsMode=null;
 function kokoroLinkStatusAbilityStateText(ability){
   if(!ability)return '';
   if(!ability.resolved)return '対象選択後に1回判定';
@@ -137,7 +139,8 @@ function kokoroLinkStatusHtml(){
   const barrier=Math.max(0,Number(link.barrierRemaining)||0);
   const attack=Math.round((link.effects.attackMultiplier-1)*100);
   const ability=typeof kokoroLinkPowerAbilityStatus==='function'?kokoroLinkPowerAbilityStatus(activeInstance):'';
-  return ` / 💞${link.sourceName}（攻撃ダメージ+${attack}%・素早さ+${link.effects.speedBonus}・障壁${barrier}${ability?`・${ability}`:''}）`;
+  const tactics=typeof kokoroLinkTacticsAbilityStatus==='function'?kokoroLinkTacticsAbilityStatus(activeInstance):'';
+  return ` / 💞${link.sourceName}（攻撃ダメージ+${attack}%・素早さ+${link.effects.speedBonus}・障壁${barrier}${ability?`・${ability}`:''}${tactics?`・${tactics}`:''}）`;
 }
 function kokoroLinkFailureText(reason){
   return {
@@ -154,10 +157,12 @@ function renderKokoroLinkPanel(){
   const sources=typeof currentKokoroLinkSources==='function' ? currentKokoroLinkSources({includeUsed:true}) : [];
   const targetEligible=player?.entityKind==='monster';
   const available=sources.filter(source=>source.available).length;
-  button.disabled=!targetEligible||!!current||available===0;
+  const tacticsAction=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved||current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0;
+  button.disabled=!targetEligible||!!current&&!tacticsAction||!current&&available===0;
   button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}`;
+  const tacticsActionHtml=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved?'<button onclick="beginKokoroLinkOriginChoice()">原初選択を決める</button>':current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0?'<button onclick="beginKokoroLinkFreeSwitch()">無消費交代を使う</button>':'';
   const activeHtml=current
-    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}${current.statusAbility?`<small>★2リンク能力：${current.statusAbility.label}（${kokoroLinkStatusAbilityStateText(current.statusAbility)}）</small>`:''}</div>`
+    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}${current.statusAbility?`<small>★2リンク能力：${current.statusAbility.label}（${kokoroLinkStatusAbilityStateText(current.statusAbility)}）</small>`:''}${current.tacticsAbility?`<small>★3リンク能力：${current.tacticsAbility.label}（${kokoroLinkTacticsAbilityStatus(activeInstance)}）</small>${tacticsActionHtml}`:''}</div>`
     : '';
   const message=!targetEligible
     ? '<p class="kokoro-link-empty">現在の戦闘個体はリンク対象外です。</p>'
@@ -177,6 +182,7 @@ function renderKokoroLinkPanel(){
       `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+
       `${preview.powerAbility?`<small>★1リンク能力：${preview.powerAbility.label}（${preview.powerAbility.summary}）</small>`:''}`+
       `${preview.statusAbility?`<small>★2リンク能力：${preview.statusAbility.label}（${preview.statusAbility.summary}）</small>`:''}`+
+      `${preview.tacticsAbility?`<small>★3リンク能力：${preview.tacticsAbility.label}（${preview.tacticsAbility.summary}）</small>`:''}`+
       `<small>${source.used?'この戦闘で使用済み':'行動を消費せず発動'}</small></button>`;
   }).join('');
   panel.innerHTML=`<div class="kokoro-link-panel-head"><div><small>KOKORO LINK</small><h3>控えの力を借りる</h3></div><button onclick="toggleKokoroLinkPanel()" aria-label="閉じる">×</button></div>${activeHtml}${message}<div class="kokoro-link-source-grid">${cards}</div>`;
@@ -184,6 +190,7 @@ function renderKokoroLinkPanel(){
 function toggleKokoroLinkPanel(){
   if(busy)return;
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
+  if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
   if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
   const panel=document.getElementById('kokoroLinkPanel');
   if(!panel)return;
@@ -199,19 +206,43 @@ function beginKokoroLinkStatusTargetSelection(sourceUid){
 }
 function cancelKokoroLinkStatusTarget(){pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');if(multiBattle?.active)updateMultiBattleView();}
 function selectKokoroLinkStatusTarget(targetId){const sourceUid=pendingKokoroLinkStatusSourceUid;if(!sourceUid)return;pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');activateKokoroLinkFromBattle(sourceUid,targetId);}
+function kokoroLinkSourceNeedsEnemyTarget(source){return source?.profile?.rarity===2||source?.profile?.rarity===3&&['dark','star'].includes(source.profile.primaryType);}
+function beginKokoroLinkOriginChoice(){
+  const picker=document.getElementById('multiTargetSelect');if(!picker)return;pendingKokoroLinkTacticsMode='origin-choice';
+  picker.innerHTML='<p><b>原初選択</b><span>発動する支援効果を選択</span></p><button onclick="selectKokoroLinkOriginChoice(\'small_heal\')">🌿 小回復：最大HP10%</button><button onclick="selectKokoroLinkOriginChoice(\'cleanse\')">✨ 浄化：状態異常を解除</button><button disabled>💧 技コスト軽減：保留中</button><button onclick="cancelKokoroLinkTacticsPicker()" class="secondary-button">あとで選ぶ</button>';
+  picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
+}
+function selectKokoroLinkOriginChoice(optionId){
+  if(pendingKokoroLinkTacticsMode!=='origin-choice')return;const msg=applyKokoroLinkOriginChoiceForBattle(optionId),log=document.getElementById('log');if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+msg;cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
+}
+function beginKokoroLinkFreeSwitch(){
+  const picker=document.getElementById('multiTargetSelect'),candidates=partyBattle.map((entry,index)=>({entry,index})).filter(item=>item.index!==activePartyIdx&&!item.entry.fainted&&item.entry.hp>0);if(!picker||!candidates.length)return;
+  pendingKokoroLinkTacticsMode='free-switch';picker.innerHTML=`<p><b>風渡り交代</b><span>行動を消費せず交代する仲間を選択</span></p>${candidates.map(({entry,index})=>`<button onclick="selectKokoroLinkFreeSwitch(${index})">${entry.mon.name}（HP ${entry.hp}）</button>`).join('')}<button onclick="cancelKokoroLinkTacticsPicker()" class="secondary-button">あとで使う</button>`;
+  picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
+}
+function selectKokoroLinkFreeSwitch(nextIndex){
+  if(pendingKokoroLinkTacticsMode!=='free-switch'||busy)return;const next=partyBattle[nextIndex];if(!next||nextIndex===activePartyIdx||next.fainted||next.hp<=0||!consumeKokoroLinkFreeSwitch(activeInstance))return;
+  const previous=player.name;partyBattle[activePartyIdx].hp=pHp;activePartyIdx=nextIndex;activeInstance=next.inst;player=next.mon;pHp=next.hp;pAtk=1;pGuard=false;pStatus=null;pPoisonTurns=0;pParalysisTurns=0;pConfusionTurns=0;pSleepTurns=0;pFlareCharge=false;pAquaShield=false;
+  document.getElementById('pName').textContent=player.name;document.getElementById('pVis').innerHTML=vis(player);renderSkillButtons();const log=document.getElementById('log');if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`🌪️ 風渡り交代で${previous}から<b>${player.name}</b>へ交代した！`;
+  cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
+}
+function cancelKokoroLinkTacticsPicker(){pendingKokoroLinkTacticsMode=null;const picker=document.getElementById('multiTargetSelect');picker?.classList.add('hidden');if(picker)picker.innerHTML='';if(multiBattle?.active)updateMultiBattleView();}
 function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(busy)return;
   const source=typeof currentKokoroLinkSources==='function'?currentKokoroLinkSources({includeUsed:true}).find(candidate=>candidate.uid===sourceUid):null;
-  if(!targetId&&multiBattle?.active&&source?.profile?.rarity===2){beginKokoroLinkStatusTargetSelection(sourceUid);return;}
+  if(!targetId&&multiBattle?.active&&kokoroLinkSourceNeedsEnemyTarget(source)){beginKokoroLinkStatusTargetSelection(sourceUid);return;}
   const result=activateCurrentKokoroLink(sourceUid,kokoroLinkTargetStats());
   const log=document.getElementById('log');
   if(!result.ok){if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`⚠️ ${kokoroLinkFailureText(result.reason)}`;renderKokoroLinkPanel();return;}
   const {link}=result;
   const statusMsg=link.statusAbility&&typeof applyKokoroLinkStatusAbilityForBattle==='function'?applyKokoroLinkStatusAbilityForBattle(link,targetId):'';
-  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}${link.powerAbility?`<br>✨ ★1リンク能力「${link.powerAbility.label}」：${link.powerAbility.summary}`:''}${statusMsg?`<br>${statusMsg}`:''}`;
+  const tacticsMsg=link.tacticsAbility&&typeof applyKokoroLinkTacticsAbilityForBattle==='function'?applyKokoroLinkTacticsAbilityForBattle(link,targetId):'';
+  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}${link.powerAbility?`<br>✨ ★1リンク能力「${link.powerAbility.label}」：${link.powerAbility.summary}`:''}${statusMsg?`<br>${statusMsg}`:''}${tacticsMsg?`<br>${tacticsMsg}`:''}`;
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   renderKokoroLinkPanel();
   update();
+  if(link.tacticsAbility?.id==='origin_choice'&&!link.tacticsAbility.resolved)beginKokoroLinkOriginChoice();
+  if(link.tacticsAbility?.id==='free_switch'&&link.tacticsAbility.charges>0)beginKokoroLinkFreeSwitch();
 }
 function update() {
   if (multiBattle?.active) { updateMultiBattleView(); return; }
