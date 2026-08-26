@@ -24,6 +24,9 @@ const swordMove = motion.skillToMove('skill_elna_beginner_01');
 const swordSupportMove = motion.skillToMove('skill_elna_beginner_02');
 const clawMove = motion.skillToMove('skill_freigal_02');
 const fangMove = motion.skillToMove('skill_freigal_01');
+const magicMove = motion.skillToMove('skill_aquaron_01');
+const magicSupportMove = motion.skillToMove('skill_stella_apprentice_03');
+const bladeMove = motion.skillToMove('skill_tienhairon_02');
 const genericMove = motion.skillToMove('skill_slime_01');
 
 assert.equal(breathMove[8], 'skill_nemes_03', 'converted moves must retain their fixed skill ID');
@@ -41,6 +44,9 @@ assert.equal(motion.skillBattleMotionForMove(swordMove).animated, true, 'damage 
 assert.equal(motion.skillBattleMotionForMove(swordSupportMove).animated, false, 'support sword skills must not launch a slash motion');
 assert.equal(motion.skillBattleMotionForMove(clawMove).animated, true, 'damage claw tags must select a claw-rake motion');
 assert.equal(motion.skillBattleMotionForMove(fangMove).animated, true, 'damage fang tags must select a bite motion');
+assert.equal(motion.skillBattleMotionForMove(magicMove).animated, true, 'damage magic tags must select a magic projectile');
+assert.equal(motion.skillBattleMotionForMove(magicSupportMove).animated, false, 'support magic skills must not launch an attack projectile');
+assert.equal(motion.skillBattleMotionForMove(bladeMove).animated, true, 'damage blade tags must select a flying blade');
 assert.equal(motion.skillBattleMotionForMove(genericMove).animated, false, 'unimplemented forms must retain the existing impact-only presentation');
 
 const originalBreath = motion.by('nemes').moves.find(move => move[0] === 'コスモブレス');
@@ -52,9 +58,12 @@ const projectileCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && (card.tags.includes('form:breath') || card.tags.includes('form:beam')));
 const meleeCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && ['sword','claw','fang'].some(form => card.tags.includes(`form:${form}`)));
+const rangedCards = motion.cards
+  .filter(card => card.tags.includes('role:damage') && ['magic','blade'].some(form => card.tags.includes(`form:${form}`)));
 assert.equal(projectileCards.length, 8, 'the tagged catalog must include the expected breath and beam attack set');
 assert.equal(meleeCards.length, 28, 'the tagged catalog must include the expected sword, claw, and fang attack set');
-for (const card of [...projectileCards,...meleeCards]) {
+assert.equal(rangedCards.length, 40, 'the tagged catalog must include the expected magic and flying-blade attack set');
+for (const card of [...projectileCards,...meleeCards,...rangedCards]) {
   const descriptor = motion.skillBattleMotionForMove(motion.skillToMove(card.id));
   assert.equal(descriptor.animated, true, `${card.id} must receive its tagged attack motion`);
   assert(card.types.every(type => descriptor.types.includes(type)), `${card.id} must preserve its attribute colors`);
@@ -111,6 +120,15 @@ for (const [skillId,form] of [['skill_elna_beginner_01','sword'],['skill_freigal
   assert.equal(meleeEffect.removed, true, `${form} must be removed after its animation`);
 }
 
+for (const [skillId,form] of [['skill_aquaron_01','magic'],['skill_tienhairon_02','blade']]) {
+  const rangedRendered = await vm.runInContext(`playBattleSkillMotion('sourceVis','targetVis',skillToMove('${skillId}'))`, context);
+  const rangedEffect = stage.appended;
+  assert.equal(rangedRendered, true, `${form} must travel toward the target`);
+  assert(rangedEffect.className.includes('battle-skill-motion') && rangedEffect.className.includes(`is-${form}`), `${form} must use its dedicated visual class`);
+  assert(Number.parseFloat(rangedEffect.style.width) > 100, `${form} must span from attacker toward target`);
+  assert.equal(rangedEffect.removed, true, `${form} must be removed after its animation`);
+}
+
 assert(battleView.includes('async function playBattleSkillMotion'), 'the battle view must expose the projectile renderer');
 assert(battleView.includes('BATTLE_MOTION_DURATIONS'), 'each battle motion must use an explicit duration');
 assert(battleRules.includes("await playBattleSkillMotion(sourceId,targetId,mv)"), 'single battles must await the tagged motion before impact');
@@ -121,6 +139,8 @@ assert(css.includes('.battle-skill-motion.is-breath') && css.includes('@keyframe
 assert(css.includes('.battle-melee-motion.is-sword') && css.includes('@keyframes battleSwordCut'), 'sword styling is missing');
 assert(css.includes('.battle-melee-motion.is-claw') && css.includes('@keyframes battleClawRake'), 'claw styling is missing');
 assert(css.includes('.battle-melee-motion.is-fang') && css.includes('@keyframes battleFangTop'), 'fang styling is missing');
+assert(css.includes('.battle-skill-motion.is-magic') && css.includes('@keyframes battleMagicOrb'), 'magic projectile styling is missing');
+assert(css.includes('.battle-skill-motion.is-blade') && css.includes('@keyframes battleFlyingBlade'), 'flying-blade styling is missing');
 assert(css.includes('.battle-skill-motion,.battle-melee-motion{display:none}'), 'reduced-motion users must be able to skip attack motion');
 
-console.log(`Battle skill motion validation passed (${projectileCards.length} projectile and ${meleeCards.length} melee attacks, normal and multi-battle wiring, reduced-motion fallback).`);
+console.log(`Battle skill motion validation passed (${projectileCards.length} breath/beam, ${meleeCards.length} melee, and ${rangedCards.length} magic/blade attacks, normal and multi-battle wiring, reduced-motion fallback).`);
