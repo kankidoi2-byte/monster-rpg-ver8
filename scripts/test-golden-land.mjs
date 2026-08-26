@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-const context = vm.createContext({console});
+const context = vm.createContext({console,MAX_LEVEL:100});
 vm.runInContext(fs.readFileSync(new URL('../js/state.js', import.meta.url), 'utf8'), context);
 
 assert.equal(context.rollGoldenLand('easy', () => 0), false, 'Easy must not naturally reveal Golden Land');

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-const context = vm.createContext({console});
+const context = vm.createContext({console,MAX_LEVEL:100});
 vm.runInContext(fs.readFileSync(new URL('../js/state.js', import.meta.url), 'utf8'), context);
 const multiBattleSource = fs.readFileSync(new URL('../js/multi-battle.js', import.meta.url), 'utf8');
 const battleFlowSource = fs.readFileSync(new URL('../js/battle-flow.js', import.meta.url), 'utf8');
@@ -33,11 +33,11 @@ const monsters = new Map([
 ]);
 context.by = id => monsters.get(id) || null;
 
-const second = context.chooseSecondHuntEnemy({enemyIds:['a', 'b', 'c']}, 'a', () => 0);
+const second = context.chooseSecondHuntEnemy({enemyIds:['a', 'b', 'c']}, 'a', 'normal', () => 0);
 assert.equal(second.id, 'b', 'A different same-map enemy must be preferred when available');
-const only = context.chooseSecondHuntEnemy({enemyIds:['a']}, 'a', () => 0);
+const only = context.chooseSecondHuntEnemy({enemyIds:['a']}, 'a', 'normal', () => 0);
 assert.equal(only.id, 'a', 'A same species fallback must remain possible on a one-enemy map');
-assert.equal(context.chooseSecondHuntEnemy({enemyIds:['missing']}, 'a', () => 0), null, 'Missing enemy references must not create a battle');
+assert.equal(context.chooseSecondHuntEnemy({enemyIds:['missing']}, 'a', 'normal', () => 0), null, 'Missing enemy references must not create a battle');
 
 const targetEntries = [
   {id:'enemy_a', alive:true, hp:30},

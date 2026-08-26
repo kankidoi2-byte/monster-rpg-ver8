@@ -59,7 +59,7 @@ function showBattleChoices() {
     if (entries.length >= 3) entries[2] = chosenSpecial; else entries.push(chosenSpecial);
   }
   const preparedEntries = entries.map(({map,difficulty,goldenLandMapEntry=false}) => {
-    const candidates = (map.enemyIds||[]).map(id=>by(id)).filter(Boolean);
+    const candidates = huntCandidatesFor(map, difficulty.id);
     const m = candidates[Math.floor(Math.random()*candidates.length)];
     if (!m) return null;
     const conditionIds = rollHuntConditionIds(difficulty.id);

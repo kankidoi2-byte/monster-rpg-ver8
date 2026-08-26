@@ -67,14 +67,15 @@ function repairSave(payload,report=[]){
     if(canValidateMonsters&&!knownMonsterIds.has(entry.id)){report.push(`未知のモンスターID ${entry.id} を隔離`);payload.quarantine.unknownInstances.push(entry);return;}
     let instanceUid=typeof entry.uid==='string'&&entry.uid?entry.uid:'';
     if(!instanceUid||seenUids.has(instanceUid)){instanceUid=`repair_${Date.now().toString(36)}_${index.toString(36)}`;report.push('欠損・重複した個体UIDを再発行');}
-    seenUids.add(instanceUid);entry.uid=instanceUid;entry.level=Math.max(1,nonNegativeInteger(entry.level,1));entry.exp=nonNegativeInteger(entry.exp);entry.locked=entry.locked===true;
+    seenUids.add(instanceUid);entry.uid=instanceUid;entry.level=clampLevel(nonNegativeInteger(entry.level,1));entry.exp=isMaxLevel(entry.level)?0:nonNegativeInteger(entry.exp);entry.locked=entry.locked===true;
     if(Array.isArray(entry.alchemy?.exclusiveSkillIds))entry.alchemy.exclusiveSkillIds=entry.alchemy.exclusiveSkillIds.map(repairSkillId).filter(x=>typeof x==='string');
     payload.instances.push(entry);
   });
   const rawCaught=Array.isArray(payload.caught)?payload.caught:[];
   payload.caught=[...new Set(rawCaught.filter(id=>{const valid=typeof id==='string'&&(!canValidateMonsters||knownMonsterIds.has(id));if(!valid&&typeof id==='string')payload.quarantine.unknownCaughtIds.push(id);return valid;}).concat(payload.instances.map(entry=>entry.id)))];
   payload.levels=isSaveObject(payload.levels)?payload.levels:{};payload.exp=isSaveObject(payload.exp)?payload.exp:{};
-  payload.instances.forEach(entry=>{payload.levels[entry.id]=Math.max(nonNegativeInteger(payload.levels[entry.id],1),entry.level);payload.exp[entry.id]=Math.max(nonNegativeInteger(payload.exp[entry.id]),entry.exp);});
+  Object.keys(payload.levels).forEach(id=>{payload.levels[id]=clampLevel(nonNegativeInteger(payload.levels[id],1));});
+  payload.instances.forEach(entry=>{payload.levels[entry.id]=clampLevel(Math.max(nonNegativeInteger(payload.levels[entry.id],1),entry.level));payload.exp[entry.id]=isMaxLevel(payload.levels[entry.id])?0:Math.max(nonNegativeInteger(payload.exp[entry.id]),entry.exp);});
   payload.party=[...new Set(Array.isArray(payload.party)?payload.party:[])].filter(value=>seenUids.has(value)).slice(0,3);
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
@@ -189,7 +190,8 @@ function insExp(id) {
 }
 function caughtHas(id) { return save.instances.some(x => x.id === id) || save.caught.includes(id); }
 function addInstance(id, level=1, exp=0, extraFields=null) {
-  const ins = {uid:uid(), id, level, exp, locked:false};
+  const normalizedLevel=clampLevel(level);
+  const ins = {uid:uid(), id, level:normalizedLevel, exp:isMaxLevel(normalizedLevel)?0:Math.max(0,Math.floor(Number(exp)||0)), locked:false};
   if(extraFields && typeof extraFields === 'object') Object.assign(ins, extraFields);
   normalizeInstanceSaveFields(ins);
   save.instances.push(ins);

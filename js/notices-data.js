@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-fixed-hunt-difficulty',
+    date: '2026-08-26',
+    category: 'update',
+    title: '討伐依頼の難易度とレアリティを刷新しました',
+    body: '敵の強さがパーティーに連動しない固定Lv制になりました。EasyはLv.1の★1、Normalは★1～★3、Hardは★2～★4、ExtremeはLv.100の★5だけが出現します。モンスターのレベル上限もLv.100になりました。'
+  }),
+  Object.freeze({
     id: '20260826-dex-hub-map-dex',
     date: '2026-08-26',
     category: 'update',

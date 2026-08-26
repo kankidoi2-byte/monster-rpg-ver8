@@ -63,9 +63,10 @@ function grantPartyExp(baseExp) {
   const targets = getPartyInstances();
   const msgs = [];
   targets.forEach(ins => {
+    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; msgs.push(`🏆 ${by(ins.id).name} は Lv.MAX！`); return; }
     ins.exp = (ins.exp||0) + baseExp;
     msgs.push(`✨ ${by(ins.id).name} EXP +${baseExp}`);
-    while (ins.exp >= needExp(ins.level)) {
+    while (!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)) {
       ins.exp -= needExp(ins.level);
       ins.level++;
       msgs.push(`⬆️ ${by(ins.id).name} は Lv.${ins.level} に上がった！`);
@@ -73,6 +74,7 @@ function grantPartyExp(baseExp) {
       const pv = document.getElementById('pVis');
       if (pv) { pv.classList.remove('levelup-anim'); void pv.offsetWidth; pv.classList.add('levelup-anim'); }
     }
+    if (isMaxLevel(ins.level)) ins.exp=0;
     checkEvolution(ins);
   });
   saveGame();
