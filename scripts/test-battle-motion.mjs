@@ -61,14 +61,17 @@ assert.deepEqual(
 assert.equal(motion.skillBattleMotionForMove(beamMove).form, 'beam');
 assert.equal(motion.skillBattleMotionForMove(beamMove).animated, true, 'damage beam tags must select a beam motion');
 assert.equal(motion.skillBattleMotionForMove(healingBreathMove).role, 'support');
-assert.equal(motion.skillBattleMotionForMove(healingBreathMove).animated, false, 'support breath skills must not launch an attack motion');
+assert.equal(motion.skillBattleMotionForMove(healingBreathMove).form, 'heal');
+assert.equal(motion.skillBattleMotionForMove(healingBreathMove).animated, true, 'healing breath must select the shared healing motion');
 assert.equal(motion.skillBattleMotionForMove(swordMove).form, 'sword');
 assert.equal(motion.skillBattleMotionForMove(swordMove).animated, true, 'damage sword tags must select a slash motion');
-assert.equal(motion.skillBattleMotionForMove(swordSupportMove).animated, false, 'support sword skills must not launch a slash motion');
+assert.equal(motion.skillBattleMotionForMove(swordSupportMove).form, 'guard');
+assert.equal(motion.skillBattleMotionForMove(swordSupportMove).animated, true, 'support sword skills must select a guard motion instead of a slash');
 assert.equal(motion.skillBattleMotionForMove(clawMove).animated, true, 'damage claw tags must select a claw-rake motion');
 assert.equal(motion.skillBattleMotionForMove(fangMove).animated, true, 'damage fang tags must select a bite motion');
 assert.equal(motion.skillBattleMotionForMove(magicMove).animated, true, 'damage magic tags must select a magic projectile');
-assert.equal(motion.skillBattleMotionForMove(magicSupportMove).animated, false, 'support magic skills must not launch an attack projectile');
+assert.equal(motion.skillBattleMotionForMove(magicSupportMove).form, 'buff');
+assert.equal(motion.skillBattleMotionForMove(magicSupportMove).animated, true, 'support magic skills must select a buff motion instead of an attack projectile');
 assert.equal(motion.skillBattleMotionForMove(bladeMove).animated, true, 'damage blade tags must select a flying blade');
 assert.equal(motion.skillBattleMotionForMove(chargeMove).animated, true, 'damage charge tags must select a charge motion');
 assert.equal(motion.skillBattleMotionForMove(strikeMove).animated, true, 'damage strike tags must select a heavy-impact motion');
@@ -77,7 +80,8 @@ for(const move of [tailMove,hornMove,fistMove,wingMove,finMove,legMove,beakMove,
   assert.equal(motion.skillBattleMotionForMove(move).animated, true, 'tagged anatomy and weapon attacks must select a dedicated motion');
 }
 assert.equal(motion.skillBattleMotionForMove(roarMove).animated, true, 'damage roar tags must select a shockwave motion');
-assert.equal(motion.skillBattleMotionForMove(roarSupportMove).animated, false, 'support roar skills must not launch an attack shockwave');
+assert.equal(motion.skillBattleMotionForMove(roarSupportMove).form, 'buff');
+assert.equal(motion.skillBattleMotionForMove(roarSupportMove).animated, true, 'support roar skills must select a buff motion instead of an attack shockwave');
 for(const [skillId,form] of genericMotionCases){
   const descriptor=motion.skillBattleMotionForMove(motion.skillToMove(skillId));
   assert.equal(descriptor.form, form, `${skillId} must select its supplemented motion family`);
@@ -104,6 +108,7 @@ const roarCards = motion.cards
 const genericDamageCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && card.tags.includes('form:generic'));
 const damageCards = motion.cards.filter(card => card.tags.includes('role:damage'));
+const supportCards = motion.cards.filter(card => card.tags.includes('role:support'));
 assert.equal(projectileCards.length, 8, 'the tagged catalog must include the expected breath and beam attack set');
 assert.equal(meleeCards.length, 28, 'the tagged catalog must include the expected sword, claw, and fang attack set');
 assert.equal(rangedCards.length, 40, 'the tagged catalog must include the expected magic and flying-blade attack set');
@@ -112,6 +117,12 @@ assert.equal(anatomyCards.length, 21, 'the tagged catalog must include the expec
 assert.equal(roarCards.length, 3, 'the tagged catalog must include the expected damage roar set');
 assert.equal(genericDamageCards.length, 35, 'the catalog must retain the expected generic attack set without changing card taxonomy');
 assert.equal(damageCards.length, 155, 'the catalog must retain the complete attack set');
+assert.equal(supportCards.length, 36, 'the catalog must retain the complete support set');
+const supportCounts=Object.create(null);
+for(const card of supportCards){
+  supportCounts[card.effect]=(supportCounts[card.effect]||0)+1;
+}
+assert.deepEqual({...supportCounts},{buff:7,aqua_shield:1,heal:6,sleep:1,guard:21},'support skills must retain their reviewed effect counts');
 const supplementedCounts=Object.create(null);
 for(const card of genericDamageCards){
   const form=motion.skillBattleMotionForMove(motion.skillToMove(card.id)).form;
@@ -127,6 +138,13 @@ for (const card of damageCards) {
   assert.equal(descriptor.animated, true, `${card.id} must receive an attack motion`);
   assert(card.types.every(type => descriptor.types.includes(type)), `${card.id} must preserve its attribute colors`);
 }
+for(const card of supportCards){
+  const descriptor=motion.skillBattleMotionForMove(motion.skillToMove(card.id));
+  assert.equal(descriptor.animated,true,`${card.id} must receive a support motion`);
+  assert(['guard','heal','buff','shield','sleep'].includes(descriptor.form),`${card.id} must resolve to a support motion family`);
+  assert(card.types.every(type=>descriptor.types.includes(type)),`${card.id} must preserve its support attribute colors`);
+}
+assert.equal(damageCards.length+supportCards.length,191,'all fixed skills must be covered by battle motion validation');
 
 const battleView = read('js/battle-view.js');
 const battleRules = read('js/battle-rules.js');
@@ -215,6 +233,22 @@ for (const [skillId,form] of [['skill_spaquinn_01','lightning'],['skill_voltax_0
   assert.equal(arcaneEffect.removed, true, `${form} must be removed after its animation`);
 }
 
+for (const [skillId,form,targetId] of [
+  ['skill_icegolem_02','guard','sourceVis'],
+  ['skill_hikari_02','heal','sourceVis'],
+  ['skill_freiwolf_03','buff','sourceVis'],
+  ['skill_aquaron_04','shield','sourceVis'],
+  ['skill_grassbeat_05','sleep','targetVis']
+]) {
+  const supportRendered = await vm.runInContext(`playBattleSkillMotion('sourceVis','${targetId}',skillToMove('${skillId}'))`, context);
+  const supportEffect = stage.appended;
+  assert.equal(supportRendered, true, `${form} must render for a zero-power support skill`);
+  assert(supportEffect.className.includes('battle-support-motion') && supportEffect.className.includes(`is-${form}`), `${form} must use its support visual class`);
+  assert.equal(supportEffect.style.left, targetId==='sourceVis'?'80px':'280px', `${form} must use the correct horizontal target`);
+  assert.equal(supportEffect.style.top, targetId==='sourceVis'?'270px':'90px', `${form} must use the correct vertical target`);
+  assert.equal(supportEffect.removed, true, `${form} must be removed after its animation`);
+}
+
 for (const [skillId,form] of [['skill_freigal_03','charge'],['skill_icegolem_03','strike'],['skill_slime_01','body']]) {
   const impactRendered = await vm.runInContext(`playBattleSkillMotion('sourceVis','targetVis',skillToMove('${skillId}'))`, context);
   const impactEffect = stage.appended;
@@ -244,8 +278,10 @@ for (const [skillId,form,family] of [
 assert(battleView.includes('async function playBattleSkillMotion'), 'the battle view must expose the projectile renderer');
 assert(battleView.includes('BATTLE_MOTION_DURATIONS'), 'each battle motion must use an explicit duration');
 assert(battleRules.includes("await playBattleSkillMotion(sourceId,targetId,mv)"), 'single battles must await the tagged motion before impact');
+assert(battleRules.includes("await playBattleSkillMotion(sourceId,supportTargetId,mv)"), 'single battles must await self- or enemy-targeted support motion before applying the effect');
 assert(battleFlow.includes('await performAction(enemy,player,enemyAction.move,false)'), 'manual-switch retaliation must await its attack motion');
 assert(multiBattle.includes('await playBattleSkillMotion(sourceId,impactTargetId,move)'), 'multi battles must target the selected combatant');
+assert(multiBattle.includes('await playBattleSkillMotion(sourceId,supportTargetId,move)'), 'multi battles must await support motion on the correct combatant');
 assert(css.includes('.battle-skill-motion.is-beam') && css.includes('@keyframes battleSkillBeam'), 'beam styling is missing');
 assert(css.includes('.battle-skill-motion.is-breath') && css.includes('@keyframes battleSkillBreath'), 'breath styling is missing');
 assert(css.includes('.battle-melee-motion.is-sword') && css.includes('@keyframes battleSwordCut'), 'sword styling is missing');
@@ -265,6 +301,11 @@ assert(css.includes('.battle-skill-motion.is-projectile') && css.includes('@keyf
 assert(css.includes('.battle-arcane-motion.is-lightning') && css.includes('@keyframes battleLightningStrike'), 'lightning styling is missing');
 assert(css.includes('.battle-arcane-motion.is-field') && css.includes('@keyframes battleFieldBurst'), 'field attack styling is missing');
 assert(css.includes('.battle-arcane-motion.is-mystic') && css.includes('@keyframes battleMysticSpiral'), 'mystic styling is missing');
-assert(css.includes('.battle-skill-motion,.battle-melee-motion,.battle-impact-motion,.battle-anatomy-motion,.battle-arcane-motion{display:none}'), 'reduced-motion users must be able to skip attack motion');
+assert(css.includes('.battle-support-motion.is-guard') && css.includes('@keyframes battleGuardShield'), 'guard styling is missing');
+assert(css.includes('.battle-support-motion.is-heal') && css.includes('@keyframes battleHealCross'), 'heal styling is missing');
+assert(css.includes('.battle-support-motion.is-buff') && css.includes('@keyframes battleBuffRise'), 'buff styling is missing');
+assert(css.includes('.battle-support-motion.is-shield') && css.includes('@keyframes battleAquaShield'), 'aqua shield styling is missing');
+assert(css.includes('.battle-support-motion.is-sleep') && css.includes('@keyframes battleSleepFloat'), 'sleep styling is missing');
+assert(css.includes('.battle-skill-motion,.battle-melee-motion,.battle-impact-motion,.battle-anatomy-motion,.battle-arcane-motion,.battle-support-motion{display:none}'), 'reduced-motion users must be able to skip all battle motion');
 
-console.log(`Battle skill motion validation passed (all ${damageCards.length} attacks: ${projectileCards.length} breath/beam, ${meleeCards.length} melee, ${rangedCards.length} magic/blade, ${impactCards.length} charge/strike/body, ${anatomyCards.length} anatomy/weapon, ${roarCards.length} roar, and ${genericDamageCards.length} supplemented generic attacks; normal and multi-battle wiring, reduced-motion fallback).`);
+console.log(`Battle skill motion validation passed (all ${damageCards.length} attacks and ${supportCards.length} support skills, ${damageCards.length+supportCards.length} total; normal and multi-battle wiring, reduced-motion fallback).`);

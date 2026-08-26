@@ -200,15 +200,18 @@ function skillBattleMotionForMove(mv){
   const roleTag=tags.find(tag => tag.startsWith('role:'));
   const elementTags=tags.filter(tag => tag.startsWith('element:')).map(tag => tag.slice(8));
   const catalogForm=formTag?.slice(5) || skill?.form || 'generic';
-  const form=catalogForm === 'generic' ? genericBattleMotionForm(skill,mv) : catalogForm;
+  const damageForm=catalogForm === 'generic' ? genericBattleMotionForm(skill,mv) : catalogForm;
   const role=roleTag?.slice(5) || ((Number(mv?.[1]) || 0) > 0 ? 'damage' : 'support');
+  const effect=skill?.effect || mv?.[3] || null;
+  const supportForm={guard:'guard',heal:'heal',buff:'buff',aqua_shield:'shield',sleep:'sleep'}[effect] || null;
+  const form=role === 'support' && supportForm ? supportForm : damageForm;
   return Object.freeze({
     skillId:skill?.id || null,
     form,
     role,
     types:Object.freeze(elementTags.length ? elementTags : moveTypes(mv)),
-    effect:skill?.effect || mv?.[3] || null,
-    animated:role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body','tail','horn','fist','wing','fin','leg','beak','club','dagger','roar','wave','projectile','lightning','field','mystic'].includes(form)
+    effect,
+    animated:(role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body','tail','horn','fist','wing','fin','leg','beak','club','dagger','roar','wave','projectile','lightning','field','mystic'].includes(form)) || (role === 'support' && ['guard','heal','buff','shield','sleep'].includes(form))
   });
 }
 function skillToMove(skillId){

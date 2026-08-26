@@ -333,10 +333,13 @@ async function turn(i) {
 async function doAttack(attacker, defender, mv, isPlayer) {
   const [name, power, type, effect, effectChance] = mv;
   const logEl = document.getElementById('log');
+  const sourceId=isPlayer?'pVis':'eVis',targetId=isPlayer?'eVis':'pVis';
+  const supportTargetId=effect==='sleep'?targetId:sourceId;
+  const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,mv):false;
   // 補助技
   if (effect === 'guard') {
     isPlayer ? pGuard=true : eGuard=true;
-    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`; update(); return {animated:false};
+    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`; update(); return {animated:supportAnimated};
   }
   if (effect === 'heal') {
     const baseHealing = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
@@ -345,21 +348,21 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
     const healed = (isPlayer ? pHp : eHp) - before;
-    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`; update(); return {animated:false};
+    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`; update(); return {animated:supportAnimated};
   }
   if (effect === 'buff') {
     isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
-    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`; update(); return {animated:false};
+    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`; update(); return {animated:supportAnimated};
   }
   if (effect === 'debuff') {
     isPlayer ? eAtk=Math.max(.65,eAtk-.2) : pAtk=Math.max(.65,pAtk-.2);
-    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`; update(); return {animated:false};
+    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`; update(); return {animated:supportAnimated};
   }
   if (effect === 'aqua_shield') {
     if (isPlayer) pAquaShield = true; else eAquaShield = true;
     logEl.innerHTML = `💧 ${attacker.name}は水の盾を展開した！ 次に受ける攻撃ダメージを半減する！`;
     update();
-    return {animated:false};
+    return {animated:supportAnimated};
   }
   if (effect === 'sleep') {
     let msg = `🌿 ${attacker.name}の「${name}」！`;
@@ -372,9 +375,8 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     }
     logEl.innerHTML = msg;
     update();
-    return {animated:false};
+    return {animated:supportAnimated};
   }
-  const sourceId=isPlayer?'pVis':'eVis',targetId=isPlayer?'eVis':'pVis';
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,mv):false;
   if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;update();return {animated};}
   // ダメージ計算
