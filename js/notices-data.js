@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-ranged-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: '魔法・飛刃技に攻撃演出を追加しました',
+    body: '攻撃魔法では属性色の魔力弾が、刃を飛ばす技では三日月状の刃が相手へ飛ぶようになりました。通常戦と複数の敵が登場するバトルの両方に対応しています。'
+  }),
+  Object.freeze({
     id: '20260826-battle-melee-motion',
     date: '2026-08-26',
     category: 'update',

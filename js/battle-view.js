@@ -105,7 +105,7 @@ const BATTLE_MOTION_COLORS=Object.freeze({
   fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
-const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400});
+const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420});
 const BATTLE_MELEE_FORMS=Object.freeze(['sword','claw','fang']);
 function battleMotionDelay(ms){
   return new Promise(resolve => setTimeout(resolve,ms));
