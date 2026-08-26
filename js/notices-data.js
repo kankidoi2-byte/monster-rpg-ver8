@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-roar-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: '攻撃系の咆哮技に専用演出を追加しました',
+    body: 'ダメージを与える咆哮技を使うと、技の属性色をまとった衝撃波が相手へ広がるようになりました。強化や防御を目的とする咆哮技は、攻撃演出の対象外です。'
+  }),
+  Object.freeze({
     id: '20260826-battle-anatomy-motion',
     date: '2026-08-26',
     category: 'update',
