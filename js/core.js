@@ -193,7 +193,7 @@ function skillBattleMotionForMove(mv){
     role,
     types:Object.freeze(elementTags.length ? elementTags : moveTypes(mv)),
     effect:skill?.effect || mv?.[3] || null,
-    animated:role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade'].includes(form)
+    animated:role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body'].includes(form)
   });
 }
 function skillToMove(skillId){

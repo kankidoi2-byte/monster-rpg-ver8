@@ -105,8 +105,10 @@ const BATTLE_MOTION_COLORS=Object.freeze({
   fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
-const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420});
+const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440});
 const BATTLE_MELEE_FORMS=Object.freeze(['sword','claw','fang']);
+const BATTLE_COLLISION_FORMS=Object.freeze(['charge','strike','body']);
+const BATTLE_LUNGE_FORMS=Object.freeze(['charge','body']);
 function battleMotionDelay(ms){
   return new Promise(resolve => setTimeout(resolve,ms));
 }
@@ -128,15 +130,17 @@ async function playBattleSkillMotion(sourceId,targetId,mv){
   const end={x:targetCenter.x-ux*targetInset,y:targetCenter.y-uy*targetInset};
   const dx=end.x-start.x,dy=end.y-start.y,distance=Math.max(12,Math.hypot(dx,dy));
   const types=normalizeMoveTypes(motion.types),primary=types[0]||'normal',secondary=types[1]||primary;
-  const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form);
-  effect.className=`${melee?'battle-melee-motion':'battle-skill-motion'} is-${motion.form} is-${battleImpactType(primary)}`;
+  const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form),collision=BATTLE_COLLISION_FORMS.includes(motion.form);
+  const targetLocal=melee||collision;
+  effect.className=`${melee?'battle-melee-motion':collision?'battle-impact-motion':'battle-skill-motion'} is-${motion.form} is-${battleImpactType(primary)}`;
   effect.setAttribute('aria-hidden','true');
-  if(melee){
+  if(targetLocal){
     const size=Math.max(58,Math.min(104,Math.min(targetRect.width,targetRect.height)*.72));
     effect.style.left=`${targetCenter.x}px`;
     effect.style.top=`${targetCenter.y}px`;
     effect.style.width=`${size}px`;
     effect.style.height=`${size}px`;
+    effect.style.setProperty('--skill-angle',`${Math.atan2(rawDy,rawDx)}rad`);
   }else{
     effect.style.left=`${start.x}px`;
     effect.style.top=`${start.y}px`;
@@ -145,12 +149,27 @@ async function playBattleSkillMotion(sourceId,targetId,mv){
   }
   effect.style.setProperty('--skill-color',BATTLE_MOTION_COLORS[primary]||BATTLE_MOTION_COLORS.normal);
   effect.style.setProperty('--skill-color-secondary',BATTLE_MOTION_COLORS[secondary]||BATTLE_MOTION_COLORS[primary]||BATTLE_MOTION_COLORS.normal);
-  source.classList.remove('battle-skill-cast');
+  const lunge=BATTLE_LUNGE_FORMS.includes(motion.form);
+  const castClass=lunge?'battle-charge-cast':'battle-skill-cast';
+  source.classList.remove('battle-skill-cast','battle-charge-cast');
+  if(lunge){
+    const travel=Math.min(42,rawDistance*.18);
+    source.style.setProperty('--battle-lunge-x',`${ux*travel}px`);
+    source.style.setProperty('--battle-lunge-y',`${uy*travel}px`);
+    source.style.setProperty('--battle-recoil-x',`${ux*travel*-.18}px`);
+    source.style.setProperty('--battle-recoil-y',`${uy*travel*-.18}px`);
+  }
   void source.offsetWidth;
-  source.classList.add('battle-skill-cast');
+  source.classList.add(castClass);
   stage.appendChild(effect);
   await battleMotionDelay(BATTLE_MOTION_DURATIONS[motion.form]||350);
-  source.classList.remove('battle-skill-cast');
+  source.classList.remove(castClass);
+  if(lunge){
+    source.style.removeProperty('--battle-lunge-x');
+    source.style.removeProperty('--battle-lunge-y');
+    source.style.removeProperty('--battle-recoil-x');
+    source.style.removeProperty('--battle-recoil-y');
+  }
   effect.remove();
   return true;
 }
