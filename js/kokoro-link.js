@@ -112,7 +112,8 @@ function kokoroLinkBattleSnapshot(){
       profile:{...link.profile},
       effects:{...link.effects,capsApplied:{...link.effects.capsApplied}},
       powerAbility:link.powerAbility ? {...link.powerAbility} : null,
-      statusAbility:link.statusAbility ? {...link.statusAbility} : null
+      statusAbility:link.statusAbility ? {...link.statusAbility} : null,
+      tacticsAbility:link.tacticsAbility ? {...link.tacticsAbility,options:link.tacticsAbility.options?.map(option=>({...option}))} : null
     })),
     enemyEffects:[...kokoroLinkBattleState.enemyEffectsByTargetKey.entries()].map(([targetKey,effects])=>({targetKey,effects:effects.map(effect=>({...effect}))}))
   };
@@ -233,6 +234,73 @@ function buildKokoroLinkStatusAbility(plan){
   return definition?{id:plan.abilityId,...definition,resolved:false,succeeded:false,targetKey:null}:null;
 }
 
+function buildKokoroLinkTacticsAbility(plan){
+  if(!plan || plan.band !== 'tactics') return null;
+  const definitions={
+    origin_choice:{label:'原初選択',summary:'HP10%回復／状態異常解除から選択',options:[{id:'small_heal',label:'小回復',summary:'最大HP10%回復'},{id:'cleanse',label:'浄化',summary:'状態異常をすべて解除'},{id:'cost_reduction',label:'技コスト軽減',summary:'戦闘内コスト実装まで保留',deferred:true}]},
+    recoil_guard:{label:'炎身不動',summary:'次の反動ダメージを1回無効',charges:1},
+    cost_reduction:{label:'水脈節約',summary:'戦闘内コスト実装まで保留',deferred:true},
+    instant_heal:{label:'森命活性',summary:'最大HP20%を即時回復',maxHpRate:.20},
+    action_priority:{label:'雷迅先行',summary:'次の行動を最優先',charges:1},
+    free_switch:{label:'風渡り交代',summary:'次の手動交代を行動消費なしで実行',charges:1},
+    cleanse:{label:'光明浄化',summary:'味方の状態異常をすべて解除'},
+    dispel:{label:'闇蝕解除',summary:'敵の解除可能な強化をすべて解除',targetKey:null},
+    foresight:{label:'星見予知',summary:'対象敵の次の行動を表示',charges:1,targetKey:null,predictedMove:null},
+    penetration:{label:'竜牙貫通',summary:'次の攻撃が耐性・軽減を20%分貫通',charges:1,rate:.20}
+  };
+  const definition=definitions[plan.abilityId];
+  return definition?{id:plan.abilityId,...definition,resolved:false,selectedOption:null}:null;
+}
+
+function kokoroLinkTacticsAbilityFor(instance){return kokoroLinkEffectForInstance(instance)?.tacticsAbility||null;}
+function kokoroLinkTacticsAbilityStatus(instance){
+  const ability=kokoroLinkTacticsAbilityFor(instance);if(!ability)return '';
+  if(ability.deferred)return `${ability.label} 保留中`;
+  if(ability.id==='origin_choice'&&!ability.resolved)return `${ability.label} 選択待ち`;
+  if(Number.isFinite(ability.charges))return ability.charges>0?`${ability.label} 待機中`:`${ability.label} 使用済み`;
+  return ability.resolved?`${ability.label} 発動済み`:ability.label;
+}
+function markKokoroLinkTacticsResolved(linkOrInstance,details={}){
+  const ability=linkOrInstance?.tacticsAbility||kokoroLinkTacticsAbilityFor(linkOrInstance);if(!ability||ability.resolved)return false;
+  Object.assign(ability,details,{resolved:true});return true;
+}
+function resolveKokoroLinkTacticsChoice(instance,optionId){
+  const ability=kokoroLinkTacticsAbilityFor(instance),option=ability?.options?.find(item=>item.id===optionId&&!item.deferred);
+  if(!ability||ability.id!=='origin_choice'||ability.resolved||!option)return {resolved:false,reason:'unavailable'};
+  ability.resolved=true;ability.selectedOption=option.id;return {resolved:true,option:{...option}};
+}
+function consumeKokoroLinkTacticsCharge(instance,abilityId){
+  const ability=kokoroLinkTacticsAbilityFor(instance);if(!ability||ability.id!==abilityId||ability.charges<=0)return false;
+  ability.charges--;return true;
+}
+function consumeKokoroLinkRecoilGuard(instance){return consumeKokoroLinkTacticsCharge(instance,'recoil_guard');}
+function consumeKokoroLinkActionPriority(instance){return consumeKokoroLinkTacticsCharge(instance,'action_priority');}
+function consumeKokoroLinkFreeSwitch(instance){return consumeKokoroLinkTacticsCharge(instance,'free_switch');}
+function consumeKokoroLinkPenetration(instance,power){
+  const ability=kokoroLinkTacticsAbilityFor(instance);if(!ability||ability.id!=='penetration'||ability.charges<=0||Number(power)<=0)return {rate:0,penetrated:false};
+  ability.charges--;return {rate:Number(ability.rate)||0,penetrated:true};
+}
+function setKokoroLinkForesight(link,targetKey,move){
+  const ability=link?.tacticsAbility;if(!ability||ability.id!=='foresight'||ability.resolved||!targetKey||!Array.isArray(move))return false;
+  ability.targetKey=targetKey;ability.predictedMove=[...move];ability.resolved=true;return true;
+}
+function consumeKokoroLinkForesightMove(targetKey){
+  for(const link of kokoroLinkBattleState.linksByTargetUid.values()){
+    const ability=link.tacticsAbility;
+    if(ability?.id==='foresight'&&ability.targetKey===targetKey&&ability.charges>0&&Array.isArray(ability.predictedMove)){
+      ability.charges--;return [...ability.predictedMove];
+    }
+  }
+  return null;
+}
+function kokoroLinkForesightTextForTarget(targetKey){
+  for(const link of kokoroLinkBattleState.linksByTargetUid.values()){
+    const ability=link.tacticsAbility;
+    if(ability?.id==='foresight'&&ability.targetKey===targetKey&&ability.charges>0&&Array.isArray(ability.predictedMove))return `🔮予知：${ability.predictedMove[0]}`;
+  }
+  return '';
+}
+
 function attemptKokoroLinkStatusAbility(link,targetContext={},randomFn=Math.random){
   const ability=link?.statusAbility;
   if(!ability || ability.resolved) return {resolved:false,reason:'unavailable'};
@@ -334,8 +402,9 @@ function resolveKokoroLink(monster, instance, targetStats){
   const abilityPlan=buildKokoroLinkAbilityPlan(profile);
   const powerAbility=buildKokoroLinkPowerAbility(abilityPlan,targetStats);
   const statusAbility=buildKokoroLinkStatusAbility(abilityPlan);
+  const tacticsAbility=buildKokoroLinkTacticsAbility(abilityPlan);
   const effects=applyKokoroLinkPowerAbility(convertKokoroLinkEffects(profile,targetStats),powerAbility);
-  return {profile,effects,abilityPlan,powerAbility,statusAbility};
+  return {profile,effects,abilityPlan,powerAbility,statusAbility,tacticsAbility};
 }
 
 function listKokoroLinkSources(partyEntries, activeIndex, options={}){
@@ -410,6 +479,7 @@ function activateKokoroLinkSource(sourceUid, partyEntries, activeIndex, targetSt
     effects:resolved.effects,
     powerAbility:resolved.powerAbility,
     statusAbility:resolved.statusAbility,
+    tacticsAbility:resolved.tacticsAbility,
     barrierRemaining:resolved.effects.barrier
   };
   kokoroLinkBattleState.linksByTargetUid.set(targetUid,link);

@@ -177,8 +177,9 @@ function startMultiBattleTurn(targetId) {
   if (busy || multiBattle?.pendingMoveIndex===null || multiBattle?.pendingMoveIndex===undefined) return;
   const moveIndex=multiBattle.pendingMoveIndex; multiBattle.pendingMoveIndex=null;
   document.getElementById('multiTargetSelect').classList.add('hidden'); busy=true; startBattleTurn();
-  const actions=[{kind:'player',speed:monSpd(player,activeInstance),targetId,move:getEquippedMovesForInstance(activeInstance)[moveIndex]||['通常攻撃',24,'normal']}];
-  aliveMultiEnemies().forEach(actor=>{const delayed=consumeKokoroLinkEnemyActionDelay(actor.id);actions.push({kind:'enemy',actorId:actor.id,speed:delayed?-Infinity:multiEnemyKokoroLinkSpeed(actor),move:actor.mon.moves[Math.floor(Math.random()*actor.mon.moves.length)]});});
+  const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);
+  const actions=[{kind:'player',speed:prioritized?Infinity:monSpd(player,activeInstance),targetId,move:getEquippedMovesForInstance(activeInstance)[moveIndex]||['通常攻撃',24,'normal']}];
+  aliveMultiEnemies().forEach(actor=>{const delayed=consumeKokoroLinkEnemyActionDelay(actor.id),enemyAction=nextEnemyMoveWithKokoroLinkForesight(actor.id,actor.mon);actions.push({kind:'enemy',actorId:actor.id,speed:delayed?-Infinity:multiEnemyKokoroLinkSpeed(actor),move:enemyAction.move});});
   actions.sort((a,b)=>b.speed-a.speed || Math.random()-.5);
   runMultiActions(actions,0);
 }
@@ -244,10 +245,12 @@ function performMultiAttack(actor,target,move) {
   if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return;}
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
   const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
+  const penetration=actorIsPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
   const effectivePower=power*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
   const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
-  const rawDamage=Math.max(1,Math.floor((effectivePower*atk*r+Math.random()*9)*difficulty*map*(guard?.55:1)*(shield?.5:1)));
+  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=guard?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.5,penetration.rate):1;
+  const rawDamage=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map*guardMultiplier*shieldMultiplier));
   const linkBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawDamage):{hpDamage:rawDamage,absorbed:0,barrierRemaining:0};
   const damage=linkBarrier.hpDamage;
   const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
@@ -258,6 +261,7 @@ function performMultiAttack(actor,target,move) {
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
   const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
   if(powerBoost.boosted)msg+='<br>🐉 竜威増幅で技威力アップ！';
+  if(penetration.penetrated)msg+='<br>🐲 竜牙貫通で耐性・軽減を20%分貫通！';
   if(r>1)msg+='<br>🔥 効果はバツグン！';if(r<1)msg+='<br>💧 効果はいまひとつ……';if(map>1)msg+='<br>🗺️ マップ属性強化！（×1.2）';
   if(effect==='drain'){const heal=adjustedBattleHealing(Math.floor(damage/2));if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+heal);else actor.hp=Math.min(actor.maxHp,actor.hp+heal);msg+=`<br>🌱 HPを${heal}吸収した！`;}
   if(actorIsPlayer){const linkHeal=applyPlayerKokoroLinkLifeSteal(Math.min(damage,Math.max(0,defenderHpBefore)));if(linkHeal)msg+=`<br>${linkHeal}`;}
@@ -265,7 +269,7 @@ function performMultiAttack(actor,target,move) {
     const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.3):{chance:effectChance??.3,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
     if(Math.random()<chance.chance){
-    const rawSecond=Math.max(1,Math.floor((effectivePower*atk*r+Math.random()*9)*difficulty*map));
+    const rawSecond=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map));
     const secondBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawSecond):{hpDamage:rawSecond,absorbed:0,barrierRemaining:0};
     const second=secondBarrier.hpDamage;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
@@ -273,7 +277,10 @@ function performMultiAttack(actor,target,move) {
     const secondDefense=kokoroLinkDefenseMessage(secondBarrier);if(secondDefense)msg+=`<br>${secondDefense}`;
     }
   }
-  if(effect==='recoil'||effect==='alchemy_recoil'){const recoil=effect==='recoil'?8:alchemyRecoilDamage(damage);if(actorIsPlayer)pHp=Math.max(0,pHp-recoil);else actor.hp=Math.max(0,actor.hp-recoil);msg+=`<br>💥 ${a.name}は反動で${recoil}ダメージ！`;}
+  if(effect==='recoil'||effect==='alchemy_recoil'){
+    const recoil=effect==='recoil'?8:alchemyRecoilDamage(damage),guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{if(actorIsPlayer)pHp=Math.max(0,pHp-recoil);else actor.hp=Math.max(0,actor.hp-recoil);msg+=`<br>💥 ${a.name}は反動で${recoil}ダメージ！`;}
+  }
   if(effect==='flare_charge'){if(actorIsPlayer)pFlareCharge=true;else actor.flareCharge=true;}else if(power>0){if(actorIsPlayer)pFlareCharge=false;else actor.flareCharge=false;}
   if((defenderIsPlayer?pHp:targetEntry.hp)>0){
     if(effect==='poison'){

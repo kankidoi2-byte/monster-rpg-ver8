@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link-three-star-abilities',
+    date: '2026-08-26',
+    category: 'update',
+    title: '★3モンスターのリンク能力を追加しました',
+    body: '★3モンスターが主属性に応じて、回復・状態解除・反動無効・先制行動・無消費交代・敵強化解除・行動予知・耐性貫通などの戦術支援を発動するようになりました。技コスト軽減は戦闘内コスト実装まで保留されます。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link-two-star-abilities',
     date: '2026-08-26',
     category: 'update',

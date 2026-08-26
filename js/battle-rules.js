@@ -11,7 +11,7 @@ function typeEff(atkTypeOrTypes, defTypes) {
 (function loadMultiBattleModule() {
   if (document.querySelector('script[data-multi-battle]')) return;
   const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=kokoro-link-phase4-2';
+  script.src = 'js/multi-battle.js?v=kokoro-link-phase4-3';
   script.dataset.multiBattle = 'true';
   document.head.appendChild(script);
 })();
@@ -55,7 +55,10 @@ function singleEnemyKokoroLinkKey(){return 'single';}
 function enemyKokoroLinkAttackMultiplier(targetKey){return typeof kokoroLinkEnemyAttackMultiplierFor==='function'?kokoroLinkEnemyAttackMultiplierFor(targetKey):1;}
 function enemyKokoroLinkSpeed(monster,targetKey){const base=monSpd(monster);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
 function enemyKokoroLinkMisses(targetKey,randomFn=Math.random){const accuracy=typeof kokoroLinkEnemyAccuracyFor==='function'?kokoroLinkEnemyAccuracyFor(targetKey):1;return randomFn()>=accuracy;}
-function enemyKokoroLinkStatusHtml(targetKey){const text=typeof kokoroLinkEnemyStatusText==='function'?kokoroLinkEnemyStatusText(targetKey):'';return text?` / 💔${text}`:'';}
+function enemyKokoroLinkStatusHtml(targetKey){
+  const parts=[];const status=typeof kokoroLinkEnemyStatusText==='function'?kokoroLinkEnemyStatusText(targetKey):'';const foresight=typeof kokoroLinkForesightTextForTarget==='function'?kokoroLinkForesightTextForTarget(targetKey):'';
+  if(status)parts.push(`💔${status}`);if(foresight)parts.push(foresight);return parts.length?` / ${parts.join('・')}`:'';
+}
 function applyKokoroLinkControlStatus(result,target){
   const turns=Math.max(1,Number(result.durationTurns)||1),multi=target?.kind==='multi';
   if(multi){
@@ -86,6 +89,48 @@ function applyKokoroLinkStatusAbilityForBattle(link,targetId=null,randomFn=Math.
   if(result.controlStatus)applyKokoroLinkControlStatus(result,multiEntry?{kind:'multi',entry:multiEntry}:{kind:'single'});
   return `💔 ${targetMon.name}に「${result.label}」が発動！（成功率${rate}%）<br>${result.summary}`;
 }
+function clearPlayerKokoroLinkStatuses(){
+  const cleared=[];
+  if(pStatus==='poison'||pPoisonTurns>0)cleared.push('毒');if(pParalysisTurns>0)cleared.push('麻痺');if(pConfusionTurns>0)cleared.push('こんらん');if(pSleepTurns>0)cleared.push('ねむり');
+  pStatus=null;pPoisonTurns=0;pParalysisTurns=0;pConfusionTurns=0;pSleepTurns=0;
+  return [...new Set(cleared)];
+}
+function healPlayerByKokoroLink(rate){
+  const before=pHp,requested=Math.max(1,Math.floor(playerMaxHp()*(Number(rate)||0))),healing=typeof adjustedBattleHealing==='function'?adjustedBattleHealing(requested):requested;
+  pHp=Math.min(playerMaxHp(),pHp+healing);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;return pHp-before;
+}
+function dispelEnemyKokoroLinkBoosts(targetId=null){
+  const entry=multiBattle?.active?multiEnemy(targetId):null;const removed=[];
+  if(entry){if(entry.attack>1){entry.attack=1;removed.push('攻撃強化');}if(entry.guard){entry.guard=false;removed.push('防御');}if(entry.flareCharge){entry.flareCharge=false;removed.push('フレアチャージ');}if(entry.aquaShield){entry.aquaShield=false;removed.push('水の盾');}}
+  else{if(eAtk>1){eAtk=1;removed.push('攻撃強化');}if(eGuard){eGuard=false;removed.push('防御');}if(eFlareCharge){eFlareCharge=false;removed.push('フレアチャージ');}if(eAquaShield){eAquaShield=false;removed.push('水の盾');}}
+  return removed;
+}
+function applyKokoroLinkTacticsAbilityForBattle(link,targetId=null,randomFn=Math.random){
+  const ability=link?.tacticsAbility;if(!ability)return '';
+  if(ability.deferred)return `⏸️ ★3リンク能力「${ability.label}」は、戦闘内コスト実装まで保留中です。`;
+  if(ability.id==='origin_choice')return `✨ ★3リンク能力「${ability.label}」：効果を選択してください。`;
+  if(ability.id==='instant_heal'){const healed=healPlayerByKokoroLink(ability.maxHpRate);markKokoroLinkTacticsResolved(link);return `🌿 「${ability.label}」でHPを${healed}回復！`;}
+  if(ability.id==='cleanse'){const cleared=clearPlayerKokoroLinkStatuses();markKokoroLinkTacticsResolved(link);return cleared.length?`✨ 「${ability.label}」で${cleared.join('・')}を解除！`:`✨ 「${ability.label}」が発動したが、解除する状態異常はなかった。`;}
+  if(ability.id==='dispel'){
+    const target=multiBattle?.active?multiEnemy(targetId):null,targetMon=target?.mon||enemy;if(!targetMon)return '⚠️ 強化解除の対象が見つからなかった。';
+    const removed=dispelEnemyKokoroLinkBoosts(targetId);markKokoroLinkTacticsResolved(link,{targetKey:target?.id||singleEnemyKokoroLinkKey()});return removed.length?`🌑 「${ability.label}」で${targetMon.name}の${removed.join('・')}を解除！`:`🌑 「${ability.label}」が発動したが、${targetMon.name}に解除可能な強化はなかった。`;
+  }
+  if(ability.id==='foresight'){
+    const target=multiBattle?.active?multiEnemy(targetId):null,targetMon=target?.mon||enemy,targetKey=target?.id||singleEnemyKokoroLinkKey(),moves=targetMon?.moves||[];
+    if(!moves.length)return '⚠️ 予知する行動が見つからなかった。';const move=moves[Math.floor(randomFn()*moves.length)]||moves[0];setKokoroLinkForesight(link,targetKey,move);return `🔮 「${ability.label}」で${targetMon.name}の次の行動「${move[0]}」を予知！`;
+  }
+  markKokoroLinkTacticsResolved(link);return `✨ ★3リンク能力「${ability.label}」が待機状態になった！<br>${ability.summary}`;
+}
+function applyKokoroLinkOriginChoiceForBattle(optionId){
+  const result=typeof resolveKokoroLinkTacticsChoice==='function'?resolveKokoroLinkTacticsChoice(activeInstance,optionId):{resolved:false};if(!result.resolved)return '⚠️ 原初選択を実行できませんでした。';
+  if(optionId==='small_heal'){const healed=healPlayerByKokoroLink(.10);return `✨ 原初選択「小回復」でHPを${healed}回復！`;}
+  const cleared=clearPlayerKokoroLinkStatuses();return cleared.length?`✨ 原初選択「浄化」で${cleared.join('・')}を解除！`:'✨ 原初選択「浄化」が発動したが、解除する状態異常はなかった。';
+}
+function nextEnemyMoveWithKokoroLinkForesight(targetKey,monster,randomFn=Math.random){
+  const foretold=typeof consumeKokoroLinkForesightMove==='function'?consumeKokoroLinkForesightMove(targetKey):null;if(foretold)return {move:foretold,foretold:true};
+  const moves=monster?.moves||[];return {move:moves[Math.floor(randomFn()*moves.length)]||moves[0]||['通常攻撃',24,'normal'],foretold:false};
+}
+function kokoroLinkPenetratedMultiplier(multiplier,rate){return Number(multiplier)<1?Math.min(1,Number(multiplier)+(Number(rate)||0)):Number(multiplier);}
 function tickSingleEnemyKokoroLinkEffects(){
   if(typeof tickKokoroLinkEnemyEffects!=='function'||eHp<=0)return '';
   const result=tickKokoroLinkEnemyEffects(singleEnemyKokoroLinkKey(),eHp,enemyMaxHp());eHp=result.hp;
@@ -244,8 +289,10 @@ function turn(i) {
   startBattleTurn();
 
   const playerMove = getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
-  const enemyMove = enemy.moves[Math.floor(Math.random()*enemy.moves.length)];
-  const pSpeed = monSpd(player, activeInstance);
+  const enemyAction=nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);
+  const enemyMove = enemyAction.move;
+  const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);
+  const pSpeed = prioritized?Infinity:monSpd(player, activeInstance);
   const delayed=typeof consumeKokoroLinkEnemyActionDelay==='function'&&consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
   const eSpeed = delayed?-Infinity:enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey());
   const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
@@ -337,10 +384,12 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
   const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
   const powerBoost=isPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
+  const penetration=isPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
   const effectivePower=power*powerBoost.multiplier;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
-  const rawDmg = Math.max(1, Math.floor((effectivePower * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=g?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.50,penetration.rate):1;
+  const rawDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * guardMultiplier * shieldMultiplier));
   const linkBarrier = isPlayer ? {hpDamage:rawDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawDmg);
   const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
@@ -358,6 +407,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
   const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
   if(powerBoost.boosted)msg+='<br>🐉 竜威増幅で技威力アップ！';
+  if(penetration.penetrated)msg+='<br>🐲 竜牙貫通で耐性・軽減を20%分貫通！';
   if (mapAttackMultiplier > 1) msg += `<br>🗺️ マップ属性強化！（×1.2）`;
   if (shield) msg += `<br>💧 ${defender.name}のアクアシールドがダメージを半減し、消えた！`;
   if (hasFlareCharge) {
@@ -380,13 +430,13 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   if(isPlayer){const linkHeal=applyPlayerKokoroLinkLifeSteal(actualDamage);if(linkHeal)msg+=`<br>${linkHeal}`;}
   if (effect === 'recoil') {
-    if (isPlayer) pHp -= 8; else eHp -= 8;
-    msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;
+    const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{if (isPlayer) pHp -= 8; else eHp -= 8;msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}
   }
   if (effect === 'alchemy_recoil') {
     const recoilDamage = alchemyRecoilDamage(actualDamage);
-    if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;
-    msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;
+    const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;}
   }
   if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.5):{chance:Number.isFinite(effectChance)?effectChance:0.5,boosted:false};
@@ -417,7 +467,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
     if(Math.random()<chance.chance){
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
-    const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
+    const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
     const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
     const secondDmg = secondBarrier.hpDamage;
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;

@@ -81,4 +81,4 @@ Phase 1の計算結果を実戦へ接続した。
 
 Phase 4-0で、★1～★3の能力帯と主属性に応じた追加リンク能力マトリクス、状態異常・回復・解除・コスト軽減の上限、重複、成功判定、ボス耐性を確定した。詳細は [Phase 4-0：追加能力の共通ルール](./kokoro-link-phase4-0-ability-rules.md) を参照する。
 
-Phase 4-1で★1の数値強化、Phase 4-2で★2の属性・状態異常能力を実戦へ接続した。詳細は [Phase 4-1：★1リンク能力](./kokoro-link-phase4-1-power-abilities.md) と [Phase 4-2：★2リンク能力](./kokoro-link-phase4-2-status-abilities.md) を参照する。次はPhase 4-3で★3の戦術支援能力を接続する。
+Phase 4-1で★1の数値強化、Phase 4-2で★2の属性・状態異常能力、Phase 4-3で★3の戦術支援能力を実戦へ接続した。詳細は [Phase 4-1：★1リンク能力](./kokoro-link-phase4-1-power-abilities.md)、[Phase 4-2：★2リンク能力](./kokoro-link-phase4-2-status-abilities.md)、[Phase 4-3：★3リンク能力](./kokoro-link-phase4-3-tactics-abilities.md) を参照する。
