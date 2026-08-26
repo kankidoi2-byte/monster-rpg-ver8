@@ -157,8 +157,7 @@ function renderKokoroLinkPanel(){
   const sources=typeof currentKokoroLinkSources==='function' ? currentKokoroLinkSources({includeUsed:true}) : [];
   const targetEligible=player?.entityKind==='monster';
   const available=sources.filter(source=>source.available).length;
-  const tacticsAction=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved||current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0;
-  button.disabled=!targetEligible||!!current&&!tacticsAction||!current&&available===0;
+  button.disabled=!targetEligible||(!current&&available===0);
   button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}`;
   const tacticsActionHtml=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved?'<button onclick="beginKokoroLinkOriginChoice()">原初選択を決める</button>':current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0?'<button onclick="beginKokoroLinkFreeSwitch()">無消費交代を使う</button>':'';
   const activeHtml=current
