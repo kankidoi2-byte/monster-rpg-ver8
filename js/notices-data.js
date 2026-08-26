@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-single-battle-vertical-layout',
+    date: '2026-08-26',
+    category: 'fix',
+    title: '通常戦のモンスター配置を見直しました',
+    body: '通常戦でも三つ巴バトルと同じように、敵を上、プレイヤーのモンスターを下に表示するよう変更しました。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link-water-mirror-guard',
     date: '2026-08-26',
     category: 'update',
