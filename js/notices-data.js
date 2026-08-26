@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-switch',
+    date: '2026-08-26',
+    category: 'update',
+    title: '戦闘中にモンスターを交代できるようにしました',
+    body: 'バトルコマンドの「交代」から、戦闘可能な控えモンスターへ交代できます。通常の交代は1ターンを使い、風渡り交代はこれまで通り行動を消費しません。'
+  }),
+  Object.freeze({
     id: '20260826-single-battle-vertical-layout',
     date: '2026-08-26',
     category: 'fix',

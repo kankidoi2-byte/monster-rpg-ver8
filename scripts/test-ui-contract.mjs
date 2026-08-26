@@ -39,7 +39,8 @@ screenIds.forEach(id => {
 const criticalDomIds = [
   'titleScreen', 'currentPartyView', 'partySelectList', 'battleChoiceList',
   'battleMapBanner', 'pName', 'pVis', 'pHpBar', 'pHpTrail', 'pHpText', 'pExpBar',
-  'eName', 'eVis', 'eHpBar', 'eHpTrail', 'eHpText', 'commands', 'itemText', 'log', 'battleOutcome', 'next'
+  'eName', 'eVis', 'eHpBar', 'eHpTrail', 'eHpText', 'commands', 'multiTargetSelect',
+  'battleSwitchButton', 'itemText', 'log', 'battleOutcome', 'next'
 ];
 criticalDomIds.forEach(id => expect(index.includes(`id="${id}"`), `required UI contract is missing: #${id}`));
 
@@ -52,6 +53,8 @@ expect(index.includes('class="screen battle-screen"'), 'portrait-first battle sc
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
 expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
+expect(read('js/battle-view.js').includes('function openBattleSwitchPicker'), 'manual battle-switch picker is missing');
+expect(read('js/battle-flow.js').includes('function performManualPartySwitch'), 'manual battle-switch turn flow is missing');
 expect(read('js/multi-battle.js').includes('function handleMultiTargetKey'), 'accessible multi-target selection is missing');
 expect(read('js/multi-battle.js').includes('function setMultiBattleLayout'), 'three-way layout state helper is missing');
 expect(read('js/multi-battle.js').includes('multi-enemy-label'), 'three-way enemy labels are missing');

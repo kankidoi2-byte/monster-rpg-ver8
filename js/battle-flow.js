@@ -192,23 +192,72 @@ function afterBattleNext() {
   hideBattleOutcome();
   showBattleChoices();
 }
-function switchPartyMember() {
-  partyBattle[activePartyIdx].hp = 0;
-  partyBattle[activePartyIdx].fainted = true;
-  const next = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
-  if (next < 0) { losePartyBattle(); return false; }
-  activePartyIdx = next;
-  activeInstance = partyBattle[next].inst;
-  player = partyBattle[next].mon;
-  pHp = partyBattle[next].hp;
+function livingPartySwitchCandidates(entries=partyBattle, currentIndex=activePartyIdx) {
+  return (entries || []).map((entry,index) => ({entry,index}))
+    .filter(({entry,index}) => index !== currentIndex && entry && !entry.fainted && entry.hp > 0);
+}
+function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={}) {
+  const current = partyBattle[activePartyIdx];
+  const next = partyBattle[nextIndex];
+  if (!next || nextIndex === activePartyIdx || next.fainted || next.hp <= 0) return false;
+  if (current) {
+    current.hp = faintCurrent ? 0 : Math.max(0,pHp);
+    if (faintCurrent) current.fainted = true;
+  }
+  activePartyIdx = nextIndex;
+  activeInstance = next.inst;
+  player = next.mon;
+  pHp = next.hp;
   pAtk = 1; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
-  document.getElementById('log').innerHTML += `<br><b>${player.name}</b>に交代した！`;
-  // ② 名前・画像・技ボタンを全更新
+  const log = document.getElementById('log');
+  if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
   renderSkillButtons();
   if (typeof renderKokoroLinkPanel === 'function') renderKokoroLinkPanel();
+  if (typeof renderBattleSwitchButton === 'function') renderBattleSwitchButton();
   update();
+  return true;
+}
+function switchPartyMember() {
+  const current = partyBattle[activePartyIdx];
+  if (current) { current.hp = 0; current.fainted = true; }
+  const next = livingPartySwitchCandidates(partyBattle, activePartyIdx)[0];
+  if (!next) { losePartyBattle(); return false; }
+  return changeActivePartyMember(next.index, {faintCurrent:true, message:`<b>${next.entry.mon.name}</b>に交代した！`});
+}
+function performManualPartySwitch(nextIndex) {
+  if (busy || !livingPartySwitchCandidates().some(candidate => candidate.index === nextIndex)) return false;
+  const previousName = player.name;
+  busy = true;
+  startBattleTurn();
+  if (!changeActivePartyMember(nextIndex, {message:`🔄 ${previousName}から<b>${partyBattle[nextIndex].mon.name}</b>へ交代した！`})) {
+    busy = false;
+    return false;
+  }
+  if (multiBattle?.active) {
+    const actions = aliveMultiEnemies().map(actor => {
+      const delayed = consumeKokoroLinkEnemyActionDelay(actor.id);
+      const enemyAction = nextEnemyMoveWithKokoroLinkForesight(actor.id,actor.mon);
+      return {kind:'enemy',actorId:actor.id,speed:delayed?-Infinity:multiEnemyKokoroLinkSpeed(actor),move:enemyAction.move};
+    }).sort((a,b) => b.speed-a.speed || Math.random()-.5);
+    runMultiActions(actions,0);
+    return true;
+  }
+  const enemyAction = nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);
+  const delayed = typeof consumeKokoroLinkEnemyActionDelay === 'function' && consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
+  setTimeout(() => {
+    performAction(enemy,player,enemyAction.move,false);
+    if (eHp <= 0) { win(); return; }
+    if (pHp <= 0) {
+      if (!switchPartyMember()) return;
+      completeBattleTurn();
+      if (triggerInvasionIfDue()) return;
+      busy = false;
+      return;
+    }
+    finishTurnWithPoison();
+  }, delayed ? 850 : 550);
   return true;
 }
 function losePartyBattle() {
