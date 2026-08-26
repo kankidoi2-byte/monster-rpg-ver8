@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-melee-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: '剣・爪・牙の攻撃演出を追加しました',
+    body: '剣技・爪技・牙技を使うと、相手の位置に属性色をまとった斬撃、爪痕、噛みつきの演出が表示されるようになりました。通常戦と複数の敵が登場するバトルの両方に対応しています。'
+  }),
+  Object.freeze({
     id: '20260826-battle-skill-motion',
     date: '2026-08-26',
     category: 'update',

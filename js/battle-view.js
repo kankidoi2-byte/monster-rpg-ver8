@@ -105,6 +105,8 @@ const BATTLE_MOTION_COLORS=Object.freeze({
   fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
+const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400});
+const BATTLE_MELEE_FORMS=Object.freeze(['sword','claw','fang']);
 function battleMotionDelay(ms){
   return new Promise(resolve => setTimeout(resolve,ms));
 }
@@ -126,20 +128,28 @@ async function playBattleSkillMotion(sourceId,targetId,mv){
   const end={x:targetCenter.x-ux*targetInset,y:targetCenter.y-uy*targetInset};
   const dx=end.x-start.x,dy=end.y-start.y,distance=Math.max(12,Math.hypot(dx,dy));
   const types=normalizeMoveTypes(motion.types),primary=types[0]||'normal',secondary=types[1]||primary;
-  const effect=document.createElement('i');
-  effect.className=`battle-skill-motion is-${motion.form} is-${battleImpactType(primary)}`;
+  const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form);
+  effect.className=`${melee?'battle-melee-motion':'battle-skill-motion'} is-${motion.form} is-${battleImpactType(primary)}`;
   effect.setAttribute('aria-hidden','true');
-  effect.style.left=`${start.x}px`;
-  effect.style.top=`${start.y}px`;
-  effect.style.width=`${distance}px`;
-  effect.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+  if(melee){
+    const size=Math.max(58,Math.min(104,Math.min(targetRect.width,targetRect.height)*.72));
+    effect.style.left=`${targetCenter.x}px`;
+    effect.style.top=`${targetCenter.y}px`;
+    effect.style.width=`${size}px`;
+    effect.style.height=`${size}px`;
+  }else{
+    effect.style.left=`${start.x}px`;
+    effect.style.top=`${start.y}px`;
+    effect.style.width=`${distance}px`;
+    effect.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+  }
   effect.style.setProperty('--skill-color',BATTLE_MOTION_COLORS[primary]||BATTLE_MOTION_COLORS.normal);
   effect.style.setProperty('--skill-color-secondary',BATTLE_MOTION_COLORS[secondary]||BATTLE_MOTION_COLORS[primary]||BATTLE_MOTION_COLORS.normal);
   source.classList.remove('battle-skill-cast');
   void source.offsetWidth;
   source.classList.add('battle-skill-cast');
   stage.appendChild(effect);
-  await battleMotionDelay(motion.form==='breath'?430:350);
+  await battleMotionDelay(BATTLE_MOTION_DURATIONS[motion.form]||350);
   source.classList.remove('battle-skill-cast');
   effect.remove();
   return true;
