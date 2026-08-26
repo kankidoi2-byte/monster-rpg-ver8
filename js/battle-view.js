@@ -101,6 +101,49 @@ function battleImpactType(typeOrTypes) {
   const type = normalizeMoveTypes(typeOrTypes)[0] || 'normal';
   return /^[a-z_]+$/.test(type) ? type : 'normal';
 }
+const BATTLE_MOTION_COLORS=Object.freeze({
+  fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
+  light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
+});
+function battleMotionDelay(ms){
+  return new Promise(resolve => setTimeout(resolve,ms));
+}
+async function playBattleSkillMotion(sourceId,targetId,mv){
+  const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;
+  if(!motion?.animated)return false;
+  const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced)return false;
+  const source=document.getElementById(sourceId),target=document.getElementById(targetId),stage=document.querySelector('#battle .battle-arena');
+  if(!source||!target||!stage)return false;
+  const sourceRect=source.getBoundingClientRect(),targetRect=target.getBoundingClientRect(),stageRect=stage.getBoundingClientRect();
+  const sourceCenter={x:sourceRect.left-stageRect.left+sourceRect.width/2,y:sourceRect.top-stageRect.top+sourceRect.height/2};
+  const targetCenter={x:targetRect.left-stageRect.left+targetRect.width/2,y:targetRect.top-stageRect.top+targetRect.height/2};
+  const rawDx=targetCenter.x-sourceCenter.x,rawDy=targetCenter.y-sourceCenter.y,rawDistance=Math.hypot(rawDx,rawDy);
+  if(rawDistance<8)return false;
+  const ux=rawDx/rawDistance,uy=rawDy/rawDistance;
+  const sourceInset=Math.min(sourceRect.width,sourceRect.height)*.24,targetInset=Math.min(targetRect.width,targetRect.height)*.18;
+  const start={x:sourceCenter.x+ux*sourceInset,y:sourceCenter.y+uy*sourceInset};
+  const end={x:targetCenter.x-ux*targetInset,y:targetCenter.y-uy*targetInset};
+  const dx=end.x-start.x,dy=end.y-start.y,distance=Math.max(12,Math.hypot(dx,dy));
+  const types=normalizeMoveTypes(motion.types),primary=types[0]||'normal',secondary=types[1]||primary;
+  const effect=document.createElement('i');
+  effect.className=`battle-skill-motion is-${motion.form} is-${battleImpactType(primary)}`;
+  effect.setAttribute('aria-hidden','true');
+  effect.style.left=`${start.x}px`;
+  effect.style.top=`${start.y}px`;
+  effect.style.width=`${distance}px`;
+  effect.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+  effect.style.setProperty('--skill-color',BATTLE_MOTION_COLORS[primary]||BATTLE_MOTION_COLORS.normal);
+  effect.style.setProperty('--skill-color-secondary',BATTLE_MOTION_COLORS[secondary]||BATTLE_MOTION_COLORS[primary]||BATTLE_MOTION_COLORS.normal);
+  source.classList.remove('battle-skill-cast');
+  void source.offsetWidth;
+  source.classList.add('battle-skill-cast');
+  stage.appendChild(effect);
+  await battleMotionDelay(motion.form==='breath'?430:350);
+  source.classList.remove('battle-skill-cast');
+  effect.remove();
+  return true;
+}
 function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal', power=0) {
   const target = document.getElementById(targetId);
   const stage = document.querySelector('#battle .battle-arena');

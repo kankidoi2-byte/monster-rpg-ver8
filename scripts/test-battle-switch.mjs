@@ -60,6 +60,7 @@ assert.equal(vm.runInContext('pHp',context),48,'Incoming member must restore its
 
 vm.runInContext(`activePartyIdx=0;activeInstance=partyBattle[0].inst;player=partyBattle[0].mon;pHp=61;partyBattle[0].hp=61;partyBattle[0].fainted=false;partyBattle[1].hp=48;busy=false;started=0;finished=0;enemyActions=0;`,context);
 assert.equal(vm.runInContext('performManualPartySwitch(1)',context),true,'Manual switching must start when a living reserve is selected');
+await Promise.resolve();
 assert.equal(context.started,1,'Manual switching must consume one battle turn');
 assert.equal(context.enemyActions,1,'The enemy must act after a normal switch');
 assert.equal(context.finished,1,'The switch turn must reach normal end-of-turn handling');
