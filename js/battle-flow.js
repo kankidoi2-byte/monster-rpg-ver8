@@ -246,8 +246,8 @@ function performManualPartySwitch(nextIndex) {
   }
   const enemyAction = nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);
   const delayed = typeof consumeKokoroLinkEnemyActionDelay === 'function' && consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
-  setTimeout(() => {
-    performAction(enemy,player,enemyAction.move,false);
+  setTimeout(async () => {
+    await performAction(enemy,player,enemyAction.move,false);
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;

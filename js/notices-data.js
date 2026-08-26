@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-skill-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: 'ブレス・ビーム技に攻撃演出を追加しました',
+    body: 'ブレス系とビーム系の攻撃技を使うと、技の属性色をまとった光が相手へ飛ぶようになりました。通常戦と複数の敵が登場するバトルの両方に対応しています。'
+  }),
+  Object.freeze({
     id: '20260826-battle-command-pad',
     date: '2026-08-26',
     category: 'update',

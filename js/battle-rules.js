@@ -211,27 +211,27 @@ function tryConfusionAction(isPlayer) {
   update();
   return result;
 }
-function performAction(attacker, defender, move, isPlayer) {
+async function performAction(attacker, defender, move, isPlayer) {
   const logEl = document.getElementById('log');
   const sleep = trySleepAction(isPlayer);
   if (!sleep.canAct) {
     logEl.innerHTML = sleep.message;
-    return false;
+    return {acted:false,animated:false};
   }
   const paralysis = tryParalysisAction(isPlayer);
   if (!paralysis.canAct) {
     logEl.innerHTML = paralysis.message;
-    return false;
+    return {acted:false,animated:false};
   }
   const confusion = tryConfusionAction(isPlayer);
   if (!confusion.canAct) {
     logEl.innerHTML = confusion.message;
-    return false;
+    return {acted:false,animated:false};
   }
-  doAttack(attacker, defender, move, isPlayer);
+  const result=await doAttack(attacker, defender, move, isPlayer);
   const extra = [paralysis.message, confusion.message].filter(Boolean).join('<br>');
   if (extra) logEl.innerHTML += `<br>${extra}`;
-  return true;
+  return {acted:true,animated:!!result?.animated};
 }
 function applyPoisonToTarget(targetIsPlayer) {
   const poison = BATTLE_STATUS_EFFECTS.poison;
@@ -282,7 +282,7 @@ function finishTurnWithPoison() {
   if (triggerInvasionIfDue()) return;
   busy = false;
 }
-function turn(i) {
+async function turn(i) {
   if (busy) return;
   if (typeof closeBattleSkillPanel === 'function') closeBattleSkillPanel();
   if (multiBattle?.active) { chooseMultiBattleTarget(i); return; }
@@ -299,23 +299,11 @@ function turn(i) {
   const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
 
   if (playerFirst) {
-    performAction(player, enemy, playerMove, true);
+    const playerResult=await performAction(player, enemy, playerMove, true);
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0 && !switchPartyMember()) return;
-    setTimeout(() => {
-      performAction(enemy, player, enemyMove, false);
-      if (eHp <= 0) { win(); return; }
-      if (pHp <= 0) {
-        if (!switchPartyMember()) return;
-        completeBattleTurn();
-        if (triggerInvasionIfDue()) return;
-        busy = false;
-        return;
-      }
-      finishTurnWithPoison();
-    }, 700);
-  } else {
-    performAction(enemy, player, enemyMove, false);
+    await battleMotionDelay(playerResult.animated?140:700);
+    await performAction(enemy, player, enemyMove, false);
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
@@ -324,21 +312,31 @@ function turn(i) {
       busy = false;
       return;
     }
-    setTimeout(() => {
-      performAction(player, enemy, playerMove, true);
-      if (eHp <= 0) { win(); return; }
-      if (pHp <= 0 && !switchPartyMember()) return;
-      finishTurnWithPoison();
-    }, 700);
+    finishTurnWithPoison();
+  } else {
+    const enemyResult=await performAction(enemy, player, enemyMove, false);
+    if (eHp <= 0) { win(); return; }
+    if (pHp <= 0) {
+      if (!switchPartyMember()) return;
+      completeBattleTurn();
+      if (triggerInvasionIfDue()) return;
+      busy = false;
+      return;
+    }
+    await battleMotionDelay(enemyResult.animated?140:700);
+    await performAction(player, enemy, playerMove, true);
+    if (eHp <= 0) { win(); return; }
+    if (pHp <= 0 && !switchPartyMember()) return;
+    finishTurnWithPoison();
   }
 }
-function doAttack(attacker, defender, mv, isPlayer) {
+async function doAttack(attacker, defender, mv, isPlayer) {
   const [name, power, type, effect, effectChance] = mv;
   const logEl = document.getElementById('log');
   // 補助技
   if (effect === 'guard') {
     isPlayer ? pGuard=true : eGuard=true;
-    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`; update(); return;
+    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`; update(); return {animated:false};
   }
   if (effect === 'heal') {
     const baseHealing = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
@@ -347,21 +345,21 @@ function doAttack(attacker, defender, mv, isPlayer) {
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
     const healed = (isPlayer ? pHp : eHp) - before;
-    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`; update(); return;
+    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`; update(); return {animated:false};
   }
   if (effect === 'buff') {
     isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
-    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`; update(); return;
+    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`; update(); return {animated:false};
   }
   if (effect === 'debuff') {
     isPlayer ? eAtk=Math.max(.65,eAtk-.2) : pAtk=Math.max(.65,pAtk-.2);
-    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`; update(); return;
+    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`; update(); return {animated:false};
   }
   if (effect === 'aqua_shield') {
     if (isPlayer) pAquaShield = true; else eAquaShield = true;
     logEl.innerHTML = `💧 ${attacker.name}は水の盾を展開した！ 次に受ける攻撃ダメージを半減する！`;
     update();
-    return;
+    return {animated:false};
   }
   if (effect === 'sleep') {
     let msg = `🌿 ${attacker.name}の「${name}」！`;
@@ -374,9 +372,11 @@ function doAttack(attacker, defender, mv, isPlayer) {
     }
     logEl.innerHTML = msg;
     update();
-    return;
+    return {animated:false};
   }
-  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;update();return;}
+  const sourceId=isPlayer?'pVis':'eVis',targetId=isPlayer?'eVis':'pVis';
+  const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,mv):false;
+  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;update();return {animated};}
   // ダメージ計算
   const r = typeEff(type, defender.types);
   const hasFlareCharge = effect !== 'flare_charge' && power > 0 && (isPlayer ? pFlareCharge : eFlareCharge);
@@ -478,7 +478,6 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   logEl.innerHTML = msg;
   // ヒットアニメとダメージ表示
-  const targetId = isPlayer ? 'eVis' : 'pVis';
   if (typeof playBattleImpact === 'function') playBattleImpact(targetId, dmg, r, moveTypes(mv), power);
   else {
     const el = document.getElementById(targetId);
@@ -487,4 +486,6 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (partyBattle[activePartyIdx] && !isPlayer) partyBattle[activePartyIdx].hp = Math.max(0, pHp);
   update();
+  if(animated)await battleMotionDelay(120);
+  return {animated};
 }

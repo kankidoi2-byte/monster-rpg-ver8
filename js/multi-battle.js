@@ -184,10 +184,11 @@ function startMultiBattleTurn(targetId) {
   runMultiActions(actions,0);
 }
 
-function runMultiActions(actions,index) {
+async function runMultiActions(actions,index) {
   if (!multiBattle?.active || multiBattle.finished) return;
   if (index>=actions.length) { finishMultiBattleTurn(); return; }
   const action=actions[index];
+  let result=null;
   if (action.kind==='player') {
     if (pHp<=0) { runMultiActions(actions,index+1); return; }
     if (pSleepTurns>0) { pSleepTurns--; appendMultiLog(`💤 ${player.name}は眠っていて動けない！`); runMultiActions(actions,index+1); return; }
@@ -200,21 +201,22 @@ function runMultiActions(actions,index) {
     }
     const resolvedTargetId=resolveLivingMultiTargetId(multiBattle.enemies,action.targetId);
     const target=multiEnemy(resolvedTargetId);
-    if (target) performMultiAttack({kind:'player'},target,action.move);
+    if (target) result=await performMultiAttack({kind:'player'},target,action.move);
   } else {
     const actor=multiEnemy(action.actorId);
     if (!actor?.alive) { runMultiActions(actions,index+1); return; }
     const targets=[{kind:'player',id:'player'},...aliveMultiEnemies().filter(entry=>entry.id!==actor.id).map(entry=>({kind:'enemy',id:entry.id}))];
     const targetDescriptor=targets[Math.floor(Math.random()*targets.length)];
     const target=targetDescriptor?.kind==='enemy' ? multiEnemy(targetDescriptor.id) : targetDescriptor;
-    if (target) performMultiAttack(actor,target,action.move);
+    if (target) result=await performMultiAttack(actor,target,action.move);
   }
   if (pHp<=0 && !switchPartyMember()) return;
   if (!aliveMultiEnemies().length) { winMultiBattle(); return; }
-  setTimeout(()=>runMultiActions(actions,index+1),550);
+  await battleMotionDelay(result?.animated?140:550);
+  runMultiActions(actions,index+1);
 }
 
-function performMultiAttack(actor,target,move) {
+async function performMultiAttack(actor,target,move) {
   const actorIsPlayer=actor.kind==='player'; const defenderIsPlayer=target.kind==='player';
   const a=actorIsPlayer?player:actor.mon; const d=defenderIsPlayer?player:target.mon;
   const [name,power,type,effect,effectChance]=move; let msg='';
@@ -242,7 +244,9 @@ function performMultiAttack(actor,target,move) {
     if(Math.random()<chance.chance){if(defenderIsPlayer)pSleepTurns=2;else targetEntry.sleepTurns=2;appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
     updateMultiBattleView();return;
   }
-  if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return;}
+  const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
+  const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move):false;
+  if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return {animated};}
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
   const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
   const penetration=actorIsPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
@@ -256,7 +260,6 @@ function performMultiAttack(actor,target,move) {
   const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
   else{targetEntry.hp=Math.max(0,targetEntry.hp-damage);targetEntry.guard=false;targetEntry.aquaShield=false;}
-  const impactTargetId=defenderIsPlayer?'pVis':`${targetEntry.id}Vis`;
   if(typeof playBattleImpact==='function')playBattleImpact(impactTargetId,damage,r,moveTypes(move),power);
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
   const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
@@ -296,6 +299,8 @@ function performMultiAttack(actor,target,move) {
   if(!defenderIsPlayer&&targetEntry.hp<=0){targetEntry.alive=false;targetEntry.defeatedByPlayer=actorIsPlayer;appendMultiLog(`💀 ${targetEntry.mon.name}は${a.name}に倒された！`);}
   if(!actorIsPlayer&&actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;appendMultiLog(`💀 ${actor.mon.name}は反動で倒れた！`);}
   updateMultiBattleView();
+  if(animated)await battleMotionDelay(120);
+  return {animated};
 }
 
 function appendMultiLog(message){const el=document.getElementById('log');if(el)el.innerHTML+=(el.innerHTML?'<br>':'')+message;}

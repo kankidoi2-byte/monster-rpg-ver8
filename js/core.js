@@ -178,10 +178,28 @@ function canonicalSkillId(skillId){
   const normalized=normalizeSkillId(skillId);
   return SKILL_CANONICAL_BY_ID[normalized] || normalized;
 }
+function skillBattleMotionForMove(mv){
+  const skillId=normalizeSkillId(skillIdFromMove(mv));
+  const skill=SKILL_BY_ID[skillId] || null;
+  const tags=skill?.tags || [];
+  const formTag=tags.find(tag => tag.startsWith('form:'));
+  const roleTag=tags.find(tag => tag.startsWith('role:'));
+  const elementTags=tags.filter(tag => tag.startsWith('element:')).map(tag => tag.slice(8));
+  const form=formTag?.slice(5) || skill?.form || 'generic';
+  const role=roleTag?.slice(5) || ((Number(mv?.[1]) || 0) > 0 ? 'damage' : 'support');
+  return Object.freeze({
+    skillId:skill?.id || null,
+    form,
+    role,
+    types:Object.freeze(elementTags.length ? elementTags : moveTypes(mv)),
+    effect:skill?.effect || mv?.[3] || null,
+    animated:role === 'damage' && ['breath','beam'].includes(form)
+  });
+}
 function skillToMove(skillId){
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return ['通常攻撃',24,'normal'];
-  return [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId];
+  return [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId, sk.id];
 }
 function rarityCount(m){ return (m?.rarity || '★').length || 1; }
 function skillCostLimitFor(mon, ins){
