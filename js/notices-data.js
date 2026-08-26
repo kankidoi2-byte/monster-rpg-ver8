@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link-active-details',
+    date: '2026-08-26',
+    category: 'fix',
+    title: '発動中のリンク効果を確認できるようにしました',
+    body: 'ココロリンク発動後も「発動中」ボタンから、残り障壁・攻撃・素早さと追加リンク能力の状態をいつでも確認できます。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link-three-star-abilities',
     date: '2026-08-26',
     category: 'update',
