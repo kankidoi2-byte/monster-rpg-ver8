@@ -11,7 +11,7 @@ function typeEff(atkTypeOrTypes, defTypes) {
 (function loadMultiBattleModule() {
   if (document.querySelector('script[data-multi-battle]')) return;
   const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=kokoro-link-phase3-1';
+  script.src = 'js/multi-battle.js?v=kokoro-link-scaling-1';
   script.dataset.multiBattle = 'true';
   document.head.appendChild(script);
 })();

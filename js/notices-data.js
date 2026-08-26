@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link-scaling',
+    date: '2026-08-26',
+    category: 'fix',
+    title: 'ココロリンクの強化計算と表示を改善しました',
+    body: '強化量が戦闘中モンスターの能力を基準に決まるよう修正しました。効果欄にはレアリティ補正を適用した最終値を表示します。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link',
     date: '2026-08-26',
     category: 'update',

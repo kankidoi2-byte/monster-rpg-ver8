@@ -129,7 +129,7 @@ function kokoroLinkStatusHtml(){
   if(!link)return '';
   const barrier=Math.max(0,Number(link.barrierRemaining)||0);
   const attack=Math.round((link.effects.attackMultiplier-1)*100);
-  return ` / 💞${link.sourceName}（攻撃+${attack}%・速度+${link.effects.speedBonus}・障壁${barrier}）`;
+  return ` / 💞${link.sourceName}（攻撃ダメージ+${attack}%・素早さ+${link.effects.speedBonus}・障壁${barrier}）`;
 }
 function kokoroLinkFailureText(reason){
   return {
@@ -149,7 +149,7 @@ function renderKokoroLinkPanel(){
   button.disabled=!targetEligible||!!current||available===0;
   button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}`;
   const activeHtml=current
-    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>攻撃 +${Math.round((current.effects.attackMultiplier-1)*100)}% / 速度 +${current.effects.speedBonus} / 障壁 ${current.barrierRemaining}</span></div>`
+    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span></div>`
     : '';
   const message=!targetEligible
     ? '<p class="kokoro-link-empty">現在の戦闘個体はリンク対象外です。</p>'
@@ -164,8 +164,9 @@ function renderKokoroLinkPanel(){
     const effects=preview.effects;
     const disabled=source.used||!!current||!targetEligible;
     return `<button class="kokoro-link-source${source.used?' is-used':''}" onclick="activateKokoroLinkFromBattle('${source.uid}')" ${disabled?'disabled':''}>`+
-      `<span>${source.entry.mon.rarity} ×${source.profile.multiplier} ${source.entry.mon.name}</span>`+
-      `<strong>障壁 ${effects.barrier} / 攻撃 +${Math.round(effects.attackBonus*100)}% / 速度 +${effects.speedBonus}</strong>`+
+      `<span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
+      `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
+      `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+
       `<small>${source.used?'この戦闘で使用済み':'行動を消費せず発動'}</small></button>`;
   }).join('');
   panel.innerHTML=`<div class="kokoro-link-panel-head"><div><small>KOKORO LINK</small><h3>控えの力を借りる</h3></div><button onclick="toggleKokoroLinkPanel()" aria-label="閉じる">×</button></div>${activeHtml}${message}<div class="kokoro-link-source-grid">${cards}</div>`;
@@ -184,7 +185,7 @@ function activateKokoroLinkFromBattle(sourceUid){
   const log=document.getElementById('log');
   if(!result.ok){if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`⚠️ ${kokoroLinkFailureText(result.reason)}`;renderKokoroLinkPanel();return;}
   const {link}=result;
-  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 障壁${link.effects.barrier}・攻撃+${Math.round(link.effects.attackBonus*100)}%・速度+${link.effects.speedBonus}`;
+  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}`;
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   renderKokoroLinkPanel();
   update();

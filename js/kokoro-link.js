@@ -2,13 +2,8 @@ const KOKORO_LINK_CONFIG = Object.freeze({
   rarityMultipliers:Object.freeze({1:3.5, 2:2.6, 3:1.9, 4:1.3, 5:1.0}),
   abilityBands:Object.freeze({1:'power', 2:'status', 3:'tactics', 4:null, 5:null}),
   conversion:Object.freeze({
-    barrierIndexRate:0.25,
-    barrierTargetHpCapRate:0.40,
-    attackIndexRate:1 / 500,
-    attackMinimumBonus:0.08,
-    attackMaximumBonus:0.30,
-    speedIndexRate:0.10,
-    speedTargetCapRate:0.30
+    baseEffectRate:0.10,
+    maximumEffectRate:0.35
   })
 });
 
@@ -24,7 +19,7 @@ function kokoroLinkBattleSnapshot(){
     usedSourceUids:[...kokoroLinkBattleState.usedSourceUids],
     activeLinks:[...kokoroLinkBattleState.linksByTargetUid.values()].map(link => ({
       ...link,
-      profile:{...link.profile,sourceStats:{...link.profile.sourceStats},indices:{...link.profile.indices}},
+      profile:{...link.profile},
       effects:{...link.effects,capsApplied:{...link.effects.capsApplied}}
     }))
   };
@@ -47,11 +42,6 @@ function kokoroLinkMultiplier(monster){
   return KOKORO_LINK_CONFIG.rarityMultipliers[kokoroLinkRarity(monster)] || 1;
 }
 
-function kokoroLinkStatModifier(instance, stat){
-  const value=Number(instance?.alchemy?.statModifiers?.[stat]);
-  return Number.isFinite(value) && value > 0 ? value : 1;
-}
-
 function kokoroLinkPositiveNumber(value, fallback=1){
   const number=Number(value);
   return Number.isFinite(number) && number > 0 ? number : fallback;
@@ -59,26 +49,6 @@ function kokoroLinkPositiveNumber(value, fallback=1){
 
 function kokoroLinkLevel(instance){
   return Math.max(1,Math.floor(kokoroLinkPositiveNumber(instance?.level,1)));
-}
-
-function kokoroLinkMaxHp(monster, instance){
-  const level=kokoroLinkLevel(instance);
-  const base=kokoroLinkPositiveNumber(monster?.hp,1) + (level - 1) * 12;
-  return Math.max(1, Math.round(base * kokoroLinkStatModifier(instance,'hp')));
-}
-
-function kokoroLinkSpeed(monster, instance){
-  const base=kokoroLinkPositiveNumber(monster?.spd,50);
-  return Math.max(1, Math.round(base * kokoroLinkStatModifier(instance,'speed')));
-}
-
-function kokoroLinkNativeOffense(monster, instance){
-  const powers=(monster?.moves || [])
-    .map(move => Number(move?.[1]) || 0)
-    .filter(power => Number.isFinite(power) && power > 0);
-  if(!powers.length) return 0;
-  const average=powers.reduce((sum,power) => sum + power,0) / powers.length;
-  return Math.max(0, average * kokoroLinkStatModifier(instance,'attack'));
 }
 
 function kokoroLinkRounded(value, digits=2){
@@ -96,9 +66,6 @@ function buildKokoroLinkProfile(monster, instance={}){
   if(!monster || monster.entityKind !== 'monster') return null;
   const rarity=kokoroLinkRarity(monster);
   const multiplier=KOKORO_LINK_CONFIG.rarityMultipliers[rarity];
-  const hp=kokoroLinkMaxHp(monster,instance);
-  const speed=kokoroLinkSpeed(monster,instance);
-  const offense=kokoroLinkNativeOffense(monster,instance);
   const abilityBand=KOKORO_LINK_CONFIG.abilityBands[rarity];
   return {
     sourceUid:typeof instance?.uid === 'string' ? instance.uid : null,
@@ -110,44 +77,31 @@ function buildKokoroLinkProfile(monster, instance={}){
     primaryType:Array.isArray(monster.types) && monster.types.length ? monster.types[0] : 'normal',
     abilityEligible:abilityBand !== null,
     abilityBand,
-    sourceStats:{hp, speed, offense:kokoroLinkRounded(offense)},
-    indices:{
-      hp:kokoroLinkRounded(hp * multiplier),
-      speed:kokoroLinkRounded(speed * multiplier),
-      offense:kokoroLinkRounded(offense * multiplier)
-    }
+    linkRate:kokoroLinkRounded(KOKORO_LINK_CONFIG.conversion.baseEffectRate * multiplier,4)
   };
 }
 
 function convertKokoroLinkEffects(profile, targetStats={}){
-  if(!profile?.indices) return null;
+  if(!profile) return null;
   const conversion=KOKORO_LINK_CONFIG.conversion;
   const targetMaxHp=kokoroLinkPositiveNumber(targetStats.maxHp,1);
   const targetSpeed=kokoroLinkPositiveNumber(targetStats.speed,1);
-  const hpIndex=Math.max(0,Number.isFinite(Number(profile.indices.hp)) ? Number(profile.indices.hp) : 0);
-  const speedIndex=Math.max(0,Number.isFinite(Number(profile.indices.speed)) ? Number(profile.indices.speed) : 0);
-  const offenseIndex=Math.max(0,Number.isFinite(Number(profile.indices.offense)) ? Number(profile.indices.offense) : 0);
-  const barrierFromIndex=Math.round(hpIndex * conversion.barrierIndexRate);
-  const barrierCap=Math.max(1,Math.round(targetMaxHp * conversion.barrierTargetHpCapRate));
-  const rawAttackBonus=offenseIndex > 0
-    ? offenseIndex * conversion.attackIndexRate
-    : 0;
-  const attackBonus=rawAttackBonus > 0
-    ? kokoroLinkClamp(rawAttackBonus,conversion.attackMinimumBonus,conversion.attackMaximumBonus)
-    : 0;
-  const speedFromIndex=Math.round(speedIndex * conversion.speedIndexRate);
-  const speedCap=Math.max(1,Math.round(targetSpeed * conversion.speedTargetCapRate));
+  const rawEffectRate=Number.isFinite(Number(profile.linkRate)) ? Math.max(0,Number(profile.linkRate)) : 0;
+  const effectRate=kokoroLinkClamp(rawEffectRate,0,conversion.maximumEffectRate);
+  const barrier=Math.round(kokoroLinkRounded(targetMaxHp * effectRate,8));
+  const speedBonus=Math.round(kokoroLinkRounded(targetSpeed * effectRate,8));
   return {
-    barrier:Math.min(barrierFromIndex,barrierCap),
-    barrierCap,
-    attackBonus:kokoroLinkRounded(attackBonus,4),
-    attackMultiplier:kokoroLinkRounded(1 + attackBonus,4),
-    speedBonus:Math.min(speedFromIndex,speedCap),
-    speedCap,
+    effectRate:kokoroLinkRounded(effectRate,4),
+    barrier,
+    barrierCap:Math.round(kokoroLinkRounded(targetMaxHp * conversion.maximumEffectRate,8)),
+    attackBonus:kokoroLinkRounded(effectRate,4),
+    attackMultiplier:kokoroLinkRounded(1 + effectRate,4),
+    speedBonus,
+    speedCap:Math.round(kokoroLinkRounded(targetSpeed * conversion.maximumEffectRate,8)),
     capsApplied:{
-      barrier:barrierFromIndex > barrierCap,
-      attack:rawAttackBonus > conversion.attackMaximumBonus,
-      speed:speedFromIndex > speedCap
+      barrier:rawEffectRate > conversion.maximumEffectRate,
+      attack:rawEffectRate > conversion.maximumEffectRate,
+      speed:rawEffectRate > conversion.maximumEffectRate
     }
   };
 }
