@@ -178,6 +178,20 @@ function canonicalSkillId(skillId){
   const normalized=normalizeSkillId(skillId);
   return SKILL_CANONICAL_BY_ID[normalized] || normalized;
 }
+const GENERIC_BATTLE_MOTION_RULES=Object.freeze([
+  Object.freeze({form:'blade',pattern:/(リーフカッター|ゼファーカッター)/}),
+  Object.freeze({form:'strike',pattern:/影打ち/}),
+  Object.freeze({form:'charge',pattern:/(疾風迅雷|蒼流の突撃|猛毒天?翔破|エアスライド|夜滑り)/}),
+  Object.freeze({form:'wave',pattern:/(龍波|竜波|突風)/}),
+  Object.freeze({form:'projectile',pattern:/(ニードル|リーフスパーク|セラフィックリーフ|聖光の槍|灼熱花弁)/}),
+  Object.freeze({form:'lightning',pattern:/(サンダーボルト|パラライズショック|ライトニングチェイン|雷撃|混成竜雷)/}),
+  Object.freeze({form:'field',pattern:/(トキシックガーデン|雷嵐|ジャッジメント|アストラルエンド|オルカアビス|火花の舞|天嵐大旋回)/}),
+  Object.freeze({form:'mystic',pattern:/(吸収|呪いの視線|イリュージョン|ムーンシャドウ)/})
+]);
+function genericBattleMotionForm(skill,mv){
+  const name=String(skill?.name || mv?.[0] || '');
+  return GENERIC_BATTLE_MOTION_RULES.find(rule => rule.pattern.test(name))?.form || 'generic';
+}
 function skillBattleMotionForMove(mv){
   const skillId=normalizeSkillId(skillIdFromMove(mv));
   const skill=SKILL_BY_ID[skillId] || null;
@@ -185,7 +199,8 @@ function skillBattleMotionForMove(mv){
   const formTag=tags.find(tag => tag.startsWith('form:'));
   const roleTag=tags.find(tag => tag.startsWith('role:'));
   const elementTags=tags.filter(tag => tag.startsWith('element:')).map(tag => tag.slice(8));
-  const form=formTag?.slice(5) || skill?.form || 'generic';
+  const catalogForm=formTag?.slice(5) || skill?.form || 'generic';
+  const form=catalogForm === 'generic' ? genericBattleMotionForm(skill,mv) : catalogForm;
   const role=roleTag?.slice(5) || ((Number(mv?.[1]) || 0) > 0 ? 'damage' : 'support');
   return Object.freeze({
     skillId:skill?.id || null,
@@ -193,7 +208,7 @@ function skillBattleMotionForMove(mv){
     role,
     types:Object.freeze(elementTags.length ? elementTags : moveTypes(mv)),
     effect:skill?.effect || mv?.[3] || null,
-    animated:role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body','tail','horn','fist','wing','fin','leg','beak','club','dagger','roar'].includes(form)
+    animated:role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body','tail','horn','fist','wing','fin','leg','beak','club','dagger','roar','wave','projectile','lightning','field','mystic'].includes(form)
   });
 }
 function skillToMove(skillId){

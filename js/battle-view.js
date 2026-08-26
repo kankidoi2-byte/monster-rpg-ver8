@@ -105,7 +105,7 @@ const BATTLE_MOTION_COLORS=Object.freeze({
   fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
-const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340,roar:480});
+const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340,roar:480,wave:460,projectile:420,lightning:440,field:520,mystic:480});
 const BATTLE_MELEE_FORMS=Object.freeze(['sword','claw','fang']);
 const BATTLE_COLLISION_FORMS=Object.freeze(['charge','strike','body']);
 const BATTLE_LUNGE_FORMS=Object.freeze(['charge','body']);
@@ -113,6 +113,7 @@ const BATTLE_SWEEP_FORMS=Object.freeze(['tail','wing','fin','leg']);
 const BATTLE_PIERCE_FORMS=Object.freeze(['horn','beak','dagger']);
 const BATTLE_BLUNT_FORMS=Object.freeze(['fist','club']);
 const BATTLE_ANATOMY_FORMS=Object.freeze([...BATTLE_SWEEP_FORMS,...BATTLE_PIERCE_FORMS,...BATTLE_BLUNT_FORMS]);
+const BATTLE_ARCANE_FORMS=Object.freeze(['lightning','field','mystic']);
 function battleAnatomyFamily(form){
   if(BATTLE_SWEEP_FORMS.includes(form))return 'sweep';
   if(BATTLE_PIERCE_FORMS.includes(form))return 'pierce';
@@ -139,9 +140,9 @@ async function playBattleSkillMotion(sourceId,targetId,mv){
   const end={x:targetCenter.x-ux*targetInset,y:targetCenter.y-uy*targetInset};
   const dx=end.x-start.x,dy=end.y-start.y,distance=Math.max(12,Math.hypot(dx,dy));
   const types=normalizeMoveTypes(motion.types),primary=types[0]||'normal',secondary=types[1]||primary;
-  const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form),collision=BATTLE_COLLISION_FORMS.includes(motion.form),anatomy=BATTLE_ANATOMY_FORMS.includes(motion.form);
-  const targetLocal=melee||collision||anatomy,anatomyFamily=anatomy?battleAnatomyFamily(motion.form):'';
-  effect.className=`${melee?'battle-melee-motion':collision?'battle-impact-motion':anatomy?'battle-anatomy-motion':'battle-skill-motion'} is-${motion.form}${anatomyFamily?` is-${anatomyFamily}`:''} is-${battleImpactType(primary)}`;
+  const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form),collision=BATTLE_COLLISION_FORMS.includes(motion.form),anatomy=BATTLE_ANATOMY_FORMS.includes(motion.form),arcane=BATTLE_ARCANE_FORMS.includes(motion.form);
+  const targetLocal=melee||collision||anatomy||arcane,anatomyFamily=anatomy?battleAnatomyFamily(motion.form):'';
+  effect.className=`${melee?'battle-melee-motion':collision?'battle-impact-motion':anatomy?'battle-anatomy-motion':arcane?'battle-arcane-motion':'battle-skill-motion'} is-${motion.form}${anatomyFamily?` is-${anatomyFamily}`:''} is-${battleImpactType(primary)}`;
   effect.setAttribute('aria-hidden','true');
   if(targetLocal){
     const size=Math.max(58,Math.min(104,Math.min(targetRect.width,targetRect.height)*.72));
