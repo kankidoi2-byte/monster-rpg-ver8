@@ -2,7 +2,7 @@
 const SAVE_KEY = 'mb_v95c';
 const SAVE_BACKUP_KEY = `${SAVE_KEY}_lastKnownGood`;
 const SAVE_CORRUPT_KEY = `${SAVE_KEY}_corrupt`;
-const SAVE_SCHEMA_VERSION = 1;
+const SAVE_SCHEMA_VERSION = 2;
 let lastSaveError = null;
 let saveRecoveryReport = [];
 
@@ -12,7 +12,7 @@ function initSave() {
     saveMeta:{migrations:[], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{},
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
-    coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[],
+    coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
     progress:{chapterId:'prologue', storyFlags:{}, tutorial:{id:'prologue', version:1, status:'not_started', stepId:null}, missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
@@ -37,11 +37,19 @@ function migrate_v0_to_v1(payload,report){
   if(!payload.saveMeta.migrations.includes('v0_to_v1'))payload.saveMeta.migrations.push('v0_to_v1');
   report.push('旧形式をschemaVersion 1へ移行');return payload;
 }
+function migrate_v1_to_v2(payload,report){
+  payload.schemaVersion=2;
+  if(!isSaveObject(payload.saveMeta))payload.saveMeta={};
+  if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];
+  if(!Array.isArray(payload.mapDex))payload.mapDex=(typeof MAPS!=='undefined'&&Array.isArray(MAPS))?MAPS.map(map=>map.id):[];
+  if(!payload.saveMeta.migrations.includes('v1_to_v2_map_dex'))payload.saveMeta.migrations.push('v1_to_v2_map_dex');
+  report.push('既存プレイで利用可能だったマップを図鑑へ登録');return payload;
+}
 function migrateSave(payload,report=[]){
   if(!isSaveObject(payload))throw new Error('セーブデータのルートがオブジェクトではありません。');
   let version=Number.isInteger(payload.schemaVersion)?payload.schemaVersion:0;
   if(version>SAVE_SCHEMA_VERSION)throw new Error(`未対応の新しいセーブ形式です（v${version}）。`);
-  while(version<SAVE_SCHEMA_VERSION){if(version===0)payload=migrate_v0_to_v1(payload,report);else throw new Error(`v${version}からの移行処理がありません。`);version=payload.schemaVersion;}
+  while(version<SAVE_SCHEMA_VERSION){if(version===0)payload=migrate_v0_to_v1(payload,report);else if(version===1)payload=migrate_v1_to_v2(payload,report);else throw new Error(`v${version}からの移行処理がありません。`);version=payload.schemaVersion;}
   return payload;
 }
 function nonNegativeInteger(value,fallback=0){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.floor(n):fallback;}
@@ -77,6 +85,7 @@ function repairSave(payload,report=[]){
   if(migratedSkillIds&&!payload.saveMeta.migrations.includes('fixed_skill_ids_v1')){payload.saveMeta.migrations.push('fixed_skill_ids_v1');report.push('旧技IDを固定skillIdへ移行');}
   payload.itemDex=Array.isArray(payload.itemDex)?[...new Set(payload.itemDex.filter(x=>typeof x==='string'))]:[];payload.goldenLandMapReady=payload.goldenLandMapReady===true&&payload.items.golden_land_map>0;
   const knownMapIds=new Set((typeof MAPS!=='undefined'&&Array.isArray(MAPS)?MAPS:[]).map(map=>map.id));const validDistances=new Set(['short','medium','long']);
+  payload.mapDex=Array.isArray(payload.mapDex)?[...new Set(payload.mapDex.filter(id=>typeof id==='string'&&(!knownMapIds.size||knownMapIds.has(id))))]:[];
   payload.expeditions=isSaveObject(payload.expeditions)?payload.expeditions:defaults.expeditions;payload.expeditions.completedCount=nonNegativeInteger(payload.expeditions.completedCount);
   const rawExpeditions=Array.isArray(payload.expeditions.active)?payload.expeditions.active:[];
   payload.expeditions.active=rawExpeditions.filter(entry=>{const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];const valid=isSaveObject(entry)&&typeof entry.id==='string'&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;if(!valid){payload.quarantine.invalidExpeditions.push(entry);report.push('参照切れの遠征データを隔離');return false;}entry.memberUids=members;entry.requiredWins={short:1,medium:3,long:5}[entry.distanceId];entry.progress=Math.min(entry.requiredWins,nonNegativeInteger(entry.progress));entry.status=entry.status==='complete'?'complete':'active';return true;});
@@ -104,6 +113,14 @@ function syncItemDexFromInventory(){
   });
 }
 syncItemDexFromInventory();
+
+function registerMapDex(mapId){
+  if(!(typeof MAPS!=='undefined' && MAPS.some(map=>map.id===mapId))) return false;
+  if(!Array.isArray(save.mapDex)) save.mapDex = [];
+  if(save.mapDex.includes(mapId)) return false;
+  save.mapDex.push(mapId);
+  return true;
+}
 
 function saveGame() {
   ensureContractScrollItem();

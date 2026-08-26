@@ -94,9 +94,7 @@
     <button onclick="showShop()"><span>🛒</span><div><strong>ショップ</strong><small>アイテムを購入</small></div><b>›</b></button>
     <button onclick="showItemGacha()"><span>🎰</span><div><strong>アイテムガチャ</strong><small>コインで報酬を抽選</small></div><b>›</b></button>
     <button onclick="showSkillGacha()"><span>🃏</span><div><strong>技ガチャ</strong><small>コインで技カードを獲得</small></div><b>›</b></button>
-    <button onclick="show('dex')"><span>📖</span><div><strong>モンスター図鑑</strong><small>出会ったモンスターの記録</small></div><b>›</b></button>
-    <button onclick="show('characterDex')"><span>👤</span><div><strong>キャラクター図鑑</strong><small>仲間と成長形態の記録</small></div><b>›</b></button>
-    <button onclick="show('itemDex')"><span>🎒</span><div><strong>アイテム図鑑</strong><small>入手したアイテムの記録</small></div><b>›</b></button>
+    <button onclick="show('dexHub')"><span>📚</span><div><strong>図鑑</strong><small>モンスター・人物・マップ・アイテムの記録</small></div><b>›</b></button>
     <button onclick="showTypeChart()"><span>🌐</span><div><strong>属性相性</strong><small>有利・不利を確認</small></div><b>›</b></button>
   </div>
   <button class="ui-danger-button" onclick="resetSave()">セーブデータをリセット</button>
@@ -330,20 +328,31 @@
 </section>
 
 <!-- 図鑑 -->
+<section id="dexHub" class="screen ui-hub-screen">
+  <div class="ui-page-heading"><span class="ui-eyebrow">COLLECTION</span><h1>図鑑</h1><p>冒険で集めた記録を選んで閲覧できます。</p></div>
+  <div id="dexHubGrid" class="ui-hub-grid dex-hub-grid"></div>
+</section>
+
 <section id="dex" class="screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">MONSTER DEX</span><h1>モンスター図鑑</h1><p>カードをタップすると出現マップと入手方法を確認できます。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">MONSTER DEX</span><h1>モンスター図鑑</h1><p>カードをタップすると出現マップと入手方法を確認できます。</p></div>
   <div id="dexDetail"></div>
   <div id="dexList" class="grid"></div>
 </section>
 
 <section id="characterDex" class="screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">CHARACTER DEX</span><h1>キャラクター図鑑</h1><p>仲間となる人物と、その成長形態を確認できます。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">CHARACTER DEX</span><h1>キャラクター図鑑</h1><p>仲間となる人物と、その成長形態を確認できます。</p></div>
   <div id="characterDexDetail"></div>
   <div id="characterDexList" class="grid"></div>
 </section>
 
+<section id="mapDex" class="screen">
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">MAP DEX</span><h1>マップ図鑑</h1><p>発見した土地の環境、出現モンスター、特殊な出来事を確認できます。</p></div>
+  <div id="mapDexDetail"></div>
+  <div id="mapDexList" class="map-dex-grid"></div>
+</section>
+
 <section id="itemDex" class="screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM DEX</span><h1>アイテム図鑑</h1><p>入手したアイテムは、使い切った後も記録されます。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">ITEM DEX</span><h1>アイテム図鑑</h1><p>入手したアイテムは、使い切った後も記録されます。</p></div>
   <div id="itemDexDetail"></div>
   <div id="itemDexList" class="item-dex-grid"></div>
 </section>

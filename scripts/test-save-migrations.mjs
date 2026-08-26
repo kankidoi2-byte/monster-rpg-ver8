@@ -25,7 +25,7 @@ function prepare(value){
 
 const fixtures=[
   {},
-  {caught:['freigal'],levels:{freigal:4},exp:{freigal:12},items:{potion:1},coins:'25'},
+  {caught:['freigal'],levels:{freigal:4},exp:{freigal:12},items:{potion:1},coins:'25',mapDex:['grassland','missing','grassland']},
   {instances:[{uid:'same',id:'freigal',level:2,exp:3},{uid:'same',id:'aquaron',level:-2,exp:-9},{uid:'lost',id:'future_monster'}],party:['same','lost'],items:{}},
   {instances:[{uid:'u1',id:'freigal',level:1,exp:0}],expeditions:{completedCount:-3,active:[{id:'bad',mapId:'missing',distanceId:'short',memberUids:['u1']}]}},
   {schemaVersion:0,instances:[{id:'elna_beginner'}],items:{golden_land_map:1},goldenLandMapReady:true,history:{wins:2,logs:['ok']}}
@@ -33,8 +33,9 @@ const fixtures=[
 
 fixtures.forEach((fixture,index)=>{
   const migrated=prepare(fixture);
-  assert.equal(migrated.schemaVersion,1,`fixture ${index+1} must migrate to v1`);
+  assert.equal(migrated.schemaVersion,2,`fixture ${index+1} must migrate to v2`);
   assert.ok(migrated.saveMeta.migrations.includes('v0_to_v1'));
+  assert.ok(migrated.saveMeta.migrations.includes('v1_to_v2_map_dex'));
   assert.ok(Array.isArray(migrated.instances));
   assert.ok(migrated.progress?.tutorial&&migrated.progress?.missions);
 });
@@ -46,6 +47,8 @@ assert.equal(repaired.instances[1].level,1,'invalid level must be repaired');
 assert.equal(repaired.instances[1].exp,0,'invalid EXP must be repaired');
 assert.equal(repaired.quarantine.unknownInstances.length,1);
 assert.deepEqual([...repaired.party],['same'],'party must only keep valid unique UIDs');
+assert.deepEqual([...prepare(fixtures[1]).mapDex],['grassland'],'map dex must keep valid unique map IDs');
+assert.deepEqual([...prepare({schemaVersion:1,saveMeta:{migrations:['v0_to_v1']}}).mapDex],['grassland'],'v1 saves must inherit maps that were historically available');
 
 const expeditionRepair=prepare(fixtures[3]);
 assert.equal(expeditionRepair.expeditions.completedCount,0);

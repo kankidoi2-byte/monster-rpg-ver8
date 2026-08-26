@@ -29,7 +29,7 @@ const screenIds = [
   'home', 'growthHub', 'moreMenu', 'notices', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
   'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
-  'skillEdit', 'typeChart', 'dex', 'characterDex', 'itemDex'
+  'skillEdit', 'typeChart', 'dexHub', 'dex', 'characterDex', 'mapDex', 'itemDex'
 ];
 screenIds.forEach(id => {
   const pattern = new RegExp(`<section\\s+id=["']${id}["'][^>]*class=["'][^"']*screen`);
@@ -79,7 +79,11 @@ expect(dex.includes('INITIAL_PARTY_IDS.includes(m.id)'), 'monster dex must deriv
 expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection)"), 'monster dex must show acquisition sources instead of skills');
 expect(dex.includes('detailSection=renderUnitSkillList'), 'character dex must retain its skill list');
 expect(index.includes('カードをタップすると出現マップと入手方法を確認できます。'), 'monster dex guidance still describes the removed skill list');
-expect(index.includes('<strong>キャラクター図鑑</strong>'), 'character dex menu entry is missing');
+expect(index.includes('onclick="show(\'dexHub\')"') && index.includes('<strong>図鑑</strong>'), 'unified dex hub menu entry is missing');
+expect(index.includes('id="dexHubGrid"') && dex.includes('function renderDexHub'), 'dex hub renderer is missing');
+expect(index.includes('id="mapDexList"') && dex.includes('function renderMapDex'), 'map dex screen or renderer is missing');
+expect(dex.includes('function openMapFromMonsterDex') && dex.includes('function openUnitFromMapDex'), 'monster/map dex cross-links are missing');
+expect(save.includes('mapDex:[]') && save.includes('function registerMapDex'), 'map discovery save state is missing');
 expect(dex.includes('function renderCharacterDex'), 'character dex renderer is missing');
 expect(dex.includes('M.filter(m=>!isCharacterUnit(m))'), 'characters are not excluded from the monster dex');
 expect(read('js/items.js').includes('!isContractableUnit(enemy)'), 'single-battle character contract guard is missing');
