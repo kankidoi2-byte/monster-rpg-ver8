@@ -14,6 +14,7 @@ const contract=vm.runInContext(`({
   convertKokoroLinkEffects,
   resolveKokoroLink
 })`,context);
+const plain=value=>JSON.parse(JSON.stringify(value));
 
 assert.deepEqual({...contract.config.rarityMultipliers},{1:3.5,2:2.6,3:1.9,4:1.3,5:1});
 assert.equal(contract.config.abilityBands[1],'power');
@@ -24,7 +25,7 @@ assert.equal(contract.config.abilityBands[5],null);
 
 const profiles=contract.monsters.map(monster => contract.buildKokoroLinkProfile(monster,{uid:`test-${monster.id}`,id:monster.id,level:10}));
 assert.equal(profiles.length,50);
-assert(profiles.every(profile => profile && Object.values(profile.indices).every(Number.isFinite)));
+assert(profiles.every(profile => profile && Number.isFinite(profile.linkRate)));
 assert(profiles.filter(profile => profile.rarity <= 3).every(profile => profile.abilityEligible));
 assert(profiles.filter(profile => profile.rarity >= 4).every(profile => !profile.abilityEligible));
 assert(profiles.filter(profile => profile.rarity === 5).every(profile => profile.multiplier === 1 && profile.abilityBand === null));
@@ -33,24 +34,21 @@ assert.equal(contract.buildKokoroLinkProfile(contract.characters[0],{level:1}),n
 const sameBase=stars => ({id:`same-${stars}`,name:`same-${stars}`,entityKind:'monster',rarity:'★'.repeat(stars),types:['normal'],hp:100,spd:50,moves:[['test',40,'normal']]});
 const oneStar=contract.buildKokoroLinkProfile(sameBase(1),{uid:'one',level:1});
 const fiveStar=contract.buildKokoroLinkProfile(sameBase(5),{uid:'five',level:1});
-assert.equal(oneStar.indices.hp,fiveStar.indices.hp*3.5);
-assert.equal(oneStar.indices.speed,fiveStar.indices.speed*3.5);
-assert.equal(oneStar.indices.offense,fiveStar.indices.offense*3.5);
+assert.equal(oneStar.linkRate,0.35);
+assert.equal(fiveStar.linkRate,0.10);
 assert.equal(fiveStar.abilityEligible,false,'five-star profiles must never receive a link ability');
 
 const modified=contract.buildKokoroLinkProfile(sameBase(1),{
   uid:'modified',level:5,
   alchemy:{statModifiers:{hp:1.2,speed:1.1,attack:1.15}}
 });
-assert(modified.sourceStats.hp > oneStar.sourceStats.hp);
-assert(modified.sourceStats.speed > oneStar.sourceStats.speed);
-assert(modified.sourceStats.offense > oneStar.sourceStats.offense);
+assert.equal(modified.linkRate,oneStar.linkRate,'source level and stats must not change rarity-only link strength');
 
-const extremeProfile={indices:{hp:999999,speed:999999,offense:999999}};
+const extremeProfile={linkRate:999};
 const capped=contract.convertKokoroLinkEffects(extremeProfile,{maxHp:1000,speed:100});
-assert.equal(capped.barrier,400,'barrier must cap at 40% of target maximum HP');
-assert.equal(capped.attackBonus,0.30,'attack bonus must cap at 30%');
-assert.equal(capped.speedBonus,30,'speed bonus must cap at 30% of target speed');
+assert.equal(capped.barrier,350,'barrier must cap at 35% of target maximum HP');
+assert.equal(capped.attackBonus,0.35,'attack bonus must cap at 35%');
+assert.equal(capped.speedBonus,35,'speed bonus must cap at 35% of target speed');
 assert.deepEqual({...capped.capsApplied},{barrier:true,attack:true,speed:true});
 
 const target={maxHp:360,speed:90};
@@ -58,17 +56,30 @@ const targetBefore=JSON.stringify(target);
 const resolved=contract.resolveKokoroLink(sameBase(1),{uid:'resolved',level:1},target);
 assert(resolved?.profile && resolved?.effects);
 assert.equal(JSON.stringify(target),targetBefore,'Kokoro Link calculation must not mutate target stats');
-assert(resolved.effects.attackMultiplier >= 1.08 && resolved.effects.attackMultiplier <= 1.30);
-assert(resolved.effects.barrier <= Math.round(target.maxHp*0.40));
-assert(resolved.effects.speedBonus <= Math.round(target.speed*0.30));
+assert.deepEqual(plain(resolved.effects),{
+  effectRate:0.35,
+  barrier:126,
+  barrierCap:126,
+  attackBonus:0.35,
+  attackMultiplier:1.35,
+  speedBonus:32,
+  speedCap:32,
+  capsApplied:{barrier:false,attack:false,speed:false}
+});
+
+const alternateOneStar=contract.resolveKokoroLink(
+  {id:'alternate',name:'alternate',entityKind:'monster',rarity:'★',types:['fire'],hp:9999,spd:1,moves:[['huge',9999,'fire']]},
+  {uid:'alternate',level:99,alchemy:{statModifiers:{hp:5,speed:5,attack:5}}},
+  target
+);
+assert.deepEqual(plain(alternateOneStar.effects),plain(resolved.effects),'same-rarity sources must produce the same effect on the same active monster');
 
 const malformed=contract.buildKokoroLinkProfile(
   {id:'malformed',name:'malformed',entityKind:'monster',rarity:'★',types:[],hp:Infinity,spd:'bad',moves:[['bad',Infinity,'normal']]},
   {uid:'malformed',level:Infinity,alchemy:{statModifiers:{hp:Infinity,speed:-1,attack:'bad'}}}
 );
-assert(Object.values(malformed.sourceStats).every(Number.isFinite),'malformed source values must be repaired to finite values');
-assert(Object.values(malformed.indices).every(Number.isFinite),'malformed indices must remain finite');
-const malformedEffects=contract.convertKokoroLinkEffects({indices:{hp:Infinity,speed:NaN,offense:'bad'}},{maxHp:Infinity,speed:NaN});
+assert(Number.isFinite(malformed.linkRate),'malformed source values must still produce a finite rarity link rate');
+const malformedEffects=contract.convertKokoroLinkEffects({linkRate:Infinity},{maxHp:Infinity,speed:NaN});
 assert(Object.values(malformedEffects).filter(value => typeof value === 'number').every(Number.isFinite),'malformed effect inputs must remain finite');
 
-console.log('Kokoro Link engine validation passed (50 monsters, rarity multipliers, monster eligibility, alchemy modifiers, five-star restriction, pure calculation, and bounded effects).');
+console.log('Kokoro Link engine validation passed (50 monsters, active-monster scaling, rarity-only strength, monster eligibility, five-star restriction, pure calculation, and bounded effects).');

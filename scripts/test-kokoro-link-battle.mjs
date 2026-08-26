@@ -58,6 +58,7 @@ const viewSource=fs.readFileSync(new URL('../js/battle-view.js',import.meta.url)
 const rulesSource=fs.readFileSync(new URL('../js/battle-rules.js',import.meta.url),'utf8');
 const multiSource=fs.readFileSync(new URL('../js/multi-battle.js',import.meta.url),'utf8');
 assert(indexSource.includes('id="kokoroLinkButton"')&&indexSource.includes('id="kokoroLinkPanel"'),'battle UI must expose the link command and source panel');
+assert(viewSource.includes('レアリティ補正 ×')&&viewSource.includes('（適用済み）')&&viewSource.includes('最終効果：'),'battle UI must distinguish the applied rarity modifier from final effects');
 assert(coreSource.includes('kokoroLinkAttackMultiplierFor')&&coreSource.includes('kokoroLinkSpeedBonusFor'),'combat stats must include link effects');
 assert(viewSource.includes('activateKokoroLinkFromBattle')&&viewSource.includes('行動を消費せず発動'),'battle UI must activate links as a free subcommand');
 assert(rulesSource.includes('resolvePlayerIncomingDamage'),'single battle damage must pass through the link barrier');
