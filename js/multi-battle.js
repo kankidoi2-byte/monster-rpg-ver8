@@ -113,7 +113,8 @@ function setupMultiBattle() {
 
 function aliveMultiEnemies() { return multiBattle?.enemies?.filter(entry => entry.alive && entry.hp > 0) || []; }
 function multiEnemy(id) { return multiBattle?.enemies?.find(entry => entry.id === id) || null; }
-function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield); }
+function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield)+enemyKokoroLinkStatusHtml(entry.id); }
+function multiEnemyKokoroLinkSpeed(entry){return enemyKokoroLinkSpeed(entry.mon,entry.id);}
 function multiStatChangeHtml(entry) {
   const changes=[];
   if(entry.attack>1)changes.push('攻撃↑');
@@ -133,22 +134,24 @@ function updateMultiBattleView() {
   document.getElementById('pHpText').textContent=`${pHp} / ${pm}`; document.getElementById('pExpBar').style.width=xp/nd*100+'%'; document.getElementById('pExpText').textContent=`EXP ${xp} / ${nd}`;
   document.getElementById('multiEnemyGrid').innerHTML=multiBattle.enemies.map((entry,index)=>{
     const pct=Math.max(0,entry.hp)/entry.maxHp*100;
-    const targetable=multiBattle.pendingMoveIndex!==null&&entry.alive;
+    const linkTargeting=Boolean(pendingKokoroLinkStatusSourceUid);
+    const targetable=(multiBattle.pendingMoveIndex!==null||linkTargeting)&&entry.alive;
     const enemyLabel = index === 0 ? '敵A' : '敵B';
-    const cardLabel=targetable?`${entry.mon.name}を攻撃対象にする`:`${entry.mon.name}の詳細を開く`;
+    const cardLabel=linkTargeting&&entry.alive?`${entry.mon.name}へリンク能力を発動する`:targetable?`${entry.mon.name}を攻撃対象にする`:`${entry.mon.name}の詳細を開く`;
     return `<article class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" role="button" tabindex="0" aria-label="${cardLabel}" aria-expanded="${entry.detailsOpen?'true':'false'}" onclick="handleMultiEnemyCard('${entry.id}')" onkeydown="handleMultiEnemyCardKey(event,'${entry.id}')">`+
       `<div class="multi-enemy-label">${enemyLabel}</div>`+
       `<div class="multi-enemy-visual" id="${entry.id}Vis">${vis(entry.mon)}</div>`+
-      `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?'<span class="multi-target-cue">照準中</span>':''}</div>`+
+      `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
       `<div class="multi-enemy-state"><span>${multiStatusHtml(entry) || '状態正常'}</span><b>${multiStatChangeHtml(entry)}</b></div>`+
       `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+
-      `<p class="multi-warning">${targetable?'タップして攻撃':entry.alive?'タップで詳細':'💀 撃破済み'}</p>`+
-      `${entry.detailsOpen?`<div class="multi-enemy-details"><span>Lv.${entry.level}</span><span>${typesHtml(entry.mon.types)}</span><span>素早さ ${monSpd(entry.mon)}</span><small>もう一方の敵とプレイヤーの両方を攻撃対象にする。</small></div>`:''}</div></article>`;
+      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':'💀 撃破済み'}</p>`+
+      `${entry.detailsOpen?`<div class="multi-enemy-details"><span>Lv.${entry.level}</span><span>${typesHtml(entry.mon.types)}</span><span>素早さ ${multiEnemyKokoroLinkSpeed(entry)}</span><small>もう一方の敵とプレイヤーの両方を攻撃対象にする。</small></div>`:''}</div></article>`;
   }).join('');
 }
 function handleMultiTargetKey(event,targetId){if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();startMultiBattleTurn(targetId);}
 function handleMultiEnemyCard(targetId){
   const entry=multiEnemy(targetId);if(!entry||busy)return;
+  if(pendingKokoroLinkStatusSourceUid&&entry.alive){selectKokoroLinkStatusTarget(targetId);return;}
   const action=multiEnemyCardAction(entry,multiBattle?.pendingMoveIndex);
   if(action==='target'){startMultiBattleTurn(targetId);return;}
   if(action!=='details')return;
@@ -158,6 +161,7 @@ function handleMultiEnemyCardKey(event,targetId){if(event.key!=='Enter'&&event.k
 
 function chooseMultiBattleTarget(moveIndex) {
   if (busy || !multiBattle?.active || multiBattle.finished) return;
+  if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   const living=aliveMultiEnemies();
   if (!living.length) return;
   multiBattle.enemies.forEach(entry=>{entry.detailsOpen=false;});
@@ -174,7 +178,7 @@ function startMultiBattleTurn(targetId) {
   const moveIndex=multiBattle.pendingMoveIndex; multiBattle.pendingMoveIndex=null;
   document.getElementById('multiTargetSelect').classList.add('hidden'); busy=true; startBattleTurn();
   const actions=[{kind:'player',speed:monSpd(player,activeInstance),targetId,move:getEquippedMovesForInstance(activeInstance)[moveIndex]||['通常攻撃',24,'normal']}];
-  aliveMultiEnemies().forEach(actor=>actions.push({kind:'enemy',actorId:actor.id,speed:monSpd(actor.mon),move:actor.mon.moves[Math.floor(Math.random()*actor.mon.moves.length)]}));
+  aliveMultiEnemies().forEach(actor=>{const delayed=consumeKokoroLinkEnemyActionDelay(actor.id);actions.push({kind:'enemy',actorId:actor.id,speed:delayed?-Infinity:multiEnemyKokoroLinkSpeed(actor),move:actor.mon.moves[Math.floor(Math.random()*actor.mon.moves.length)]});});
   actions.sort((a,b)=>b.speed-a.speed || Math.random()-.5);
   runMultiActions(actions,0);
 }
@@ -219,7 +223,7 @@ function performMultiAttack(actor,target,move) {
     actor.confusionTurns--;
     const roll=Math.random();
     if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${a.name}はこんらんして動けない！`);return;}
-    if(roll>=.75){const dmg=Math.max(1,Math.floor(12*actor.attack));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
+    if(roll>=.75){const dmg=Math.max(1,Math.floor(12*actor.attack*enemyKokoroLinkAttackMultiplier(actor.id)));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
   }
   if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return; }
   if(effect==='heal'){
@@ -237,7 +241,8 @@ function performMultiAttack(actor,target,move) {
     if(Math.random()<chance.chance){if(defenderIsPlayer)pSleepTurns=2;else targetEntry.sleepTurns=2;appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
     updateMultiBattleView();return;
   }
-  const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack)*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
+  if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return;}
+  const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
   const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
   const effectivePower=power*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
@@ -273,7 +278,7 @@ function performMultiAttack(actor,target,move) {
   if((defenderIsPlayer?pHp:targetEntry.hp)>0){
     if(effect==='poison'){
       const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.5):{chance:effectChance??.5,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(Math.random()<chance.chance){
-      if(defenderIsPlayer){pStatus='poison';pPoisonTurns=BATTLE_STATUS_EFFECTS.poison.duration;}else{targetEntry.status='poison';targetEntry.poisonTurns=BATTLE_STATUS_EFFECTS.poison.duration;targetEntry.poisonSourceIsPlayer=actorIsPlayer;}
+      if(defenderIsPlayer){pStatus='poison';pPoisonTurns=BATTLE_STATUS_EFFECTS.poison.duration;}else{removeKokoroLinkEnemyEffectCategory(targetEntry.id,'poison');targetEntry.status='poison';targetEntry.poisonTurns=BATTLE_STATUS_EFFECTS.poison.duration;targetEntry.poisonSourceIsPlayer=actorIsPlayer;}
       msg+='<br>☠️ 毒状態になった！';
       }
     }
@@ -292,6 +297,7 @@ function finishMultiBattleTurn(){
   const poison=BATTLE_STATUS_EFFECTS.poison;
   if(pStatus==='poison'&&pPoisonTurns>0&&pHp>0){const dmg=Math.max(1,Math.floor(playerMaxHp()*poison.maxHpDamageRate));pHp=Math.max(0,pHp-dmg);pPoisonTurns--;appendMultiLog(`☠️ ${player.name}は毒で${dmg}ダメージ！`);if(!pPoisonTurns)pStatus=null;}
   aliveMultiEnemies().forEach(entry=>{if(entry.status==='poison'&&entry.poisonTurns>0){const dmg=Math.max(1,Math.floor(entry.maxHp*poison.maxHpDamageRate));entry.hp=Math.max(0,entry.hp-dmg);entry.poisonTurns--;appendMultiLog(`☠️ ${entry.mon.name}は毒で${dmg}ダメージ！`);if(!entry.poisonTurns)entry.status=null;if(entry.hp<=0){entry.alive=false;entry.defeatedByPlayer=entry.poisonSourceIsPlayer;appendMultiLog(`💀 ${entry.mon.name}は毒で倒れた！`);}}});
+  aliveMultiEnemies().forEach(entry=>{const result=tickKokoroLinkEnemyEffects(entry.id,entry.hp,entry.maxHp);entry.hp=result.hp;if(result.damage)appendMultiLog(`🔥☠️ ${entry.mon.name}はリンク状態異常で${result.damage}ダメージ！`);if(result.expiredLabels.length&&entry.hp>0)appendMultiLog(`✨ ${[...new Set(result.expiredLabels)].join('・')}の効果が切れた！`);if(entry.hp<=0){entry.alive=false;entry.defeatedByPlayer=true;appendMultiLog(`💀 ${entry.mon.name}はリンク状態異常で倒れた！`);}});
   if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)appendMultiLog(regenMsg);}
   updateMultiBattleView(); if(pHp<=0&&!switchPartyMember())return;if(!aliveMultiEnemies().length){winMultiBattle();return;} busy=false;
 }

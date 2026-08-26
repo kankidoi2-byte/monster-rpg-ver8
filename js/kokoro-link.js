@@ -97,10 +97,10 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
   })
 });
 
-let kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map()};
+let kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map(),enemyEffectsByTargetKey:new Map()};
 
 function resetKokoroLinkBattleState(){
-  kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map()};
+  kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map(),enemyEffectsByTargetKey:new Map()};
   return kokoroLinkBattleSnapshot();
 }
 
@@ -111,8 +111,10 @@ function kokoroLinkBattleSnapshot(){
       ...link,
       profile:{...link.profile},
       effects:{...link.effects,capsApplied:{...link.effects.capsApplied}},
-      powerAbility:link.powerAbility ? {...link.powerAbility} : null
-    }))
+      powerAbility:link.powerAbility ? {...link.powerAbility} : null,
+      statusAbility:link.statusAbility ? {...link.statusAbility} : null
+    })),
+    enemyEffects:[...kokoroLinkBattleState.enemyEffectsByTargetKey.entries()].map(([targetKey,effects])=>({targetKey,effects:effects.map(effect=>({...effect}))}))
   };
 }
 
@@ -213,6 +215,78 @@ function buildKokoroLinkPowerAbility(plan,targetStats={}){
   return definition ? {id:plan.abilityId,...definition} : null;
 }
 
+function buildKokoroLinkStatusAbility(plan){
+  if(!plan || plan.band !== 'status') return null;
+  const definitions={
+    origin_weaken:{label:'原初の弱化',summary:'攻撃・素早さ -10%（2ターン）',components:[{category:'attack',rate:.10,durationTurns:2},{category:'speed',rate:.10,durationTurns:2}]},
+    burn:{label:'火傷',summary:'最大HP5%ダメージ（2ターン）',components:[{category:'burn',maxHpRatePerTurn:.05,durationTurns:2}]},
+    slow:{label:'鈍足',summary:'素早さ -20%（2ターン）',components:[{category:'speed',rate:.20,durationTurns:2}]},
+    poison:{label:'毒',summary:'最大HP5%ダメージ（2ターン）',components:[{category:'poison',maxHpRatePerTurn:.05,durationTurns:2}]},
+    paralysis:{label:'麻痺',summary:'麻痺（1ターン）',controlStatus:'paralysis',durationTurns:1},
+    action_delay:{label:'行動遅延',summary:'次の行動順を最後へ送る',components:[{category:'action-delay',charges:1}]},
+    dazzle:{label:'目くらまし',summary:'命中 -20%（2ターン）',components:[{category:'accuracy',rate:.20,durationTurns:2}]},
+    confusion:{label:'こんらん',summary:'こんらん（1ターン）',controlStatus:'confusion',durationTurns:1},
+    sleep:{label:'ねむり',summary:'ねむり（1ターン）',controlStatus:'sleep',durationTurns:1},
+    attack_down:{label:'竜圧',summary:'攻撃 -20%（2ターン）',components:[{category:'attack',rate:.20,durationTurns:2}]}
+  };
+  const definition=definitions[plan.abilityId];
+  return definition?{id:plan.abilityId,...definition,resolved:false,succeeded:false,targetKey:null}:null;
+}
+
+function attemptKokoroLinkStatusAbility(link,targetContext={},randomFn=Math.random){
+  const ability=link?.statusAbility;
+  if(!ability || ability.resolved) return {resolved:false,reason:'unavailable'};
+  const boss=typeof targetContext?.bossClass==='string'&&targetContext.bossClass.trim().length>0;
+  const immune=targetContext?.immune===true;
+  const successRate=immune?0:KOKORO_LINK_ABILITY_RULES.enemyEffectBaseChance*(boss?KOKORO_LINK_ABILITY_RULES.bossResistanceMultiplier:1);
+  const succeeded=!immune&&randomFn()<successRate;
+  ability.resolved=true;
+  ability.succeeded=succeeded;
+  ability.targetKey=targetContext?.targetKey||null;
+  ability.successRate=successRate;
+  return {resolved:true,succeeded,immune,boss,successRate,abilityId:ability.id,label:ability.label,summary:ability.summary,components:(ability.components||[]).map(component=>({...component,label:ability.label})),controlStatus:ability.controlStatus||null,durationTurns:ability.durationTurns||0,targetKey:ability.targetKey};
+}
+
+function applyKokoroLinkEnemyEffectComponents(targetKey,components=[]){
+  if(typeof targetKey!=='string'||!targetKey)return [];
+  const current=kokoroLinkBattleState.enemyEffectsByTargetKey.get(targetKey)||[];
+  components.forEach(component=>{
+    const next={...component,remainingTurns:Math.max(0,Number(component.durationTurns)||0),charges:Math.max(0,Number(component.charges)||0)};
+    const index=current.findIndex(effect=>effect.category===next.category);
+    if(index<0){current.push(next);return;}
+    const existing=current[index];
+    const stronger=(Number(next.rate)||Number(next.maxHpRatePerTurn)||0)>(Number(existing.rate)||Number(existing.maxHpRatePerTurn)||0);
+    current[index]={...(stronger?next:existing),remainingTurns:Math.max(existing.remainingTurns||0,next.remainingTurns||0),charges:Math.max(existing.charges||0,next.charges||0)};
+  });
+  kokoroLinkBattleState.enemyEffectsByTargetKey.set(targetKey,current);
+  return current;
+}
+
+function kokoroLinkEnemyEffectsFor(targetKey){return kokoroLinkBattleState.enemyEffectsByTargetKey.get(targetKey)||[];}
+function removeKokoroLinkEnemyEffectCategory(targetKey,category){
+  const active=kokoroLinkEnemyEffectsFor(targetKey).filter(effect=>effect.category!==category);if(active.length)kokoroLinkBattleState.enemyEffectsByTargetKey.set(targetKey,active);else kokoroLinkBattleState.enemyEffectsByTargetKey.delete(targetKey);
+}
+function kokoroLinkEnemyEffectRate(targetKey,category){return kokoroLinkEnemyEffectsFor(targetKey).filter(effect=>effect.category===category&&(effect.remainingTurns>0||effect.charges>0)).reduce((max,effect)=>Math.max(max,Number(effect.rate)||0),0);}
+function kokoroLinkEnemyAttackMultiplierFor(targetKey){return Math.max(0,1-kokoroLinkEnemyEffectRate(targetKey,'attack'));}
+function kokoroLinkEnemySpeedMultiplierFor(targetKey){return Math.max(0,1-kokoroLinkEnemyEffectRate(targetKey,'speed'));}
+function kokoroLinkEnemyAccuracyFor(targetKey){return Math.max(0,1-kokoroLinkEnemyEffectRate(targetKey,'accuracy'));}
+function consumeKokoroLinkEnemyActionDelay(targetKey){
+  const effects=kokoroLinkEnemyEffectsFor(targetKey),effect=effects.find(item=>item.category==='action-delay'&&item.charges>0);
+  if(!effect)return false;effect.charges--;if(effect.charges<=0)kokoroLinkBattleState.enemyEffectsByTargetKey.set(targetKey,effects.filter(item=>item!==effect));return true;
+}
+function tickKokoroLinkEnemyEffects(targetKey,currentHp,maxHp){
+  const effects=kokoroLinkEnemyEffectsFor(targetKey),safeHp=Math.max(0,Math.floor(Number(currentHp)||0)),safeMax=Math.max(1,Math.floor(Number(maxHp)||1));
+  let damage=0;
+  effects.forEach(effect=>{if(['burn','poison'].includes(effect.category)&&effect.remainingTurns>0&&safeHp-damage>0)damage+=Math.max(1,Math.floor(safeMax*(Number(effect.maxHpRatePerTurn)||0)));if(effect.remainingTurns>0)effect.remainingTurns--;});
+  const active=effects.filter(effect=>effect.remainingTurns>0||effect.charges>0);
+  if(active.length)kokoroLinkBattleState.enemyEffectsByTargetKey.set(targetKey,active);else kokoroLinkBattleState.enemyEffectsByTargetKey.delete(targetKey);
+  return {damage:Math.min(safeHp,damage),hp:Math.max(0,safeHp-damage),expiredLabels:[...new Set(effects.filter(effect=>effect.remainingTurns===0&&!effect.charges).map(effect=>effect.label))]};
+}
+function kokoroLinkEnemyStatusText(targetKey){
+  const groups=new Map();kokoroLinkEnemyEffectsFor(targetKey).forEach(effect=>{const suffix=effect.remainingTurns>0?`${effect.remainingTurns}T`:'次行動';groups.set(effect.label,suffix);});
+  return [...groups.entries()].map(([label,suffix])=>`${label}(${suffix})`).join('・');
+}
+
 function applyKokoroLinkPowerAbility(effects,powerAbility){
   if(!effects || !powerAbility) return effects;
   const extraAttackRate=Math.max(0,Number(powerAbility.extraAttackRate)||0);
@@ -259,8 +333,9 @@ function resolveKokoroLink(monster, instance, targetStats){
   if(!profile) return null;
   const abilityPlan=buildKokoroLinkAbilityPlan(profile);
   const powerAbility=buildKokoroLinkPowerAbility(abilityPlan,targetStats);
+  const statusAbility=buildKokoroLinkStatusAbility(abilityPlan);
   const effects=applyKokoroLinkPowerAbility(convertKokoroLinkEffects(profile,targetStats),powerAbility);
-  return {profile,effects,abilityPlan,powerAbility};
+  return {profile,effects,abilityPlan,powerAbility,statusAbility};
 }
 
 function listKokoroLinkSources(partyEntries, activeIndex, options={}){
@@ -334,6 +409,7 @@ function activateKokoroLinkSource(sourceUid, partyEntries, activeIndex, targetSt
     profile:resolved.profile,
     effects:resolved.effects,
     powerAbility:resolved.powerAbility,
+    statusAbility:resolved.statusAbility,
     barrierRemaining:resolved.effects.barrier
   };
   kokoroLinkBattleState.linksByTargetUid.set(targetUid,link);

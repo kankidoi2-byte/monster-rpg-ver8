@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link-two-star-abilities',
+    date: '2026-08-26',
+    category: 'update',
+    title: '★2モンスターのリンク能力を追加しました',
+    body: '★2モンスターが主属性に応じて、弱体化・火傷・鈍足・毒・麻痺・行動遅延・目くらまし・こんらん・ねむり・攻撃低下を発動するようになりました。ボスには通常より効きにくくなります。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link-one-star-abilities',
     date: '2026-08-26',
     category: 'update',

@@ -1,4 +1,5 @@
 function setupBattle() {
+  pendingKokoroLinkStatusSourceUid=null;
   const targetSelect = document.getElementById('multiTargetSelect');
   if (targetSelect) {
     targetSelect.classList.add('hidden');
@@ -124,6 +125,12 @@ function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, s
 function kokoroLinkTargetStats(){
   return {maxHp:playerMaxHp(),speed:Math.max(1,Math.round(Number(player?.spd ?? 50)*instanceStatModifier(activeInstance,'speed')))};
 }
+let pendingKokoroLinkStatusSourceUid=null;
+function kokoroLinkStatusAbilityStateText(ability){
+  if(!ability)return '';
+  if(!ability.resolved)return '対象選択後に1回判定';
+  return ability.succeeded?'発動成功':'不発';
+}
 function kokoroLinkStatusHtml(){
   const link=typeof kokoroLinkEffectForInstance==='function' ? kokoroLinkEffectForInstance(activeInstance) : null;
   if(!link)return '';
@@ -150,7 +157,7 @@ function renderKokoroLinkPanel(){
   button.disabled=!targetEligible||!!current||available===0;
   button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}`;
   const activeHtml=current
-    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}</div>`
+    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}${current.statusAbility?`<small>★2リンク能力：${current.statusAbility.label}（${kokoroLinkStatusAbilityStateText(current.statusAbility)}）</small>`:''}</div>`
     : '';
   const message=!targetEligible
     ? '<p class="kokoro-link-empty">現在の戦闘個体はリンク対象外です。</p>'
@@ -169,25 +176,39 @@ function renderKokoroLinkPanel(){
       `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
       `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+
       `${preview.powerAbility?`<small>★1リンク能力：${preview.powerAbility.label}（${preview.powerAbility.summary}）</small>`:''}`+
+      `${preview.statusAbility?`<small>★2リンク能力：${preview.statusAbility.label}（${preview.statusAbility.summary}）</small>`:''}`+
       `<small>${source.used?'この戦闘で使用済み':'行動を消費せず発動'}</small></button>`;
   }).join('');
   panel.innerHTML=`<div class="kokoro-link-panel-head"><div><small>KOKORO LINK</small><h3>控えの力を借りる</h3></div><button onclick="toggleKokoroLinkPanel()" aria-label="閉じる">×</button></div>${activeHtml}${message}<div class="kokoro-link-source-grid">${cards}</div>`;
 }
 function toggleKokoroLinkPanel(){
   if(busy)return;
+  if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
   const panel=document.getElementById('kokoroLinkPanel');
   if(!panel)return;
   renderKokoroLinkPanel();
   panel.classList.toggle('hidden');
 }
-function activateKokoroLinkFromBattle(sourceUid){
+function beginKokoroLinkStatusTargetSelection(sourceUid){
+  const picker=document.getElementById('multiTargetSelect'),living=typeof aliveMultiEnemies==='function'?aliveMultiEnemies():[];
+  if(!picker||!living.length)return;
+  pendingKokoroLinkStatusSourceUid=sourceUid;
+  picker.innerHTML=`<p><b>リンク能力の対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="selectKokoroLinkStatusTarget('${entry.id}')">${entry.mon.name}へ発動</button>`).join('')}<button onclick="cancelKokoroLinkStatusTarget()" class="secondary-button">やめる</button>`;
+  picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');updateMultiBattleView();
+}
+function cancelKokoroLinkStatusTarget(){pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');if(multiBattle?.active)updateMultiBattleView();}
+function selectKokoroLinkStatusTarget(targetId){const sourceUid=pendingKokoroLinkStatusSourceUid;if(!sourceUid)return;pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');activateKokoroLinkFromBattle(sourceUid,targetId);}
+function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(busy)return;
+  const source=typeof currentKokoroLinkSources==='function'?currentKokoroLinkSources({includeUsed:true}).find(candidate=>candidate.uid===sourceUid):null;
+  if(!targetId&&multiBattle?.active&&source?.profile?.rarity===2){beginKokoroLinkStatusTargetSelection(sourceUid);return;}
   const result=activateCurrentKokoroLink(sourceUid,kokoroLinkTargetStats());
   const log=document.getElementById('log');
   if(!result.ok){if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`⚠️ ${kokoroLinkFailureText(result.reason)}`;renderKokoroLinkPanel();return;}
   const {link}=result;
-  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}${link.powerAbility?`<br>✨ ★1リンク能力「${link.powerAbility.label}」：${link.powerAbility.summary}`:''}`;
+  const statusMsg=link.statusAbility&&typeof applyKokoroLinkStatusAbilityForBattle==='function'?applyKokoroLinkStatusAbilityForBattle(link,targetId):'';
+  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}${link.powerAbility?`<br>✨ ★1リンク能力「${link.powerAbility.label}」：${link.powerAbility.summary}`:''}${statusMsg?`<br>${statusMsg}`:''}`;
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   renderKokoroLinkPanel();
   update();
@@ -200,7 +221,7 @@ function update() {
   const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
   document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}${statusHtml(pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}${kokoroLinkStatusHtml()}`;
   const enemyLevel = activeHuntRequest?.enemyLevel || 1;
-  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${monSpd(enemy)}${statusHtml(eStatus,ePoisonTurns,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}`;
+  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey())}${statusHtml(eStatus,ePoisonTurns,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}${enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())}`;
   const pBar = document.getElementById('pHpBar');
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';

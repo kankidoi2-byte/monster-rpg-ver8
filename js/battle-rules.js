@@ -11,7 +11,7 @@ function typeEff(atkTypeOrTypes, defTypes) {
 (function loadMultiBattleModule() {
   if (document.querySelector('script[data-multi-battle]')) return;
   const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=kokoro-link-phase4-1';
+  script.src = 'js/multi-battle.js?v=kokoro-link-phase4-2';
   script.dataset.multiBattle = 'true';
   document.head.appendChild(script);
 })();
@@ -50,6 +50,46 @@ function applyPlayerKokoroLinkLifeSteal(actualDamage){
 function playerKokoroLinkChance(baseChance){
   if(typeof kokoroLinkChanceFor!=='function')return {chance:baseChance,boosted:false};
   return kokoroLinkChanceFor(activeInstance,baseChance);
+}
+function singleEnemyKokoroLinkKey(){return 'single';}
+function enemyKokoroLinkAttackMultiplier(targetKey){return typeof kokoroLinkEnemyAttackMultiplierFor==='function'?kokoroLinkEnemyAttackMultiplierFor(targetKey):1;}
+function enemyKokoroLinkSpeed(monster,targetKey){const base=monSpd(monster);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
+function enemyKokoroLinkMisses(targetKey,randomFn=Math.random){const accuracy=typeof kokoroLinkEnemyAccuracyFor==='function'?kokoroLinkEnemyAccuracyFor(targetKey):1;return randomFn()>=accuracy;}
+function enemyKokoroLinkStatusHtml(targetKey){const text=typeof kokoroLinkEnemyStatusText==='function'?kokoroLinkEnemyStatusText(targetKey):'';return text?` / 💔${text}`:'';}
+function applyKokoroLinkControlStatus(result,target){
+  const turns=Math.max(1,Number(result.durationTurns)||1),multi=target?.kind==='multi';
+  if(multi){
+    target.entry.paralysisTurns=0;target.entry.confusionTurns=0;target.entry.sleepTurns=0;
+    if(result.controlStatus==='paralysis')target.entry.paralysisTurns=turns;
+    if(result.controlStatus==='confusion')target.entry.confusionTurns=turns;
+    if(result.controlStatus==='sleep')target.entry.sleepTurns=turns;
+  }else{
+    eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;
+    if(result.controlStatus==='paralysis')eParalysisTurns=turns;
+    if(result.controlStatus==='confusion')eConfusionTurns=turns;
+    if(result.controlStatus==='sleep')eSleepTurns=turns;
+  }
+}
+function applyKokoroLinkStatusAbilityForBattle(link,targetId=null,randomFn=Math.random){
+  if(!link?.statusAbility||typeof attemptKokoroLinkStatusAbility!=='function')return '';
+  const multiEntry=multiBattle?.active?multiEnemy(targetId):null;
+  const targetMon=multiEntry?.mon||enemy;
+  const targetKey=multiEntry?.id||singleEnemyKokoroLinkKey();
+  if(!targetMon)return '⚠️ 追加能力の対象が見つからなかった。';
+  const result=attemptKokoroLinkStatusAbility(link,{targetKey,bossClass:targetMon.bossClass,immune:targetMon.kokoroLinkStatusImmune===true},randomFn);
+  const rate=Math.round((result.successRate||0)*100);
+  if(!result.resolved)return '⚠️ 追加能力はすでに判定済みです。';
+  if(!result.succeeded)return result.immune?`🛡️ ${targetMon.name}には「${result.label}」が効かなかった！`:`💨 「${result.label}」は不発だった！（成功率${rate}%）`;
+  const strongerPoisonActive=result.abilityId==='poison'&&(multiEntry?multiEntry.status==='poison'&&multiEntry.poisonTurns>0:eStatus==='poison'&&ePoisonTurns>0);
+  if(result.components?.length&&!strongerPoisonActive)applyKokoroLinkEnemyEffectComponents(targetKey,result.components);
+  if(strongerPoisonActive){if(multiEntry)multiEntry.poisonTurns=Math.max(multiEntry.poisonTurns,result.components?.[0]?.durationTurns||2);else ePoisonTurns=Math.max(ePoisonTurns,result.components?.[0]?.durationTurns||2);}
+  if(result.controlStatus)applyKokoroLinkControlStatus(result,multiEntry?{kind:'multi',entry:multiEntry}:{kind:'single'});
+  return `💔 ${targetMon.name}に「${result.label}」が発動！（成功率${rate}%）<br>${result.summary}`;
+}
+function tickSingleEnemyKokoroLinkEffects(){
+  if(typeof tickKokoroLinkEnemyEffects!=='function'||eHp<=0)return '';
+  const result=tickKokoroLinkEnemyEffects(singleEnemyKokoroLinkKey(),eHp,enemyMaxHp());eHp=result.hp;
+  const messages=[];if(result.damage)messages.push(`🔥☠️ ${enemy.name}はリンク状態異常で${result.damage}ダメージ！`);if(result.expiredLabels.length&&eHp>0)messages.push(`✨ ${[...new Set(result.expiredLabels)].join('・')}の効果が切れた！`);return messages.join('<br>');
 }
 function applySleepToTarget(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
@@ -110,7 +150,7 @@ function tryConfusionAction(isPlayer) {
   } else if (roll < 0.75) {
     result = {canAct:false, selfHit:false, message:`🌀 ${actor.name}はこんらんして動けない！`};
   } else {
-    const atkMultiplier = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk * enemyDifficultyAttackMultiplier();
+    const atkMultiplier = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk * enemyDifficultyAttackMultiplier() * enemyKokoroLinkAttackMultiplier(singleEnemyKokoroLinkKey());
     const rawDamage = Math.max(1, Math.floor(24 * atkMultiplier * 0.5));
     const barrier = isPlayer ? resolvePlayerIncomingDamage(rawDamage) : {hpDamage:rawDamage,absorbed:0};
     const damage = barrier.hpDamage;
@@ -156,6 +196,7 @@ function applyPoisonToTarget(targetIsPlayer) {
     pStatus = 'poison';
     pPoisonTurns = poison.duration;
   } else {
+    if(typeof removeKokoroLinkEnemyEffectCategory==='function')removeKokoroLinkEnemyEffectCategory(singleEnemyKokoroLinkKey(),'poison');
     eStatus = 'poison';
     ePoisonTurns = poison.duration;
   }
@@ -187,6 +228,7 @@ function finishTurnWithPoison() {
   completeBattleTurn();
   const poisonMsg = applyPoisonEndTurn();
   if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;
+  const linkStatusMsg=tickSingleEnemyKokoroLinkEffects();if(linkStatusMsg)logEl.innerHTML+=`<br>${linkStatusMsg}`;
   if (eHp <= 0) { win(); return; }
   if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;}
   if (pHp <= 0) {
@@ -204,7 +246,8 @@ function turn(i) {
   const playerMove = getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
   const enemyMove = enemy.moves[Math.floor(Math.random()*enemy.moves.length)];
   const pSpeed = monSpd(player, activeInstance);
-  const eSpeed = monSpd(enemy);
+  const delayed=typeof consumeKokoroLinkEnemyActionDelay==='function'&&consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
+  const eSpeed = delayed?-Infinity:enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey());
   const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
 
   if (playerFirst) {
@@ -285,10 +328,11 @@ function doAttack(attacker, defender, mv, isPlayer) {
     update();
     return;
   }
+  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;update();return;}
   // ダメージ計算
   const r = typeEff(type, defender.types);
   const hasFlareCharge = effect !== 'flare_charge' && power > 0 && (isPlayer ? pFlareCharge : eFlareCharge);
-  const baseAtk = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk;
+  const baseAtk = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk*enemyKokoroLinkAttackMultiplier(singleEnemyKokoroLinkKey());
   const atk = baseAtk * (hasFlareCharge ? 1.20 : 1);
   const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
   const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
