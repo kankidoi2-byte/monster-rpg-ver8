@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-impact-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: '突進・打撃・体当たり技に攻撃演出を追加しました',
+    body: '突進と体当たりでは攻撃側が相手へ踏み込み、打撃技では相手の位置に重い衝撃が走るようになりました。通常戦と複数の敵が登場するバトルの両方に対応しています。'
+  }),
+  Object.freeze({
     id: '20260826-battle-ranged-motion',
     date: '2026-08-26',
     category: 'update',
