@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "check": "npm run check:data && npm run check:data-contract && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-complete && npm run check:kokoro-link-balance && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:battle-switch && npm run check:battle-motion && npm run check:monster-dex && npm run check:character-dex && npm run check:map-dex && npm run check:contract-animation && npm run check:three-way && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save",
+    "check": "npm run check:data && npm run check:data-contract && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-complete && npm run check:kokoro-link-balance && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:battle-switch && npm run check:battle-motion && npm run check:monster-dex && npm run check:character-dex && npm run check:map-dex && npm run check:contract-animation && npm run check:three-way && npm run check:hunt-difficulty && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save",
     "check:data": "node scripts/validate-data.mjs",
     "check:data-contract": "node scripts/test-data-contract.mjs",
     "check:skill-taxonomy": "node scripts/test-skill-taxonomy.mjs",
@@ -29,6 +29,7 @@
     "check:map-dex": "node scripts/test-map-dex.mjs",
     "check:contract-animation": "node scripts/test-contract-animation.mjs",
     "check:three-way": "node scripts/test-three-way.mjs",
+    "check:hunt-difficulty": "node scripts/test-hunt-difficulty.mjs",
     "check:alchemy": "node scripts/test-alchemy-workbench.mjs",
     "check:expedition": "node scripts/test-expedition.mjs",
     "check:golden-land": "node scripts/test-golden-land.mjs",

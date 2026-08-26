@@ -145,14 +145,16 @@ function useExpItemOnInstance(itemId, uidValue){
   const ins = getInstance(uidValue);
   if(!ins){ alert('対象のモンスターが見つかりません。'); return; }
   const mon = by(ins.id);
+  if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;alert(`${mon.name}はすでに Lv.MAX です！`);return;}
   save.items[itemId]--;
   ins.exp = (ins.exp||0) + it.expAmount;
   let msg = `${it.icon || '📦'} ${it.name}を${mon.name}に与えた！\nEXP +${it.expAmount}`;
-  while(ins.exp >= needExp(ins.level)){
+  while(!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)){
     ins.exp -= needExp(ins.level);
     ins.level++;
     msg += `\n${mon.name}は Lv.${ins.level} に上がった！`;
   }
+  if(isMaxLevel(ins.level))ins.exp=0;
   checkEvolution(ins);
   saveGame();
   renderParty();

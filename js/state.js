@@ -11,10 +11,10 @@ let pAquaShield = false, eAquaShield = false;
 let activeInstance = null;
 let partyBattle = [], activePartyIdx = 0, selectedMap = null;
 const HUNT_DIFFICULTIES = Object.freeze({
-  easy:Object.freeze({id:'easy', label:'Easy', levelOffset:-1, hpMultiplier:.85, attackMultiplier:.85, attackText:'0.85', rewardMultiplier:.7, rewardText:'0.7', weight:20, danger:'危険度：低。戦力を整えながら挑める依頼。'}),
-  normal:Object.freeze({id:'normal', label:'Normal', levelOffset:0, hpMultiplier:1, attackMultiplier:1, attackText:'1.0', rewardMultiplier:1, rewardText:'1.0', weight:45, danger:'危険度：標準。現在のパーティーに見合う依頼。'}),
-  hard:Object.freeze({id:'hard', label:'Hard', levelOffset:1, hpMultiplier:1.15, attackMultiplier:1.15, attackText:'1.15', rewardMultiplier:1.8, rewardText:'1.8', weight:25, danger:'危険度：高。強敵だが報酬も多い依頼。'}),
-  extreme:Object.freeze({id:'extreme', label:'Extreme', levelOffset:2, hpMultiplier:1.30, attackMultiplier:1.30, attackText:'1.30', rewardMultiplier:3, rewardText:'3.0', weight:10, danger:'危険度：極大。最大級の危険と報酬を伴う依頼。'})
+  easy:Object.freeze({id:'easy', label:'Easy', fixedLevel:1, rarities:Object.freeze([1]), hpMultiplier:.85, attackMultiplier:.85, attackText:'0.85', rewardMultiplier:.7, rewardText:'0.7', weight:20, danger:'危険度：低。Lv.1の★1だけが現れる入門依頼。'}),
+  normal:Object.freeze({id:'normal', label:'Normal', rarities:Object.freeze([1,2,3]), hpMultiplier:1, attackMultiplier:1, attackText:'1.0', rewardMultiplier:1, rewardText:'1.0', weight:45, danger:'危険度：標準。★1～★3が種族ごとの固定Lvで現れる依頼。'}),
+  hard:Object.freeze({id:'hard', label:'Hard', rarities:Object.freeze([2,3,4]), hpMultiplier:1.15, attackMultiplier:1.15, attackText:'1.15', rewardMultiplier:1.8, rewardText:'1.8', weight:25, danger:'危険度：高。★2～★4が種族ごとの固定Lvで現れる依頼。'}),
+  extreme:Object.freeze({id:'extreme', label:'Extreme', fixedLevel:MAX_LEVEL, rarities:Object.freeze([5]), hpMultiplier:1.30, attackMultiplier:1.30, attackText:'1.30', rewardMultiplier:3, rewardText:'3.0', weight:10, danger:'危険度：極大。Lv.100の★5だけが現れる最高難度依頼。'})
 });
 const HUNT_MAP_BOOST_TYPES = Object.freeze({
   grassland:'grass', volcano:'fire', lake:'water', seikai_irie:'water',
@@ -89,10 +89,32 @@ function rollInvasionTurn(randomFn=Math.random) {
   return 2 + Math.min(2, Math.floor(randomFn() * 3));
 }
 
-function chooseSecondHuntEnemy(map, firstEnemyId, randomFn=Math.random) {
-  const candidates = [...new Set(map?.enemyIds || [])]
-    .map(id => by(id))
-    .filter(Boolean);
+function huntMonsterRarity(mon) {
+  return Math.max(1, Math.min(5, String(mon?.rarity || '★').length));
+}
+function isHuntMonsterEligible(mon, difficultyId) {
+  return !!mon && huntDifficulty(difficultyId).rarities.includes(huntMonsterRarity(mon));
+}
+function huntLevelFor(mon, difficultyId) {
+  const difficulty = huntDifficulty(difficultyId);
+  if (Number.isFinite(difficulty.fixedLevel)) return clampLevel(difficulty.fixedLevel);
+  const configured = Number(mon?.huntLevels?.[difficulty.id]);
+  if (Number.isFinite(configured)) return clampLevel(configured);
+  const rarity = huntMonsterRarity(mon);
+  const fallback = difficulty.id === 'normal' ? {1:10,2:22,3:40}[rarity] : {2:50,3:70,4:85}[rarity];
+  return clampLevel(fallback || 1);
+}
+function huntCandidatesFor(map, difficultyId) {
+  return (map?.enemyIds || []).map(id => by(id)).filter(mon => isHuntMonsterEligible(mon, difficultyId));
+}
+function availableHuntDifficulties(map) {
+  const specialOnly = !!(map?.bossOnly || map?.rareOnly || map?.goldenLand);
+  return Object.values(HUNT_DIFFICULTIES).filter(difficulty =>
+    (!specialOnly || difficulty.id === 'hard' || difficulty.id === 'extreme') && huntCandidatesFor(map, difficulty.id).length
+  );
+}
+function chooseSecondHuntEnemy(map, firstEnemyId, difficultyId='normal', randomFn=Math.random) {
+  const candidates = [...new Map(huntCandidatesFor(map, difficultyId).map(mon => [mon.id, mon])).values()];
   const different = candidates.filter(mon => mon.id !== firstEnemyId);
   const pool = different.length ? different : candidates;
   if (!pool.length) return null;
@@ -114,13 +136,6 @@ function multiEnemyCardAction(entry, pendingMoveIndex) {
 
 function huntDifficulty(id='normal') {
   return HUNT_DIFFICULTIES[id] || HUNT_DIFFICULTIES.normal;
-}
-function battlePartyAverageLevel() {
-  const members = partyBattle.length
-    ? partyBattle.map(entry => entry.inst).filter(Boolean)
-    : getPartyInstances();
-  if (!members.length) return 1;
-  return members.reduce((sum, ins) => sum + Math.max(1, Number(ins.level) || 1), 0) / members.length;
 }
 function createHuntCondition(map, conditionId) {
   if (conditionId === 'map_boost') {
@@ -156,18 +171,16 @@ function rollHuntConditionIds(difficultyId, randomFn=Math.random) {
 }
 function createHuntRequest(map, mon, difficultyId='normal', conditionIds=[]) {
   const difficulty = huntDifficulty(difficultyId);
-  const partyAverageLevel = battlePartyAverageLevel();
-  const enemyLevel = Math.max(1, Math.round(partyAverageLevel) + difficulty.levelOffset);
+  const enemyLevel = huntLevelFor(mon, difficulty.id);
   const enemyHp = Math.max(1, Math.round(maxHp(mon, enemyLevel) * difficulty.hpMultiplier));
   const conditions = [...new Set(conditionIds)].map(id => createHuntCondition(map, id)).filter(Boolean);
   const rolledMode = map?.goldenLand ? 'single' : rollHuntBattleMode(difficulty.id);
-  const secondEnemy = rolledMode !== 'single' ? chooseSecondHuntEnemy(map, mon?.id) : null;
+  const secondEnemy = rolledMode !== 'single' ? chooseSecondHuntEnemy(map, mon?.id, difficulty.id) : null;
   const battleMode = secondEnemy ? rolledMode : 'single';
   return {
     difficultyId:difficulty.id,
     difficultyLabel:difficulty.label,
     danger:difficulty.danger,
-    partyAverageLevel,
     enemyLevel,
     enemyHp,
     attackMultiplier:difficulty.attackMultiplier,
@@ -200,10 +213,7 @@ function preparedHuntRequest(requestId, mapId, enemyId, difficultyId) {
   return request;
 }
 function rollHuntDifficulty(map) {
-  const specialOnly = !!(map?.bossOnly || map?.rareOnly);
-  const pool = Object.values(HUNT_DIFFICULTIES).filter(difficulty =>
-    !specialOnly || difficulty.id === 'hard' || difficulty.id === 'extreme'
-  );
+  const pool = availableHuntDifficulties(map);
   const total = pool.reduce((sum, difficulty) => sum + difficulty.weight, 0);
   let roll = Math.random() * total;
   for (const difficulty of pool) {

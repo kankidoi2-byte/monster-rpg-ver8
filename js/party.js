@@ -12,7 +12,7 @@ function renderParty() {
     const m = by(ins.id); if (!m) return;
     el.innerHTML += `<article class="monster-roster-card">
       <div class="monster-roster-visual">${vis(m)}<span>${ins.locked?'🔒':'個体'+(i+1)}</span></div>
-      <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>EXP ${ins.exp}/${needExp(ins.level)}</small></div>
+      <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <details class="monster-roster-details"><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>
       ${instanceAlchemySummary(ins)}
       <div class="mini"><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
@@ -63,7 +63,7 @@ function renderPartySetup() {
     const onExpedition = typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(ins.uid);
     return `<article class="party-select-card${inParty?' is-selected':''}${onExpedition?' is-expedition':''}">
       <div class="party-select-visual">${vis(m)}${inParty?'<span>編成中</span>':onExpedition?'<span>遠征中</span>':''}</div><div><h2>${m.name}</h2>
-      <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><strong>Lv.${ins.level}</strong><small>EXP ${ins.exp}/${needExp(ins.level)}</small></div>
+      <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <button onclick="togglePartyMember('${ins.uid}')" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
     </article>`;
   }).join('');

@@ -419,6 +419,6 @@ function update() {
   eBar.setAttribute('aria-valuenow', String(eHp));
   document.getElementById('pHpText').textContent = `${pHp} / ${pm}`;
   document.getElementById('eHpText').textContent = `${eHp} / ${em}`;
-  document.getElementById('pExpBar').style.width = xp/nd*100+'%';
-  document.getElementById('pExpText').textContent = `EXP ${xp} / ${nd}`;
+  document.getElementById('pExpBar').style.width = (isMaxLevel(lv)?100:xp/nd*100)+'%';
+  document.getElementById('pExpText').textContent = isMaxLevel(lv)?'EXP MAX':`EXP ${xp} / ${nd}`;
 }

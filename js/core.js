@@ -301,7 +301,13 @@ function isAlchemyCatalystUnit(unit) { return entityEligibility(unit,'alchemyCat
 function isAlchemyResultEligible(unit, resultKind) {
   return entityEligibility(unit,resultKind === 'success' ? 'alchemySuccess' : 'alchemyFailure',false);
 }
-function needExp(lv) { return lv * 60; }
+const MAX_LEVEL = 100;
+function clampLevel(value) {
+  const level = Number(value);
+  return Math.min(MAX_LEVEL, Math.max(1, Number.isFinite(level) ? Math.floor(level) : 1));
+}
+function needExp(lv) { return clampLevel(lv) * 60; }
+function isMaxLevel(lv) { return clampLevel(lv) >= MAX_LEVEL; }
 function maxHp(m, level) {
   // Ver5.1 Claude修正: 種族IDだけで検索するinsLevel()に頼ると、
   // 「同種族の別個体」や「野生の敵」が別のプレイヤー所持個体のレベルと

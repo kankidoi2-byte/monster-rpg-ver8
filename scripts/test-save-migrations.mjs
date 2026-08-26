@@ -12,6 +12,7 @@ const localStorage={
 };
 const context=vm.createContext({
   console,localStorage,Date,JSON,Math,
+  MAX_LEVEL:100,clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
   M:[{id:'elna_beginner'},{id:'freigal'},{id:'aquaron'}],
   MAPS:[{id:'grassland'}],
   confirm:()=>false,alert:()=>{}
@@ -49,6 +50,10 @@ assert.equal(repaired.quarantine.unknownInstances.length,1);
 assert.deepEqual([...repaired.party],['same'],'party must only keep valid unique UIDs');
 assert.deepEqual([...prepare(fixtures[1]).mapDex],['grassland'],'map dex must keep valid unique map IDs');
 assert.deepEqual([...prepare({schemaVersion:1,saveMeta:{migrations:['v0_to_v1']}}).mapDex],['grassland'],'v1 saves must inherit maps that were historically available');
+const capped=prepare({instances:[{uid:'over',id:'freigal',level:135,exp:9999}],levels:{freigal:140},exp:{freigal:9999}});
+assert.equal(capped.instances[0].level,100,'legacy instances above the cap must be clamped to level 100');
+assert.equal(capped.instances[0].exp,0,'max-level instances must not retain overflow EXP');
+assert.equal(capped.levels.freigal,100,'legacy species levels above the cap must be clamped');
 
 const expeditionRepair=prepare(fixtures[3]);
 assert.equal(expeditionRepair.expeditions.completedCount,0);
@@ -71,6 +76,7 @@ const writeStorage=new Map();
 let failPrimaryWrite=false;
 const writeContext=vm.createContext({
   console,Date,JSON,Math,setTimeout,
+  MAX_LEVEL:100,clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
   M:[{id:'elna_beginner'}],MAPS:[],ALCHEMY_MONSTER_CONFIGS:{},ITEM_DEX_BY_ID:{},ITEM_DEX_ITEMS:[],SHOP_ITEMS:[],
   localStorage:{
     getItem:key=>writeStorage.has(key)?writeStorage.get(key):null,

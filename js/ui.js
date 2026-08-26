@@ -96,10 +96,11 @@ function renderHome(){
   if(growthPreview){
     const lead=party[0];
     const mon=lead ? by(lead.id) : null;
-    const needed=lead ? needExp(lead.level||1) : 0;
+    const atMax=lead ? isMaxLevel(lead.level) : false;
+    const needed=lead&&!atMax ? needExp(lead.level||1) : 0;
     const current=Number(lead?.exp||0);
     const rate=needed ? Math.max(0,Math.min(100,current/needed*100)) : 0;
-    growthPreview.innerHTML = mon ? `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>${mon.name}のレベルアップまで</strong><div class="home-progress"><span style="width:${rate}%"></span></div><small>あと${Math.max(0,needed-current)} EXP</small></div><button onclick="show('party')">確認</button>` : `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>仲間を選ぶと成長目標が表示されます</strong></div>`;
+    growthPreview.innerHTML = mon ? `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>${atMax?`${mon.name}は Lv.MAX`:`${mon.name}のレベルアップまで`}</strong><div class="home-progress"><span style="width:${atMax?100:rate}%"></span></div><small>${atMax?'最大レベル到達':`あと${Math.max(0,needed-current)} EXP`}</small></div><button onclick="show('party')">確認</button>` : `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>仲間を選ぶと成長目標が表示されます</strong></div>`;
   }
   if(expeditionPreview){
     const active=Array.isArray(save?.expeditions?.active) ? save.expeditions.active : [];
