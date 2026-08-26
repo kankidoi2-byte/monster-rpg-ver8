@@ -1,4 +1,5 @@
 function prepareBattleParty() {
+  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   const party = getPartyInstances();
   partyBattle = party.map(ins => ({
     uid:ins.uid, inst:ins,
@@ -206,6 +207,7 @@ function switchPartyMember() {
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
   renderSkillButtons();
+  if (typeof renderKokoroLinkPanel === 'function') renderKokoroLinkPanel();
   update();
   return true;
 }
@@ -229,6 +231,7 @@ function endPartyRecovery() {
   multiBattle = null;
   pendingMultiBattleContractId = null;
   if (typeof setMultiBattleLayout === 'function') setMultiBattleLayout(false);
+  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
 }
 function runAway() {
@@ -241,6 +244,7 @@ function runAway() {
   pSleepTurns = 0; eSleepTurns = 0;
   pFlareCharge = false; eFlareCharge = false;
   pAquaShield = false; eAquaShield = false;
+  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
   document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';
   showBattleOutcome({kind:'retreat',title:'撤退成功',note:'態勢を整えてから再挑戦できる。'});
@@ -249,6 +253,7 @@ function runAway() {
 function win() {
   if (battleRewardGranted) return;
   battleRewardGranted = true;
+  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   completeBattleTurn();
   eHp = 0;
   pStatus = null; eStatus = null;

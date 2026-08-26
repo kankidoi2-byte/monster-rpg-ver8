@@ -11,12 +11,17 @@ function typeEff(atkTypeOrTypes, defTypes) {
 (function loadMultiBattleModule() {
   if (document.querySelector('script[data-multi-battle]')) return;
   const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=tutorial-phase1-1';
+  script.src = 'js/multi-battle.js?v=kokoro-link-phase3-1';
   script.dataset.multiBattle = 'true';
   document.head.appendChild(script);
 })();
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
+}
+function resolvePlayerIncomingDamage(damage){
+  if(typeof absorbKokoroLinkDamage==='function')return absorbKokoroLinkDamage(activeInstance,damage);
+  const incoming=Math.max(0,Math.floor(Number(damage)||0));
+  return {incoming,hpDamage:incoming,absorbed:0,barrierRemaining:0};
 }
 function applySleepToTarget(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
@@ -78,14 +83,16 @@ function tryConfusionAction(isPlayer) {
     result = {canAct:false, selfHit:false, message:`🌀 ${actor.name}はこんらんして動けない！`};
   } else {
     const atkMultiplier = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk * enemyDifficultyAttackMultiplier();
-    const damage = Math.max(1, Math.floor(24 * atkMultiplier * 0.5));
+    const rawDamage = Math.max(1, Math.floor(24 * atkMultiplier * 0.5));
+    const barrier = isPlayer ? resolvePlayerIncomingDamage(rawDamage) : {hpDamage:rawDamage,absorbed:0};
+    const damage = barrier.hpDamage;
     if (isPlayer) {
       pHp = Math.max(0, pHp - damage);
       if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
     } else {
       eHp = Math.max(0, eHp - damage);
     }
-    result = {canAct:false, selfHit:true, message:`🌀 ${actor.name}はこんらんして自分を攻撃した！ <b>${damage}</b>ダメージ！`};
+    result = {canAct:false, selfHit:true, message:`🌀 ${actor.name}はこんらんして自分を攻撃した！ <b>${damage}</b>ダメージ！${barrier.absorbed?`<br>💞 ココロ障壁が${barrier.absorbed}ダメージを防いだ！`:''}`};
   }
   if (turns === 0) result.message += `<br>✨ ${actor.name}のこんらんが治った！`;
   update();
@@ -256,7 +263,9 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
-  const dmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const rawDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * (g ? .55 : 1) * (shield ? .50 : 1)));
+  const linkBarrier = isPlayer ? {hpDamage:rawDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawDmg);
+  const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
   if (isPlayer) {
     eHp -= dmg;
@@ -270,6 +279,7 @@ function doAttack(attacker, defender, mv, isPlayer) {
   const actualDamage = Math.min(dmg, Math.max(0, defenderHpBefore));
 
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
+  if (linkBarrier.absorbed) msg += `<br>💞 ココロ障壁が${linkBarrier.absorbed}ダメージを防いだ！（残り${linkBarrier.barrierRemaining}）`;
   if (mapAttackMultiplier > 1) msg += `<br>🗺️ マップ属性強化！（×1.2）`;
   if (shield) msg += `<br>💧 ${defender.name}のアクアシールドがダメージを半減し、消えた！`;
   if (hasFlareCharge) {
@@ -313,9 +323,12 @@ function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (effect === 'repeat_attack' && (isPlayer ? eHp > 0 : pHp > 0) && Math.random() < (Number.isFinite(effectChance) ? effectChance : 0.30)) {
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
-    const secondDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
+    const rawSecondDmg = Math.max(1, Math.floor((power * atk * r + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
+    const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
+    const secondDmg = secondBarrier.hpDamage;
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
+    if (secondBarrier.absorbed) msg += `<br>💞 ココロ障壁が${secondBarrier.absorbed}ダメージを防いだ！（残り${secondBarrier.barrierRemaining}）`;
   }
   logEl.innerHTML = msg;
   // ヒットアニメとダメージ表示

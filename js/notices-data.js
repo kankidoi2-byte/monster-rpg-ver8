@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link',
+    date: '2026-08-26',
+    category: 'update',
+    title: '新バトルシステム「ココロリンク」を追加しました',
+    body: '戦闘中、控えモンスター1体の力を借りて、味方に障壁・攻撃・素早さの強化を付与できるようになりました。低レアリティほど高いリンク倍率を持ちます。'
+  }),
+  Object.freeze({
     id: '20260825-notice-center',
     date: '2026-08-25',
     category: 'update',

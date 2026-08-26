@@ -284,10 +284,15 @@ function instanceMaxHp(ins){
   return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp')));
 }
 function monSpd(m, ins=null) {
-  return Math.max(1, Math.round(Number(m?.spd ?? 50) * instanceStatModifier(ins, 'speed')));
+  const base = Math.round(Number(m?.spd ?? 50) * instanceStatModifier(ins, 'speed'));
+  const linkBonus = typeof kokoroLinkSpeedBonusFor === 'function' ? kokoroLinkSpeedBonusFor(ins) : 0;
+  return Math.max(1, base + linkBonus);
 }
 function playerAttackInstanceMultiplier(){
-  return instanceStatModifier(activeInstance, 'attack');
+  const linkMultiplier = typeof kokoroLinkAttackMultiplierFor === 'function'
+    ? kokoroLinkAttackMultiplierFor(activeInstance)
+    : 1;
+  return instanceStatModifier(activeInstance, 'attack') * linkMultiplier;
 }
 function moveEffectText(mv) {
   const [,power,type,effect,chance,,customDesc] = mv;
