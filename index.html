@@ -197,8 +197,10 @@
   <div class="cmd battle-command-dock">
     <div class="battle-command-title"><span>YOUR TURN</span><h2>技を選ぶ</h2></div>
     <div id="commands"></div>
+    <div id="multiTargetSelect" class="multi-target-select hidden"></div>
     <div class="battle-subcommands">
       <button id="kokoroLinkButton" onclick="toggleKokoroLinkPanel()">💞 リンク</button>
+      <button id="battleSwitchButton" onclick="openBattleSwitchPicker()">🔄 交代</button>
       <button onclick="askUseContractScroll()">🤝 契約</button>
       <button onclick="openBattleItemSelect()">🎒 道具</button>
       <button onclick="runAway()">🏃 逃走</button>
@@ -394,9 +396,9 @@
 <script src="js/contract-animation.js?v=contract-animation-1"></script>
 <script src="js/items.js?v=elna-character-dex-1"></script>
 <script src="js/alchemy.js?v=phase3-prologue-1"></script>
-<script src="js/battle-view.js?v=kokoro-link-phase5-1"></script>
+<script src="js/battle-view.js?v=battle-switch-1"></script>
 <script src="js/battle-rules.js?v=kokoro-link-phase5-1"></script>
-<script src="js/battle-flow.js?v=kokoro-link-scaling-1"></script>
+<script src="js/battle-flow.js?v=battle-switch-1"></script>
 <script src="js/multi-battle.js?v=kokoro-link-phase5-1"></script>
 <script src="js/expedition.js?v=golden-land-release-1"></script>
 <script src="js/init.js?v=golden-land-release-1"></script>

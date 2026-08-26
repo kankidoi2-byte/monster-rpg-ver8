@@ -29,8 +29,37 @@ function setupBattle() {
   // 技ボタン
   renderSkillButtons();
   renderKokoroLinkPanel();
+  renderBattleSwitchButton();
   updateItemText();
   update();
+}
+function renderBattleSwitchButton(){
+  const button=document.getElementById('battleSwitchButton');
+  if(!button)return;
+  const count=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates().length:0;
+  button.disabled=count===0;
+  button.innerHTML='🔄 交代';
+}
+function openBattleSwitchPicker(){
+  if(busy)return;
+  if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
+  if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
+  if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
+  const picker=document.getElementById('multiTargetSelect');
+  const candidates=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates():[];
+  if(!picker||!candidates.length)return;
+  picker.innerHTML=`<p><b>交代する仲間を選択</b><span>交代すると、このターンの行動を消費します</span></p>${candidates.map(({entry,index})=>`<button onclick="selectBattleSwitchTarget(${index})">${entry.mon.name}（HP ${entry.hp} / ${instanceMaxHp(entry.inst)}）</button>`).join('')}<button onclick="cancelBattleSwitchPicker()" class="secondary-button">やめる</button>`;
+  picker.classList.remove('hidden');
+}
+function cancelBattleSwitchPicker(){
+  const picker=document.getElementById('multiTargetSelect');
+  picker?.classList.add('hidden');
+  if(picker)picker.innerHTML='';
+  if(multiBattle?.active)updateMultiBattleView();
+}
+function selectBattleSwitchTarget(nextIndex){
+  cancelBattleSwitchPicker();
+  performManualPartySwitch(nextIndex);
 }
 function battleImpactType(typeOrTypes) {
   const type = normalizeMoveTypes(typeOrTypes)[0] || 'normal';
@@ -221,8 +250,7 @@ function beginKokoroLinkFreeSwitch(){
 }
 function selectKokoroLinkFreeSwitch(nextIndex){
   if(pendingKokoroLinkTacticsMode!=='free-switch'||busy)return;const next=partyBattle[nextIndex];if(!next||nextIndex===activePartyIdx||next.fainted||next.hp<=0||!consumeKokoroLinkFreeSwitch(activeInstance))return;
-  const previous=player.name;partyBattle[activePartyIdx].hp=pHp;activePartyIdx=nextIndex;activeInstance=next.inst;player=next.mon;pHp=next.hp;pAtk=1;pGuard=false;pStatus=null;pPoisonTurns=0;pParalysisTurns=0;pConfusionTurns=0;pSleepTurns=0;pFlareCharge=false;pAquaShield=false;
-  document.getElementById('pName').textContent=player.name;document.getElementById('pVis').innerHTML=vis(player);renderSkillButtons();const log=document.getElementById('log');if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`🌪️ 風渡り交代で${previous}から<b>${player.name}</b>へ交代した！`;
+  const previous=player.name;changeActivePartyMember(nextIndex,{message:`🌪️ 風渡り交代で${previous}から<b>${next.mon.name}</b>へ交代した！`});
   cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
 }
 function cancelKokoroLinkTacticsPicker(){pendingKokoroLinkTacticsMode=null;const picker=document.getElementById('multiTargetSelect');picker?.classList.add('hidden');if(picker)picker.innerHTML='';if(multiBattle?.active)updateMultiBattleView();}
