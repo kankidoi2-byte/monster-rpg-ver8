@@ -105,7 +105,7 @@ const BATTLE_MOTION_COLORS=Object.freeze({
   fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
-const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340});
+const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340,roar:480});
 const BATTLE_MELEE_FORMS=Object.freeze(['sword','claw','fang']);
 const BATTLE_COLLISION_FORMS=Object.freeze(['charge','strike','body']);
 const BATTLE_LUNGE_FORMS=Object.freeze(['charge','body']);
