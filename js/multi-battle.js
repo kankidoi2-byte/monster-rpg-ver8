@@ -228,23 +228,25 @@ async function performMultiAttack(actor,target,move) {
     if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${a.name}はこんらんして動けない！`);return;}
     if(roll>=.75){const dmg=Math.max(1,Math.floor(12*actor.attack*enemyKokoroLinkAttackMultiplier(actor.id)));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
   }
-  if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return; }
+  const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
+  const supportTargetId=effect==='sleep'?impactTargetId:sourceId;
+  const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,move):false;
+  if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return {animated:supportAnimated}; }
   if(effect==='heal'){
     const amount=adjustedBattleHealing(24+(actorIsPlayer?(activeInstance?.level||1):1)*3);
     if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+amount);else actor.hp=Math.min(actor.maxHp,actor.hp+amount);
-    appendMultiLog(`💚 ${a.name}はHPを${amount}回復した！`);updateMultiBattleView();return;
+    appendMultiLog(`💚 ${a.name}はHPを${amount}回復した！`);updateMultiBattleView();return {animated:supportAnimated};
   }
-  if(effect==='buff'){if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);appendMultiLog(`⬆️ ${a.name}の攻撃力が上がった！`);return;}
+  if(effect==='buff'){if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);appendMultiLog(`⬆️ ${a.name}の攻撃力が上がった！`);return {animated:supportAnimated};}
   const targetEntry=defenderIsPlayer?null:target;
-  if(effect==='debuff'){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return;}
-  if(effect==='aqua_shield'){if(actorIsPlayer)pAquaShield=true;else actor.aquaShield=true;appendMultiLog(`💧 ${a.name}は水の盾を展開した！`);return;}
+  if(effect==='debuff'){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return {animated:supportAnimated};}
+  if(effect==='aqua_shield'){if(actorIsPlayer)pAquaShield=true;else actor.aquaShield=true;appendMultiLog(`💧 ${a.name}は水の盾を展開した！`);return {animated:supportAnimated};}
   if(effect==='sleep'&&power<=0){
     const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.7):{chance:effectChance??.7,boosted:false};
     const boostMsg=chance.boosted?'<br>⭐ 星運上昇で成功率アップ！':'';
     if(Math.random()<chance.chance){if(defenderIsPlayer)pSleepTurns=2;else targetEntry.sleepTurns=2;appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
-    updateMultiBattleView();return;
+    updateMultiBattleView();return {animated:supportAnimated};
   }
-  const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move):false;
   if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return {animated};}
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);

@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-support-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: '回復・強化・防御技にも専用演出を追加しました',
+    body: '回復、能力強化、防御、水の盾、睡眠の補助技に、属性色付きの専用演出を追加しました。これですべての攻撃技と補助技が演出に対応しました。'
+  }),
+  Object.freeze({
     id: '20260826-battle-all-attack-motion',
     date: '2026-08-26',
     category: 'update',
