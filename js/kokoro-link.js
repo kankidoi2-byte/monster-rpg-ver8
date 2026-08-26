@@ -8,7 +8,7 @@ const KOKORO_LINK_CONFIG = Object.freeze({
 });
 
 const KOKORO_LINK_ABILITY_RULES = Object.freeze({
-  version:'phase4-0',
+  version:'phase5-1',
   timing:'link-activation',
   resolutionCount:1,
   primaryTypeOnly:true,
@@ -29,6 +29,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
     fateChanceBonus:.15,
     debuffRate:.20,
     penetrationRate:.20,
+    waterMirrorReductionRate:.30,
     costReduction:1,
     minimumBattleCost:1,
     durationTurns:2
@@ -50,7 +51,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
   attributes:Object.freeze({
     normal:Object.freeze({power:'balanced_boost',status:'origin_weaken',tactics:'origin_choice'}),
     fire:Object.freeze({power:'attack_boost',status:'burn',tactics:'recoil_guard'}),
-    water:Object.freeze({power:'barrier_boost',status:'slow',tactics:'cost_reduction'}),
+    water:Object.freeze({power:'barrier_boost',status:'slow',tactics:'water_mirror_guard'}),
     grass:Object.freeze({power:'regeneration',status:'poison',tactics:'instant_heal'}),
     thunder:Object.freeze({power:'speed_boost',status:'paralysis',tactics:'action_priority'}),
     wind:Object.freeze({power:'evasion',status:'action_delay',tactics:'free_switch'}),
@@ -83,6 +84,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
     origin_choice:Object.freeze({target:'ally',kind:'choice',options:Object.freeze(['small_heal','cleanse','cost_reduction'])}),
     small_heal:Object.freeze({target:'ally',kind:'heal',maxHpRate:.10}),
     recoil_guard:Object.freeze({target:'ally',kind:'recoil-guard',charges:1}),
+    water_mirror_guard:Object.freeze({target:'ally',kind:'damage-reduction',rate:.30,charges:1}),
     cost_reduction:Object.freeze({target:'ally',kind:'cost-reduction',amount:1,minimumCost:1,charges:1}),
     instant_heal:Object.freeze({target:'ally',kind:'heal',maxHpRate:.20}),
     action_priority:Object.freeze({target:'ally',kind:'action-order',charges:1}),
@@ -239,6 +241,7 @@ function buildKokoroLinkTacticsAbility(plan){
   const definitions={
     origin_choice:{label:'原初選択',summary:'HP10%回復／状態異常解除から選択',options:[{id:'small_heal',label:'小回復',summary:'最大HP10%回復'},{id:'cleanse',label:'浄化',summary:'状態異常をすべて解除'},{id:'cost_reduction',label:'技コスト軽減',summary:'戦闘内コスト実装まで保留',deferred:true}]},
     recoil_guard:{label:'炎身不動',summary:'次の反動ダメージを1回無効',charges:1},
+    water_mirror_guard:{label:'水鏡の護り',summary:'次に受ける直接ダメージを30%軽減（1回）',charges:1,reductionRate:.30},
     cost_reduction:{label:'水脈節約',summary:'戦闘内コスト実装まで保留',deferred:true},
     instant_heal:{label:'森命活性',summary:'最大HP20%を即時回復',maxHpRate:.20},
     action_priority:{label:'雷迅先行',summary:'次の行動を最優先',charges:1},
@@ -555,20 +558,28 @@ function tickKokoroLinkRegeneration(instance,currentHp,maxHp){
 function absorbKokoroLinkDamage(instance,damage,randomFn=Math.random){
   const incoming=Math.max(0,Math.floor(Number(damage) || 0));
   const link=kokoroLinkEffectForInstance(instance);
-  if(!link) return {incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,evaded:false,barrierRemaining:0};
+  if(!link) return {incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,reductionLabel:null,evaded:false,barrierRemaining:0};
   const ability=link.powerAbility;
   if(ability?.id === 'evasion' && ability.charges > 0){
     ability.charges--;
-    if(randomFn() < (Number(ability.chance)||0)) return {incoming,afterReduction:0,hpDamage:0,absorbed:0,reduced:0,evaded:true,barrierRemaining:link.barrierRemaining};
+    if(randomFn() < (Number(ability.chance)||0)) return {incoming,afterReduction:0,hpDamage:0,absorbed:0,reduced:0,reductionLabel:null,evaded:true,barrierRemaining:link.barrierRemaining};
   }
   let reduced=0;
+  let reductionLabel=null;
   if(ability?.id === 'first_hit_guard' && ability.charges > 0){
     ability.charges--;
     reduced=Math.floor(incoming*(Number(ability.reductionRate)||0));
+    reductionLabel=ability.label;
+  }
+  const tacticsAbility=link.tacticsAbility;
+  if(incoming>0&&tacticsAbility?.id==='water_mirror_guard'&&tacticsAbility.charges>0){
+    tacticsAbility.charges--;
+    reduced=Math.floor(incoming*(Number(tacticsAbility.reductionRate)||0));
+    reductionLabel=tacticsAbility.label;
   }
   const afterReduction=Math.max(0,incoming-reduced);
-  if(link.barrierRemaining <= 0) return {incoming,afterReduction,hpDamage:afterReduction,absorbed:0,reduced,evaded:false,barrierRemaining:0};
+  if(link.barrierRemaining <= 0) return {incoming,afterReduction,hpDamage:afterReduction,absorbed:0,reduced,reductionLabel,evaded:false,barrierRemaining:0};
   const absorbed=Math.min(afterReduction,link.barrierRemaining);
   link.barrierRemaining-=absorbed;
-  return {incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,evaded:false,barrierRemaining:link.barrierRemaining};
+  return {incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,reductionLabel,evaded:false,barrierRemaining:link.barrierRemaining};
 }

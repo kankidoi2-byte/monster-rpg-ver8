@@ -21,6 +21,7 @@ assert.equal(contract.rules.bossResistanceMultiplier,.50);
 assert.equal(contract.rules.enemyEffectBaseChance * contract.rules.bossResistanceMultiplier,.35);
 assert.equal(contract.rules.caps.actionControlTurns,1);
 assert.equal(contract.rules.caps.durationTurns,2);
+assert.equal(contract.rules.caps.waterMirrorReductionRate,.30);
 assert.equal(contract.rules.caps.costReduction,1);
 assert.equal(contract.rules.caps.minimumBattleCost,1);
 
@@ -49,16 +50,16 @@ assert(plans.filter(({profile})=>profile.rarity === 3).every(({plan})=>plan.band
 const dualType={id:'dual',name:'dual',entityKind:'monster',rarity:'★★',types:['water','dragon']};
 const dualPlan=contract.buildKokoroLinkAbilityPlan(contract.buildKokoroLinkProfile(dualType,{uid:'dual',level:1}));
 assert.deepEqual(plain({...dualPlan,ability:undefined}),{
-  rulesVersion:'phase4-0',band:'status',bandLabel:'属性・状態異常',primaryType:'water',abilityId:'slow',
+  rulesVersion:'phase5-1',band:'status',bandLabel:'属性・状態異常',primaryType:'water',abilityId:'slow',
   timing:'link-activation',resolutionCount:1,successRule:'enemy-resisted',deferredReason:null
 });
 
-const costPlan=contract.buildKokoroLinkAbilityPlan(contract.buildKokoroLinkProfile(
+const waterGuardPlan=contract.buildKokoroLinkAbilityPlan(contract.buildKokoroLinkProfile(
   {id:'water-three',name:'water-three',entityKind:'monster',rarity:'★★★',types:['water']},
   {uid:'water-three',level:1}
 ));
-assert.equal(costPlan.abilityId,'cost_reduction');
-assert.equal(costPlan.deferredReason,'battle-cost-resource-required');
+assert.equal(waterGuardPlan.abilityId,'water_mirror_guard');
+assert.equal(waterGuardPlan.deferredReason,null);
 
 const malformedPlan=contract.buildKokoroLinkAbilityPlan({rarity:2,primaryType:'unknown',abilityEligible:true});
 assert.equal(malformedPlan.primaryType,'normal','unknown attributes must safely use the universal normal matrix');

@@ -10,7 +10,7 @@ const types=['normal','fire','water','grass','thunder','wind','light','dark','st
 const expected={
   1:{band:'power',ids:['balanced_boost','attack_boost','barrier_boost','regeneration','speed_boost','evasion','first_hit_guard','life_steal','fate_boost','move_power_boost'],rate:.35},
   2:{band:'status',ids:['origin_weaken','burn','slow','poison','paralysis','action_delay','dazzle','confusion','sleep','attack_down'],rate:.26},
-  3:{band:'tactics',ids:['origin_choice','recoil_guard','cost_reduction','instant_heal','action_priority','free_switch','cleanse','dispel','foresight','penetration'],rate:.19},
+  3:{band:'tactics',ids:['origin_choice','recoil_guard','water_mirror_guard','instant_heal','action_priority','free_switch','cleanse','dispel','foresight','penetration'],rate:.19},
   4:{band:null,ids:[],rate:.13},
   5:{band:null,ids:[],rate:.10}
 };

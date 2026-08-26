@@ -9,7 +9,7 @@ const api=vm.runInContext(`({
   kokoroLinkTacticsAbilityStatus,markKokoroLinkTacticsResolved,resolveKokoroLinkTacticsChoice,
   consumeKokoroLinkRecoilGuard,consumeKokoroLinkActionPriority,consumeKokoroLinkFreeSwitch,
   consumeKokoroLinkPenetration,setKokoroLinkForesight,consumeKokoroLinkForesightMove,
-  kokoroLinkForesightTextForTarget
+  kokoroLinkForesightTextForTarget,absorbKokoroLinkDamage
 })`,context);
 const plain=value=>JSON.parse(JSON.stringify(value));
 const monster=type=>({id:type,name:type,entityKind:'monster',rarity:'★★★',types:[type],moves:[['技',40,type]]});
@@ -21,7 +21,9 @@ for(const type of types){
   assert(resolved.tacticsAbility,`${type} must have a three-star tactics ability`);
   assert.equal(resolved.powerAbility,null);assert.equal(resolved.statusAbility,null);
 }
-assert.equal(api.resolveKokoroLink(monster('water'),{uid:'water'},targetStats).tacticsAbility.deferred,true,'cost reduction must remain deferred');
+assert.deepEqual(plain(api.resolveKokoroLink(monster('water'),{uid:'water'},targetStats).tacticsAbility),{
+  id:'water_mirror_guard',label:'水鏡の護り',summary:'次に受ける直接ダメージを30%軽減（1回）',charges:1,reductionRate:.3,resolved:false,selectedOption:null
+});
 assert.equal(api.resolveKokoroLink(monster('normal'),{uid:'normal'},targetStats).tacticsAbility.options.find(option=>option.id==='cost_reduction').deferred,true);
 
 const activate=type=>{
@@ -40,6 +42,14 @@ const activate=type=>{
 {
   const {instance,link}=activate('fire');api.markKokoroLinkTacticsResolved(link);
   assert.equal(api.consumeKokoroLinkRecoilGuard(instance),true);assert.equal(api.consumeKokoroLinkRecoilGuard(instance),false);
+}
+{
+  const {instance,link}=activate('water');link.barrierRemaining=20;api.markKokoroLinkTacticsResolved(link);
+  const first=api.absorbKokoroLinkDamage(instance,100);
+  assert.equal(first.reduced,30);assert.equal(first.absorbed,20);assert.equal(first.hpDamage,50);assert.equal(first.reductionLabel,'水鏡の護り');
+  const second=api.absorbKokoroLinkDamage(instance,100);
+  assert.equal(second.reduced,0);assert.equal(second.hpDamage,100);
+  assert.match(api.kokoroLinkTacticsAbilityStatus(instance),/使用済み/);
 }
 {
   const {instance,link}=activate('thunder');api.markKokoroLinkTacticsResolved(link);
@@ -70,7 +80,9 @@ assert(snapshot.activeLinks[0].tacticsAbility,'battle snapshot must include tact
 const battleContext=vm.createContext({console,Math,document:{querySelector:()=>true}});
 vm.runInContext(fs.readFileSync(new URL('../js/battle-rules.js',import.meta.url),'utf8'),battleContext,{filename:'js/battle-rules.js'});
 const penetratedMultiplier=vm.runInContext('kokoroLinkPenetratedMultiplier',battleContext);
+const defenseMessage=vm.runInContext('kokoroLinkDefenseMessage',battleContext);
 assert.equal(penetratedMultiplier(.5,.2),.7,'penetration must remove 20 percentage points of resistance');
 assert.equal(penetratedMultiplier(.9,.2),1,'penetration must not exceed neutral effectiveness');
 assert.equal(penetratedMultiplier(1.5,.2),1.5,'penetration must not alter weakness multipliers');
-console.log('Kokoro Link Phase 4-3 tactics abilities validated (10 attributes, choice, deferral, one-shot charges, foresight, and penetration).');
+assert.equal(defenseMessage({reduced:30,reductionLabel:'水鏡の護り',absorbed:0,evaded:false}),'✨ 水鏡の護りが30ダメージを軽減！');
+console.log('Kokoro Link tactics abilities validated (10 attributes, choice, water guard, one-shot charges, foresight, and penetration).');

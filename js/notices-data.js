@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-kokoro-link-water-mirror-guard',
+    date: '2026-08-26',
+    category: 'update',
+    title: '★3水属性のリンク能力を変更しました',
+    body: '保留中だった「水脈節約」を「水鏡の護り」へ変更しました。次に受ける直接ダメージを30％軽減し、1回発動すると消費します。'
+  }),
+  Object.freeze({
     id: '20260826-kokoro-link-active-details',
     date: '2026-08-26',
     category: 'fix',

@@ -11,7 +11,7 @@ function typeEff(atkTypeOrTypes, defTypes) {
 (function loadMultiBattleModule() {
   if (document.querySelector('script[data-multi-battle]')) return;
   const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=kokoro-link-phase4-3';
+  script.src = 'js/multi-battle.js?v=kokoro-link-phase5-1';
   script.dataset.multiBattle = 'true';
   document.head.appendChild(script);
 })();
@@ -21,13 +21,13 @@ function alchemyRecoilDamage(actualDamage){
 function resolvePlayerIncomingDamage(damage){
   if(typeof absorbKokoroLinkDamage==='function')return absorbKokoroLinkDamage(activeInstance,damage);
   const incoming=Math.max(0,Math.floor(Number(damage)||0));
-  return {incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,evaded:false,barrierRemaining:0};
+  return {incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,reductionLabel:null,evaded:false,barrierRemaining:0};
 }
 function kokoroLinkDefenseMessage(result){
   if(!result)return '';
   const messages=[];
   if(result.evaded)messages.push('🌪️ 風渡りで攻撃を回避！');
-  if(result.reduced)messages.push(`✨ 光護の一閃が${result.reduced}ダメージを軽減！`);
+  if(result.reduced)messages.push(`✨ ${result.reductionLabel||'リンク能力'}が${result.reduced}ダメージを軽減！`);
   if(result.absorbed)messages.push(`💞 ココロ障壁が${result.absorbed}ダメージを防いだ！（残り${result.barrierRemaining}）`);
   return messages.join('<br>');
 }
