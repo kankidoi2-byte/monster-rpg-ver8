@@ -41,7 +41,16 @@ const clubMove = motion.skillToMove('skill_goblin_01');
 const daggerMove = motion.skillToMove('skill_goblin_03');
 const roarMove = motion.skillToMove('skill_false_dragon_gamma_02');
 const roarSupportMove = motion.skillToMove('skill_freiwolf_03');
-const genericMove = motion.skillToMove('skill_grassbeat_01');
+const genericMotionCases = [
+  ['skill_grassbeat_01','blade'],
+  ['skill_nightmare_01','strike'],
+  ['skill_orca_stream_02','charge'],
+  ['skill_tienhairon_03','wave'],
+  ['skill_grassbeat_04','projectile'],
+  ['skill_spaquinn_01','lightning'],
+  ['skill_voltax_01','field'],
+  ['skill_nightmare_02','mystic']
+];
 
 assert.equal(breathMove[8], 'skill_nemes_03', 'converted moves must retain their fixed skill ID');
 assert.deepEqual(
@@ -69,7 +78,11 @@ for(const move of [tailMove,hornMove,fistMove,wingMove,finMove,legMove,beakMove,
 }
 assert.equal(motion.skillBattleMotionForMove(roarMove).animated, true, 'damage roar tags must select a shockwave motion');
 assert.equal(motion.skillBattleMotionForMove(roarSupportMove).animated, false, 'support roar skills must not launch an attack shockwave');
-assert.equal(motion.skillBattleMotionForMove(genericMove).animated, false, 'unimplemented forms must retain the existing impact-only presentation');
+for(const [skillId,form] of genericMotionCases){
+  const descriptor=motion.skillBattleMotionForMove(motion.skillToMove(skillId));
+  assert.equal(descriptor.form, form, `${skillId} must select its supplemented motion family`);
+  assert.equal(descriptor.animated, true, `${skillId} must receive a supplemented attack motion`);
+}
 
 const originalBreath = motion.by('nemes').moves.find(move => move[0] === 'コスモブレス');
 assert(originalBreath, 'the source monster must still expose its original breath move');
@@ -88,15 +101,30 @@ const anatomyCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && ['tail','horn','fist','wing','fin','leg','beak','club','dagger'].some(form => card.tags.includes(`form:${form}`)));
 const roarCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && card.tags.includes('form:roar'));
+const genericDamageCards = motion.cards
+  .filter(card => card.tags.includes('role:damage') && card.tags.includes('form:generic'));
+const damageCards = motion.cards.filter(card => card.tags.includes('role:damage'));
 assert.equal(projectileCards.length, 8, 'the tagged catalog must include the expected breath and beam attack set');
 assert.equal(meleeCards.length, 28, 'the tagged catalog must include the expected sword, claw, and fang attack set');
 assert.equal(rangedCards.length, 40, 'the tagged catalog must include the expected magic and flying-blade attack set');
 assert.equal(impactCards.length, 20, 'the tagged catalog must include the expected charge, strike, and body attack set');
 assert.equal(anatomyCards.length, 21, 'the tagged catalog must include the expected anatomy and weapon attack set');
 assert.equal(roarCards.length, 3, 'the tagged catalog must include the expected damage roar set');
-for (const card of [...projectileCards,...meleeCards,...rangedCards,...impactCards,...anatomyCards,...roarCards]) {
+assert.equal(genericDamageCards.length, 35, 'the catalog must retain the expected generic attack set without changing card taxonomy');
+assert.equal(damageCards.length, 155, 'the catalog must retain the complete attack set');
+const supplementedCounts=Object.create(null);
+for(const card of genericDamageCards){
+  const form=motion.skillBattleMotionForMove(motion.skillToMove(card.id)).form;
+  supplementedCounts[form]=(supplementedCounts[form]||0)+1;
+}
+assert.deepEqual(
+  {...supplementedCounts},
+  {wave:5,blade:2,mystic:4,projectile:5,lightning:5,field:7,charge:6,strike:1},
+  'generic attack motions must stay in their reviewed visual families'
+);
+for (const card of damageCards) {
   const descriptor = motion.skillBattleMotionForMove(motion.skillToMove(card.id));
-  assert.equal(descriptor.animated, true, `${card.id} must receive its tagged attack motion`);
+  assert.equal(descriptor.animated, true, `${card.id} must receive an attack motion`);
   assert(card.types.every(type => descriptor.types.includes(type)), `${card.id} must preserve its attribute colors`);
 }
 
@@ -168,6 +196,25 @@ assert(roarEffect.className.includes('battle-skill-motion') && roarEffect.classN
 assert(Number.parseFloat(roarEffect.style.width) > 100, 'roar must span from attacker toward target');
 assert.equal(roarEffect.removed, true, 'roar must be removed after its animation');
 
+for (const [skillId,form] of [['skill_tienhairon_03','wave'],['skill_grassbeat_04','projectile']]) {
+  const supplementedRendered = await vm.runInContext(`playBattleSkillMotion('sourceVis','targetVis',skillToMove('${skillId}'))`, context);
+  const supplementedEffect = stage.appended;
+  assert.equal(supplementedRendered, true, `${form} must travel toward the target`);
+  assert(supplementedEffect.className.includes('battle-skill-motion') && supplementedEffect.className.includes(`is-${form}`), `${form} must use its traveling visual class`);
+  assert(Number.parseFloat(supplementedEffect.style.width) > 100, `${form} must span from attacker toward target`);
+  assert.equal(supplementedEffect.removed, true, `${form} must be removed after its animation`);
+}
+
+for (const [skillId,form] of [['skill_spaquinn_01','lightning'],['skill_voltax_01','field'],['skill_nightmare_02','mystic']]) {
+  const arcaneRendered = await vm.runInContext(`playBattleSkillMotion('sourceVis','targetVis',skillToMove('${skillId}'))`, context);
+  const arcaneEffect = stage.appended;
+  assert.equal(arcaneRendered, true, `${form} must render on the target`);
+  assert(arcaneEffect.className.includes('battle-arcane-motion') && arcaneEffect.className.includes(`is-${form}`), `${form} must use its target-local visual class`);
+  assert.equal(arcaneEffect.style.left, '280px', `${form} must be centered on the target horizontally`);
+  assert.equal(arcaneEffect.style.top, '90px', `${form} must be centered on the target vertically`);
+  assert.equal(arcaneEffect.removed, true, `${form} must be removed after its animation`);
+}
+
 for (const [skillId,form] of [['skill_freigal_03','charge'],['skill_icegolem_03','strike'],['skill_slime_01','body']]) {
   const impactRendered = await vm.runInContext(`playBattleSkillMotion('sourceVis','targetVis',skillToMove('${skillId}'))`, context);
   const impactEffect = stage.appended;
@@ -213,6 +260,11 @@ assert(css.includes('.battle-anatomy-motion.is-sweep') && css.includes('@keyfram
 assert(css.includes('.battle-anatomy-motion.is-pierce') && css.includes('@keyframes battlePierceThrust'), 'piercing anatomy styling is missing');
 assert(css.includes('.battle-anatomy-motion.is-blunt') && css.includes('@keyframes battleBluntBurst'), 'blunt anatomy styling is missing');
 assert(css.includes('.battle-skill-motion.is-roar') && css.includes('@keyframes battleRoarWave'), 'roar shockwave styling is missing');
-assert(css.includes('.battle-skill-motion,.battle-melee-motion,.battle-impact-motion,.battle-anatomy-motion{display:none}'), 'reduced-motion users must be able to skip attack motion');
+assert(css.includes('.battle-skill-motion.is-wave') && css.includes('@keyframes battleWaveTravel'), 'wave styling is missing');
+assert(css.includes('.battle-skill-motion.is-projectile') && css.includes('@keyframes battleElementProjectile'), 'element projectile styling is missing');
+assert(css.includes('.battle-arcane-motion.is-lightning') && css.includes('@keyframes battleLightningStrike'), 'lightning styling is missing');
+assert(css.includes('.battle-arcane-motion.is-field') && css.includes('@keyframes battleFieldBurst'), 'field attack styling is missing');
+assert(css.includes('.battle-arcane-motion.is-mystic') && css.includes('@keyframes battleMysticSpiral'), 'mystic styling is missing');
+assert(css.includes('.battle-skill-motion,.battle-melee-motion,.battle-impact-motion,.battle-anatomy-motion,.battle-arcane-motion{display:none}'), 'reduced-motion users must be able to skip attack motion');
 
-console.log(`Battle skill motion validation passed (${projectileCards.length} breath/beam, ${meleeCards.length} melee, ${rangedCards.length} magic/blade, ${impactCards.length} charge/strike/body, ${anatomyCards.length} anatomy/weapon, and ${roarCards.length} roar attacks, normal and multi-battle wiring, reduced-motion fallback).`);
+console.log(`Battle skill motion validation passed (all ${damageCards.length} attacks: ${projectileCards.length} breath/beam, ${meleeCards.length} melee, ${rangedCards.length} magic/blade, ${impactCards.length} charge/strike/body, ${anatomyCards.length} anatomy/weapon, ${roarCards.length} roar, and ${genericDamageCards.length} supplemented generic attacks; normal and multi-battle wiring, reduced-motion fallback).`);

@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260826-battle-all-attack-motion',
+    date: '2026-08-26',
+    category: 'update',
+    title: 'すべての攻撃技に専用演出を追加しました',
+    body: '波動、葉や光の投射物、雷撃、嵐などの範囲攻撃、幻術・吸収など、残っていた攻撃技にも属性色付きの演出を追加しました。これですべての攻撃技が演出に対応しました。'
+  }),
+  Object.freeze({
     id: '20260826-battle-roar-motion',
     date: '2026-08-26',
     category: 'update',
