@@ -10,7 +10,7 @@ assert.equal(rows.length,50*49*TARGET_LEVELS.length,'every distinct source/targe
 assert(rows.every(row=>Object.values(row).every(value=>typeof value!=='number'||Number.isFinite(value))),'all measured values must be finite');
 assert(rows.every(row=>Math.abs(row.effectRate-runtime.config.conversion.baseEffectRate*runtime.config.rarityMultipliers[row.rarity])<1e-9),'source level and target level must not change rarity rates');
 
-assert.deepEqual(analysis.raritySummary.map(row=>row.sourceCount),[10,18,13,4,5]);
+assert.deepEqual(analysis.raritySummary.map(row=>row.sourceCount),[10,19,13,3,5]);
 assert.deepEqual(analysis.raritySummary.map(row=>row.basePackage),[1.05,.78,.57,.39,.3]);
 assert(analysis.raritySummary.every((row,index,all)=>index===0||row.basePackage<all[index-1].basePackage),'base packages must decrease with rarity');
 assert.equal(analysis.raritySummary[0].persistentBoostSourceCount,5,'five actual ★1 sources have persistent numeric power boosts');

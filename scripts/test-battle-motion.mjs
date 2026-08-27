@@ -109,20 +109,20 @@ const genericDamageCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && card.tags.includes('form:generic'));
 const damageCards = motion.cards.filter(card => card.tags.includes('role:damage'));
 const supportCards = motion.cards.filter(card => card.tags.includes('role:support'));
-assert.equal(projectileCards.length, 8, 'the tagged catalog must include the expected breath and beam attack set');
-assert.equal(meleeCards.length, 28, 'the tagged catalog must include the expected sword, claw, and fang attack set');
-assert.equal(rangedCards.length, 40, 'the tagged catalog must include the expected magic and flying-blade attack set');
+assert.equal(projectileCards.length, 9, 'the tagged catalog must include the expected breath and beam attack set');
+assert.equal(meleeCards.length, 29, 'the tagged catalog must include the expected sword, claw, and fang attack set');
+assert.equal(rangedCards.length, 42, 'the tagged catalog must include the expected magic and flying-blade attack set');
 assert.equal(impactCards.length, 20, 'the tagged catalog must include the expected charge, strike, and body attack set');
-assert.equal(anatomyCards.length, 21, 'the tagged catalog must include the expected anatomy and weapon attack set');
+assert.equal(anatomyCards.length, 22, 'the tagged catalog must include the expected anatomy and weapon attack set');
 assert.equal(roarCards.length, 3, 'the tagged catalog must include the expected damage roar set');
 assert.equal(genericDamageCards.length, 35, 'the catalog must retain the expected generic attack set without changing card taxonomy');
-assert.equal(damageCards.length, 155, 'the catalog must retain the complete attack set');
-assert.equal(supportCards.length, 36, 'the catalog must retain the complete support set');
+assert.equal(damageCards.length, 160, 'the catalog must retain the complete attack set');
+assert.equal(supportCards.length, 40, 'the catalog must retain the complete support set');
 const supportCounts=Object.create(null);
 for(const card of supportCards){
   supportCounts[card.effect]=(supportCounts[card.effect]||0)+1;
 }
-assert.deepEqual({...supportCounts},{buff:7,aqua_shield:1,heal:6,sleep:1,guard:21},'support skills must retain their reviewed effect counts');
+assert.deepEqual({...supportCounts},{buff:8,aqua_shield:1,heal:8,sleep:1,guard:22},'support skills must retain their reviewed effect counts');
 const supplementedCounts=Object.create(null);
 for(const card of genericDamageCards){
   const form=motion.skillBattleMotionForMove(motion.skillToMove(card.id)).form;
@@ -144,7 +144,7 @@ for(const card of supportCards){
   assert(['guard','heal','buff','shield','sleep'].includes(descriptor.form),`${card.id} must resolve to a support motion family`);
   assert(card.types.every(type=>descriptor.types.includes(type)),`${card.id} must preserve its support attribute colors`);
 }
-assert.equal(damageCards.length+supportCards.length,191,'all fixed skills must be covered by battle motion validation');
+assert.equal(damageCards.length+supportCards.length,200,'all fixed skills must be covered by battle motion validation');
 
 const battleView = read('js/battle-view.js');
 const battleRules = read('js/battle-rules.js');
