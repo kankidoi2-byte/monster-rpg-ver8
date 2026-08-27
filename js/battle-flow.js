@@ -357,6 +357,7 @@ function win() {
   save.history.logs = save.history.logs||[];
   save.history.logs.push(`${enemy.name}に勝利`);
   if (save.history.logs.length > 30) save.history.logs = save.history.logs.slice(-30);
+  if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]});
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
   saveGame();
   document.getElementById('log').innerHTML = msg;

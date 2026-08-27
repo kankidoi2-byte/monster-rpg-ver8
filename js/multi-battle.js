@@ -330,7 +330,7 @@ function winMultiBattle(){
   const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
   if(!selectedMap?.goldenLand&&grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId))msg+='<br>🗺️ 黄金郷への地図を入手！';
-  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();saveGame();
+  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',multi:true,enemies:multiBattle.enemies.map(entry=>entry.mon)});if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();saveGame();
   document.getElementById('log').innerHTML=msg;
   showBattleOutcome({kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`});
   renderMultiContractPanel();renderParty();setTimeout(processNextEvolution,300);
@@ -346,7 +346,7 @@ function selectMultiBattleContractTarget(id){const entry=multiEnemy(id);if(!entr
 async function useMultiBattleContractScroll(itemId){
   const entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;if(!entry||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[entry.id]){show('battle');return;}if((save.items[itemId]||0)<=0){alert(`${it.name}を持っていない！`);show('battle');return;}
   save.items[itemId]--;const rate=Math.min(.95,(entry.mon.catchRate??.25)*(it.catchMultiplier||1)),roll=Math.random(),animationStage=contractAnimationStage(roll,rate),ok=animationStage===3;multiBattle.contractAttempts[entry.id]=true;pendingMultiBattleContractId=null;
-  if(ok)addInstance(entry.mon.id);saveGame();show('battle');busy=true;await playContractAnimation({monsterName:entry.mon.name,stage:animationStage});
+  if(ok){addInstance(entry.mon.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(entry.mon.id);}saveGame();show('battle');busy=true;await playContractAnimation({monsterName:entry.mon.name,stage:animationStage});
   if(ok){appendMultiLog(`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`);}else{appendMultiLog(`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);}busy=false;updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();
 }
 function runAwayFromMultiBattle(){if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;}

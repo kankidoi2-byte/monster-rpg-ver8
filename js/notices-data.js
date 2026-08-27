@@ -7,6 +7,27 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260827-contractor-rank-rewards',
+    date: '2026-08-27',
+    category: 'update',
+    title: '契約者Rank報酬を追加しました',
+    body: 'Rank 2〜50に一度限りの報酬を追加しました。契約書、コイン、育成データ、錬成素材などを、契約者Rank画面から個別または一括で受け取れます。これまでの冒険記録から到達したRankの報酬も未受取として用意されます。'
+  }),
+  Object.freeze({
+    id: '20260827-contractor-title-menu',
+    date: '2026-08-27',
+    category: 'update',
+    title: '獲得した称号を装備できるようになりました',
+    body: 'メニューの「称号」から、契約者Rankで獲得した称号を1つ選んで装備できます。現在の称号は契約者Rank画面にも表示されます。称号は冒険の達成記録で、戦闘能力や利用できる機能には影響しません。'
+  }),
+  Object.freeze({
+    id: '20260827-contractor-rank-ui',
+    date: '2026-08-27',
+    category: 'update',
+    title: '契約者Rankを確認できるようになりました',
+    body: '討伐、契約、図鑑登録、進化、錬成、遠征などで契約者EXPを獲得し、冒険全体の歩みをRankとして記録します。上部のRank表示やメニューから進捗と最近の獲得履歴を確認でき、Rankアップ時は専用演出が表示されます。Rankによる機能制限や能力補正はありません。'
+  }),
+  Object.freeze({
     id: '20260826-fixed-hunt-difficulty',
     date: '2026-08-26',
     category: 'update',
