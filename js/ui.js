@@ -48,6 +48,7 @@ function show(id) {
   if (id === 'mapDex')   renderMapDex();
   if (id === 'itemDex')  renderItemDex();
   if (id === 'contractorRank') renderContractorRank();
+  if (id === 'contractorRankRewards') renderContractorRankRewards();
   if (id === 'contractorTitles') renderContractorTitles();
   if (id === 'partySet') renderPartySetup();
   if (id === 'shop')     renderShop();
@@ -91,6 +92,7 @@ function updateContractorRankHeader(){
   if(titleSummary)titleSummary.textContent=title?`装備中：${title.name}`:`${unlockedTitleCount}個獲得・称号未設定`;
 }
 function showContractorRank(){show('contractorRank');}
+function showContractorRankRewards(){show('contractorRankRewards');}
 function showContractorTitles(){show('contractorTitles');}
 function contractorRecentExpTime(value){
   const date=new Date(value);
@@ -106,6 +108,8 @@ function renderContractorRank(){
   const nextTitle=CONTRACTOR_TITLE_CATALOG.find(title=>title.category==='rank'&&title.rank>progress.rank)||null;
   const recent=[...state.recentExp].reverse().slice(0,8);
   const unlockedRankTitles=CONTRACTOR_TITLE_CATALOG.filter(title=>title.category==='rank'&&state.unlockedTitleIds.includes(title.id));
+  const pendingRewardRanks=unclaimedContractorRankRewardRanks();
+  const nextReward=progress.rank<CONTRACTOR_MAX_RANK?contractorRankReward(progress.rank+1):null;
   const progressText=progress.isMax?'MAX':`${progress.currentExp.toLocaleString('ja-JP')} / ${progress.requiredExp.toLocaleString('ja-JP')} EXP`;
   const migration=state.legacyMigrationSummary?.eligible?`<p class="contractor-migration-note">以前の勝利・図鑑・遠征記録から <strong>${Number(state.legacyMigrationSummary.grantedExp||0).toLocaleString('ja-JP')} EXP</strong> を復元済みです。</p>`:'';
   content.innerHTML=`
@@ -116,6 +120,11 @@ function renderContractorRank(){
       <small>累計 ${progress.totalExp.toLocaleString('ja-JP')} EXP</small>
     </section>
     ${migration}
+    <section class="contractor-rank-card contractor-reward-preview">
+      <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">RANK REWARDS</span><h2>Rank報酬</h2></div><b>${pendingRewardRanks.length?`未受取 ${pendingRewardRanks.length}件`:'未受取なし'}</b></div>
+      ${pendingRewardRanks.length?`<p>${pendingRewardRanks.length===1?`Rank ${pendingRewardRanks[0]}の報酬`:`Rank ${pendingRewardRanks[0]}など${pendingRewardRanks.length}件`}を受け取れます。</p><button type="button" onclick="claimAllContractorRewardsUi()">未受取をまとめて受け取る</button>`:nextReward?`<p>次はRank ${nextReward.rank}で新しい報酬を受け取れます。</p>`:'<p>Rank 50までの報酬をすべて受け取りました。</p>'}
+      <button type="button" class="secondary-button" onclick="showContractorRankRewards()">報酬一覧を見る ›</button>
+    </section>
     <section class="contractor-rank-card">
       <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">NEXT TITLE</span><h2>次の称号</h2></div><b>${unlockedRankTitles.length} / ${CONTRACTOR_TITLE_CATALOG.length}</b></div>
       ${nextTitle?`<div class="contractor-next-title"><span>Rank ${nextTitle.rank}</span><div><strong>${nextTitle.name}</strong><small>${nextTitle.description}</small></div></div>`:`<div class="contractor-next-title is-complete"><span>★</span><div><strong>すべてのRank称号を獲得</strong><small>星を結ぶ契約者として歩み続けましょう。</small></div></div>`}
@@ -130,6 +139,66 @@ function renderContractorRank(){
       <p>Rankによる機能制限やモンスターの能力補正はありません。</p>
     </section>`;
 }
+function contractorRewardItemMeta(itemId){return (typeof ITEM_BY_ID!=='undefined'&&ITEM_BY_ID[itemId])||{id:itemId,name:itemId,icon:'🎁'};}
+function contractorRewardParts(reward){
+  if(!reward)return [];
+  const parts=[];
+  if(reward.coins>0)parts.push(`🪙 コイン ${reward.coins.toLocaleString('ja-JP')}枚`);
+  Object.entries(reward.items).forEach(([itemId,count])=>{const item=contractorRewardItemMeta(itemId);parts.push(`${item.icon||'🎁'} ${item.name} ×${count}`);});
+  const title=reward.titleId?contractorTitleById(reward.titleId):null;
+  if(title)parts.push(`🎖️ 称号「${title.name}」（到達時獲得）`);
+  return parts;
+}
+function contractorRewardCard(reward,{compact=false}={}){
+  const state=ensureContractorState();
+  const currentRank=contractorRankFromExp(state.exp);
+  const claimed=state.claimedRankRewards.includes(reward.rank);
+  const available=currentRank>=reward.rank&&!claimed;
+  const status=claimed?'受取済み':available?'受取可能':`Rank ${reward.rank}で解放`;
+  const action=available?`<button type="button" onclick="claimContractorRewardUi(${reward.rank})">受け取る</button>`:`<button type="button" disabled>${status}</button>`;
+  return `<article class="contractor-reward-card${claimed?' is-claimed':''}${available?' is-available':''}${currentRank<reward.rank?' is-locked':''}${compact?' is-compact':''}">
+    <div class="contractor-reward-rank"><small>RANK</small><strong>${reward.rank}</strong></div>
+    <div class="contractor-reward-copy"><span>${status}</span><div>${contractorRewardParts(reward).map(part=>`<p>${part}</p>`).join('')}</div></div>${action}
+  </article>`;
+}
+function renderContractorRankRewards(){
+  const content=document.getElementById('contractorRewardContent');
+  if(!content||typeof contractorRankReward!=='function')return;
+  const progress=contractorRankProgress(save?.contractor?.exp||0);
+  const pendingRanks=unclaimedContractorRankRewardRanks();
+  const pendingRewards=pendingRanks.map(contractorRankReward).filter(Boolean);
+  const nextRewards=CONTRACTOR_RANK_REWARD_CATALOG.filter(reward=>reward.rank>progress.rank).slice(0,5);
+  content.innerHTML=`<section class="contractor-reward-summary">
+      <div><span class="ui-eyebrow">CURRENT RANK</span><strong>Rank ${progress.rank}</strong><small>${pendingRanks.length?`未受取 ${pendingRanks.length}件`:'受け取れる報酬はありません'}</small></div>
+      <button type="button" onclick="claimAllContractorRewardsUi()" ${pendingRanks.length?'':'disabled'}>すべて受け取る</button>
+    </section>
+    <section class="contractor-reward-section"><div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">AVAILABLE</span><h2>受取可能な報酬</h2></div></div>
+      <div class="contractor-reward-list">${pendingRewards.length?pendingRewards.map(reward=>contractorRewardCard(reward)).join(''):'<p class="contractor-reward-empty">現在受け取れる報酬はありません。</p>'}</div>
+    </section>
+    ${nextRewards.length?`<section class="contractor-reward-section"><div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">UP NEXT</span><h2>次の報酬</h2></div></div><div class="contractor-reward-list">${nextRewards.map(reward=>contractorRewardCard(reward,{compact:true})).join('')}</div></section>`:''}
+    <details class="contractor-reward-all"><summary>Rank 2〜50の全報酬を見る</summary><div class="contractor-reward-list">${CONTRACTOR_RANK_REWARD_CATALOG.map(reward=>contractorRewardCard(reward,{compact:true})).join('')}</div></details>`;
+}
+function contractorClaimNotice(result){
+  const count=Array.isArray(result.claimedRanks)?result.claimedRanks.length:result.claimed?1:0;
+  const parts=[];
+  if(result.coins>0)parts.push(`コイン${result.coins.toLocaleString('ja-JP')}枚`);
+  const itemCount=Object.values(result.items||{}).reduce((sum,value)=>sum+Number(value||0),0);
+  if(itemCount)parts.push(`アイテム${itemCount}個`);
+  return `Rank報酬${count>1?`${count}件`:''}を受け取りました${parts.length?`（${parts.join('・')}）`:''}。`;
+}
+function finishContractorRewardClaim(result){
+  if(!result?.claimed)return false;
+  if(typeof saveGame==='function')saveGame();
+  if(typeof updateItems==='function')updateItems();
+  updateAppResourceBar();
+  updateContractorRankHeader();
+  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
+  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+  if(typeof showUiNotice==='function')showUiNotice(contractorClaimNotice(result));
+  return true;
+}
+function claimContractorRewardUi(rank){return finishContractorRewardClaim(claimContractorRankReward(rank));}
+function claimAllContractorRewardsUi(){return finishContractorRewardClaim(claimAllContractorRankRewards());}
 function renderContractorTitles(){
   const content=document.getElementById('contractorTitleContent');
   if(!content||typeof contractorTitleById!=='function')return;
@@ -187,7 +256,7 @@ function presentNextContractorRankUp(){
   contractorRankUpPreviousFocus=document.activeElement;
   document.getElementById('contractorRankUpValue').textContent=`Rank ${entry.fromRank} → Rank ${entry.toRank}`;
   const titles=(entry.unlockedTitleIds||[]).map(contractorTitleById).filter(Boolean);
-  document.getElementById('contractorRankUpTitles').innerHTML=titles.length?titles.map(title=>`<p>称号「<strong>${title.name}</strong>」を獲得</p>`).join(''):'<p>新しいRankに到達しました。</p>';
+  document.getElementById('contractorRankUpTitles').innerHTML=`${titles.length?titles.map(title=>`<p>称号「<strong>${title.name}</strong>」を獲得</p>`).join(''):'<p>新しいRankに到達しました。</p>'}<p>Rank ${entry.toRank}までの報酬を受け取れます。</p>`;
   overlay.classList.remove('hidden');
   overlay.querySelector('button')?.focus();
 }
@@ -200,6 +269,7 @@ function closeContractorRankUp(){
   updateContractorRankHeader();
   if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
   if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
+  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
   contractorRankUpPreviousFocus?.focus?.();
   contractorRankUpPreviousFocus=null;
   scheduleContractorRankUpPresentation();
@@ -208,6 +278,7 @@ function refreshContractorRankUi(){
   updateContractorRankHeader();
   if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
   if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
+  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
   scheduleContractorRankUpPresentation();
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden'))closeContractorRankUp();});
@@ -215,7 +286,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
-  if(['moreMenu','contractorRank','contractorTitles','notices','expedition','shop','itemGacha','skillGacha','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
+  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','itemGacha','skillGacha','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){

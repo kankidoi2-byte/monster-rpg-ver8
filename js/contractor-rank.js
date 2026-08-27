@@ -26,6 +26,43 @@ const CONTRACTOR_TITLE_CATALOG = Object.freeze([
   Object.freeze({id:'rank_50_star_binder',name:'星を結ぶ契約者',category:'rank',rank:50,description:'星々を結ぶほどの契約を成し遂げた者の証。'})
 ]);
 
+const CONTRACTOR_NORMAL_MATERIAL_SET=Object.freeze({monster_bone:1,magic_crystal:1,metal_ore:1,unstable_alchemy_matter:1,raptor_feather:1,venom_carapace:1});
+const CONTRACTOR_FINE_MATERIAL_SET=Object.freeze({fine_monster_bone:1,fine_magic_crystal:1,fine_metal_ore:1,fine_unstable_alchemy_matter:1,fine_raptor_feather:1,fine_venom_carapace:1});
+const CONTRACTOR_RANK_REWARD_OVERRIDES=Object.freeze({
+  2:Object.freeze({items:Object.freeze({contract_scroll:2})}),
+  3:Object.freeze({items:Object.freeze({silver_contract_scroll:1})}),
+  4:Object.freeze({items:Object.freeze({potion:3,attack_potion:1})}),
+  5:Object.freeze({coins:150}),
+  6:Object.freeze({items:CONTRACTOR_NORMAL_MATERIAL_SET}),
+  7:Object.freeze({items:Object.freeze({mega_data:1})}),
+  8:Object.freeze({items:Object.freeze({gold_contract_scroll:1})}),
+  9:Object.freeze({coins:200}),
+  10:Object.freeze({items:Object.freeze({rainbow_contract_scroll:1})}),
+  12:Object.freeze({items:CONTRACTOR_FINE_MATERIAL_SET}),
+  15:Object.freeze({coins:500}),
+  20:Object.freeze({coins:750,items:Object.freeze({rainbow_contract_scroll:1,giga_data:1})}),
+  30:Object.freeze({coins:1000,items:Object.freeze({rainbow_contract_scroll:1})}),
+  40:Object.freeze({coins:1500,items:Object.freeze({giga_data:1})}),
+  50:Object.freeze({coins:2500,items:Object.freeze({rainbow_contract_scroll:2,giga_data:2})})
+});
+
+function contractorStandardRankReward(rank){
+  if(rank%3===0)return {coins:0,items:{kilo_data:Math.max(1,Math.floor(rank/15)+1)}};
+  return {coins:50+rank*10,items:{}};
+}
+
+function contractorRankReward(rank){
+  const normalized=Math.floor(Number(rank)||0);
+  if(normalized<2||normalized>CONTRACTOR_MAX_RANK)return null;
+  const standard=contractorStandardRankReward(normalized);
+  const hasOverride=Object.prototype.hasOwnProperty.call(CONTRACTOR_RANK_REWARD_OVERRIDES,normalized);
+  const override=CONTRACTOR_RANK_REWARD_OVERRIDES[normalized]||{};
+  const title=CONTRACTOR_TITLE_CATALOG.find(entry=>entry.category==='rank'&&entry.rank===normalized)||null;
+  return Object.freeze({rank:normalized,coins:Math.max(0,Math.floor(Number(hasOverride?(override.coins||0):standard.coins)||0)),items:Object.freeze(hasOverride?{...(override.items||{})}:{...standard.items}),titleId:title?.id||null});
+}
+
+const CONTRACTOR_RANK_REWARD_CATALOG=Object.freeze(Array.from({length:CONTRACTOR_MAX_RANK-1},(_,index)=>contractorRankReward(index+2)));
+
 function contractorExpToNextRank(rank){
   const normalized=Math.max(1,Math.min(CONTRACTOR_MAX_RANK,Math.floor(Number(rank)||1)));
   return normalized>=CONTRACTOR_MAX_RANK?0:100+(normalized-1)*50;
@@ -110,6 +147,36 @@ function availableContractorRankRewardRanks(){
 function unclaimedContractorRankRewardRanks(){
   const state=ensureContractorState();
   return availableContractorRankRewardRanks().filter(rank=>!state.claimedRankRewards.includes(rank));
+}
+
+function claimContractorRankReward(rank){
+  const state=ensureContractorState();
+  const reward=contractorRankReward(rank);
+  if(!reward)return {claimed:false,reason:'invalid_rank',rank:null,coins:0,items:{},titleId:null};
+  const currentRank=contractorRankFromExp(state.exp);
+  if(currentRank<reward.rank)return {claimed:false,reason:'rank_locked',rank:reward.rank,coins:0,items:{},titleId:reward.titleId};
+  if(state.claimedRankRewards.includes(reward.rank))return {claimed:false,reason:'already_claimed',rank:reward.rank,coins:0,items:{},titleId:reward.titleId};
+  if(!save.items||typeof save.items!=='object'||Array.isArray(save.items))save.items={};
+  save.coins=Math.max(0,Math.floor(Number(save.coins)||0))+reward.coins;
+  Object.entries(reward.items).forEach(([itemId,count])=>{save.items[itemId]=Math.max(0,Math.floor(Number(save.items[itemId])||0))+count;});
+  state.claimedRankRewards.push(reward.rank);
+  state.claimedRankRewards=[...new Set(state.claimedRankRewards)].sort((a,b)=>a-b);
+  if(reward.titleId)unlockContractorTitle(reward.titleId);
+  Object.keys(reward.items).forEach(itemId=>{if(typeof registerItemDex==='function')registerItemDex(itemId);});
+  return {claimed:true,reason:'claimed',rank:reward.rank,coins:reward.coins,items:{...reward.items},titleId:reward.titleId};
+}
+
+function claimAllContractorRankRewards(){
+  const targetRanks=unclaimedContractorRankRewardRanks();
+  const results=targetRanks.map(rank=>claimContractorRankReward(rank)).filter(result=>result.claimed);
+  return {
+    claimed:results.length>0,
+    reason:results.length?'claimed':'nothing_to_claim',
+    claimedRanks:results.map(result=>result.rank),
+    coins:results.reduce((sum,result)=>sum+result.coins,0),
+    items:results.reduce((items,result)=>{Object.entries(result.items).forEach(([id,count])=>{items[id]=(items[id]||0)+count;});return items;},{}),
+    results
+  };
 }
 
 function contractorGrantSummary(results=[]){

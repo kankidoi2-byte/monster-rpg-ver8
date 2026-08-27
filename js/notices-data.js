@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260827-contractor-rank-rewards',
+    date: '2026-08-27',
+    category: 'update',
+    title: '契約者Rank報酬を追加しました',
+    body: 'Rank 2〜50に一度限りの報酬を追加しました。契約書、コイン、育成データ、錬成素材などを、契約者Rank画面から個別または一括で受け取れます。これまでの冒険記録から到達したRankの報酬も未受取として用意されます。'
+  }),
+  Object.freeze({
     id: '20260827-contractor-title-menu',
     date: '2026-08-27',
     category: 'update',

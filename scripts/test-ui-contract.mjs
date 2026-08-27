@@ -26,7 +26,7 @@ expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','fr
 expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
 const screenIds = [
-  'home', 'growthHub', 'moreMenu', 'contractorRank', 'contractorTitles', 'notices', 'expedition', 'evolution', 'partySet', 'battleChoices',
+  'home', 'growthHub', 'moreMenu', 'contractorRank', 'contractorRankRewards', 'contractorTitles', 'notices', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
   'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
   'skillEdit', 'typeChart', 'dexHub', 'dex', 'characterDex', 'mapDex', 'itemDex'
@@ -57,6 +57,9 @@ expect(index.includes('id="contractorTitleContent"') && index.includes('onclick=
 expect(read('js/ui.js').includes('function renderContractorTitles') && read('js/ui.js').includes('function setContractorTitle'), 'contractor title equip UI is missing');
 expect(read('js/ui.js').includes('equipContractorTitle(titleId||null)') && read('js/ui.js').includes("if(typeof saveGame==='function')saveGame()"), 'contractor title selection must persist through the shared save path');
 expect(index.includes('称号による能力補正はありません。') && read('js/ui.js').includes('装備しても戦闘能力や利用できる機能は変わりません。'), 'contractor titles must clearly remain cosmetic only');
+expect(index.includes('id="contractorRewardContent"') && read('js/ui.js').includes('function renderContractorRankRewards'), 'contractor Rank reward screen is missing');
+expect(read('js/ui.js').includes('function claimContractorRewardUi') && read('js/ui.js').includes('function claimAllContractorRewardsUi'), 'individual and bulk contractor Rank reward actions are missing');
+expect(read('js/ui.js').includes('claimContractorRankReward(rank)') && read('js/ui.js').includes('claimAllContractorRankRewards()'), 'contractor Rank reward UI is not wired to the reward engine');
 expect(index.includes('class="screen battle-screen"'), 'portrait-first battle screen is missing');
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(index.includes('class="battle-command-pad"'), 'five-way battle command pad is missing');
