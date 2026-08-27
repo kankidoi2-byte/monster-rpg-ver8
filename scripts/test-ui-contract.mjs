@@ -26,7 +26,7 @@ expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','fr
 expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
 const screenIds = [
-  'home', 'growthHub', 'moreMenu', 'notices', 'expedition', 'evolution', 'partySet', 'battleChoices',
+  'home', 'growthHub', 'moreMenu', 'contractorRank', 'notices', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
   'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
   'skillEdit', 'typeChart', 'dexHub', 'dex', 'characterDex', 'mapDex', 'itemDex'
@@ -50,6 +50,9 @@ expect(index.includes('class="app-bottom-nav"'), 'new five-item navigation is mi
 expect(index.includes('class="home-adventure"'), 'new battle-first home entry is missing');
 expect(index.includes('id="homeNoticePreview"'), 'home notice preview is missing');
 expect(index.includes('id="noticeList"'), 'notice history list is missing');
+expect(index.includes('id="contractorRankView"') && index.includes('onclick="showContractorRank()"'), 'dynamic contractor Rank header entry is missing');
+expect(index.includes('id="contractorRankContent"') && read('js/ui.js').includes('function renderContractorRank'), 'contractor Rank details UI is missing');
+expect(index.includes('id="contractorRankUpOverlay"') && read('js/ui.js').includes('function closeContractorRankUp'), 'contractor Rank-up presentation is missing');
 expect(index.includes('class="screen battle-screen"'), 'portrait-first battle screen is missing');
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(index.includes('class="battle-command-pad"'), 'five-way battle command pad is missing');

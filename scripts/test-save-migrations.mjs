@@ -58,9 +58,10 @@ assert.equal(capped.instances[0].level,100,'legacy instances above the cap must 
 assert.equal(capped.instances[0].exp,0,'max-level instances must not retain overflow EXP');
 assert.equal(capped.levels.freigal,100,'legacy species levels above the cap must be clamped');
 
-const contractorRepair=prepare({schemaVersion:3,contractor:{exp:-20,claimedRankRewards:[1,2,2,51],expEventIds:['boss:a','boss:a',null],unlockedTitleIds:['rank_05_full_contractor','rank_05_full_contractor'],equippedTitleId:'missing',recentExp:[{amount:10,source:'battle',awardedAt:'now'},{amount:-4}],legacyMigrationVersion:-1}});
+const contractorRepair=prepare({schemaVersion:3,contractor:{exp:-20,claimedRankRewards:[1,2,2,51],expEventIds:['boss:a','boss:a',null],unlockedTitleIds:['rank_05_full_contractor','rank_05_full_contractor'],equippedTitleId:'missing',recentExp:[{amount:10,source:'battle',awardedAt:'now'},{amount:-4}],pendingRankUps:[{fromRank:1,toRank:5,unlockedTitleIds:['rank_05_full_contractor'],createdAt:'now'},{fromRank:5,toRank:5}],legacyMigrationVersion:-1}});
 assert.equal(contractorRepair.contractor.exp,0,'invalid contractor EXP must be repaired');
 assert.deepEqual([...contractorRepair.contractor.claimedRankRewards],[2],'rank reward claims must remain unique and in range');
+assert.equal(contractorRepair.contractor.pendingRankUps.length,1,'valid pending Rank-up notifications must survive repair');
 assert.deepEqual([...contractorRepair.contractor.expEventIds],['boss:a'],'contractor EXP event IDs must remain unique strings');
 assert.equal(contractorRepair.contractor.equippedTitleId,null,'an unavailable equipped title must be cleared');
 assert.equal(contractorRepair.contractor.recentExp.length,1,'invalid recent contractor EXP entries must be removed');

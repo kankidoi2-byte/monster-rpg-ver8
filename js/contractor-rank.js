@@ -63,6 +63,7 @@ function ensureContractorState(){
   if(!Array.isArray(save.contractor.expEventIds))save.contractor.expEventIds=[];
   if(!Array.isArray(save.contractor.unlockedTitleIds))save.contractor.unlockedTitleIds=[];
   if(!Array.isArray(save.contractor.recentExp))save.contractor.recentExp=[];
+  if(!Array.isArray(save.contractor.pendingRankUps))save.contractor.pendingRankUps=[];
   save.contractor.exp=Math.max(0,Math.min(CONTRACTOR_MAX_EXP,Math.floor(Number(save.contractor.exp)||0)));
   return save.contractor;
 }
@@ -121,6 +122,21 @@ function contractorGrantSummary(results=[]){
   };
 }
 
+function queueContractorRankUp(fromRank,toRank,unlockedTitleIds=[]){
+  const state=ensureContractorState();
+  if(toRank<=fromRank)return null;
+  const latest=state.pendingRankUps[state.pendingRankUps.length-1];
+  if(latest&&latest.toRank===fromRank){
+    latest.toRank=toRank;
+    latest.unlockedTitleIds=[...new Set([...(latest.unlockedTitleIds||[]),...unlockedTitleIds])];
+    return latest;
+  }
+  const entry={fromRank,toRank,unlockedTitleIds:[...new Set(unlockedTitleIds)],createdAt:new Date().toISOString()};
+  state.pendingRankUps.push(entry);
+  state.pendingRankUps=state.pendingRankUps.slice(-10);
+  return entry;
+}
+
 function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}={}){
   const state=ensureContractorState();
   const normalizedAmount=Math.max(0,Math.floor(Number(amount)||0));
@@ -139,6 +155,8 @@ function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}=
     state.recentExp=state.recentExp.slice(-20);
   }
   const unlockedTitleIds=syncContractorRankTitles();
+  if(newRank>oldRank)queueContractorRankUp(oldRank,newRank,unlockedTitleIds);
+  if(typeof refreshContractorRankUi==='function')refreshContractorRankUi();
   return {awarded:grantedAmount>0,reason:grantedAmount>0?'awarded':'max_rank',amount:grantedAmount,oldExp,newExp:state.exp,oldRank,newRank,reachedRanks,unlockedTitleIds};
 }
 
@@ -229,6 +247,7 @@ function migrateLegacyContractorProgress(){
   const currentMapDexCount=new Set(Array.isArray(save.mapDex)?save.mapDex:[]).size;
   const plan=eligible?contractorLegacyMigrationPlan():{wins:0,unitDexCount:currentUnitDexCount,itemDexCount:currentItemDexCount,mapDexCount:currentMapDexCount,dexMilestoneCount:Math.floor(currentUnitDexCount/10),expeditions:0,bosses:[],activityExp:0,dexMilestoneExp:Math.floor(currentUnitDexCount/10)*CONTRACTOR_ACTION_EXP.dexMilestone,bossExp:0,totalExp:0};
   const appliedAt=new Date().toISOString();
+  const existingPendingRankUps=state.pendingRankUps.slice();
   let grantedExp=0;
   if(plan.activityExp>0){
     const result=grantContractorExp(plan.activityExp,{source:'legacy_activity',eventId:'legacy:activity:v1',awardedAt:appliedAt});
@@ -250,6 +269,7 @@ function migrateLegacyContractorProgress(){
     grantedExp+=result.amount;
   });
   state.legacyMigrationVersion=CONTRACTOR_LEGACY_MIGRATION_VERSION;
+  state.pendingRankUps=existingPendingRankUps;
   state.legacyMigrationSummary={
     version:CONTRACTOR_LEGACY_MIGRATION_VERSION,
     eligible,

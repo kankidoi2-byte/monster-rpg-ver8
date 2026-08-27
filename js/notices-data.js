@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260827-contractor-rank-ui',
+    date: '2026-08-27',
+    category: 'update',
+    title: '契約者Rankを確認できるようになりました',
+    body: '討伐、契約、図鑑登録、進化、錬成、遠征などで契約者EXPを獲得し、冒険全体の歩みをRankとして記録します。上部のRank表示やメニューから進捗と最近の獲得履歴を確認でき、Rankアップ時は専用演出が表示されます。Rankによる機能制限や能力補正はありません。'
+  }),
+  Object.freeze({
     id: '20260826-fixed-hunt-difficulty',
     date: '2026-08-26',
     category: 'update',

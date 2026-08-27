@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const source=fs.readFileSync(new URL('../js/contractor-rank.js',import.meta.url),'utf8');
-const defaults=()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0,legacyMigrationSummary:null});
+const defaults=()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],pendingRankUps:[],legacyMigrationVersion:0,legacyMigrationSummary:null});
 const monsters=[
   {id:'field_mon',name:'野の獣'},
   {id:'boss_mon',name:'黒鉄の王',bossClass:'ボス級'},
@@ -32,6 +32,7 @@ assert.equal(legacySave.contractor.legacyMigrationSummary.expeditionExp,40);
 assert.equal(legacySave.contractor.legacyMigrationSummary.bossExp,350);
 assert.equal(legacySave.contractor.legacyMigrationSummary.storyExp,0);
 assert.equal(legacySave.contractor.legacyMigrationSummary.missionExp,0);
+assert.deepEqual(legacySave.contractor.pendingRankUps,[],'legacy reconstruction must not replay Rank-up animations');
 assert.deepEqual([...legacy.value('unclaimedContractorRankRewardRanks()')],[2,3,4]);
 assert.ok(legacySave.contractor.expEventIds.includes('boss:first:boss_mon'));
 assert.ok(legacySave.contractor.expEventIds.includes('boss:first:super_mon'));

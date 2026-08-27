@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const source=fs.readFileSync(new URL('../js/contractor-rank.js',import.meta.url),'utf8');
-const save={saveMeta:{migrations:[]},history:{wins:0,logs:[]},caught:[],expeditions:{completedCount:0},contractor:{systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0,legacyMigrationSummary:null}};
-const context=vm.createContext({console,Date,Math,M:[],save,contractorSaveDefaults:()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0,legacyMigrationSummary:null})});
+const save={saveMeta:{migrations:[]},history:{wins:0,logs:[]},caught:[],expeditions:{completedCount:0},contractor:{systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],pendingRankUps:[],legacyMigrationVersion:0,legacyMigrationSummary:null}};
+const context=vm.createContext({console,Date,Math,M:[],save,contractorSaveDefaults:()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],pendingRankUps:[],legacyMigrationVersion:0,legacyMigrationSummary:null})});
 vm.runInContext(source,context);
 
 const value=expression=>vm.runInContext(expression,context);
@@ -25,6 +25,9 @@ assert.equal(first.oldRank,1);
 assert.equal(first.newRank,5);
 assert.deepEqual([...first.reachedRanks],[2,3,4,5]);
 assert.deepEqual([...first.unlockedTitleIds],['rank_05_full_contractor']);
+assert.equal(save.contractor.pendingRankUps.length,1);
+assert.equal(save.contractor.pendingRankUps[0].fromRank,1);
+assert.equal(save.contractor.pendingRankUps[0].toRank,5);
 assert.equal(save.contractor.recentExp.length,1);
 assert.equal(value("equipContractorTitle('rank_05_full_contractor')"),true);
 assert.equal(value("equippedContractorTitle().name"),'一人前の契約者');
@@ -42,6 +45,8 @@ assert.equal(value('contractorRankFromExp(save.contractor.exp)'),50);
 assert.equal(save.contractor.exp,63700);
 assert.equal(value('contractorRankProgress(save.contractor.exp).isMax'),true);
 assert.equal(save.contractor.unlockedTitleIds.length,7,'all Rank titles must unlock by Rank 50');
+assert.equal(save.contractor.pendingRankUps.length,1,'unseen consecutive Rank-ups must be consolidated');
+assert.equal(save.contractor.pendingRankUps[0].toRank,50);
 
 const atMax=value("grantContractorExp(100,{eventId:'phase1:after-max'})");
 assert.equal(atMax.reason,'max_rank');

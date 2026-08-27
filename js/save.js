@@ -16,6 +16,7 @@ function contractorSaveDefaults(){
     unlockedTitleIds:[],
     equippedTitleId:null,
     recentExp:[],
+    pendingRankUps:[],
     legacyMigrationVersion:0,
     legacyMigrationSummary:null
   };
@@ -123,6 +124,8 @@ function repairSave(payload,report=[]){
   payload.contractor.equippedTitleId=typeof payload.contractor.equippedTitleId==='string'&&payload.contractor.unlockedTitleIds.includes(payload.contractor.equippedTitleId)?payload.contractor.equippedTitleId:null;
   const rawRecentExp=Array.isArray(payload.contractor.recentExp)?payload.contractor.recentExp:[];
   payload.contractor.recentExp=rawRecentExp.filter(entry=>isSaveObject(entry)&&nonNegativeInteger(entry.amount)>0).slice(-20).map(entry=>({amount:nonNegativeInteger(entry.amount),source:typeof entry.source==='string'&&entry.source?entry.source:'other',eventId:typeof entry.eventId==='string'&&entry.eventId?entry.eventId:null,awardedAt:typeof entry.awardedAt==='string'?entry.awardedAt:''}));
+  const rawPendingRankUps=Array.isArray(payload.contractor.pendingRankUps)?payload.contractor.pendingRankUps:[];
+  payload.contractor.pendingRankUps=rawPendingRankUps.filter(entry=>isSaveObject(entry)&&nonNegativeInteger(entry.fromRank,1)>=1&&nonNegativeInteger(entry.toRank)>nonNegativeInteger(entry.fromRank,1)&&nonNegativeInteger(entry.toRank)<=50).slice(-10).map(entry=>({fromRank:nonNegativeInteger(entry.fromRank,1),toRank:nonNegativeInteger(entry.toRank),unlockedTitleIds:[...new Set((Array.isArray(entry.unlockedTitleIds)?entry.unlockedTitleIds:[]).filter(value=>typeof value==='string'&&value))],createdAt:typeof entry.createdAt==='string'?entry.createdAt:''}));
   payload.contractor.legacyMigrationVersion=nonNegativeInteger(payload.contractor.legacyMigrationVersion);
   payload.contractor.legacyMigrationSummary=isSaveObject(payload.contractor.legacyMigrationSummary)?payload.contractor.legacyMigrationSummary:null;
   payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};payload.progress.tutorial=isSaveObject(payload.progress.tutorial)?payload.progress.tutorial:defaults.progress.tutorial;payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
