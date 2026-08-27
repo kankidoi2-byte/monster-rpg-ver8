@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260827-contractor-title-menu',
+    date: '2026-08-27',
+    category: 'update',
+    title: '獲得した称号を装備できるようになりました',
+    body: 'メニューの「称号」から、契約者Rankで獲得した称号を1つ選んで装備できます。現在の称号は契約者Rank画面にも表示されます。称号は冒険の達成記録で、戦闘能力や利用できる機能には影響しません。'
+  }),
+  Object.freeze({
     id: '20260827-contractor-rank-ui',
     date: '2026-08-27',
     category: 'update',

@@ -65,6 +65,9 @@ assert.equal(contractorRepair.contractor.pendingRankUps.length,1,'valid pending 
 assert.deepEqual([...contractorRepair.contractor.expEventIds],['boss:a'],'contractor EXP event IDs must remain unique strings');
 assert.equal(contractorRepair.contractor.equippedTitleId,null,'an unavailable equipped title must be cleared');
 assert.equal(contractorRepair.contractor.recentExp.length,1,'invalid recent contractor EXP entries must be removed');
+
+const equippedTitleSave=prepare({schemaVersion:3,contractor:{exp:700,unlockedTitleIds:['rank_05_full_contractor'],equippedTitleId:'rank_05_full_contractor'}});
+assert.equal(equippedTitleSave.contractor.equippedTitleId,'rank_05_full_contractor','an unlocked equipped title must survive save repair and reload');
 assert.equal(contractorRepair.contractor.legacyMigrationSummary,null,'invalid legacy migration summaries must be cleared');
 assert.equal(prepare({schemaVersion:3,contractor:{exp:999999}}).contractor.exp,63700,'contractor EXP must not exceed the Rank 50 cap');
 

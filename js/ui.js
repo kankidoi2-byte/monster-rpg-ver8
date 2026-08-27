@@ -48,6 +48,7 @@ function show(id) {
   if (id === 'mapDex')   renderMapDex();
   if (id === 'itemDex')  renderItemDex();
   if (id === 'contractorRank') renderContractorRank();
+  if (id === 'contractorTitles') renderContractorTitles();
   if (id === 'partySet') renderPartySetup();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
@@ -83,10 +84,14 @@ function updateContractorRankHeader(){
   const title=typeof equippedContractorTitle==='function'?equippedContractorTitle():null;
   const view=document.getElementById('contractorRankView');
   const summary=document.getElementById('contractorRankMenuSummary');
+  const titleSummary=document.getElementById('contractorTitleMenuSummary');
+  const unlockedTitleCount=Array.isArray(save?.contractor?.unlockedTitleIds)?CONTRACTOR_TITLE_CATALOG.filter(entry=>save.contractor.unlockedTitleIds.includes(entry.id)).length:0;
   if(view)view.textContent=`Rank ${progress.rank}`;
   if(summary)summary.textContent=`Rank ${progress.rank}・${title?.name||'称号未設定'}`;
+  if(titleSummary)titleSummary.textContent=title?`装備中：${title.name}`:`${unlockedTitleCount}個獲得・称号未設定`;
 }
 function showContractorRank(){show('contractorRank');}
+function showContractorTitles(){show('contractorTitles');}
 function contractorRecentExpTime(value){
   const date=new Date(value);
   if(!value||Number.isNaN(date.getTime()))return '';
@@ -105,7 +110,7 @@ function renderContractorRank(){
   const migration=state.legacyMigrationSummary?.eligible?`<p class="contractor-migration-note">以前の勝利・図鑑・遠征記録から <strong>${Number(state.legacyMigrationSummary.grantedExp||0).toLocaleString('ja-JP')} EXP</strong> を復元済みです。</p>`:'';
   content.innerHTML=`
     <section class="contractor-rank-hero">
-      <span>CONTRACTOR STATUS</span><strong>Rank ${progress.rank}</strong><p>${equipped?.name||'称号未設定'}</p>
+      <span>CONTRACTOR STATUS</span><strong>Rank ${progress.rank}</strong><p>${equipped?.name||'称号未設定'}</p><button type="button" class="contractor-title-link" onclick="showContractorTitles()">称号を変更 ›</button>
       <div class="contractor-rank-progress" role="progressbar" aria-label="次の契約者Rankまで" aria-valuemin="0" aria-valuemax="${progress.requiredExp||1}" aria-valuenow="${progress.isMax?1:progress.currentExp}"><i style="width:${Math.round(progress.ratio*100)}%"></i></div>
       <div class="contractor-rank-progress-copy"><span>${progressText}</span><span>${progress.isMax?'最高Rank到達':`あと ${progress.remainingExp.toLocaleString('ja-JP')} EXP`}</span></div>
       <small>累計 ${progress.totalExp.toLocaleString('ja-JP')} EXP</small>
@@ -124,6 +129,45 @@ function renderContractorRank(){
       <div><span>⚔️<strong>討伐・ボス撃破</strong></span><span>🤝<strong>契約・図鑑登録</strong></span><span>✦<strong>進化・錬成</strong></span><span>🧭<strong>遠征完了</strong></span></div>
       <p>Rankによる機能制限やモンスターの能力補正はありません。</p>
     </section>`;
+}
+function renderContractorTitles(){
+  const content=document.getElementById('contractorTitleContent');
+  if(!content||typeof contractorTitleById!=='function')return;
+  const state=ensureContractorState();
+  const equipped=equippedContractorTitle();
+  const unlocked=new Set(state.unlockedTitleIds);
+  const unlockedCount=CONTRACTOR_TITLE_CATALOG.filter(title=>unlocked.has(title.id)).length;
+  const cards=CONTRACTOR_TITLE_CATALOG.map(title=>{
+    const isUnlocked=unlocked.has(title.id);
+    const isEquipped=state.equippedTitleId===title.id;
+    const action=isUnlocked
+      ?`<button type="button" aria-pressed="${isEquipped}" onclick="setContractorTitle('${isEquipped?'':title.id}')">${isEquipped?'称号を外す':'この称号を装備'}</button>`
+      :`<button type="button" disabled>Rank ${title.rank}で獲得</button>`;
+    return `<article class="contractor-title-card${isUnlocked?' is-unlocked':' is-locked'}${isEquipped?' is-equipped':''}">
+      <div class="contractor-title-medal" aria-hidden="true">${isUnlocked?'✦':'?'}</div>
+      <div class="contractor-title-copy"><span>RANK ${title.rank}${isEquipped?'・装備中':''}</span><h2>${title.name}</h2><p>${title.description}</p><small>${isUnlocked?'獲得済み':`契約者Rank ${title.rank}で獲得`}</small></div>${action}
+    </article>`;
+  }).join('');
+  content.innerHTML=`<section class="contractor-title-current">
+      <span class="ui-eyebrow">EQUIPPED TITLE</span><div><i aria-hidden="true">🎖️</i><p><small>現在の称号</small><strong>${equipped?.name||'称号未設定'}</strong></p></div>
+      <small>獲得済み ${unlockedCount} / ${CONTRACTOR_TITLE_CATALOG.length}</small>
+    </section>
+    <section class="contractor-title-list" aria-label="称号一覧">${cards}</section>
+    <p class="contractor-title-note">称号は冒険の達成記録です。装備しても戦闘能力や利用できる機能は変わりません。</p>`;
+}
+function setContractorTitle(titleId){
+  const previous=equippedContractorTitle();
+  if(!equipContractorTitle(titleId||null)){
+    if(typeof showUiNotice==='function')showUiNotice('未獲得の称号は装備できません。','warning');
+    return false;
+  }
+  if(typeof saveGame==='function')saveGame();
+  const current=equippedContractorTitle();
+  updateContractorRankHeader();
+  renderContractorTitles();
+  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+  if(typeof showUiNotice==='function')showUiNotice(current?`称号「${current.name}」を装備しました。`:previous?'称号を外しました。':'称号未設定です。');
+  return true;
 }
 function contractorRankUpCanPresent(){
   const active=document.querySelector('.screen.active')?.id;
@@ -155,6 +199,7 @@ function closeContractorRankUp(){
   if(typeof saveGame==='function')saveGame();
   updateContractorRankHeader();
   if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+  if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
   contractorRankUpPreviousFocus?.focus?.();
   contractorRankUpPreviousFocus=null;
   scheduleContractorRankUpPresentation();
@@ -162,6 +207,7 @@ function closeContractorRankUp(){
 function refreshContractorRankUi(){
   updateContractorRankHeader();
   if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+  if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
   scheduleContractorRankUpPresentation();
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden'))closeContractorRankUp();});
@@ -169,7 +215,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
-  if(['moreMenu','contractorRank','notices','expedition','shop','itemGacha','skillGacha','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
+  if(['moreMenu','contractorRank','contractorTitles','notices','expedition','shop','itemGacha','skillGacha','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
