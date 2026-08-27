@@ -57,5 +57,6 @@ assert.match(multiBattleSource, /resolveLivingMultiTargetId\(multiBattle\.enemie
 assert.match(multiBattleSource, /function triggerInvasionIfDue\([\s\S]*?setMultiBattleLayout\(true\)/, 'An invasion must switch into the shared multi-battle layout');
 assert.match(multiBattleSource, /targets=\[\{kind:'player'[\s\S]*?kind:'enemy'/, 'Enemies must be able to attack the player or the other enemy');
 assert.match(battleFlowSource, /function endPartyRecovery\([\s\S]*?setMultiBattleLayout\(false\)/, 'Leaving battle must restore the normal single-enemy layout');
+assert.match(battleFlowSource, /function win\([\s\S]*?showBattleOutcome\([\s\S]*?renderSingleBattleContractPanel\(\)/, 'A single-battle victory must expose the shared post-battle contract flow');
 
 console.log('Multi-faction battle validation passed (rates, invasion, side-by-side UI, card actions, and living-target fallback).');

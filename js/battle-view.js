@@ -70,9 +70,7 @@ function renderBattleSwitchButton(){
 function renderBattleItemButton(){
   const button=document.getElementById('battleItemButton');
   if(!button)return;
-  const hasScroll=typeof SHOP_ITEMS!=='undefined'&&SHOP_ITEMS.some(item=>item.contract&&(save.items[item.id]||0)>0);
-  const contractReady=!multiBattle?.active&&!!enemy&&isContractableUnit(enemy)&&hasScroll;
-  button.innerHTML=`<span aria-hidden="true">🎒</span><strong>道具</strong><small id="battleItemBadge" class="battle-command-badge${contractReady?'':' hidden'}">契約可</small>`;
+  button.innerHTML='<span aria-hidden="true">🎒</span><strong>道具</strong>';
 }
 function openBattleSwitchPicker(){
   if(busy)return;

@@ -40,7 +40,8 @@ const contract = vm.runInContext(`({
   characterCount:M.filter(monster=>monster.entityKind==='character').length,
   recipeIds:ALCHEMY_RECIPES.map(recipe=>recipe.recipeId),
   failureIds:ALCHEMY_ALL_FAILURE_CANDIDATES.map(entry=>entry.monsterId),
-  initialPartyIds:INITIAL_PARTY_IDS
+  initialPartyIds:INITIAL_PARTY_IDS,
+  contractItems:SHOP_ITEMS.filter(item=>item.contract)
 })`, context);
 
 assert.equal(contract.monsters.length,64);
@@ -52,6 +53,7 @@ assert.equal(contract.cards.length,200);
 assert.equal(new Set(contract.cards.map(card => card.id)).size,200);
 assert(contract.monsters.every(monster => monster.moves.every(move => typeof move[8] === 'string')));
 assert(contract.monsters.every(monster => ['monster','character'].includes(monster.entityKind)));
+assert(contract.contractItems.length>0&&contract.contractItems.every(item=>item.usableInBattle===false),'contract scrolls must only be usable after battle victory');
 assert.equal(contract.normalizeSkillId(contract.firstLegacyId),contract.firstFixedId,'legacy skill ID must resolve to its fixed ID');
 assert.notEqual(contract.firstLegacyId,contract.firstFixedId,'fixed IDs must not reuse the mutable legacy format');
 
