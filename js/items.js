@@ -303,6 +303,7 @@ async function tryContractWithScroll(itemId='contract_scroll'){
     pFlareCharge = false; eFlareCharge = false;
     pAquaShield = false; eAquaShield = false;
     addInstance(enemy.id);
+    if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(enemy.id);
     saveGame();
     await playContractAnimation({monsterName:enemy.name, stage:animationStage});
     updateItems();

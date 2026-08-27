@@ -140,7 +140,10 @@ let save = loadSave();
 function registerItemDex(itemId){
   if(!ITEM_DEX_BY_ID[itemId]) return;
   if(!Array.isArray(save.itemDex)) save.itemDex = [];
-  if(!save.itemDex.includes(itemId)) save.itemDex.push(itemId);
+  if(!save.itemDex.includes(itemId)) {
+    save.itemDex.push(itemId);
+    if(typeof grantContractorCatalogRegistration==='function')grantContractorCatalogRegistration('item',itemId);
+  }
 }
 function syncItemDexFromInventory(){
   if(!save.items) save.items = {};
@@ -155,6 +158,7 @@ function registerMapDex(mapId){
   if(!Array.isArray(save.mapDex)) save.mapDex = [];
   if(save.mapDex.includes(mapId)) return false;
   save.mapDex.push(mapId);
+  if(typeof grantContractorCatalogRegistration==='function')grantContractorCatalogRegistration('map',mapId);
   return true;
 }
 
@@ -225,12 +229,16 @@ function insExp(id) {
 }
 function caughtHas(id) { return save.instances.some(x => x.id === id) || save.caught.includes(id); }
 function addInstance(id, level=1, exp=0, extraFields=null) {
+  const firstRegistration=!save.caught.includes(id);
   const normalizedLevel=clampLevel(level);
   const ins = {uid:uid(), id, level:normalizedLevel, exp:isMaxLevel(normalizedLevel)?0:Math.max(0,Math.floor(Number(exp)||0)), locked:false};
   if(extraFields && typeof extraFields === 'object') Object.assign(ins, extraFields);
   normalizeInstanceSaveFields(ins);
   save.instances.push(ins);
-  if (!save.caught.includes(id)) save.caught.push(id);
+  if (firstRegistration) {
+    save.caught.push(id);
+    if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(id);
+  }
   if (typeof ensureInstanceSkills === 'function') {
     ensureInstanceSkills(ins);
     if (typeof grantEquippedSkillCardsForInstance === 'function') grantEquippedSkillCardsForInstance(ins);

@@ -44,11 +44,16 @@ function tryFusion(idx) {
 
   if (!confirm(`${from.name}と${r.itemName} × ${r.count}を合成して${to.name}に進化させますか？`)) return;
 
+  const firstRegistration=!caughtHas(r.to);
   save.items[r.item] -= r.count;
   ins.id = r.to;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
   if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
-  if (!save.caught.includes(r.to)) save.caught.push(r.to);
+  if (firstRegistration) {
+    save.caught.push(r.to);
+    if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(r.to);
+  }
+  if(typeof grantContractorEvolution==='function')grantContractorEvolution({special:true});
 
   saveGame();
   renderFusion();
@@ -113,11 +118,15 @@ function confirmEvolution(toId) {
   if (!currentEvolution) return;
   const ins = getInstance(currentEvolution.uid);
   if (!ins) { currentEvolution=null; processNextEvolution(); return; }
-  const from = by(ins.id), to = by(toId);
+  const from = by(ins.id), to = by(toId), firstRegistration=!caughtHas(toId);
   ins.id = toId;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
   if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
-  if (!save.caught.includes(toId)) save.caught.push(toId);
+  if (firstRegistration) {
+    save.caught.push(toId);
+    if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(toId);
+  }
+  if(typeof grantContractorEvolution==='function')grantContractorEvolution();
   saveGame(); renderParty(); renderDex();
   currentEvolution = null;
   alert(`✨ ${from.name}は${to.name}に進化した！`);

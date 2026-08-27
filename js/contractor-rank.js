@@ -2,6 +2,19 @@
 const CONTRACTOR_RANK_SYSTEM_VERSION = 1;
 const CONTRACTOR_MAX_RANK = 50;
 const CONTRACTOR_LEGACY_MIGRATION_VERSION = 1;
+const CONTRACTOR_ACTION_EXP = Object.freeze({
+  battle:Object.freeze({easy:5,normal:10,hard:20,extreme:35,multiBonus:10}),
+  contractSuccess:20,
+  firstSpeciesContract:30,
+  dexRegistration:30,
+  dexMilestone:100,
+  evolution:30,
+  specialEvolution:50,
+  alchemySuccess:50,
+  expedition:Object.freeze({short:10,medium:25,long:45}),
+  bossFirstWin:100,
+  superBossFirstWin:250
+});
 
 const CONTRACTOR_TITLE_CATALOG = Object.freeze([
   Object.freeze({id:'rank_05_full_contractor',name:'一人前の契約者',category:'rank',rank:5,description:'契約者として確かな一歩を刻んだ証。'}),
@@ -98,6 +111,16 @@ function unclaimedContractorRankRewardRanks(){
   return availableContractorRankRewardRanks().filter(rank=>!state.claimedRankRewards.includes(rank));
 }
 
+function contractorGrantSummary(results=[]){
+  const valid=results.filter(Boolean);
+  return {
+    amount:valid.reduce((sum,result)=>sum+(Number(result.amount)||0),0),
+    reachedRanks:[...new Set(valid.flatMap(result=>result.reachedRanks||[]))],
+    unlockedTitleIds:[...new Set(valid.flatMap(result=>result.unlockedTitleIds||[]))],
+    results:valid
+  };
+}
+
 function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}={}){
   const state=ensureContractorState();
   const normalizedAmount=Math.max(0,Math.floor(Number(amount)||0));
@@ -119,6 +142,63 @@ function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}=
   return {awarded:grantedAmount>0,reason:grantedAmount>0?'awarded':'max_rank',amount:grantedAmount,oldExp,newExp:state.exp,oldRank,newRank,reachedRanks,unlockedTitleIds};
 }
 
+function grantContractorDexMilestones(unitDexCount=null,{source='dex_milestone'}={}){
+  const count=unitDexCount===null?new Set(Array.isArray(save.caught)?save.caught:[]).size:Math.max(0,Math.floor(Number(unitDexCount)||0));
+  const results=[];
+  for(let milestone=10;milestone<=count;milestone+=10){
+    results.push(grantContractorExp(CONTRACTOR_ACTION_EXP.dexMilestone,{source,eventId:`dex:milestone:${milestone}`}));
+  }
+  return contractorGrantSummary(results);
+}
+
+function grantContractorDexRegistration(unitId){
+  if(typeof unitId!=='string'||!unitId)return contractorGrantSummary([]);
+  const registration=grantContractorExp(CONTRACTOR_ACTION_EXP.dexRegistration,{source:'dex_registration',eventId:`dex:first:${unitId}`});
+  const milestones=grantContractorDexMilestones();
+  return contractorGrantSummary([registration,...milestones.results]);
+}
+
+function grantContractorCatalogRegistration(category,entryId){
+  if(!['item','map'].includes(category)||typeof entryId!=='string'||!entryId)return contractorGrantSummary([]);
+  return contractorGrantSummary([grantContractorExp(CONTRACTOR_ACTION_EXP.dexRegistration,{source:`${category}_dex_registration`,eventId:`dex:${category}:${entryId}`})]);
+}
+
+function grantContractorContractSuccess(unitId){
+  const results=[grantContractorExp(CONTRACTOR_ACTION_EXP.contractSuccess,{source:'contract_success'})];
+  if(typeof unitId==='string'&&unitId)results.push(grantContractorExp(CONTRACTOR_ACTION_EXP.firstSpeciesContract,{source:'first_species_contract',eventId:`contract:first:${unitId}`}));
+  return contractorGrantSummary(results);
+}
+
+function grantContractorBossFirstWin(mon){
+  if(!mon||typeof mon.bossClass!=='string'||!mon.bossClass)return contractorGrantSummary([]);
+  const amount=mon.bossClass.includes('超ボス')?CONTRACTOR_ACTION_EXP.superBossFirstWin:CONTRACTOR_ACTION_EXP.bossFirstWin;
+  return contractorGrantSummary([grantContractorExp(amount,{source:'boss_first_win',eventId:`boss:first:${mon.id}`})]);
+}
+
+function grantContractorBattleWin({difficultyId='normal',multi=false,enemies=[]}={}){
+  const difficulty=['easy','normal','hard','extreme'].includes(difficultyId)?difficultyId:'normal';
+  const results=[grantContractorExp(CONTRACTOR_ACTION_EXP.battle[difficulty],{source:`battle_${difficulty}`})];
+  if(multi)results.push(grantContractorExp(CONTRACTOR_ACTION_EXP.battle.multiBonus,{source:'multi_battle_bonus'}));
+  (Array.isArray(enemies)?enemies:[]).forEach(mon=>results.push(...grantContractorBossFirstWin(mon).results));
+  return contractorGrantSummary(results);
+}
+
+function grantContractorEvolution({special=false}={}){
+  const amount=special?CONTRACTOR_ACTION_EXP.specialEvolution:CONTRACTOR_ACTION_EXP.evolution;
+  return contractorGrantSummary([grantContractorExp(amount,{source:special?'special_evolution':'evolution'})]);
+}
+
+function grantContractorAlchemySuccess(){
+  return contractorGrantSummary([grantContractorExp(CONTRACTOR_ACTION_EXP.alchemySuccess,{source:'alchemy_success'})]);
+}
+
+function grantContractorExpeditionComplete(entry){
+  const distanceId=typeof entry?.distanceId==='string'?entry.distanceId:'short';
+  const amount=CONTRACTOR_ACTION_EXP.expedition[distanceId]||CONTRACTOR_ACTION_EXP.expedition.short;
+  const eventId=typeof entry?.id==='string'&&entry.id?`expedition:complete:${entry.id}`:null;
+  return contractorGrantSummary([grantContractorExp(amount,{source:`expedition_${distanceId}`,eventId})]);
+}
+
 function legacyBossVictoryRecords(){
   const logs=Array.isArray(save.history?.logs)?save.history.logs:[];
   if(typeof M==='undefined'||!Array.isArray(M)||!logs.length)return [];
@@ -129,23 +209,41 @@ function legacyBossVictoryRecords(){
 function contractorLegacyMigrationPlan(){
   const wins=Math.max(0,Math.floor(Number(save.history?.wins)||0));
   const unitDexCount=new Set(Array.isArray(save.caught)?save.caught.filter(id=>typeof id==='string'&&id):[]).size;
+  const itemDexCount=new Set(Array.isArray(save.itemDex)?save.itemDex.filter(id=>typeof id==='string'&&id):[]).size;
+  const mapDexCount=new Set(Array.isArray(save.mapDex)?save.mapDex.filter(id=>typeof id==='string'&&id):[]).size;
   const expeditions=Math.max(0,Math.floor(Number(save.expeditions?.completedCount)||0));
   const bosses=legacyBossVictoryRecords();
-  const activityExp=wins*10+unitDexCount*30+expeditions*20;
+  const dexMilestoneCount=Math.floor(unitDexCount/10);
+  const activityExp=wins*10+(unitDexCount+itemDexCount+mapDexCount)*30+expeditions*20;
+  const dexMilestoneExp=dexMilestoneCount*CONTRACTOR_ACTION_EXP.dexMilestone;
   const bossExp=bosses.reduce((sum,boss)=>sum+boss.exp,0);
-  return {wins,unitDexCount,expeditions,bosses,activityExp,bossExp,totalExp:activityExp+bossExp};
+  return {wins,unitDexCount,itemDexCount,mapDexCount,dexMilestoneCount,expeditions,bosses,activityExp,dexMilestoneExp,bossExp,totalExp:activityExp+dexMilestoneExp+bossExp};
 }
 
 function migrateLegacyContractorProgress(){
   const state=ensureContractorState();
   if(state.legacyMigrationVersion>=CONTRACTOR_LEGACY_MIGRATION_VERSION)return {applied:false,reason:'already_migrated',summary:state.legacyMigrationSummary};
   const eligible=Array.isArray(save.saveMeta?.migrations)&&save.saveMeta.migrations.includes('v2_to_v3_contractor_rank');
-  const plan=eligible?contractorLegacyMigrationPlan():{wins:0,unitDexCount:0,expeditions:0,bosses:[],activityExp:0,bossExp:0,totalExp:0};
+  const currentUnitDexCount=new Set(Array.isArray(save.caught)?save.caught:[]).size;
+  const currentItemDexCount=new Set(Array.isArray(save.itemDex)?save.itemDex:[]).size;
+  const currentMapDexCount=new Set(Array.isArray(save.mapDex)?save.mapDex:[]).size;
+  const plan=eligible?contractorLegacyMigrationPlan():{wins:0,unitDexCount:currentUnitDexCount,itemDexCount:currentItemDexCount,mapDexCount:currentMapDexCount,dexMilestoneCount:Math.floor(currentUnitDexCount/10),expeditions:0,bosses:[],activityExp:0,dexMilestoneExp:Math.floor(currentUnitDexCount/10)*CONTRACTOR_ACTION_EXP.dexMilestone,bossExp:0,totalExp:0};
   const appliedAt=new Date().toISOString();
   let grantedExp=0;
   if(plan.activityExp>0){
     const result=grantContractorExp(plan.activityExp,{source:'legacy_activity',eventId:'legacy:activity:v1',awardedAt:appliedAt});
     grantedExp+=result.amount;
+  }
+  if(eligible){
+    (Array.isArray(save.caught)?save.caught:[]).forEach(id=>{const eventId=`dex:first:${id}`;if(typeof id==='string'&&id&&!state.expEventIds.includes(eventId))state.expEventIds.push(eventId);});
+    (Array.isArray(save.itemDex)?save.itemDex:[]).forEach(id=>{const eventId=`dex:item:${id}`;if(typeof id==='string'&&id&&!state.expEventIds.includes(eventId))state.expEventIds.push(eventId);});
+    (Array.isArray(save.mapDex)?save.mapDex:[]).forEach(id=>{const eventId=`dex:map:${id}`;if(typeof id==='string'&&id&&!state.expEventIds.includes(eventId))state.expEventIds.push(eventId);});
+    const milestones=grantContractorDexMilestones(plan.unitDexCount,{source:'legacy_dex_milestone'});
+    grantedExp+=milestones.amount;
+  }else{
+    (Array.isArray(save.caught)?save.caught:[]).forEach(id=>{grantedExp+=grantContractorDexRegistration(id).amount;});
+    (Array.isArray(save.itemDex)?save.itemDex:[]).forEach(id=>{grantedExp+=grantContractorCatalogRegistration('item',id).amount;});
+    (Array.isArray(save.mapDex)?save.mapDex:[]).forEach(id=>{grantedExp+=grantContractorCatalogRegistration('map',id).amount;});
   }
   plan.bosses.forEach(boss=>{
     const result=grantContractorExp(boss.exp,{source:'boss_first_win',eventId:`boss:first:${boss.id}`,awardedAt:appliedAt});
@@ -160,6 +258,12 @@ function migrateLegacyContractorProgress(){
     winsExp:plan.wins*10,
     unitDexCount:plan.unitDexCount,
     unitDexExp:plan.unitDexCount*30,
+    itemDexCount:plan.itemDexCount,
+    itemDexExp:plan.itemDexCount*30,
+    mapDexCount:plan.mapDexCount,
+    mapDexExp:plan.mapDexCount*30,
+    dexMilestoneCount:plan.dexMilestoneCount,
+    dexMilestoneExp:plan.dexMilestoneExp,
     expeditions:plan.expeditions,
     expeditionExp:plan.expeditions*20,
     bossFirstWins:plan.bosses.map(boss=>({id:boss.id,exp:boss.exp})),

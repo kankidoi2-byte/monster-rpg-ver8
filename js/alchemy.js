@@ -419,6 +419,7 @@ function finalizeAlchemy(originalPlan){
     const success = rollAlchemySuccess(plan);
     const candidate = rollAlchemyResultCandidate(plan.recipe, success, plan.coinOption);
     const {resultMonster, resultInstance, archetype} = createAlchemyResultInstance(candidate);
+    if(success&&typeof grantContractorAlchemySuccess==='function')grantContractorAlchemySuccess();
     saveGame();
 
     const content = document.getElementById('alchemyResultContent');

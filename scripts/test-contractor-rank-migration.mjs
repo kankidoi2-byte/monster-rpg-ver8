@@ -19,7 +19,7 @@ function run(save){
 const legacySave={
   saveMeta:{migrations:['v0_to_v1','v1_to_v2_map_dex','v2_to_v3_contractor_rank']},
   history:{wins:12,logs:['野の獣に勝利','黒鉄の王に勝利','星喰らいとの三つ巴に勝利']},
-  caught:['field_mon','boss_mon','field_mon'],
+  caught:['field_mon','boss_mon','field_mon'],itemDex:[],mapDex:[],
   expeditions:{completedCount:2},
   contractor:defaults()
 };
@@ -39,10 +39,21 @@ const before=JSON.stringify(legacySave.contractor);
 assert.equal(legacy.value('migrateLegacyContractorProgress().reason'),'already_migrated');
 assert.equal(JSON.stringify(legacySave.contractor),before,'legacy reconstruction must be idempotent');
 
-const freshSave={saveMeta:{migrations:[]},history:{wins:99,logs:['黒鉄の王に勝利']},caught:['field_mon'],expeditions:{completedCount:8},contractor:defaults()};
+const milestoneSave={saveMeta:{migrations:['v2_to_v3_contractor_rank']},history:{wins:0,logs:[]},caught:Array.from({length:10},(_,index)=>`unit_${index}`),itemDex:[],mapDex:[],expeditions:{completedCount:0},contractor:defaults()};
+run(milestoneSave);
+assert.equal(milestoneSave.contractor.exp,400,'legacy dex reconstruction must include the 10-unit milestone bonus');
+assert.equal(milestoneSave.contractor.legacyMigrationSummary.dexMilestoneCount,1);
+assert.equal(milestoneSave.contractor.legacyMigrationSummary.dexMilestoneExp,100);
+assert.ok(milestoneSave.contractor.expEventIds.includes('dex:milestone:10'));
+
+const freshSave={saveMeta:{migrations:[]},history:{wins:99,logs:['黒鉄の王に勝利']},caught:[],itemDex:[],mapDex:[],expeditions:{completedCount:8},contractor:defaults()};
 run(freshSave);
 assert.equal(freshSave.contractor.exp,0,'a new schema-v3 save must not receive legacy reconstruction');
 assert.equal(freshSave.contractor.legacyMigrationSummary.eligible,false);
 assert.equal(freshSave.contractor.legacyMigrationSummary.resultingRank,1);
+
+const seededFreshSave={saveMeta:{migrations:[]},history:{wins:0,logs:[]},caught:['field_mon'],itemDex:['potion'],mapDex:['grassland'],expeditions:{completedCount:0},contractor:defaults()};
+run(seededFreshSave);
+assert.equal(seededFreshSave.contractor.exp,90,'new saves must count already-created initial dex entries without reconstructing unrelated history');
 
 console.log('Contractor Rank legacy migration validation passed (activity reconstruction, boss detection, pending rewards, new-save guard, and idempotency).');
