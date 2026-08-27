@@ -400,10 +400,10 @@ const M = [
    evolutionOnly:true,hp:315,spd:132,catchRate:0,contractable:false,alchemyExclusive:true,
    desc:'キメラグナが混成魔力の極点へ到達した姿。雷光と猛毒をまとい、巨翼で戦場を制圧する。',
    moves:[["猛毒天翔破",82,"wind","poison",0.6,4,"60％の確率で相手を3ターンの毒状態にする。",null,"skill_kimeragna_apex_01"],["混成竜雷",72,["thunder","dragon"],null,null,6,"雷と竜気を重ねた混成魔力を放つ。",null,"skill_kimeragna_apex_02"],["アペクスストーム",108,["wind","dragon"],"recoil",null,7,"極限の嵐を解放する代わりに反動を受ける。",null,"skill_kimeragna_apex_03"]]},
-  {id:'elixion',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'elixion',no:50,dexNo:50,name:'賢金神竜エリクシオン',rarity:'★★★★★',types:['light','dragon'],
+  {id:'elixion',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'elixion',no:50,dexNo:50,name:'賢金神竜エリクシオン',rarity:'★★★★★',types:['normal','dragon'],
    hp:330,spd:112,catchRate:0,contractable:false,alchemyExclusive:true,
-   desc:'星宮の賢金から錬成される神竜。白銀の一尾に光と知識を宿す、最高位の錬成限定種。',
-   moves:[["賢金光輪",76,"light",null,null,null,null,null,"skill_elixion_01"],["神竜錬壁",0,"dragon","guard",null,null,null,null,"skill_elixion_02"],["エリクシオン・ノヴァ",112,["light","dragon"],null,null,8,"賢金の光と神竜の力を束ねた大爆発を起こす。",null,"skill_elixion_03"]]}
+   desc:'星宮の賢金から錬成される神竜。白銀の一尾に無垢な錬成力と知識を宿す、最高位の錬成限定種。',
+   moves:[["賢金錬輪",76,"normal",null,null,null,null,null,"skill_elixion_01"],["神竜錬壁",0,"dragon","guard",null,null,null,null,"skill_elixion_02"],["エリクシオン・ノヴァ",112,["normal","dragon"],null,null,8,"無垢な錬成力と神竜の力を束ねた大爆発を起こす。",null,"skill_elixion_03"]]}
 
 ];
 

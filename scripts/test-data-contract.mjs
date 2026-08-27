@@ -63,6 +63,7 @@ contract.firstMove[0] = originalName;
 const elna = contract.monsters.find(monster => monster.id === 'elna_advanced');
 const freigal = contract.monsters.find(monster => monster.id === 'freigal');
 const kimeragnaApex = contract.monsters.find(monster => monster.id === 'kimeragna_apex');
+const elixion = contract.monsters.find(monster => monster.id === 'elixion');
 assert.equal(contract.isCharacterUnit(elna),true);
 assert.equal(contract.isContractableUnit(elna),false);
 assert.equal(contract.isAlchemyCatalystUnit(elna),false);
@@ -72,6 +73,9 @@ assert.equal(kimeragnaApex.rarity,'★★★★','Kimeragna Apex must be a four-
 assert.equal(contract.skillCostLimitFor(kimeragnaApex,{level:1}),8,'four-star Kimeragna Apex must use the four-star skill-cost limit');
 assert.deepEqual([...contract.defaultSkillIdsForMonster(kimeragnaApex,{level:1})],['skill_kimeragna_apex_01'],'level-1 default skills must fit the four-star cost limit');
 assert.equal(kimeragnaApex.eligibility.alchemySuccess,false,'Kimeragna Apex must only be reached by evolution');
+assert.deepEqual([...elixion.types],['normal','dragon'],'Elixion must be a neutral/dragon monster');
+assert.equal(elixion.moves[0][2],'normal','Elixion\'s first exclusive move must be neutral');
+assert.deepEqual([...elixion.moves[2][2]],['normal','dragon'],'Elixion Nova must be neutral/dragon');
 assert(!contract.failureIds.includes('elna_advanced'),'characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('stella_wizard'),'Stella characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('lumina_wizard'),'Lumina characters must not enter alchemy failure results');
