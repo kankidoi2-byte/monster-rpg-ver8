@@ -55,7 +55,7 @@ const SKILL_FORM_RULES = Object.freeze([
   Object.freeze({tag:'anatomy:body', form:'body', pattern:/(たいあたり|アタック)/}),
   Object.freeze({tag:null, form:'blade', pattern:/(水刃|風刃)/}),
   Object.freeze({tag:'capability:beam', form:'beam', pattern:/(光砲|断界光|コード・)/}),
-  Object.freeze({tag:null, form:'magic', pattern:/(弾|波動|波紋|ウェーブ|瀑流|奔流|スパイラル|ノヴァ|アーク|レイ|ストーム|召喚|裁き|光輪|エクリプス)/})
+  Object.freeze({tag:null, form:'magic', pattern:/(弾|波動|波紋|ウェーブ|瀑流|奔流|スパイラル|ノヴァ|アーク|レイ|ストーム|召喚|裁き|光輪|錬輪|エクリプス)/})
 ]);
 
 function skillFormFor(sourceUnit,mv){

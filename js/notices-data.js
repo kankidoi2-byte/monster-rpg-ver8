@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260827-elixion-neutral-dragon',
+    date: '2026-08-27',
+    category: 'update',
+    title: 'エリクシオンの属性を変更しました',
+    body: '賢金神竜エリクシオンの属性を光／竜から無／竜へ変更しました。専用技「賢金錬輪」と「エリクシオン・ノヴァ」も、新しい属性に合わせて無属性を持つ技へ変更しました。'
+  }),
+  Object.freeze({
     id: '20260827-contractor-rank-rewards',
     date: '2026-08-27',
     category: 'update',
