@@ -64,9 +64,9 @@ expect(index.includes('class="screen battle-screen"'), 'portrait-first battle sc
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(index.includes('class="battle-command-pad"'), 'five-way battle command pad is missing');
 expect(!index.includes('onclick="askUseContractScroll()">🤝 契約</button>'), 'contract must not remain as an independent battle command');
-expect(index.includes('回復薬や契約書など、使う道具を選んでください。'), 'battle item guidance must include contract scrolls');
+expect(index.includes('契約書は勝利後に使用できます。'), 'battle item guidance must explain post-battle contracting');
 expect(read('js/battle-view.js').includes('function toggleBattleSkillPanel'), 'collapsible battle skill panel is missing');
-expect(read('js/battle-view.js').includes("class=\"battle-command-badge${contractReady?'':' hidden'}\">契約可"), 'contract-ready item badge is missing');
+expect(!read('js/battle-view.js').includes('契約可'), 'battle command must not advertise contracting before victory');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
 expect(read('js/battle-view.js').includes('function showBattleOutcome'), 'battle outcome feedback is missing');
 expect(read('js/battle-view.js').includes('function openBattleSwitchPicker'), 'manual battle-switch picker is missing');
@@ -97,6 +97,11 @@ expect(save.includes('mapDex:[]') && save.includes('function registerMapDex'), '
 expect(dex.includes('function renderCharacterDex'), 'character dex renderer is missing');
 expect(dex.includes('M.filter(m=>!isCharacterUnit(m))'), 'characters are not excluded from the monster dex');
 expect(read('js/items.js').includes('!isContractableUnit(enemy)'), 'single-battle character contract guard is missing');
+expect(read('js/items.js').includes('function renderSingleBattleContractPanel'), 'single-battle post-victory contract panel is missing');
+expect(read('js/battle-flow.js').includes('renderSingleBattleContractPanel();'), 'single-battle victory must render the contract panel');
+expect(read('js/items.js').includes('singleBattleContractAttempted = true'), 'single-battle contract attempts must be limited to one per battle');
+const singleContractFlow=read('js/items.js').slice(read('js/items.js').indexOf('async function tryContractWithScroll'),read('js/items.js').indexOf('function tryCatch'));
+expect(!singleContractFlow.includes('goNextBattleAfterContract()'), 'a contract result must remain on the battle outcome screen until the player continues');
 expect(read('js/multi-battle.js').includes('isContractableUnit(entry.mon)'), 'multi-battle character contract guard is missing');
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
 expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');

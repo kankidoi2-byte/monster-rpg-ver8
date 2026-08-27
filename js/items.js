@@ -171,7 +171,7 @@ function renderBattleItemSelect(){
   ensureContractScrollItem();
   const list=document.getElementById('battleItemList');
   if(!list)return;
-  list.innerHTML = SHOP_ITEMS.filter(it=>it.usableInBattle).map(it=>`
+  list.innerHTML = SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
     <div class="item-card">
       <h2>${itemInlineVisual(it)} ${it.name} ×${save.items[it.id]||0}</h2>
       <p>${it.battleDesc || it.desc}</p>
@@ -183,7 +183,7 @@ function useBattleItemFromMenu(id){
 }
 function useBattleItem(id) {
   ensureContractScrollItem();
-  if(ITEM_BY_ID[id]?.contract) { askUseContractScroll(id); return; }
+  if(ITEM_BY_ID[id]?.contract) { alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
   const it = ITEM_BY_ID[id];
   if(!it){ alert('そのアイテムは使えません。'); return; }
   if (!player || !enemy) { alert('バトル中だけ使えます。'); return; }
@@ -230,8 +230,13 @@ function askUseContractScroll(itemId){
     show('battle');
     return;
   }
+  if(!multiBattle?.active && (!battleRewardGranted || singleBattleContractAttempted)){
+    alert(singleBattleContractAttempted?'この相手への契約判定は完了しています。':'契約書は敵を倒した後に使用できます。');
+    show('battle');
+    return;
+  }
   if(enemy && !isContractableUnit(enemy)){
-    alert(`${enemy.name}はキャラクターのため、バトル中の契約対象ではありません。`);
+    alert(`${enemy.name}は契約対象ではありません。`);
     show('battle');
     return;
   }
@@ -290,6 +295,7 @@ async function tryContractWithScroll(itemId='contract_scroll'){
   const animationStage = contractAnimationStage(roll, rate);
   const ok = animationStage === 3;
   const logBox = document.getElementById('log');
+  singleBattleContractAttempted = true;
 
   show('battle');
   busy = true;
@@ -309,35 +315,39 @@ async function tryContractWithScroll(itemId='contract_scroll'){
     updateItems();
     renderParty();
     renderDex();
-    if(logBox)logBox.innerHTML=`${it.name}を使用した！<br>${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！<br>次のバトルへ進みます。`;
+    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}🤝 ${it.name}を使い、${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！`;
     refreshContractScrollDisplay();
     busy = false;
-    goNextBattleAfterContract();
+    show('battle');
+    renderSingleBattleContractPanel();
     return;
   }
 
   saveGame();
   await playContractAnimation({monsterName:enemy.name, stage:animationStage});
-  if(logBox)logBox.innerHTML=`${it.name}を使用した！<br>しかし、${enemy.name}との契約には失敗した……`;
+  if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}📜 ${it.name}を使ったが、${enemy.name}との契約には失敗した……`;
   updateItems();
   refreshContractScrollDisplay();
   busy = false;
   show('battle');
+  renderSingleBattleContractPanel();
 }
 function tryCatch(){ askUseContractScroll(); }
 function catchEnemy(){ askUseContractScroll(); }
 function contractEnemy(){ askUseContractScroll(); }
-function goNextBattleAfterContract(){
-  updateItems();
-  renderParty();
-  renderDex();
-  // ③ パーティーを維持したまま次の敵選択へ
-  if(typeof prepareBattleParty==='function') prepareBattleParty();
-  if(typeof showBattleChoices==='function'){
-    showBattleChoices();
-  }else{
-    show('battleChoices');
+function renderSingleBattleContractPanel(){
+  const actions=document.getElementById('battleOutcomeActions');
+  if(!actions||multiBattle?.active||!battleRewardGranted)return;
+  if(!isContractableUnit(enemy)){
+    actions.innerHTML='<div class="multi-contract-panel"><h3>🤝 契約</h3><p class="small">この相手とは契約できません。</p></div>';
+    return;
   }
+  if(singleBattleContractAttempted){
+    actions.innerHTML='<div class="multi-contract-panel"><h3>🤝 契約</h3><p class="small">この相手への契約判定は完了しました。</p></div>';
+    return;
+  }
+  const hasScroll=SHOP_ITEMS.some(item=>item.contract&&(save.items[item.id]||0)>0);
+  actions.innerHTML=`<div class="multi-contract-panel"><h3>🤝 契約候補</h3>${hasScroll?`<button onclick="askUseContractScroll()">${enemy.name}と契約</button>`:'<p class="small">契約書を持っていません。</p>'}</div>`;
 }
 function refreshContractScrollDisplay(){
   ensureContractScrollItem();

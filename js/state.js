@@ -30,6 +30,7 @@ let huntRequestSerial = 0;
 let battleTurnCount = 0;
 let battleTurnInProgress = false;
 let battleRewardGranted = false;
+let singleBattleContractAttempted = false;
 let multiBattle = null;
 let pendingMultiBattleContractId = null;
 

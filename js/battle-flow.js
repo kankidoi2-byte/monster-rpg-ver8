@@ -160,6 +160,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     updateItems();
   }
   battleRewardGranted = false;
+  singleBattleContractAttempted = false;
   resetBattleTurnCounter();
   if (!partyBattle.length) prepareBattleParty();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
@@ -191,6 +192,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;
 }
 function afterBattleNext() {
+  singleBattleContractAttempted = false;
   endPartyRecovery();
   hideBattleOutcome();
   showBattleChoices();
@@ -366,6 +368,7 @@ function win() {
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   });
+  renderSingleBattleContractPanel();
   busy = true;
   renderParty();
   setTimeout(processNextEvolution, 300);

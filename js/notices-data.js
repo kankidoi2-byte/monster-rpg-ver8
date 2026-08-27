@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260828-post-battle-contract',
+    date: '2026-08-28',
+    category: 'update',
+    title: 'モンスターとの契約を勝利後に統一しました',
+    body: '通常戦でも敵を倒した後に契約を試みる方式へ変更しました。三つ巴バトルと同じく、勝利結果から契約書を使い、成功すると仲間に加わります。契約に失敗することもあります。'
+  }),
+  Object.freeze({
     id: '20260828-prologue-dex-elysia-galdra',
     date: '2026-08-28',
     category: 'update',
