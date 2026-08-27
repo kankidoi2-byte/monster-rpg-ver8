@@ -46,6 +46,10 @@ const IMG={
   freiwolf:"images/monsters/freiwolf.webp",
   freigal:"images/monsters/freigal.webp",
   goddess:"images/monsters/hikari.webp",
+  elysia_prologue:"images/monsters/elysia_prologue_v1.webp",
+  elysia_prayer:"images/monsters/elysia_prayer_v1.webp",
+  elysia_goddess:"images/monsters/elysia_goddess_v1.webp",
+  galdra:"images/monsters/galdra_v1.webp",
   tsubaki:'images/monsters/tsubaki.webp',
   elnaKaen:'images/monsters/elna_kaen.webp',
   alchemion:'images/monsters/alchemion.webp',
@@ -226,9 +230,17 @@ const M = [
    hp:180,spd:18,catchRate:.16,
    desc:'古代の氷核から造られた試作型ゴーレム。アイスゴーレムより鈍重だが、破壊力に優れる。',
    moves:[["氷塊拳",44,"water",null,null,null,null,null,"skill_proto_icegolem_01"],["重装防御",0,"normal","guard",null,null,null,null,"skill_proto_icegolem_02"],["大氷河クラッシュ",70,"water",null,null,null,null,null,"skill_proto_icegolem_03"]]},
-  {id:'hikari',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'goddess',no:16,name:'光の女神',rarity:'★★★★',types:['light'],huntLevels:{hard:88},
-   hp:175,spd:90,catchRate:.08,bossClass:'ボス級',
-   desc:'光を司る女神。闇属性に強い。',
+  {id:'elysia',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_prologue',no:62,name:'エリシア',rarity:'★★',types:['light'],unitType:'character',characterNo:12,contractable:false,
+   hp:120,spd:82,catchRate:0,evolution:'elysia_prayer',evolutionLevel:2,
+   desc:'古代文明で暮らす、明るく心優しい少女。自らに宿る大きな光の力には、まだ気づいていない。',
+   moves:[["光雫弾",30,"light",null,null,null,null,null,"skill_elysia_01"],["祈りの癒し",0,"light","heal",null,null,null,null,"skill_elysia_02"],["希望の光",0,"light","buff",null,null,null,null,"skill_elysia_03"]]},
+  {id:'elysia_prayer',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_prayer',no:63,name:'光祈の巫女エリシア',rarity:'★★★',types:['light'],unitType:'character',characterNo:13,contractable:false,
+   evolutionOnly:true,evolution:'hikari',evolutionLevel:3,hp:158,spd:88,catchRate:0,
+   desc:'人々の安寧を願い、聖なる光へ祈りを捧げる巫女。やがて女神へ至る力が静かに目覚め始めている。',
+   moves:[["祈光弾",42,"light",null,null,null,null,null,"skill_elysia_prayer_01"],["聖祈の癒し",0,"light","heal",null,null,null,null,"skill_elysia_prayer_02"],["光祈結界",0,"light","guard",null,null,null,null,"skill_elysia_prayer_03"]]},
+  {id:'hikari',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_goddess',no:16,name:'光の女神エリシア',rarity:'★★★★',types:['light'],huntLevels:{hard:88},unitType:'character',characterNo:14,contractable:false,
+   evolutionOnly:true,hp:175,spd:90,catchRate:0,bossClass:'ボス級',
+   desc:'祈りと光の力によって神格へ至ったエリシア。失われた古代文明の記憶を胸の奥に宿している。',
    moves:[["聖光の槍",38,"light",null,null,null,null,null,"skill_hikari_01"],["ヒールオーラ",0,"light","heal",null,null,null,null,"skill_hikari_02"],["ジャッジメント",58,"light",null,null,null,null,null,"skill_hikari_03"]]},
   {id:'nemes',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nemes',no:17,name:'ネメス',rarity:'★★',types:['star','dragon'],huntLevels:{normal:24,hard:52},
    hp:125,spd:78,catchRate:.22,evolution:'nemesia',evolutionLevel:2,
@@ -392,10 +404,14 @@ const M = [
    evolutionOnly:true,hp:245,spd:92,catchRate:.07,
    desc:'ルクシアードが守護の光を極めた姿。黄金の光翼で大地を覆い、邪気を退ける。',
    moves:[["守光竜牙",50,"light",null,null,null,null,null,"skill_lux_galdion_01"],["聖竜の庇護",0,"light","guard",null,null,null,null,"skill_lux_galdion_02"],["ガルディオンレイ",78,["light","dragon"],null,null,6,"光と竜気を束ねた守護竜の奔流を放つ。",null,"skill_lux_galdion_03"]]},
-  {id:'astralepis',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'astralepis',no:61,dexNo:46,name:'アストラレピス',rarity:'★★',types:['star'],huntLevels:{normal:22,hard:50},
+  {id:'astralepis',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'astralepis',no:61,dexNo:16,name:'アストラレピス',rarity:'★★',types:['star'],huntLevels:{normal:22,hard:50},
    hp:150,spd:110,catchRate:.16,
    desc:'星空を軽やかに跳ぶ蒼い兎獣。長い耳で星の魔力を集め、尾に輝きを蓄える。',
    moves:[["星兎跳",38,"star",null,null,null,null,null,"skill_astralepis_01"],["アストラルステップ",0,"star","buff",null,null,null,null,"skill_astralepis_02"],["流星蹴り",60,"star",null,null,null,null,null,"skill_astralepis_03"]]},
+  {id:'galdra',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'galdra',no:64,dexNo:46,name:'ガルドラ',rarity:'★★',types:['normal','dragon'],
+   hp:148,spd:86,catchRate:0,contractable:false,alchemyExclusive:true,
+   desc:'錬成陣から生まれた黒い幼竜。胸の蒼い錬成核に力を秘め、恥ずかしがりながらも信頼した相手のそばを懸命に飛ぶ。',
+   moves:[["黒錬牙",36,"normal",null,null,null,null,null,"skill_galdra_01"],["幼竜翼撃",32,"dragon",null,null,null,null,null,"skill_galdra_02"],["蒼核ブレス",52,["normal","dragon"],null,null,4,"蒼い錬成核の力を息吹へ変えて放つ。",null,"skill_galdra_03"]]},
   {id:'kimeragna_apex',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'kimeragna_apex',no:49,dexNo:49,name:'キメラグナ・アペクス',rarity:'★★★★',types:['wind','dragon'],
    evolutionOnly:true,hp:315,spd:132,catchRate:0,contractable:false,alchemyExclusive:true,
    desc:'キメラグナが混成魔力の極点へ到達した姿。雷光と猛毒をまとい、巨翼で戦場を制圧する。',
@@ -422,7 +438,8 @@ const UNIT_TAG_GROUPS = Object.freeze([
   Object.freeze({ids:['nightmare'], tags:['species:spirit','capability:magic']}),
   Object.freeze({ids:['volteck','spaquinn','voltax'], tags:['species:avian','anatomy:beak','anatomy:wing','capability:magic','capability:charge']}),
   Object.freeze({ids:['icegolem','proto_icegolem'], tags:['species:construct','anatomy:fist','armor:heavy','capability:charge']}),
-  Object.freeze({ids:['hikari'], tags:['origin:divine','species:spirit','capability:magic']}),
+  Object.freeze({ids:['elysia','elysia_prayer'], tags:['species:humanoid','capability:magic']}),
+  Object.freeze({ids:['hikari'], tags:['origin:divine','species:humanoid','capability:magic']}),
   Object.freeze({ids:['nemes','nemesia','nemesion','doom_nemesion'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:wing','capability:breath','capability:magic']}),
   Object.freeze({ids:['suiren','tsubaki'], tags:['origin:spirit','species:spirit','capability:magic']}),
   Object.freeze({ids:['tsubaki'], tags:['anatomy:wing']}),
@@ -432,6 +449,7 @@ const UNIT_TAG_GROUPS = Object.freeze([
   Object.freeze({ids:['volmoog','gran_volmoog'], tags:['species:beast','anatomy:claw','armor:heavy','capability:roar','capability:charge']}),
   Object.freeze({ids:['orcana','orca_stream','orca_abyss'], tags:['species:aquatic','anatomy:fin','anatomy:tail','capability:magic','capability:charge']}),
   Object.freeze({ids:['alchemion'], tags:['origin:alchemy','species:construct','anatomy:body']}),
+  Object.freeze({ids:['galdra'], tags:['origin:alchemy','species:dragon','anatomy:fang','anatomy:tail','anatomy:wing','capability:breath','capability:magic']}),
   Object.freeze({ids:['kimeragna','kimeragna_apex'], tags:['origin:alchemy','species:dragon','anatomy:claw','anatomy:wing','capability:breath','capability:charge']}),
   Object.freeze({ids:['sylphin','zephyray','tempestray'], tags:['species:aquatic','anatomy:fin','anatomy:wing','capability:charge','capability:magic']}),
   Object.freeze({ids:['ignaros'], tags:['species:beast','anatomy:horn','armor:heavy','capability:charge']}),
@@ -509,6 +527,11 @@ const ALCHEMY_ARCHETYPES = Object.freeze([
   Object.freeze({id:'speed', label:'速度型', modifiers:Object.freeze({hp:1, attack:.90, speed:1.15})})
 ]);
 const ALCHEMY_MONSTER_CONFIGS = Object.freeze({
+  galdra:Object.freeze({
+    monsterId:'galdra',
+    archetypes:ALCHEMY_ARCHETYPES,
+    exclusiveMoveIndexes:Object.freeze([2])
+  }),
   alchemion:Object.freeze({
     monsterId:'alchemion',
     archetypes:ALCHEMY_ARCHETYPES,
@@ -525,6 +548,15 @@ const ALCHEMY_MONSTER_CONFIGS = Object.freeze({
     exclusiveMoveIndexes:Object.freeze([0, 2])
   })
 });
+const GALDRA_SUCCESS_CANDIDATES = Object.freeze([
+  Object.freeze({
+    monsterId:'galdra', weight:1, alchemyInstance:true,
+    conditions:Object.freeze({}),
+    unlockConditions:Object.freeze([]),
+    requiredCoinOptionIds:Object.freeze([]),
+    guaranteeConditions:Object.freeze([])
+  })
+]);
 const ALCHEMION_SUCCESS_CANDIDATES = Object.freeze([
   Object.freeze({
     monsterId:'alchemion', weight:1, alchemyInstance:true,
@@ -609,6 +641,24 @@ const ALCHEMY_RECIPES = Object.freeze([
     minSuccessRate:10,
     maxSuccessRate:70,
     successCandidates:ALCHEMION_SUCCESS_CANDIDATES,
+    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
+  }),
+  Object.freeze({
+    recipeId:'galdra_standard',
+    displayName:'ガルドラ',
+    materialChoices:Object.freeze([
+      Object.freeze({label:'魔物の骨', normal:'monster_bone', fine:'fine_monster_bone'}),
+      Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
+      Object.freeze({label:'不安定錬成物質', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'}),
+      Object.freeze({label:'猛禽の羽', normal:'raptor_feather', fine:'fine_raptor_feather'})
+    ]),
+    coinOptions:ALCHEMY_COIN_OPTIONS,
+    defaultCoinOptionId:'standard',
+    baseSuccessRate:30,
+    fineMaterialBonus:5,
+    minSuccessRate:10,
+    maxSuccessRate:70,
+    successCandidates:GALDRA_SUCCESS_CANDIDATES,
     failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
   }),
   Object.freeze({

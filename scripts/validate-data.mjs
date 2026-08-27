@@ -163,7 +163,7 @@ if (data) {
     }
   }
 
-  const expectedCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer'];
+  const expectedCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari'];
   const actualCharacterIds = characterRecords.map(character => character.id);
   if (actualCharacterIds.length !== expectedCharacters.length || expectedCharacters.some(id => !actualCharacterIds.includes(id))) {
     fail(`Character dex mismatch: ${actualCharacterIds.join(', ')}`);

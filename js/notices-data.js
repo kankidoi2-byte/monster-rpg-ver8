@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260828-prologue-dex-elysia-galdra',
+    date: '2026-08-28',
+    category: 'update',
+    title: '序章の図鑑にエリシアとガルドラを追加しました',
+    body: 'エリシア、光祈の巫女エリシア、光の女神エリシアをキャラクター図鑑へ追加しました。モンスター図鑑ではアストラレピスをNo.16へ移し、新たな錬成限定モンスター「ガルドラ」をNo.46へ追加しました。'
+  }),
+  Object.freeze({
     id: '20260827-elixion-neutral-dragon',
     date: '2026-08-27',
     category: 'update',

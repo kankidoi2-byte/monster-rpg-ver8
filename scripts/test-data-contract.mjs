@@ -43,13 +43,13 @@ const contract = vm.runInContext(`({
   initialPartyIds:INITIAL_PARTY_IDS
 })`, context);
 
-assert.equal(contract.monsters.length,61);
+assert.equal(contract.monsters.length,64);
 assert.deepEqual([...contract.initialPartyIds],['elna_beginner','freigal','aquaron','grassbeat','volteck']);
-assert.equal(contract.characterCount,11);
+assert.equal(contract.characterCount,14);
 assert.equal(contract.monsterDexNumbers.length,50);
 assert.deepEqual([...contract.monsterDexNumbers].sort((a,b)=>a-b),Array.from({length:50},(_,index)=>index+1));
-assert.equal(contract.cards.length,191);
-assert.equal(new Set(contract.cards.map(card => card.id)).size,191);
+assert.equal(contract.cards.length,200);
+assert.equal(new Set(contract.cards.map(card => card.id)).size,200);
 assert(contract.monsters.every(monster => monster.moves.every(move => typeof move[8] === 'string')));
 assert(contract.monsters.every(monster => ['monster','character'].includes(monster.entityKind)));
 assert.equal(contract.normalizeSkillId(contract.firstLegacyId),contract.firstFixedId,'legacy skill ID must resolve to its fixed ID');
@@ -64,6 +64,7 @@ const elna = contract.monsters.find(monster => monster.id === 'elna_advanced');
 const freigal = contract.monsters.find(monster => monster.id === 'freigal');
 const kimeragnaApex = contract.monsters.find(monster => monster.id === 'kimeragna_apex');
 const elixion = contract.monsters.find(monster => monster.id === 'elixion');
+const galdra = contract.monsters.find(monster => monster.id === 'galdra');
 assert.equal(contract.isCharacterUnit(elna),true);
 assert.equal(contract.isContractableUnit(elna),false);
 assert.equal(contract.isAlchemyCatalystUnit(elna),false);
@@ -76,10 +77,14 @@ assert.equal(kimeragnaApex.eligibility.alchemySuccess,false,'Kimeragna Apex must
 assert.deepEqual([...elixion.types],['normal','dragon'],'Elixion must be a neutral/dragon monster');
 assert.equal(elixion.moves[0][2],'normal','Elixion\'s first exclusive move must be neutral');
 assert.deepEqual([...elixion.moves[2][2]],['normal','dragon'],'Elixion Nova must be neutral/dragon');
+assert.equal(galdra.dexNo,46,'Galdra must occupy monster dex No.46');
+assert.deepEqual([...galdra.types],['normal','dragon'],'Galdra must be a neutral/dragon monster');
+assert.equal(contract.monsters.find(monster => monster.id === 'astralepis').dexNo,16,'Astralepis must occupy the former goddess slot');
 assert(!contract.failureIds.includes('elna_advanced'),'characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('stella_wizard'),'Stella characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('lumina_wizard'),'Lumina characters must not enter alchemy failure results');
 assert(contract.recipeIds.includes('elixion_standard'),'Elixion alchemy recipe must be registered');
+assert(contract.recipeIds.includes('galdra_standard'),'Galdra alchemy recipe must be registered');
 
 storage.set('mb_v95c',JSON.stringify({
   schemaVersion:1,
@@ -117,4 +122,4 @@ assert(htmlSource.includes('css/ui-redesign.css?v=kokoro-link-scaling-1'),'UI st
 assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
 
-console.log('Canonical data contract validation passed (61 entities, 50-number monster dex, 11-character dex, 191 fixed skills, eligibility separation, and legacy skill-ID migration).');
+console.log('Canonical data contract validation passed (64 entities, 50-number monster dex, 14-character dex, 200 fixed skills, eligibility separation, and legacy skill-ID migration).');
