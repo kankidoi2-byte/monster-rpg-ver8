@@ -34,11 +34,14 @@ const fixtures=[
 
 fixtures.forEach((fixture,index)=>{
   const migrated=prepare(fixture);
-  assert.equal(migrated.schemaVersion,2,`fixture ${index+1} must migrate to v2`);
+  assert.equal(migrated.schemaVersion,3,`fixture ${index+1} must migrate to v3`);
   assert.ok(migrated.saveMeta.migrations.includes('v0_to_v1'));
   assert.ok(migrated.saveMeta.migrations.includes('v1_to_v2_map_dex'));
+  assert.ok(migrated.saveMeta.migrations.includes('v2_to_v3_contractor_rank'));
   assert.ok(Array.isArray(migrated.instances));
   assert.ok(migrated.progress?.tutorial&&migrated.progress?.missions);
+  assert.equal(migrated.contractor?.exp,0);
+  assert.ok(Array.isArray(migrated.contractor?.unlockedTitleIds));
 });
 
 const repaired=prepare(fixtures[2]);
@@ -54,6 +57,14 @@ const capped=prepare({instances:[{uid:'over',id:'freigal',level:135,exp:9999}],l
 assert.equal(capped.instances[0].level,100,'legacy instances above the cap must be clamped to level 100');
 assert.equal(capped.instances[0].exp,0,'max-level instances must not retain overflow EXP');
 assert.equal(capped.levels.freigal,100,'legacy species levels above the cap must be clamped');
+
+const contractorRepair=prepare({schemaVersion:3,contractor:{exp:-20,claimedRankRewards:[1,2,2,51],expEventIds:['boss:a','boss:a',null],unlockedTitleIds:['rank_05_full_contractor','rank_05_full_contractor'],equippedTitleId:'missing',recentExp:[{amount:10,source:'battle',awardedAt:'now'},{amount:-4}],legacyMigrationVersion:-1}});
+assert.equal(contractorRepair.contractor.exp,0,'invalid contractor EXP must be repaired');
+assert.deepEqual([...contractorRepair.contractor.claimedRankRewards],[2],'rank reward claims must remain unique and in range');
+assert.deepEqual([...contractorRepair.contractor.expEventIds],['boss:a'],'contractor EXP event IDs must remain unique strings');
+assert.equal(contractorRepair.contractor.equippedTitleId,null,'an unavailable equipped title must be cleared');
+assert.equal(contractorRepair.contractor.recentExp.length,1,'invalid recent contractor EXP entries must be removed');
+assert.equal(prepare({schemaVersion:3,contractor:{exp:999999}}).contractor.exp,63700,'contractor EXP must not exceed the Rank 50 cap');
 
 const expeditionRepair=prepare(fixtures[3]);
 assert.equal(expeditionRepair.expeditions.completedCount,0);

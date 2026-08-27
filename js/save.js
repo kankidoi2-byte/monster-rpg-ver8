@@ -2,9 +2,23 @@
 const SAVE_KEY = 'mb_v95c';
 const SAVE_BACKUP_KEY = `${SAVE_KEY}_lastKnownGood`;
 const SAVE_CORRUPT_KEY = `${SAVE_KEY}_corrupt`;
-const SAVE_SCHEMA_VERSION = 2;
+const SAVE_SCHEMA_VERSION = 3;
+const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
+
+function contractorSaveDefaults(){
+  return {
+    systemVersion:1,
+    exp:0,
+    claimedRankRewards:[],
+    expEventIds:[],
+    unlockedTitleIds:[],
+    equippedTitleId:null,
+    recentExp:[],
+    legacyMigrationVersion:0
+  };
+}
 
 function initSave() {
   return {
@@ -14,6 +28,7 @@ function initSave() {
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
+    contractor:contractorSaveDefaults(),
     progress:{chapterId:'prologue', storyFlags:{}, tutorial:{id:'prologue', version:1, status:'not_started', stepId:null}, missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
   };
@@ -45,11 +60,19 @@ function migrate_v1_to_v2(payload,report){
   if(!payload.saveMeta.migrations.includes('v1_to_v2_map_dex'))payload.saveMeta.migrations.push('v1_to_v2_map_dex');
   report.push('既存プレイで利用可能だったマップを図鑑へ登録');return payload;
 }
+function migrate_v2_to_v3(payload,report){
+  payload.schemaVersion=3;
+  if(!isSaveObject(payload.saveMeta))payload.saveMeta={};
+  if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];
+  if(!isSaveObject(payload.contractor))payload.contractor=contractorSaveDefaults();
+  if(!payload.saveMeta.migrations.includes('v2_to_v3_contractor_rank'))payload.saveMeta.migrations.push('v2_to_v3_contractor_rank');
+  report.push('契約者Rank・称号データの保存領域を追加');return payload;
+}
 function migrateSave(payload,report=[]){
   if(!isSaveObject(payload))throw new Error('セーブデータのルートがオブジェクトではありません。');
   let version=Number.isInteger(payload.schemaVersion)?payload.schemaVersion:0;
   if(version>SAVE_SCHEMA_VERSION)throw new Error(`未対応の新しいセーブ形式です（v${version}）。`);
-  while(version<SAVE_SCHEMA_VERSION){if(version===0)payload=migrate_v0_to_v1(payload,report);else if(version===1)payload=migrate_v1_to_v2(payload,report);else throw new Error(`v${version}からの移行処理がありません。`);version=payload.schemaVersion;}
+  while(version<SAVE_SCHEMA_VERSION){if(version===0)payload=migrate_v0_to_v1(payload,report);else if(version===1)payload=migrate_v1_to_v2(payload,report);else if(version===2)payload=migrate_v2_to_v3(payload,report);else throw new Error(`v${version}からの移行処理がありません。`);version=payload.schemaVersion;}
   return payload;
 }
 function nonNegativeInteger(value,fallback=0){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.floor(n):fallback;}
@@ -90,6 +113,16 @@ function repairSave(payload,report=[]){
   payload.expeditions=isSaveObject(payload.expeditions)?payload.expeditions:defaults.expeditions;payload.expeditions.completedCount=nonNegativeInteger(payload.expeditions.completedCount);
   const rawExpeditions=Array.isArray(payload.expeditions.active)?payload.expeditions.active:[];
   payload.expeditions.active=rawExpeditions.filter(entry=>{const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];const valid=isSaveObject(entry)&&typeof entry.id==='string'&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;if(!valid){payload.quarantine.invalidExpeditions.push(entry);report.push('参照切れの遠征データを隔離');return false;}entry.memberUids=members;entry.requiredWins={short:1,medium:3,long:5}[entry.distanceId];entry.progress=Math.min(entry.requiredWins,nonNegativeInteger(entry.progress));entry.status=entry.status==='complete'?'complete':'active';return true;});
+  payload.contractor=isSaveObject(payload.contractor)?payload.contractor:contractorSaveDefaults();
+  payload.contractor.systemVersion=Math.max(1,nonNegativeInteger(payload.contractor.systemVersion,1));
+  payload.contractor.exp=Math.min(CONTRACTOR_SAVE_EXP_CAP,nonNegativeInteger(payload.contractor.exp));
+  payload.contractor.claimedRankRewards=[...new Set((Array.isArray(payload.contractor.claimedRankRewards)?payload.contractor.claimedRankRewards:[]).map(value=>nonNegativeInteger(value)).filter(value=>value>=2&&value<=50))];
+  payload.contractor.expEventIds=[...new Set((Array.isArray(payload.contractor.expEventIds)?payload.contractor.expEventIds:[]).filter(value=>typeof value==='string'&&value))];
+  payload.contractor.unlockedTitleIds=[...new Set((Array.isArray(payload.contractor.unlockedTitleIds)?payload.contractor.unlockedTitleIds:[]).filter(value=>typeof value==='string'&&value))];
+  payload.contractor.equippedTitleId=typeof payload.contractor.equippedTitleId==='string'&&payload.contractor.unlockedTitleIds.includes(payload.contractor.equippedTitleId)?payload.contractor.equippedTitleId:null;
+  const rawRecentExp=Array.isArray(payload.contractor.recentExp)?payload.contractor.recentExp:[];
+  payload.contractor.recentExp=rawRecentExp.filter(entry=>isSaveObject(entry)&&nonNegativeInteger(entry.amount)>0).slice(-20).map(entry=>({amount:nonNegativeInteger(entry.amount),source:typeof entry.source==='string'&&entry.source?entry.source:'other',eventId:typeof entry.eventId==='string'&&entry.eventId?entry.eventId:null,awardedAt:typeof entry.awardedAt==='string'?entry.awardedAt:''}));
+  payload.contractor.legacyMigrationVersion=nonNegativeInteger(payload.contractor.legacyMigrationVersion);
   payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};payload.progress.tutorial=isSaveObject(payload.progress.tutorial)?payload.progress.tutorial:defaults.progress.tutorial;payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;
 }
