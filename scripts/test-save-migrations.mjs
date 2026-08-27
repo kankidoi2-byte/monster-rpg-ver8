@@ -64,6 +64,7 @@ assert.deepEqual([...contractorRepair.contractor.claimedRankRewards],[2],'rank r
 assert.deepEqual([...contractorRepair.contractor.expEventIds],['boss:a'],'contractor EXP event IDs must remain unique strings');
 assert.equal(contractorRepair.contractor.equippedTitleId,null,'an unavailable equipped title must be cleared');
 assert.equal(contractorRepair.contractor.recentExp.length,1,'invalid recent contractor EXP entries must be removed');
+assert.equal(contractorRepair.contractor.legacyMigrationSummary,null,'invalid legacy migration summaries must be cleared');
 assert.equal(prepare({schemaVersion:3,contractor:{exp:999999}}).contractor.exp,63700,'contractor EXP must not exceed the Rank 50 cap');
 
 const expeditionRepair=prepare(fixtures[3]);

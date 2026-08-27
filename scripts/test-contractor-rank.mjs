@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const source=fs.readFileSync(new URL('../js/contractor-rank.js',import.meta.url),'utf8');
-const save={contractor:{systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0}};
-const context=vm.createContext({console,Date,Math,save,contractorSaveDefaults:()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0})});
+const save={saveMeta:{migrations:[]},history:{wins:0,logs:[]},caught:[],expeditions:{completedCount:0},contractor:{systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0,legacyMigrationSummary:null}};
+const context=vm.createContext({console,Date,Math,M:[],save,contractorSaveDefaults:()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0,legacyMigrationSummary:null})});
 vm.runInContext(source,context);
 
 const value=expression=>vm.runInContext(expression,context);
@@ -18,6 +18,7 @@ assert.equal(value('contractorCumulativeExpForRank(30)'),23200);
 assert.equal(value('contractorCumulativeExpForRank(50)'),63700);
 assert.equal(value('contractorRankFromExp(699)'),4);
 assert.equal(value('contractorRankFromExp(700)'),5);
+assert.equal(save.contractor.legacyMigrationVersion,1,'new saves must be marked as not requiring legacy reconstruction');
 
 const first=value("grantContractorExp(700,{source:'test',eventId:'phase1:first',awardedAt:'2026-08-26T00:00:00.000Z'})");
 assert.equal(first.oldRank,1);

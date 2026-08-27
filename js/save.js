@@ -16,7 +16,8 @@ function contractorSaveDefaults(){
     unlockedTitleIds:[],
     equippedTitleId:null,
     recentExp:[],
-    legacyMigrationVersion:0
+    legacyMigrationVersion:0,
+    legacyMigrationSummary:null
   };
 }
 
@@ -123,6 +124,7 @@ function repairSave(payload,report=[]){
   const rawRecentExp=Array.isArray(payload.contractor.recentExp)?payload.contractor.recentExp:[];
   payload.contractor.recentExp=rawRecentExp.filter(entry=>isSaveObject(entry)&&nonNegativeInteger(entry.amount)>0).slice(-20).map(entry=>({amount:nonNegativeInteger(entry.amount),source:typeof entry.source==='string'&&entry.source?entry.source:'other',eventId:typeof entry.eventId==='string'&&entry.eventId?entry.eventId:null,awardedAt:typeof entry.awardedAt==='string'?entry.awardedAt:''}));
   payload.contractor.legacyMigrationVersion=nonNegativeInteger(payload.contractor.legacyMigrationVersion);
+  payload.contractor.legacyMigrationSummary=isSaveObject(payload.contractor.legacyMigrationSummary)?payload.contractor.legacyMigrationSummary:null;
   payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};payload.progress.tutorial=isSaveObject(payload.progress.tutorial)?payload.progress.tutorial:defaults.progress.tutorial;payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;
 }

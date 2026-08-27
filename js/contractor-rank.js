@@ -1,6 +1,7 @@
 /* ===== 契約者Rank・称号 基盤 ===== */
 const CONTRACTOR_RANK_SYSTEM_VERSION = 1;
 const CONTRACTOR_MAX_RANK = 50;
+const CONTRACTOR_LEGACY_MIGRATION_VERSION = 1;
 
 const CONTRACTOR_TITLE_CATALOG = Object.freeze([
   Object.freeze({id:'rank_05_full_contractor',name:'一人前の契約者',category:'rank',rank:5,description:'契約者として確かな一歩を刻んだ証。'}),
@@ -86,6 +87,17 @@ function equippedContractorTitle(){
   return contractorTitleById(state.equippedTitleId);
 }
 
+function availableContractorRankRewardRanks(){
+  const state=ensureContractorState();
+  const rank=contractorRankFromExp(state.exp);
+  return Array.from({length:Math.max(0,rank-1)},(_,index)=>index+2);
+}
+
+function unclaimedContractorRankRewardRanks(){
+  const state=ensureContractorState();
+  return availableContractorRankRewardRanks().filter(rank=>!state.claimedRankRewards.includes(rank));
+}
+
 function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}={}){
   const state=ensureContractorState();
   const normalizedAmount=Math.max(0,Math.floor(Number(amount)||0));
@@ -107,5 +119,62 @@ function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}=
   return {awarded:grantedAmount>0,reason:grantedAmount>0?'awarded':'max_rank',amount:grantedAmount,oldExp,newExp:state.exp,oldRank,newRank,reachedRanks,unlockedTitleIds};
 }
 
+function legacyBossVictoryRecords(){
+  const logs=Array.isArray(save.history?.logs)?save.history.logs:[];
+  if(typeof M==='undefined'||!Array.isArray(M)||!logs.length)return [];
+  return M.filter(mon=>typeof mon?.bossClass==='string'&&mon.bossClass&&logs.some(log=>typeof log==='string'&&log.includes('勝利')&&log.includes(mon.name)))
+    .map(mon=>({id:mon.id,name:mon.name,bossClass:mon.bossClass,exp:mon.bossClass.includes('超ボス')?250:100}));
+}
+
+function contractorLegacyMigrationPlan(){
+  const wins=Math.max(0,Math.floor(Number(save.history?.wins)||0));
+  const unitDexCount=new Set(Array.isArray(save.caught)?save.caught.filter(id=>typeof id==='string'&&id):[]).size;
+  const expeditions=Math.max(0,Math.floor(Number(save.expeditions?.completedCount)||0));
+  const bosses=legacyBossVictoryRecords();
+  const activityExp=wins*10+unitDexCount*30+expeditions*20;
+  const bossExp=bosses.reduce((sum,boss)=>sum+boss.exp,0);
+  return {wins,unitDexCount,expeditions,bosses,activityExp,bossExp,totalExp:activityExp+bossExp};
+}
+
+function migrateLegacyContractorProgress(){
+  const state=ensureContractorState();
+  if(state.legacyMigrationVersion>=CONTRACTOR_LEGACY_MIGRATION_VERSION)return {applied:false,reason:'already_migrated',summary:state.legacyMigrationSummary};
+  const eligible=Array.isArray(save.saveMeta?.migrations)&&save.saveMeta.migrations.includes('v2_to_v3_contractor_rank');
+  const plan=eligible?contractorLegacyMigrationPlan():{wins:0,unitDexCount:0,expeditions:0,bosses:[],activityExp:0,bossExp:0,totalExp:0};
+  const appliedAt=new Date().toISOString();
+  let grantedExp=0;
+  if(plan.activityExp>0){
+    const result=grantContractorExp(plan.activityExp,{source:'legacy_activity',eventId:'legacy:activity:v1',awardedAt:appliedAt});
+    grantedExp+=result.amount;
+  }
+  plan.bosses.forEach(boss=>{
+    const result=grantContractorExp(boss.exp,{source:'boss_first_win',eventId:`boss:first:${boss.id}`,awardedAt:appliedAt});
+    grantedExp+=result.amount;
+  });
+  state.legacyMigrationVersion=CONTRACTOR_LEGACY_MIGRATION_VERSION;
+  state.legacyMigrationSummary={
+    version:CONTRACTOR_LEGACY_MIGRATION_VERSION,
+    eligible,
+    appliedAt,
+    wins:plan.wins,
+    winsExp:plan.wins*10,
+    unitDexCount:plan.unitDexCount,
+    unitDexExp:plan.unitDexCount*30,
+    expeditions:plan.expeditions,
+    expeditionExp:plan.expeditions*20,
+    bossFirstWins:plan.bosses.map(boss=>({id:boss.id,exp:boss.exp})),
+    bossExp:plan.bossExp,
+    storyAchievements:0,
+    storyExp:0,
+    missionAchievements:0,
+    missionExp:0,
+    grantedExp,
+    resultingRank:contractorRankFromExp(state.exp)
+  };
+  syncContractorRankTitles();
+  return {applied:eligible,reason:eligible?'migrated':'new_save',summary:state.legacyMigrationSummary};
+}
+
 ensureContractorState();
 syncContractorRankTitles();
+migrateLegacyContractorProgress();

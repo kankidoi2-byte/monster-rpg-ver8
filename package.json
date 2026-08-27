@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "check": "npm run check:data && npm run check:data-contract && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-complete && npm run check:kokoro-link-balance && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:battle-switch && npm run check:battle-motion && npm run check:monster-dex && npm run check:character-dex && npm run check:map-dex && npm run check:contract-animation && npm run check:three-way && npm run check:hunt-difficulty && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save && npm run check:contractor-rank",
+    "check": "npm run check:data && npm run check:data-contract && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-complete && npm run check:kokoro-link-balance && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:battle-switch && npm run check:battle-motion && npm run check:monster-dex && npm run check:character-dex && npm run check:map-dex && npm run check:contract-animation && npm run check:three-way && npm run check:hunt-difficulty && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save && npm run check:contractor-rank && npm run check:contractor-rank-migration",
     "check:data": "node scripts/validate-data.mjs",
     "check:data-contract": "node scripts/test-data-contract.mjs",
     "check:skill-taxonomy": "node scripts/test-skill-taxonomy.mjs",
@@ -35,6 +35,7 @@
     "check:golden-land": "node scripts/test-golden-land.mjs",
     "check:save": "node scripts/test-save-migrations.mjs",
     "check:contractor-rank": "node scripts/test-contractor-rank.mjs",
+    "check:contractor-rank-migration": "node scripts/test-contractor-rank-migration.mjs",
     "analyze:kokoro-link": "node scripts/kokoro-link-analysis.mjs",
     "analyze:kokoro-link-balance": "node scripts/kokoro-link-phase5-balance.mjs"
   },
