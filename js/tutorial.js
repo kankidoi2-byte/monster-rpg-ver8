@@ -16,6 +16,9 @@ function normalizeTutorialStep(step,index){
     screenId:typeof step.screenId==='string'&&step.screenId?step.screenId:null,
     target:typeof step.target==='string'&&step.target?step.target:null,
     advanceOnTarget:step.advanceOnTarget===true,
+    requiredPartyMin:Math.max(0,Math.floor(Number(step.requiredPartyMin)||0)),
+    requiredPartyMax:Math.max(0,Math.floor(Number(step.requiredPartyMax)||0)),
+    continueAt:typeof step.continueAt==='string'&&step.continueAt?step.continueAt:null,
     progressLabel:typeof step.progressLabel==='string'&&step.progressLabel?step.progressLabel:'TUTORIAL',
     nextLabel:typeof step.nextLabel==='string'&&step.nextLabel?step.nextLabel:null
   });
@@ -174,9 +177,31 @@ function tutorialPrevious(){
   if(!tutorialUiState.active||tutorialUiState.index<=0)return;
   tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
+function tutorialStepCanAdvance(step){
+  if(!step?.requiredPartyMin&&!step?.requiredPartyMax)return true;
+  const count=typeof getPartyInstances==='function'?getPartyInstances().length:0;
+  const below=step.requiredPartyMin&&count<step.requiredPartyMin;
+  const above=step.requiredPartyMax&&count>step.requiredPartyMax;
+  if(!below&&!above)return true;
+  if(typeof showUiNotice==='function')showUiNotice(`パーティーを${step.requiredPartyMin||1}〜${step.requiredPartyMax||3}体で編成してください。`,'warning');
+  return false;
+}
+function checkpointTutorialFlow(step){
+  const returnScreen=tutorialUiState.returnScreen;
+  if(tutorialUiState.persist&&step?.continueAt){
+    setTutorialStep(step.continueAt);
+    if(typeof saveGame==='function')saveGame();
+  }
+  clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
+}
 function tutorialNext(){
   if(!tutorialUiState.active)return;
-  if(tutorialUiState.index>=tutorialUiState.steps.length-1){finishTutorialFlow();return;}
+  const step=tutorialUiState.steps[tutorialUiState.index];
+  if(!tutorialStepCanAdvance(step))return;
+  if(tutorialUiState.index>=tutorialUiState.steps.length-1){
+    if(step?.continueAt){checkpointTutorialFlow(step);return;}
+    finishTutorialFlow();return;
+  }
   tutorialUiState.index+=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
 function restoreTutorialReturnScreen(returnScreen){
@@ -239,6 +264,7 @@ function openTutorialFromMenu(){
 function resumeTutorialIfNeeded(){
   if(document.body.classList.contains('title-mode')||typeof currentTutorialState!=='function')return false;
   const tutorial=currentTutorialState();
+  if(tutorialShouldAutoStart())return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{persist:true});
   if(tutorial.status!=='in_progress'&&!tutorial.replaying)return false;
   return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true,replay:tutorial.replaying});
 }
@@ -247,9 +273,21 @@ function handleTutorialScreenChange(){
   if(tutorialUiState.active)setTimeout(renderTutorialStep,0);
 }
 
+registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
+  {id:'intro_gnosis',screenId:'home',title:'グノーシス',text:'ようこそ、契約者。まずは一緒に冒険する仲間を選びましょう。長い説明はしません。実際の画面で確かめていきます。',progressLabel:'GNOSIS'},
+  {id:'party_open',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'仲間を選びましょう',text:'「編成」を開いてください。最初に用意された5体から、好きな仲間を選べます。',progressLabel:'GNOSIS'},
+  {id:'party_choose',screenId:'partySet',target:'#partySelectList',advanceOnTarget:true,requiredPartyMin:1,requiredPartyMax:3,title:'好きな1体を選んでください',text:'初級剣士エルナ、フレイガル、アクアロン、グラスビート、ボルテックから、まず1体をパーティーに入れてください。',progressLabel:'PARTY'},
+  {id:'party_more',screenId:'partySet',target:'#partySelectList',requiredPartyMin:1,requiredPartyMax:3,title:'最大3体まで編成できます',text:'このまま1体でも、あと2体まで加えても構いません。自分の好きな1〜3体を選んで「次へ」を押してください。',progressLabel:'PARTY'},
+  {id:'party_leader',screenId:'partySet',target:'#partyCurrentCard',requiredPartyMin:1,requiredPartyMax:3,title:'最初の仲間がリーダーです',text:'並びの最初がバトル開始時のリーダーです。パーティーと順番は、あとからいつでも変更できます。',progressLabel:'PARTY'},
+  {id:'home_return',screenId:'partySet',target:'[data-nav="home"]',advanceOnTarget:true,requiredPartyMin:1,requiredPartyMax:3,title:'ホームへ戻りましょう',text:'下の「ホーム」を押してください。選んだパーティーは自動で保存されています。',progressLabel:'HOME'},
+  {id:'home_adventure',screenId:'home',target:'#homeAdventureButton',title:'冒険',text:'ここから討伐依頼へ向かいます。次の案内で、最初の依頼を実際に進めます。',progressLabel:'HOME'},
+  {id:'home_party',screenId:'home',target:'#homePartyEditButton',title:'パーティー',text:'編成はここから何度でも変更できます。最初に表示される仲間がリーダーです。',progressLabel:'HOME'},
+  {id:'home_coin',screenId:'home',target:'.app-resource',title:'コイン',text:'画面上部で所持コインを確認できます。ショップや育成などで使います。',progressLabel:'HOME'},
+  {id:'home_menu',screenId:'home',target:'.app-bottom-nav',title:'下部メニュー',text:'ホーム、モンスター、バトル、育成、メニューへは、画面下から移動できます。',progressLabel:'HOME',nextLabel:'ここまで',continueAt:'first_hunt'}
+]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},
-  {id:'help_controls',title:'止めても、あとから続けられます',text:'「戻る」で説明を見直し、×で閉じると現在位置を保存します。本編チュートリアルは確認してからスキップでき、メニューから再閲覧できます。',progressLabel:'GUIDE UI',nextLabel:'メニューへ戻る'}
+  {id:'help_controls',title:'止めても、あとから続けられます',text:'「戻る」で説明を見直せます。本編チュートリアルは×で閉じると現在位置を保存し、確認してからスキップでき、メニューから再閲覧できます。',progressLabel:'GUIDE UI',nextLabel:'メニューへ戻る'}
 ]);
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;

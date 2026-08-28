@@ -31,7 +31,7 @@ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion suppo
 assert.ok(tutorial.includes("confirm('必須チュートリアルをスキップしますか？"),'required tutorial skip must ask for confirmation');
 assert.ok(tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must use the shared persisted state');
 assert.ok(tutorial.includes("event.key==='Escape'")&&tutorial.includes("event.key==='ArrowLeft'")&&tutorial.includes("event.key==='ArrowRight'"),'keyboard tutorial controls are missing');
-assert.ok(!tutorial.includes('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),'Phase 3B must not complete or auto-start the required Phase 4 tutorial with placeholder content');
+assert.ok(tutorial.includes('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),'the required onboarding flow must use the shared tutorial engine');
 assert.ok(ui.includes("typeof handleTutorialScreenChange === 'function'"),'screen changes must notify the tutorial engine');
 assert.ok(init.includes('setTimeout(resumeTutorialIfNeeded,0)'),'reload/title entry must resume an interrupted tutorial');
 

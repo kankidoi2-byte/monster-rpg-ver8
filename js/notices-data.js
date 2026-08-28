@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-party-home',
+    date: '2026-08-29',
+    category: 'update',
+    title: '仲間選びとホームのチュートリアルを追加しました',
+    body: '新しくゲームを始めた契約者向けに、グノーシスが最初のパーティー編成とホーム画面の基本を案内します。既存のセーブデータでは自動開始しません。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-guide-foundation',
     date: '2026-08-29',
     category: 'update',
