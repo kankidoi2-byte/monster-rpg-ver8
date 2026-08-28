@@ -22,7 +22,7 @@ const flowSlice=(constant,nextConstant)=>{
 };
 const threeWayFlow=flowSlice('TUTORIAL_THREE_WAY_FLOW_ID','TUTORIAL_INVASION_FLOW_ID');
 const invasionFlow=flowSlice('TUTORIAL_INVASION_FLOW_ID','TUTORIAL_KOKORO_LINK_FLOW_ID');
-const kokoroFlow=flowSlice('TUTORIAL_KOKORO_LINK_FLOW_ID',null);
+const kokoroFlow=flowSlice('TUTORIAL_KOKORO_LINK_FLOW_ID','TUTORIAL_ALCHEMY_FLOW_ID');
 const stepCount=source=>(source.match(/\{id:'/g)||[]).length;
 assert.equal(stepCount(threeWayFlow),3,'the three-way guide must remain within 1–3 screens');
 assert.equal(stepCount(invasionFlow),2,'the invasion guide must remain within 1–3 screens');

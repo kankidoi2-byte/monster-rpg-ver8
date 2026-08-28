@@ -79,7 +79,7 @@ function showBattleChoices() {
     const secondEnemy = request.secondEnemyId ? by(request.secondEnemyId) : null;
     const hasInvasion = request.battleMode === 'invasion_pending' && request.invasionEnemyId;
     const isRecommended = request.requestId === recommended;
-    return `<article class="enemy-choice-card difficulty-card-${difficulty.id}${isRecommended?' is-recommended':''}">
+    return `<article class="enemy-choice-card difficulty-card-${difficulty.id}${isRecommended?' is-recommended':''}" ${map.goldenLand?'data-tutorial-golden-land':''}>
       <div class="hunt-card-visual"><img class="map-img" src="${map.image}" alt="${map.name}"><div class="hunt-card-shade"></div>${vis(m)}
         <div class="hunt-card-badges">${isRecommended?'<span class="hunt-recommended">おすすめ</span>':''}<span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span></div>
         <div class="hunt-card-title"><small>${map.name}</small><h2>${m.name}</h2><p>${m.rarity} ${typesHtml(m.types)}</p></div>
@@ -98,6 +98,7 @@ function showBattleChoices() {
         <button class="hunt-accept-button" onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この依頼へ出発 ›</button>
       </div></article>`;
   }).join('');
+  if(preparedEntries.some(entry=>entry.map.goldenLand)&&typeof offerGoldenLandTutorialGuide==='function')setTimeout(offerGoldenLandTutorialGuide,0);
 }
 function isBossClassMonster(mon){
   return !!(mon && typeof mon.bossClass === 'string' && mon.bossClass.trim());

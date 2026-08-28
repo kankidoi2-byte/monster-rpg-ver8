@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-growth-collection-guides',
+    date: '2026-08-29',
+    category: 'update',
+    title: '育成・収集機能の初回案内を追加しました',
+    body: '錬成、遠征、進化・融合、技カード・技ガチャ、黄金郷、図鑑、ショップ・アイテム、契約者Rank・称号を初めて使う時に、現行ルールを実際の画面で短く確認できるようになりました。案内は機能ごとに一度だけ表示されます。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-battle-feature-guides',
     date: '2026-08-29',
     category: 'update',

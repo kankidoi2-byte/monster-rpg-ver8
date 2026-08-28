@@ -3,6 +3,18 @@ const TUTORIAL_HELP_FLOW_ID='tutorial_help';
 const TUTORIAL_THREE_WAY_FLOW_ID='guide_three_way';
 const TUTORIAL_INVASION_FLOW_ID='guide_invasion';
 const TUTORIAL_KOKORO_LINK_FLOW_ID='guide_kokoro_link';
+const TUTORIAL_ALCHEMY_FLOW_ID='guide_alchemy';
+const TUTORIAL_EXPEDITION_FLOW_ID='guide_expedition';
+const TUTORIAL_FUSION_FLOW_ID='guide_evolution_fusion';
+const TUTORIAL_EVOLUTION_FLOW_ID='guide_evolution';
+const TUTORIAL_SKILL_CARDS_FLOW_ID='guide_skill_cards';
+const TUTORIAL_SKILL_GACHA_FLOW_ID='guide_skill_gacha';
+const TUTORIAL_GOLDEN_LAND_FLOW_ID='guide_golden_land';
+const TUTORIAL_DEX_FLOW_ID='guide_dex';
+const TUTORIAL_SHOP_ITEMS_FLOW_ID='guide_shop_items';
+const TUTORIAL_BATTLE_ITEMS_FLOW_ID='guide_battle_items';
+const TUTORIAL_CONTRACTOR_RANK_FLOW_ID='guide_contractor_rank';
+const TUTORIAL_CONTRACTOR_TITLES_FLOW_ID='guide_contractor_titles';
 const tutorialFlows=new Map();
 const tutorialUiState={
   active:false,flowId:null,steps:[],index:0,persist:false,replay:false,
@@ -307,9 +319,29 @@ function resumeTutorialIfNeeded(){
   if(tutorial.status!=='in_progress'&&!tutorial.replaying)return false;
   return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true,replay:tutorial.replaying});
 }
-function handleTutorialScreenChange(){
+function tutorialFeatureGuideForScreen(screenId){
+  return ({
+    alchemy:['alchemy',TUTORIAL_ALCHEMY_FLOW_ID],
+    expedition:['expedition',TUTORIAL_EXPEDITION_FLOW_ID],
+    fusion:['evolutionFusion',TUTORIAL_FUSION_FLOW_ID],
+    evolution:['evolutionFusion',TUTORIAL_EVOLUTION_FLOW_ID],
+    skillEdit:['skillCards',TUTORIAL_SKILL_CARDS_FLOW_ID],
+    skillGacha:['skillCards',TUTORIAL_SKILL_GACHA_FLOW_ID],
+    dexHub:['dex',TUTORIAL_DEX_FLOW_ID],
+    shop:['shopItems',TUTORIAL_SHOP_ITEMS_FLOW_ID],
+    battleItemSelect:['shopItems',TUTORIAL_BATTLE_ITEMS_FLOW_ID],
+    contractorRank:['contractorRank',TUTORIAL_CONTRACTOR_RANK_FLOW_ID],
+    contractorTitles:['contractorRank',TUTORIAL_CONTRACTOR_TITLES_FLOW_ID]
+  })[screenId]||null;
+}
+function handleTutorialScreenChange(screenId){
   updateTutorialMenuSummary();
-  if(tutorialUiState.active)setTimeout(renderTutorialStep,0);
+  if(tutorialUiState.active){setTimeout(renderTutorialStep,0);return;}
+  const guide=tutorialFeatureGuideForScreen(screenId);
+  if(guide)setTimeout(()=>startTutorialFeatureGuide(guide[0],guide[1]),0);
+}
+function offerGoldenLandTutorialGuide(){
+  return startTutorialFeatureGuide('goldenLand',TUTORIAL_GOLDEN_LAND_FLOW_ID);
 }
 
 function tutorialFirstHuntIsPending(){
@@ -508,6 +540,56 @@ registerTutorialFlow(TUTORIAL_INVASION_FLOW_ID,[
 registerTutorialFlow(TUTORIAL_KOKORO_LINK_FLOW_ID,[
   {id:'kokoro_link_intro',screenId:'battle',target:'#kokoroLinkPanel',title:'ココロリンク',text:'控えモンスター1体の力を、戦闘中の仲間へ借りられます。発動してもターンは消費しません。',progressLabel:'KOKORO LINK'},
   {id:'kokoro_link_source',screenId:'battle',target:'#kokoroLinkPanel .kokoro-link-source-grid',title:'控えを1体選択',text:'効果は控えのレアリティや属性で変わり、戦闘終了まで続きます。同じ控えが力を貸せるのは1戦につき1回です。',progressLabel:'KOKORO LINK',nextLabel:'リンクを選ぶ'}
+]);
+registerTutorialFlow(TUTORIAL_ALCHEMY_FLOW_ID,[
+  {id:'alchemy_materials',screenId:'alchemy',target:'.alchemy-material-board',title:'素材を4枠にセット',text:'錬成は指定された4枠の素材を消費します。上質素材や投入数、レシピとの一致で成功率が変わります。',progressLabel:'ALCHEMY'},
+  {id:'alchemy_catalyst',screenId:'alchemy',target:'.alchemy-catalyst',title:'触媒モンスターは1体消費',text:'遠征中とパーティー編成中を除く仲間から、触媒を1体選びます。錬成すると結果にかかわらず消費されます。',progressLabel:'ALCHEMY'},
+  {id:'alchemy_rate',screenId:'alchemy',target:'.alchemy-coin-compact',title:'50・100・250コインから選択',text:'投入額で成功率と失敗時の候補が変わります。最終成功率は確認欄に表示されるので、実行前に確かめてください。',progressLabel:'ALCHEMY',nextLabel:'錬成へ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_EXPEDITION_FLOW_ID,[
+  {id:'expedition_party',screenId:'expedition',target:'.expedition-member-grid',title:'待機中の仲間を1〜3体派遣',text:'パーティーに編成していない仲間から1〜3体を選びます。遠征中の仲間は、編成や他の遠征には使えません。',progressLabel:'EXPEDITION'},
+  {id:'expedition_progress',screenId:'expedition',target:'.expedition-distance-grid',title:'勝利すると遠征が進みます',text:'短距離は1勝、中距離は3勝、長距離は5勝で完了します。どの通常バトルでも、勝利するたびに進行します。',progressLabel:'EXPEDITION'},
+  {id:'expedition_recall',screenId:'expedition',target:'.expedition-active-grid',title:'途中帰還は進捗報酬の50％',text:'完了前でも帰還できます。その場合は進んだ分の50％だけ受け取り、派遣した仲間が戻ります。',progressLabel:'EXPEDITION',nextLabel:'遠征へ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_FUSION_FLOW_ID,[
+  {id:'fusion_intro',screenId:'fusion',target:'#fusionList',title:'合成・特殊進化',text:'対象の仲間と指定アイテムをそろえると、特別な姿へ進化できます。必要条件は各カードで確認できます。',progressLabel:'EVOLUTION'},
+  {id:'fusion_cost',screenId:'fusion',target:'#fusionItemText',title:'素材と対象個体を消費・変化',text:'合成すると指定アイテムを消費し、選んだ個体が進化先へ変わります。遠征中の個体は選べません。',progressLabel:'EVOLUTION',nextLabel:'合成へ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_EVOLUTION_FLOW_ID,[
+  {id:'evolution_intro',screenId:'evolution',target:'#evoVisual',title:'レベル条件を満たして進化',text:'必要レベルに達した仲間は、勝利後に進化できます。分岐がある場合は、進化先をここで選びます。',progressLabel:'EVOLUTION'},
+  {id:'evolution_choice',screenId:'evolution',target:'#evoChoices',title:'今は進化しない選択もできます',text:'進化後は姿と能力が変わり、初期技のカードを獲得します。特殊進化は育成メニューの合成から行います。',progressLabel:'EVOLUTION',nextLabel:'進化を選ぶ'}
+]);
+registerTutorialFlow(TUTORIAL_SKILL_CARDS_FLOW_ID,[
+  {id:'skill_equipped',screenId:'skillEdit',target:'#skillEditCurrent',title:'装備中の技',text:'技は最大3つまで装備でき、仲間ごとのコスト上限内で組み替えられます。外したカードは所持品へ戻ります。',progressLabel:'SKILL CARDS'},
+  {id:'skill_inventory',screenId:'skillEdit',target:'#skillCardList',title:'技カードは所持枚数ぶん使えます',text:'属性や区分などの条件を満たすカードだけ装備できます。技ガチャではコインを使って新しいカードを獲得できます。',progressLabel:'SKILL CARDS',nextLabel:'技編集へ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_SKILL_GACHA_FLOW_ID,[
+  {id:'skill_gacha_draw',screenId:'skillGacha',target:'.skill-gacha-actions',title:'コインで技カードを獲得',text:'1回は100コイン、10回は900コインです。10回ではCOST 2以上が少なくとも1枚出ます。',progressLabel:'SKILL GACHA'},
+  {id:'skill_gacha_rates',screenId:'skillGacha',target:'#skillGachaRateList',title:'種類と排出率を確認',text:'モンスター技とキャラクター技は別のガチャです。獲得したカードは、仲間の技編集で条件とコスト内なら装備できます。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID,[
+  {id:'golden_land_intro',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'黄金郷が現れました',text:'ゴールド系モンスターだけが出現する希少マップです。勝利すると難易度に応じた追加コインを獲得できます。',progressLabel:'GOLDEN LAND'},
+  {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図なら次の候補に出現確定',text:'黄金郷への地図を使った場合、出発した時に地図を1枚消費します。候補を見ただけでは消費されません。',progressLabel:'GOLDEN LAND',nextLabel:'依頼を選ぶ'}
+]);
+registerTutorialFlow(TUTORIAL_DEX_FLOW_ID,[
+  {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'4つの図鑑',text:'モンスター、キャラクター、マップ、アイテムの発見記録を確認できます。項目を選ぶと詳細へ進みます。',progressLabel:'DEX'},
+  {id:'dex_records',screenId:'dexHub',target:'#dexHubGrid',title:'出会った情報が記録されます',text:'契約や進化、訪れたマップ、入手したアイテムが保存されます。モンスター図鑑では主な入手方法も確認できます。',progressLabel:'DEX',nextLabel:'図鑑を選ぶ'}
+]);
+registerTutorialFlow(TUTORIAL_SHOP_ITEMS_FLOW_ID,[
+  {id:'shop_buy',screenId:'shop',target:'#shopList',title:'コインでアイテムを購入',text:'回復薬、強化薬、契約書などを購入できます。価格と現在の所持数を確認して選んでください。',progressLabel:'SHOP & ITEMS'},
+  {id:'shop_use',screenId:'shop',target:'#shopList',title:'アイテムごとに使う場所が違います',text:'回復・強化薬は戦闘中、契約書は勝利後、進化素材は合成で使います。入手した道具はアイテム図鑑にも記録されます。',progressLabel:'SHOP & ITEMS',nextLabel:'ショップへ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_BATTLE_ITEMS_FLOW_ID,[
+  {id:'battle_items_use',screenId:'battleItemSelect',target:'#battleItemList',title:'戦闘中に使うアイテム',text:'回復薬や強化薬を選ぶと、そのターンの行動として消費します。所持数と効果を確認してください。',progressLabel:'SHOP & ITEMS'},
+  {id:'battle_items_shop',screenId:'battleItemSelect',target:'#battleItemList',title:'道具はショップなどで入手',text:'ショップではコインで道具や契約書を購入できます。契約書はこの画面ではなく、勝利後の契約で使います。',progressLabel:'SHOP & ITEMS',nextLabel:'道具を選ぶ'}
+]);
+registerTutorialFlow(TUTORIAL_CONTRACTOR_RANK_FLOW_ID,[
+  {id:'rank_progress',screenId:'contractorRank',target:'#contractorRankContent',title:'契約者Rankは冒険全体の記録',text:'討伐、契約、図鑑、進化、錬成、遠征などで契約者EXPを獲得します。モンスターのレベルとは別です。',progressLabel:'CONTRACTOR RANK'},
+  {id:'rank_titles',screenId:'contractorRank',target:'.contractor-title-link',title:'Rankで称号や報酬を獲得',text:'称号はプロフィール表示を飾る記録で、装備しても能力補正はありません。Rankによる機能制限もありません。',progressLabel:'CONTRACTOR RANK',nextLabel:'Rankへ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[
+  {id:'titles_equip',screenId:'contractorTitles',target:'#contractorTitleContent',title:'獲得した称号を1つ装備',text:'条件を達成した称号から、表示したいものを選べます。あとから何度でも変更できます。',progressLabel:'CONTRACTOR RANK'},
+  {id:'titles_cosmetic',screenId:'contractorTitles',target:'#contractorTitleContent',title:'称号に能力補正はありません',text:'称号は冒険の実績を示す表示要素です。装備しても戦闘能力や利用できる機能は変わりません。',progressLabel:'CONTRACTOR RANK',nextLabel:'称号へ戻る'}
 ]);
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;
