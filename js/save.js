@@ -2,10 +2,59 @@
 const SAVE_KEY = 'mb_v95c';
 const SAVE_BACKUP_KEY = `${SAVE_KEY}_lastKnownGood`;
 const SAVE_CORRUPT_KEY = `${SAVE_KEY}_corrupt`;
-const SAVE_SCHEMA_VERSION = 3;
+const SAVE_SCHEMA_VERSION = 4;
 const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
+
+const TUTORIAL_VERSION = 1;
+const TUTORIAL_GUIDE_IDS = Object.freeze([
+  'threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion',
+  'skillCards','goldenLand','dex','shopItems','contractorRank'
+]);
+function tutorialGuideDefaults(){
+  return Object.fromEntries(TUTORIAL_GUIDE_IDS.map(id=>[id,false]));
+}
+function tutorialSaveDefaults({legacy=false}={}){
+  return {
+    id:'prologue',
+    version:TUTORIAL_VERSION,
+    status:legacy?'completed':'not_started',
+    stepId:null,
+    completed:legacy,
+    skipped:false,
+    replaying:false,
+    firstContractGuaranteeUsed:legacy,
+    starterContractScrollGranted:legacy,
+    guides:tutorialGuideDefaults()
+  };
+}
+function normalizeTutorialSave(value,{legacy=false}={}){
+  const defaults=tutorialSaveDefaults({legacy});
+  const source=isSaveObject(value)?value:{};
+  const validStatuses=new Set(['not_started','in_progress','completed','skipped']);
+  const guides=isSaveObject(source.guides)?source.guides:{};
+  const normalized={
+    ...defaults,
+    id:typeof source.id==='string'&&source.id?source.id:defaults.id,
+    version:Math.max(1,nonNegativeInteger(source.version,TUTORIAL_VERSION)),
+    status:validStatuses.has(source.status)?source.status:defaults.status,
+    stepId:typeof source.stepId==='string'&&source.stepId?source.stepId:null,
+    completed:source.completed===true,
+    skipped:source.skipped===true,
+    replaying:source.replaying===true,
+    firstContractGuaranteeUsed:source.firstContractGuaranteeUsed===true,
+    starterContractScrollGranted:source.starterContractScrollGranted===true,
+    guides:Object.fromEntries(TUTORIAL_GUIDE_IDS.map(id=>[id,guides[id]===true]))
+  };
+  if(normalized.status==='completed'){normalized.completed=true;normalized.skipped=false;}
+  if(normalized.status==='skipped'){normalized.completed=false;normalized.skipped=true;}
+  if(normalized.status==='not_started'||normalized.status==='in_progress'){
+    normalized.completed=false;normalized.skipped=false;
+  }
+  if((normalized.completed||normalized.skipped)&&!normalized.replaying)normalized.stepId=null;
+  return normalized;
+}
 
 function contractorSaveDefaults(){
   return {
@@ -31,7 +80,7 @@ function initSave() {
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
     contractor:contractorSaveDefaults(),
-    progress:{chapterId:'prologue', storyFlags:{}, tutorial:{id:'prologue', version:1, status:'not_started', stepId:null}, missions:{version:1, states:{}}},
+    progress:{chapterId:'prologue', storyFlags:{}, tutorial:tutorialSaveDefaults(), missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
   };
 }
@@ -70,11 +119,21 @@ function migrate_v2_to_v3(payload,report){
   if(!payload.saveMeta.migrations.includes('v2_to_v3_contractor_rank'))payload.saveMeta.migrations.push('v2_to_v3_contractor_rank');
   report.push('契約者Rank・称号データの保存領域を追加');return payload;
 }
+function migrate_v3_to_v4(payload,report){
+  payload.schemaVersion=4;
+  if(!isSaveObject(payload.saveMeta))payload.saveMeta={};
+  if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];
+  if(!isSaveObject(payload.progress))payload.progress={};
+  // v3以前にはプレイ可能なチュートリアルが存在しなかったため、既存プレイヤーへ強制表示しない。
+  payload.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  if(!payload.saveMeta.migrations.includes('v3_to_v4_tutorial_state'))payload.saveMeta.migrations.push('v3_to_v4_tutorial_state');
+  report.push('既存プレイヤーを完了扱いにしてチュートリアル保存領域を追加');return payload;
+}
 function migrateSave(payload,report=[]){
   if(!isSaveObject(payload))throw new Error('セーブデータのルートがオブジェクトではありません。');
   let version=Number.isInteger(payload.schemaVersion)?payload.schemaVersion:0;
   if(version>SAVE_SCHEMA_VERSION)throw new Error(`未対応の新しいセーブ形式です（v${version}）。`);
-  while(version<SAVE_SCHEMA_VERSION){if(version===0)payload=migrate_v0_to_v1(payload,report);else if(version===1)payload=migrate_v1_to_v2(payload,report);else if(version===2)payload=migrate_v2_to_v3(payload,report);else throw new Error(`v${version}からの移行処理がありません。`);version=payload.schemaVersion;}
+  while(version<SAVE_SCHEMA_VERSION){if(version===0)payload=migrate_v0_to_v1(payload,report);else if(version===1)payload=migrate_v1_to_v2(payload,report);else if(version===2)payload=migrate_v2_to_v3(payload,report);else if(version===3)payload=migrate_v3_to_v4(payload,report);else throw new Error(`v${version}からの移行処理がありません。`);version=payload.schemaVersion;}
   return payload;
 }
 function nonNegativeInteger(value,fallback=0){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.floor(n):fallback;}
@@ -128,7 +187,7 @@ function repairSave(payload,report=[]){
   payload.contractor.pendingRankUps=rawPendingRankUps.filter(entry=>isSaveObject(entry)&&nonNegativeInteger(entry.fromRank,1)>=1&&nonNegativeInteger(entry.toRank)>nonNegativeInteger(entry.fromRank,1)&&nonNegativeInteger(entry.toRank)<=50).slice(-10).map(entry=>({fromRank:nonNegativeInteger(entry.fromRank,1),toRank:nonNegativeInteger(entry.toRank),unlockedTitleIds:[...new Set((Array.isArray(entry.unlockedTitleIds)?entry.unlockedTitleIds:[]).filter(value=>typeof value==='string'&&value))],createdAt:typeof entry.createdAt==='string'?entry.createdAt:''}));
   payload.contractor.legacyMigrationVersion=nonNegativeInteger(payload.contractor.legacyMigrationVersion);
   payload.contractor.legacyMigrationSummary=isSaveObject(payload.contractor.legacyMigrationSummary)?payload.contractor.legacyMigrationSummary:null;
-  payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};payload.progress.tutorial=isSaveObject(payload.progress.tutorial)?payload.progress.tutorial:defaults.progress.tutorial;payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
+  payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};payload.progress.tutorial=normalizeTutorialSave(payload.progress.tutorial);payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;
 }
 function parseAndPrepareSave(raw,report=[]){const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))report.push('整合性ハッシュの不一致を検出');return repairSave(migrateSave(parsed,report),report);}
@@ -138,6 +197,76 @@ function loadSave(){
   catch(error){safeStorageSet(SAVE_CORRUPT_KEY,raw);const backup=safeStorageGet(SAVE_BACKUP_KEY);if(backup&&typeof confirm==='function'&&confirm('セーブデータが破損しています。直前のバックアップから復旧しますか？')){try{saveRecoveryReport.push('破損データをバックアップから復旧');return parseAndPrepareSave(backup,saveRecoveryReport);}catch(_backupError){}}saveRecoveryReport.push(`破損データを隔離して初期化: ${error.message}`);if(typeof alert==='function')alert('破損したセーブを隔離し、新規データで起動します。メニューの「セーブ管理」から破損内容をコピーできます。');return initSave();}
 }
 let save = loadSave();
+
+function currentTutorialState(){
+  if(!isSaveObject(save.progress))save.progress=initSave().progress;
+  save.progress.tutorial=normalizeTutorialSave(save.progress.tutorial);
+  return save.progress.tutorial;
+}
+function tutorialShouldAutoStart(){
+  const tutorial=currentTutorialState();
+  return tutorial.status==='not_started'&&!tutorial.replaying;
+}
+function setTutorialStep(stepId){
+  const tutorial=currentTutorialState();
+  tutorial.stepId=typeof stepId==='string'&&stepId?stepId:null;
+  if(!tutorial.replaying){
+    tutorial.status='in_progress';
+    tutorial.completed=false;
+    tutorial.skipped=false;
+  }
+  return tutorial;
+}
+function completeTutorial(){
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying){
+    tutorial.replaying=false;
+    tutorial.stepId=null;
+    return tutorial;
+  }
+  tutorial.status='completed';
+  tutorial.stepId=null;
+  tutorial.completed=true;
+  tutorial.skipped=false;
+  return tutorial;
+}
+function skipTutorial(){
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying){
+    tutorial.replaying=false;
+    tutorial.stepId=null;
+    return tutorial;
+  }
+  tutorial.status='skipped';
+  tutorial.stepId=null;
+  tutorial.completed=false;
+  tutorial.skipped=true;
+  return tutorial;
+}
+function beginTutorialReplay(stepId='intro'){
+  const tutorial=currentTutorialState();
+  tutorial.replaying=true;
+  tutorial.stepId=typeof stepId==='string'&&stepId?stepId:'intro';
+  return tutorial;
+}
+function markTutorialGuideSeen(guideId){
+  const tutorial=currentTutorialState();
+  if(!TUTORIAL_GUIDE_IDS.includes(guideId))return false;
+  tutorial.guides[guideId]=true;
+  return true;
+}
+function markTutorialFirstContractGuaranteeUsed(){
+  const tutorial=currentTutorialState();
+  if(tutorial.firstContractGuaranteeUsed)return false;
+  tutorial.firstContractGuaranteeUsed=true;
+  return true;
+}
+function markTutorialStarterContractScrollGranted(){
+  const tutorial=currentTutorialState();
+  if(tutorial.starterContractScrollGranted)return false;
+  tutorial.starterContractScrollGranted=true;
+  return true;
+}
 
 /* Ver7.8: ここからはすべてグローバル関数 */
 function registerItemDex(itemId){
