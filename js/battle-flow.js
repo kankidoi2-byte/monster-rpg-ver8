@@ -34,6 +34,7 @@ function showBattleChoices() {
   resetBattleTurnCounter();
   show('battleChoices');
   const list = document.getElementById('battleChoiceList');
+  if(typeof renderTutorialHuntChoice==='function'&&renderTutorialHuntChoice(list))return;
   const normal = MAPS.filter(m => !m.bossOnly && !m.rareOnly && !m.goldenLand);
   const special = MAPS.filter(m => (m.bossOnly || m.rareOnly) && !m.goldenLand);
   const goldenLand = MAPS.find(m => m.goldenLand);
@@ -270,6 +271,7 @@ function losePartyBattle() {
   document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';
   endPartyRecovery();
   showBattleOutcome({kind:'defeat',title:'パーティー全滅',note:'編成や相性を見直して、もう一度挑もう。'});
+  if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('defeat');
   busy = true;
 }
 function endPartyRecovery() {
@@ -302,6 +304,7 @@ function runAway() {
   resetBattleTurnCounter();
   document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';
   showBattleOutcome({kind:'retreat',title:'撤退成功',note:'態勢を整えてから再挑戦できる。'});
+  if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('retreat');
   busy = true;
 }
 function win() {
@@ -328,6 +331,7 @@ function win() {
   let displayedCoinGain = coinGain;
   save.coins += coinGain;
   let msg = `🏆 ${enemy.name}を倒した！<br>`;
+  const materialRewards=[];
   if (turnBonusActive) {
     msg += turnBonusSucceeded
       ? `⏱️ ${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`
@@ -347,28 +351,32 @@ function win() {
     const dropRate = Number.isFinite(enemy.dropRate) ? enemy.dropRate : 1;
     if (Math.random() < dropRate) {
       save.items[enemy.dropItem] = (save.items[enemy.dropItem]||0)+1;
+      materialRewards.push(enemy.dropItemName||ITEM_BY_ID[enemy.dropItem]?.name||enemy.dropItem);
       const dropVisual = enemy.dropItem === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : '';
       msg += `<br>🎁 ${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`;
     }
   }
   const alchemyMaterial = grantAlchemyMaterialReward();
   if (alchemyMaterial) {
+    materialRewards.push(alchemyMaterial.name);
     msg += `<br>⚗️ ${itemInlineVisual(alchemyMaterial)} ${alchemyMaterial.name}を入手！`;
   }
   save.history.wins = (save.history.wins||0)+1;
   save.history.logs = save.history.logs||[];
   save.history.logs.push(`${enemy.name}に勝利`);
   if (save.history.logs.length > 30) save.history.logs = save.history.logs.slice(-30);
-  if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]});
+  const contractorReward=typeof grantContractorBattleWin==='function'?grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]}):{amount:0};
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
   saveGame();
   document.getElementById('log').innerHTML = msg;
   // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）
   showBattleOutcome({
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
+    materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   });
   renderSingleBattleContractPanel();
+  if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
   busy = true;
   renderParty();
   setTimeout(processNextEvolution, 300);

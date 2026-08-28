@@ -23,8 +23,8 @@ orderedSteps.forEach(id=>{
   assert.ok(current>previous,`missing or out-of-order Phase 4A step: ${id}`);
   previous=current;
 });
-assert.ok(!tutorial.includes("id:'first_hunt'"),'Phase 4A must not implement the Phase 4B hunt flow early');
-assert.ok(tutorial.includes("continueAt:'first_hunt'"),'Phase 4A must checkpoint safely at the Phase 4B entry');
+assert.ok(tutorial.includes("id:'first_hunt'"),'the completed Phase 4A flow must connect to the Phase 4B entry');
+assert.ok(tutorial.indexOf("id:'first_hunt'")>tutorial.indexOf("id:'home_menu'"),'Phase 4A home guidance must remain before the first hunt');
 
 assert.ok(tutorial.includes("title:'グノーシス'")&&tutorial.includes('ようこそ、契約者。'),'Gnosis must address the player as 契約者 without adding a long story');
 assert.ok(tutorial.includes('好きな1〜3体を選んで'),'the player must be allowed to choose one to three starters');
@@ -70,4 +70,4 @@ entryContext.state={status:'in_progress',stepId:'party_more',replaying:false};en
 assert.equal(vm.runInContext('resumeTutorialIfNeeded()',entryContext),true);
 assert.equal(entryContext.starts[0].options.stepId,'party_more','an interrupted onboarding must resume its saved step');
 
-console.log('Tutorial Phase 4A validation passed (new-save entry, Gnosis copy, five starter choices, 1–3 party guard, leader rule, home guidance, and Phase 4B checkpoint).');
+console.log('Tutorial Phase 4A validation passed (new-save entry, Gnosis copy, five starter choices, 1–3 party guard, leader rule, home guidance, and Phase 4B handoff).');

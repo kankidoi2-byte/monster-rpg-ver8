@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-first-battle',
+    date: '2026-08-29',
+    category: 'update',
+    title: '最初の討伐バトル案内を追加しました',
+    body: '新しくゲームを始めた契約者向けに、草原のスライムとの入門依頼を追加しました。敵と味方、HP、属性、技、ターン、勝利報酬を実際のバトル画面で短く確認できます。敗北や撤退のあとも同じ依頼へ再挑戦できます。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-party-home',
     date: '2026-08-29',
     category: 'update',
