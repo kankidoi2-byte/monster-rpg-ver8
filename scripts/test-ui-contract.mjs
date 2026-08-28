@@ -113,7 +113,7 @@ expect(read('js/ui.js').includes('function replayUiMotion'), 'shared UI motion h
 expect(read('js/battle-view.js').includes('is-revealing'), 'staged battle reward reveal is missing');
 
 const requiredScripts = [
-  'data.js', 'bootstrap-guard.js', 'core.js', 'kokoro-link.js', 'state.js', 'save.js', 'contractor-rank.js', 'ui.js',
+  'data.js', 'bootstrap-guard.js', 'core.js', 'kokoro-link.js', 'state.js', 'save.js', 'contractor-rank.js', 'ui.js', 'tutorial.js',
   'skills.js', 'skill-gacha.js', 'dex.js', 'party.js', 'progression.js', 'contract-animation.js', 'items.js', 'alchemy.js',
   'battle-view.js', 'battle-rules.js', 'battle-flow.js', 'expedition.js', 'init.js'
 ];

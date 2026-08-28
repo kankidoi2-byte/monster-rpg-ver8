@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-guide-foundation',
+    date: '2026-08-29',
+    category: 'update',
+    title: '画面上で確認できる操作ガイドを追加しました',
+    body: '実際の操作場所を照らしながら説明するチュートリアル表示を追加しました。メニューの「チュートリアル」から表示方法を確認できます。案内は戻る操作と、画面を閉じる操作に対応しています。'
+  }),
+  Object.freeze({
     id: '20260828-post-battle-contract',
     date: '2026-08-28',
     category: 'update',
