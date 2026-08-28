@@ -19,8 +19,11 @@ function normalizeTutorialStep(step,index){
     target:typeof step.target==='string'&&step.target?step.target:null,
     advanceOnTarget:step.advanceOnTarget===true,
     nextStepId:typeof step.nextStepId==='string'&&step.nextStepId?step.nextStepId:null,
+    replayNextStepId:typeof step.replayNextStepId==='string'&&step.replayNextStepId?step.replayNextStepId:null,
     persistAs:typeof step.persistAs==='string'&&step.persistAs?step.persistAs:null,
     waitForEvent:typeof step.waitForEvent==='string'&&step.waitForEvent?step.waitForEvent:null,
+    externalAdvance:step.externalAdvance===true,
+    disableBack:step.disableBack===true,
     requiredPartyMin:Math.max(0,Math.floor(Number(step.requiredPartyMin)||0)),
     requiredPartyMax:Math.max(0,Math.floor(Number(step.requiredPartyMax)||0)),
     continueAt:typeof step.continueAt==='string'&&step.continueAt?step.continueAt:null,
@@ -126,6 +129,7 @@ function renderTutorialStep(){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
   if(!step){finishTutorialFlow();return;}
+  prepareTutorialStep(step);
   if(step.screenId&&activeScreenId()!==step.screenId){
     show(step.screenId);
     setTimeout(renderTutorialStep,0);
@@ -145,9 +149,10 @@ function renderTutorialStep(){
   const back=document.getElementById('tutorialBackButton');
   const skip=document.getElementById('tutorialSkipButton');
   const next=document.getElementById('tutorialNextButton');
-  back.disabled=tutorialUiState.index===0;
+  back.disabled=tutorialUiState.index===0||step.disableBack;
   skip.textContent=tutorialUiState.persist?'スキップ':'閉じる';
   next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
+  next.disabled=step.externalAdvance;
   overlay.classList.remove('hidden');
   overlay.setAttribute('aria-hidden','false');
   scheduleTutorialPosition();
@@ -184,6 +189,7 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,replay=false,return
 }
 function tutorialPrevious(){
   if(!tutorialUiState.active||tutorialUiState.index<=0)return;
+  if(tutorialUiState.steps[tutorialUiState.index]?.disableBack)return;
   tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
 function tutorialStepCanAdvance(step){
@@ -206,10 +212,12 @@ function checkpointTutorialFlow(step){
 function tutorialNext(){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.externalAdvance)return;
   if(!tutorialStepCanAdvance(step))return;
   if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
-  if(step?.nextStepId){
-    const nextIndex=tutorialStepIndex(tutorialUiState.steps,step.nextStepId);
+  const nextStepId=tutorialUiState.replay&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
+  if(nextStepId){
+    const nextIndex=tutorialStepIndex(tutorialUiState.steps,nextStepId);
     if(nextIndex<0)return;
     tutorialUiState.index=nextIndex;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();return;
   }
@@ -344,6 +352,89 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   return true;
 }
 
+function tutorialFirstContractMode(){
+  if(typeof currentTutorialState!=='function')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return 'replay';
+  if(tutorial.status!=='in_progress'||tutorial.completed||tutorial.skipped)return null;
+  if(!['first_contract','contract_confirm'].includes(tutorial.stepId))return null;
+  if(Array.isArray(save?.saveMeta?.migrations)&&save.saveMeta.migrations.includes('v3_to_v4_tutorial_state'))return null;
+  if(tutorial.firstContractGuaranteeUsed||tutorial.starterContractScrollGranted)return null;
+  return 'required';
+}
+function tutorialContractTargetIsValid(target=typeof enemy!=='undefined'?enemy:null,map=typeof selectedMap!=='undefined'?selectedMap:null){
+  return target?.id===TUTORIAL_FIRST_HUNT.enemyId&&map?.id===TUTORIAL_FIRST_HUNT.mapId;
+}
+function shouldGuaranteeTutorialContract(target=typeof enemy!=='undefined'?enemy:null,itemId='contract_scroll'){
+  return tutorialFirstContractMode()==='required'&&tutorialContractTargetIsValid(target)&&itemId==='contract_scroll';
+}
+function setTutorialContractContext(){
+  const target=by(TUTORIAL_FIRST_HUNT.enemyId);
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
+  if(!target||!map)return false;
+  enemy=structuredClone(target);selectedMap=map;activeHuntRequest=createHuntRequest(map,target,TUTORIAL_FIRST_HUNT.difficultyId,[]);
+  battleRewardGranted=true;singleBattleContractAttempted=false;pendingContractItemId='contract_scroll';
+  return true;
+}
+function renderTutorialContractCheckpoint(){
+  if(!setTutorialContractContext())return false;
+  const mode=tutorialFirstContractMode();
+  const battle=document.getElementById('battle');
+  const outcome=document.getElementById('battleOutcome');
+  const actions=document.getElementById('battleOutcomeActions');
+  if(!battle||!outcome||!actions)return false;
+  battle.classList.add('is-finished');outcome.className='battle-outcome is-victory';
+  document.getElementById('battleOutcomeIcon').textContent='📜';
+  document.getElementById('battleOutcomeEyebrow').textContent='CONTRACT CHANCE';
+  document.getElementById('battleOutcomeTitle').textContent='草原のスライムと契約';
+  document.getElementById('battleOutcomeRewards').innerHTML='<span><small>対象</small><strong>スライム</strong></span><span><small>契約書</small><strong>通常 ×1</strong></span>';
+  document.getElementById('battleOutcomeNote').textContent=mode==='replay'?'再閲覧では契約書の支給と成功保証は行いません。':'確認すると通常契約書を1枚支給し、そのまま1枚消費します。';
+  actions.innerHTML=mode==='required'
+    ? '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>🤝 最初の契約</h3><p class="small">このスライムへの最初の契約だけ、必ず成功します。</p><button data-tutorial-contract-start onclick="askUseContractScroll(\'contract_scroll\')">通常契約書で契約する</button></div>'
+    : '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>🤝 契約の再閲覧</h3><p class="small">実際の契約や報酬なしで、加入後の案内を見直します。</p><button data-tutorial-contract-start>加入後の案内へ</button></div>';
+  document.getElementById('next')?.classList.add('hidden');
+  return true;
+}
+function commitTutorialFirstContract(itemId='contract_scroll',target=typeof enemy!=='undefined'?enemy:null){
+  if(!shouldGuaranteeTutorialContract(target,itemId))return null;
+  const snapshot=JSON.stringify(save);
+  ensureContractScrollItem();
+  save.items.contract_scroll=(save.items.contract_scroll||0)+1;
+  if(!markTutorialStarterContractScrollGranted()){save=JSON.parse(snapshot);return null;}
+  save.items.contract_scroll--;
+  const instance=addInstance(TUTORIAL_FIRST_HUNT.enemyId);
+  if(!instance||!markTutorialFirstContractGuaranteeUsed()){save=JSON.parse(snapshot);return null;}
+  if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(TUTORIAL_FIRST_HUNT.enemyId);
+  setTutorialStep('contract_success');
+  if(!saveGame()){save=JSON.parse(snapshot);return null;}
+  return instance;
+}
+function handleTutorialContractCommitted(){
+  if(tutorialUiState.active)clearTutorialUi();
+  updateTutorialMenuSummary();
+}
+function handleTutorialContractAnimationComplete(){
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  if(!tutorial||tutorial.stepId!=='contract_success'||tutorial.status!=='in_progress')return false;
+  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'contract_success',persist:true});
+}
+function tutorialContractInstance(){
+  if(!Array.isArray(save?.instances))return null;
+  const matches=save.instances.filter(instance=>instance.id===TUTORIAL_FIRST_HUNT.enemyId);
+  return matches[matches.length-1]||null;
+}
+function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||null;}
+function prepareTutorialStep(step){
+  if(['first_contract','contract_confirm'].includes(step?.id)){
+    setTutorialContractContext();
+    if(step.id==='first_contract')renderTutorialContractCheckpoint();
+  }
+  if(['contract_success','contract_card','contract_type','contract_skills','contract_list','contract_future'].includes(step?.id)){
+    if(activeScreenId()==='party'&&typeof renderParty==='function')renderParty();
+    if(step.id==='contract_skills')document.querySelector('[data-tutorial-contract-instance] details')?.setAttribute('open','');
+  }
+}
+
 registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'intro_gnosis',screenId:'home',title:'グノーシス',text:'ようこそ、契約者。まずは一緒に冒険する仲間を選びましょう。長い説明はしません。実際の画面で確かめていきます。',progressLabel:'GNOSIS'},
   {id:'party_open',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'仲間を選びましょう',text:'「編成」を開いてください。最初に用意された5体から、好きな仲間を選べます。',progressLabel:'GNOSIS'},
@@ -369,7 +460,21 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'victory_exp',screenId:'battle',target:'#battleRewardExp',persistAs:'first_contract',title:'勝利：経験値',text:'パーティーの仲間が経験値を獲得します。経験値がたまるとレベルが上がり、強くなります。',progressLabel:'VICTORY'},
   {id:'victory_coin',screenId:'battle',target:'#battleRewardCoins',persistAs:'first_contract',title:'勝利：コイン',text:'コインはショップや育成で使います。今回の獲得数は勝利結果で確認できます。',progressLabel:'VICTORY'},
   {id:'victory_material',screenId:'battle',target:'#battleRewardMaterials',persistAs:'first_contract',title:'勝利：素材',text:'バトルでは錬成などに使う素材を獲得することがあります。出なかった場合も、次の勝利でまた抽選されます。',progressLabel:'VICTORY'},
-  {id:'victory_rank',screenId:'battle',target:'#battleRewardContractorExp',persistAs:'first_contract',title:'契約者Rank経験値',text:'勝利すると契約者EXPも増えます。冒険全体の歩みを示すRankで、モンスターの戦闘経験値とは別です。',progressLabel:'VICTORY',nextLabel:'契約へ',continueAt:'first_contract'}
+  {id:'victory_rank',screenId:'battle',target:'#battleRewardContractorExp',persistAs:'first_contract',title:'契約者Rank経験値',text:'勝利すると契約者EXPも増えます。冒険全体の歩みを示すRankで、モンスターの戦闘経験値とは別です。',progressLabel:'VICTORY',nextLabel:'契約へ'},
+  {id:'first_contract',screenId:'battle',target:'[data-tutorial-contract-start]',advanceOnTarget:true,replayNextStepId:'contract_success',title:'通常契約書を1枚支給します',text:'このスライムへの最初の契約だけ必ず成功します。契約書は通常どおり1枚消費します。',progressLabel:'CONTRACT'},
+  {id:'contract_confirm',screenId:'contractConfirm',target:'#contractConfirmAcceptButton',externalAdvance:true,title:'契約を確定',text:'「はい」を押すと、通常契約書1枚の支給と消費、スライムの加入をまとめて保存してから契約演出を再生します。',progressLabel:'CONTRACT',nextLabel:'「はい」を押してください'},
+  {id:'contract_success',screenId:'party',target:'[data-tutorial-contract-instance]',disableBack:true,title:'スライムが仲間になりました',text:'契約書が3回反応し、手形が押されると成功です。加入したスライムのカードを確認しましょう。',progressLabel:'NEW ALLY'},
+  {id:'contract_card',screenId:'party',target:'[data-tutorial-contract-instance] .monster-roster-summary',title:'仲間のカード',text:'名前、レベル、経験値がカードにまとまっています。育つとHPや攻撃などが強くなります。',progressLabel:'NEW ALLY'},
+  {id:'contract_type',screenId:'party',target:'[data-tutorial-contract-instance] .monster-roster-summary',title:'属性',text:'スライムは無属性です。属性は技の相性や、どんな戦い方が得意かを考える手がかりになります。',progressLabel:'NEW ALLY'},
+  {id:'contract_skills',screenId:'party',target:'[data-tutorial-contract-instance] [data-tutorial-skill-summary]',title:'技',text:'「育成・個体情報」を開くと装備技を確認できます。技カードを持っていれば、あとから技変更もできます。',progressLabel:'NEW ALLY'},
+  {id:'contract_list',screenId:'party',target:'#partyList',title:'仲間の一覧',text:'契約した仲間は「モンスター」の一覧へ追加されます。同じ種類でも別の個体として育てられます。',progressLabel:'NEW ALLY'},
+  {id:'contract_future',screenId:'party',target:'[data-tutorial-contract-instance]',title:'次からの契約',text:'必ず成功するのは今回だけです。これ以後の契約は、使う契約書と相手によって失敗することがあります。',progressLabel:'CONTRACT'},
+  {id:'growth_open',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成へ',text:'下部メニューの「育成」を押してください。仲間を強くする方法を確認します。',progressLabel:'GROWTH'},
+  {id:'growth_overview',screenId:'growthHub',target:'#growthMonsterButton',title:'成長の方法',text:'「モンスター育成」では、経験値によるレベルアップや技変更を確認できます。進化・合成や錬成でも仲間を育てられます。',progressLabel:'GROWTH'},
+  {id:'party_edit_open',screenId:'growthHub',target:'#growthPartyEditButton',advanceOnTarget:true,title:'パーティー編成',text:'加入したスライムも、ここから最大3体のパーティーへ入れられます。編成はいつでも変更できます。',progressLabel:'GROWTH'},
+  {id:'party_edit_contract',screenId:'partySet',target:'[data-tutorial-contract-party]',title:'加入した仲間を編成できます',text:'スライムを今すぐ入れても、控えで育てても構いません。最初の仲間がリーダーというルールは同じです。',progressLabel:'PARTY'},
+  {id:'home_finish',screenId:'partySet',target:'[data-nav="home"]',advanceOnTarget:true,title:'ホームへ戻りましょう',text:'最後にホームへ戻って、基本チュートリアルを完了します。',progressLabel:'FINISH'},
+  {id:'tutorial_complete',screenId:'home',target:'#homeGrowthPreview',title:'基本チュートリアル完了',text:'これで準備は完了です。次の討伐へ進むか、ホームの成長目標を見ながら仲間を育ててください。',progressLabel:'GNOSIS',nextLabel:'完了'}
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},

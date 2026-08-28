@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-first-contract',
+    date: '2026-08-29',
+    category: 'update',
+    title: '最初の契約と加入後の案内を追加しました',
+    body: '新しくゲームを始めた契約者向けに、草原のスライムとの最初の契約だけが必ず成功する案内を追加しました。通常契約書は1枚だけ支給・消費され、加入後はカード、属性、技、編成、成長を実際の画面で確認できます。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-first-battle',
     date: '2026-08-29',
     category: 'update',

@@ -241,14 +241,15 @@ function askUseContractScroll(itemId){
     return;
   }
   ensureContractScrollItem();
+  const tutorialOffer=typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,'contract_scroll');
   // ① 契約書0枚チェック
-  const hasAny = SHOP_ITEMS.filter(it => it.contract).some(it => (save.items[it.id]||0) > 0);
+  const hasAny = tutorialOffer||SHOP_ITEMS.filter(it => it.contract).some(it => (save.items[it.id]||0) > 0);
   if(!hasAny){
     alert('契約書を持っていません。ショップで購入してください。');
     show('battle');
     return;
   }
-  pendingContractItemId = ITEM_BY_ID[itemId]?.contract ? itemId : chooseDefaultContractItem();
+  pendingContractItemId = tutorialOffer?'contract_scroll':ITEM_BY_ID[itemId]?.contract ? itemId : chooseDefaultContractItem();
   const it = ITEM_BY_ID[pendingContractItemId] || ITEM_BY_ID.contract_scroll;
   const title = document.querySelector('#contractConfirm h1');
   if(title) title.innerHTML = `${itemInlineVisual(it)} ${it.name}`;
@@ -260,6 +261,7 @@ function useContractScrollConfirmed(){
   ensureContractScrollItem();
   const itemId = ITEM_BY_ID[pendingContractItemId]?.contract ? pendingContractItemId : chooseDefaultContractItem();
   const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
+  const tutorialGuarantee=typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,itemId);
   if(multiBattle?.active && multiBattle.finished && pendingMultiBattleContractId){
     useMultiBattleContractScroll(itemId);
     return;
@@ -269,19 +271,21 @@ function useContractScrollConfirmed(){
     show('battle');
     return;
   }
-  if((save.items[itemId]||0)<=0){
+  if(!tutorialGuarantee&&(save.items[itemId]||0)<=0){
     alert(`${it.name}を持っていない！ショップで購入してください。`);
     refreshContractScrollDisplay();
     show('battle');
     return;
   }
-  save.items[itemId]--;
-  saveGame();
-  updateItems();
-  refreshContractScrollDisplay();
-  tryContractWithScroll(itemId);
+  if(!tutorialGuarantee){
+    save.items[itemId]--;
+    saveGame();
+    updateItems();
+    refreshContractScrollDisplay();
+  }
+  tryContractWithScroll(itemId,{tutorialGuarantee});
 }
-async function tryContractWithScroll(itemId='contract_scroll'){
+async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee=false}={}){
   ensureContractScrollItem();
   const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
   if(!isContractableUnit(enemy)){
@@ -289,10 +293,11 @@ async function tryContractWithScroll(itemId='contract_scroll'){
     show('battle');
     return;
   }
+  const guaranteed=tutorialGuarantee&&typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,itemId);
   const baseRate = enemy.catchRate ?? 0.25;
   const rate = Math.min(0.95, baseRate * (it.catchMultiplier || 1));
-  const roll = Math.random();
-  const animationStage = contractAnimationStage(roll, rate);
+  const roll = guaranteed?0:Math.random();
+  const animationStage = guaranteed?3:contractAnimationStage(roll, rate);
   const ok = animationStage === 3;
   const logBox = document.getElementById('log');
   singleBattleContractAttempted = true;
@@ -308,9 +313,19 @@ async function tryContractWithScroll(itemId='contract_scroll'){
   pSleepTurns = 0; eSleepTurns = 0;
     pFlareCharge = false; eFlareCharge = false;
     pAquaShield = false; eAquaShield = false;
-    addInstance(enemy.id);
-    if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(enemy.id);
-    saveGame();
+    const joinedInstance=guaranteed&&typeof commitTutorialFirstContract==='function'
+      ? commitTutorialFirstContract(itemId,enemy)
+      : addInstance(enemy.id);
+    if(!joinedInstance){
+      singleBattleContractAttempted=false;busy=false;
+      if(typeof showUiNotice==='function')showUiNotice('契約状態を保存できませんでした。もう一度お試しください。','error');
+      show('contractConfirm');
+      return;
+    }
+    if(!guaranteed){
+      if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(enemy.id);
+      saveGame();
+    }else if(typeof handleTutorialContractCommitted==='function')handleTutorialContractCommitted();
     await playContractAnimation({monsterName:enemy.name, stage:animationStage});
     updateItems();
     renderParty();
@@ -320,6 +335,7 @@ async function tryContractWithScroll(itemId='contract_scroll'){
     busy = false;
     show('battle');
     renderSingleBattleContractPanel();
+    if(guaranteed&&typeof handleTutorialContractAnimationComplete==='function')handleTutorialContractAnimationComplete();
     return;
   }
 
@@ -358,7 +374,10 @@ function refreshContractScrollDisplay(){
     .join(' / ');
 
   const confirmText=document.getElementById('contractConfirmText');
-  if(confirmText)confirmText.textContent=`${it.name}を使用しますか？ 所持数：${save.items[it.id]||0}　${contractStockText}`;
+  const tutorialOffer=typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,it.id);
+  if(confirmText)confirmText.textContent=tutorialOffer
+    ? 'チュートリアル用の通常契約書を1枚支給し、この契約で1枚消費します。最初のスライムとの契約は必ず成功します。'
+    : `${it.name}を使用しますか？ 所持数：${save.items[it.id]||0}　${contractStockText}`;
 
   updateItemText();
 
