@@ -548,7 +548,7 @@ registerTutorialFlow(TUTORIAL_ALCHEMY_FLOW_ID,[
 ]);
 registerTutorialFlow(TUTORIAL_EXPEDITION_FLOW_ID,[
   {id:'expedition_party',screenId:'expedition',target:'.expedition-member-grid',title:'待機中の仲間を1〜3体派遣',text:'パーティーに編成していない仲間から1〜3体を選びます。遠征中の仲間は、編成や他の遠征には使えません。',progressLabel:'EXPEDITION'},
-  {id:'expedition_progress',screenId:'expedition',target:'.expedition-distance-grid',title:'勝利すると遠征が進みます',text:'短距離は1勝、中距離は3勝、長距離は5勝で完了します。どの通常バトルでも、勝利するたびに進行します。',progressLabel:'EXPEDITION'},
+  {id:'expedition_progress',screenId:'expedition',target:'.expedition-distance-grid',title:'勝利すると遠征が進みます',text:'短距離は1勝、中距離は3勝、長距離は5勝で完了します。バトルに勝利するたびに進行します。',progressLabel:'EXPEDITION'},
   {id:'expedition_recall',screenId:'expedition',target:'.expedition-active-grid',title:'途中帰還は進捗報酬の50％',text:'完了前でも帰還できます。その場合は進んだ分の50％だけ受け取り、派遣した仲間が戻ります。',progressLabel:'EXPEDITION',nextLabel:'遠征へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_FUSION_FLOW_ID,[
