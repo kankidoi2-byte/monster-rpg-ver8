@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-battle-feature-guides',
+    date: '2026-08-29',
+    category: 'update',
+    title: '特殊バトルとココロリンクの初回案内を追加しました',
+    body: '三つ巴、乱入、ココロリンクを初めて使う時に、現在のルールを実際のバトル画面で短く確認できるようになりました。一度確認した案内は繰り返し表示されません。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-first-contract',
     date: '2026-08-29',
     category: 'update',

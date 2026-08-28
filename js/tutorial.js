@@ -1,5 +1,8 @@
 const TUTORIAL_MAIN_FLOW_ID='prologue';
 const TUTORIAL_HELP_FLOW_ID='tutorial_help';
+const TUTORIAL_THREE_WAY_FLOW_ID='guide_three_way';
+const TUTORIAL_INVASION_FLOW_ID='guide_invasion';
+const TUTORIAL_KOKORO_LINK_FLOW_ID='guide_kokoro_link';
 const tutorialFlows=new Map();
 const tutorialUiState={
   active:false,flowId:null,steps:[],index:0,persist:false,replay:false,
@@ -39,6 +42,19 @@ function registerTutorialFlow(flowId,steps){
   return true;
 }
 function tutorialFlowSteps(flowId){return tutorialFlows.get(flowId)||[];}
+function startTutorialFeatureGuide(guideId,flowId){
+  const steps=tutorialFlowSteps(flowId);
+  if(!steps.length||tutorialUiState.active||typeof currentTutorialState!=='function')return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.guides?.[guideId])return false;
+  if(typeof markTutorialGuideSeen!=='function'||!markTutorialGuideSeen(guideId))return false;
+  if(typeof saveGame==='function'&&!saveGame()){
+    const current=currentTutorialState();
+    if(current.guides)current.guides[guideId]=false;
+    return false;
+  }
+  return startTutorialFlow(flowId,{persist:false});
+}
 function activeScreenId(){return document.querySelector('.screen.active')?.id||null;}
 function tutorialStepIndex(steps,stepId){
   if(!stepId)return 0;
@@ -479,6 +495,19 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},
   {id:'help_controls',title:'止めても、あとから続けられます',text:'「戻る」で説明を見直せます。本編チュートリアルは×で閉じると現在位置を保存し、確認してからスキップでき、メニューから再閲覧できます。',progressLabel:'GUIDE UI',nextLabel:'メニューへ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_THREE_WAY_FLOW_ID,[
+  {id:'three_way_intro',screenId:'battle',target:'#multiEnemyGrid',title:'三つ巴バトル',text:'敵が2体いる特殊戦です。敵Aと敵Bは、契約者だけでなく敵同士も攻撃します。',progressLabel:'THREE-WAY'},
+  {id:'three_way_target',screenId:'battle',target:'#battleSkillButton',title:'技のあとに対象を選択',text:'技を選んだあと、光っている敵カードをタップして攻撃対象を決めます。倒れた敵は選べません。',progressLabel:'THREE-WAY'},
+  {id:'three_way_contract',screenId:'battle',target:'#multiEnemyGrid',title:'契約候補に注意',text:'契約候補になるのは、契約者側が倒した相手だけです。もう一方の敵に倒された相手とは契約できません。',progressLabel:'THREE-WAY',nextLabel:'戦闘へ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_INVASION_FLOW_ID,[
+  {id:'invasion_intro',screenId:'battle',target:'#multiEnemyGrid',title:'乱入が発生しました',text:'通常の1対1戦では、2〜4ターン目に別の敵が乱入することがあります。発生率や登場ターンは通常ルールのままです。',progressLabel:'INVASION'},
+  {id:'invasion_wait',screenId:'battle',target:'#multiEnemyGrid',title:'登場したターンは行動しません',text:'乱入した敵は周囲を警戒し、このターンは行動しません。次のターンから三つ巴と同じように戦います。',progressLabel:'INVASION',nextLabel:'戦闘へ戻る'}
+]);
+registerTutorialFlow(TUTORIAL_KOKORO_LINK_FLOW_ID,[
+  {id:'kokoro_link_intro',screenId:'battle',target:'#kokoroLinkPanel',title:'ココロリンク',text:'控えモンスター1体の力を、戦闘中の仲間へ借りられます。発動してもターンは消費しません。',progressLabel:'KOKORO LINK'},
+  {id:'kokoro_link_source',screenId:'battle',target:'#kokoroLinkPanel .kokoro-link-source-grid',title:'控えを1体選択',text:'効果は控えのレアリティや属性で変わり、戦闘終了まで続きます。同じ控えが力を貸せるのは1戦につき1回です。',progressLabel:'KOKORO LINK',nextLabel:'リンクを選ぶ'}
 ]);
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;

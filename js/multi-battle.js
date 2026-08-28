@@ -57,6 +57,7 @@ function beginThreeWayBattle() {
   document.getElementById('log').innerHTML =
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br>`+
     `⚔️ <b>${multiBattle.enemies[0].mon.name}</b>と<b>${multiBattle.enemies[1].mon.name}</b>が互いを警戒している！<br>${player.name}、三つ巴を制せ！`;
+  if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('threeWay',TUTORIAL_THREE_WAY_FLOW_ID);
 }
 
 function createExistingMultiEnemy() {
@@ -95,6 +96,7 @@ function triggerInvasionIfDue() {
   setupMultiBattle();
   appendMultiLog(`❗ 不穏な気配の正体は<b>${invader.name}</b>だった！<br>乱入した${invader.name}は周囲を警戒している。次のターンから行動する！`);
   busy = false;
+  if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('invasion',TUTORIAL_INVASION_FLOW_ID);
   return true;
 }
 

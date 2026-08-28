@@ -343,6 +343,7 @@ function toggleKokoroLinkPanel(){
   if(!panel)return;
   renderKokoroLinkPanel();
   panel.classList.toggle('hidden');
+  if(!panel.classList.contains('hidden')&&typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('kokoroLink',TUTORIAL_KOKORO_LINK_FLOW_ID);
 }
 function beginKokoroLinkStatusTargetSelection(sourceUid){
   const picker=document.getElementById('multiTargetSelect'),living=typeof aliveMultiEnemies==='function'?aliveMultiEnemies():[];
