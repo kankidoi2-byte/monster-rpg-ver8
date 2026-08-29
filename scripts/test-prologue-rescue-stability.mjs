@@ -15,10 +15,11 @@ assert.ok(queueStart>=0&&queueEnd>queueStart,'idempotent tutorial action queue i
 const queued=[];
 const queueContext=vm.createContext({
   tutorialUiState:{active:true,steps:[{id:'battle_target'}],index:0,advancePendingStepId:null},
-  tutorialCurrentStepId(){return this.tutorialUiState.steps[this.tutorialUiState.index]?.id||null;},
-  tutorialNext(){this.advanced=(this.advanced||0)+1;},
+  advanced:0,
   setTimeout(callback){queued.push(callback);}
 });
+queueContext.tutorialCurrentStepId=()=>queueContext.tutorialUiState.steps[queueContext.tutorialUiState.index]?.id||null;
+queueContext.tutorialNext=()=>{queueContext.advanced+=1;};
 vm.runInContext(tutorial.slice(queueStart,queueEnd),queueContext);
 assert.equal(vm.runInContext("queueTutorialActionAdvance('battle_target')",queueContext),true);
 assert.equal(vm.runInContext("queueTutorialActionAdvance('battle_target')",queueContext),false,'a double tap must schedule one STEP completion');
@@ -36,7 +37,6 @@ const makeWaveContext=({missing=false,brokenSetup=false}={})=>{
   const context=vm.createContext({
     console:{error(){notices.push('error');}},
     tutorialBattleSession:{active:true,kind:'elna_rescue',enemyQueue:['slime']},
-    isTutorialRescueBattleActive(){return this.tutorialBattleSession.active&&this.tutorialBattleSession.kind==='elna_rescue';},
     by:id=>missing?null:{id,name:'スライム'},
     structuredClone:value=>({...value}),
     enemy:null,eHp:0,eAtk:0,eGuard:false,eStatus:null,
@@ -45,9 +45,10 @@ const makeWaveContext=({missing=false,brokenSetup=false}={})=>{
     enemyMaxHp(){return 30;},
     setupBattle(){if(brokenSetup)throw new Error('setup_failed');},
     document:{getElementById(){return {innerHTML:''};}},
-    showBattleOutcome(value){outcomes.push(value);},
-    handleTutorialBattleOutcome(kind){outcomes.push({tutorial:kind});this.tutorialBattleSession.active=false;return true;}
+    showBattleOutcome(value){outcomes.push(value);}
   });
+  context.isTutorialRescueBattleActive=()=>context.tutorialBattleSession.active&&context.tutorialBattleSession.kind==='elna_rescue';
+  context.handleTutorialBattleOutcome=kind=>{outcomes.push({tutorial:kind});context.tutorialBattleSession.active=false;return true;};
   vm.runInContext(tutorial.slice(waveStart,waveEnd),context);
   return {context,outcomes,notices};
 };
