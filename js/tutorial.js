@@ -150,6 +150,15 @@ function clearTutorialTarget(){
   tutorialUiState.target?.classList.remove('tutorial-target-active');
   tutorialUiState.target=null;
 }
+function ensureTutorialTargetVisible(target){
+  const rect=target?.getBoundingClientRect?.();
+  if(!rect||rect.width<=0||rect.height<=0)return;
+  const viewportHeight=window.innerHeight||document.documentElement.clientHeight;
+  const viewportWidth=window.innerWidth||document.documentElement.clientWidth;
+  if(rect.top<8||rect.bottom>viewportHeight-8||rect.left<4||rect.right>viewportWidth-4){
+    target.scrollIntoView?.({block:'center',inline:'nearest'});
+  }
+}
 function positionTutorialUi(){
   if(!tutorialUiState.active)return;
   const bubble=document.getElementById('tutorialBubble');
@@ -243,6 +252,24 @@ function confirmTutorialPlayerName(event){
   return false;
 }
 
+function tutorialInitialPartyReady(party=typeof getPartyInstances==='function'?getPartyInstances():[]){
+  const ids=(party||[]).map(instance=>instance?.id).filter(Boolean);
+  return ids.length===3&&['freigal','aquaron','elna_beginner'].every(id=>ids.includes(id));
+}
+function canConfirmTutorialParty(party){
+  if(tutorialCurrentStepId()!=='party_save')return true;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  if(tutorial?.replaying)return true;
+  if(tutorialInitialPartyReady(party))return true;
+  if(typeof showUiNotice==='function')showUiNotice('フレイガル、アクアロン、エルナの3体を編成してください。','warning');
+  return false;
+}
+function handleTutorialPartySaved(){
+  if(!tutorialUiState.active||tutorialCurrentStepId()!=='party_save')return false;
+  tutorialNext(true);
+  return true;
+}
+
 function tutorialElnaContractInstance(){
   if(!Array.isArray(save?.instances))return null;
   const matches=save.instances.filter(instance=>instance?.id==='elna_beginner'&&instance?.guest!==true);
@@ -332,6 +359,7 @@ function renderTutorialStep(){
   clearTutorialTarget();
   tutorialUiState.target=step.target?document.querySelector(step.target):null;
   tutorialUiState.target?.classList.add('tutorial-target-active');
+  ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
   document.getElementById('tutorialProgressText').textContent=`${tutorialUiState.index+1} / ${tutorialUiState.steps.length}`;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
@@ -791,6 +819,10 @@ function tutorialContractInstance(){
 function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||null;}
 function prepareTutorialStep(step){
   if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
+  if(['growth_elna','growth_elna_details','growth_skill_open'].includes(step?.id)&&typeof renderParty==='function'){
+    renderParty();
+    if(step.id==='growth_skill_open')document.querySelector('[data-monster-id="elna_beginner"] .monster-roster-details')?.setAttribute('open','');
+  }
   if(['first_contract','contract_confirm'].includes(step?.id)){
     setTutorialContractContext();
     if(step.id==='first_contract')renderTutorialContractCheckpoint();
@@ -815,9 +847,27 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！',progressLabel:'CONTRACT'},
   {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',title:'本人エルナが共闘',text:'助けてくれるの？ 私も一緒に戦う。背中は任せて！',progressLabel:'GUEST'},
   {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'契約体2体と本人エルナの3人で行くぞ！ スライムはボクが逃がさない！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
-  {id:'home_party',screenId:'home',target:'#homePartyEditButton',title:'パーティー',text:'編成はここから何度でも変更できます。最初に表示される仲間がリーダーです。',progressLabel:'HOME'},
-  {id:'home_coin',screenId:'home',target:'.app-resource',title:'コイン',text:'画面上部で所持コインを確認できます。ショップや育成などで使います。',progressLabel:'HOME'},
-  {id:'home_menu',screenId:'home',target:'.app-bottom-nav',title:'下部メニュー',text:'ホーム、モンスター、バトル、育成、メニューへは、画面下から移動できます。',progressLabel:'HOME',nextLabel:'最初の依頼へ'},
+  {id:'home_party',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'編成を確認しよう',text:'ここを押すと、冒険へ連れていく仲間を編成できるぞ！',progressLabel:'HOME'},
+  {id:'party_review',screenId:'partySet',target:'#currentPartyView',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'最初の3体',text:'フレイガル、アクアロン、エルナの契約体がそろってるな！ 先頭がリーダーだぞ！',progressLabel:'PARTY'},
+  {id:'party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,disableBack:true,title:'編成を保存',text:'3体を確認したら「この編成を保存」を押そう！',progressLabel:'PARTY'},
+  {id:'home_dex_open',screenId:'home',target:'#homeDexButton',advanceOnTarget:true,title:'図鑑を開こう',text:'ここを押すと、出会った仲間の記録を確認できるぞ！',progressLabel:'DEX'},
+  {id:'dex_character_open',screenId:'dexHub',target:'#dexHubCharacterButton',advanceOnTarget:true,title:'キャラクター図鑑',text:'まずはキャラクター図鑑を押してみよう！',progressLabel:'DEX'},
+  {id:'dex_elna_open',screenId:'characterDex',target:'[data-tutorial-character="elna_beginner"]',advanceOnTarget:true,title:'エルナの記録',text:'エルナを押すと、本人と成長形態の記録を見られるぞ！',progressLabel:'CHARACTER DEX'},
+  {id:'dex_elna_detail',screenId:'characterDex',target:'#characterDexDetail',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'キャラクター図鑑のエルナ',text:'ここには本人エルナの記録が載る。呼び出す契約体とは役割を分けてあるぞ！',progressLabel:'CHARACTER DEX'},
+  {id:'dex_character_back',screenId:'characterDex',target:'#characterDexBackButton',advanceOnTarget:true,title:'図鑑一覧へ',text:'図鑑一覧へ戻って、今度はモンスター図鑑を見よう！',progressLabel:'DEX'},
+  {id:'dex_monster_open',screenId:'dexHub',target:'#dexHubMonsterButton',advanceOnTarget:true,title:'モンスター図鑑',text:'ここを押すと、契約したモンスターの記録を見られるぞ！',progressLabel:'DEX'},
+  {id:'dex_freigal',screenId:'dex',target:'[data-tutorial-monster="freigal"]',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'フレイガル',text:'炎の契約体フレイガルだ！ 図鑑では属性や進化先を確認できるぞ！',progressLabel:'MONSTER DEX'},
+  {id:'dex_aquaron',screenId:'dex',target:'[data-tutorial-monster="aquaron"]',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'アクアロン',text:'こっちは水の契約体アクアロン！ 入手した仲間はここへ記録されるぞ！',progressLabel:'MONSTER DEX'},
+  {id:'home_growth_open',screenId:'dex',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
+  {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
+  {id:'growth_elna',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-summary',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'育成する仲間',text:'レベルと経験値はここで確認できる。育つほど能力も上がるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'個体情報を開こう',text:'ここを押すと、装備中の技や個体情報を確認できるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
+  {id:'growth_skill_current',screenId:'skillEdit',target:'#skillEditCurrent',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'装備中の技',text:'技は3つまで。仲間ごとのコスト上限に収めて装備するぞ！',progressLabel:'SKILL'},
+  {id:'growth_skill_cards',screenId:'skillEdit',target:'#skillCardList',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'所持している技カード',text:'持っているカードから、条件に合う技を選べるぞ！',progressLabel:'SKILL'},
+  {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'育成を押して、最後に進化を確認しよう！',progressLabel:'GROWTH'},
+  {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
+  {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',waitForEvent:'home_requests',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'次は依頼へ',text:'編成、図鑑、育成はこれで大丈夫！ 次は依頼と報酬を見ていくぞ！',progressLabel:'HOME',nextLabel:'次へ'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
   {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'上が敵です',text:'上側が敵のスライムです。HPを0にすると倒せるぞ！',progressLabel:'BATTLE'},
