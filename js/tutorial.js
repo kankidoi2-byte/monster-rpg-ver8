@@ -15,6 +15,12 @@ const TUTORIAL_SHOP_ITEMS_FLOW_ID='guide_shop_items';
 const TUTORIAL_BATTLE_ITEMS_FLOW_ID='guide_battle_items';
 const TUTORIAL_CONTRACTOR_RANK_FLOW_ID='guide_contractor_rank';
 const TUTORIAL_CONTRACTOR_TITLES_FLOW_ID='guide_contractor_titles';
+const TUTORIAL_STEP_MODE=Object.freeze({
+  DIALOGUE:'dialogue',
+  TARGET_ACTION:'target_action',
+  EXTERNAL_ACTION:'external_action'
+});
+const TUTORIAL_STEP_MODES=new Set(Object.values(TUTORIAL_STEP_MODE));
 const tutorialFlows=new Map();
 const tutorialUiState={
   active:false,flowId:null,steps:[],index:0,persist:false,replay:false,
@@ -23,21 +29,36 @@ const tutorialUiState={
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
 const tutorialBattleSession={active:false,firstSkillUsed:false};
 
+function inferTutorialStepMode(step){
+  if(TUTORIAL_STEP_MODES.has(step?.mode))return step.mode;
+  if(step?.advanceOnTarget===true)return TUTORIAL_STEP_MODE.TARGET_ACTION;
+  if(step?.externalAdvance===true)return TUTORIAL_STEP_MODE.EXTERNAL_ACTION;
+  return TUTORIAL_STEP_MODE.DIALOGUE;
+}
+function tutorialStepMode(step){return inferTutorialStepMode(step);}
+function tutorialStepRequiresAction(step){return tutorialStepMode(step)!==TUTORIAL_STEP_MODE.DIALOGUE;}
+function tutorialStepAcceptsTargetAction(step){
+  return tutorialStepMode(step)===TUTORIAL_STEP_MODE.TARGET_ACTION&&Boolean(step?.target);
+}
 function normalizeTutorialStep(step,index){
-  if(!step||typeof step!=='object')return null;
+  if(!step||typeof step!=='object'||(step.advanceOnTarget===true&&step.externalAdvance===true))return null;
   const id=typeof step.id==='string'&&step.id?step.id:`step_${index+1}`;
+  const mode=inferTutorialStepMode(step);
+  const target=typeof step.target==='string'&&step.target?step.target:null;
+  if(mode===TUTORIAL_STEP_MODE.TARGET_ACTION&&!target)return null;
   return Object.freeze({
     id,
+    mode,
     title:typeof step.title==='string'&&step.title?step.title:'操作ガイド',
     text:typeof step.text==='string'?step.text:'',
     screenId:typeof step.screenId==='string'&&step.screenId?step.screenId:null,
-    target:typeof step.target==='string'&&step.target?step.target:null,
-    advanceOnTarget:step.advanceOnTarget===true,
+    target,
+    advanceOnTarget:mode===TUTORIAL_STEP_MODE.TARGET_ACTION,
     nextStepId:typeof step.nextStepId==='string'&&step.nextStepId?step.nextStepId:null,
     replayNextStepId:typeof step.replayNextStepId==='string'&&step.replayNextStepId?step.replayNextStepId:null,
     persistAs:typeof step.persistAs==='string'&&step.persistAs?step.persistAs:null,
     waitForEvent:typeof step.waitForEvent==='string'&&step.waitForEvent?step.waitForEvent:null,
-    externalAdvance:step.externalAdvance===true,
+    externalAdvance:mode===TUTORIAL_STEP_MODE.EXTERNAL_ACTION,
     disableBack:step.disableBack===true,
     requiredPartyMin:Math.max(0,Math.floor(Number(step.requiredPartyMin)||0)),
     requiredPartyMax:Math.max(0,Math.floor(Number(step.requiredPartyMax)||0)),
@@ -48,8 +69,8 @@ function normalizeTutorialStep(step,index){
 }
 function registerTutorialFlow(flowId,steps){
   if(typeof flowId!=='string'||!flowId||!Array.isArray(steps))return false;
-  const normalized=steps.map(normalizeTutorialStep).filter(Boolean);
-  if(!normalized.length)return false;
+  const normalized=steps.map(normalizeTutorialStep);
+  if(!normalized.length||normalized.some(step=>!step))return false;
   tutorialFlows.set(flowId,Object.freeze(normalized));
   return true;
 }
@@ -152,7 +173,6 @@ function positionTutorialUi(){
   }
 }
 function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(positionTutorialUi));}
-function tutorialStepRequiresAction(step){return step?.advanceOnTarget===true||step?.externalAdvance===true;}
 
 function renderTutorialStep(){
   if(!tutorialUiState.active)return;
@@ -616,7 +636,7 @@ registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
-  if(step?.advanceOnTarget&&step.target&&event.target.closest?.(step.target))setTimeout(()=>tutorialNext(true),0);
+  if(tutorialStepAcceptsTargetAction(step)&&event.target.closest?.(step.target))setTimeout(()=>tutorialNext(true),0);
 },true);
 document.addEventListener('keydown',event=>{
   if(!tutorialUiState.active)return;
