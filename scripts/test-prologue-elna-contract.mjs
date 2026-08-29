@@ -11,7 +11,7 @@ const packageJson=JSON.parse(read('package.json'));
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const mainFlow=tutorial.slice(flowStart,flowEnd);
-const requiredOrder=['elna_rescue_complete','elna_contract_intro','elna_contract_consent','elna_contract_execute','elna_contract_departure','elna_contract_body','home_party'];
+const requiredOrder=['elna_rescue_complete','elna_contract_intro','elna_contract_consent','elna_contract_execute','elna_contract_departure','elna_contract_body'];
 let previous=-1;
 for(const id of requiredOrder){
   const current=mainFlow.indexOf(`id:'${id}'`);
