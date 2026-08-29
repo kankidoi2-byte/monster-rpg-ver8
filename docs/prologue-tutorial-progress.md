@@ -204,7 +204,7 @@
 - 新規 `npm run check:prologue-save-v2` で、新規セーブの初期配布延期、公開版v1保護、v2中断再開、名前保存、GUEST破棄、所持個体によるフラグ修復、再読み込み後の二重付与防止を検査する。
 - `npm run check` へ新規検査を統合した。
 - プレイヤー向け表示はリセット確認文以外に変更せず、公開お知らせは後続の序章実装とまとめる。
-- GitHub Actionsの結果はコミット後に追記する。
+- `c38ec33` のGitHub Actions「Validate game data and assets」run #179で、専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
