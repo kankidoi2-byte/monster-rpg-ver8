@@ -14,11 +14,14 @@ const init=read('js/init.js');
   'tutorialProgressBar','tutorialTitle','tutorialText','tutorialBackButton','tutorialSkipButton','tutorialNextButton'
 ].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing tutorial UI contract: #${id}`));
 assert.ok(index.includes('id="tutorialMenuButton"')&&index.includes('onclick="openTutorialFromMenu()"'),'the menu must expose tutorial replay');
-assert.ok(index.includes('css/tutorial.css?v=tutorial-phase3b-1'),'the tutorial stylesheet must be cache-versioned');
+assert.ok(index.includes('css/tutorial.css?v=tutorial-android-flow-fix-1'),'the tutorial stylesheet must be cache-versioned');
 assert.ok(index.indexOf('js/ui.js')<index.indexOf('js/tutorial.js')&&index.indexOf('js/tutorial.js')<index.indexOf('js/init.js'),'the tutorial engine must load after shared UI and before initialization');
 
 assert.match(css,/\.tutorial-overlay\{[^}]*pointer-events:none/,'the overlay must not block the highlighted game control');
 assert.match(css,/\.tutorial-bubble\{[^}]*pointer-events:auto/,'the tutorial controls must remain interactive');
+assert.match(css,/\.tutorial-bubble\{[^}]*overflow-y:auto/,'long mobile guidance must scroll vertically');
+assert.match(css,/\.tutorial-bubble\{[^}]*touch-action:pan-y/,'Android must allow a vertical swipe inside the guidance bubble');
+assert.match(css,/\.tutorial-bubble\{[^}]*-webkit-overflow-scrolling:touch/,'mobile guidance must retain touch momentum scrolling');
 assert.match(css,/\.tutorial-shade\{[^}]*pointer-events:none/,'spotlight shades must not intercept target operations');
 assert.match(css,/@media\(max-width:480px\)/,'portrait-phone tutorial layout is missing');
 assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion support is missing');
@@ -31,6 +34,8 @@ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion suppo
 assert.ok(tutorial.includes("confirm('必須チュートリアルをスキップしますか？"),'required tutorial skip must ask for confirmation');
 assert.ok(tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must use the shared persisted state');
 assert.ok(tutorial.includes("event.key==='Escape'")&&tutorial.includes("event.key==='ArrowLeft'")&&tutorial.includes("event.key==='ArrowRight'"),'keyboard tutorial controls are missing');
+assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.includes('bubble.contains(event.target)')&&tutorial.includes("window.addEventListener('scroll',handleTutorialViewportScroll,true)"),'scrolling the guidance bubble must not trigger viewport repositioning');
+assert.ok(tutorial.includes('bubble.scrollTop=0'),'each new tutorial step must begin at the top of its own guidance');
 assert.ok(tutorial.includes('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),'the required onboarding flow must use the shared tutorial engine');
 assert.ok(ui.includes("typeof handleTutorialScreenChange === 'function'"),'screen changes must notify the tutorial engine');
 assert.ok(init.includes('setTimeout(resumeTutorialIfNeeded,0)'),'reload/title entry must resume an interrupted tutorial');

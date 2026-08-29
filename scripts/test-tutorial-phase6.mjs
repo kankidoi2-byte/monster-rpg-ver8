@@ -128,7 +128,9 @@ for(const sample of viewports){
 }
 assert.match(tutorialCss,/@media\(max-width:480px\)/,'Android compact layout override is missing');
 assert.match(tutorialCss,/max-height:calc\(100svh - 20px\)/,'tutorial bubble must stay within the mobile visual viewport');
+assert.match(tutorialCss,/touch-action:pan-y/,'tutorial bubble must support Android vertical touch scrolling');
+assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.includes('bubble.contains(event.target)'),'tutorial bubble scrolling must not restart viewport placement');
 assert.match(tutorialCss,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion fallback is missing');
-assert.ok(index.includes('js/tutorial.js?v=tutorial-battle-start-fix-1'),'the integrated tutorial engine cache key is missing');
+assert.ok(index.includes('js/tutorial.js?v=tutorial-android-flow-fix-1'),'the integrated tutorial engine cache key is missing');
 
 console.log(`Tutorial Phase 6 integration passed (${stepIds.length} unique steps, ${new Set(screenIds).size} screens, ${targets.length} target contracts, Android/Chromebook placement, save/reload, and full regression wiring).`);

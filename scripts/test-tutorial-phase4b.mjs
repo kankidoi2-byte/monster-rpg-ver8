@@ -55,6 +55,19 @@ assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),false,'normal 
 context.tutorialUiState.active=true;context.tutorialUiState.steps=[{id:'battle_retry'}];context.tutorialUiState.index=0;
 assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),true,'retry must render the dedicated request again');
 
+const nextStart=tutorial.indexOf('function tutorialNext(');
+const nextEnd=tutorial.indexOf('function restoreTutorialReturnScreen',nextStart);
+const externalAdvanceContext=vm.createContext({
+  tutorialUiState:{active:true,steps:[{id:'tutorial_hunt_request',externalAdvance:true},{id:'battle_enemy'}],index:0,replay:false,lastFocusedStep:'tutorial_hunt_request'},
+  tutorialStepCanAdvance:()=>true,persistTutorialStep:()=>{},renderTutorialStep:()=>{},clearTutorialUi:()=>{},updateTutorialMenuSummary:()=>{},
+  tutorialStepIndex:(steps,id)=>steps.findIndex(step=>step.id===id),checkpointTutorialFlow:()=>{},finishTutorialFlow:()=>{}
+});
+vm.runInContext(tutorial.slice(nextStart,nextEnd),externalAdvanceContext);
+vm.runInContext('tutorialNext()',externalAdvanceContext);
+assert.equal(externalAdvanceContext.tutorialUiState.index,0,'ordinary Next must not bypass an external gameplay action');
+vm.runInContext('tutorialNext(true)',externalAdvanceContext);
+assert.equal(externalAdvanceContext.tutorialUiState.index,1,'a successful tutorial battle start must release the external step immediately');
+
 const battleStartStart=tutorial.indexOf('function preparedTutorialHuntRequest');
 const battleStartEnd=tutorial.indexOf('function handleTutorialFirstSkillUsed',battleStartStart);
 assert.ok(battleStartStart>=0&&battleStartEnd>battleStartStart,'tutorial battle start helpers must exist');
@@ -68,9 +81,9 @@ const battleStartContext=vm.createContext({
   registerHuntRequest:request=>Object.assign(request,{requestId:'hunt_recovered'}),
   tutorialBattleSession:{active:false,firstSkillUsed:true},
   tutorialUiState:{active:true,steps:[{id:'tutorial_hunt_request'}],index:0},
-  screen:'battleChoices',player:null,enemy:null,startCalls:[],nextCalls:0,choiceCalls:0,
+  screen:'battleChoices',player:null,enemy:null,startCalls:[],nextCalls:0,nextArgs:[],choiceCalls:0,
   activeScreenId:()=>battleStartContext.screen,
-  tutorialNext:()=>{battleStartContext.nextCalls++;},
+  tutorialNext:externalAdvance=>{battleStartContext.nextCalls++;battleStartContext.nextArgs.push(externalAdvance);},
   showBattleChoices:()=>{battleStartContext.choiceCalls++;battleStartContext.screen='battleChoices';},
   startChosenBattle:(mapId,enemyId,difficultyId,requestId)=>{
     battleStartContext.startCalls.push({mapId,enemyId,difficultyId,requestId});
@@ -81,9 +94,10 @@ vm.runInContext(tutorial.slice(battleStartStart,battleStartEnd),battleStartConte
 assert.equal(vm.runInContext("startTutorialHunt('stale_request')",battleStartContext),true,'a stale rendered request must be regenerated and start normally');
 assert.deepEqual(JSON.parse(JSON.stringify(battleStartContext.startCalls)),[{mapId:'grassland',enemyId:'slime',difficultyId:'easy',requestId:'hunt_recovered'}]);
 assert.equal(battleStartContext.nextCalls,1,'the guide must advance once after both combatants are ready');
+assert.deepEqual(battleStartContext.nextArgs,[true],'the successful battle start must explicitly release the external-advance guard');
 assert.equal(battleStartContext.choiceCalls,0,'a recovered request must not return to the choice screen');
 
-battleStartContext.startChosenBattle=()=>{};battleStartContext.player=null;battleStartContext.enemy=null;battleStartContext.screen='battleChoices';battleStartContext.nextCalls=0;
+battleStartContext.startChosenBattle=()=>{};battleStartContext.player=null;battleStartContext.enemy=null;battleStartContext.screen='battleChoices';battleStartContext.nextCalls=0;battleStartContext.nextArgs=[];
 assert.equal(vm.runInContext("startTutorialHunt('still_stale')",battleStartContext),false,'a failed battle initialization must stay recoverable');
 assert.equal(battleStartContext.nextCalls,0,'a failed battle initialization must not advance to an empty battle screen');
 assert.equal(battleStartContext.choiceCalls,1,'a failed battle initialization must return to a fresh request choice');

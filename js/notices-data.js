@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-android-flow-fix',
+    date: '2026-08-29',
+    category: 'fix',
+    title: 'チュートリアルの開始操作とスクロールを修正しました',
+    body: '入門依頼のボタンを押してもスライム戦へ進まず、バトルを選び直す必要がある問題を修正しました。スマートフォンで説明が長い場合に、案内の吹き出しを指で縦スクロールできない問題も修正しました。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-battle-start-fix',
     date: '2026-08-29',
     category: 'fix',

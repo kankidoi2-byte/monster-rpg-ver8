@@ -166,6 +166,7 @@ function renderTutorialStep(){
   const overlay=document.getElementById('tutorialOverlay');
   const bubble=document.getElementById('tutorialBubble');
   if(!overlay||!bubble)return;
+  bubble.scrollTop=0;
   clearTutorialTarget();
   tutorialUiState.target=step.target?document.querySelector(step.target):null;
   tutorialUiState.target?.classList.add('tutorial-target-active');
@@ -237,10 +238,10 @@ function checkpointTutorialFlow(step){
   }
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
-function tutorialNext(){
+function tutorialNext(externalAdvance=false){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
-  if(step?.externalAdvance)return;
+  if(step?.externalAdvance&&externalAdvance!==true)return;
   if(!tutorialStepCanAdvance(step))return;
   if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
   const nextStepId=tutorialUiState.replay&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
@@ -392,7 +393,7 @@ function startTutorialHunt(requestId){
   const ready=activeScreenId()==='battle'&&player?.id&&enemy?.id;
   if(!ready){tutorialBattleSession.active=false;showBattleChoices();return false;}
   const step=tutorialUiState.active?tutorialUiState.steps[tutorialUiState.index]:null;
-  if(step?.id==='tutorial_hunt_request')tutorialNext();
+  if(step?.id==='tutorial_hunt_request')tutorialNext(true);
   return true;
 }
 function handleTutorialFirstSkillUsed(){
@@ -620,6 +621,11 @@ document.addEventListener('keydown',event=>{
   if(event.key==='ArrowLeft'){event.preventDefault();tutorialPrevious();}
   if(event.key==='ArrowRight'){event.preventDefault();tutorialNext();}
 });
+function handleTutorialViewportScroll(event){
+  const bubble=document.getElementById('tutorialBubble');
+  if(bubble&&(event.target===bubble||bubble.contains(event.target)))return;
+  scheduleTutorialPosition();
+}
 window.addEventListener('resize',scheduleTutorialPosition);
-window.addEventListener('scroll',scheduleTutorialPosition,true);
+window.addEventListener('scroll',handleTutorialViewportScroll,true);
 updateTutorialMenuSummary();
