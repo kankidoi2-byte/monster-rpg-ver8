@@ -245,7 +245,7 @@
 - `npm run check:tutorial-ui` で背景・立ち絵・会話の別レイヤー、スマホ縦画面用CSS、既存スポットライトと操作待ち契約を検査する。
 - Phase 5B・Phase 6の統合検査を、新しいキャッシュキーと序章STEP順へ追従させた。
 - コミット前の静的検査で、チュートリアル本体の構文、74STEPとID一意性、導入7STEPの順序、画像の透過情報、HTML/CSSレイヤー契約を確認した。
-- ドラフトPR上のGitHub Actions「Validate game data and assets」で `npm run check` 全体を実行する。
+- 初回の全検査run #181は、実装ではなくテスト内の名前変数固定値を検出して停止した。検査を実装契約へ合わせた後、`03409f1` のGitHub Actions「Validate game data and assets」run #182で、専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
