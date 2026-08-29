@@ -28,12 +28,13 @@ const tutorialUiState={
 };
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
-const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true});
+const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true,tutorialRole:'person'});
 const TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime']);
 const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue']);
 const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,enemyQueue:[]};
 function isTutorialRescueBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='elna_rescue';}
 let tutorialTransitionBusy=false;
+let tutorialElnaContractBusy=false;
 
 function inferTutorialStepMode(step){
   if(TUTORIAL_STEP_MODES.has(step?.mode))return step.mode;
@@ -58,7 +59,7 @@ function normalizeTutorialStep(step,index){
     speaker:typeof step.speaker==='string'&&step.speaker?step.speaker:null,
     portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
     scene:typeof step.scene==='string'&&step.scene?step.scene:null,
-    input:step.input==='player_name'?'player_name':null,
+    input:['player_name','elna_contract'].includes(step.input)?step.input:null,
     transition:TUTORIAL_TRANSITIONS.has(step.transition)?step.transition:null,
     title:typeof step.title==='string'&&step.title?step.title:'操作ガイド',
     text:typeof step.text==='string'?step.text:'',
@@ -242,6 +243,77 @@ function confirmTutorialPlayerName(event){
   return false;
 }
 
+function tutorialElnaContractInstance(){
+  if(!Array.isArray(save?.instances))return null;
+  const matches=save.instances.filter(instance=>instance?.id==='elna_beginner'&&instance?.guest!==true);
+  return matches.find(instance=>instance.tutorialRole==='contract_body')
+    ||matches.find(instance=>instance.tutorialContract===true)
+    ||matches[matches.length-1]
+    ||null;
+}
+function commitTutorialElnaContract(){
+  if(typeof currentTutorialState!=='function'||typeof addInstance!=='function')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return {instance:tutorialElnaContractInstance(),replay:true};
+  const snapshot=JSON.stringify(save);
+  try{
+    const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(tutorialOwnedStarterInstance);
+    if(starters.some(instance=>!instance))throw new Error('elna_contract_starters_missing');
+    let instance=tutorialElnaContractInstance();
+    if(!instance)instance=addInstance('elna_beginner',1,0,{tutorialContract:true,tutorialRole:'contract_body'});
+    if(!instance)throw new Error('elna_contract_body_missing');
+    instance.tutorialContract=true;
+    instance.tutorialRole='contract_body';
+    if(!tutorial.elnaContractGranted&&typeof markTutorialElnaContractGranted==='function'&&!markTutorialElnaContractGranted()){
+      throw new Error('elna_contract_flag');
+    }
+    if(typeof setTutorialElnaGuestActive==='function')setTutorialElnaGuestActive(false);
+    save.party=[...new Set([...starters.map(entry=>entry.uid),instance.uid])].slice(0,3);
+    if(save.party.length!==3)throw new Error('elna_contract_party');
+    if(typeof setTutorialStep==='function')setTutorialStep('elna_contract_departure');
+    if(typeof saveGame==='function'&&!saveGame())throw new Error('elna_contract_save');
+    try{
+      if(typeof updateParty==='function')updateParty();
+      if(typeof renderParty==='function')renderParty();
+      if(typeof renderDex==='function')renderDex();
+    }catch(error){console.error('エルナ契約後の画面更新に失敗しました。',error);}
+    return {instance,replay:false};
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('エルナの契約体を保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('契約状態を保存できませんでした。もう一度お試しください。','warning');
+    return null;
+  }
+}
+async function confirmTutorialElnaContract(){
+  if(tutorialElnaContractBusy||!tutorialUiState.active)return false;
+  const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.input!=='elna_contract')return false;
+  if(typeof playContractAnimation!=='function'){
+    if(typeof showUiNotice==='function')showUiNotice('契約演出を開始できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+  tutorialElnaContractBusy=true;
+  renderTutorialStep();
+  const committed=commitTutorialElnaContract();
+  if(!committed){
+    tutorialElnaContractBusy=false;
+    renderTutorialStep();
+    return false;
+  }
+  try{
+    await playContractAnimation({monsterName:'エルナの契約体',stage:3});
+  }catch(error){
+    console.error('エルナの契約演出を完了できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('契約は保存されています。続きから再開できます。','warning');
+  }finally{
+    tutorialElnaContractBusy=false;
+  }
+  if(tutorialUiState.active&&tutorialUiState.steps[tutorialUiState.index]?.id===step.id)tutorialNext(true);
+  else updateTutorialMenuSummary();
+  return true;
+}
+
 function renderTutorialStep(){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
@@ -277,11 +349,13 @@ function renderTutorialStep(){
   const next=document.getElementById('tutorialNextButton');
   const actions=next?.closest('.tutorial-actions');
   const requiresAction=tutorialStepRequiresAction(step);
-  back.disabled=tutorialUiState.index===0||step.disableBack;
+  back.disabled=tutorialElnaContractBusy||tutorialUiState.index===0||step.disableBack;
+  skip.disabled=tutorialElnaContractBusy;
+  document.querySelector('.tutorial-pause')?.toggleAttribute('disabled',tutorialElnaContractBusy);
   skip.textContent=tutorialUiState.persist?'スキップ':'閉じる';
   next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
   next.hidden=requiresAction;
-  next.disabled=requiresAction;
+  next.disabled=requiresAction||tutorialElnaContractBusy;
   actions?.classList.toggle('is-target-action',requiresAction);
   actions?.classList.toggle('is-name-entry',step.input==='player_name');
   overlay.classList.remove('hidden');
@@ -319,7 +393,7 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,replay=false,return
   return true;
 }
 function tutorialPrevious(){
-  if(!tutorialUiState.active||tutorialUiState.index<=0)return;
+  if(tutorialElnaContractBusy||!tutorialUiState.active||tutorialUiState.index<=0)return;
   if(tutorialUiState.steps[tutorialUiState.index]?.disableBack)return;
   tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
@@ -350,8 +424,9 @@ function queueTutorialActionAdvance(stepId=tutorialCurrentStepId()){
   return true;
 }
 function tutorialNext(actionCompleted=false){
-  if(!tutorialUiState.active)return;
+  if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.input==='elna_contract'&&actionCompleted!==true){void confirmTutorialElnaContract();return;}
   if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return;
   if(!tutorialStepCanAdvance(step))return;
   if(step?.transition&&!runTutorialTransition(step.transition))return;
@@ -379,12 +454,12 @@ function finishTutorialFlow(){
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
 function pauseTutorial(){
-  if(!tutorialUiState.active)return;
+  if(tutorialElnaContractBusy||!tutorialUiState.active)return;
   const returnScreen=tutorialUiState.returnScreen;
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
 function requestTutorialSkip(){
-  if(!tutorialUiState.active)return;
+  if(tutorialElnaContractBusy||!tutorialUiState.active)return;
   if(!tutorialUiState.persist){pauseTutorial();return;}
   if(!confirm('必須チュートリアルをスキップしますか？ メニューからいつでも見直せます。'))return;
   const returnScreen=tutorialUiState.returnScreen;
@@ -761,7 +836,12 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'battle_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'tutorial_hunt_request',persistAs:'first_hunt',title:'何度でも再挑戦できます',text:'敗北や撤退でも進行は失われません。「依頼を選び直す」から同じ入門依頼へ戻れます。',progressLabel:'RETRY'},
   {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
-  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',persistAs:'elna_contract_intro',waitForEvent:'elna_contract_intro',disableBack:true,title:'救援成功',text:'助かった……！ あなたたちが来てくれなかったら危なかった。ありがとう。',progressLabel:'RESCUE',nextLabel:'エルナと話す'},
+  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',persistAs:'elna_contract_intro',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'助かった……！ あなたたちが来てくれなかったら危なかった。ありがとう。',progressLabel:'RESCUE',nextLabel:'エルナと話す'},
+  {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'契約！ 契約を貰って！',progressLabel:'CONTRACT'},
+  {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',disableBack:true,title:'本人エルナの同意',text:'うん。助けてもらったあなたになら、私の力を預けられる。契約を受け取って！',progressLabel:'CONTRACT'},
+  {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'契約書が3回反応して、手形が押されたら成功だ！',progressLabel:'CONTRACT',nextLabel:'契約する'},
+  {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'契約は結ばれたよ。呼ばれる契約体は私の力を写した存在。本人の私は、ここでお別れだね。',progressLabel:'CONTRACT'},
+  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',waitForEvent:'home_party',disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'ホームへ'},
   {id:'victory_exp',screenId:'battle',target:'#battleRewardExp',persistAs:'first_contract',title:'勝利：経験値',text:'パーティーの仲間が経験値を獲得します。経験値がたまるとレベルが上がり、強くなります。',progressLabel:'VICTORY'},
   {id:'victory_coin',screenId:'battle',target:'#battleRewardCoins',persistAs:'first_contract',title:'勝利：コイン',text:'コインはショップや育成で使います。今回の獲得数は勝利結果で確認できます。',progressLabel:'VICTORY'},
   {id:'victory_material',screenId:'battle',target:'#battleRewardMaterials',persistAs:'first_contract',title:'勝利：素材',text:'バトルでは錬成などに使う素材を獲得することがあります。出なかった場合も、次の勝利でまた抽選されます。',progressLabel:'VICTORY'},
