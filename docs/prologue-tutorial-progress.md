@@ -488,6 +488,7 @@
 - 作業単位9の検査は、後続PhaseでSTEPが増えても前半機能と一意性を維持する回帰検査へ更新した。
 - ローカルの `npm run check` で、全117STEP・21画面・97操作対象を含む全検査が成功した。
 - `git diff --check` で空白エラーがないことを確認した。
+- `5a46a22` のGitHub Actions「Validate game data and assets」run #206で、新しい専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
