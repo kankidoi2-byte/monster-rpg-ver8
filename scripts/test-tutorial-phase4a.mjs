@@ -36,7 +36,7 @@ for(const id of introIds){
   assert.ok(current>previous,`missing or out-of-order Gnosis intro step: ${id}`);
   previous=current;
 }
-const intro=tutorial.slice(tutorial.indexOf("id:'intro_gnosis'"),tutorial.indexOf("id:'home_party'"));
+const intro=tutorial.slice(tutorial.indexOf("id:'intro_gnosis'"),tutorial.indexOf("id:'elna_encounter'"));
 assert.ok(intro.includes("text:'ーい……'")&&intro.includes("text:'おーい……'")&&intro.includes("text:'おーい！'"),'the three-part opening call must match the approved wording');
 assert.ok(intro.indexOf("text:'ーい……'")<intro.indexOf("text:'おーい……'")&&intro.indexOf("text:'おーい……'")<intro.indexOf("text:'おーい！'"),'the three-part opening call must keep its order');
 assert.ok(intro.includes('やっと起きた！')&&intro.includes('案内するぞ！'),'Gnosis must sound cheerful and direct');
@@ -44,7 +44,7 @@ assert.ok(!intro.includes('カナタ'),'Kanata must not appear in the prologue')
 assert.equal((intro.match(/gnosis-dialogue-transparent-final\.png/g)||[]).length,7,'every Gnosis dialogue step must use the transparent portrait');
 assert.ok(intro.includes("id:'gnosis_name'")&&intro.includes("input:'player_name'")&&intro.includes("mode:'external_action'"),'name entry must be a blocking external-action step');
 assert.ok(intro.includes('{{playerName}}')&&intro.includes('契約した相手の力を「契約体」として呼び出せる'),'the contract explanation must use the entered name and explain contract bodies');
-assert.ok(intro.includes("id:'gnosis_descent'")&&intro.includes("scene:'world_descent'")&&intro.includes("persistAs:'elna_encounter'")&&intro.includes("waitForEvent:'elna_encounter'"),'world descent must checkpoint the next prologue encounter without marking the tutorial complete');
+assert.ok(intro.includes("id:'gnosis_descent'")&&intro.includes("scene:'world_descent'")&&intro.includes("persistAs:'elna_encounter'")&&intro.includes("nextStepId:'elna_encounter'"),'world descent must checkpoint the next prologue encounter without marking the tutorial complete');
 
 ['tutorialStoryBackdrop','tutorialCharacterLayer','tutorialCharacterPortrait','tutorialNameForm','tutorialPlayerNameInput']
   .forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing layered story UI contract: #${id}`));

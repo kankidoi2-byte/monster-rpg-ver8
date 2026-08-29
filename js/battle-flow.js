@@ -1,6 +1,9 @@
 function prepareBattleParty() {
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
-  const party = getPartyInstances();
+  const savedParty = getPartyInstances();
+  const party = typeof tutorialBattlePartyInstances === 'function'
+    ? tutorialBattlePartyInstances(savedParty)
+    : savedParty;
   partyBattle = party.map(ins => ({
     uid:ins.uid, inst:ins,
     mon:structuredClone(by(ins.id)),
@@ -309,6 +312,7 @@ function runAway() {
   busy = true;
 }
 function win() {
+  if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
   if (battleRewardGranted) return;
   battleRewardGranted = true;
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();

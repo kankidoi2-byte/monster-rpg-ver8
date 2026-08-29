@@ -5,107 +5,91 @@ import vm from 'node:vm';
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 const tutorial=read('js/tutorial.js');
 const flow=read('js/battle-flow.js');
-const rules=read('js/battle-rules.js');
-const view=read('js/battle-view.js');
-const state=read('js/state.js');
 const data=read('js/data.js');
+const css=read('css/tutorial.css');
 const index=read('index.html');
 
-assert.ok(data.includes("{id:'grassland'")&&data.includes("{id:'slime'"),'the existing grassland and slime IDs must remain the tutorial targets');
-assert.ok(tutorial.includes("Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'})"),'the first hunt must use the existing Easy request rules');
-assert.ok(tutorial.includes('registerHuntRequest(createHuntRequest(map,mon,difficulty.id,[]))'),'the tutorial request must go through the normal hunt request factory');
-assert.ok(tutorial.includes("registerMapDex(map.id)"),'the dedicated request must preserve normal map discovery');
-assert.ok(flow.includes("renderTutorialHuntChoice(list))return"),'hunt choices must offer the dedicated first request before random entries');
-assert.ok(!tutorial.includes('enemyHp:')&&!tutorial.includes('rewardMultiplier:')&&!tutorial.includes('attackMultiplier:'),'the tutorial must not override enemy ability or reward calculations');
-assert.match(state,/THREE_WAY_RATES = Object\.freeze\(\{easy:0,/,'Easy must continue to use the existing single-battle rule');
+assert.ok(data.includes("{id:'freigal'")&&data.includes("{id:'aquaron'")&&data.includes("{id:'slime'")&&data.includes("{id:'elna_beginner'"),'stable starter, enemy, and Elna source IDs must remain available');
+assert.ok(tutorial.includes("TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron'])"),'the two approved contract bodies must be fixed by stable IDs');
+assert.ok(tutorial.includes("TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime'])"),'the rescue must guarantee two sequential Slime enemies');
+assert.ok(tutorial.includes("uid:'tutorial_guest_elna'")&&tutorial.includes("sourceId:'elna_beginner'")&&tutorial.includes("guest:true"),'Elna herself must use a dedicated temporary GUEST descriptor');
+assert.ok(!tutorial.includes("addInstance('elna_beginner'"),'Elna herself must never be persisted as the encounter GUEST');
 
-const orderedSteps=['first_hunt','tutorial_hunt_request','battle_enemy','battle_ally','battle_hp','battle_type','battle_turn','battle_skill','battle_choose_skill','battle_free','battle_retry','victory_exp','victory_coin','victory_material','victory_rank'];
+const encounterSteps=[
+  'gnosis_descent','elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts',
+  'starter_contracts_received','elna_guest_join','elna_rescue_start'
+];
 let previous=-1;
-orderedSteps.forEach(id=>{
+for(const id of encounterSteps){
   const current=tutorial.indexOf(`id:'${id}'`);
-  assert.ok(current>previous,`missing or out-of-order Phase 4B step: ${id}`);
+  assert.ok(current>previous,`missing or out-of-order Elna encounter step: ${id}`);
   previous=current;
-});
-['#singleEnemyBox','#singlePlayerBox','.battle-vitals','#battleCommandTitle','#battleSkillButton','#commands'].forEach(target=>assert.ok(tutorial.includes(`target:'${target}'`),`missing real battle target: ${target}`));
-assert.ok(tutorial.includes("waitForEvent:'battle_outcome'"),'the guide must release controls after the first skill');
-assert.ok(rules.includes("typeof handleTutorialFirstSkillUsed==='function'"),'the real first skill action must notify the guide');
+}
+const encounter=tutorial.slice(tutorial.indexOf("id:'elna_encounter'"),tutorial.indexOf("id:'home_party'"));
+assert.ok(encounter.includes('スライムに囲まれてる')||encounter.includes('スライムに囲まれた'),'the story must visibly establish that Slimes surround Elna');
+assert.ok(encounter.includes('助けに入ろう！')&&encounter.includes('フレイガルとアクアロンの契約体を貸すぞ！'),'Gnosis must call for the rescue and lend the two contract bodies');
+assert.ok(encounter.includes('本人エルナが共闘')&&encounter.includes('私も一緒に戦う'),'the encounter must distinguish Elna herself joining as a guest');
+assert.ok(encounter.includes("transition:'start_elna_rescue'")&&encounter.includes("nextStepId:'battle_enemy'"),'the rescue confirmation must start real combat before battle guidance');
+assert.ok(!encounter.includes('カナタ'),'Kanata must not appear in the prologue encounter');
+assert.ok((encounter.match(/images\/tutorial\/characters\/elna_beginner\.png/g)||[]).length>=2,'Elna dialogue must use the existing transparent portrait');
+assert.match(css,/data-scene="grassland"/,'the encounter background must be a separate grassland layer');
+assert.ok(index.includes('js/tutorial.js?v=prologue-elna-encounter-1')&&index.includes('prologue-elna-rescue-1'),'changed encounter and battle scripts must have fresh cache keys');
 
-assert.ok(tutorial.includes("persistAs:'first_hunt'"),'transient battle steps must reload at the safe hunt checkpoint');
-assert.ok(tutorial.includes("persistAs:'first_contract'"),'reward steps must reload after the won battle instead of granting rewards twice');
-assert.ok(tutorial.includes("setTutorialStep('first_contract')")&&tutorial.includes("if(typeof saveGame==='function')saveGame()"),'victory must save the Phase 4C checkpoint before showing reward guidance');
-assert.ok(flow.includes("handleTutorialBattleOutcome('defeat')")&&flow.includes("handleTutorialBattleOutcome('retreat')"),'defeat and retreat must enter the retry path');
-assert.ok(tutorial.includes("nextStepId:'tutorial_hunt_request'")&&tutorial.includes("persistAs:'first_hunt'"),'retry must return to the same safe request without losing progress');
-assert.match(tutorial,/id:'tutorial_hunt_request'[^\n]+externalAdvance:true/,'the guide must not advance before the battle has actually started');
-assert.ok(tutorial.includes("activeScreenId()==='battle'&&player?.id&&enemy?.id"),'the tutorial must verify both combatants before advancing');
+assert.ok(tutorial.includes('function ensureTutorialStarterContracts')&&tutorial.includes("addInstance(id,1,0,{tutorialContract:true})"),'the encounter must grant real contract-body instances');
+assert.ok(tutorial.includes('save.party=starters.map(instance=>instance.uid)'),'the two received bodies must become the real saved party');
+assert.ok(tutorial.includes("setTutorialElnaGuestActive==='function'")&&tutorial.includes('setTutorialElnaGuestActive(true)'),'required progress must remember that Elna herself is temporarily active');
+assert.ok(tutorial.includes("if(typeof saveGame==='function'&&!saveGame())throw"),'starter grant and guest activation must roll back when persistence fails');
 
-assert.ok(flow.includes('const materialRewards=[]')&&flow.includes('contractorReward.amount'),'the existing victory calculation must expose actual materials and contractor EXP to the result');
-['battleRewardExp','battleRewardCoins','battleRewardMaterials','battleRewardContractorExp'].forEach(id=>assert.ok(view.includes(`id="${id}"`),`missing victory reward target: ${id}`));
-assert.ok(tutorial.includes('経験値がたまるとレベルが上がり')&&tutorial.includes('ショップや育成で使います')&&tutorial.includes('次の勝利でまた抽選')&&tutorial.includes('契約者EXPも増えます'),'all four current reward types must be explained');
-assert.ok(!tutorial.includes('firstContractGuaranteeUsed=true')&&!tutorial.includes('starterContractScrollGranted=true'),'Phase 4B must not implement the Phase 4C contract guarantee early');
-
-['singleEnemyBox','singlePlayerBox','battleCommandTitle','battleSkillButton','commands','battleOutcomeRewards'].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing DOM anchor: #${id}`));
-
-const helperStart=tutorial.indexOf('function tutorialFirstHuntIsPending');
-const helperEnd=tutorial.indexOf('function renderTutorialHuntChoice',helperStart);
-const context=vm.createContext({tutorialUiState:{active:false,steps:[],index:0},state:{status:'in_progress',stepId:'first_hunt',replaying:false},currentTutorialState:()=>context.state});
-vm.runInContext(tutorial.slice(helperStart,helperEnd),context);
-assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),true,'an interrupted required tutorial must restore the first request');
-context.state={status:'completed',stepId:null,replaying:false};
-assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),false,'normal completed saves must keep random hunt choices');
-context.tutorialUiState.active=true;context.tutorialUiState.steps=[{id:'battle_retry'}];context.tutorialUiState.index=0;
-assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),true,'retry must render the dedicated request again');
-
-const nextStart=tutorial.indexOf('function tutorialNext(');
-const nextEnd=tutorial.indexOf('function restoreTutorialReturnScreen',nextStart);
-const externalAdvanceContext=vm.createContext({
-  tutorialUiState:{active:true,steps:[{id:'tutorial_hunt_request',externalAdvance:true},{id:'battle_enemy'}],index:0,replay:false,lastFocusedStep:'tutorial_hunt_request'},
-  tutorialStepRequiresAction:step=>step?.advanceOnTarget===true||step?.externalAdvance===true,
-  tutorialStepCanAdvance:()=>true,persistTutorialStep:()=>{},renderTutorialStep:()=>{},clearTutorialUi:()=>{},updateTutorialMenuSummary:()=>{},
-  tutorialStepIndex:(steps,id)=>steps.findIndex(step=>step.id===id),checkpointTutorialFlow:()=>{},finishTutorialFlow:()=>{}
-});
-vm.runInContext(tutorial.slice(nextStart,nextEnd),externalAdvanceContext);
-vm.runInContext('tutorialNext()',externalAdvanceContext);
-assert.equal(externalAdvanceContext.tutorialUiState.index,0,'ordinary Next must not bypass an external gameplay action');
-vm.runInContext('tutorialNext(true)',externalAdvanceContext);
-assert.equal(externalAdvanceContext.tutorialUiState.index,1,'a successful tutorial battle start must release the external step immediately');
-externalAdvanceContext.tutorialUiState.steps=[{id:'first_hunt',advanceOnTarget:true},{id:'tutorial_hunt_request'}];externalAdvanceContext.tutorialUiState.index=0;
-vm.runInContext('tutorialNext()',externalAdvanceContext);
-assert.equal(externalAdvanceContext.tutorialUiState.index,0,'Next and the Right Arrow must not bypass a highlighted real-screen operation');
-vm.runInContext('tutorialNext(true)',externalAdvanceContext);
-assert.equal(externalAdvanceContext.tutorialUiState.index,1,'clicking the highlighted operation must advance the guide');
-
-const battleStartStart=tutorial.indexOf('function preparedTutorialHuntRequest');
-const battleStartEnd=tutorial.indexOf('function handleTutorialFirstSkillUsed',battleStartStart);
-assert.ok(battleStartStart>=0&&battleStartEnd>battleStartStart,'tutorial battle start helpers must exist');
-const battleStartContext=vm.createContext({
-  console,
+const helperStart=tutorial.indexOf('function tutorialOwnedStarterInstance');
+const helperEnd=tutorial.indexOf('function tutorialFirstHuntIsPending',helperStart);
+assert.ok(helperStart>=0&&helperEnd>helperStart,'Elna encounter helpers must be present');
+const context=vm.createContext({
+  console,JSON,
+  TUTORIAL_STARTER_CONTRACT_IDS:['freigal','aquaron'],
+  TUTORIAL_ELNA_GUEST:{uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true},
+  TUTORIAL_RESCUE_ENEMY_IDS:['slime','slime'],
   TUTORIAL_FIRST_HUNT:{mapId:'grassland',enemyId:'slime',difficultyId:'easy'},
-  MAPS:[{id:'grassland'}],
-  by:id=>id==='slime'?{id:'slime'}:null,
-  preparedHuntRequest:()=>null,
-  createHuntRequest:(map,mon,difficultyId)=>({mapId:map.id,enemyId:mon.id,difficultyId}),
-  registerHuntRequest:request=>Object.assign(request,{requestId:'hunt_recovered'}),
-  tutorialBattleSession:{active:false,firstSkillUsed:true},
-  tutorialUiState:{active:true,steps:[{id:'tutorial_hunt_request'}],index:0},
-  screen:'battleChoices',player:null,enemy:null,startCalls:[],nextCalls:0,nextArgs:[],choiceCalls:0,
-  activeScreenId:()=>battleStartContext.screen,
-  tutorialNext:externalAdvance=>{battleStartContext.nextCalls++;battleStartContext.nextArgs.push(externalAdvance);},
-  showBattleChoices:()=>{battleStartContext.choiceCalls++;battleStartContext.screen='battleChoices';},
-  startChosenBattle:(mapId,enemyId,difficultyId,requestId)=>{
-    battleStartContext.startCalls.push({mapId,enemyId,difficultyId,requestId});
-    battleStartContext.player={id:'freigal'};battleStartContext.enemy={id:'slime'};battleStartContext.screen='battle';
-  }
+  tutorialBattleSession:{active:true,kind:'elna_rescue',firstSkillUsed:false,enemyQueue:[]},
+  tutorialTransitionBusy:false,
+  save:{instances:[],party:[],progress:{tutorial:{replaying:false,starterContractsGranted:false,elnaGuestActive:false}}},
+  serial:0,saveSucceeds:true,updates:0,notices:[],
+  currentTutorialState:()=>context.save.progress.tutorial,
+  addInstance:(id,level,exp,extra)=>{const instance={uid:`u${++context.serial}`,id,level,exp,...extra};context.save.instances.push(instance);return instance;},
+  markTutorialStarterContractsGranted:()=>{const state=context.save.progress.tutorial;if(state.starterContractsGranted)return false;state.starterContractsGranted=true;return true;},
+  setTutorialElnaGuestActive:active=>(context.save.progress.tutorial.elnaGuestActive=active===true),
+  saveGame:()=>context.saveSucceeds,
+  updateParty:()=>context.updates++,
+  showUiNotice:message=>context.notices.push(message),
+  MAPS:[{id:'grassland'}],by:id=>({id}),createHuntRequest:()=>({}),registerHuntRequest:x=>x,
+  startChosenBattle:()=>{},activeScreenId:()=>'',partyBattle:[],player:null,enemy:null
 });
-vm.runInContext(tutorial.slice(battleStartStart,battleStartEnd),battleStartContext);
-assert.equal(vm.runInContext("startTutorialHunt('stale_request')",battleStartContext),true,'a stale rendered request must be regenerated and start normally');
-assert.deepEqual(JSON.parse(JSON.stringify(battleStartContext.startCalls)),[{mapId:'grassland',enemyId:'slime',difficultyId:'easy',requestId:'hunt_recovered'}]);
-assert.equal(battleStartContext.nextCalls,1,'the guide must advance once after both combatants are ready');
-assert.deepEqual(battleStartContext.nextArgs,[true],'the successful battle start must explicitly release the external-advance guard');
-assert.equal(battleStartContext.choiceCalls,0,'a recovered request must not return to the choice screen');
+vm.runInContext(tutorial.slice(helperStart,helperEnd),context);
+assert.equal(vm.runInContext('ensureTutorialStarterContracts()',context),true,'the first encounter must grant its two bodies atomically');
+assert.deepEqual(context.save.instances.map(instance=>instance.id),['freigal','aquaron']);
+assert.equal(context.save.party.length,2);
+assert.equal(context.save.progress.tutorial.starterContractsGranted,true);
+assert.equal(context.save.progress.tutorial.elnaGuestActive,true);
+assert.equal(vm.runInContext('ensureTutorialStarterContracts()',context),true,'resuming the same grant step must remain successful');
+assert.equal(context.save.instances.length,2,'resuming must not duplicate either contract body');
+const battleParty=vm.runInContext('tutorialBattlePartyInstances([])',context);
+assert.equal(battleParty.length,3,'the rescue party must be two saved bodies plus one temporary guest');
+assert.equal(battleParty[2].guest,true);
+assert.equal(context.save.instances.some(instance=>instance.id==='elna_beginner'),false,'the temporary Elna guest must stay outside saved instances');
 
-battleStartContext.startChosenBattle=()=>{};battleStartContext.player=null;battleStartContext.enemy=null;battleStartContext.screen='battleChoices';battleStartContext.nextCalls=0;battleStartContext.nextArgs=[];
-assert.equal(vm.runInContext("startTutorialHunt('still_stale')",battleStartContext),false,'a failed battle initialization must stay recoverable');
-assert.equal(battleStartContext.nextCalls,0,'a failed battle initialization must not advance to an empty battle screen');
-assert.equal(battleStartContext.choiceCalls,1,'a failed battle initialization must return to a fresh request choice');
+context.save={instances:[],party:[],progress:{tutorial:{replaying:false,starterContractsGranted:false,elnaGuestActive:false}}};
+context.serial=0;context.saveSucceeds=false;
+assert.equal(vm.runInContext('ensureTutorialStarterContracts()',context),false,'a failed save must reject the grant');
+assert.equal(context.save.instances.length,0,'failed persistence must roll back granted bodies');
+assert.equal(context.save.progress.tutorial.starterContractsGranted,false);
+assert.equal(context.save.progress.tutorial.elnaGuestActive,false);
 
-console.log('Tutorial Phase 4B validation passed (grassland Slime request, real battle guidance, first-skill release, retry/reload recovery, actual rewards, and Phase 4C checkpoint).');
+assert.ok(tutorial.includes("request.battleMode='single'")&&tutorial.includes("request.enemyIds=[...TUTORIAL_RESCUE_ENEMY_IDS]"),'the rescue request must guarantee its enemy roster without random three-way or invasion rolls');
+assert.ok(tutorial.includes("partyBattle.length===3")&&tutorial.includes("enemy?.id==='slime'")&&tutorial.includes("entry.inst?.guest===true"),'combat must not advance until enemy, two bodies, and Elna GUEST all exist');
+assert.ok(flow.includes("tutorialBattlePartyInstances(savedParty)"),'the real battle party builder must accept the temporary GUEST layer');
+assert.ok(flow.indexOf("continueTutorialRescueWave")<flow.indexOf("if (battleRewardGranted) return;",flow.indexOf('function win()')),'the next guaranteed Slime must spawn before victory rewards are finalized');
+assert.ok(tutorial.includes('function continueTutorialRescueWave')&&tutorial.includes("tutorialBattleSession.enemyQueue.shift()")&&tutorial.includes('setupBattle()'),'the second Slime must be generated as an actual sequential battle wave');
+assert.ok(tutorial.includes("rescue?'elna_rescue_complete':'victory_exp'")&&tutorial.includes("rescue?'elna_rescue_retry':'battle_retry'"),'rescue outcomes must stay on the prologue path rather than the old Slime-contract path');
+assert.ok(tutorial.includes("persistAs:'elna_contract_intro'")&&tutorial.includes("waitForEvent:'elna_contract_intro'"),'victory must stop at the safe Phase 8 contract checkpoint');
+assert.ok(flow.includes("handleTutorialBattleOutcome('defeat')")&&flow.includes("handleTutorialBattleOutcome('retreat')"),'defeat and retreat must remain recoverable');
+
+console.log('Tutorial Phase 4B validation passed (Elna encounter, idempotent Freigal/Aquaron grant, temporary GUEST, two guaranteed Slime waves, real battle start, and safe outcome checkpoints).');

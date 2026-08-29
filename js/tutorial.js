@@ -27,7 +27,12 @@ const tutorialUiState={
   returnScreen:null,target:null,previousFocus:null,lastFocusedStep:null
 };
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
-const tutorialBattleSession={active:false,firstSkillUsed:false};
+const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
+const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true});
+const TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime']);
+const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue']);
+const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,enemyQueue:[]};
+let tutorialTransitionBusy=false;
 
 function inferTutorialStepMode(step){
   if(TUTORIAL_STEP_MODES.has(step?.mode))return step.mode;
@@ -53,6 +58,7 @@ function normalizeTutorialStep(step,index){
     portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
     scene:typeof step.scene==='string'&&step.scene?step.scene:null,
     input:step.input==='player_name'?'player_name':null,
+    transition:TUTORIAL_TRANSITIONS.has(step.transition)?step.transition:null,
     title:typeof step.title==='string'&&step.title?step.title:'操作ガイド',
     text:typeof step.text==='string'?step.text:'',
     screenId:typeof step.screenId==='string'&&step.screenId?step.screenId:null,
@@ -338,6 +344,7 @@ function tutorialNext(actionCompleted=false){
   const step=tutorialUiState.steps[tutorialUiState.index];
   if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return;
   if(!tutorialStepCanAdvance(step))return;
+  if(step?.transition&&!runTutorialTransition(step.transition))return;
   if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
   const nextStepId=tutorialUiState.replay&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
   if(nextStepId){
@@ -441,6 +448,90 @@ function offerGoldenLandTutorialGuide(){
   return startTutorialFeatureGuide('goldenLand',TUTORIAL_GOLDEN_LAND_FLOW_ID);
 }
 
+function tutorialOwnedStarterInstance(id){
+  return Array.isArray(save?.instances)?save.instances.find(instance=>instance.id===id)||null:null;
+}
+function ensureTutorialStarterContracts(){
+  if(typeof currentTutorialState!=='function'||typeof addInstance!=='function')return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return TUTORIAL_STARTER_CONTRACT_IDS.every(id=>tutorialOwnedStarterInstance(id));
+  const snapshot=JSON.stringify(save);
+  try{
+    const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(id=>tutorialOwnedStarterInstance(id)||addInstance(id,1,0,{tutorialContract:true}));
+    if(starters.some(instance=>!instance))throw new Error('starter_contract_missing');
+    if(!tutorial.starterContractsGranted&&typeof markTutorialStarterContractsGranted==='function'&&!markTutorialStarterContractsGranted())throw new Error('starter_contract_flag');
+    save.party=starters.map(instance=>instance.uid);
+    if(typeof setTutorialElnaGuestActive==='function')setTutorialElnaGuestActive(true);
+    if(typeof saveGame==='function'&&!saveGame())throw new Error('starter_contract_save');
+    if(typeof updateParty==='function')updateParty();
+    return true;
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('序章の契約体を準備できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('契約体を準備できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+}
+function tutorialElnaGuestInstance(){
+  return {...TUTORIAL_ELNA_GUEST,equippedSkills:[]};
+}
+function tutorialBattlePartyInstances(defaultParty=[]){
+  if(!tutorialBattleSession.active||tutorialBattleSession.kind!=='elna_rescue')return defaultParty;
+  const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(tutorialOwnedStarterInstance).filter(Boolean);
+  if(starters.length!==TUTORIAL_STARTER_CONTRACT_IDS.length)return defaultParty;
+  return [...starters,tutorialElnaGuestInstance()];
+}
+function tutorialRescueRequest(){
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
+  const slime=by(TUTORIAL_FIRST_HUNT.enemyId);
+  if(!map||!slime)return null;
+  const request=createHuntRequest(map,slime,TUTORIAL_FIRST_HUNT.difficultyId,[]);
+  request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null;
+  request.tutorialRescue=true;request.enemyIds=[...TUTORIAL_RESCUE_ENEMY_IDS];
+  return registerHuntRequest(request);
+}
+function startTutorialRescueBattle(){
+  if(tutorialTransitionBusy||!ensureTutorialStarterContracts())return false;
+  tutorialTransitionBusy=true;
+  tutorialBattleSession.active=true;tutorialBattleSession.kind='elna_rescue';
+  tutorialBattleSession.firstSkillUsed=false;tutorialBattleSession.enemyQueue=TUTORIAL_RESCUE_ENEMY_IDS.slice(1);
+  try{
+    const request=tutorialRescueRequest();
+    if(!request)throw new Error('rescue_request_missing');
+    partyBattle=[];
+    startChosenBattle(TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId,request.requestId);
+    const guestReady=partyBattle.length===3&&partyBattle.some(entry=>entry.inst?.guest===true&&entry.inst?.sourceId==='elna_beginner');
+    const ready=activeScreenId()==='battle'&&player?.id&&enemy?.id==='slime'&&guestReady;
+    if(!ready)throw new Error('rescue_battle_not_ready');
+    return true;
+  }catch(error){
+    console.error('エルナ救援戦を開始できませんでした。',error);
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+    partyBattle=[];
+    if(typeof showUiNotice==='function')showUiNotice('救援戦を開始できませんでした。もう一度お試しください。','warning');
+    return false;
+  }finally{
+    tutorialTransitionBusy=false;
+  }
+}
+function continueTutorialRescueWave(){
+  if(!tutorialBattleSession.active||tutorialBattleSession.kind!=='elna_rescue'||!tutorialBattleSession.enemyQueue.length)return false;
+  const nextId=tutorialBattleSession.enemyQueue.shift();
+  const nextEnemy=by(nextId);
+  if(!nextEnemy)return false;
+  enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
+  ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
+  battleRewardGranted=false;busy=false;
+  setupBattle();
+  const log=document.getElementById('log');
+  if(log)log.innerHTML='<b>もう1体のスライム</b>が飛び出した！ エルナを守りながら戦おう！';
+  return true;
+}
+function runTutorialTransition(transition){
+  if(transition==='start_elna_rescue')return startTutorialRescueBattle();
+  return false;
+}
+
 function tutorialFirstHuntIsPending(){
   if(typeof currentTutorialState!=='function')return false;
   const tutorial=currentTutorialState();
@@ -500,16 +591,18 @@ function handleTutorialFirstSkillUsed(){
 function handleTutorialBattleOutcome(kind,rewards={}){
   if(!tutorialBattleSession.active)return false;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
-  if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying)){tutorialBattleSession.active=false;return false;}
+  if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying)){tutorialBattleSession.active=false;tutorialBattleSession.kind=null;return false;}
+  const rescue=tutorialBattleSession.kind==='elna_rescue';
   if(kind==='victory'){
-    setTutorialStep('first_contract');
+    const nextStep=rescue?'elna_rescue_complete':'victory_exp';
+    setTutorialStep(rescue?'elna_contract_intro':'first_contract');
     if(typeof saveGame==='function')saveGame();
-    startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'victory_exp',persist:true,replay:tutorial.replaying});
-    tutorialBattleSession.active=false;
+    startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:nextStep,persist:true,replay:tutorial.replaying});
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
     return true;
   }
-  startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'battle_retry',persist:true,replay:tutorial.replaying});
-  tutorialBattleSession.active=false;
+  startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:rescue?'elna_rescue_retry':'battle_retry',persist:true,replay:tutorial.replaying});
+  tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
   return true;
 }
 
@@ -586,6 +679,7 @@ function tutorialContractInstance(){
 }
 function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||null;}
 function prepareTutorialStep(step){
+  if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
   if(['first_contract','contract_confirm'].includes(step?.id)){
     setTutorialContractContext();
     if(step.id==='first_contract')renderTutorialContractCheckpoint();
@@ -603,7 +697,13 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス。契約の力を案内するぞ！',progressLabel:'GNOSIS'},
   {id:'gnosis_name',screenId:'home',mode:'external_action',input:'player_name',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'名前を教えて！',text:'君の名前は？ 呼びやすい名前にしてくれ！',progressLabel:'GNOSIS'},
   {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界では、契約した相手の力を「契約体」として呼び出せる。ボクの力を少し貸すぞ！',progressLabel:'CONTRACT'},
-  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',waitForEvent:'elna_encounter',title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'世界へ降りる'},
+  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'世界へ降りる'},
+  {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',title:'スライムに囲まれた少女',text:'くっ……数が多い。でも、ここで退くわけには……！',progressLabel:'ENCOUNTER'},
+  {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入ろう！',progressLabel:'RESCUE'},
+  {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'フレイガルとアクアロンの契約体を貸すぞ！ ふたりを呼び出して戦おう！',progressLabel:'CONTRACT'},
+  {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！',progressLabel:'CONTRACT'},
+  {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',title:'本人エルナが共闘',text:'助けてくれるの？ 私も一緒に戦う。背中は任せて！',progressLabel:'GUEST'},
+  {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'契約体2体と本人エルナの3人で行くぞ！ スライムはボクが逃がさない！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
   {id:'home_party',screenId:'home',target:'#homePartyEditButton',title:'パーティー',text:'編成はここから何度でも変更できます。最初に表示される仲間がリーダーです。',progressLabel:'HOME'},
   {id:'home_coin',screenId:'home',target:'.app-resource',title:'コイン',text:'画面上部で所持コインを確認できます。ショップや育成などで使います。',progressLabel:'HOME'},
   {id:'home_menu',screenId:'home',target:'.app-bottom-nav',title:'下部メニュー',text:'ホーム、モンスター、バトル、育成、メニューへは、画面下から移動できます。',progressLabel:'HOME',nextLabel:'最初の依頼へ'},
@@ -618,6 +718,8 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'battle_choose_skill',screenId:'battle',target:'#commands',advanceOnTarget:true,persistAs:'first_hunt',title:'最初の技を使う',text:'好きな技を1つ押してください。威力と属性は技のボタンで確認できます。',progressLabel:'BATTLE'},
   {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'first_hunt',waitForEvent:'battle_outcome',title:'ここからは自由に戦えます',text:'説明はここで止めます。技、交代、リンク、道具、逃走を使いながら、スライムを倒してください。',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'battle_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'tutorial_hunt_request',persistAs:'first_hunt',title:'何度でも再挑戦できます',text:'敗北や撤退でも進行は失われません。「依頼を選び直す」から同じ入門依頼へ戻れます。',progressLabel:'RETRY'},
+  {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
+  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',persistAs:'elna_contract_intro',waitForEvent:'elna_contract_intro',disableBack:true,title:'救援成功',text:'助かった……！ あなたたちが来てくれなかったら危なかった。ありがとう。',progressLabel:'RESCUE',nextLabel:'エルナと話す'},
   {id:'victory_exp',screenId:'battle',target:'#battleRewardExp',persistAs:'first_contract',title:'勝利：経験値',text:'パーティーの仲間が経験値を獲得します。経験値がたまるとレベルが上がり、強くなります。',progressLabel:'VICTORY'},
   {id:'victory_coin',screenId:'battle',target:'#battleRewardCoins',persistAs:'first_contract',title:'勝利：コイン',text:'コインはショップや育成で使います。今回の獲得数は勝利結果で確認できます。',progressLabel:'VICTORY'},
   {id:'victory_material',screenId:'battle',target:'#battleRewardMaterials',persistAs:'first_contract',title:'勝利：素材',text:'バトルでは錬成などに使う素材を獲得することがあります。出なかった場合も、次の勝利でまた抽選されます。',progressLabel:'VICTORY'},

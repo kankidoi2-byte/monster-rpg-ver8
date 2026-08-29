@@ -2,6 +2,7 @@
 .tutorial-story-backdrop{position:fixed;z-index:0;inset:0;background:#061522;pointer-events:none}
 .tutorial-story-backdrop[data-scene="void"]{background:radial-gradient(circle at 50% 34%,rgba(43,99,180,.48),transparent 34%),radial-gradient(circle at 22% 18%,rgba(255,220,120,.18),transparent 18%),linear-gradient(155deg,#020715 0%,#0a1230 48%,#180b26 100%)}
 .tutorial-story-backdrop[data-scene="world_descent"]{background:linear-gradient(180deg,#62b8f2 0%,#bde9ff 52%,#78bd71 53%,#315f38 100%)}
+.tutorial-story-backdrop[data-scene="grassland"]{background:linear-gradient(180deg,rgba(91,179,237,.88) 0%,rgba(193,232,255,.9) 48%,rgba(107,169,85,.94) 49%,rgba(38,91,48,.98) 100%)}
 .tutorial-shade{position:fixed;z-index:1;background:rgba(3,15,27,.74);pointer-events:none;transition:top .18s,left .18s,width .18s,height .18s}
 .tutorial-spotlight{position:fixed;z-index:3;border:3px solid #ffe175;border-radius:18px;box-shadow:0 0 0 2px #fff,0 0 26px #ffd54f;pointer-events:none;transition:top .18s,left .18s,width .18s,height .18s}
 .tutorial-spotlight.is-empty,.tutorial-arrow.is-empty{display:none}

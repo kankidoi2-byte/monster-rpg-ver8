@@ -14,7 +14,7 @@ const init=read('js/init.js');
   'tutorialProgressBar','tutorialTitle','tutorialText','tutorialNameForm','tutorialPlayerNameInput','tutorialBackButton','tutorialSkipButton','tutorialNextButton'
 ].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing tutorial UI contract: #${id}`));
 assert.ok(index.includes('id="tutorialMenuButton"')&&index.includes('onclick="openTutorialFromMenu()"'),'the menu must expose tutorial replay');
-assert.ok(index.includes('css/tutorial.css?v=prologue-portrait-layer-1'),'the tutorial stylesheet must be cache-versioned');
+assert.ok(index.includes('css/tutorial.css?v=prologue-story-scenes-1'),'the tutorial stylesheet must be cache-versioned');
 assert.ok(index.indexOf('js/ui.js')<index.indexOf('js/tutorial.js')&&index.indexOf('js/tutorial.js')<index.indexOf('js/init.js'),'the tutorial engine must load after shared UI and before initialization');
 
 assert.match(css,/\.tutorial-overlay\{[^}]*pointer-events:none/,'the overlay must not block the highlighted game control');
