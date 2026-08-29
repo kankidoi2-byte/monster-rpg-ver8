@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-action-guidance',
+    date: '2026-08-29',
+    category: 'fix',
+    title: 'チュートリアルの操作案内を分かりやすくしました',
+    body: '「冒険」や「技」など実際の画面操作が必要な案内では「次へ」を表示せず、黄色い枠の操作だけを選べるようにしました。押しても進まない「次へ」に迷わず、説明を読む場面と操作する場面を区別できます。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-android-flow-fix',
     date: '2026-08-29',
     category: 'fix',

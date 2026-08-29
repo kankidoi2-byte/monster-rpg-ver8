@@ -152,6 +152,7 @@ function positionTutorialUi(){
   }
 }
 function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(positionTutorialUi));}
+function tutorialStepRequiresAction(step){return step?.advanceOnTarget===true||step?.externalAdvance===true;}
 
 function renderTutorialStep(){
   if(!tutorialUiState.active)return;
@@ -178,10 +179,14 @@ function renderTutorialStep(){
   const back=document.getElementById('tutorialBackButton');
   const skip=document.getElementById('tutorialSkipButton');
   const next=document.getElementById('tutorialNextButton');
+  const actions=next?.closest('.tutorial-actions');
+  const requiresAction=tutorialStepRequiresAction(step);
   back.disabled=tutorialUiState.index===0||step.disableBack;
   skip.textContent=tutorialUiState.persist?'スキップ':'閉じる';
   next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
-  next.disabled=step.externalAdvance;
+  next.hidden=requiresAction;
+  next.disabled=requiresAction;
+  actions?.classList.toggle('is-target-action',requiresAction);
   overlay.classList.remove('hidden');
   overlay.setAttribute('aria-hidden','false');
   scheduleTutorialPosition();
@@ -238,10 +243,10 @@ function checkpointTutorialFlow(step){
   }
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
-function tutorialNext(externalAdvance=false){
+function tutorialNext(actionCompleted=false){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
-  if(step?.externalAdvance&&externalAdvance!==true)return;
+  if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return;
   if(!tutorialStepCanAdvance(step))return;
   if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
   const nextStepId=tutorialUiState.replay&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
@@ -611,7 +616,7 @@ registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
-  if(step?.advanceOnTarget&&step.target&&event.target.closest?.(step.target))setTimeout(tutorialNext,0);
+  if(step?.advanceOnTarget&&step.target&&event.target.closest?.(step.target))setTimeout(()=>tutorialNext(true),0);
 },true);
 document.addEventListener('keydown',event=>{
   if(!tutorialUiState.active)return;

@@ -12,6 +12,7 @@
 .tutorial-progress{height:5px;overflow:hidden;border-radius:999px;background:#d8e9ef}.tutorial-progress>span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#26a9d5,#f0b52b);transition:width .2s}
 .tutorial-bubble h2{margin:0;color:#17364a;font-family:Georgia,"Noto Serif JP",serif;font-size:20px}.tutorial-bubble p{margin:0;color:#526d7d;font-size:13px;line-height:1.65}
 .tutorial-actions{display:grid;grid-template-columns:auto auto minmax(92px,1fr);gap:7px}.tutorial-actions button{min-height:42px;margin:0;padding:9px 12px}.tutorial-back{border:1px solid #c9dfe8;background:#fff;color:#37647a}.tutorial-back:disabled{opacity:.45;cursor:default}.tutorial-back:disabled:hover{transform:none}.tutorial-skip{background:transparent;color:#8b5f51}.tutorial-next{background:linear-gradient(135deg,#2eb7d8,#1677ad)}
+.tutorial-actions.is-target-action{grid-template-columns:1fr 1fr}.tutorial-next[hidden]{display:none}
 .tutorial-target-active{outline:4px solid #ffe175!important;outline-offset:5px!important}
 @media(max-width:480px){.tutorial-bubble{width:calc(100vw - 16px);padding:13px;border-radius:19px}.tutorial-bubble h2{font-size:18px}.tutorial-actions{grid-template-columns:1fr 1fr}.tutorial-next{grid-column:1/-1;grid-row:1}.tutorial-back,.tutorial-skip{grid-row:2}.tutorial-arrow{display:none}}
 @media(prefers-reduced-motion:reduce){.tutorial-shade,.tutorial-spotlight,.tutorial-bubble,.tutorial-progress>span{transition:none}}

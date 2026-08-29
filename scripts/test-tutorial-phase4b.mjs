@@ -59,6 +59,7 @@ const nextStart=tutorial.indexOf('function tutorialNext(');
 const nextEnd=tutorial.indexOf('function restoreTutorialReturnScreen',nextStart);
 const externalAdvanceContext=vm.createContext({
   tutorialUiState:{active:true,steps:[{id:'tutorial_hunt_request',externalAdvance:true},{id:'battle_enemy'}],index:0,replay:false,lastFocusedStep:'tutorial_hunt_request'},
+  tutorialStepRequiresAction:step=>step?.advanceOnTarget===true||step?.externalAdvance===true,
   tutorialStepCanAdvance:()=>true,persistTutorialStep:()=>{},renderTutorialStep:()=>{},clearTutorialUi:()=>{},updateTutorialMenuSummary:()=>{},
   tutorialStepIndex:(steps,id)=>steps.findIndex(step=>step.id===id),checkpointTutorialFlow:()=>{},finishTutorialFlow:()=>{}
 });
@@ -67,6 +68,11 @@ vm.runInContext('tutorialNext()',externalAdvanceContext);
 assert.equal(externalAdvanceContext.tutorialUiState.index,0,'ordinary Next must not bypass an external gameplay action');
 vm.runInContext('tutorialNext(true)',externalAdvanceContext);
 assert.equal(externalAdvanceContext.tutorialUiState.index,1,'a successful tutorial battle start must release the external step immediately');
+externalAdvanceContext.tutorialUiState.steps=[{id:'first_hunt',advanceOnTarget:true},{id:'tutorial_hunt_request'}];externalAdvanceContext.tutorialUiState.index=0;
+vm.runInContext('tutorialNext()',externalAdvanceContext);
+assert.equal(externalAdvanceContext.tutorialUiState.index,0,'Next and the Right Arrow must not bypass a highlighted real-screen operation');
+vm.runInContext('tutorialNext(true)',externalAdvanceContext);
+assert.equal(externalAdvanceContext.tutorialUiState.index,1,'clicking the highlighted operation must advance the guide');
 
 const battleStartStart=tutorial.indexOf('function preparedTutorialHuntRequest');
 const battleStartEnd=tutorial.indexOf('function handleTutorialFirstSkillUsed',battleStartStart);

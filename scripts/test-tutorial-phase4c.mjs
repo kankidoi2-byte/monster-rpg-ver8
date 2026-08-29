@@ -80,7 +80,7 @@ assert.ok(items.includes('const animationStage = guaranteed?3:contractAnimationS
 assert.ok(items.includes("commitTutorialFirstContract(itemId,enemy)"),'confirmation must use the atomic tutorial transaction');
 assert.ok(items.includes("show('contractConfirm')")&&items.includes('契約状態を保存できませんでした'),'a failed transaction must remain safely retryable');
 assert.ok(animation.includes('const zoomLevels = [1.16, 1.32, 1.48]')&&animation.includes("paper.classList.add('is-stamping')"),'the existing three zoom pulses and paw-stamp success animation must remain in use');
-assert.ok(tutorial.includes("externalAdvance:true,title:'契約を確定'")&&tutorial.includes('if(step?.externalAdvance&&externalAdvance!==true)return'),'the guide must not advance before confirmation commits');
+assert.ok(tutorial.includes("externalAdvance:true,title:'契約を確定'")&&tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'the guide must not advance before confirmation commits');
 assert.ok(!items.includes('tutorialNext(true)'),'contract confirmation must not bypass the external-step transaction guard');
 
 const orderedSteps=['first_contract','contract_confirm','contract_success','contract_card','contract_type','contract_skills','contract_list','contract_future','growth_open','growth_overview','party_edit_open','party_edit_contract','home_finish','tutorial_complete'];
