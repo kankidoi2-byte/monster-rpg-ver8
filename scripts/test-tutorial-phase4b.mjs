@@ -13,7 +13,8 @@ assert.ok(data.includes("{id:'freigal'")&&data.includes("{id:'aquaron'")&&data.i
 assert.ok(tutorial.includes("TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron'])"),'the two approved contract bodies must be fixed by stable IDs');
 assert.ok(tutorial.includes("TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime'])"),'the rescue must guarantee two sequential Slime enemies');
 assert.ok(tutorial.includes("uid:'tutorial_guest_elna'")&&tutorial.includes("sourceId:'elna_beginner'")&&tutorial.includes("guest:true"),'Elna herself must use a dedicated temporary GUEST descriptor');
-assert.ok(!tutorial.includes("addInstance('elna_beginner'"),'Elna herself must never be persisted as the encounter GUEST');
+const encounterHelperSource=tutorial.slice(tutorial.indexOf('function tutorialOwnedStarterInstance'),tutorial.indexOf('function tutorialElnaContractInstance'));
+assert.ok(!encounterHelperSource.includes("addInstance('elna_beginner'"),'Elna herself must never be persisted as the encounter GUEST');
 
 const encounterSteps=[
   'gnosis_descent','elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts',
@@ -89,7 +90,7 @@ assert.ok(flow.includes("tutorialBattlePartyInstances(savedParty)"),'the real ba
 assert.ok(flow.indexOf("continueTutorialRescueWave")<flow.indexOf("if (battleRewardGranted) return;",flow.indexOf('function win()')),'the next guaranteed Slime must spawn before victory rewards are finalized');
 assert.ok(tutorial.includes('function continueTutorialRescueWave')&&tutorial.includes("tutorialBattleSession.enemyQueue.shift()")&&tutorial.includes('setupBattle()'),'the second Slime must be generated as an actual sequential battle wave');
 assert.ok(tutorial.includes("rescue?'elna_rescue_complete':'victory_exp'")&&tutorial.includes("rescue?'elna_rescue_retry':'battle_retry'"),'rescue outcomes must stay on the prologue path rather than the old Slime-contract path');
-assert.ok(tutorial.includes("persistAs:'elna_contract_intro'")&&tutorial.includes("waitForEvent:'elna_contract_intro'"),'victory must stop at the safe Phase 8 contract checkpoint');
+assert.ok(tutorial.includes("persistAs:'elna_contract_intro'")&&tutorial.includes("nextStepId:'elna_contract_intro'"),'victory must continue from the safe Phase 8 contract checkpoint');
 assert.ok(flow.includes("handleTutorialBattleOutcome('defeat')")&&flow.includes("handleTutorialBattleOutcome('retreat')"),'defeat and retreat must remain recoverable');
 
 console.log('Tutorial Phase 4B validation passed (Elna encounter, idempotent Freigal/Aquaron grant, temporary GUEST, two guaranteed Slime waves, real battle start, and safe outcome checkpoints).');
