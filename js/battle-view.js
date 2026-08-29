@@ -221,7 +221,7 @@ function hideBattleOutcome() {
   }
   document.getElementById('next')?.classList.add('hidden');
 }
-function showBattleOutcome({kind='victory', title, exp=0, coins=0, note=''}) {
+function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=null, contractorExp=null, note=''}) {
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   if (!battle || !outcome) return;
@@ -236,7 +236,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, note=''}) {
   document.getElementById('battleOutcomeEyebrow').textContent = eyebrow;
   document.getElementById('battleOutcomeTitle').textContent = title;
   document.getElementById('battleOutcomeRewards').innerHTML = victory
-    ? `<span><small>EXP</small><strong>+${exp}</strong></span><span><small>COIN</small><strong>+${coins}</strong></span>`
+    ? `<span id="battleRewardExp"><small>EXP</small><strong>+${exp}</strong></span><span id="battleRewardCoins"><small>COIN</small><strong>+${coins}</strong></span>${Array.isArray(materials)?`<span id="battleRewardMaterials"><small>素材</small><strong>${materials.length?materials.join('・'):'獲得なし'}</strong></span>`:''}${contractorExp!==null?`<span id="battleRewardContractorExp"><small>契約者EXP</small><strong>+${Math.max(0,Number(contractorExp)||0)}</strong></span>`:''}`
     : '<span class="battle-outcome-empty">報酬なし</span>';
   document.getElementById('battleOutcomeNote').textContent = note;
   const next = document.getElementById('next');
@@ -343,6 +343,7 @@ function toggleKokoroLinkPanel(){
   if(!panel)return;
   renderKokoroLinkPanel();
   panel.classList.toggle('hidden');
+  if(!panel.classList.contains('hidden')&&typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('kokoroLink',TUTORIAL_KOKORO_LINK_FLOW_ID);
 }
 function beginKokoroLinkStatusTargetSelection(sourceUid){
   const picker=document.getElementById('multiTargetSelect'),living=typeof aliveMultiEnemies==='function'?aliveMultiEnemies():[];

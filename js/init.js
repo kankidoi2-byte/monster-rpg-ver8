@@ -67,6 +67,7 @@ function initTitleScreen(){
       const screen=document.getElementById('titleScreen');
       if(screen) screen.remove();
       if (typeof show === 'function') show('home');
+      if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
     }
   }
 }
@@ -79,6 +80,7 @@ function startFromTitle(){
     document.body.classList.remove('title-mode');
     if(screen) screen.remove();
     show('home');
+    if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
   },620);
 }
 try{ initTitleScreen(); }catch(err){
@@ -87,4 +89,5 @@ try{ initTitleScreen(); }catch(err){
   const screen=document.getElementById('titleScreen');
   if(screen) screen.remove();
   if (typeof show === 'function') show('home');
+  if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
 }

@@ -56,6 +56,8 @@ function show(id) {
   if (id === 'skillGacha') renderSkillGacha();
   if (id === 'battleItemSelect') renderBattleItemSelect();
   if (id === 'skillEdit') renderSkillEdit();
+  if (id === 'moreMenu' && typeof updateTutorialMenuSummary === 'function') updateTutorialMenuSummary();
+  if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(id);
   scheduleContractorRankUpPresentation();
 }
 function openBattleHub(){

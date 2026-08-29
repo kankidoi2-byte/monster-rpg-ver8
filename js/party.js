@@ -8,14 +8,15 @@ function renderParty() {
     <p>${itemInlineVisual(ITEM_DEX_BY_ID.water_mirror,'item-material-image')} 水鏡 × ${save.items.water_mirror||0} / 🌑 滅亡のカケラ × ${save.items.doom_fragment||0}</p>
     <p class="small">錬成素材：${SHOP_ITEMS.filter(it=>it.alchemyMaterial).map(it=>`${it.icon} ${it.name} × ${save.items[it.id]||0}`).join(' / ')}</p></div></details>`;
   if (!save.instances.length) { el.innerHTML += "<div class='panel'>まだ手持ちがいない。</div>"; return; }
+  const tutorialContractUid=typeof tutorialContractInstanceUid==='function'?tutorialContractInstanceUid():null;
   save.instances.forEach((ins, i) => {
     const m = by(ins.id); if (!m) return;
-    el.innerHTML += `<article class="monster-roster-card">
+    el.innerHTML += `<article class="monster-roster-card" data-monster-id="${m.id}" data-instance-uid="${ins.uid}"${ins.uid===tutorialContractUid?' data-tutorial-contract-instance="true"':''}>
       <div class="monster-roster-visual">${vis(m)}<span>${ins.locked?'🔒':'個体'+(i+1)}</span></div>
       <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <details class="monster-roster-details"><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>
       ${instanceAlchemySummary(ins)}
-      <div class="mini"><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
+      <div class="mini" data-tutorial-skill-summary><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
       <div class="mini">
         ${dataItems.map(it => `<button onclick="useExpItemOnInstance('${it.id}','${ins.uid}')" ${((save.items[it.id]||0)<=0)?'disabled':''}>${itemInlineVisual(it)}${it.name}</button>`).join('')}
       </div>
@@ -54,6 +55,7 @@ function renderPartySetup() {
   const list = document.getElementById('partySelectList');
   if (!cur || !list) return;
   const party = getPartyInstances();
+  const tutorialContractUid=typeof tutorialContractInstanceUid==='function'?tutorialContractInstanceUid():null;
   cur.innerHTML = party.length
     ? party.map((ins,i) => { const m=by(ins.id); return `<div class="party-current-member"><span>${i===0?'LEADER':i+1}</span>${vis(m)}<strong>${m.name}</strong><small>Lv.${ins.level}</small></div>`; }).join('')
     : '<p class="small">まだ設定されていません。</p>';
@@ -64,7 +66,7 @@ function renderPartySetup() {
     return `<article class="party-select-card${inParty?' is-selected':''}${onExpedition?' is-expedition':''}">
       <div class="party-select-visual">${vis(m)}${inParty?'<span>編成中</span>':onExpedition?'<span>遠征中</span>':''}</div><div><h2>${m.name}</h2>
       <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
-      <button onclick="togglePartyMember('${ins.uid}')" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
+      <button data-monster-id="${m.id}" data-party-uid="${ins.uid}"${ins.uid===tutorialContractUid?' data-tutorial-contract-party="true"':''} onclick="togglePartyMember('${ins.uid}')" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
     </article>`;
   }).join('');
 }

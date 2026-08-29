@@ -34,12 +34,14 @@ const fixtures=[
 
 fixtures.forEach((fixture,index)=>{
   const migrated=prepare(fixture);
-  assert.equal(migrated.schemaVersion,3,`fixture ${index+1} must migrate to v3`);
+  assert.equal(migrated.schemaVersion,4,`fixture ${index+1} must migrate to v4`);
   assert.ok(migrated.saveMeta.migrations.includes('v0_to_v1'));
   assert.ok(migrated.saveMeta.migrations.includes('v1_to_v2_map_dex'));
   assert.ok(migrated.saveMeta.migrations.includes('v2_to_v3_contractor_rank'));
+  assert.ok(migrated.saveMeta.migrations.includes('v3_to_v4_tutorial_state'));
   assert.ok(Array.isArray(migrated.instances));
   assert.ok(migrated.progress?.tutorial&&migrated.progress?.missions);
+  assert.equal(migrated.progress.tutorial.status,'completed','legacy fixtures must not auto-start the tutorial');
   assert.equal(migrated.contractor?.exp,0);
   assert.ok(Array.isArray(migrated.contractor?.unlockedTitleIds));
 });

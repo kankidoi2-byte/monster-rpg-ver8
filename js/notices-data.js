@@ -7,6 +7,69 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-action-guidance',
+    date: '2026-08-29',
+    category: 'fix',
+    title: 'チュートリアルの操作案内を分かりやすくしました',
+    body: '「冒険」や「技」など実際の画面操作が必要な案内では「次へ」を表示せず、黄色い枠の操作だけを選べるようにしました。押しても進まない「次へ」に迷わず、説明を読む場面と操作する場面を区別できます。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-android-flow-fix',
+    date: '2026-08-29',
+    category: 'fix',
+    title: 'チュートリアルの開始操作とスクロールを修正しました',
+    body: '入門依頼のボタンを押してもスライム戦へ進まず、バトルを選び直す必要がある問題を修正しました。スマートフォンで説明が長い場合に、案内の吹き出しを指で縦スクロールできない問題も修正しました。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-battle-start-fix',
+    date: '2026-08-29',
+    category: 'fix',
+    title: '最初のバトルが空になる問題を修正しました',
+    body: 'チュートリアルの入門依頼で、まれに敵と味方が表示されないままバトル画面へ進む問題を修正しました。依頼の準備が完了したことを確認してからバトル案内を開始します。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-growth-collection-guides',
+    date: '2026-08-29',
+    category: 'update',
+    title: '育成・収集機能の初回案内を追加しました',
+    body: '錬成、遠征、進化・融合、技カード・技ガチャ、黄金郷、図鑑、ショップ・アイテム、契約者Rank・称号を初めて使う時に、現行ルールを実際の画面で短く確認できるようになりました。案内は機能ごとに一度だけ表示されます。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-battle-feature-guides',
+    date: '2026-08-29',
+    category: 'update',
+    title: '特殊バトルとココロリンクの初回案内を追加しました',
+    body: '三つ巴、乱入、ココロリンクを初めて使う時に、現在のルールを実際のバトル画面で短く確認できるようになりました。一度確認した案内は繰り返し表示されません。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-first-contract',
+    date: '2026-08-29',
+    category: 'update',
+    title: '最初の契約と加入後の案内を追加しました',
+    body: '新しくゲームを始めた契約者向けに、草原のスライムとの最初の契約だけが必ず成功する案内を追加しました。通常契約書は1枚だけ支給・消費され、加入後はカード、属性、技、編成、成長を実際の画面で確認できます。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-first-battle',
+    date: '2026-08-29',
+    category: 'update',
+    title: '最初の討伐バトル案内を追加しました',
+    body: '新しくゲームを始めた契約者向けに、草原のスライムとの入門依頼を追加しました。敵と味方、HP、属性、技、ターン、勝利報酬を実際のバトル画面で短く確認できます。敗北や撤退のあとも同じ依頼へ再挑戦できます。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-party-home',
+    date: '2026-08-29',
+    category: 'update',
+    title: '仲間選びとホームのチュートリアルを追加しました',
+    body: '新しくゲームを始めた契約者向けに、グノーシスが最初のパーティー編成とホーム画面の基本を案内します。既存のセーブデータでは自動開始しません。'
+  }),
+  Object.freeze({
+    id: '20260829-tutorial-guide-foundation',
+    date: '2026-08-29',
+    category: 'update',
+    title: '画面上で確認できる操作ガイドを追加しました',
+    body: '実際の操作場所を照らしながら説明するチュートリアル表示を追加しました。メニューの「チュートリアル」から表示方法を確認できます。案内は戻る操作と、画面を閉じる操作に対応しています。'
+  }),
+  Object.freeze({
     id: '20260828-post-battle-contract',
     date: '2026-08-28',
     category: 'update',
