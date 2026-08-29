@@ -37,7 +37,7 @@ targets.forEach(selector=>{
 
 const mainFlow=registeredFlows.slice(0,registeredFlows.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID'));
 const requiredMainOrder=[
-  'intro_gnosis','party_choose','home_adventure','first_hunt','battle_enemy','battle_skill','battle_free',
+  'intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent','first_hunt','battle_enemy','battle_skill','battle_free',
   'victory_exp','victory_coin','victory_material','victory_rank','first_contract','contract_confirm',
   'contract_success','contract_future','growth_open','party_edit_open','home_finish','tutorial_complete'
 ];
@@ -131,6 +131,6 @@ assert.match(tutorialCss,/max-height:calc\(100svh - 20px\)/,'tutorial bubble mus
 assert.match(tutorialCss,/touch-action:pan-y/,'tutorial bubble must support Android vertical touch scrolling');
 assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.includes('bubble.contains(event.target)'),'tutorial bubble scrolling must not restart viewport placement');
 assert.match(tutorialCss,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion fallback is missing');
-assert.ok(index.includes('js/tutorial.js?v=prologue-step-modes-1'),'the integrated tutorial engine cache key is missing');
+assert.ok(index.includes('js/tutorial.js?v=prologue-gnosis-intro-1'),'the integrated tutorial engine cache key is missing');
 
 console.log(`Tutorial Phase 6 integration passed (${stepIds.length} unique steps, ${new Set(screenIds).size} screens, ${targets.length} target contracts, Android/Chromebook placement, save/reload, and full regression wiring).`);

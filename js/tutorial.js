@@ -49,6 +49,10 @@ function normalizeTutorialStep(step,index){
   return Object.freeze({
     id,
     mode,
+    speaker:typeof step.speaker==='string'&&step.speaker?step.speaker:null,
+    portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
+    scene:typeof step.scene==='string'&&step.scene?step.scene:null,
+    input:step.input==='player_name'?'player_name':null,
     title:typeof step.title==='string'&&step.title?step.title:'操作ガイド',
     text:typeof step.text==='string'?step.text:'',
     screenId:typeof step.screenId==='string'&&step.screenId?step.screenId:null,
@@ -96,6 +100,17 @@ function tutorialStepIndex(steps,stepId){
 }
 function persistedTutorialStepId(step){return step?.persistAs||step?.id||null;}
 
+function calculateTutorialStoryPlacement(bubbleSize,viewport){
+  const margin=10;
+  const width=Math.min(Number(bubbleSize?.width)||360,Math.max(0,viewport.width-margin*2));
+  const height=Math.min(Number(bubbleSize?.height)||260,Math.max(0,viewport.height-margin*2));
+  if(viewport.width>=720){
+    return {left:viewport.width-width-24,top:Math.max(margin,(viewport.height-height)/2),maxHeight:viewport.height-margin*2,side:'story'};
+  }
+  const maxHeight=Math.max(190,Math.min(viewport.height*.48,viewport.height-margin*2));
+  const fittedHeight=Math.min(height,maxHeight);
+  return {left:margin,top:viewport.height-fittedHeight-margin,maxHeight,side:'story'};
+}
 function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   const margin=Math.max(0,Number(options.margin)||10);
   const gap=Math.max(0,Number(options.gap)||16);
@@ -132,6 +147,7 @@ function positionTutorialUi(){
   const bubble=document.getElementById('tutorialBubble');
   const spotlight=document.getElementById('tutorialSpotlight');
   const arrow=document.getElementById('tutorialArrow');
+  const overlay=document.getElementById('tutorialOverlay');
   const topShade=document.querySelector('.tutorial-shade-top');
   const leftShade=document.querySelector('.tutorial-shade-left');
   const rightShade=document.querySelector('.tutorial-shade-right');
@@ -160,7 +176,9 @@ function positionTutorialUi(){
   }
   bubble.style.visibility='hidden';
   bubble.style.maxHeight='calc(100svh - 20px)';
-  const placement=calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport);
+  const placement=overlay?.classList.contains('is-story-step')&&!hole
+    ?calculateTutorialStoryPlacement(bubble.getBoundingClientRect(),viewport)
+    :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport);
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;
@@ -173,6 +191,49 @@ function positionTutorialUi(){
   }
 }
 function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(positionTutorialUi));}
+function tutorialResolvedText(step){
+  const playerName=typeof currentTutorialState==='function'?currentTutorialState().playerName:null;
+  return String(step?.text||'').replaceAll('{{playerName}}',playerName||'契約者');
+}
+function renderTutorialStoryStep(step){
+  const overlay=document.getElementById('tutorialOverlay');
+  const backdrop=document.getElementById('tutorialStoryBackdrop');
+  const layer=document.getElementById('tutorialCharacterLayer');
+  const portrait=document.getElementById('tutorialCharacterPortrait');
+  const story=Boolean(step?.scene||step?.portrait);
+  overlay?.classList.toggle('is-story-step',story);
+  if(backdrop){
+    backdrop.hidden=!step?.scene;
+    backdrop.dataset.scene=step?.scene||'';
+  }
+  if(layer)layer.hidden=!step?.portrait;
+  if(portrait){
+    portrait.hidden=!step?.portrait;
+    if(step?.portrait&&portrait.getAttribute('src')!==step.portrait)portrait.setAttribute('src',step.portrait);
+    portrait.alt=step?.speaker?step.speaker:'';
+  }
+}
+function confirmTutorialPlayerName(event){
+  event?.preventDefault?.();
+  if(!tutorialUiState.active)return false;
+  const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.input!=='player_name')return false;
+  const input=document.getElementById('tutorialPlayerNameInput');
+  const value=input?.value||'';
+  const snapshot=JSON.stringify(save);
+  if(typeof setTutorialPlayerName!=='function'||!setTutorialPlayerName(value)){
+    input?.setCustomValidity?.('1文字以上の名前を入力してください。');
+    input?.reportValidity?.();input?.focus?.();return false;
+  }
+  input?.setCustomValidity?.('');
+  if(typeof saveGame==='function'&&!saveGame()){
+    save=JSON.parse(snapshot);
+    if(typeof showUiNotice==='function')showUiNotice('名前を保存できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+  tutorialNext(true);
+  return false;
+}
 
 function renderTutorialStep(){
   if(!tutorialUiState.active)return;
@@ -187,6 +248,7 @@ function renderTutorialStep(){
   const overlay=document.getElementById('tutorialOverlay');
   const bubble=document.getElementById('tutorialBubble');
   if(!overlay||!bubble)return;
+  renderTutorialStoryStep(step);
   bubble.scrollTop=0;
   clearTutorialTarget();
   tutorialUiState.target=step.target?document.querySelector(step.target):null;
@@ -194,8 +256,15 @@ function renderTutorialStep(){
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
   document.getElementById('tutorialProgressText').textContent=`${tutorialUiState.index+1} / ${tutorialUiState.steps.length}`;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
-  document.getElementById('tutorialTitle').textContent=step.title;
-  document.getElementById('tutorialText').textContent=step.text;
+  document.getElementById('tutorialTitle').textContent=step.speaker||step.title;
+  document.getElementById('tutorialText').textContent=tutorialResolvedText(step);
+  const nameForm=document.getElementById('tutorialNameForm');
+  const nameInput=document.getElementById('tutorialPlayerNameInput');
+  if(nameForm)nameForm.hidden=step.input!=='player_name';
+  if(step.input==='player_name'&&nameInput){
+    const savedName=typeof currentTutorialState==='function'?currentTutorialState().playerName:'';
+    nameInput.value=savedName||'';
+  }
   const back=document.getElementById('tutorialBackButton');
   const skip=document.getElementById('tutorialSkipButton');
   const next=document.getElementById('tutorialNextButton');
@@ -207,12 +276,13 @@ function renderTutorialStep(){
   next.hidden=requiresAction;
   next.disabled=requiresAction;
   actions?.classList.toggle('is-target-action',requiresAction);
+  actions?.classList.toggle('is-name-entry',step.input==='player_name');
   overlay.classList.remove('hidden');
   overlay.setAttribute('aria-hidden','false');
   scheduleTutorialPosition();
   if(tutorialUiState.lastFocusedStep!==step.id){
     tutorialUiState.lastFocusedStep=step.id;
-    setTimeout(()=>bubble.focus({preventScroll:true}),0);
+    setTimeout(()=>step.input==='player_name'?nameInput?.focus({preventScroll:true}):bubble.focus({preventScroll:true}),0);
   }
 }
 function persistTutorialStep(){
@@ -308,6 +378,7 @@ function clearTutorialUi(){
   const overlay=document.getElementById('tutorialOverlay');
   clearTutorialTarget();
   overlay?.classList.add('hidden');overlay?.setAttribute('aria-hidden','true');
+  renderTutorialStoryStep(null);
   const previousFocus=tutorialUiState.previousFocus;
   tutorialUiState.active=false;tutorialUiState.flowId=null;tutorialUiState.steps=[];
   tutorialUiState.index=0;tutorialUiState.persist=false;tutorialUiState.replay=false;
@@ -526,13 +597,13 @@ function prepareTutorialStep(step){
 }
 
 registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
-  {id:'intro_gnosis',screenId:'home',title:'グノーシス',text:'ようこそ、契約者。まずは一緒に冒険する仲間を選びましょう。長い説明はしません。実際の画面で確かめていきます。',progressLabel:'GNOSIS'},
-  {id:'party_open',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'仲間を選びましょう',text:'「編成」を開いてください。最初に用意された5体から、好きな仲間を選べます。',progressLabel:'GNOSIS'},
-  {id:'party_choose',screenId:'partySet',target:'#partySelectList',advanceOnTarget:true,requiredPartyMin:1,requiredPartyMax:3,title:'好きな1体を選んでください',text:'初級剣士エルナ、フレイガル、アクアロン、グラスビート、ボルテックから、まず1体をパーティーに入れてください。',progressLabel:'PARTY'},
-  {id:'party_more',screenId:'partySet',target:'#partySelectList',requiredPartyMin:1,requiredPartyMax:3,title:'最大3体まで編成できます',text:'このまま1体でも、あと2体まで加えても構いません。自分の好きな1〜3体を選んで「次へ」を押してください。',progressLabel:'PARTY'},
-  {id:'party_leader',screenId:'partySet',target:'#partyCurrentCard',requiredPartyMin:1,requiredPartyMax:3,title:'最初の仲間がリーダーです',text:'並びの最初がバトル開始時のリーダーです。パーティーと順番は、あとからいつでも変更できます。',progressLabel:'PARTY'},
-  {id:'home_return',screenId:'partySet',target:'[data-nav="home"]',advanceOnTarget:true,requiredPartyMin:1,requiredPartyMax:3,title:'ホームへ戻りましょう',text:'下の「ホーム」を押してください。選んだパーティーは自動で保存されています。',progressLabel:'HOME'},
-  {id:'home_adventure',screenId:'home',target:'#homeAdventureButton',title:'冒険',text:'ここから討伐依頼へ向かいます。次の案内で、最初の依頼を実際に進めます。',progressLabel:'HOME'},
+  {id:'intro_gnosis',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'遠くから声がする',text:'ーい……',progressLabel:'PROLOGUE'},
+  {id:'gnosis_call_2',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'声が近づいてくる',text:'おーい……',progressLabel:'PROLOGUE'},
+  {id:'gnosis_call_3',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'すぐそばから聞こえる',text:'おーい！',progressLabel:'PROLOGUE'},
+  {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス。契約の力を案内するぞ！',progressLabel:'GNOSIS'},
+  {id:'gnosis_name',screenId:'home',mode:'external_action',input:'player_name',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'名前を教えて！',text:'君の名前は？ 呼びやすい名前にしてくれ！',progressLabel:'GNOSIS'},
+  {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界では、契約した相手の力を「契約体」として呼び出せる。ボクの力を少し貸すぞ！',progressLabel:'CONTRACT'},
+  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',waitForEvent:'elna_encounter',title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'世界へ降りる'},
   {id:'home_party',screenId:'home',target:'#homePartyEditButton',title:'パーティー',text:'編成はここから何度でも変更できます。最初に表示される仲間がリーダーです。',progressLabel:'HOME'},
   {id:'home_coin',screenId:'home',target:'.app-resource',title:'コイン',text:'画面上部で所持コインを確認できます。ショップや育成などで使います。',progressLabel:'HOME'},
   {id:'home_menu',screenId:'home',target:'.app-bottom-nav',title:'下部メニュー',text:'ホーム、モンスター、バトル、育成、メニューへは、画面下から移動できます。',progressLabel:'HOME',nextLabel:'最初の依頼へ'},

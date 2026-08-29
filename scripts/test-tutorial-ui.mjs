@@ -10,11 +10,11 @@ const ui=read('js/ui.js');
 const init=read('js/init.js');
 
 [
-  'tutorialOverlay','tutorialSpotlight','tutorialArrow','tutorialBubble','tutorialProgressText',
-  'tutorialProgressBar','tutorialTitle','tutorialText','tutorialBackButton','tutorialSkipButton','tutorialNextButton'
+  'tutorialOverlay','tutorialStoryBackdrop','tutorialCharacterLayer','tutorialCharacterPortrait','tutorialSpotlight','tutorialArrow','tutorialBubble','tutorialProgressText',
+  'tutorialProgressBar','tutorialTitle','tutorialText','tutorialNameForm','tutorialPlayerNameInput','tutorialBackButton','tutorialSkipButton','tutorialNextButton'
 ].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing tutorial UI contract: #${id}`));
 assert.ok(index.includes('id="tutorialMenuButton"')&&index.includes('onclick="openTutorialFromMenu()"'),'the menu must expose tutorial replay');
-assert.ok(index.includes('css/tutorial.css?v=tutorial-action-guidance-1'),'the tutorial stylesheet must be cache-versioned');
+assert.ok(index.includes('css/tutorial.css?v=prologue-portrait-layer-1'),'the tutorial stylesheet must be cache-versioned');
 assert.ok(index.indexOf('js/ui.js')<index.indexOf('js/tutorial.js')&&index.indexOf('js/tutorial.js')<index.indexOf('js/init.js'),'the tutorial engine must load after shared UI and before initialization');
 
 assert.match(css,/\.tutorial-overlay\{[^}]*pointer-events:none/,'the overlay must not block the highlighted game control');
@@ -26,12 +26,15 @@ assert.match(css,/\.tutorial-actions\.is-target-action\{[^}]*grid-template-colum
 assert.match(css,/\.tutorial-next\[hidden\]\{[^}]*display:none/,'the unusable Next button must be absent during target actions');
 assert.match(css,/\.tutorial-shade\{[^}]*pointer-events:none/,'spotlight shades must not intercept target operations');
 assert.match(css,/@media\(max-width:480px\)/,'portrait-phone tutorial layout is missing');
+assert.match(css,/\.tutorial-story-backdrop\{/,'story background layer is missing');
+assert.match(css,/\.tutorial-character-layer\{/,'transparent portrait layer is missing');
+assert.match(css,/@media\(max-width:719px\)/,'story dialogue must have a phone-portrait layout');
 assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion support is missing');
 
 [
   'function registerTutorialFlow','function startTutorialFlow','function tutorialPrevious','function tutorialNext',
   'function pauseTutorial','function requestTutorialSkip','function openTutorialFromMenu',
-  'function resumeTutorialIfNeeded','function handleTutorialScreenChange'
+  'function resumeTutorialIfNeeded','function handleTutorialScreenChange','function renderTutorialStoryStep','function confirmTutorialPlayerName'
 ].forEach(contract=>assert.ok(tutorial.includes(contract),`missing tutorial engine contract: ${contract}`));
 assert.ok(tutorial.includes("confirm('必須チュートリアルをスキップしますか？"),'required tutorial skip must ask for confirmation');
 assert.ok(tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must use the shared persisted state');
@@ -42,9 +45,10 @@ assert.ok(tutorial.includes('function tutorialStepRequiresAction(step)')&&tutori
 assert.ok(tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'Next and the Right Arrow must not bypass a required real-screen action');
 assert.ok(tutorial.includes('setTimeout(()=>tutorialNext(true),0)'),'the guide must advance after the highlighted target operation succeeds');
 [
-  'party_open','party_choose','home_return','first_hunt','tutorial_hunt_request','battle_skill',
+  'first_hunt','tutorial_hunt_request','battle_skill',
   'battle_choose_skill','first_contract','contract_confirm','growth_open','party_edit_open','home_finish'
 ].forEach(id=>assert.match(tutorial,new RegExp(`id:'${id}'[^\\n]+(?:advanceOnTarget|externalAdvance):true`),`${id} must be classified as a real-screen action`));
+assert.match(tutorial,/id:'gnosis_name'[^\n]+mode:'external_action'/,'player-name entry must be classified as a blocking external action');
 assert.ok(tutorial.includes('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),'the required onboarding flow must use the shared tutorial engine');
 assert.ok(ui.includes("typeof handleTutorialScreenChange === 'function'"),'screen changes must notify the tutorial engine');
 assert.ok(init.includes('setTimeout(resumeTutorialIfNeeded,0)'),'reload/title entry must resume an interrupted tutorial');
@@ -72,4 +76,4 @@ const centered=place(null,{width:340,height:220},viewport);
 assert.equal(centered.side,'center');
 assert.ok(centered.top>=0&&centered.left>=0,'targetless guidance must remain visible');
 
-console.log('Tutorial UI validation passed (spotlight, bubble, progress, navigation, skip confirmation, resume/replay hooks, accessibility, and portrait placement).');
+console.log('Tutorial UI validation passed (story layers, transparent portrait, spotlight, bubble, navigation, resume/replay hooks, accessibility, and portrait placement).');
