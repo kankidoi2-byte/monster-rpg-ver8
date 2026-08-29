@@ -157,6 +157,8 @@
 
 - `js/tutorial.js`
 - `scripts/test-prologue-tutorial-engine.mjs`
+- `scripts/test-tutorial-phase5b.mjs`
+- `scripts/test-tutorial-phase6.mjs`
 - `package.json`
 - `index.html`
 - `docs/prologue-tutorial-progress.md`
@@ -166,7 +168,8 @@
 - 新規の `npm run check:prologue-tutorial-engine` で、3モードの推論、旧フラグ互換、無効STEP拒否、操作待ちのNext停止、外部処理と対象クリックの分離、正規化層が保存処理を持たないことを検査する。
 - `npm run check` へ新規検査を統合した。
 - プレイヤー向けの表示内容は未変更のため、`js/notices-data.js` は変更しない。
-- GitHub Actionsの結果はこの作業単位のコミット後に追記する。
+- 初回の全検査では、実装ではなくPhase 5B・Phase 6検査に残っていた旧 `tutorial.js` キャッシュキー固定値を検出した。両検査を新キーへ更新した。
+- `03195c3` のGitHub Actions「Validate game data and assets」run #177で、専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
