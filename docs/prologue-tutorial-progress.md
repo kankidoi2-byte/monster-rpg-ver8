@@ -328,6 +328,7 @@
 - 既存のUI、Phase 4B、Phase 5B、Phase 6検査を新しいSTEP列とキャッシュキーへ追従させた。
 - コミット前の静的検査で、変更JavaScriptの構文、88STEPとID一意性、操作対象の実DOM契約、通常攻撃の救援限定、カナタ不在、全チェックコマンドの接続を確認した。
 - 初回の全検査run #186は、実装検査を含むPhase 5Aまで成功し、Phase 5Bに残っていた旧JavaScriptキャッシュキーの固定値を検出して停止した。比較対象を現行キーへ修正して再検査する。
+- `3603142` のGitHub Actions「Validate game data and assets」run #187で、専用検査と全回帰検査が成功した。
 
 ### 残る問題
 
