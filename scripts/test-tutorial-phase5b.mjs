@@ -72,6 +72,6 @@ assert.match(skillGacha,/SKILL_GACHA_TEN_COST = 900/,'ten-pull skill-gacha cost 
 assert.ok(state.includes('consumeReservedGoldenLandMap')&&battleFlow.includes('if (activeHuntRequest.goldenLandMapEntry)'),'Golden Land maps must still be consumed on departure');
 assert.ok(ui.includes('装備しても戦闘能力や利用できる機能は変わりません。')&&index.includes('称号による能力補正はありません。'),'titles must remain cosmetic only');
 assert.ok(notices.includes("id: '20260829-tutorial-growth-collection-guides'"),'the player-facing update must have a stable notice ID');
-assert.ok(index.includes('js/tutorial.js?v=prologue-battle-basics-1')&&index.includes('prologue-elna-encounter-1'),'changed browser scripts must have refreshed cache keys');
+assert.ok(index.includes('js/tutorial.js?v=prologue-battle-basics-1')&&index.includes('tutorial-action-guidance-1'),'changed browser scripts must have refreshed cache keys');
 
 console.log('Tutorial Phase 5B validation passed (eight persisted guide families, current rules, first-use routing, and no gameplay-rule changes).');
