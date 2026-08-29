@@ -35,7 +35,7 @@ assert.equal(evaluate("registerTutorialFlow('valid',[{id:'talk'},{id:'tap',mode:
 
 assert.ok(tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'Next must not bypass an action wait');
 assert.ok(tutorial.includes('if(tutorialStepAcceptsTargetAction(step)&&event.target.closest?.(step.target))'),'only target-action steps may advance from a highlighted click');
-assert.ok(tutorial.includes('setTimeout(()=>tutorialNext(true),0)'),'successful target actions must keep asynchronous advancement');
+assert.ok(tutorial.includes('queueTutorialActionAdvance'),'successful target actions must keep asynchronous advancement');
 assert.ok(!tutorial.slice(engineStart,engineEnd).includes('saveGame('),'STEP normalization must not mutate save data or grant rewards');
 
 console.log('Prologue tutorial STEP engine checks passed.');

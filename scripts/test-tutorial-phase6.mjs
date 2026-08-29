@@ -50,7 +50,7 @@ requiredMainOrder.forEach(id=>{
 assert.ok(mainFlow.includes("persistAs:'first_hunt'")&&mainFlow.includes("persistAs:'first_contract'"),'battle reload checkpoints must remain durable');
 assert.ok(mainFlow.includes("waitForEvent:'battle_outcome'")&&mainFlow.includes("externalAdvance:true"),'battle and contract flows must wait for real gameplay outcomes');
 
-const expectedPhaseChecks=['tutorial','tutorial-ui','prologue-battle-basics','tutorial-phase4a','tutorial-phase4b','tutorial-phase4c','tutorial-phase5a','tutorial-phase5b','tutorial-phase6'];
+const expectedPhaseChecks=['tutorial','tutorial-ui','prologue-battle-basics','prologue-rescue-stability','tutorial-phase4a','tutorial-phase4b','tutorial-phase4c','tutorial-phase5a','tutorial-phase5b','tutorial-phase6'];
 expectedPhaseChecks.forEach(name=>{
   assert.ok(packageJson.scripts[`check:${name}`],`missing tutorial check command: check:${name}`);
   assert.ok(packageJson.scripts.check.includes(`npm run check:${name}`),`npm run check does not include check:${name}`);
@@ -131,6 +131,6 @@ assert.match(tutorialCss,/max-height:calc\(100svh - 20px\)/,'tutorial bubble mus
 assert.match(tutorialCss,/touch-action:pan-y/,'tutorial bubble must support Android vertical touch scrolling');
 assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.includes('bubble.contains(event.target)'),'tutorial bubble scrolling must not restart viewport placement');
 assert.match(tutorialCss,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion fallback is missing');
-assert.ok(index.includes('js/tutorial.js?v=prologue-battle-basics-1'),'the integrated tutorial engine cache key is missing');
+assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1'),'the integrated tutorial engine cache key is missing');
 
 console.log(`Tutorial Phase 6 integration passed (${stepIds.length} unique steps, ${new Set(screenIds).size} screens, ${targets.length} target contracts, Android/Chromebook placement, save/reload, and full regression wiring).`);

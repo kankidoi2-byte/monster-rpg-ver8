@@ -312,6 +312,7 @@ function runAway() {
   busy = true;
 }
 function win() {
+  if (eHp > 0) return;
   if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
   if (battleRewardGranted) return;
   battleRewardGranted = true;
@@ -380,8 +381,8 @@ function win() {
     materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   });
-  renderSingleBattleContractPanel();
-  if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
+  const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
+  if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
   busy = true;
   renderParty();
   setTimeout(processNextEvolution, 300);

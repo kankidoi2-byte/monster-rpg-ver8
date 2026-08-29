@@ -24,7 +24,7 @@ const TUTORIAL_STEP_MODES=new Set(Object.values(TUTORIAL_STEP_MODE));
 const tutorialFlows=new Map();
 const tutorialUiState={
   active:false,flowId:null,steps:[],index:0,persist:false,replay:false,
-  returnScreen:null,target:null,previousFocus:null,lastFocusedStep:null
+  returnScreen:null,target:null,previousFocus:null,lastFocusedStep:null,advancePendingStepId:null
 };
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
@@ -340,6 +340,15 @@ function checkpointTutorialFlow(step){
   }
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
+function queueTutorialActionAdvance(stepId=tutorialCurrentStepId()){
+  if(!tutorialUiState.active||!stepId||tutorialCurrentStepId()!==stepId||tutorialUiState.advancePendingStepId===stepId)return false;
+  tutorialUiState.advancePendingStepId=stepId;
+  setTimeout(()=>{
+    if(tutorialUiState.advancePendingStepId===stepId)tutorialUiState.advancePendingStepId=null;
+    if(tutorialUiState.active&&tutorialCurrentStepId()===stepId)tutorialNext(true);
+  },0);
+  return true;
+}
 function tutorialNext(actionCompleted=false){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
@@ -390,7 +399,7 @@ function clearTutorialUi(){
   const previousFocus=tutorialUiState.previousFocus;
   tutorialUiState.active=false;tutorialUiState.flowId=null;tutorialUiState.steps=[];
   tutorialUiState.index=0;tutorialUiState.persist=false;tutorialUiState.replay=false;
-  tutorialUiState.returnScreen=null;tutorialUiState.previousFocus=null;tutorialUiState.lastFocusedStep=null;
+  tutorialUiState.returnScreen=null;tutorialUiState.previousFocus=null;tutorialUiState.lastFocusedStep=null;tutorialUiState.advancePendingStepId=null;
   previousFocus?.focus?.({preventScroll:true});
 }
 
@@ -515,18 +524,34 @@ function startTutorialRescueBattle(){
     tutorialTransitionBusy=false;
   }
 }
-function continueTutorialRescueWave(){
-  if(!tutorialBattleSession.active||tutorialBattleSession.kind!=='elna_rescue'||!tutorialBattleSession.enemyQueue.length)return false;
-  const nextId=tutorialBattleSession.enemyQueue.shift();
-  const nextEnemy=by(nextId);
-  if(!nextEnemy)return false;
-  enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
-  ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
-  battleRewardGranted=false;busy=false;
-  setupBattle();
-  const log=document.getElementById('log');
-  if(log)log.innerHTML='<b>もう1体のスライム</b>が飛び出した！ エルナを守りながら戦おう！';
+function failTutorialRescueBattle(reason){
+  console.error('エルナ救援戦の敵を準備できませんでした。',reason);
+  tutorialBattleSession.enemyQueue=[];
+  if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'retreat',title:'救援戦を再準備',note:'スライムを準備できませんでした。進行を保持して再挑戦できます。'});
+  handleTutorialBattleOutcome('error');
+  busy=true;
   return true;
+}
+function continueTutorialRescueWave(){
+  if(!isTutorialRescueBattleActive()||!tutorialBattleSession.enemyQueue.length)return false;
+  const nextId=tutorialBattleSession.enemyQueue[0];
+  const nextEnemy=by(nextId);
+  if(!nextEnemy)return failTutorialRescueBattle('rescue_enemy_missing');
+  busy=true;
+  try{
+    enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
+    ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
+    battleRewardGranted=false;
+    setupBattle();
+    if(enemy?.id!==nextId||eHp<=0)throw new Error('rescue_enemy_not_ready');
+    tutorialBattleSession.enemyQueue.shift();
+    const log=document.getElementById('log');
+    if(log)log.innerHTML='<b>もう1体のスライム</b>が飛び出した！ エルナを守りながら戦おう！';
+    busy=false;
+    return true;
+  }catch(error){
+    return failTutorialRescueBattle(error);
+  }
 }
 function runTutorialTransition(transition){
   if(transition==='start_elna_rescue')return startTutorialRescueBattle();
@@ -592,8 +617,7 @@ function handleTutorialBattleAction(action){
     :action==='skill_panel_opened'&&['battle_attack_open','battle_skill'].includes(currentStep)?currentStep
     :({actor_selected:'battle_actor_select',normal_attack:'battle_normal_attack',skill:'battle_choose_skill'}[action]||null);
   if(!expectedStep||currentStep!==expectedStep)return false;
-  setTimeout(()=>tutorialNext(true),0);
-  return true;
+  return queueTutorialActionAdvance(currentStep);
 }
 function handleTutorialFirstSkillUsed(){
   if(!isTutorialRescueBattleActive()||tutorialBattleSession.firstSkillUsed)return false;
@@ -827,7 +851,7 @@ registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
-  if(tutorialStepAcceptsTargetAction(step)&&event.target.closest?.(step.target))setTimeout(()=>tutorialNext(true),0);
+  if(tutorialStepAcceptsTargetAction(step)&&event.target.closest?.(step.target))queueTutorialActionAdvance(step.id);
 },true);
 document.addEventListener('keydown',event=>{
   if(!tutorialUiState.active)return;

@@ -43,7 +43,7 @@ assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.i
 assert.ok(tutorial.includes('bubble.scrollTop=0'),'each new tutorial step must begin at the top of its own guidance');
 assert.ok(tutorial.includes('function tutorialStepRequiresAction(step)')&&tutorial.includes('next.hidden=requiresAction')&&tutorial.includes("actions?.classList.toggle('is-target-action',requiresAction)"),'real-screen action steps must hide Next and expose only the highlighted operation');
 assert.ok(tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'Next and the Right Arrow must not bypass a required real-screen action');
-assert.ok(tutorial.includes('setTimeout(()=>tutorialNext(true),0)'),'the guide must advance after the highlighted target operation succeeds');
+assert.ok(tutorial.includes('queueTutorialActionAdvance'),'the guide must advance after the highlighted target operation succeeds');
 [
   'first_hunt','tutorial_hunt_request','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill',
   'battle_choose_skill','first_contract','contract_confirm','growth_open','party_edit_open','home_finish'
