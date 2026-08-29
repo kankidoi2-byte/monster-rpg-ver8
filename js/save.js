@@ -7,52 +7,65 @@ const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
 
-const TUTORIAL_VERSION = 1;
+const TUTORIAL_VERSION = 2;
 const TUTORIAL_GUIDE_IDS = Object.freeze([
   'threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion',
   'skillCards','goldenLand','dex','shopItems','contractorRank'
+]);
+const TUTORIAL_ONCE_FLAG_IDS = Object.freeze([
+  'starterContractsGranted','elnaContractGranted','stellaSkillCardGranted',
+  'alchemySuppliesGranted','expeditionDispatched','prologueCompleted'
 ]);
 function tutorialGuideDefaults(){
   return Object.fromEntries(TUTORIAL_GUIDE_IDS.map(id=>[id,false]));
 }
 function tutorialSaveDefaults({legacy=false}={}){
   return {
-    id:'prologue',
-    version:TUTORIAL_VERSION,
-    status:legacy?'completed':'not_started',
-    stepId:null,
-    completed:legacy,
-    skipped:false,
-    replaying:false,
-    firstContractGuaranteeUsed:legacy,
-    starterContractScrollGranted:legacy,
+    id:'prologue',version:TUTORIAL_VERSION,status:legacy?'completed':'not_started',stepId:null,
+    completed:legacy,skipped:false,replaying:false,playerName:null,playerNamed:false,
+    starterContractsGranted:legacy,elnaGuestActive:false,elnaContractGranted:legacy,
+    stellaSkillCardGranted:legacy,alchemySuppliesGranted:legacy,expeditionDispatched:legacy,
+    prologueCompleted:legacy,firstContractGuaranteeUsed:legacy,starterContractScrollGranted:legacy,
     guides:tutorialGuideDefaults()
   };
 }
 function normalizeTutorialSave(value,{legacy=false}={}){
   const defaults=tutorialSaveDefaults({legacy});
   const source=isSaveObject(value)?value:{};
+  const sourceVersion=Math.max(1,nonNegativeInteger(source.version,1));
+  const protectPublishedFlow=legacy||sourceVersion<TUTORIAL_VERSION;
   const validStatuses=new Set(['not_started','in_progress','completed','skipped']);
   const guides=isSaveObject(source.guides)?source.guides:{};
+  const playerName=typeof source.playerName==='string'&&source.playerName.trim()?source.playerName.trim().slice(0,20):null;
   const normalized={
-    ...defaults,
-    id:typeof source.id==='string'&&source.id?source.id:defaults.id,
-    version:Math.max(1,nonNegativeInteger(source.version,TUTORIAL_VERSION)),
+    ...defaults,id:typeof source.id==='string'&&source.id?source.id:defaults.id,
+    version:Math.max(TUTORIAL_VERSION,sourceVersion),
     status:validStatuses.has(source.status)?source.status:defaults.status,
     stepId:typeof source.stepId==='string'&&source.stepId?source.stepId:null,
-    completed:source.completed===true,
-    skipped:source.skipped===true,
-    replaying:source.replaying===true,
-    firstContractGuaranteeUsed:source.firstContractGuaranteeUsed===true,
-    starterContractScrollGranted:source.starterContractScrollGranted===true,
+    completed:source.completed===true,skipped:source.skipped===true,replaying:source.replaying===true,
+    playerName,playerNamed:source.playerNamed===true&&Boolean(playerName),
+    starterContractsGranted:source.starterContractsGranted===true||protectPublishedFlow,
+    elnaGuestActive:source.elnaGuestActive===true&&!protectPublishedFlow,
+    elnaContractGranted:source.elnaContractGranted===true||protectPublishedFlow,
+    stellaSkillCardGranted:source.stellaSkillCardGranted===true||protectPublishedFlow,
+    alchemySuppliesGranted:source.alchemySuppliesGranted===true||protectPublishedFlow,
+    expeditionDispatched:source.expeditionDispatched===true||protectPublishedFlow,
+    prologueCompleted:source.prologueCompleted===true||protectPublishedFlow,
+    firstContractGuaranteeUsed:source.firstContractGuaranteeUsed===true||protectPublishedFlow,
+    starterContractScrollGranted:source.starterContractScrollGranted===true||protectPublishedFlow,
     guides:Object.fromEntries(TUTORIAL_GUIDE_IDS.map(id=>[id,guides[id]===true]))
   };
-  if(normalized.status==='completed'){normalized.completed=true;normalized.skipped=false;}
-  if(normalized.status==='skipped'){normalized.completed=false;normalized.skipped=true;}
-  if(normalized.status==='not_started'||normalized.status==='in_progress'){
-    normalized.completed=false;normalized.skipped=false;
+  if(protectPublishedFlow){
+    const keepSkipped=source.status==='skipped'||source.skipped===true;
+    normalized.status=keepSkipped?'skipped':'completed';normalized.stepId=null;
+    normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;
+    normalized.elnaGuestActive=false;normalized.prologueCompleted=true;
+  }else{
+    if(normalized.status==='completed'){normalized.completed=true;normalized.skipped=false;normalized.prologueCompleted=true;}
+    if(normalized.status==='skipped'){normalized.completed=false;normalized.skipped=true;}
+    if(normalized.status==='not_started'||normalized.status==='in_progress'){normalized.completed=false;normalized.skipped=false;}
+    if((normalized.completed||normalized.skipped)&&!normalized.replaying)normalized.stepId=null;
   }
-  if((normalized.completed||normalized.skipped)&&!normalized.replaying)normalized.stepId=null;
   return normalized;
 }
 
@@ -187,7 +200,20 @@ function repairSave(payload,report=[]){
   payload.contractor.pendingRankUps=rawPendingRankUps.filter(entry=>isSaveObject(entry)&&nonNegativeInteger(entry.fromRank,1)>=1&&nonNegativeInteger(entry.toRank)>nonNegativeInteger(entry.fromRank,1)&&nonNegativeInteger(entry.toRank)<=50).slice(-10).map(entry=>({fromRank:nonNegativeInteger(entry.fromRank,1),toRank:nonNegativeInteger(entry.toRank),unlockedTitleIds:[...new Set((Array.isArray(entry.unlockedTitleIds)?entry.unlockedTitleIds:[]).filter(value=>typeof value==='string'&&value))],createdAt:typeof entry.createdAt==='string'?entry.createdAt:''}));
   payload.contractor.legacyMigrationVersion=nonNegativeInteger(payload.contractor.legacyMigrationVersion);
   payload.contractor.legacyMigrationSummary=isSaveObject(payload.contractor.legacyMigrationSummary)?payload.contractor.legacyMigrationSummary:null;
-  payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};payload.progress.tutorial=normalizeTutorialSave(payload.progress.tutorial);payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
+  payload.progress=isSaveObject(payload.progress)?payload.progress:defaults.progress;
+  if(typeof payload.progress.chapterId!=='string')payload.progress.chapterId='prologue';
+  payload.progress.storyFlags=isSaveObject(payload.progress.storyFlags)?payload.progress.storyFlags:{};
+  const rawTutorial=payload.progress.tutorial;
+  const rawTutorialVersion=isSaveObject(rawTutorial)?Math.max(1,nonNegativeInteger(rawTutorial.version,1)):TUTORIAL_VERSION;
+  payload.progress.tutorial=normalizeTutorialSave(rawTutorial);
+  if(isSaveObject(rawTutorial)&&rawTutorialVersion<TUTORIAL_VERSION){
+    if(!payload.saveMeta.migrations.includes('tutorial_v1_to_v2_legacy_protection'))payload.saveMeta.migrations.push('tutorial_v1_to_v2_legacy_protection');
+    report.push('公開版チュートリアルの状態を保護して序章v2保存形式へ移行');
+  }
+  const ownedTutorialIds=new Set(payload.instances.map(entry=>entry.id));
+  if(ownedTutorialIds.has('freigal')&&ownedTutorialIds.has('aquaron'))payload.progress.tutorial.starterContractsGranted=true;
+  if(ownedTutorialIds.has('elna_beginner'))payload.progress.tutorial.elnaContractGranted=true;
+  payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;
 }
 function parseAndPrepareSave(raw,report=[]){const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))report.push('整合性ハッシュの不一致を検出');return repairSave(migrateSave(parsed,report),report);}
@@ -266,6 +292,25 @@ function markTutorialStarterContractScrollGranted(){
   if(tutorial.starterContractScrollGranted)return false;
   tutorial.starterContractScrollGranted=true;
   return true;
+}
+function markTutorialOnce(flagId){
+  if(!TUTORIAL_ONCE_FLAG_IDS.includes(flagId))return false;
+  const tutorial=currentTutorialState();
+  if(tutorial[flagId]===true)return false;
+  tutorial[flagId]=true;
+  return true;
+}
+function markTutorialStarterContractsGranted(){return markTutorialOnce('starterContractsGranted');}
+function markTutorialElnaContractGranted(){return markTutorialOnce('elnaContractGranted');}
+function markTutorialStellaSkillCardGranted(){return markTutorialOnce('stellaSkillCardGranted');}
+function markTutorialAlchemySuppliesGranted(){return markTutorialOnce('alchemySuppliesGranted');}
+function markTutorialExpeditionDispatched(){return markTutorialOnce('expeditionDispatched');}
+function markTutorialPrologueCompleted(){return markTutorialOnce('prologueCompleted');}
+function setTutorialElnaGuestActive(active){const tutorial=currentTutorialState();tutorial.elnaGuestActive=active===true;return tutorial.elnaGuestActive;}
+function setTutorialPlayerName(value){
+  const playerName=typeof value==='string'?value.trim().slice(0,20):'';
+  if(!playerName)return false;
+  const tutorial=currentTutorialState();tutorial.playerName=playerName;tutorial.playerNamed=true;return true;
 }
 
 /* Ver7.8: ここからはすべてグローバル関数 */
@@ -408,6 +453,10 @@ function getInstance(u) { return save.instances.find(x => x.uid === u) || null; 
 function getPartyInstances() {
   return (save.party || []).map(u => getInstance(u)).filter(Boolean);
 }
+function tutorialDefersInitialParty(){
+  const tutorial=currentTutorialState();
+  return tutorial.version>=TUTORIAL_VERSION&&!tutorial.starterContractsGranted;
+}
 function initStarters() {
   if (save.instances.length > 0) {
     // uid・level・expの補完
@@ -424,7 +473,9 @@ function initStarters() {
     save.caught.forEach(id => addInstance(id, save.levels?.[id]||1, save.exp?.[id]||0));
     return;
   }
-  // 初回
+  // 序章v2では、フレイガル／アクアロンを物語内で受け取るまで初期配布を延期する。
+  if(tutorialDefersInitialParty())return;
+  // 公開版以前のセーブだけは、従来の初期編成を補完する。
   INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0));
 }
 function ensureContractScrollItem(){
@@ -436,7 +487,7 @@ function ensureContractScrollItem(){
   if(save.items.doom_fragment==null) save.items.doom_fragment=0;
 }
 function resetSave() {
-  if (confirm('セーブデータを削除しますか？\nスターターモンスターから再スタートします。')) {
+  if (confirm('セーブデータを削除しますか？\n序章の最初から再スタートします。')) {
     const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
     safeStorageRemove(SAVE_KEY);
     location.reload();
