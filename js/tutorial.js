@@ -30,11 +30,16 @@ const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',diffi
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
 const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true,tutorialRole:'person'});
 const TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime']);
+const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
+  coins:250,
+  materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])
+});
 const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue']);
 const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,enemyQueue:[]};
 function isTutorialRescueBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='elna_rescue';}
 let tutorialTransitionBusy=false;
 let tutorialElnaContractBusy=false;
+let tutorialSupplyRewardBusy=false;
 
 function inferTutorialStepMode(step){
   if(TUTORIAL_STEP_MODES.has(step?.mode))return step.mode;
@@ -661,6 +666,105 @@ function runTutorialTransition(transition){
   return false;
 }
 
+function tutorialSupplyRewardMaterialEntries(){
+  return TUTORIAL_ALCHEMY_SUPPLY_REWARD.materials.map(itemId=>({itemId,item:ITEM_BY_ID[itemId]}));
+}
+function tutorialSupplyRequestIsPending(){
+  if(typeof currentTutorialState!=='function')return false;
+  const tutorial=currentTutorialState();
+  return (tutorial.status==='in_progress'||tutorial.replaying)&&[
+    'home_requests','request_board','request_accept'
+  ].includes(tutorial.stepId);
+}
+function shouldOfferTutorialSupplyRequest(){
+  return tutorialSupplyRequestIsPending()||[
+    'home_requests','request_board','request_accept'
+  ].includes(tutorialCurrentStepId());
+}
+function renderTutorialSupplyRequest(list){
+  if(!list||!shouldOfferTutorialSupplyRequest())return false;
+  const current=tutorialCurrentStepId();
+  const canOpen=current==='request_accept';
+  const materials=tutorialSupplyRewardMaterialEntries();
+  if(materials.some(entry=>!entry.item?.alchemyMaterial))return false;
+  list.innerHTML=`<article class="enemy-choice-card difficulty-card-easy" data-tutorial-request-report>
+    <div class="hunt-card-body">
+      <div class="hunt-card-badges"><span class="hunt-recommended">序章依頼</span></div>
+      <div class="hunt-card-title"><small>救援報告</small><h2>エルナ救援の報告</h2><p>草原での救援を依頼所へ報告しよう。</p></div>
+      <div class="hunt-primary-rewards"><span><small>COIN</small><strong>250</strong></span><span><small>MATERIAL</small><strong>4種</strong></span></div>
+      <p class="hunt-danger">受け取った素材とコインは、後の錬成で使います。</p>
+      <button class="hunt-accept-button" data-tutorial-request-open onclick="openTutorialSupplyRequest()" ${canOpen?'':'disabled'}>報告して報酬を確認 ›</button>
+    </div></article>`;
+  return true;
+}
+function openTutorialSupplyRequest(){
+  if(tutorialCurrentStepId()!=='request_accept')return false;
+  tutorialNext(true);
+  return true;
+}
+function renderTutorialSupplyReward(){
+  const list=document.getElementById('tutorialRequestRewardList');
+  const status=document.getElementById('tutorialRequestRewardStatus');
+  const button=document.getElementById('tutorialRequestClaimButton');
+  if(!list||!status||!button)return false;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  const alreadyGranted=tutorial?.alchemySuppliesGranted===true;
+  list.innerHTML=`<span><small>COIN</small><strong>250枚</strong></span>${tutorialSupplyRewardMaterialEntries().map(({item})=>
+    `<span><small>${item?.icon||'📦'} MATERIAL</small><strong>${item?.name||'錬成素材'} ×1</strong></span>`
+  ).join('')}`;
+  status.textContent=alreadyGranted&&!tutorial?.replaying
+    ?'報酬は受取済みです。素材とコインは保持されています。'
+    :'この報酬は一度だけ受け取れます。途中で再開しても二重には増えません。';
+  const canClaim=tutorialCurrentStepId()==='request_reward_claim'&&!tutorialSupplyRewardBusy;
+  button.disabled=!canClaim;
+  button.textContent=tutorialSupplyRewardBusy?'保存中…':alreadyGranted&&!tutorial?.replaying?'受取済みを確認':'報酬を受け取る';
+  return true;
+}
+function commitTutorialAlchemySupplyReward(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return {granted:false,replay:true};
+  const snapshot=JSON.stringify(save);
+  try{
+    const alreadyGranted=tutorial.alchemySuppliesGranted===true;
+    if(!alreadyGranted){
+      if(typeof ensureContractScrollItem==='function')ensureContractScrollItem();
+      const materials=tutorialSupplyRewardMaterialEntries();
+      if(materials.some(entry=>!entry.item?.alchemyMaterial))throw new Error('tutorial_alchemy_material_missing');
+      save.coins=Math.max(0,Number(save.coins)||0)+TUTORIAL_ALCHEMY_SUPPLY_REWARD.coins;
+      materials.forEach(({itemId})=>{
+        save.items[itemId]=Math.max(0,Number(save.items[itemId])||0)+1;
+        if(typeof registerItemDex==='function')registerItemDex(itemId);
+      });
+      if(typeof markTutorialAlchemySuppliesGranted!=='function'||!markTutorialAlchemySuppliesGranted()){
+        throw new Error('tutorial_alchemy_reward_flag');
+      }
+    }
+    if(typeof setTutorialStep==='function')setTutorialStep('request_reward_received');
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_alchemy_reward_save');
+    if(typeof updateItems==='function')updateItems();
+    if(typeof updateAppResourceBar==='function')updateAppResourceBar();
+    return {granted:!alreadyGranted,replay:false};
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('序章依頼の報酬を保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('報酬を保存できませんでした。もう一度お試しください。','warning');
+    return null;
+  }
+}
+function claimTutorialAlchemySupplyReward(){
+  if(tutorialSupplyRewardBusy||tutorialCurrentStepId()!=='request_reward_claim')return false;
+  tutorialSupplyRewardBusy=true;
+  renderTutorialSupplyReward();
+  const result=commitTutorialAlchemySupplyReward();
+  tutorialSupplyRewardBusy=false;
+  renderTutorialSupplyReward();
+  if(!result)return false;
+  if(tutorialUiState.active&&tutorialCurrentStepId()==='request_reward_claim')tutorialNext(true);
+  else updateTutorialMenuSummary();
+  return true;
+}
+
 function tutorialFirstHuntIsPending(){
   if(typeof currentTutorialState!=='function')return false;
   const tutorial=currentTutorialState();
@@ -671,6 +775,7 @@ function shouldOfferTutorialHunt(){
   return tutorialFirstHuntIsPending()||['first_hunt','tutorial_hunt_request','battle_retry'].includes(tutorialCurrentStepId());
 }
 function renderTutorialHuntChoice(list){
+  if(renderTutorialSupplyRequest(list))return true;
   if(!list||!shouldOfferTutorialHunt())return false;
   const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
   const mon=by(TUTORIAL_FIRST_HUNT.enemyId);
@@ -819,6 +924,8 @@ function tutorialContractInstance(){
 function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||null;}
 function prepareTutorialStep(step){
   if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
+  if(['request_board','request_accept'].includes(step?.id))renderTutorialSupplyRequest(document.getElementById('battleChoiceList'));
+  if(['request_reward_preview','request_reward_claim','request_reward_received'].includes(step?.id))renderTutorialSupplyReward();
   if(['growth_elna','growth_elna_details','growth_skill_open'].includes(step?.id)&&typeof renderParty==='function'){
     renderParty();
     if(step.id==='growth_skill_open')document.querySelector('[data-monster-id="elna_beginner"] .monster-roster-details')?.setAttribute('open','');
@@ -867,7 +974,13 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'growth_skill_cards',screenId:'skillEdit',target:'#skillCardList',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'所持している技カード',text:'持っているカードから、条件に合う技を選べるぞ！',progressLabel:'SKILL'},
   {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'育成を押して、最後に進化を確認しよう！',progressLabel:'GROWTH'},
   {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
-  {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',waitForEvent:'home_requests',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'次は依頼へ',text:'編成、図鑑、育成はこれで大丈夫！ 次は依頼と報酬を見ていくぞ！',progressLabel:'HOME',nextLabel:'次へ'},
+  {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',advanceOnTarget:true,title:'依頼を見よう',text:'ここを押すと、討伐依頼と報酬を確認できるぞ！',progressLabel:'REQUEST'},
+  {id:'request_board',screenId:'battleChoices',target:'[data-tutorial-request-report]',persistAs:'request_board',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'エルナ救援の報告',text:'さっきの救援が依頼として認められたぞ！ 内容と報酬を確認しよう！',progressLabel:'REQUEST'},
+  {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,title:'依頼を報告',text:'ここを押すと、依頼を報告して報酬を受け取れるぞ！',progressLabel:'REQUEST'},
+  {id:'request_reward_preview',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardList',persistAs:'request_reward_preview',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'依頼報酬',text:'コイン250枚と、錬成に使う4種類の素材だ！',progressLabel:'REWARD'},
+  {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,disableBack:true,title:'報酬を受け取ろう',text:'ここを押すと、依頼報酬を受け取れるぞ！',progressLabel:'REWARD'},
+  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',waitForEvent:'stella_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'次の出会いへ'},
+  {id:'stella_intro',screenId:'home',target:'#homeGrowthPreview',persistAs:'stella_intro',waitForEvent:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'次の出会いへ',text:'準備はできたな！ 次は技と属性に詳しい子を探しに行くぞ！',progressLabel:'PROLOGUE',nextLabel:'続きはここから'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
   {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'上が敵です',text:'上側が敵のスライムです。HPを0にすると倒せるぞ！',progressLabel:'BATTLE'},

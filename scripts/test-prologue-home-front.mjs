@@ -27,7 +27,7 @@ for(const id of required){
 const allRegistered=tutorial.slice(flowStart,tutorial.indexOf("document.addEventListener('click'",flowStart));
 const ids=[...allRegistered.matchAll(/\{id:'([^']+)'/g)].map(match=>match[1]);
 assert.equal(ids.length,new Set(ids).size,'tutorial STEP IDs must remain globally unique');
-assert.equal(ids.length,111,'Phase 9 must retain all guides while adding the home-front sequence');
+assert.ok(ids.length>=111,'later prologue phases must retain every Phase 9 STEP and guide');
 
 assert.match(main,/id:'home_party'[^\n]+target:'#homePartyEditButton'[^\n]+advanceOnTarget:true/);
 assert.match(main,/id:'party_save'[^\n]+target:'#partySetupSaveButton'[^\n]+externalAdvance:true/);
@@ -36,7 +36,7 @@ assert.match(main,/id:'dex_freigal'[^\n]+data-tutorial-monster="freigal"/);
 assert.match(main,/id:'dex_aquaron'[^\n]+data-tutorial-monster="aquaron"/);
 assert.match(main,/id:'growth_skill_open'[^\n]+data-tutorial-skill-edit/);
 assert.match(main,/id:'growth_evolution'[^\n]+target:'#growthEvolutionButton'/);
-assert.match(main,/id:'home_requests'[^\n]+persistAs:'home_requests'[^\n]+waitForEvent:'home_requests'/,'Phase 10 must have a durable resume checkpoint');
+assert.match(main,/id:'home_requests'[^\n]+persistAs:'home_requests'[^\n]+advanceOnTarget:true/,'Phase 10 must continue from the durable request checkpoint through a real action');
 assert.ok(main.includes('ここを押すと、冒険へ連れていく仲間を編成できるぞ！'));
 assert.ok(main.includes('ここを押すと、出会った仲間の記録を確認できるぞ！'));
 assert.ok(main.includes('ここを押すと、仲間の育成や技を確認できるぞ！'));
