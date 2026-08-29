@@ -59,6 +59,7 @@ function toggleBattleSkillPanel(){
   button.setAttribute('aria-expanded',String(opening));
   button.innerHTML=opening?'<span aria-hidden="true">×</span><strong>閉じる</strong><small>戻る</small>':'<span aria-hidden="true">✨</span><strong>技</strong><small>決定</small>';
   if(title)title.textContent=opening?'技を選ぶ':'コマンドを選ぶ';
+  if(opening&&typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('skill_panel_opened');
 }
 function renderBattleSwitchButton(){
   const button=document.getElementById('battleSwitchButton');
@@ -82,8 +83,9 @@ function openBattleSwitchPicker(){
   const picker=document.getElementById('multiTargetSelect');
   const candidates=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates():[];
   if(!picker||!candidates.length)return;
-  picker.innerHTML=`<p><b>交代する仲間を選択</b><span>交代すると、このターンの行動を消費します</span></p>${candidates.map(({entry,index})=>`<button onclick="selectBattleSwitchTarget(${index})">${entry.mon.name}（HP ${entry.hp} / ${instanceMaxHp(entry.inst)}）</button>`).join('')}<button onclick="cancelBattleSwitchPicker()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>交代する仲間を選択</b><span>交代すると、このターンの行動を消費します</span></p>${candidates.map(({entry,index})=>`<button data-tutorial-actor-select onclick="selectBattleSwitchTarget(${index})">${entry.mon.name}（HP ${entry.hp} / ${instanceMaxHp(entry.inst)}）</button>`).join('')}<button onclick="cancelBattleSwitchPicker()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
+  if(typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('actor_picker_opened');
 }
 function cancelBattleSwitchPicker(){
   const picker=document.getElementById('multiTargetSelect');
@@ -93,7 +95,9 @@ function cancelBattleSwitchPicker(){
 }
 function selectBattleSwitchTarget(nextIndex){
   cancelBattleSwitchPicker();
-  performManualPartySwitch(nextIndex);
+  const switched=performManualPartySwitch(nextIndex);
+  if(switched&&typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('actor_selected');
+  return switched;
 }
 function battleImpactType(typeOrTypes) {
   const type = normalizeMoveTypes(typeOrTypes)[0] || 'normal';

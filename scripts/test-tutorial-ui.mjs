@@ -45,7 +45,7 @@ assert.ok(tutorial.includes('function tutorialStepRequiresAction(step)')&&tutori
 assert.ok(tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'Next and the Right Arrow must not bypass a required real-screen action');
 assert.ok(tutorial.includes('setTimeout(()=>tutorialNext(true),0)'),'the guide must advance after the highlighted target operation succeeds');
 [
-  'first_hunt','tutorial_hunt_request','battle_skill',
+  'first_hunt','tutorial_hunt_request','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill',
   'battle_choose_skill','first_contract','contract_confirm','growth_open','party_edit_open','home_finish'
 ].forEach(id=>assert.match(tutorial,new RegExp(`id:'${id}'[^\\n]+(?:advanceOnTarget|externalAdvance):true`),`${id} must be classified as a real-screen action`));
 assert.match(tutorial,/id:'gnosis_name'[^\n]+mode:'external_action'/,'player-name entry must be classified as a blocking external action');

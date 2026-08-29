@@ -32,6 +32,7 @@ const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_begi
 const TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime']);
 const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue']);
 const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,enemyQueue:[]};
+function isTutorialRescueBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='elna_rescue';}
 let tutorialTransitionBusy=false;
 
 function inferTutorialStepMode(step){
@@ -583,10 +584,21 @@ function startTutorialHunt(requestId){
   if(step?.id==='tutorial_hunt_request')tutorialNext(true);
   return true;
 }
-function handleTutorialFirstSkillUsed(){
-  if(!tutorialBattleSession.active||tutorialBattleSession.firstSkillUsed)return false;
-  tutorialBattleSession.firstSkillUsed=true;
+function handleTutorialBattleAction(action){
+  if(!isTutorialRescueBattleActive())return false;
+  if(action==='skill')tutorialBattleSession.firstSkillUsed=true;
+  const currentStep=tutorialCurrentStepId();
+  const expectedStep=action==='actor_picker_opened'?'battle_actor_open'
+    :action==='skill_panel_opened'&&['battle_attack_open','battle_skill'].includes(currentStep)?currentStep
+    :({actor_selected:'battle_actor_select',normal_attack:'battle_normal_attack',skill:'battle_choose_skill'}[action]||null);
+  if(!expectedStep||currentStep!==expectedStep)return false;
+  setTimeout(()=>tutorialNext(true),0);
   return true;
+}
+function handleTutorialFirstSkillUsed(){
+  if(!isTutorialRescueBattleActive()||tutorialBattleSession.firstSkillUsed)return false;
+  tutorialBattleSession.firstSkillUsed=true;
+  return handleTutorialBattleAction('skill')||true;
 }
 function handleTutorialBattleOutcome(kind,rewards={}){
   if(!tutorialBattleSession.active)return false;
@@ -709,14 +721,20 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'home_menu',screenId:'home',target:'.app-bottom-nav',title:'下部メニュー',text:'ホーム、モンスター、バトル、育成、メニューへは、画面下から移動できます。',progressLabel:'HOME',nextLabel:'最初の依頼へ'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
   {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
-  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'first_hunt',title:'上が敵です',text:'上側が敵のスライムです。敵のHPを0にすると勝利です。',progressLabel:'BATTLE'},
-  {id:'battle_ally',screenId:'battle',target:'#singlePlayerBox',persistAs:'first_hunt',title:'下が味方です',text:'下側が選んだ仲間です。味方のHPが0になると控えへ交代し、全員が倒れると敗北です。',progressLabel:'BATTLE'},
-  {id:'battle_hp',screenId:'battle',target:'.battle-vitals',persistAs:'first_hunt',title:'HPを確認',text:'HPは戦える体力です。バーと数値で、敵と味方の残りHPを確認できます。',progressLabel:'BATTLE'},
-  {id:'battle_type',screenId:'battle',target:'#singleEnemyBox',persistAs:'first_hunt',title:'属性と相性',text:'モンスターと技には属性があります。有利な属性の技なら、与えるダメージが大きくなります。',progressLabel:'BATTLE'},
-  {id:'battle_turn',screenId:'battle',target:'#battleCommandTitle',persistAs:'first_hunt',title:'技を選ぶと1ターン',text:'技を1つ選ぶと1ターン進み、素早さなどで行動順が決まります。',progressLabel:'BATTLE'},
-  {id:'battle_skill',screenId:'battle',target:'#battleSkillButton',advanceOnTarget:true,persistAs:'first_hunt',title:'「技」を開く',text:'中央の「技」を押して、装備中の技を開いてください。',progressLabel:'BATTLE'},
-  {id:'battle_choose_skill',screenId:'battle',target:'#commands',advanceOnTarget:true,persistAs:'first_hunt',title:'最初の技を使う',text:'好きな技を1つ押してください。威力と属性は技のボタンで確認できます。',progressLabel:'BATTLE'},
-  {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'first_hunt',waitForEvent:'battle_outcome',title:'ここからは自由に戦えます',text:'説明はここで止めます。技、交代、リンク、道具、逃走を使いながら、スライムを倒してください。',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
+  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'上が敵です',text:'上側が敵のスライムです。HPを0にすると倒せるぞ！',progressLabel:'BATTLE'},
+  {id:'battle_ally',screenId:'battle',target:'#singlePlayerBox',persistAs:'elna_rescue_start',title:'下が味方です',text:'下側が味方です。今は3人でエルナを助けるぞ！',progressLabel:'BATTLE'},
+  {id:'battle_hp',screenId:'battle',target:'.battle-vitals',persistAs:'elna_rescue_start',title:'HPを確認',text:'このバーがHPだ。0になる前に交代しよう！',progressLabel:'BATTLE'},
+  {id:'battle_type',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'属性と相性',text:'属性が有利なら、与えるダメージが大きくなるぞ！',progressLabel:'BATTLE'},
+  {id:'battle_turn',screenId:'battle',target:'#battleCommandTitle',persistAs:'elna_rescue_start',title:'1回選ぶと1ターン',text:'攻撃を1つ選ぶと、敵も動いて1ターン進むぞ！',progressLabel:'BATTLE'},
+  {id:'battle_actor_open',screenId:'battle',target:'#battleSwitchButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'行動者を選ぼう',text:'ここを押すと、戦う仲間を選べるぞ！',progressLabel:'BATTLE'},
+  {id:'battle_actor_select',screenId:'battle',target:'[data-tutorial-actor-select]',externalAdvance:true,persistAs:'elna_rescue_start',title:'仲間を交代',text:'交代する仲間を1人選んでみよう！',progressLabel:'BATTLE'},
+  {id:'battle_target',screenId:'battle',target:'#singleEnemyBox',advanceOnTarget:true,persistAs:'elna_rescue_start',title:'対象を選ぼう',text:'このスライムを押して、攻撃対象に決めよう！',progressLabel:'BATTLE'},
+  {id:'battle_attack_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'攻撃を開こう',text:'ここを押すと、使える攻撃を選べるぞ！',progressLabel:'BATTLE'},
+  {id:'battle_normal_attack',screenId:'battle',target:'[data-tutorial-normal-attack]',externalAdvance:true,persistAs:'elna_rescue_start',title:'通常攻撃',text:'まずはCOST 0の通常攻撃を押してみよう！',progressLabel:'BATTLE'},
+  {id:'battle_skill',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を開こう',text:'もう一度ここを押して、今度は技を選ぶぞ！',progressLabel:'BATTLE'},
+  {id:'battle_skill_cost',screenId:'battle',target:'[data-tutorial-skill-cost]',persistAs:'elna_rescue_start',title:'技コスト',text:'COSTは、その技を装備するために必要な値だぞ！',progressLabel:'BATTLE'},
+  {id:'battle_choose_skill',screenId:'battle',target:'[data-tutorial-skill]',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を使おう',text:'好きな技を1つ押して、実際に使ってみよう！',progressLabel:'BATTLE'},
+  {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'battle_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'tutorial_hunt_request',persistAs:'first_hunt',title:'何度でも再挑戦できます',text:'敗北や撤退でも進行は失われません。「依頼を選び直す」から同じ入門依頼へ戻れます。',progressLabel:'RETRY'},
   {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
   {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',persistAs:'elna_contract_intro',waitForEvent:'elna_contract_intro',disableBack:true,title:'救援成功',text:'助かった……！ あなたたちが来てくれなかったら危なかった。ありがとう。',progressLabel:'RESCUE',nextLabel:'エルナと話す'},

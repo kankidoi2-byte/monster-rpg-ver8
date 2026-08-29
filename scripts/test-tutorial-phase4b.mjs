@@ -33,7 +33,7 @@ assert.ok(encounter.includes("transition:'start_elna_rescue'")&&encounter.includ
 assert.ok(!encounter.includes('カナタ'),'Kanata must not appear in the prologue encounter');
 assert.ok((encounter.match(/images\/tutorial\/characters\/elna_beginner\.png/g)||[]).length>=2,'Elna dialogue must use the existing transparent portrait');
 assert.match(css,/data-scene="grassland"/,'the encounter background must be a separate grassland layer');
-assert.ok(index.includes('js/tutorial.js?v=prologue-elna-encounter-1')&&index.includes('prologue-elna-rescue-1'),'changed encounter and battle scripts must have fresh cache keys');
+assert.ok(index.includes('js/tutorial.js?v=prologue-battle-basics-1')&&index.includes('prologue-elna-rescue-1'),'changed encounter and battle scripts must have fresh cache keys');
 
 assert.ok(tutorial.includes('function ensureTutorialStarterContracts')&&tutorial.includes("addInstance(id,1,0,{tutorialContract:true})"),'the encounter must grant real contract-body instances');
 assert.ok(tutorial.includes('save.party=starters.map(instance=>instance.uid)'),'the two received bodies must become the real saved party');

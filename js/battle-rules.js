@@ -284,13 +284,15 @@ function finishTurnWithPoison() {
 }
 async function turn(i) {
   if (busy) return;
-  if(typeof handleTutorialFirstSkillUsed==='function')handleTutorialFirstSkillUsed();
+  const tutorialAction=i===-1?'normal_attack':'skill';
   if (typeof closeBattleSkillPanel === 'function') closeBattleSkillPanel();
   if (multiBattle?.active) { chooseMultiBattleTarget(i); return; }
   busy = true;
   startBattleTurn();
+  if(typeof handleTutorialBattleAction==='function')handleTutorialBattleAction(tutorialAction);
+  else if(tutorialAction==='skill'&&typeof handleTutorialFirstSkillUsed==='function')handleTutorialFirstSkillUsed();
 
-  const playerMove = getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
+  const playerMove = i===-1?['通常攻撃',24,'normal',null,null,0]:getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
   const enemyAction=nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);
   const enemyMove = enemyAction.move;
   const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);

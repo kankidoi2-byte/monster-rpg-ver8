@@ -90,11 +90,16 @@ function availableSkillCount(skillId, exceptUid=null){
 function renderSkillButtons(){
   const moves = getEquippedMovesForInstance(activeInstance);
   const el = document.getElementById('commands');
-  if (el) el.innerHTML = moves.map((mv,i) => {
+  if (!el) return;
+  const rescueBasicAttack=typeof isTutorialRescueBattleActive==='function'&&isTutorialRescueBattleActive()
+    ? '<button onclick="turn(-1)" data-tutorial-normal-attack class="skill-button normal" aria-label="通常攻撃、威力24、COST 0"><span>無属性</span><strong>通常攻撃</strong><small>威力 24 / COST 0</small></button>'
+    : '';
+  el.innerHTML = rescueBasicAttack + moves.map((mv,i) => {
     const power = Number(mv[1]) || 0;
     const role = power > 0 ? `威力 ${power}` : '補助';
+    const cost = Number.isFinite(mv[5]) ? Number(mv[5]) : skillCostFromMove(mv);
     const strength = power >= 50 ? ' is-strong-skill' : '';
-    return `<button onclick="turn(${i})" class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role}</small></button>`;
+    return `<button onclick="turn(${i})" data-tutorial-skill class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}、COST ${cost}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role} / <b data-tutorial-skill-cost>COST ${cost}</b></small></button>`;
   }).join('');
 }
 function openSkillEdit(uid){
