@@ -140,7 +140,7 @@
 - GitHub上の `main@9fe122d`、主要ソース、現行仕様書、進捗記録、テスト構成、画像マニフェストを読み取り監査。
 - 開いている競合PRがないことを確認。
 - `main@9fe122d` の「Validate game data and assets」成功を確認。
-- 今回は文書のみの変更であり、ローカルの `npm run check` は未実行。次のコード変更時に必須実行する。
+- 今回は文書のみの変更であり、ローカルの `npm run check` は未実行。ドラフトPR #58で起動したGitHub Actions「Validate game data and assets」は成功した。次のコード変更時も全検査を必須とする。
 
 ## 次回対象
 
