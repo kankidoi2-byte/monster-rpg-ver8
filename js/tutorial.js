@@ -372,11 +372,27 @@ function renderTutorialHuntChoice(list){
     </div></article>`;
   return true;
 }
+function preparedTutorialHuntRequest(requestId){
+  const existing=preparedHuntRequest(requestId,TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId);
+  if(existing)return existing;
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
+  const mon=by(TUTORIAL_FIRST_HUNT.enemyId);
+  if(!map||!mon)return null;
+  return registerHuntRequest(createHuntRequest(map,mon,TUTORIAL_FIRST_HUNT.difficultyId,[]));
+}
 function startTutorialHunt(requestId){
-  const request=preparedHuntRequest(requestId,TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId);
+  const request=preparedTutorialHuntRequest(requestId);
   if(!request){showBattleChoices();return false;}
   tutorialBattleSession.active=true;tutorialBattleSession.firstSkillUsed=false;
-  startChosenBattle(TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId,requestId);
+  try{
+    startChosenBattle(TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId,request.requestId);
+  }catch(error){
+    console.error('チュートリアル戦闘を開始できませんでした。',error);
+  }
+  const ready=activeScreenId()==='battle'&&player?.id&&enemy?.id;
+  if(!ready){tutorialBattleSession.active=false;showBattleChoices();return false;}
+  const step=tutorialUiState.active?tutorialUiState.steps[tutorialUiState.index]:null;
+  if(step?.id==='tutorial_hunt_request')tutorialNext();
   return true;
 }
 function handleTutorialFirstSkillUsed(){
@@ -495,7 +511,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'home_coin',screenId:'home',target:'.app-resource',title:'コイン',text:'画面上部で所持コインを確認できます。ショップや育成などで使います。',progressLabel:'HOME'},
   {id:'home_menu',screenId:'home',target:'.app-bottom-nav',title:'下部メニュー',text:'ホーム、モンスター、バトル、育成、メニューへは、画面下から移動できます。',progressLabel:'HOME',nextLabel:'最初の依頼へ'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
-  {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',advanceOnTarget:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
+  {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'first_hunt',title:'上が敵です',text:'上側が敵のスライムです。敵のHPを0にすると勝利です。',progressLabel:'BATTLE'},
   {id:'battle_ally',screenId:'battle',target:'#singlePlayerBox',persistAs:'first_hunt',title:'下が味方です',text:'下側が選んだ仲間です。味方のHPが0になると控えへ交代し、全員が倒れると敗北です。',progressLabel:'BATTLE'},
   {id:'battle_hp',screenId:'battle',target:'.battle-vitals',persistAs:'first_hunt',title:'HPを確認',text:'HPは戦える体力です。バーと数値で、敵と味方の残りHPを確認できます。',progressLabel:'BATTLE'},

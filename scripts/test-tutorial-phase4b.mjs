@@ -35,6 +35,8 @@ assert.ok(tutorial.includes("persistAs:'first_contract'"),'reward steps must rel
 assert.ok(tutorial.includes("setTutorialStep('first_contract')")&&tutorial.includes("if(typeof saveGame==='function')saveGame()"),'victory must save the Phase 4C checkpoint before showing reward guidance');
 assert.ok(flow.includes("handleTutorialBattleOutcome('defeat')")&&flow.includes("handleTutorialBattleOutcome('retreat')"),'defeat and retreat must enter the retry path');
 assert.ok(tutorial.includes("nextStepId:'tutorial_hunt_request'")&&tutorial.includes("persistAs:'first_hunt'"),'retry must return to the same safe request without losing progress');
+assert.match(tutorial,/id:'tutorial_hunt_request'[^\n]+externalAdvance:true/,'the guide must not advance before the battle has actually started');
+assert.ok(tutorial.includes("activeScreenId()==='battle'&&player?.id&&enemy?.id"),'the tutorial must verify both combatants before advancing');
 
 assert.ok(flow.includes('const materialRewards=[]')&&flow.includes('contractorReward.amount'),'the existing victory calculation must expose actual materials and contractor EXP to the result');
 ['battleRewardExp','battleRewardCoins','battleRewardMaterials','battleRewardContractorExp'].forEach(id=>assert.ok(view.includes(`id="${id}"`),`missing victory reward target: ${id}`));
@@ -52,5 +54,38 @@ context.state={status:'completed',stepId:null,replaying:false};
 assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),false,'normal completed saves must keep random hunt choices');
 context.tutorialUiState.active=true;context.tutorialUiState.steps=[{id:'battle_retry'}];context.tutorialUiState.index=0;
 assert.equal(vm.runInContext('shouldOfferTutorialHunt()',context),true,'retry must render the dedicated request again');
+
+const battleStartStart=tutorial.indexOf('function preparedTutorialHuntRequest');
+const battleStartEnd=tutorial.indexOf('function handleTutorialFirstSkillUsed',battleStartStart);
+assert.ok(battleStartStart>=0&&battleStartEnd>battleStartStart,'tutorial battle start helpers must exist');
+const battleStartContext=vm.createContext({
+  console,
+  TUTORIAL_FIRST_HUNT:{mapId:'grassland',enemyId:'slime',difficultyId:'easy'},
+  MAPS:[{id:'grassland'}],
+  by:id=>id==='slime'?{id:'slime'}:null,
+  preparedHuntRequest:()=>null,
+  createHuntRequest:(map,mon,difficultyId)=>({mapId:map.id,enemyId:mon.id,difficultyId}),
+  registerHuntRequest:request=>Object.assign(request,{requestId:'hunt_recovered'}),
+  tutorialBattleSession:{active:false,firstSkillUsed:true},
+  tutorialUiState:{active:true,steps:[{id:'tutorial_hunt_request'}],index:0},
+  screen:'battleChoices',player:null,enemy:null,startCalls:[],nextCalls:0,choiceCalls:0,
+  activeScreenId:()=>battleStartContext.screen,
+  tutorialNext:()=>{battleStartContext.nextCalls++;},
+  showBattleChoices:()=>{battleStartContext.choiceCalls++;battleStartContext.screen='battleChoices';},
+  startChosenBattle:(mapId,enemyId,difficultyId,requestId)=>{
+    battleStartContext.startCalls.push({mapId,enemyId,difficultyId,requestId});
+    battleStartContext.player={id:'freigal'};battleStartContext.enemy={id:'slime'};battleStartContext.screen='battle';
+  }
+});
+vm.runInContext(tutorial.slice(battleStartStart,battleStartEnd),battleStartContext);
+assert.equal(vm.runInContext("startTutorialHunt('stale_request')",battleStartContext),true,'a stale rendered request must be regenerated and start normally');
+assert.deepEqual(JSON.parse(JSON.stringify(battleStartContext.startCalls)),[{mapId:'grassland',enemyId:'slime',difficultyId:'easy',requestId:'hunt_recovered'}]);
+assert.equal(battleStartContext.nextCalls,1,'the guide must advance once after both combatants are ready');
+assert.equal(battleStartContext.choiceCalls,0,'a recovered request must not return to the choice screen');
+
+battleStartContext.startChosenBattle=()=>{};battleStartContext.player=null;battleStartContext.enemy=null;battleStartContext.screen='battleChoices';battleStartContext.nextCalls=0;
+assert.equal(vm.runInContext("startTutorialHunt('still_stale')",battleStartContext),false,'a failed battle initialization must stay recoverable');
+assert.equal(battleStartContext.nextCalls,0,'a failed battle initialization must not advance to an empty battle screen');
+assert.equal(battleStartContext.choiceCalls,1,'a failed battle initialization must return to a fresh request choice');
 
 console.log('Tutorial Phase 4B validation passed (grassland Slime request, real battle guidance, first-skill release, retry/reload recovery, actual rewards, and Phase 4C checkpoint).');

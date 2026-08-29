@@ -9,7 +9,7 @@
 
 ## 現在地
 
-Phase 0〜2、Phase 3A・3B、Phase 4A・4B・4C、Phase 5A・5B、Phase 6まで完了。確認用PR #56でPhase 7「Android・Chromebook実機確認」待ち。
+Phase 0〜2、Phase 3A・3B、Phase 4A・4B・4C、Phase 5A・5B、Phase 6まで完了。確認用PR #56でPhase 7「Android・Chromebook実機確認」を進行中。Android確認で発見した初回バトルの空表示を修正し、再確認待ち。
 
 | Phase | 配分 | 状態 | 主な反映 |
 |---|---:|---|---|
@@ -24,9 +24,17 @@ Phase 0〜2、Phase 3A・3B、Phase 4A・4B・4C、Phase 5A・5B、Phase 6まで
 | Phase 5A 戦闘系の初回ガイド | 未配分 | 完了 | `7cbfba9` |
 | Phase 5B 育成・収集系の初回ガイド | 未配分 | 完了 | `cb2fe97` |
 | Phase 6 統合・回帰検査・表示調整 | 未配分 | 完了 | `0ce0120` / PR #56 |
-| Phase 7 Android・Chromebook実機確認 | 未配分 | 未着手・次候補 | PR #56 |
+| Phase 7 Android・Chromebook実機確認 | 未配分 | 進行中・Android再確認待ち | PR #56 |
 
 Phase 3以降の配分は未確定のため、既存35%へ推測で加算しない。
+
+## Phase 7 実機確認ログ
+
+- Android確認で、チュートリアルの入門依頼が敵・味方を描画しないまま空のバトル画面へ進む問題を確認。
+- 原因は、依頼ボタンの操作で戦闘開始の成否とは独立してチュートリアルだけが次へ進んでいたこと。
+- 古い依頼参照は草原・スライムのEasy依頼として安全に再生成し、敵・味方が準備できた場合だけバトル案内へ進むよう修正。
+- 戦闘初期化に失敗した場合は空のバトル画面へ進めず、依頼選択を再表示する。
+- 失効した依頼参照からの復旧、成功時の一度だけの進行、失敗時の停止を自動検査へ追加。`npm run check`成功。
 
 ## 完了済み
 

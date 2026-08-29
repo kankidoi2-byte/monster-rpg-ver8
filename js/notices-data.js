@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260829-tutorial-battle-start-fix',
+    date: '2026-08-29',
+    category: 'fix',
+    title: '最初のバトルが空になる問題を修正しました',
+    body: 'チュートリアルの入門依頼で、まれに敵と味方が表示されないままバトル画面へ進む問題を修正しました。依頼の準備が完了したことを確認してからバトル案内を開始します。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-growth-collection-guides',
     date: '2026-08-29',
     category: 'update',
