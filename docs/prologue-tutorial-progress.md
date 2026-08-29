@@ -285,7 +285,7 @@
 - `npm run check:tutorial-phase4b` をエルナ遭遇仕様へ更新し、会話順、透過画像、草原背景、契約体の冪等付与、保存失敗時ロールバック、本人GUESTの非永続化、3人編成、2スライム連続生成、救援専用の勝敗分岐を検査する。
 - Phase 4A、UI、Phase 5B、Phase 6の検査を、新しい降下接続、STEP順、CSS・JavaScriptキャッシュキーへ追従させた。
 - コミット前の静的検査で、変更JavaScriptの構文、82STEPとID一意性、序章中のカナタ不在、保存個体への本人エルナ混入防止、救援戦開始条件、キャッシュキーを確認する。
-- ドラフトPR上のGitHub Actions「Validate game data and assets」で `npm run check` 全体を実行する。
+- `639ce88` のGitHub Actions「Validate game data and assets」run #184で、更新した遭遇・GUEST・連続ウェーブ検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
