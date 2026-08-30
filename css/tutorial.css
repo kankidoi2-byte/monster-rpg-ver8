@@ -32,6 +32,6 @@
 .tutorial-stella-skill-card{display:grid;gap:10px;padding:18px;border:2px solid rgba(130,91,213,.42);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(236,229,255,.95));box-shadow:0 15px 38px rgba(33,23,66,.2);color:#27203c}
 .tutorial-stella-skill-card p,.tutorial-stella-skill-card small{margin:0}
 .tutorial-stella-card-panel>button{min-height:48px}
-@media(max-width:719px){.tutorial-character-layer{left:0;bottom:43svh;width:100vw;height:56svh}.tutorial-character-layer img{max-width:92vw}.tutorial-overlay.is-story-step .tutorial-bubble{max-height:48svh}}
+@media(max-width:719px){.tutorial-character-layer{left:0;bottom:43svh;width:100vw;height:56svh}.tutorial-character-layer img{max-width:92vw}.tutorial-overlay.is-story-step .tutorial-bubble{max-height:calc(100svh - 20px)}}
 @media(max-width:480px){.tutorial-bubble{width:calc(100vw - 16px);padding:13px;border-radius:19px}.tutorial-bubble h2{font-size:18px}.tutorial-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.tutorial-next{grid-column:1/-1;grid-row:1}.tutorial-back,.tutorial-dialogue-skip,.tutorial-skip{grid-row:2}.tutorial-actions button{padding-inline:6px;font-size:11px}.tutorial-arrow{display:none}.tutorial-name-form{grid-template-columns:1fr}.tutorial-name-form label{grid-column:auto}.tutorial-name-form button{width:100%}}
 @media(prefers-reduced-motion:reduce){.tutorial-shade,.tutorial-spotlight,.tutorial-bubble,.tutorial-progress>span{transition:none}}

@@ -798,3 +798,37 @@
 - `npm run check`、`git diff --check`：成功。ゲームデータ、画像、保存移行、戦闘、図鑑、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
 - 実装コミット `9a7bf0a7` のGitHub Actions「Validate game data and assets」run #223：成功。
 - 次回対象：更新版URLで、停止していた同じセーブから「メニュー」→「図鑑」→「キャラクター図鑑」と進めること、およびエルナの背景と表示比率を実機確認する。
+
+## スマートフォン実機確認後の修正 Phase C/D
+
+### Phase C：依頼報告ボタンの進行停止
+
+- 序章専用の依頼カードが、画像付き討伐カード用の絶対配置見出し `.hunt-card-title` を流用していたため、見出しが「報告して報酬を確認」ボタンへ重なり、タップ領域を覆っていた不具合を修正した。
+- 依頼カード専用の通常フロー見出し `.tutorial-request-summary` へ分離し、見出し、報酬、注意書き、報告ボタンを縦に配置した。長いボタン文言も改行可能にした。
+- `request_accept` のSTEP ID、操作対象属性、報酬受領処理は維持した。既にこのSTEPで停止している途中セーブは、更新版を開き直せば同じ位置から報告できる。
+
+### Phase D：案内パネルの可読高さ
+
+- 強調対象の上下に空きが少ない場合、案内パネルを最小96pxまで縮めて内部スクロールさせていた配置計算を修正した。
+- スマホ縦画面では、本文と操作ボタンを含む案内パネルの自然な高さを、表示領域内で優先して確保する。大きなカードを強調して上下どちらにも十分な空きがない場合だけ、強調対象の非操作部分へパネルを重ねる。
+- 画面自体より長い案内だけは従来どおり内部スクロールを安全策として残すが、通常の序章STEPはスクロールなしで全文と操作を表示する。
+
+### 変更ファイル
+
+- `js/tutorial.js`
+- `css/tutorial.css`
+- `css/ui-redesign.css`
+- `index.html`
+- `scripts/test-tutorial-ui.mjs`
+- `scripts/test-tutorial-phase4a.mjs`
+- `scripts/test-prologue-home-back.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:prologue-home-back`：依頼報告STEPと報酬の一度限り付与に加え、序章依頼が絶対配置の討伐見出しを使用しないことを検証した。
+- `check:tutorial-ui`：360×640で画面の大部分を占める強調対象でも、300pxの案内パネルが縮まず表示領域内に収まることを追加検証した。
+- `check:tutorial-phase4a`、`check:prologue-comprehensive`：スマホ用の会話・機能案内が自然な高さを使用し、キャッシュ更新後も全体フローへ接続されることを確認した。
+- `node --check js/tutorial.js`、`git diff --check`、`npm run check`：成功。ゲームデータ、画像、保存移行、戦闘、図鑑、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
+- 次回対象：更新版URLで、停止していた同じセーブから「報告して報酬を確認」→「報酬を受け取る」へ進めること、および技カードなどの大きな強調対象で案内本文とボタンがスクロールなしで見えることを実機確認する。

@@ -148,7 +148,7 @@ for(const viewport of [{width:360,height:640},{width:412,height:915},{width:1366
 }
 assert.match(tutorialCss,/\.tutorial-overlay\{[^}]*pointer-events:none/,'the overlay must not block operation targets');
 assert.match(tutorialCss,/@media\(max-width:719px\)\{[^}]*bottom:43svh/,'portrait art must stay above the phone dialogue region');
-assert.match(tutorialCss,/\.tutorial-overlay\.is-story-step \.tutorial-bubble\{max-height:48svh/,'phone story dialogue must stay within its lower region');
+assert.match(tutorialCss,/\.tutorial-overlay\.is-story-step \.tutorial-bubble\{max-height:calc\(100svh - 20px\)/,'phone story dialogue must expose its full natural content height');
 assert.match(tutorialCss,/@media\(max-width:480px\)[^\n]+grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,'phone controls must fit Back, dialogue skip, and full skip');
 assert.ok(!index.includes('homeStoryPreview'),'the completed prologue must return to free play without a Chapter 1 route');
 assert.ok(!tutorial.includes('chapter1Unlocked'),'full skip must not unlock an unimplemented Chapter 1');
@@ -157,7 +157,7 @@ assert.ok(index.includes('id="tutorialDialogueSkipButton"')&&index.includes('>�
 assert.ok(index.includes('id="tutorialSkipButton"')&&index.includes('>全体スキップ</button>'));
 assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must remain separate layers');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1'),'tutorial CSS cache key must be refreshed');
-assert.ok(index.includes('prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1"></script>'),'tutorial JS cache key must be refreshed');
+assert.ok(index.includes('prologue-mobile-dex-elna-1-prologue-request-panel-fix-1"></script>'),'tutorial JS cache key must be refreshed');
 assert.equal(packageJson.scripts['check:prologue-comprehensive'],'node scripts/test-prologue-comprehensive.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-comprehensive'));
 

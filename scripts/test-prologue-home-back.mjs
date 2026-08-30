@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 const tutorial=read('js/tutorial.js');
 const index=read('index.html');
+const uiCss=read('css/ui-redesign.css');
 const packageJson=JSON.parse(read('package.json'));
 
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
@@ -36,6 +37,10 @@ for(const token of [
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1'));
 assert.ok(tutorial.includes('data-tutorial-request-report'));
 assert.ok(tutorial.includes('data-tutorial-request-open'));
+assert.ok(tutorial.includes('tutorial-request-summary'),'the prologue request heading must use normal document flow');
+assert.ok(!/data-tutorial-request-report>[\s\S]{0,500}hunt-card-title/.test(tutorial),'the prologue request must not reuse the absolutely positioned hunt image caption');
+assert.match(uiCss,/\.tutorial-request-summary\{[^}]*display:grid/,'the prologue request summary must remain in normal layout flow');
+assert.match(uiCss,/\.tutorial-request-card \.hunt-accept-button\{[^}]*white-space:normal/,'the report button label must wrap instead of overlapping adjacent content');
 assert.match(tutorial,/coins:250/);
 for(const id of ['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter']){
   assert.ok(tutorial.includes(`'${id}'`),`missing guaranteed alchemy material: ${id}`);

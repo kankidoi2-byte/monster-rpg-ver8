@@ -52,7 +52,7 @@ assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacte
 assert.match(css,/\.tutorial-story-backdrop\{/,'story backdrop styling is missing');
 assert.match(css,/\.tutorial-character-layer\{/,'transparent character layer styling is missing');
 assert.match(css,/@media\(max-width:719px\)/,'portrait-phone story layout is missing');
-assert.match(css,/max-height:48svh/,'mobile story dialogue must leave the operation area visible');
+assert.match(css,/\.tutorial-overlay\.is-story-step \.tutorial-bubble\{max-height:calc\(100svh - 20px\)/,'mobile story dialogue must expose its full natural content height');
 assert.ok(tutorial.includes('function renderTutorialStoryStep')&&tutorial.includes('function confirmTutorialPlayerName'),'story rendering and name confirmation contracts are missing');
 assert.ok(tutorial.includes('setTutorialPlayerName(value)')&&tutorial.includes('saveGame()')&&tutorial.includes('tutorialNext(true)'),'confirmed names must persist before the story advances');
 

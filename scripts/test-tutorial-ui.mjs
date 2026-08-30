@@ -76,5 +76,9 @@ assert.ok(above.top+220<=lowerTarget.top,'portrait bubble must not cover a targe
 const centered=place(null,{width:340,height:220},viewport);
 assert.equal(centered.side,'center');
 assert.ok(centered.top>=0&&centered.left>=0,'targetless guidance must remain visible');
+const oversizedTarget={top:40,bottom:590,left:20,right:340,width:320,height:550};
+const readable=place(oversizedTarget,{width:340,height:300},viewport);
+assert.ok(readable.maxHeight>=300,'a large spotlight target must not collapse the guidance into an undiscoverable inner scroll area');
+assert.ok(readable.top>=0&&readable.top+300<=viewport.height,'readable guidance must remain inside the portrait viewport');
 
 console.log('Tutorial UI validation passed (story layers, transparent portrait, spotlight, bubble, navigation, resume/replay hooks, accessibility, and portrait placement).');

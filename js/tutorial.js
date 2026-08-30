@@ -134,9 +134,8 @@ function calculateTutorialStoryPlacement(bubbleSize,viewport){
   if(viewport.width>=720){
     return {left:viewport.width-width-24,top:Math.max(margin,(viewport.height-height)/2),maxHeight:viewport.height-margin*2,side:'story'};
   }
-  const maxHeight=Math.max(190,Math.min(viewport.height*.48,viewport.height-margin*2));
-  const fittedHeight=Math.min(height,maxHeight);
-  return {left:margin,top:viewport.height-fittedHeight-margin,maxHeight,side:'story'};
+  const maxHeight=Math.max(0,viewport.height-margin*2);
+  return {left:margin,top:viewport.height-height-margin,maxHeight,side:'story'};
 }
 function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   const margin=Math.max(0,Number(options.margin)||10);
@@ -151,7 +150,12 @@ function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   const above=Math.max(0,targetRect.top-gap-margin);
   const side=below>=Math.min(height,180)||below>=above?'below':'above';
   const available=side==='below'?below:above;
-  const maxHeight=Math.max(96,available);
+  // A large highlighted card can leave almost no room above or below it. In that
+  // case shrinking the guide to the old 96px minimum hid its text and controls
+  // behind an undiscoverable inner scroll area. Keep the guide at its natural
+  // height (up to the visual viewport) and allow it to overlap a non-interactive
+  // part of the spotlight when there is not enough adjacent space.
+  const maxHeight=Math.min(Math.max(0,viewport.height-margin*2),Math.max(available,height));
   const fittedHeight=Math.min(height,maxHeight);
   const top=side==='below'?targetRect.bottom+gap:targetRect.top-gap-fittedHeight;
   const centered=targetRect.left+(targetRect.width-width)/2;
@@ -881,13 +885,13 @@ function renderTutorialSupplyRequest(list){
   const canOpen=current==='request_accept';
   const materials=tutorialSupplyRewardMaterialEntries();
   if(materials.some(entry=>!entry.item?.alchemyMaterial))return false;
-  list.innerHTML=`<article class="enemy-choice-card difficulty-card-easy" data-tutorial-request-report>
+  list.innerHTML=`<article class="enemy-choice-card difficulty-card-easy tutorial-request-card" data-tutorial-request-report>
     <div class="hunt-card-body">
       <div class="hunt-card-badges"><span class="hunt-recommended">序章依頼</span></div>
-      <div class="hunt-card-title"><small>救援報告</small><h2>エルナ救援の報告</h2><p>草原での救援を依頼所へ報告しよう。</p></div>
+      <div class="tutorial-request-summary"><small>救援報告</small><h2>エルナ救援の報告</h2><p>草原での救援を依頼所へ報告しよう。</p></div>
       <div class="hunt-primary-rewards"><span><small>COIN</small><strong>250</strong></span><span><small>MATERIAL</small><strong>4種</strong></span></div>
       <p class="hunt-danger">受け取った素材とコインは、後の錬成で使います。</p>
-      <button class="hunt-accept-button" data-tutorial-request-open onclick="openTutorialSupplyRequest()" ${canOpen?'':'disabled'}>報告して報酬を確認 ›</button>
+      <button type="button" class="hunt-accept-button" data-tutorial-request-open onclick="openTutorialSupplyRequest()" ${canOpen?'':'disabled'}>報告して報酬を確認 ›</button>
     </div></article>`;
   return true;
 }
