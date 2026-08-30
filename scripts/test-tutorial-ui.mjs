@@ -11,7 +11,7 @@ const init=read('js/init.js');
 
 [
   'tutorialOverlay','tutorialStoryBackdrop','tutorialCharacterLayer','tutorialCharacterPortrait','tutorialSpotlight','tutorialArrow','tutorialBubble','tutorialProgressText',
-  'tutorialProgressBar','tutorialTitle','tutorialText','tutorialNameForm','tutorialPlayerNameInput','tutorialBackButton','tutorialSkipButton','tutorialNextButton'
+  'tutorialProgressBar','tutorialTitle','tutorialText','tutorialNameForm','tutorialPlayerNameInput','tutorialBackButton','tutorialDialogueSkipButton','tutorialSkipButton','tutorialNextButton'
 ].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing tutorial UI contract: #${id}`));
 assert.ok(index.includes('id="tutorialMenuButton"')&&index.includes('onclick="openTutorialFromMenu()"'),'the menu must expose tutorial replay');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1'),'the tutorial stylesheet must be cache-versioned');
@@ -36,7 +36,8 @@ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion suppo
   'function pauseTutorial','function requestTutorialSkip','function openTutorialFromMenu',
   'function resumeTutorialIfNeeded','function handleTutorialScreenChange','function renderTutorialStoryStep','function confirmTutorialPlayerName'
 ].forEach(contract=>assert.ok(tutorial.includes(contract),`missing tutorial engine contract: ${contract}`));
-assert.ok(tutorial.includes("confirm('必須チュートリアルをスキップしますか？"),'required tutorial skip must ask for confirmation');
+assert.ok(tutorial.includes('必須チュートリアルを全体スキップしますか？'),'required tutorial skip must ask for confirmation');
+assert.ok(tutorial.includes('function skipTutorialDialogue()')&&tutorial.includes('function tutorialDialogueSkipTargetIndex()'),'dialogue-only skipping must stop at the next operation boundary');
 assert.ok(tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must use the shared persisted state');
 assert.ok(tutorial.includes("event.key==='Escape'")&&tutorial.includes("event.key==='ArrowLeft'")&&tutorial.includes("event.key==='ArrowRight'"),'keyboard tutorial controls are missing');
 assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.includes('bubble.contains(event.target)')&&tutorial.includes("window.addEventListener('scroll',handleTutorialViewportScroll,true)"),'scrolling the guidance bubble must not trigger viewport repositioning');

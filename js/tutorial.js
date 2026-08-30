@@ -41,6 +41,11 @@ const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
   coinOptionId:'high',coins:250,
   materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])
 });
+const TUTORIAL_REQUIRED_SKIP_FLAGS=Object.freeze([
+  'starterContractsGranted','elnaContractGranted','stellaSkillCardGranted',
+  'alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted',
+  'expeditionDispatched','prologueCompleted'
+]);
 const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue','grant_stella_skill_card','start_stella_mock_battle','prepare_lumina_alchemy']);
 const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,advantageUsed:false,enemyQueue:[]};
 function isTutorialRescueBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='elna_rescue';}
@@ -387,14 +392,19 @@ function renderTutorialStep(){
     nameInput.value=savedName||'';
   }
   const back=document.getElementById('tutorialBackButton');
+  const dialogueSkip=document.getElementById('tutorialDialogueSkipButton');
   const skip=document.getElementById('tutorialSkipButton');
   const next=document.getElementById('tutorialNextButton');
   const actions=next?.closest('.tutorial-actions');
   const requiresAction=tutorialStepRequiresAction(step);
   back.disabled=tutorialElnaContractBusy||tutorialUiState.index===0||step.disableBack;
+  if(dialogueSkip){
+    dialogueSkip.hidden=tutorialDialogueSkipTargetIndex()<0;
+    dialogueSkip.disabled=tutorialElnaContractBusy;
+  }
   skip.disabled=tutorialElnaContractBusy;
   document.querySelector('.tutorial-pause')?.toggleAttribute('disabled',tutorialElnaContractBusy);
-  skip.textContent=tutorialUiState.persist?'スキップ':'閉じる';
+  skip.textContent=tutorialUiState.persist?(tutorialUiState.replay?'再閲覧を終了':'全体スキップ'):'閉じる';
   next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
   next.hidden=requiresAction;
   next.disabled=requiresAction||tutorialElnaContractBusy;
@@ -438,6 +448,36 @@ function tutorialPrevious(){
   if(tutorialElnaContractBusy||!tutorialUiState.active||tutorialUiState.index<=0)return;
   if(tutorialUiState.steps[tutorialUiState.index]?.disableBack)return;
   tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
+}
+function tutorialLinkedStepIndex(index){
+  const step=tutorialUiState.steps[index];
+  if(!step)return -1;
+  const linkedId=tutorialUiState.replay&&step.replayNextStepId?step.replayNextStepId:step.nextStepId;
+  if(linkedId)return tutorialStepIndex(tutorialUiState.steps,linkedId);
+  return index<tutorialUiState.steps.length-1?index+1:-1;
+}
+function tutorialDialogueSkipTargetIndex(){
+  if(!tutorialUiState.active)return -1;
+  const current=tutorialUiState.steps[tutorialUiState.index];
+  if(!current||tutorialStepRequiresAction(current)||current.transition||current.input||current.waitForEvent||current.continueAt)return -1;
+  let index=tutorialUiState.index;
+  const visited=new Set([index]);
+  while(visited.size<=tutorialUiState.steps.length){
+    const nextIndex=tutorialLinkedStepIndex(index);
+    if(nextIndex<0||visited.has(nextIndex))return -1;
+    visited.add(nextIndex);
+    const next=tutorialUiState.steps[nextIndex];
+    if(tutorialStepRequiresAction(next)||next.transition||next.input||next.waitForEvent||next.continueAt||nextIndex===tutorialUiState.steps.length-1)return nextIndex;
+    index=nextIndex;
+  }
+  return -1;
+}
+function skipTutorialDialogue(){
+  if(tutorialElnaContractBusy||!tutorialUiState.active)return false;
+  const nextIndex=tutorialDialogueSkipTargetIndex();
+  if(nextIndex<0)return false;
+  tutorialUiState.index=nextIndex;tutorialUiState.lastFocusedStep=null;
+  persistTutorialStep();renderTutorialStep();return true;
 }
 function tutorialStepCanAdvance(step){
   if(!step?.requiredPartyMin&&!step?.requiredPartyMax)return true;
@@ -508,13 +548,69 @@ function pauseTutorial(){
   const returnScreen=tutorialUiState.returnScreen;
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
+function tutorialSkipRewardInstance(id,extraFields=null){
+  const existing=Array.isArray(save?.instances)?save.instances.find(instance=>instance?.id===id&&instance?.guest!==true):null;
+  return existing||(typeof addInstance==='function'?addInstance(id,1,0,extraFields):null);
+}
+function commitTutorialFullSkip(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return false;
+  const snapshot=JSON.stringify(save);
+  try{
+    const initial=currentTutorialState();
+    if(initial.replaying){
+      skipTutorial();
+      if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_replay_exit_save');
+      return true;
+    }
+    const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(id=>tutorialSkipRewardInstance(id,{tutorialContract:true}));
+    const elna=tutorialSkipRewardInstance('elna_beginner',{tutorialContract:true,tutorialRole:'contract_body'});
+    const alchemion=tutorialSkipRewardInstance(TUTORIAL_LUMINA_ALCHEMY.resultId,{tutorialAlchemyLesson:true});
+    if(starters.some(instance=>!instance)||!elna||!alchemion)throw new Error('tutorial_skip_contract_reward');
+    elna.tutorialContract=true;elna.tutorialRole='contract_body';alchemion.tutorialAlchemyLesson=true;
+
+    const cardWasGranted=currentTutorialState().stellaSkillCardGranted===true;
+    if(typeof SKILL_BY_ID!=='object'||!SKILL_BY_ID[TUTORIAL_STELLA_SKILL_ID])throw new Error('tutorial_skip_skill_missing');
+    if(!save.skillCards||typeof save.skillCards!=='object')save.skillCards={};
+    if(!cardWasGranted){
+      save.skillCards[TUTORIAL_STELLA_SKILL_ID]=Math.max(0,Math.floor(Number(save.skillCards[TUTORIAL_STELLA_SKILL_ID])||0))+1;
+    }else save.skillCards[TUTORIAL_STELLA_SKILL_ID]=Math.max(1,Math.floor(Number(save.skillCards[TUTORIAL_STELLA_SKILL_ID])||0));
+    for(const flag of TUTORIAL_REQUIRED_SKIP_FLAGS){
+      if(currentTutorialState()[flag]===true)continue;
+      if(typeof markTutorialOnce!=='function'||!markTutorialOnce(flag))throw new Error(`tutorial_skip_flag_${flag}`);
+    }
+    if(typeof setTutorialElnaGuestActive==='function')setTutorialElnaGuestActive(false);
+    save.party=[...starters.map(instance=>instance.uid),elna.uid];
+    save.progress.chapterId='chapter1';
+    save.progress.storyFlags={...(save.progress.storyFlags||{}),prologueCompleted:true,chapter1Unlocked:true};
+    skipTutorial();
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_skip_save');
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+    if(typeof deactivateTutorialAlchemyLesson==='function')deactivateTutorialAlchemyLesson();
+    try{
+      if(typeof updateParty==='function')updateParty();
+      if(typeof renderParty==='function')renderParty();
+      if(typeof renderDex==='function')renderDex();
+      if(typeof updateItems==='function')updateItems();
+      if(typeof updateAppResourceBar==='function')updateAppResourceBar();
+    }catch(error){console.error('序章スキップ後の画面更新に失敗しました。',error);}
+    return true;
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('序章のスキップ状態を保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('序章のスキップ状態を保存できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+}
 function requestTutorialSkip(){
   if(tutorialElnaContractBusy||!tutorialUiState.active)return;
   if(!tutorialUiState.persist){pauseTutorial();return;}
-  if(!confirm('必須チュートリアルをスキップしますか？ メニューからいつでも見直せます。'))return;
+  const replay=tutorialUiState.replay;
+  if(!confirm(replay?'チュートリアルの再閲覧を終了しますか？':'必須チュートリアルを全体スキップしますか？ 必須報酬を受け取り、第1章を解放します。'))return;
   const returnScreen=tutorialUiState.returnScreen;
-  skipTutorial();if(typeof saveGame==='function')saveGame();
-  clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
+  if(!commitTutorialFullSkip())return;
+  clearTutorialUi();
+  if(!replay&&typeof show==='function')show('home');else restoreTutorialReturnScreen(returnScreen);
+  updateTutorialMenuSummary();
 }
 function clearTutorialUi(){
   const overlay=document.getElementById('tutorialOverlay');
