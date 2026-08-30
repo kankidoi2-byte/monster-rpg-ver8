@@ -533,6 +533,7 @@
 - `npm run check` で、全132STEP・24画面・107操作対象を含む全検査が成功した。
 - `git diff --check` と変更JavaScriptの構文検査が成功した。
 - ステラ画像がRGBA PNGであり、マニフェスト上の透明・半透明ピクセルを保持していることを確認した。
+- `2355fe2` のGitHub Actions「Validate game data and assets」run #208で、新しい専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
