@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 32046)
-Total output lines: 1565
-
 const TUTORIAL_MAIN_FLOW_ID='prologue';
 const TUTORIAL_HELP_FLOW_ID='tutorial_help';
 const TUTORIAL_THREE_WAY_FLOW_ID='guide_three_way';
@@ -744,7 +741,653 @@ function startTutorialRescueBattle(){
     return true;
   }catch(error){
     console.error('エルナ救援戦を開始できませんでした。',error);
-    tutorialBattleSession.active=…12046 tokens truncated…受け取る'},
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+    partyBattle=[];
+    if(typeof showUiNotice==='function')showUiNotice('救援戦を開始できませんでした。もう一度お試しください。','warning');
+    return false;
+  }finally{
+    tutorialTransitionBusy=false;
+  }
+}
+function failTutorialRescueBattle(reason){
+  console.error('エルナ救援戦の敵を準備できませんでした。',reason);
+  tutorialBattleSession.enemyQueue=[];
+  if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'retreat',title:'救援戦を再準備',note:'スライムを準備できませんでした。進行を保持して再挑戦できます。'});
+  handleTutorialBattleOutcome('error');
+  busy=true;
+  return true;
+}
+function continueTutorialRescueWave(){
+  if(!isTutorialRescueBattleActive()||!tutorialBattleSession.enemyQueue.length)return false;
+  const nextId=tutorialBattleSession.enemyQueue[0];
+  const nextEnemy=by(nextId);
+  if(!nextEnemy)return failTutorialRescueBattle('rescue_enemy_missing');
+  busy=true;
+  try{
+    enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
+    ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
+    battleRewardGranted=false;
+    setupBattle();
+    if(enemy?.id!==nextId||eHp<=0)throw new Error('rescue_enemy_not_ready');
+    tutorialBattleSession.enemyQueue.shift();
+    const log=document.getElementById('log');
+    if(log)log.innerHTML='<b>もう1体のスライム</b>が飛び出した！ エルナを守りながら戦おう！';
+    busy=false;
+    return true;
+  }catch(error){
+    return failTutorialRescueBattle(error);
+  }
+}
+function tutorialStellaMockRequest(){
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_STELLA_MOCK.mapId);
+  const target=by(TUTORIAL_STELLA_MOCK.enemyId);
+  if(!map||!target)return null;
+  const request=createHuntRequest(map,target,TUTORIAL_STELLA_MOCK.difficultyId,[]);
+  request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null;
+  request.tutorialStellaMock=true;
+  return registerHuntRequest(request);
+}
+function startTutorialStellaMockBattle(){
+  if(tutorialTransitionBusy)return false;
+  tutorialTransitionBusy=true;
+  tutorialBattleSession.active=true;tutorialBattleSession.kind='stella_mock';
+  tutorialBattleSession.firstSkillUsed=false;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
+  try{
+    const request=tutorialStellaMockRequest();
+    if(!request)throw new Error('stella_mock_request_missing');
+    partyBattle=[];
+    startChosenBattle(TUTORIAL_STELLA_MOCK.mapId,TUTORIAL_STELLA_MOCK.enemyId,TUTORIAL_STELLA_MOCK.difficultyId,request.requestId);
+    const ready=activeScreenId()==='battle'&&player?.id===TUTORIAL_STELLA_MOCK.actorId&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
+    if(!ready)throw new Error('stella_mock_battle_not_ready');
+    return true;
+  }catch(error){
+    console.error('ステラ模擬戦を開始できませんでした。',error);
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;
+    partyBattle=[];
+    if(typeof showUiNotice==='function')showUiNotice('模擬戦を開始できませんでした。もう一度お試しください。','warning');
+    return false;
+  }finally{
+    tutorialTransitionBusy=false;
+  }
+}
+function isTutorialStellaMockAdvantageMove(move,actor=typeof activeInstance!=='undefined'?activeInstance:null,target=typeof enemy!=='undefined'?enemy:null){
+  if(!isTutorialStellaMockBattleActive()||actor?.id!==TUTORIAL_STELLA_MOCK.actorId||target?.id!==TUTORIAL_STELLA_MOCK.enemyId)return false;
+  return Number(move?.[1])>0&&moveTypes(move).includes('fire')&&typeEff(moveTypes(move),target.types)>1;
+}
+function completeTutorialStellaMockVictory(){
+  if(!isTutorialStellaMockBattleActive())return false;
+  battleRewardGranted=true;
+  if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();
+  if(typeof completeBattleTurn==='function')completeBattleTurn();
+  eHp=0;pStatus=null;eStatus=null;pPoisonTurns=0;ePoisonTurns=0;
+  const cleared=tutorialBattleSession.advantageUsed===true;
+  const log=document.getElementById('log');
+  if(log)log.innerHTML=cleared?'🔥 炎属性の技が効果抜群！<br><b>属性模擬戦に勝利した！</b>':'相性を確かめる前に模擬戦が終わった。もう一度、炎属性の技を試そう！';
+  if(typeof showBattleOutcome==='function')showBattleOutcome(cleared
+    ?{kind:'victory',title:'属性模擬戦クリア',note:'模擬戦のため通常報酬はありません。'}
+    :{kind:'retreat',title:'相性をもう一度確認',note:'フレイガルの炎属性の技を使って再挑戦しよう。'});
+  handleTutorialBattleOutcome(cleared?'victory':'error');
+  busy=true;
+  return true;
+}
+function runTutorialTransition(transition){
+  if(transition==='start_elna_rescue')return startTutorialRescueBattle();
+  if(transition==='grant_stella_skill_card')return Boolean(commitTutorialStellaSkillCard());
+  if(transition==='start_stella_mock_battle')return startTutorialStellaMockBattle();
+  if(transition==='prepare_lumina_alchemy')return prepareTutorialLuminaAlchemy();
+  return false;
+}
+
+function tutorialSupplyRewardMaterialEntries(){
+  return TUTORIAL_ALCHEMY_SUPPLY_REWARD.materials.map(itemId=>({itemId,item:ITEM_BY_ID[itemId]}));
+}
+function tutorialSupplyRequestIsPending(){
+  if(typeof currentTutorialState!=='function')return false;
+  const tutorial=currentTutorialState();
+  return (tutorial.status==='in_progress'||tutorial.replaying)&&[
+    'home_requests','request_board','request_accept'
+  ].includes(tutorial.stepId);
+}
+function shouldOfferTutorialSupplyRequest(){
+  return tutorialSupplyRequestIsPending()||[
+    'home_requests','request_board','request_accept'
+  ].includes(tutorialCurrentStepId());
+}
+function renderTutorialSupplyRequest(list){
+  if(!list||!shouldOfferTutorialSupplyRequest())return false;
+  const current=tutorialCurrentStepId();
+  const canOpen=current==='request_accept';
+  const materials=tutorialSupplyRewardMaterialEntries();
+  if(materials.some(entry=>!entry.item?.alchemyMaterial))return false;
+  list.innerHTML=`<article class="enemy-choice-card difficulty-card-easy" data-tutorial-request-report>
+    <div class="hunt-card-body">
+      <div class="hunt-card-badges"><span class="hunt-recommended">序章依頼</span></div>
+      <div class="hunt-card-title"><small>救援報告</small><h2>エルナ救援の報告</h2><p>草原での救援を依頼所へ報告しよう。</p></div>
+      <div class="hunt-primary-rewards"><span><small>COIN</small><strong>250</strong></span><span><small>MATERIAL</small><strong>4種</strong></span></div>
+      <p class="hunt-danger">受け取った素材とコインは、後の錬成で使います。</p>
+      <button class="hunt-accept-button" data-tutorial-request-open onclick="openTutorialSupplyRequest()" ${canOpen?'':'disabled'}>報告して報酬を確認 ›</button>
+    </div></article>`;
+  return true;
+}
+function openTutorialSupplyRequest(){
+  if(tutorialCurrentStepId()!=='request_accept')return false;
+  tutorialNext(true);
+  return true;
+}
+function renderTutorialSupplyReward(){
+  const list=document.getElementById('tutorialRequestRewardList');
+  const status=document.getElementById('tutorialRequestRewardStatus');
+  const button=document.getElementById('tutorialRequestClaimButton');
+  if(!list||!status||!button)return false;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  const alreadyGranted=tutorial?.alchemySuppliesGranted===true;
+  list.innerHTML=`<span><small>COIN</small><strong>250枚</strong></span>${tutorialSupplyRewardMaterialEntries().map(({item})=>
+    `<span><small>${item?.icon||'📦'} MATERIAL</small><strong>${item?.name||'錬成素材'} ×1</strong></span>`
+  ).join('')}`;
+  status.textContent=alreadyGranted&&!tutorial?.replaying
+    ?'報酬は受取済みです。素材とコインは保持されています。'
+    :'この報酬は一度だけ受け取れます。途中で再開しても二重には増えません。';
+  const canClaim=tutorialCurrentStepId()==='request_reward_claim'&&!tutorialSupplyRewardBusy;
+  button.disabled=!canClaim;
+  button.textContent=tutorialSupplyRewardBusy?'保存中…':alreadyGranted&&!tutorial?.replaying?'受取済みを確認':'報酬を受け取る';
+  return true;
+}
+function commitTutorialAlchemySupplyReward(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return {granted:false,replay:true};
+  const snapshot=JSON.stringify(save);
+  try{
+    const alreadyGranted=tutorial.alchemySuppliesGranted===true;
+    if(!alreadyGranted){
+      if(typeof ensureContractScrollItem==='function')ensureContractScrollItem();
+      const materials=tutorialSupplyRewardMaterialEntries();
+      if(materials.some(entry=>!entry.item?.alchemyMaterial))throw new Error('tutorial_alchemy_material_missing');
+      save.coins=Math.max(0,Number(save.coins)||0)+TUTORIAL_ALCHEMY_SUPPLY_REWARD.coins;
+      materials.forEach(({itemId})=>{
+        save.items[itemId]=Math.max(0,Number(save.items[itemId])||0)+1;
+        if(typeof registerItemDex==='function')registerItemDex(itemId);
+      });
+      if(typeof markTutorialAlchemySuppliesGranted!=='function'||!markTutorialAlchemySuppliesGranted()){
+        throw new Error('tutorial_alchemy_reward_flag');
+      }
+    }
+    if(typeof setTutorialStep==='function')setTutorialStep('request_reward_received');
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_alchemy_reward_save');
+    if(typeof updateItems==='function')updateItems();
+    if(typeof updateAppResourceBar==='function')updateAppResourceBar();
+    return {granted:!alreadyGranted,replay:false};
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('序章依頼の報酬を保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('報酬を保存できませんでした。もう一度お試しください。','warning');
+    return null;
+  }
+}
+function claimTutorialAlchemySupplyReward(){
+  if(tutorialSupplyRewardBusy||tutorialCurrentStepId()!=='request_reward_claim')return false;
+  tutorialSupplyRewardBusy=true;
+  renderTutorialSupplyReward();
+  const result=commitTutorialAlchemySupplyReward();
+  tutorialSupplyRewardBusy=false;
+  renderTutorialSupplyReward();
+  if(!result)return false;
+  if(tutorialUiState.active&&tutorialCurrentStepId()==='request_reward_claim')tutorialNext(true);
+  else updateTutorialMenuSummary();
+  return true;
+}
+
+function tutorialLuminaAlchemyResourceEntries(){
+  return TUTORIAL_LUMINA_ALCHEMY.materials.map(itemId=>({itemId,item:ITEM_BY_ID[itemId]}));
+}
+function tutorialLuminaAlchemyHasResources(){
+  return Number(save?.coins||0)>=TUTORIAL_LUMINA_ALCHEMY.coins
+    &&tutorialLuminaAlchemyResourceEntries().every(({itemId,item})=>item?.alchemyMaterial&&Number(save?.items?.[itemId]||0)>=1);
+}
+function prepareTutorialLuminaAlchemy(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying||tutorial.alchemyLessonCompleted===true){
+    if(typeof deactivateTutorialAlchemyLesson==='function')deactivateTutorialAlchemyLesson();
+    if(typeof showAlchemy==='function')showAlchemy();
+    return true;
+  }
+  const snapshot=JSON.stringify(save);
+  try{
+    if(tutorial.alchemyLessonPrepared!==true){
+      const resources=tutorialLuminaAlchemyResourceEntries();
+      if(resources.some(({item})=>!item?.alchemyMaterial))throw new Error('tutorial_lumina_material_missing');
+      save.coins=Math.max(Number(save.coins)||0,TUTORIAL_LUMINA_ALCHEMY.coins);
+      resources.forEach(({itemId})=>{
+        save.items[itemId]=Math.max(Number(save.items?.[itemId])||0,1);
+        if(typeof registerItemDex==='function')registerItemDex(itemId);
+      });
+      if(typeof markTutorialAlchemyLessonPrepared!=='function'||!markTutorialAlchemyLessonPrepared())throw new Error('tutorial_lumina_prepare_flag');
+    }
+    if(!tutorialLuminaAlchemyHasResources())throw new Error('tutorial_lumina_resources_spent');
+    if(typeof setTutorialStep==='function')setTutorialStep('lumina_alchemy');
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_lumina_prepare_save');
+    if(typeof activateTutorialAlchemyLesson!=='function'||!activateTutorialAlchemyLesson(TUTORIAL_LUMINA_ALCHEMY))throw new Error('tutorial_lumina_activate');
+    return true;
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('ルミナの入門錬成を準備できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice(error?.message==='tutorial_lumina_resources_spent'?'入門錬成用の素材かコインが不足しています。':'入門錬成を準備できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+}
+function commitTutorialLuminaAlchemySuccess(){
+  if(typeof currentTutorialState!=='function')return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return true;
+  if(tutorial.alchemyLessonCompleted===true)return false;
+  if(typeof markTutorialAlchemyLessonCompleted!=='function'||!markTutorialAlchemyLessonCompleted())return false;
+  if(typeof setTutorialStep==='function')setTutorialStep('expedition_intro');
+  return true;
+}
+function handleTutorialAlchemyConfirmationOpened(){
+  return tutorialCurrentStepId()==='lumina_start'&&queueTutorialActionAdvance('lumina_start');
+}
+function handleTutorialAlchemyExecutionStarted(){
+  return tutorialCurrentStepId()==='lumina_execute'&&queueTutorialActionAdvance('lumina_execute');
+}
+function handleTutorialLuminaAlchemyCompleted(){
+  const replay=typeof currentTutorialState==='function'&&currentTutorialState().replaying===true;
+  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_alchemy_result',persist:true,replay});
+}
+function tutorialExpeditionCandidateInstance(){
+  const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
+  return candidates.find(instance=>instance.id===TUTORIAL_LUMINA_ALCHEMY.resultId)||candidates[0]||null;
+}
+function shouldMarkTutorialExpeditionMember(uid){
+  return tutorialCurrentStepId()==='expedition_member'&&uid===tutorialExpeditionCandidateInstance()?.uid;
+}
+function handleTutorialExpeditionDestinationSelected(mapId){
+  if(tutorialCurrentStepId()!=='expedition_destination'||mapId!=='grassland')return false;
+  tutorialNext(true);return true;
+}
+function handleTutorialExpeditionDistanceSelected(distanceId){
+  if(tutorialCurrentStepId()!=='expedition_distance'||distanceId!=='short')return false;
+  tutorialNext(true);return true;
+}
+function handleTutorialExpeditionMemberSelected(uid,selected){
+  if(tutorialCurrentStepId()!=='expedition_member'||selected!==true||uid!==tutorialExpeditionCandidateInstance()?.uid)return false;
+  tutorialNext(true);return true;
+}
+function commitTutorialExpeditionDispatch(entry){
+  if(tutorialCurrentStepId()!=='expedition_dispatch')return true;
+  if(typeof currentTutorialState!=='function'||!entry)return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
+  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length<1)return false;
+  entry.tutorialPrologue=true;
+  if(typeof markTutorialExpeditionDispatched!=='function'||!markTutorialExpeditionDispatched())return false;
+  if(typeof setTutorialStep==='function')setTutorialStep('expedition_active');
+  return true;
+}
+function handleTutorialExpeditionStarted(entry){
+  if(!entry?.tutorialPrologue||tutorialCurrentStepId()!=='expedition_dispatch')return false;
+  tutorialNext(true);return true;
+}
+function commitTutorialPrologueCompletion(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return false;
+  const snapshot=JSON.stringify(save);
+  try{
+    const tutorial=currentTutorialState();
+    if(tutorial.replaying){
+      completeTutorial();
+    }else{
+      if(tutorial.expeditionDispatched!==true)throw new Error('tutorial_expedition_required');
+      if(tutorial.prologueCompleted!==true&&(typeof markTutorialPrologueCompleted!=='function'||!markTutorialPrologueCompleted()))throw new Error('tutorial_prologue_flag');
+      save.progress.storyFlags={...(save.progress.storyFlags||{}),prologueCompleted:true};
+      completeTutorial();
+    }
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_prologue_save');
+    return true;
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('序章の完了状態を保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('序章の完了状態を保存できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+}
+
+function tutorialStellaSkillCard(){return typeof SKILL_BY_ID==='object'?SKILL_BY_ID[TUTORIAL_STELLA_SKILL_ID]||null:null;}
+function tutorialStellaSkillTargetInstance(){return tutorialElnaContractInstance();}
+function tutorialStellaSkillIsEquipped(){
+  const instance=tutorialStellaSkillTargetInstance();
+  return Boolean(instance&&(save?.equippedSkills?.[instance.uid]||[]).includes(TUTORIAL_STELLA_SKILL_ID));
+}
+function tutorialStellaSkillCanEquip(){
+  const instance=tutorialStellaSkillTargetInstance();
+  const skill=tutorialStellaSkillCard();
+  if(!instance||!skill)return false;
+  const unit=by(instance.id);
+  const equipped=save?.equippedSkills?.[instance.uid]||[];
+  return equipped.length<3&&equippedSkillCost(instance)+skill.cost<=skillCostLimitFor(unit,instance)
+    &&isSkillAllowedForMonster(skill.id,unit)&&availableSkillCount(skill.id)>0;
+}
+function renderTutorialStellaSkillCard(){
+  const card=tutorialStellaSkillCard();
+  const visual=document.getElementById('tutorialStellaSkillCardVisual');
+  const status=document.getElementById('tutorialStellaSkillCardStatus');
+  const button=document.getElementById('tutorialStellaSkillEditButton');
+  if(!card||!visual||!status||!button)return false;
+  visual.className=`tutorial-stella-skill-card ${skillCardClass(skillTypes(card))}`;
+  visual.innerHTML=`${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p>${moveEffectText(skillToMove(card.id))}</p><small>エルナの契約体が装備できます。</small>`;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  status.textContent=tutorialStellaSkillIsEquipped()?'連続斬りは装備済みです。':tutorial?.stellaSkillCardGranted?'技カードを受け取りました。':'ステラから受け取る技カードです。';
+  button.disabled=tutorialCurrentStepId()!=='stella_skill_open'||tutorialStellaCardBusy;
+  button.textContent=tutorialStellaCardBusy?'準備中…':'エルナの技編集を開く';
+  return true;
+}
+function commitTutorialStellaSkillCard(){
+  if(tutorialStellaCardBusy||typeof currentTutorialState!=='function'||typeof save==='undefined')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return {granted:false,replay:true};
+  const snapshot=JSON.stringify(save);
+  tutorialStellaCardBusy=true;
+  try{
+    const card=tutorialStellaSkillCard();
+    const instance=tutorialStellaSkillTargetInstance();
+    if(!card||card.deprecated||!instance||!isSkillAllowedForMonster(card.id,by(instance.id)))throw new Error('tutorial_stella_skill_invalid');
+    const alreadyGranted=tutorial.stellaSkillCardGranted===true;
+    if(!alreadyGranted){
+      if(!save.skillCards||typeof save.skillCards!=='object')save.skillCards={};
+      save.skillCards[card.id]=Math.max(0,Math.floor(Number(save.skillCards[card.id])||0))+1;
+      if(typeof markTutorialStellaSkillCardGranted!=='function'||!markTutorialStellaSkillCardGranted())throw new Error('tutorial_stella_skill_flag');
+    }
+    if(typeof setTutorialStep==='function')setTutorialStep('stella_card_received');
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_stella_skill_save');
+    return {granted:!alreadyGranted,replay:false};
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('ステラの技カードを保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
+    return null;
+  }finally{
+    tutorialStellaCardBusy=false;
+    renderTutorialStellaSkillCard();
+  }
+}
+function openTutorialStellaSkillEdit(){
+  if(tutorialStellaCardBusy||tutorialCurrentStepId()!=='stella_skill_open')return false;
+  const instance=tutorialStellaSkillTargetInstance();
+  if(!instance||typeof openSkillEdit!=='function')return false;
+  tutorialStellaCardBusy=true;
+  try{
+    openSkillEdit(instance.uid);
+    if(typeof resetSkillFilters==='function')resetSkillFilters();
+    tutorialNext(true);
+    return true;
+  }finally{
+    tutorialStellaCardBusy=false;
+  }
+}
+function shouldMarkTutorialStellaUnequip(uid){
+  return tutorialCurrentStepId()==='stella_skill_unequip'&&uid===tutorialStellaSkillTargetInstance()?.uid;
+}
+function shouldMarkTutorialStellaSkillCard(skillId,uid){
+  return ['stella_skill_card_detail','stella_skill_equip','stella_attribute_intro'].includes(tutorialCurrentStepId())
+    &&skillId===TUTORIAL_STELLA_SKILL_ID&&uid===tutorialStellaSkillTargetInstance()?.uid;
+}
+function handleTutorialStellaSkillUnequipped(uid){
+  if(tutorialCurrentStepId()!=='stella_skill_unequip'||uid!==tutorialStellaSkillTargetInstance()?.uid||!tutorialStellaSkillCanEquip())return false;
+  tutorialNext(true);
+  return true;
+}
+function handleTutorialStellaSkillEquipped(skillId,uid){
+  if(tutorialCurrentStepId()!=='stella_skill_equip'||skillId!==TUTORIAL_STELLA_SKILL_ID||uid!==tutorialStellaSkillTargetInstance()?.uid)return false;
+  tutorialNext(true);
+  return true;
+}
+
+function tutorialFirstHuntIsPending(){
+  if(typeof currentTutorialState!=='function')return false;
+  const tutorial=currentTutorialState();
+  return (tutorial.status==='in_progress'||tutorial.replaying)&&tutorial.stepId==='first_hunt';
+}
+function tutorialCurrentStepId(){return tutorialUiState.active?tutorialUiState.steps[tutorialUiState.index]?.id:null;}
+function shouldOfferTutorialHunt(){
+  return tutorialFirstHuntIsPending()||['first_hunt','tutorial_hunt_request','battle_retry'].includes(tutorialCurrentStepId());
+}
+function renderTutorialHuntChoice(list){
+  if(renderTutorialSupplyRequest(list))return true;
+  if(!list||!shouldOfferTutorialHunt())return false;
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
+  const mon=by(TUTORIAL_FIRST_HUNT.enemyId);
+  if(!map||!mon)return false;
+  const difficulty=huntDifficulty(TUTORIAL_FIRST_HUNT.difficultyId);
+  const request=registerHuntRequest(createHuntRequest(map,mon,difficulty.id,[]));
+  if(typeof registerMapDex==='function'&&registerMapDex(map.id)&&typeof saveGame==='function')saveGame();
+  list.innerHTML=`<article class="enemy-choice-card difficulty-card-${difficulty.id}" data-tutorial-hunt="grassland-slime">
+    <div class="hunt-card-visual"><img class="map-img" src="${map.image}" alt="${map.name}"><div class="hunt-card-shade"></div>${vis(mon)}
+      <div class="hunt-card-badges"><span class="hunt-recommended">最初の依頼</span><span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span></div>
+      <div class="hunt-card-title"><small>${map.name}</small><h2>${mon.name}</h2><p>${mon.rarity} ${typesHtml(mon.types)}</p></div>
+    </div>
+    <div class="hunt-card-body"><div class="hunt-primary-rewards"><span><small>ENEMY</small><strong>Lv.${request.enemyLevel}</strong></span><span><small>REWARD</small><strong>×${request.rewardText}</strong></span></div>
+      <p class="hunt-danger">${difficulty.danger}</p>
+      <button class="hunt-accept-button" data-tutorial-hunt-start onclick="startTutorialHunt('${request.requestId}')">この依頼へ出発 ›</button>
+    </div></article>`;
+  return true;
+}
+function preparedTutorialHuntRequest(requestId){
+  const existing=preparedHuntRequest(requestId,TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId);
+  if(existing)return existing;
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
+  const mon=by(TUTORIAL_FIRST_HUNT.enemyId);
+  if(!map||!mon)return null;
+  return registerHuntRequest(createHuntRequest(map,mon,TUTORIAL_FIRST_HUNT.difficultyId,[]));
+}
+function startTutorialHunt(requestId){
+  const request=preparedTutorialHuntRequest(requestId);
+  if(!request){showBattleChoices();return false;}
+  tutorialBattleSession.active=true;tutorialBattleSession.firstSkillUsed=false;
+  try{
+    startChosenBattle(TUTORIAL_FIRST_HUNT.mapId,TUTORIAL_FIRST_HUNT.enemyId,TUTORIAL_FIRST_HUNT.difficultyId,request.requestId);
+  }catch(error){
+    console.error('チュートリアル戦闘を開始できませんでした。',error);
+  }
+  const ready=activeScreenId()==='battle'&&player?.id&&enemy?.id;
+  if(!ready){tutorialBattleSession.active=false;showBattleChoices();return false;}
+  const step=tutorialUiState.active?tutorialUiState.steps[tutorialUiState.index]:null;
+  if(step?.id==='tutorial_hunt_request')tutorialNext(true);
+  return true;
+}
+function handleTutorialBattleAction(action,details={}){
+  if(isTutorialStellaMockBattleActive()){
+    const currentStep=tutorialCurrentStepId();
+    if(action==='skill_panel_opened'&&currentStep==='stella_mock_skill_open')return queueTutorialActionAdvance(currentStep);
+    if(action==='skill'&&currentStep==='stella_mock_advantage'&&isTutorialStellaMockAdvantageMove(details.move,details.actor,details.target)){
+      tutorialBattleSession.advantageUsed=true;
+      return queueTutorialActionAdvance(currentStep);
+    }
+    return false;
+  }
+  if(!isTutorialRescueBattleActive())return false;
+  if(action==='skill')tutorialBattleSession.firstSkillUsed=true;
+  const currentStep=tutorialCurrentStepId();
+  const expectedStep=action==='actor_picker_opened'?'battle_actor_open'
+    :action==='skill_panel_opened'&&['battle_attack_open','battle_skill'].includes(currentStep)?currentStep
+    :({actor_selected:'battle_actor_select',normal_attack:'battle_normal_attack',skill:'battle_choose_skill'}[action]||null);
+  if(!expectedStep||currentStep!==expectedStep)return false;
+  return queueTutorialActionAdvance(currentStep);
+}
+function handleTutorialFirstSkillUsed(){
+  if(!isTutorialRescueBattleActive()||tutorialBattleSession.firstSkillUsed)return false;
+  tutorialBattleSession.firstSkillUsed=true;
+  return handleTutorialBattleAction('skill')||true;
+}
+function handleTutorialBattleOutcome(kind,rewards={}){
+  if(!tutorialBattleSession.active)return false;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying)){tutorialBattleSession.active=false;tutorialBattleSession.kind=null;return false;}
+  const rescue=tutorialBattleSession.kind==='elna_rescue';
+  const stellaMock=tutorialBattleSession.kind==='stella_mock';
+  if(stellaMock){
+    const cleared=kind==='victory'&&tutorialBattleSession.advantageUsed===true;
+    setTutorialStep(cleared?'lumina_intro':'stella_mock_battle');
+    if(typeof saveGame==='function')saveGame();
+    if(typeof endPartyRecovery==='function')endPartyRecovery();
+    startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:cleared?'stella_mock_victory':'stella_mock_retry',persist:true,replay:tutorial.replaying});
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
+    return true;
+  }
+  if(kind==='victory'){
+    const nextStep=rescue?'elna_rescue_complete':'victory_exp';
+    setTutorialStep(rescue?'elna_contract_intro':'first_contract');
+    if(typeof saveGame==='function')saveGame();
+    startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:nextStep,persist:true,replay:tutorial.replaying});
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+    return true;
+  }
+  startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:rescue?'elna_rescue_retry':'battle_retry',persist:true,replay:tutorial.replaying});
+  tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+  return true;
+}
+
+function tutorialFirstContractMode(){
+  if(typeof currentTutorialState!=='function')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return 'replay';
+  if(tutorial.status!=='in_progress'||tutorial.completed||tutorial.skipped)return null;
+  if(!['first_contract','contract_confirm'].includes(tutorial.stepId))return null;
+  if(Array.isArray(save?.saveMeta?.migrations)&&save.saveMeta.migrations.includes('v3_to_v4_tutorial_state'))return null;
+  if(tutorial.firstContractGuaranteeUsed||tutorial.starterContractScrollGranted)return null;
+  return 'required';
+}
+function tutorialContractTargetIsValid(target=typeof enemy!=='undefined'?enemy:null,map=typeof selectedMap!=='undefined'?selectedMap:null){
+  return target?.id===TUTORIAL_FIRST_HUNT.enemyId&&map?.id===TUTORIAL_FIRST_HUNT.mapId;
+}
+function shouldGuaranteeTutorialContract(target=typeof enemy!=='undefined'?enemy:null,itemId='contract_scroll'){
+  return tutorialFirstContractMode()==='required'&&tutorialContractTargetIsValid(target)&&itemId==='contract_scroll';
+}
+function setTutorialContractContext(){
+  const target=by(TUTORIAL_FIRST_HUNT.enemyId);
+  const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
+  if(!target||!map)return false;
+  enemy=structuredClone(target);selectedMap=map;activeHuntRequest=createHuntRequest(map,target,TUTORIAL_FIRST_HUNT.difficultyId,[]);
+  battleRewardGranted=true;singleBattleContractAttempted=false;pendingContractItemId='contract_scroll';
+  return true;
+}
+function renderTutorialContractCheckpoint(){
+  if(!setTutorialContractContext())return false;
+  const mode=tutorialFirstContractMode();
+  const battle=document.getElementById('battle');
+  const outcome=document.getElementById('battleOutcome');
+  const actions=document.getElementById('battleOutcomeActions');
+  if(!battle||!outcome||!actions)return false;
+  battle.classList.add('is-finished');outcome.className='battle-outcome is-victory';
+  document.getElementById('battleOutcomeIcon').textContent='📜';
+  document.getElementById('battleOutcomeEyebrow').textContent='CONTRACT CHANCE';
+  document.getElementById('battleOutcomeTitle').textContent='草原のスライムと契約';
+  document.getElementById('battleOutcomeRewards').innerHTML='<span><small>対象</small><strong>スライム</strong></span><span><small>契約書</small><strong>通常 ×1</strong></span>';
+  document.getElementById('battleOutcomeNote').textContent=mode==='replay'?'再閲覧では契約書の支給と成功保証は行いません。':'確認すると通常契約書を1枚支給し、そのまま1枚消費します。';
+  actions.innerHTML=mode==='required'
+    ? '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>🤝 最初の契約</h3><p class="small">このスライムへの最初の契約だけ、必ず成功します。</p><button data-tutorial-contract-start onclick="askUseContractScroll(\'contract_scroll\')">通常契約書で契約する</button></div>'
+    : '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>🤝 契約の再閲覧</h3><p class="small">実際の契約や報酬なしで、加入後の案内を見直します。</p><button data-tutorial-contract-start>加入後の案内へ</button></div>';
+  document.getElementById('next')?.classList.add('hidden');
+  return true;
+}
+function commitTutorialFirstContract(itemId='contract_scroll',target=typeof enemy!=='undefined'?enemy:null){
+  if(!shouldGuaranteeTutorialContract(target,itemId))return null;
+  const snapshot=JSON.stringify(save);
+  ensureContractScrollItem();
+  save.items.contract_scroll=(save.items.contract_scroll||0)+1;
+  if(!markTutorialStarterContractScrollGranted()){save=JSON.parse(snapshot);return null;}
+  save.items.contract_scroll--;
+  const instance=addInstance(TUTORIAL_FIRST_HUNT.enemyId);
+  if(!instance||!markTutorialFirstContractGuaranteeUsed()){save=JSON.parse(snapshot);return null;}
+  if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(TUTORIAL_FIRST_HUNT.enemyId);
+  setTutorialStep('contract_success');
+  if(!saveGame()){save=JSON.parse(snapshot);return null;}
+  return instance;
+}
+function handleTutorialContractCommitted(){
+  if(tutorialUiState.active)clearTutorialUi();
+  updateTutorialMenuSummary();
+}
+function handleTutorialContractAnimationComplete(){
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  if(!tutorial||tutorial.stepId!=='contract_success'||tutorial.status!=='in_progress')return false;
+  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'contract_success',persist:true});
+}
+function tutorialContractInstance(){
+  if(!Array.isArray(save?.instances))return null;
+  const matches=save.instances.filter(instance=>instance.id===TUTORIAL_FIRST_HUNT.enemyId);
+  return matches[matches.length-1]||null;
+}
+function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||null;}
+function prepareTutorialStep(step){
+  if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
+  if(['request_board','request_accept'].includes(step?.id))renderTutorialSupplyRequest(document.getElementById('battleChoiceList'));
+  if(['request_reward_preview','request_reward_claim','request_reward_received'].includes(step?.id))renderTutorialSupplyReward();
+  if(['stella_card_received','stella_skill_open'].includes(step?.id))renderTutorialStellaSkillCard();
+  if(['stella_skill_current','stella_skill_unequip','stella_skill_card_detail','stella_skill_equip','stella_attribute_intro'].includes(step?.id)&&typeof renderSkillEdit==='function'){
+    const instance=tutorialStellaSkillTargetInstance();
+    if(instance)editingSkillUid=instance.uid;
+    renderSkillEdit();
+    if(step.id==='stella_skill_unequip'&&tutorialStellaSkillCanEquip())queueTutorialActionAdvance(step.id);
+    if(step.id==='stella_skill_equip'&&tutorialStellaSkillIsEquipped())queueTutorialActionAdvance(step.id);
+  }
+  if(['growth_elna','growth_elna_details','growth_skill_open'].includes(step?.id)&&typeof renderParty==='function'){
+    renderParty();
+    if(step.id==='growth_skill_open')document.querySelector('[data-monster-id="elna_beginner"] .monster-roster-details')?.setAttribute('open','');
+  }
+  if(['first_contract','contract_confirm'].includes(step?.id)){
+    setTutorialContractContext();
+    if(step.id==='first_contract')renderTutorialContractCheckpoint();
+  }
+  if(['contract_success','contract_card','contract_type','contract_skills','contract_list','contract_future'].includes(step?.id)){
+    if(activeScreenId()==='party'&&typeof renderParty==='function')renderParty();
+    if(step.id==='contract_skills')document.querySelector('[data-tutorial-contract-instance] details')?.setAttribute('open','');
+  }
+}
+
+registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
+  {id:'intro_gnosis',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'遠くから声がする',text:'ーい……',progressLabel:'PROLOGUE'},
+  {id:'gnosis_call_2',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'声が近づいてくる',text:'おーい……',progressLabel:'PROLOGUE'},
+  {id:'gnosis_call_3',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'すぐそばから聞こえる',text:'おーい！',progressLabel:'PROLOGUE'},
+  {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス。契約の力を案内するぞ！',progressLabel:'GNOSIS'},
+  {id:'gnosis_name',screenId:'home',mode:'external_action',input:'player_name',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'名前を教えて！',text:'君の名前は？ 呼びやすい名前にしてくれ！',progressLabel:'GNOSIS'},
+  {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界では、契約した相手の力を「契約体」として呼び出せる。ボクの力を少し貸すぞ！',progressLabel:'CONTRACT'},
+  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'世界へ降りる'},
+  {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',title:'スライムに囲まれた少女',text:'くっ……数が多い。でも、ここで退くわけには……！',progressLabel:'ENCOUNTER'},
+  {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入ろう！',progressLabel:'RESCUE'},
+  {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'フレイガルとアクアロンの契約体を貸すぞ！ ふたりを呼び出して戦おう！',progressLabel:'CONTRACT'},
+  {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！',progressLabel:'CONTRACT'},
+  {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png',scene:'grassland',title:'本人エルナが共闘',text:'助けてくれるの？ 私も一緒に戦う。背中は任せて！',progressLabel:'GUEST'},
+  {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'契約体2体と本人エルナの3人で行くぞ！ スライムはボクが逃がさない！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
+  {id:'home_party',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'編成を確認しよう',text:'ここを押すと、冒険へ連れていく仲間を編成できるぞ！',progressLabel:'HOME'},
+  {id:'party_review',screenId:'partySet',target:'#currentPartyView',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'最初の3体',text:'フレイガル、アクアロン、エルナの契約体がそろってるな！ 先頭がリーダーだぞ！',progressLabel:'PARTY'},
+  {id:'party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,disableBack:true,title:'編成を保存',text:'3体を確認したら「この編成を保存」を押そう！',progressLabel:'PARTY'},
+  {id:'home_dex_open',screenId:'home',target:'#homeDexButton',advanceOnTarget:true,title:'図鑑を開こう',text:'ここを押すと、出会った仲間の記録を確認できるぞ！',progressLabel:'DEX'},
+  {id:'dex_character_open',screenId:'dexHub',target:'#dexHubCharacterButton',advanceOnTarget:true,title:'キャラクター図鑑',text:'まずはキャラクター図鑑を押してみよう！',progressLabel:'DEX'},
+  {id:'dex_elna_open',screenId:'characterDex',target:'[data-tutorial-character="elna_beginner"]',advanceOnTarget:true,title:'エルナの記録',text:'エルナを押すと、本人と成長形態の記録を見られるぞ！',progressLabel:'CHARACTER DEX'},
+  {id:'dex_elna_detail',screenId:'characterDex',target:'#characterDexDetail',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'キャラクター図鑑のエルナ',text:'ここには本人エルナの記録が載る。呼び出す契約体とは役割を分けてあるぞ！',progressLabel:'CHARACTER DEX'},
+  {id:'dex_character_back',screenId:'characterDex',target:'#characterDexBackButton',advanceOnTarget:true,title:'図鑑一覧へ',text:'図鑑一覧へ戻って、今度はモンスター図鑑を見よう！',progressLabel:'DEX'},
+  {id:'dex_monster_open',screenId:'dexHub',target:'#dexHubMonsterButton',advanceOnTarget:true,title:'モンスター図鑑',text:'ここを押すと、契約したモンスターの記録を見られるぞ！',progressLabel:'DEX'},
+  {id:'dex_freigal',screenId:'dex',target:'[data-tutorial-monster="freigal"]',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'フレイガル',text:'炎の契約体フレイガルだ！ 図鑑では属性や進化先を確認できるぞ！',progressLabel:'MONSTER DEX'},
+  {id:'dex_aquaron',screenId:'dex',target:'[data-tutorial-monster="aquaron"]',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'アクアロン',text:'こっちは水の契約体アクアロン！ 入手した仲間はここへ記録されるぞ！',progressLabel:'MONSTER DEX'},
+  {id:'home_growth_open',screenId:'dex',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
+  {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
+  {id:'growth_elna',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-summary',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'育成する仲間',text:'レベルと経験値はここで確認できる。育つほど能力も上がるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'個体情報を開こう',text:'ここを押すと、装備中の技や個体情報を確認できるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
+  {id:'growth_skill_current',screenId:'skillEdit',target:'#skillEditCurrent',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'装備中の技',text:'技は3つまで。仲間ごとのコスト上限に収めて装備するぞ！',progressLabel:'SKILL'},
+  {id:'growth_skill_cards',screenId:'skillEdit',target:'#skillCardList',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'所持している技カード',text:'持っているカードから、条件に合う技を選べるぞ！',progressLabel:'SKILL'},
+  {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'育成を押して、最後に進化を確認しよう！',progressLabel:'GROWTH'},
+  {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
+  {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',advanceOnTarget:true,title:'依頼を見よう',text:'ここを押すと、討伐依頼と報酬を確認できるぞ！',progressLabel:'REQUEST'},
+  {id:'request_board',screenId:'battleChoices',target:'[data-tutorial-request-report]',persistAs:'request_board',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'エルナ救援の報告',text:'さっきの救援が依頼として認められたぞ！ 内容と報酬を確認しよう！',progressLabel:'REQUEST'},
+  {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,title:'依頼を報告',text:'ここを押すと、依頼を報告して報酬を受け取れるぞ！',progressLabel:'REQUEST'},
+  {id:'request_reward_preview',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardList',persistAs:'request_reward_preview',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'依頼報酬',text:'コイン250枚と、錬成に使う4種類の素材だ！',progressLabel:'REWARD'},
+  {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,disableBack:true,title:'報酬を受け取ろう',text:'ここを押すと、依頼報酬を受け取れるぞ！',progressLabel:'REWARD'},
+  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',waitForEvent:'stella_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'次の出会いへ'},
+  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE'},
+  {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
+  {id:'stella_card_offer',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'技カードを受け取ろう',text:'エルナが使える「連続斬り」のカードをあげる。装備して、技と属性を見てみよう！',progressLabel:'SKILL CARD'},
+  {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_card_received',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'連続斬りを受け取る',text:'このカードは一度だけ渡すね。受け取ったら、エルナの技へ装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
   {id:'stella_card_received',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillCardVisual',persistAs:'stella_card_received',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'技カード獲得',text:'カードには属性、威力、COSTが書いてあるよ。まず内容を確認してね！',progressLabel:'SKILL CARD'},
   {id:'stella_skill_open',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillEditButton',externalAdvance:true,disableBack:true,title:'技編集を開こう',text:'ここを押すと、エルナの技カードを組み替えられるぞ！',progressLabel:'SKILL CARD'},
   {id:'stella_skill_current',screenId:'skillEdit',target:'#skillEditCurrent',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'装備枠とCOST',text:'技は3枚まで。合計COSTが上限を超えないように組み合わせるよ！',progressLabel:'SKILL CARD'},
