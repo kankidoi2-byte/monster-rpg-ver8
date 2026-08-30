@@ -4,6 +4,7 @@
 .tutorial-story-backdrop[data-scene="world_descent"]{background:linear-gradient(180deg,#62b8f2 0%,#bde9ff 52%,#78bd71 53%,#315f38 100%)}
 .tutorial-story-backdrop[data-scene="grassland"]{background:linear-gradient(180deg,rgba(91,179,237,.88) 0%,rgba(193,232,255,.9) 48%,rgba(107,169,85,.94) 49%,rgba(38,91,48,.98) 100%)}
 .tutorial-story-backdrop[data-scene="academy"]{background:radial-gradient(circle at 24% 22%,rgba(255,231,150,.72),transparent 23%),radial-gradient(circle at 74% 18%,rgba(184,147,255,.42),transparent 27%),linear-gradient(165deg,#e8f4ff 0%,#98cde8 48%,#72578e 49%,#2a254c 100%)}
+.tutorial-story-backdrop[data-scene="workshop"]{background:radial-gradient(circle at 24% 22%,rgba(255,217,116,.72),transparent 22%),radial-gradient(circle at 76% 28%,rgba(77,199,224,.35),transparent 26%),linear-gradient(160deg,#f3dfb0 0%,#9b7048 48%,#3f4059 49%,#171d2e 100%)}
 .tutorial-shade{position:fixed;z-index:1;background:rgba(3,15,27,.74);pointer-events:none;transition:top .18s,left .18s,width .18s,height .18s}
 .tutorial-spotlight{position:fixed;z-index:3;border:3px solid #ffe175;border-radius:18px;box-shadow:0 0 0 2px #fff,0 0 26px #ffd54f;pointer-events:none;transition:top .18s,left .18s,width .18s,height .18s}
 .tutorial-spotlight.is-empty,.tutorial-arrow.is-empty{display:none}

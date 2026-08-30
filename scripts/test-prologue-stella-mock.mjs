@@ -30,7 +30,7 @@ assert.match(mockFlow,/id:'stella_mock_skill_open'[^\n]+externalAdvance:true[^\n
 assert.match(mockFlow,/id:'stella_mock_advantage'[^\n]+data-tutorial-stella-advantage[^\n]+externalAdvance:true[^\n]+persistAs:'stella_mock_battle'/);
 assert.match(mockFlow,/id:'stella_mock_free'[^\n]+persistAs:'stella_mock_battle'[^\n]+waitForEvent:'battle_outcome'/);
 assert.match(mockFlow,/id:'stella_mock_retry'[^\n]+nextStepId:'stella_mock_battle'[^\n]+persistAs:'stella_mock_battle'/);
-assert.match(mockFlow,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+waitForEvent:'lumina_intro'/);
+assert.match(mockFlow,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+scene:'workshop'/);
 for(const id of ['stella_mock_enemy','stella_mock_actor','stella_mock_skill_open','stella_mock_advantage','stella_mock_free']){
   assert.match(mockFlow,new RegExp(`id:'${id}'[^\\n]+persistAs:'stella_mock_battle'`),`interruption must resume from the mock battle checkpoint: ${id}`);
 }

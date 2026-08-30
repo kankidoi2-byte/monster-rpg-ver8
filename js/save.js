@@ -14,7 +14,8 @@ const TUTORIAL_GUIDE_IDS = Object.freeze([
 ]);
 const TUTORIAL_ONCE_FLAG_IDS = Object.freeze([
   'starterContractsGranted','elnaContractGranted','stellaSkillCardGranted',
-  'alchemySuppliesGranted','expeditionDispatched','prologueCompleted'
+  'alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted',
+  'expeditionDispatched','prologueCompleted'
 ]);
 function tutorialGuideDefaults(){
   return Object.fromEntries(TUTORIAL_GUIDE_IDS.map(id=>[id,false]));
@@ -24,7 +25,8 @@ function tutorialSaveDefaults({legacy=false}={}){
     id:'prologue',version:TUTORIAL_VERSION,status:legacy?'completed':'not_started',stepId:null,
     completed:legacy,skipped:false,replaying:false,playerName:null,playerNamed:false,
     starterContractsGranted:legacy,elnaGuestActive:false,elnaContractGranted:legacy,
-    stellaSkillCardGranted:legacy,alchemySuppliesGranted:legacy,expeditionDispatched:legacy,
+    stellaSkillCardGranted:legacy,alchemySuppliesGranted:legacy,alchemyLessonPrepared:legacy,
+    alchemyLessonCompleted:legacy,expeditionDispatched:legacy,
     prologueCompleted:legacy,firstContractGuaranteeUsed:legacy,starterContractScrollGranted:legacy,
     guides:tutorialGuideDefaults()
   };
@@ -49,6 +51,8 @@ function normalizeTutorialSave(value,{legacy=false}={}){
     elnaContractGranted:source.elnaContractGranted===true||protectPublishedFlow,
     stellaSkillCardGranted:source.stellaSkillCardGranted===true||protectPublishedFlow,
     alchemySuppliesGranted:source.alchemySuppliesGranted===true||protectPublishedFlow,
+    alchemyLessonPrepared:source.alchemyLessonPrepared===true||protectPublishedFlow,
+    alchemyLessonCompleted:source.alchemyLessonCompleted===true||protectPublishedFlow,
     expeditionDispatched:source.expeditionDispatched===true||protectPublishedFlow,
     prologueCompleted:source.prologueCompleted===true||protectPublishedFlow,
     firstContractGuaranteeUsed:source.firstContractGuaranteeUsed===true||protectPublishedFlow,
@@ -304,6 +308,8 @@ function markTutorialStarterContractsGranted(){return markTutorialOnce('starterC
 function markTutorialElnaContractGranted(){return markTutorialOnce('elnaContractGranted');}
 function markTutorialStellaSkillCardGranted(){return markTutorialOnce('stellaSkillCardGranted');}
 function markTutorialAlchemySuppliesGranted(){return markTutorialOnce('alchemySuppliesGranted');}
+function markTutorialAlchemyLessonPrepared(){return markTutorialOnce('alchemyLessonPrepared');}
+function markTutorialAlchemyLessonCompleted(){return markTutorialOnce('alchemyLessonCompleted');}
 function markTutorialExpeditionDispatched(){return markTutorialOnce('expeditionDispatched');}
 function markTutorialPrologueCompleted(){return markTutorialOnce('prologueCompleted');}
 function setTutorialElnaGuestActive(active){const tutorial=currentTutorialState();tutorial.elnaGuestActive=active===true;return tutorial.elnaGuestActive;}

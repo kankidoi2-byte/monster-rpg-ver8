@@ -37,7 +37,7 @@ assert.deepEqual(fresh.progress.tutorial,{
   completed:false,skipped:false,replaying:false,
   playerName:null,playerNamed:false,
   starterContractsGranted:false,elnaGuestActive:false,elnaContractGranted:false,
-  stellaSkillCardGranted:false,alchemySuppliesGranted:false,
+  stellaSkillCardGranted:false,alchemySuppliesGranted:false,alchemyLessonPrepared:false,alchemyLessonCompleted:false,
   expeditionDispatched:false,prologueCompleted:false,
   firstContractGuaranteeUsed:false,starterContractScrollGranted:false,
   guides:{

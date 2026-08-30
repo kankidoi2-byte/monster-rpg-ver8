@@ -36,7 +36,12 @@ const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
 });
 const TUTORIAL_STELLA_SKILL_ID='skill_elna_middle_01';
 const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'grassland',enemyId:'grassbeat',difficultyId:'easy',actorId:'freigal'});
-const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue','grant_stella_skill_card','start_stella_mock_battle']);
+const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
+  recipeId:'alchemion_standard',displayName:'ルミナの入門錬成',resultId:'alchemion',
+  coinOptionId:'high',coins:250,
+  materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])
+});
+const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue','grant_stella_skill_card','start_stella_mock_battle','prepare_lumina_alchemy']);
 const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,advantageUsed:false,enemyQueue:[]};
 function isTutorialRescueBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='elna_rescue';}
 function isTutorialStellaMockBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='stella_mock';}
@@ -726,6 +731,7 @@ function runTutorialTransition(transition){
   if(transition==='start_elna_rescue')return startTutorialRescueBattle();
   if(transition==='grant_stella_skill_card')return Boolean(commitTutorialStellaSkillCard());
   if(transition==='start_stella_mock_battle')return startTutorialStellaMockBattle();
+  if(transition==='prepare_lumina_alchemy')return prepareTutorialLuminaAlchemy();
   return false;
 }
 
@@ -826,6 +832,65 @@ function claimTutorialAlchemySupplyReward(){
   if(tutorialUiState.active&&tutorialCurrentStepId()==='request_reward_claim')tutorialNext(true);
   else updateTutorialMenuSummary();
   return true;
+}
+
+function tutorialLuminaAlchemyResourceEntries(){
+  return TUTORIAL_LUMINA_ALCHEMY.materials.map(itemId=>({itemId,item:ITEM_BY_ID[itemId]}));
+}
+function tutorialLuminaAlchemyHasResources(){
+  return Number(save?.coins||0)>=TUTORIAL_LUMINA_ALCHEMY.coins
+    &&tutorialLuminaAlchemyResourceEntries().every(({itemId,item})=>item?.alchemyMaterial&&Number(save?.items?.[itemId]||0)>=1);
+}
+function prepareTutorialLuminaAlchemy(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying||tutorial.alchemyLessonCompleted===true){
+    if(typeof deactivateTutorialAlchemyLesson==='function')deactivateTutorialAlchemyLesson();
+    if(typeof showAlchemy==='function')showAlchemy();
+    return true;
+  }
+  const snapshot=JSON.stringify(save);
+  try{
+    if(tutorial.alchemyLessonPrepared!==true){
+      const resources=tutorialLuminaAlchemyResourceEntries();
+      if(resources.some(({item})=>!item?.alchemyMaterial))throw new Error('tutorial_lumina_material_missing');
+      save.coins=Math.max(Number(save.coins)||0,TUTORIAL_LUMINA_ALCHEMY.coins);
+      resources.forEach(({itemId})=>{
+        save.items[itemId]=Math.max(Number(save.items?.[itemId])||0,1);
+        if(typeof registerItemDex==='function')registerItemDex(itemId);
+      });
+      if(typeof markTutorialAlchemyLessonPrepared!=='function'||!markTutorialAlchemyLessonPrepared())throw new Error('tutorial_lumina_prepare_flag');
+    }
+    if(!tutorialLuminaAlchemyHasResources())throw new Error('tutorial_lumina_resources_spent');
+    if(typeof setTutorialStep==='function')setTutorialStep('lumina_alchemy');
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_lumina_prepare_save');
+    if(typeof activateTutorialAlchemyLesson!=='function'||!activateTutorialAlchemyLesson(TUTORIAL_LUMINA_ALCHEMY))throw new Error('tutorial_lumina_activate');
+    return true;
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('ルミナの入門錬成を準備できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice(error?.message==='tutorial_lumina_resources_spent'?'入門錬成用の素材かコインが不足しています。':'入門錬成を準備できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+}
+function commitTutorialLuminaAlchemySuccess(){
+  if(typeof currentTutorialState!=='function')return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return true;
+  if(tutorial.alchemyLessonCompleted===true)return false;
+  if(typeof markTutorialAlchemyLessonCompleted!=='function'||!markTutorialAlchemyLessonCompleted())return false;
+  if(typeof setTutorialStep==='function')setTutorialStep('expedition_intro');
+  return true;
+}
+function handleTutorialAlchemyConfirmationOpened(){
+  return tutorialCurrentStepId()==='lumina_start'&&queueTutorialActionAdvance('lumina_start');
+}
+function handleTutorialAlchemyExecutionStarted(){
+  return tutorialCurrentStepId()==='lumina_execute'&&queueTutorialActionAdvance('lumina_execute');
+}
+function handleTutorialLuminaAlchemyCompleted(){
+  const replay=typeof currentTutorialState==='function'&&currentTutorialState().replaying===true;
+  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_alchemy_result',persist:true,replay});
 }
 
 function tutorialStellaSkillCard(){return typeof SKILL_BY_ID==='object'?SKILL_BY_ID[TUTORIAL_STELLA_SKILL_ID]||null:null;}
@@ -1183,7 +1248,21 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'効果抜群！',text:'今のが有利属性だよ！ あとは自由に戦って、グラスビートを倒してみよう！',progressLabel:'MOCK BATTLE'},
   {id:'stella_mock_victory',screenId:'battle',persistAs:'lumina_intro',nextStepId:'lumina_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'属性模擬戦クリア！',text:'ばっちり！ 相手の属性を見て、有利な技を選べば戦いを有利に進められるよ！',progressLabel:'STELLA',nextLabel:'次へ'},
   {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'模擬戦を再開しよう',text:'進行は失われていないぞ！ 「依頼を選び直す」を押して、炎属性の技をもう一度試そう！',progressLabel:'RETRY'},
-  {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',waitForEvent:'lumina_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'工房へ'},
+  {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'工房へ'},
+  {id:'lumina_encounter',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'見習い錬金術師ルミナ',text:'ようこそ、私の工房へ！ 集めた素材から新しい契約体を生み出す「錬成」を、一緒に試してみよう。',progressLabel:'LUMINA'},
+  {id:'lumina_recipe_offer',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成',text:'練習用の錬成核は私が用意したよ。仲間は消費しないから、4つの素材と250コインで始めよう！',progressLabel:'ALCHEMY'},
+  {id:'lumina_alchemy',screenId:'home',persistAs:'lumina_alchemy',transition:'prepare_lumina_alchemy',nextStepId:'lumina_recipe',replayNextStepId:'lumina_alchemy_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'錬成台を開こう！',text:'ここを押すと、素材を組み合わせて新しい契約体を生み出せるぞ！',progressLabel:'ALCHEMY',nextLabel:'錬成台へ'},
+  {id:'lumina_recipe',screenId:'alchemy',target:'#tutorialAlchemyRecipeCard',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'ルミナの入門錬成',text:'これは序章専用のレシピだよ。今回は練習用錬成核を使うから、触媒の仲間は必要ないの。',progressLabel:'RECIPE'},
+  {id:'lumina_materials',screenId:'alchemy',target:'#tutorialAlchemyMaterials',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'4種類の素材',text:'依頼で受け取った素材を1個ずつ使うよ。所持数と必要数はここで確認できるの。',progressLabel:'MATERIAL'},
+  {id:'lumina_coin',screenId:'alchemy',target:'#tutorialAlchemyCoin',persistAs:'lumina_alchemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'投入コイン',text:'ここに必要な250コインが表示されるぞ！',progressLabel:'COIN'},
+  {id:'lumina_rate',screenId:'alchemy',target:'#tutorialAlchemyRate',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'初回成功率100％',text:'最初の入門錬成は必ず成功するよ。通常の錬成では素材や触媒で成功率が変わるからね！',progressLabel:'SUCCESS RATE'},
+  {id:'lumina_start',screenId:'alchemy',target:'#tutorialAlchemyStartButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を始めよう',text:'ここを押すと、入門錬成の確認へ進めるぞ！',progressLabel:'ALCHEMY'},
+  {id:'lumina_confirm',screenId:'alchemyConfirm',target:'#alchemyConfirmContent',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'消費内容を確認',text:'素材4個と250コイン、成功率100％を確認してね。今回は仲間を消費しないよ！',progressLabel:'CONFIRM'},
+  {id:'lumina_execute',screenId:'alchemyConfirm',target:'#alchemyExecuteButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を実行',text:'ここを押すと、素材とコインを使って錬成を実行するぞ！',progressLabel:'ALCHEMY'},
+  {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'素材の反応をひとつに結んでいるよ。もうすぐ新しい契約体が生まれるからね！',progressLabel:'ALCHEMY'},
+  {id:'lumina_alchemy_result',screenId:'alchemyResult',target:'#tutorialAlchemyResult',persistAs:'expedition_intro',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'入門錬成成功！',text:'成功だよ！ これで素材とコイン、成功率を確認しながら自分で錬成できるね。',progressLabel:'LUMINA',nextStepId:'expedition_intro'},
+  {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成の報酬は一度だけだよ。通常の錬成台は自由に使ってね！',progressLabel:'REPLAY',nextStepId:'expedition_intro'},
+  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',waitForEvent:'expedition_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ 次は仲間を短い遠征へ送り出してみるぞ！',progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
   {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'上が敵です',text:'上側が敵のスライムです。HPを0にすると倒せるぞ！',progressLabel:'BATTLE'},
