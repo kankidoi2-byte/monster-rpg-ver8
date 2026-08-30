@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 20023)
+Total output lines: 725
+
 // --- 画像データはここに挿入される ---
 const IMG={
   orca_abyss:'images/monsters/orca_abyss.webp',
@@ -143,7 +146,7 @@ const TN = {
 };
 
 const TYPE_ICONS={fire:'🔥',water:'💧',thunder:'⚡',wind:'🌪️',grass:'🌳',light:'✨',dark:'🌑',star:'⭐',dragon:'🐉',normal:'⚪'};
-const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron','grassbeat','volteck']);
+const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron']);
 const ADV = {
   fire:    {grass:1.5, water:.7},
   water:   {fire:1.5, thunder:.7},
@@ -313,8 +316,7 @@ const M = [
   {id:'stella_apprentice',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_apprentice',no:36,name:'見習い魔法使いステラ',rarity:'★★',types:['star','light'],huntLevels:{normal:22,hard:50},unitType:'character',characterNo:6,contractable:false,
    hp:115,spd:90,catchRate:.20,evolution:'stella_wizard',evolutionLevel:2,
    desc:'魔導学園で星魔法を学ぶ見習い魔法使い。明るい笑顔と未完成ながら鋭い魔力で戦う。',
-   moves:[["星屑弾",30,"star",null,null,null,null,null,"skill_stella_apprentice_01"],["マジックショット",24,"normal",null,null,null,null,null,"skill_stella_apprentice_02"],["スターブースト",0,"star","buff",null,null,null,null,"skill_stella_apprentice_03"]]},
-  {id:'stella_wizard',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_wizard',no:37,name:'魔法使いステラ',rarity:'★★★',types:['star','light'],huntLevels:{normal:46,hard:76},unitType:'character',characterNo:7,contractable:false,
+   moves:[["星屑弾",30,"star",null,null,null,null,null,"skill_stella_apprentice_01"],["マジックショット",24,"normal",null,null,null,null,null,"skill_stella_apprentice_02"],["スターブースト",0,"star","buff"…23 tokens truncated…haracter',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_wizard',no:37,name:'魔法使いステラ',rarity:'★★★',types:['star','light'],huntLevels:{normal:46,hard:76},unitType:'character',characterNo:7,contractable:false,
    evolutionOnly:true,evolution:'stella_sorcerer',evolutionLevel:3,hp:155,spd:102,catchRate:.10,
    desc:'見習い魔法使いステラが成長した姿。星の魔力を自在に操り、軽やかな詠唱で戦場を照らす魔法使い。',
    moves:[["スターライトレイ",42,"star",null,null,null,null,null,"skill_stella_wizard_01"],["マジックバースト",36,"normal",null,null,null,null,null,"skill_stella_wizard_02"],["アストラルフレア",64,"star",null,null,null,null,null,"skill_stella_wizard_03"]]},

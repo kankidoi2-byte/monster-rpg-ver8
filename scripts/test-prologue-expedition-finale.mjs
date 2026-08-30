@@ -72,9 +72,9 @@ assert.equal(wrong.save.progress.tutorial.expeditionDispatched,false);
 
 dispatch.save.progress.tutorial.stepId='prologue_complete';
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',dispatch),true);
-assert.equal(dispatch.save.progress.chapterId,'chapter1');
+assert.equal(dispatch.save.progress.chapterId,'prologue');
 assert.equal(dispatch.save.progress.storyFlags.prologueCompleted,true);
-assert.equal(dispatch.save.progress.storyFlags.chapter1Unlocked,true);
+assert.equal(dispatch.save.progress.storyFlags.chapter1Unlocked,undefined);
 assert.equal(dispatch.save.progress.tutorial.prologueCompleted,true);
 assert.equal(dispatch.save.progress.tutorial.status,'completed');
 
@@ -85,18 +85,18 @@ assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',failed),false)
 assert.equal(JSON.stringify(failed.save),before,'a failed final save must restore chapter, flags, and tutorial status');
 
 const replay=makeTutorialContext({replaying:true,dispatched:true,completed:true});
-replay.save.progress.chapterId='chapter1';replay.save.progress.storyFlags={prologueCompleted:true,chapter1Unlocked:true};
+replay.save.progress.storyFlags={prologueCompleted:true};
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',replay),true);
 assert.equal(replay.save.progress.tutorial.replaying,false);
-assert.equal(replay.save.progress.chapterId,'chapter1','replay must retain the unlocked chapter');
+assert.equal(replay.save.progress.chapterId,'prologue','replay must not add a later chapter');
 
-assert.ok(index.includes('id="homeStoryPreview"'),'home must reserve a story route');
-assert.ok(ui.includes('id="homeChapterOneButton"')&&ui.includes('function openChapterOneEntry()'),'Chapter 1 needs a visible and working home route');
-assert.ok(ui.includes("save?.progress?.chapterId==='chapter1'")&&ui.includes('openBattleHub();return true;'),'the route must only unlock after the prologue and lead to free adventure');
+assert.ok(!index.includes('id="homeStoryPreview"'),'home must not advertise an unimplemented Chapter 1');
+assert.ok(!ui.includes('homeChapterOneButton')&&!ui.includes('openChapterOneEntry'),'Chapter 1 entry must stay out of the prologue scope');
+assert.ok(!tutorial.includes('chapter1Unlocked')&&!tutorial.includes("chapterId='chapter1'"),'prologue completion must not create Chapter 1 state');
 assert.ok(saveSource.includes("function markTutorialExpeditionDispatched(){return markTutorialOnce('expeditionDispatched');}")&&saveSource.includes("function markTutorialPrologueCompleted(){return markTutorialOnce('prologueCompleted');}"));
 
 for(const file of ['tutorial.js','expedition.js','ui.js'])assert.match(index,new RegExp(`${file.replace('.','\\.')}\\?v=[^"']*prologue-expedition-finale-1`),`${file} cache key must refresh`);
 assert.equal(packageJson.scripts['check:prologue-expedition-finale'],'node scripts/test-prologue-expedition-finale.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-expedition-finale'));
 
-console.log('Prologue expedition/finale validation passed (short dispatch, suitability, real save lock, no-wait continuation, replay/idempotency, atomic completion, free play, and Chapter 1 route).');
+console.log('Prologue expedition/finale validation passed (short dispatch, suitability, real save lock, no-wait continuation, replay/idempotency, atomic completion, and free play without Chapter 1).');

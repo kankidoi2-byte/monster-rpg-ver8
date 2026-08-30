@@ -87,8 +87,8 @@ assert.deepEqual(Array.from(fresh.save.party,uid=>fresh.save.instances.find(entr
 assert.equal(fresh.save.skillCards.skill_elna_middle_01,1);
 for(const flag of requiredFlags)assert.equal(fresh.save.progress.tutorial[flag],true,`full skip must finalize ${flag}`);
 assert.equal(fresh.save.progress.tutorial.status,'skipped');
-assert.equal(fresh.save.progress.chapterId,'chapter1');
-assert.deepEqual({...fresh.save.progress.storyFlags},{prologueCompleted:true,chapter1Unlocked:true});
+assert.equal(fresh.save.progress.chapterId,'prologue');
+assert.deepEqual({...fresh.save.progress.storyFlags},{prologueCompleted:true});
 assert.equal(fresh.save.progress.tutorial.elnaGuestActive,false);
 assert.equal(fresh.tutorialBattleSession.active,false);
 assert.equal(vm.runInContext('commitTutorialFullSkip()',fresh),true);
@@ -142,13 +142,14 @@ assert.match(tutorialCss,/\.tutorial-overlay\{[^}]*pointer-events:none/,'the ove
 assert.match(tutorialCss,/@media\(max-width:719px\)\{[^}]*bottom:43svh/,'portrait art must stay above the phone dialogue region');
 assert.match(tutorialCss,/\.tutorial-overlay\.is-story-step \.tutorial-bubble\{max-height:48svh/,'phone story dialogue must stay within its lower region');
 assert.match(tutorialCss,/@media\(max-width:480px\)[^\n]+grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,'phone controls must fit Back, dialogue skip, and full skip');
-assert.match(uiCss,/\.home-story-card>button\{[^}]*width:100%[^}]*min-height:72px/,'the Chapter 1 route needs a full-width mobile tap target');
+assert.ok(!index.includes('homeStoryPreview'),'the completed prologue must return to free play without a Chapter 1 route');
+assert.ok(!tutorial.includes('chapter1Unlocked'),'full skip must not unlock an unimplemented Chapter 1');
 
 assert.ok(index.includes('id="tutorialDialogueSkipButton"')&&index.includes('>会話スキップ</button>'));
 assert.ok(index.includes('id="tutorialSkipButton"')&&index.includes('>全体スキップ</button>'));
 assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must remain separate layers');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1'),'tutorial CSS cache key must be refreshed');
-assert.ok(index.includes('prologue-expedition-finale-1-prologue-comprehensive-1"></script>'),'tutorial JS cache key must be refreshed');
+assert.ok(index.includes('prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1"></script>'),'tutorial JS cache key must be refreshed');
 assert.equal(packageJson.scripts['check:prologue-comprehensive'],'node scripts/test-prologue-comprehensive.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-comprehensive'));
 

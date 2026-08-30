@@ -22,7 +22,7 @@ expect(save.includes('safeStorageRemove(SAVE_KEY)'), `save reset must use protec
 
 const starterIds = ['elna_beginner', 'freigal', 'aquaron', 'grassbeat', 'volteck'];
 starterIds.forEach(id => expect(data.includes(`id:'${id}'`) || data.includes(`id: '${id}'`), `starter id is missing: ${id}`));
-expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron','grassbeat','volteck'])"), 'shared initial-party definition is missing');
+expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron'])"), 'initial party must exclude Grassbeat and Volteck');
 expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
 const screenIds = [

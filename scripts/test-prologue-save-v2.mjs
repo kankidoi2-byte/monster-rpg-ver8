@@ -8,7 +8,7 @@ const context=vm.createContext({
   console,Date,JSON,Math,setTimeout,
   MAX_LEVEL:100,clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
   M:[{id:'elna_beginner'},{id:'freigal'},{id:'aquaron'},{id:'grassbeat'},{id:'volteck'}],MAPS:[{id:'grassland'}],
-  INITIAL_PARTY_IDS:['elna_beginner','freigal','aquaron','grassbeat','volteck'],
+  INITIAL_PARTY_IDS:['elna_beginner','freigal','aquaron'],
   ALCHEMY_MONSTER_CONFIGS:{},ITEM_DEX_BY_ID:{},ITEM_DEX_ITEMS:[],SHOP_ITEMS:[],
   localStorage:{getItem:key=>storage.has(key)?storage.get(key):null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
   alert:()=>{},confirm:()=>false,showUiNotice:()=>{},document:{},location:{reload:()=>{}},
