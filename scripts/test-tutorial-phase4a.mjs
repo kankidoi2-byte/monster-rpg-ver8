@@ -1,56 +1,60 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
-const data=read('js/data.js');
-const party=read('js/party.js');
 const tutorial=read('js/tutorial.js');
-const init=read('js/init.js');
+const saveSource=read('js/save.js');
+const data=read('js/data.js');
 const index=read('index.html');
+const css=read('css/tutorial.css');
+const manifest=JSON.parse(read('images/tutorial/characters/manifest.json'));
+const portrait=fs.readFileSync(new URL('../images/tutorial/characters/gnosis-dialogue-transparent-final.png',import.meta.url));
 
-const starters=['elna_beginner','freigal','aquaron','grassbeat','volteck'];
-assert.ok(data.includes(`const INITIAL_PARTY_IDS=Object.freeze(['${starters.join("','")}'])`),'the five stable starter IDs must remain unchanged');
-starters.forEach(id=>assert.ok(tutorial.includes(id)||tutorial.includes({
-  elna_beginner:'初級剣士エルナ',freigal:'フレイガル',aquaron:'アクアロン',grassbeat:'グラスビート',volteck:'ボルテック'
-}[id]),`starter must be represented in the onboarding: ${id}`));
-assert.ok(party.includes('data-monster-id="${m.id}"'),'party choices must expose a stable tutorial target without changing monster IDs');
+const signature=Buffer.from([137,80,78,71,13,10,26,10]);
+assert.ok(portrait.subarray(0,8).equals(signature),'Gnosis portrait must be a decoded PNG');
+assert.equal(portrait.readUInt32BE(16),384,'Gnosis portrait width must be optimized for dialogue use');
+assert.equal(portrait.readUInt32BE(20),576,'Gnosis portrait height must be optimized for dialogue use');
+assert.equal(portrait[25],6,'Gnosis portrait must use RGBA and retain real alpha');
+assert.ok(portrait.length<=600*1024,'Gnosis portrait must stay within the mobile asset budget');
 
-const orderedSteps=['intro_gnosis','party_open','party_choose','party_more','party_leader','home_return','home_adventure','home_party','home_coin','home_menu'];
+const gnosis=manifest.characters.find(asset=>asset.id==='gnosis');
+assert.ok(manifest.runtimeReferenced,'the portrait manifest must describe runtime assets');
+assert.ok(gnosis,'Gnosis portrait must be registered in the tutorial asset manifest');
+assert.equal(gnosis.usage,'tutorial-story-only');
+assert.equal(gnosis.dexRegistered,false,'Gnosis must not be added to the character or monster dex');
+assert.ok(!Object.hasOwn(gnosis,'characterNo'),'Gnosis must not receive a character-dex number');
+assert.equal(crypto.createHash('sha256').update(portrait).digest('hex'),gnosis.cutoutSha256,'manifest hash must identify the deployed transparent PNG');
+assert.ok(gnosis.validation.rgba&&gnosis.validation.transparentPixels>0&&gnosis.validation.partialAlphaPixels>0,'the deployed portrait must contain real transparent and antialiased pixels');
+assert.ok(!new RegExp("\\bid\\s*:\\s*['\"]gnosis['\"]").test(data),'Gnosis must remain outside gameplay and dex records');
+
+const introIds=['intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent'];
 let previous=-1;
-orderedSteps.forEach(id=>{
+for(const id of introIds){
   const current=tutorial.indexOf(`id:'${id}'`);
-  assert.ok(current>previous,`missing or out-of-order Phase 4A step: ${id}`);
+  assert.ok(current>previous,`missing or out-of-order Gnosis intro step: ${id}`);
   previous=current;
-});
-assert.ok(tutorial.includes("id:'first_hunt'"),'the completed Phase 4A flow must connect to the Phase 4B entry');
-assert.ok(tutorial.indexOf("id:'first_hunt'")>tutorial.indexOf("id:'home_menu'"),'Phase 4A home guidance must remain before the first hunt');
+}
+const intro=tutorial.slice(tutorial.indexOf("id:'intro_gnosis'"),tutorial.indexOf("id:'elna_encounter'"));
+assert.ok(intro.includes("text:'ーい……'")&&intro.includes("text:'おーい……'")&&intro.includes("text:'おーい！'"),'the three-part opening call must match the approved wording');
+assert.ok(intro.indexOf("text:'ーい……'")<intro.indexOf("text:'おーい……'")&&intro.indexOf("text:'おーい……'")<intro.indexOf("text:'おーい！'"),'the three-part opening call must keep its order');
+assert.ok(intro.includes('やっと起きた！')&&intro.includes('案内するぞ！'),'Gnosis must sound cheerful and direct');
+assert.ok(!intro.includes('カナタ'),'Kanata must not appear in the prologue');
+assert.equal((intro.match(/gnosis-dialogue-transparent-final\.png/g)||[]).length,7,'every Gnosis dialogue step must use the transparent portrait');
+assert.ok(intro.includes("id:'gnosis_name'")&&intro.includes("input:'player_name'")&&intro.includes("mode:'external_action'"),'name entry must be a blocking external-action step');
+assert.ok(intro.includes('{{playerName}}')&&intro.includes('契約した相手の力を「契約体」として呼び出せる'),'the contract explanation must use the entered name and explain contract bodies');
+assert.ok(intro.includes("id:'gnosis_descent'")&&intro.includes("scene:'world_descent'")&&intro.includes("persistAs:'elna_encounter'")&&intro.includes("nextStepId:'elna_encounter'"),'world descent must checkpoint the next prologue encounter without marking the tutorial complete');
 
-assert.ok(tutorial.includes("title:'グノーシス'")&&tutorial.includes('ようこそ、契約者。'),'Gnosis must address the player as 契約者 without adding a long story');
-assert.ok(tutorial.includes('好きな1〜3体を選んで'),'the player must be allowed to choose one to three starters');
-assert.ok(tutorial.includes('最初の仲間がリーダーです'),'the first party member must be explained as leader');
-assert.ok(tutorial.includes('あとからいつでも変更できます'),'later party changes must be explained');
-assert.ok(tutorial.includes("target:'#homeAdventureButton'")&&tutorial.includes("target:'#homePartyEditButton'")&&tutorial.includes("target:'.app-resource'")&&tutorial.includes("target:'.app-bottom-nav'"),'home guidance must stay limited to adventure, party, coins, and the bottom menu');
-
-assert.ok(index.includes('id="homePartyEditButton"')&&index.includes('id="partyCurrentCard"'),'home and party tutorial anchors must be stable DOM IDs');
-assert.ok(tutorial.includes('requiredPartyMin:1')&&tutorial.includes('requiredPartyMax:3'),'progress must reject an empty or oversized party');
-assert.ok(tutorial.includes('function tutorialStepCanAdvance')&&tutorial.includes("typeof getPartyInstances==='function'"),'party selection must be validated against the real party state');
-assert.ok(tutorial.includes('function checkpointTutorialFlow')&&tutorial.includes('setTutorialStep(step.continueAt)'),'the unfinished required tutorial must checkpoint instead of completing');
-assert.ok(tutorial.includes('if(tutorialShouldAutoStart())return startTutorialFlow'),'new saves must auto-start the registered required tutorial');
-assert.ok(init.includes('setTimeout(resumeTutorialIfNeeded,0)'),'title exit and reload must use the shared new/resume entry point');
-
-const guardStart=tutorial.indexOf('function tutorialStepCanAdvance');
-const guardEnd=tutorial.indexOf('function checkpointTutorialFlow',guardStart);
-const guardContext=vm.createContext({partyCount:0,notices:[],getPartyInstances:()=>Array.from({length:guardContext.partyCount}),showUiNotice:message=>guardContext.notices.push(message)});
-vm.runInContext(tutorial.slice(guardStart,guardEnd),guardContext);
-guardContext.step={requiredPartyMin:1,requiredPartyMax:3};
-assert.equal(vm.runInContext('tutorialStepCanAdvance(step)',guardContext),false,'an empty party must block progress');
-guardContext.partyCount=1;
-assert.equal(vm.runInContext('tutorialStepCanAdvance(step)',guardContext),true,'one selected starter must allow progress');
-guardContext.partyCount=3;
-assert.equal(vm.runInContext('tutorialStepCanAdvance(step)',guardContext),true,'three selected starters must allow progress');
-guardContext.partyCount=4;
-assert.equal(vm.runInContext('tutorialStepCanAdvance(step)',guardContext),false,'more than three members must block progress');
+['tutorialStoryBackdrop','tutorialCharacterLayer','tutorialCharacterPortrait','tutorialNameForm','tutorialPlayerNameInput']
+  .forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing layered story UI contract: #${id}`));
+assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must be separate layers');
+assert.match(css,/\.tutorial-story-backdrop\{/,'story backdrop styling is missing');
+assert.match(css,/\.tutorial-character-layer\{/,'transparent character layer styling is missing');
+assert.match(css,/@media\(max-width:719px\)/,'portrait-phone story layout is missing');
+assert.match(css,/\.tutorial-overlay\.is-story-step \.tutorial-bubble\{max-height:calc\(100svh - 20px\)/,'mobile story dialogue must expose its full natural content height');
+assert.ok(tutorial.includes('function renderTutorialStoryStep')&&tutorial.includes('function confirmTutorialPlayerName'),'story rendering and name confirmation contracts are missing');
+assert.ok(tutorial.includes('setTutorialPlayerName(value)')&&tutorial.includes('saveGame()')&&tutorial.includes('tutorialNext(true)'),'confirmed names must persist before the story advances');
 
 const resumeStart=tutorial.indexOf('function resumeTutorialIfNeeded');
 const resumeEnd=tutorial.indexOf('function handleTutorialScreenChange',resumeStart);
@@ -63,11 +67,12 @@ const entryContext=vm.createContext({
 });
 vm.runInContext(tutorial.slice(resumeStart,resumeEnd),entryContext);
 assert.equal(vm.runInContext('resumeTutorialIfNeeded()',entryContext),true);
-assert.equal(entryContext.starts[0].options.persist,true,'a new save must enter the persistent required flow');
+assert.equal(entryContext.starts[0].options.persist,true,'a new save must enter the persistent prologue');
 entryContext.state={status:'completed',stepId:null,replaying:false};entryContext.starts=[];
-assert.equal(vm.runInContext('resumeTutorialIfNeeded()',entryContext),false,'an existing completed save must not be forced into onboarding');
-entryContext.state={status:'in_progress',stepId:'party_more',replaying:false};entryContext.starts=[];
+assert.equal(vm.runInContext('resumeTutorialIfNeeded()',entryContext),false,'an existing completed save must not be forced into the new prologue');
+entryContext.state={status:'in_progress',stepId:'gnosis_contract_power',replaying:false};entryContext.starts=[];
 assert.equal(vm.runInContext('resumeTutorialIfNeeded()',entryContext),true);
-assert.equal(entryContext.starts[0].options.stepId,'party_more','an interrupted onboarding must resume its saved step');
+assert.equal(entryContext.starts[0].options.stepId,'gnosis_contract_power','an interrupted Gnosis scene must resume at its saved step');
+assert.ok(saveSource.includes('playerName')&&saveSource.includes('setTutorialPlayerName'),'the entered player name must remain in the v2 tutorial save contract');
 
-console.log('Tutorial Phase 4A validation passed (new-save entry, Gnosis copy, five starter choices, 1–3 party guard, leader rule, home guidance, and Phase 4B handoff).');
+console.log('Tutorial Phase 4A validation passed (transparent Gnosis portrait, approved call, name entry, contract explanation, world descent, resume, and no dex registration).');

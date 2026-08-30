@@ -1,6 +1,9 @@
 function prepareBattleParty() {
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
-  const party = getPartyInstances();
+  const savedParty = getPartyInstances();
+  const party = typeof tutorialBattlePartyInstances === 'function'
+    ? tutorialBattlePartyInstances(savedParty)
+    : savedParty;
   partyBattle = party.map(ins => ({
     uid:ins.uid, inst:ins,
     mon:structuredClone(by(ins.id)),
@@ -309,6 +312,9 @@ function runAway() {
   busy = true;
 }
 function win() {
+  if (eHp > 0) return;
+  if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
+  if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) return;
   if (battleRewardGranted) return;
   battleRewardGranted = true;
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
@@ -376,9 +382,11 @@ function win() {
     materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   });
-  renderSingleBattleContractPanel();
-  if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
+  const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
+  if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
   busy = true;
   renderParty();
-  setTimeout(processNextEvolution, 300);
+  // The prologue resumes its next guide immediately after a tutorial battle.
+  // Do not let an automatic evolution screen replace that resumed guide.
+  if(!tutorialOutcomeHandled)setTimeout(processNextEvolution, 300);
 }

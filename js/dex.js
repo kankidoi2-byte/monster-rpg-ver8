@@ -62,12 +62,12 @@ function renderDexHub(){
   const itemCount=ITEM_DEX_ITEMS.filter(item=>save.itemDex.includes(item.id)).length;
   const mapCount=MAPS.filter(map=>save.mapDex?.includes(map.id)).length;
   const cards=[
-    {screen:'dex',icon:'🐉',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
-    {screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態',count:dexRegisteredCount(characters),total:characters.length},
+    {id:'dexHubMonsterButton',screen:'dex',icon:'🐉',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
+    {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態',count:dexRegisteredCount(characters),total:characters.length},
     {screen:'mapDex',icon:'🗺️',title:'マップ図鑑',desc:'土地・生息種・特殊イベント',count:mapCount,total:MAPS.length},
     {screen:'itemDex',icon:'🎒',title:'アイテム図鑑',desc:'入手した道具と素材',count:itemCount,total:ITEM_DEX_ITEMS.length}
   ];
-  grid.innerHTML=cards.map(card=>`<button onclick="show('${card.screen}')"><span>${card.icon}</span><strong>${card.title}</strong><small>${card.desc}</small><b class="dex-hub-count">${card.count} / ${card.total}</b></button>`).join('');
+  grid.innerHTML=cards.map(card=>`<button${card.id?` id="${card.id}"`:''} onclick="show('${card.screen}')"><span>${card.icon}</span><strong>${card.title}</strong><small>${card.desc}</small><b class="dex-hub-count">${card.count} / ${card.total}</b></button>`).join('');
 }
 function monsterMapEncounterNote(map) {
   if (map.goldenLand) return '希少マップ・地図を使うと出現確定';
@@ -178,7 +178,7 @@ function renderDex() {
   document.getElementById('dexDetail').innerHTML = '';
   document.getElementById('dexList').innerHTML =
     M.filter(m=>!isCharacterUnit(m)).sort((a,b)=>monsterDexNumber(a)-monsterDexNumber(b)).map(m => `
-      <button class="monster-dex-card" onclick="showDexDetail('${m.id}')">
+      <button class="monster-dex-card"${['freigal','aquaron'].includes(m.id)?` data-tutorial-monster="${m.id}"`:''} onclick="showDexDetail('${m.id}')">
         <span class="monster-dex-no">No.${monsterDexNumber(m)}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
         <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
 }
@@ -188,7 +188,7 @@ function renderCharacterDex() {
   document.getElementById('characterDexDetail').innerHTML = '';
   document.getElementById('characterDexList').innerHTML =
     M.filter(isCharacterUnit).sort((a,b)=>(a.characterNo||999)-(b.characterNo||999)).map(m => `
-      <button class="monster-dex-card character-dex-card" onclick="showCharacterDexDetail('${m.id}')">
+      <button class="monster-dex-card character-dex-card"${m.id==='elna_beginner'?` data-tutorial-character="${m.id}"`:''} onclick="showCharacterDexDetail('${m.id}')">
         <span class="monster-dex-no character-dex-no">${characterDexNumber(m)}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
         <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
 }

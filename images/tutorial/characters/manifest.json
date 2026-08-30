@@ -1,9 +1,28 @@
 {
-  "purpose": "future-prologue-tutorial",
-  "runtimeReferenced": false,
+  "purpose": "prologue-tutorial",
+  "runtimeReferenced": true,
   "format": "png-alpha",
   "maxEdgePx": 576,
   "characters": [
+    {
+      "id": "gnosis",
+      "name": "グノーシス",
+      "source": "gnosis-dialogue-transparent-final.png",
+      "cutout": "images/tutorial/characters/gnosis-dialogue-transparent-final.png",
+      "usage": "tutorial-story-only",
+      "dexRegistered": false,
+      "sourceSha256": "6228eea942b080d6c457eaf34b55360dd56bf0c1955a4a6b5c6f44e57694185b",
+      "cutoutSha256": "3ca983a1bdabdae69d76d7dd0638e78778c489347a315fabc9a6e5f18610e9f7",
+      "width": 384,
+      "height": 576,
+      "validation": {
+        "decoded": true,
+        "rgba": true,
+        "transparentPixels": 147745,
+        "opaquePixels": 65646,
+        "partialAlphaPixels": 7793
+      }
+    },
     {
       "id": "elna_beginner",
       "characterNo": 1,
@@ -11,16 +30,17 @@
       "source": "images/monsters/elna_beginner.webp",
       "cutout": "images/tutorial/characters/elna_beginner.png",
       "sourceSha256": "74641f5f474fe23a488769294f07eeac5a0f597aa6caba2372bd6a3174d6d8ae",
-      "cutoutSha256": "bc69b1e04dd3c87df325778dd21dbe9b5cd5bef9789f2237609fd81e8d30f120",
-      "width": 576,
+      "cutoutSha256": "7101bc766c98af1fd867252be7b225bf43d5158b2ae6c7a12a1c1dfc2c951db4",
+      "width": 384,
       "height": 576,
       "validation": {
         "decoded": true,
         "rgba": true,
-        "sourcePixelsRecomposed": true,
-        "transparentPixels": 243706,
-        "opaquePixels": 78825,
-        "partialAlphaPixels": 9245
+        "backgroundRemoved": true,
+        "portraitAspectRatio": "2:3",
+        "transparentPixels": 169608,
+        "opaquePixels": 45386,
+        "partialAlphaPixels": 6190
       }
     },
     {

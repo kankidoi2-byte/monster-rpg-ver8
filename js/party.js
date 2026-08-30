@@ -16,7 +16,7 @@ function renderParty() {
       <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <details class="monster-roster-details"><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>
       ${instanceAlchemySummary(ins)}
-      <div class="mini" data-tutorial-skill-summary><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
+      <div class="mini" data-tutorial-skill-summary><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button data-tutorial-skill-edit onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
       <div class="mini">
         ${dataItems.map(it => `<button onclick="useExpItemOnInstance('${it.id}','${ins.uid}')" ${((save.items[it.id]||0)<=0)?'disabled':''}>${itemInlineVisual(it)}${it.name}</button>`).join('')}
       </div>
@@ -69,4 +69,21 @@ function renderPartySetup() {
       <button data-monster-id="${m.id}" data-party-uid="${ins.uid}"${ins.uid===tutorialContractUid?' data-tutorial-contract-party="true"':''} onclick="togglePartyMember('${ins.uid}')" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
     </article>`;
   }).join('');
+}
+
+function savePartySetup(){
+  const party=typeof getPartyInstances==='function'?getPartyInstances():[];
+  if(!party.length||party.length>3){
+    if(typeof showUiNotice==='function')showUiNotice('パーティーを1〜3体で編成してください。','warning');
+    return false;
+  }
+  if(typeof canConfirmTutorialParty==='function'&&!canConfirmTutorialParty(party))return false;
+  if(typeof saveGame==='function'&&!saveGame()){
+    if(typeof showUiNotice==='function')showUiNotice('編成を保存できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+  renderPartySetup();
+  if(typeof handleTutorialPartySaved==='function'&&handleTutorialPartySaved())return true;
+  show('home');
+  return true;
 }

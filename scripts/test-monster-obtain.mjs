@@ -15,8 +15,11 @@ const entriesFor = id => rows.find(row => row.id === id).entries;
 
 assert.equal(rows.length, 50);
 assert.equal(rows.filter(row => row.entries.length === 0).length, 0, 'every monster needs an acquisition fallback or source');
-for (const id of ['freigal', 'aquaron', 'grassbeat', 'volteck']) {
+for (const id of ['freigal', 'aquaron']) {
   assert(entriesFor(id).some(entry => entry.kind === 'initial'), `${id} must show initial acquisition`);
+}
+for (const id of ['grassbeat', 'volteck']) {
+  assert(!entriesFor(id).some(entry => entry.kind === 'initial'), `${id} must not show initial acquisition`);
 }
 assert(entriesFor('aquaron').filter(entry => entry.kind === 'map').length > 1, 'multiple encounter maps must all be shown');
 assert(entriesFor('kimeragna_apex').some(entry => entry.kind === 'evolution'), 'normal evolution source is missing');

@@ -33,8 +33,12 @@ function resetNewSave(){evaluate('save=initSave()');}
 const fresh=plain(evaluate('initSave()'));
 assert.equal(fresh.schemaVersion,4);
 assert.deepEqual(fresh.progress.tutorial,{
-  id:'prologue',version:1,status:'not_started',stepId:null,
+  id:'prologue',version:2,status:'not_started',stepId:null,
   completed:false,skipped:false,replaying:false,
+  playerName:null,playerNamed:false,
+  starterContractsGranted:false,elnaGuestActive:false,elnaContractGranted:false,
+  stellaSkillCardGranted:false,alchemySuppliesGranted:false,alchemyLessonPrepared:false,alchemyLessonCompleted:false,
+  expeditionDispatched:false,prologueCompleted:false,
   firstContractGuaranteeUsed:false,starterContractScrollGranted:false,
   guides:{
     threeWay:false,invasion:false,kokoroLink:false,alchemy:false,expedition:false,
@@ -50,11 +54,13 @@ assert.equal(legacy.progress.tutorial.status,'completed','existing players must 
 assert.equal(legacy.progress.tutorial.completed,true);
 assert.equal(legacy.progress.tutorial.firstContractGuaranteeUsed,true,'legacy saves must not receive the guaranteed contract');
 assert.equal(legacy.progress.tutorial.starterContractScrollGranted,true,'legacy saves must not receive the tutorial scroll');
+assert.equal(legacy.progress.tutorial.starterContractsGranted,true,'legacy saves must not receive starter contracts twice');
+assert.equal(legacy.progress.tutorial.elnaContractGranted,true,'legacy saves must not receive the Elna contract twice');
 
 const repaired=plain(prepare({
   schemaVersion:4,
   progress:{tutorial:{
-    status:'in_progress',stepId:'battle_skill',guides:{threeWay:true,unknown:true},
+    version:2,status:'in_progress',stepId:'battle_skill',guides:{threeWay:true,unknown:true},
     firstContractGuaranteeUsed:false,starterContractScrollGranted:true
   }}
 }));
@@ -106,5 +112,10 @@ context.reloadedTutorialSave=plain(evaluate('save'));
 evaluate('save=parseAndPrepareSave(JSON.stringify(reloadedTutorialSave),[])');
 assert.equal(evaluate('markTutorialFirstContractGuaranteeUsed()'),false,'reload must not restore the first-contract guarantee');
 assert.equal(evaluate('markTutorialStarterContractScrollGranted()'),false,'reload must not restore the starter contract scroll grant');
+assert.equal(evaluate('markTutorialStarterContractsGranted()'),true);
+assert.equal(evaluate('markTutorialStarterContractsGranted()'),false,'starter contracts must only be claimed once');
+assert.equal(evaluate('markTutorialElnaContractGranted()'),true);
+assert.equal(evaluate('markTutorialElnaContractGranted()'),false,'the Elna contract must only be claimed once');
+assert.equal(evaluate("markTutorialOnce('unknownReward')"),false,'unknown reward flags must not enter the save contract');
 
-console.log('Tutorial save validation passed (new, legacy, resume, complete, skip, replay, guides, and idempotent first-contract flags).');
+console.log('Tutorial save validation passed (v2 new save, v1 protection, resume, complete, skip, replay, guides, and idempotent grant flags).');

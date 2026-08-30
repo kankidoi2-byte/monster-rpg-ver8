@@ -45,7 +45,7 @@ const contract = vm.runInContext(`({
 })`, context);
 
 assert.equal(contract.monsters.length,64);
-assert.deepEqual([...contract.initialPartyIds],['elna_beginner','freigal','aquaron','grassbeat','volteck']);
+assert.deepEqual([...contract.initialPartyIds],['elna_beginner','freigal','aquaron']);
 assert.equal(contract.characterCount,14);
 assert.equal(contract.monsterDexNumbers.length,50);
 assert.deepEqual([...contract.monsterDexNumbers].sort((a,b)=>a-b),Array.from({length:50},(_,index)=>index+1));
