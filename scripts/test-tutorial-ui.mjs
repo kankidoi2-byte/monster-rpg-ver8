@@ -10,9 +10,12 @@ const ui=read('js/ui.js');
 const init=read('js/init.js');
 
 [
-  'tutorialOverlay','tutorialStoryBackdrop','tutorialCharacterLayer','tutorialCharacterPortrait','tutorialSpotlight','tutorialArrow','tutorialBubble','tutorialProgressText',
+  'tutorialOverlay','tutorialStoryBackdrop','tutorialCharacterLayer','tutorialCharacterPortrait','tutorialSpotlight','tutorialArrow','tutorialBubble','tutorialProgressLabel',
   'tutorialProgressBar','tutorialTitle','tutorialText','tutorialNameForm','tutorialPlayerNameInput','tutorialBackButton','tutorialDialogueSkipButton','tutorialSkipButton','tutorialNextButton'
 ].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing tutorial UI contract: #${id}`));
+assert.ok(!index.includes('id="tutorialProgressText"'),'the tutorial must not show a discouraging current/total step counter');
+assert.ok(!tutorial.includes("getElementById('tutorialProgressText')"),'the removed numeric counter must not remain in rendering or screen-reader output');
+assert.ok(tutorial.includes("getElementById('tutorialProgressBar').style.width"),'the unobtrusive progress bar must remain');
 assert.ok(index.includes('id="tutorialMenuButton"')&&index.includes('onclick="openTutorialFromMenu()"'),'the menu must expose tutorial replay');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1'),'the tutorial stylesheet must be cache-versioned');
 assert.ok(index.indexOf('js/ui.js')<index.indexOf('js/tutorial.js')&&index.indexOf('js/tutorial.js')<index.indexOf('js/init.js'),'the tutorial engine must load after shared UI and before initialization');

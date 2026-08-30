@@ -1022,3 +1022,26 @@
 - `check:prologue-battle-basics`、`check:prologue-rescue-stability`、`check:prologue-elna-contract`：救援戦と契約の実処理・再開を検証した。
 - `check:prologue-continuity`、`check:prologue-comprehensive`、`check:tutorial-ui`、`check:tutorial-phase6`：自動再開、旧・途中セーブ、戻る・スキップ、スマホ配置を回帰検証した。
 - 次回対象：スマホ実機で13/86の「救援戦を始めよう！」から14/86の「敵・味方・HP」へ連続して進むことを確認する。
+
+## 数値STEPカウンターの撤去 Phase Q
+
+- 初見時に「○/86」が長い作業量として見え、序章を始める心理的負担になるため、現在数／総数の数値表示を撤去した。
+- `PROLOGUE`、`BATTLE`、`CONTRACT`など現在の案内区分は残した。細い進捗バーも維持し、残りの数を意識させずに進行感だけ分かる構成にした。
+- 数値表示用DOMと描画処理を両方削除したため、画面読み上げにも「○/86」は残らない。
+- STEP本体、順序、戻る、会話スキップ、途中セーブには変更を加えていない。
+
+### 変更ファイル
+
+- `index.html`
+- `js/tutorial.js`
+- `scripts/test-tutorial-ui.mjs`
+- `scripts/test-prologue-step-reduction.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `scripts/test-prologue-mobile-clarity.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:tutorial-ui`：数値カウンターのDOMと描画処理が存在せず、案内区分と進捗バーが維持されることを検証する。
+- `check:prologue-step-reduction`、`check:prologue-comprehensive`、`check:prologue-mobile-clarity`：86 STEP本線、スマホ表示、既存の進行・保存契約を回帰検証する。
+- 次回対象：スマホ実機で案内パネル上部が区分名と進捗バーだけになっていることを確認する。

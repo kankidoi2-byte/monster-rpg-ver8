@@ -431,7 +431,6 @@ function renderTutorialStep(){
   tutorialUiState.target?.classList.add('tutorial-target-active');
   ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
-  document.getElementById('tutorialProgressText').textContent=`${tutorialUiState.index+1} / ${tutorialUiState.steps.length}`;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
   document.getElementById('tutorialTitle').textContent=step.speaker||step.title;
   document.getElementById('tutorialText').textContent=tutorialResolvedText(step);
