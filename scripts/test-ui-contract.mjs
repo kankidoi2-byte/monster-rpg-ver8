@@ -15,6 +15,9 @@ const expect = (condition, message) => {
 };
 
 const saveKey = 'mb_v95c';
+expect(index.includes('<title>モンスターバトル Ver8.0</title>'), 'browser title must use the public game name');
+expect(index.includes('<div class="title-version">Ver8.0</div>'), 'title screen version must match the public game name');
+expect(!index.includes('Ver8.0 Claude'), 'obsolete development attribution must not remain player-visible');
 expect(save.includes(`const SAVE_KEY = '${saveKey}'`), `primary save key must keep ${saveKey}`);
 expect(save.includes('safeStorageGet(SAVE_KEY)'), `save loader must use protected ${saveKey} access`);
 expect(save.includes('safeStorageSet(SAVE_KEY,raw)'), `save writer must use protected ${saveKey} access`);
@@ -22,6 +25,8 @@ expect(save.includes('safeStorageRemove(SAVE_KEY)'), `save reset must use protec
 
 const starterIds = ['elna_beginner', 'freigal', 'aquaron', 'grassbeat', 'volteck'];
 starterIds.forEach(id => expect(data.includes(`id:'${id}'`) || data.includes(`id: '${id}'`), `starter id is missing: ${id}`));
+expect(!data.includes("grass:'images/maps/grass.webp'"), 'unused duplicate grass map alias must stay removed');
+expect(!data.includes("snow:'images/maps/snow.webp'"), 'unused duplicate snow map alias must stay removed');
 expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron'])"), 'initial party must exclude Grassbeat and Volteck');
 expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
