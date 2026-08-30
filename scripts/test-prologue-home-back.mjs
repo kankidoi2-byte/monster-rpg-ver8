@@ -33,7 +33,7 @@ for(const token of [
   'id="tutorialRequestReport"','id="tutorialRequestReportCard"','id="tutorialRequestRewardList"',
   'id="tutorialRequestRewardStatus"','id="tutorialRequestClaimButton"'
 ]) assert.ok(index.includes(token),`missing request reward UI: ${token}`);
-assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1'));
+assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1'));
 assert.ok(tutorial.includes('data-tutorial-request-report'));
 assert.ok(tutorial.includes('data-tutorial-request-open'));
 assert.match(tutorial,/coins:250/);

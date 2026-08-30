@@ -337,7 +337,7 @@ function showTypeChart() {
      <span class="tw-adv">→×1.5 </span><span class="tw-type ${adv}">${TN[adv]}</span>
      <span class="tw-bad"> →×0.7 </span><span class="tw-type ${bad}">${TN[bad]}</span></div>`;
   el.innerHTML =
-    `<div class="chart-group"><h2>🔥💧⚡🌬️🌿 基本5属性</h2><div class="type-wheel">${basic5.map(row).join('')}</div></div>` +
-    `<div class="chart-group"><h2>✨🌙🌌 特殊3属性</h2><div class="type-wheel">${special3.map(row).join('')}</div></div>` +
-    `<div class="chart-group"><h2><span class="dragon">竜</span>属性</h2><p style="text-align:left">竜は独立属性。竜同士の攻撃で少し有利（×1.2）。</p></div>`;
+    `<div id="typeBasicChart" class="chart-group"><h2>🔥💧⚡🌬️🌿 基本5属性</h2><div class="type-wheel">${basic5.map(row).join('')}</div></div>` +
+    `<div id="typeSpecialChart" class="chart-group"><h2>✨🌙🌌 特殊3属性</h2><div class="type-wheel">${special3.map(row).join('')}</div></div>` +
+    `<div id="typeDragonChart" class="chart-group"><h2><span class="dragon">竜</span>属性</h2><p style="text-align:left">竜は独立属性。竜同士の攻撃で少し有利（×1.2）。</p></div>`;
 }

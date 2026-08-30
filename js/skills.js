@@ -125,7 +125,8 @@ function renderSkillEdit(){
   target.innerHTML = `<div class="card">${vis(mon)}<h2>${mon.name}</h2><p>Lv.${ins.level} / ${typesHtml(mon.types)}</p><p>技コスト：<b>${used}/${limit}</b></p></div>`;
   current.innerHTML = equipped.map((id,idx) => {
     const sk = SKILL_BY_ID[id];
-    return `<div class="card ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">${moveEffectText(skillToMove(id))}</p><button onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
+    const tutorialTarget=typeof shouldMarkTutorialStellaUnequip==='function'&&shouldMarkTutorialStellaUnequip(ins.uid)?' data-tutorial-stella-unequip':'';
+    return `<div class="card ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">${moveEffectText(skillToMove(id))}</p><button${tutorialTarget} onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
   }).join('') || '<div class="card">技が未装備です。</div>';
   const skillPool = mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS;
   const filteredCards = skillPool.filter(sk => {
@@ -153,7 +154,8 @@ function renderSkillEdit(){
     const avail = availableSkillCount(sk.id);
     const can = allowed && slotOk && costOk && avail > 0;
     const reason = !allowed ? '区分・属性・タグ条件不一致' : !slotOk ? '技枠上限' : !costOk ? 'コスト超過' : avail <= 0 ? '所持枚数不足' : '装備可能';
-    return `<div class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}">${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p><p class="small">${moveEffectText(skillToMove(sk.id))}</p><button onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
+    const tutorialTarget=typeof shouldMarkTutorialStellaSkillCard==='function'&&shouldMarkTutorialStellaSkillCard(sk.id,ins.uid);
+    return `<div class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p><p class="small">${moveEffectText(skillToMove(sk.id))}</p><button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
   }).join('') || '<div class="card">条件に合う技カードがありません。</div>';
 }
 function resetSkillFilters(){
@@ -178,14 +180,31 @@ function equipSkill(skillId){
   if (!isSkillAllowedForMonster(skillId, mon)) { alert('このユニットは区分・属性・タグ条件を満たしていません。'); return; }
   if (equippedSkillCost(ins) + sk.cost > skillCostLimitFor(mon, ins)) { alert('コスト上限を超えています。'); return; }
   if (availableSkillCount(skillId) <= 0) { alert('この技カードの未使用分がありません。'); return; }
+  const previous=[...arr];
   arr.push(skillId);
   save.equippedSkills[ins.uid] = arr;
-  saveGame(); renderSkillEdit(); renderParty();
+  if(saveGame()===false){
+    save.equippedSkills[ins.uid]=previous;
+    if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
+    renderSkillEdit();return false;
+  }
+  renderSkillEdit(); renderParty();
+  if(typeof handleTutorialStellaSkillEquipped==='function')handleTutorialStellaSkillEquipped(skillId,ins.uid);
+  return true;
 }
 function unequipSkill(idx){
   const ins = getInstance(editingSkillUid); if (!ins) return;
   const arr = save.equippedSkills?.[ins.uid] || [];
+  if(!Number.isInteger(idx)||idx<0||idx>=arr.length)return false;
+  const previous=[...arr];
   arr.splice(idx,1);
   save.equippedSkills[ins.uid] = arr;
-  saveGame(); renderSkillEdit(); renderParty();
+  if(saveGame()===false){
+    save.equippedSkills[ins.uid]=previous;
+    if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
+    renderSkillEdit();return false;
+  }
+  renderSkillEdit(); renderParty();
+  if(typeof handleTutorialStellaSkillUnequipped==='function')handleTutorialStellaSkillUnequipped(ins.uid);
+  return true;
 }

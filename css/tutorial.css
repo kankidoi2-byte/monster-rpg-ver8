@@ -3,6 +3,7 @@
 .tutorial-story-backdrop[data-scene="void"]{background:radial-gradient(circle at 50% 34%,rgba(43,99,180,.48),transparent 34%),radial-gradient(circle at 22% 18%,rgba(255,220,120,.18),transparent 18%),linear-gradient(155deg,#020715 0%,#0a1230 48%,#180b26 100%)}
 .tutorial-story-backdrop[data-scene="world_descent"]{background:linear-gradient(180deg,#62b8f2 0%,#bde9ff 52%,#78bd71 53%,#315f38 100%)}
 .tutorial-story-backdrop[data-scene="grassland"]{background:linear-gradient(180deg,rgba(91,179,237,.88) 0%,rgba(193,232,255,.9) 48%,rgba(107,169,85,.94) 49%,rgba(38,91,48,.98) 100%)}
+.tutorial-story-backdrop[data-scene="academy"]{background:radial-gradient(circle at 24% 22%,rgba(255,231,150,.72),transparent 23%),radial-gradient(circle at 74% 18%,rgba(184,147,255,.42),transparent 27%),linear-gradient(165deg,#e8f4ff 0%,#98cde8 48%,#72578e 49%,#2a254c 100%)}
 .tutorial-shade{position:fixed;z-index:1;background:rgba(3,15,27,.74);pointer-events:none;transition:top .18s,left .18s,width .18s,height .18s}
 .tutorial-spotlight{position:fixed;z-index:3;border:3px solid #ffe175;border-radius:18px;box-shadow:0 0 0 2px #fff,0 0 26px #ffd54f;pointer-events:none;transition:top .18s,left .18s,width .18s,height .18s}
 .tutorial-spotlight.is-empty,.tutorial-arrow.is-empty{display:none}
@@ -24,6 +25,11 @@
 .tutorial-actions{display:grid;grid-template-columns:auto auto minmax(92px,1fr);gap:7px}.tutorial-actions button{min-height:42px;margin:0;padding:9px 12px}.tutorial-back{border:1px solid #c9dfe8;background:#fff;color:#37647a}.tutorial-back:disabled{opacity:.45;cursor:default}.tutorial-back:disabled:hover{transform:none}.tutorial-skip{background:transparent;color:#8b5f51}.tutorial-next{background:linear-gradient(135deg,#2eb7d8,#1677ad)}
 .tutorial-actions.is-target-action{grid-template-columns:1fr 1fr}.tutorial-next[hidden]{display:none}
 .tutorial-target-active{outline:4px solid #ffe175!important;outline-offset:5px!important}
+.tutorial-stella-card-screen{background:radial-gradient(circle at 50% 8%,rgba(159,111,255,.18),transparent 34%)}
+.tutorial-stella-card-panel{display:grid;gap:14px;width:min(560px,100%);margin:0 auto}
+.tutorial-stella-skill-card{display:grid;gap:10px;padding:18px;border:2px solid rgba(130,91,213,.42);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(236,229,255,.95));box-shadow:0 15px 38px rgba(33,23,66,.2);color:#27203c}
+.tutorial-stella-skill-card p,.tutorial-stella-skill-card small{margin:0}
+.tutorial-stella-card-panel>button{min-height:48px}
 @media(max-width:719px){.tutorial-character-layer{left:0;bottom:43svh;width:100vw;height:56svh}.tutorial-character-layer img{max-width:92vw}.tutorial-overlay.is-story-step .tutorial-bubble{max-height:48svh}}
 @media(max-width:480px){.tutorial-bubble{width:calc(100vw - 16px);padding:13px;border-radius:19px}.tutorial-bubble h2{font-size:18px}.tutorial-actions{grid-template-columns:1fr 1fr}.tutorial-next{grid-column:1/-1;grid-row:1}.tutorial-back,.tutorial-skip{grid-row:2}.tutorial-arrow{display:none}.tutorial-name-form{grid-template-columns:1fr}.tutorial-name-form label{grid-column:auto}.tutorial-name-form button{width:100%}}
 @media(prefers-reduced-motion:reduce){.tutorial-shade,.tutorial-spotlight,.tutorial-bubble,.tutorial-progress>span{transition:none}}

@@ -34,12 +34,14 @@ const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
   coins:250,
   materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])
 });
-const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue']);
+const TUTORIAL_STELLA_SKILL_ID='skill_elna_middle_01';
+const TUTORIAL_TRANSITIONS=new Set(['start_elna_rescue','grant_stella_skill_card']);
 const tutorialBattleSession={active:false,kind:null,firstSkillUsed:false,enemyQueue:[]};
 function isTutorialRescueBattleActive(){return tutorialBattleSession.active&&tutorialBattleSession.kind==='elna_rescue';}
 let tutorialTransitionBusy=false;
 let tutorialElnaContractBusy=false;
 let tutorialSupplyRewardBusy=false;
+let tutorialStellaCardBusy=false;
 
 function inferTutorialStepMode(step){
   if(TUTORIAL_STEP_MODES.has(step?.mode))return step.mode;
@@ -663,6 +665,7 @@ function continueTutorialRescueWave(){
 }
 function runTutorialTransition(transition){
   if(transition==='start_elna_rescue')return startTutorialRescueBattle();
+  if(transition==='grant_stella_skill_card')return Boolean(commitTutorialStellaSkillCard());
   return false;
 }
 
@@ -762,6 +765,96 @@ function claimTutorialAlchemySupplyReward(){
   if(!result)return false;
   if(tutorialUiState.active&&tutorialCurrentStepId()==='request_reward_claim')tutorialNext(true);
   else updateTutorialMenuSummary();
+  return true;
+}
+
+function tutorialStellaSkillCard(){return typeof SKILL_BY_ID==='object'?SKILL_BY_ID[TUTORIAL_STELLA_SKILL_ID]||null:null;}
+function tutorialStellaSkillTargetInstance(){return tutorialElnaContractInstance();}
+function tutorialStellaSkillIsEquipped(){
+  const instance=tutorialStellaSkillTargetInstance();
+  return Boolean(instance&&(save?.equippedSkills?.[instance.uid]||[]).includes(TUTORIAL_STELLA_SKILL_ID));
+}
+function tutorialStellaSkillCanEquip(){
+  const instance=tutorialStellaSkillTargetInstance();
+  const skill=tutorialStellaSkillCard();
+  if(!instance||!skill)return false;
+  const unit=by(instance.id);
+  const equipped=save?.equippedSkills?.[instance.uid]||[];
+  return equipped.length<3&&equippedSkillCost(instance)+skill.cost<=skillCostLimitFor(unit,instance)
+    &&isSkillAllowedForMonster(skill.id,unit)&&availableSkillCount(skill.id)>0;
+}
+function renderTutorialStellaSkillCard(){
+  const card=tutorialStellaSkillCard();
+  const visual=document.getElementById('tutorialStellaSkillCardVisual');
+  const status=document.getElementById('tutorialStellaSkillCardStatus');
+  const button=document.getElementById('tutorialStellaSkillEditButton');
+  if(!card||!visual||!status||!button)return false;
+  visual.className=`tutorial-stella-skill-card ${skillCardClass(skillTypes(card))}`;
+  visual.innerHTML=`${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p>${moveEffectText(skillToMove(card.id))}</p><small>エルナの契約体が装備できます。</small>`;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  status.textContent=tutorialStellaSkillIsEquipped()?'連続斬りは装備済みです。':tutorial?.stellaSkillCardGranted?'技カードを受け取りました。':'ステラから受け取る技カードです。';
+  button.disabled=tutorialCurrentStepId()!=='stella_skill_open'||tutorialStellaCardBusy;
+  button.textContent=tutorialStellaCardBusy?'準備中…':'エルナの技編集を開く';
+  return true;
+}
+function commitTutorialStellaSkillCard(){
+  if(tutorialStellaCardBusy||typeof currentTutorialState!=='function'||typeof save==='undefined')return null;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying)return {granted:false,replay:true};
+  const snapshot=JSON.stringify(save);
+  tutorialStellaCardBusy=true;
+  try{
+    const card=tutorialStellaSkillCard();
+    const instance=tutorialStellaSkillTargetInstance();
+    if(!card||card.deprecated||!instance||!isSkillAllowedForMonster(card.id,by(instance.id)))throw new Error('tutorial_stella_skill_invalid');
+    const alreadyGranted=tutorial.stellaSkillCardGranted===true;
+    if(!alreadyGranted){
+      if(!save.skillCards||typeof save.skillCards!=='object')save.skillCards={};
+      save.skillCards[card.id]=Math.max(0,Math.floor(Number(save.skillCards[card.id])||0))+1;
+      if(typeof markTutorialStellaSkillCardGranted!=='function'||!markTutorialStellaSkillCardGranted())throw new Error('tutorial_stella_skill_flag');
+    }
+    if(typeof setTutorialStep==='function')setTutorialStep('stella_card_received');
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_stella_skill_save');
+    return {granted:!alreadyGranted,replay:false};
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('ステラの技カードを保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
+    return null;
+  }finally{
+    tutorialStellaCardBusy=false;
+    renderTutorialStellaSkillCard();
+  }
+}
+function openTutorialStellaSkillEdit(){
+  if(tutorialStellaCardBusy||tutorialCurrentStepId()!=='stella_skill_open')return false;
+  const instance=tutorialStellaSkillTargetInstance();
+  if(!instance||typeof openSkillEdit!=='function')return false;
+  tutorialStellaCardBusy=true;
+  try{
+    openSkillEdit(instance.uid);
+    if(typeof resetSkillFilters==='function')resetSkillFilters();
+    tutorialNext(true);
+    return true;
+  }finally{
+    tutorialStellaCardBusy=false;
+  }
+}
+function shouldMarkTutorialStellaUnequip(uid){
+  return tutorialCurrentStepId()==='stella_skill_unequip'&&uid===tutorialStellaSkillTargetInstance()?.uid;
+}
+function shouldMarkTutorialStellaSkillCard(skillId,uid){
+  return ['stella_skill_card_detail','stella_skill_equip','stella_attribute_intro'].includes(tutorialCurrentStepId())
+    &&skillId===TUTORIAL_STELLA_SKILL_ID&&uid===tutorialStellaSkillTargetInstance()?.uid;
+}
+function handleTutorialStellaSkillUnequipped(uid){
+  if(tutorialCurrentStepId()!=='stella_skill_unequip'||uid!==tutorialStellaSkillTargetInstance()?.uid||!tutorialStellaSkillCanEquip())return false;
+  tutorialNext(true);
+  return true;
+}
+function handleTutorialStellaSkillEquipped(skillId,uid){
+  if(tutorialCurrentStepId()!=='stella_skill_equip'||skillId!==TUTORIAL_STELLA_SKILL_ID||uid!==tutorialStellaSkillTargetInstance()?.uid)return false;
+  tutorialNext(true);
   return true;
 }
 
@@ -926,6 +1019,14 @@ function prepareTutorialStep(step){
   if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
   if(['request_board','request_accept'].includes(step?.id))renderTutorialSupplyRequest(document.getElementById('battleChoiceList'));
   if(['request_reward_preview','request_reward_claim','request_reward_received'].includes(step?.id))renderTutorialSupplyReward();
+  if(['stella_card_received','stella_skill_open'].includes(step?.id))renderTutorialStellaSkillCard();
+  if(['stella_skill_current','stella_skill_unequip','stella_skill_card_detail','stella_skill_equip','stella_attribute_intro'].includes(step?.id)&&typeof renderSkillEdit==='function'){
+    const instance=tutorialStellaSkillTargetInstance();
+    if(instance)editingSkillUid=instance.uid;
+    renderSkillEdit();
+    if(step.id==='stella_skill_unequip'&&tutorialStellaSkillCanEquip())queueTutorialActionAdvance(step.id);
+    if(step.id==='stella_skill_equip'&&tutorialStellaSkillIsEquipped())queueTutorialActionAdvance(step.id);
+  }
   if(['growth_elna','growth_elna_details','growth_skill_open'].includes(step?.id)&&typeof renderParty==='function'){
     renderParty();
     if(step.id==='growth_skill_open')document.querySelector('[data-monster-id="elna_beginner"] .monster-roster-details')?.setAttribute('open','');
@@ -980,7 +1081,22 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'request_reward_preview',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardList',persistAs:'request_reward_preview',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'依頼報酬',text:'コイン250枚と、錬成に使う4種類の素材だ！',progressLabel:'REWARD'},
   {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,disableBack:true,title:'報酬を受け取ろう',text:'ここを押すと、依頼報酬を受け取れるぞ！',progressLabel:'REWARD'},
   {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',waitForEvent:'stella_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'次の出会いへ'},
-  {id:'stella_intro',screenId:'home',target:'#homeGrowthPreview',persistAs:'stella_intro',waitForEvent:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'次の出会いへ',text:'準備はできたな！ 次は技と属性に詳しい子を探しに行くぞ！',progressLabel:'PROLOGUE',nextLabel:'続きはここから'},
+  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE'},
+  {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
+  {id:'stella_card_offer',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'技カードを受け取ろう',text:'エルナが使える「連続斬り」のカードをあげる。装備して、技と属性を見てみよう！',progressLabel:'SKILL CARD'},
+  {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_card_received',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'連続斬りを受け取る',text:'このカードは一度だけ渡すね。受け取ったら、エルナの技へ装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
+  {id:'stella_card_received',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillCardVisual',persistAs:'stella_card_received',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'技カード獲得',text:'カードには属性、威力、COSTが書いてあるよ。まず内容を確認してね！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_open',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillEditButton',externalAdvance:true,disableBack:true,title:'技編集を開こう',text:'ここを押すと、エルナの技カードを組み替えられるぞ！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_current',screenId:'skillEdit',target:'#skillEditCurrent',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'装備枠とCOST',text:'技は3枚まで。合計COSTが上限を超えないように組み合わせるよ！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_unequip',screenId:'skillEdit',target:'[data-tutorial-stella-unequip]',externalAdvance:true,disableBack:true,title:'技を1枚外そう',text:'ここを押して、今の技を1枚外そう。新しいカードを入れる空きを作るぞ！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_card_detail',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'連続斬り',text:'無属性、威力34、COST 2。エルナの剣士タグに合うから装備できるよ！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_equip',screenId:'skillEdit',target:'[data-tutorial-stella-skill-equip]',externalAdvance:true,disableBack:true,title:'連続斬りを装備',text:'ここを押すと、受け取った技カードを装備できるぞ！',progressLabel:'SKILL CARD'},
+  {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'技の属性',text:'技には属性があるよ。相手に有利な属性なら、ダメージが大きくなるの！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_more_open',screenId:'skillEdit',target:'[data-nav="more"]',advanceOnTarget:true,title:'属性表を見よう',text:'ここを押すと、属性相性を確認できるメニューへ進めるぞ！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_type_chart_open',screenId:'moreMenu',target:'#typeChartButton',advanceOnTarget:true,title:'属性相性',text:'ここを押すと、どの属性が有利か確認できるぞ！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'基本5属性',text:'火・水・雷・風・森は輪になっているよ。水は火に強く、火は森に強いの！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_type_special',screenId:'typeChart',target:'#typeSpecialChart',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'特殊3属性',text:'光・闇・星にも相性の輪があるよ。表示の矢印を見れば、すぐ確認できるからね！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',waitForEvent:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'次は相性を試そう',text:'装備できたね！ 次は有利な属性を使う模擬戦で、実際のダメージを見てみよう！',progressLabel:'STELLA',nextLabel:'模擬戦へ'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
   {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'上が敵です',text:'上側が敵のスライムです。HPを0にすると倒せるぞ！',progressLabel:'BATTLE'},
