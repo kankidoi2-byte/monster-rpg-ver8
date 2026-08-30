@@ -80,18 +80,19 @@ assert.ok(items.includes('const animationStage = guaranteed?3:contractAnimationS
 assert.ok(items.includes("commitTutorialFirstContract(itemId,enemy)"),'confirmation must use the atomic tutorial transaction');
 assert.ok(items.includes("show('contractConfirm')")&&items.includes('契約状態を保存できませんでした'),'a failed transaction must remain safely retryable');
 assert.ok(animation.includes('const zoomLevels = [1.16, 1.32, 1.48]')&&animation.includes("paper.classList.add('is-stamping')"),'the existing three zoom pulses and paw-stamp success animation must remain in use');
-assert.ok(tutorial.includes("externalAdvance:true,title:'契約を確定'")&&tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'the guide must not advance before confirmation commits');
+assert.ok(tutorial.includes("input:'elna_contract'")&&tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'the guide must not advance before the Elna contract commits');
 assert.ok(!items.includes('tutorialNext(true)'),'contract confirmation must not bypass the external-step transaction guard');
 
-const orderedSteps=['first_contract','contract_confirm','contract_success','contract_card','contract_type','contract_skills','contract_list','contract_future','growth_open','growth_overview','party_edit_open','party_edit_contract','home_finish','tutorial_complete'];
-let previous=-1;
-orderedSteps.forEach(id=>{const current=tutorial.indexOf(`id:'${id}'`);assert.ok(current>previous,`missing or out-of-order Phase 4C step: ${id}`);previous=current;});
-assert.ok(tutorial.includes("replayNextStepId:'contract_success'"),'replay must bypass the real contract transaction');
-assert.ok(tutorial.includes('必ず成功するのは今回だけです')&&tutorial.includes('失敗することがあります'),'later contracts must be explained as fallible');
-assert.ok(tutorial.includes("target:'#growthMonsterButton'")&&tutorial.includes("target:'#growthPartyEditButton'"),'growth and party editing must use their real controls');
-assert.ok(tutorial.includes("id:'tutorial_complete',screenId:'home'")&&tutorial.includes('completeTutorial()'),'the required tutorial must finish on home');
+const modernSteps=['elna_contract_intro','elna_contract_consent','elna_contract_execute','elna_contract_departure','elna_contract_body','home_party','party_save'];
+for(const id of modernSteps)assert.ok(tutorial.includes(`id:'${id}'`),`missing modern contract/party checkpoint: ${id}`);
+for(const id of ['first_contract','contract_confirm','contract_success','contract_card','contract_type','contract_skills','contract_list','contract_future']){
+  assert.ok(!tutorial.slice(tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID')).includes(`id:'${id}'`),`obsolete visible STEP must be removed: ${id}`);
+  assert.ok(tutorial.includes(`${id}:`),`an interrupted old save needs a redirect: ${id}`);
+}
+assert.ok(tutorial.includes("target:'#growthMonsterButton'")&&tutorial.includes("target:'#homePartyEditButton'"),'growth and party editing must use their real controls');
+assert.ok(tutorial.includes("id:'prologue_complete',screenId:'home'")&&tutorial.includes('completeTutorial()'),'the required tutorial must finish on the prologue completion scene');
 assert.ok(party.includes('data-tutorial-contract-instance="true"')&&party.includes('data-tutorial-contract-party="true"'),'the joined instance must be addressable in roster and party setup without changing its ID');
-['growthMonsterButton','growthPartyEditButton','contractConfirmAcceptButton'].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing real UI anchor: #${id}`));
+['growthMonsterButton','homePartyEditButton','contractConfirmAcceptButton'].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing real UI anchor: #${id}`));
 assert.ok(notices.includes("id: '20260829-tutorial-first-contract'"),'the player-facing update must have a stable notice ID');
 
-console.log('Tutorial Phase 4C validation passed (new-save-only guarantee, atomic grant/use/join/save, reload and rollback safety, existing animation, growth guide, replay, and completion).');
+console.log('Tutorial Phase 4C validation passed (atomic legacy contract safety, modern Elna contract path, old-save redirects, party setup, and completion).');

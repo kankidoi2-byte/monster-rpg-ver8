@@ -13,9 +13,9 @@ const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
 const required=[
-  'home_party','party_review','party_save','home_dex_open','menu_dex_open','dex_character_open','dex_elna_open','dex_elna_detail',
-  'dex_character_back','dex_monster_open','dex_freigal','dex_aquaron','home_growth_open','home_growth_overview',
-  'growth_elna','growth_elna_details','growth_skill_open','growth_skill_current','growth_skill_cards',
+  'home_party','party_save','home_dex_open','menu_dex_open','dex_character_open','dex_elna_open',
+  'dex_character_back','dex_monster_open','dex_freigal','home_growth_open','home_growth_overview',
+  'growth_elna_details','growth_skill_open',
   'growth_return','growth_evolution','home_requests'
 ];
 let previous=-1;
@@ -27,7 +27,7 @@ for(const id of required){
 const allRegistered=tutorial.slice(flowStart,tutorial.indexOf("document.addEventListener('click'",flowStart));
 const ids=[...allRegistered.matchAll(/\{id:'([^']+)'/g)].map(match=>match[1]);
 assert.equal(ids.length,new Set(ids).size,'tutorial STEP IDs must remain globally unique');
-assert.ok(ids.length>=111,'later prologue phases must retain every Phase 9 STEP and guide');
+assert.ok(ids.length>=110,'the reduced prologue and optional feature guides must remain registered');
 
 assert.match(main,/id:'home_party'[^\n]+target:'#homePartyEditButton'[^\n]+advanceOnTarget:true/);
 assert.match(main,/id:'party_save'[^\n]+target:'#partySetupSaveButton'[^\n]+externalAdvance:true/);
@@ -35,7 +35,7 @@ assert.match(main,/id:'home_dex_open'[^\n]+screenId:'home'[^\n]+target:'\[data-n
 assert.match(main,/id:'menu_dex_open'[^\n]+screenId:'moreMenu'[^\n]+target:'#homeDexButton'[^\n]+advanceOnTarget:true/,'the Dex button must be targeted only after opening the menu');
 assert.match(main,/id:'dex_elna_open'[^\n]+data-tutorial-character="elna_beginner"/);
 assert.match(main,/id:'dex_freigal'[^\n]+data-tutorial-monster="freigal"/);
-assert.match(main,/id:'dex_aquaron'[^\n]+data-tutorial-monster="aquaron"/);
+assert.ok(main.includes('フレイガルとアクアロンはモンスター図鑑へ記録される'));
 assert.match(main,/id:'growth_skill_open'[^\n]+data-tutorial-skill-edit/);
 assert.match(main,/id:'growth_evolution'[^\n]+target:'#growthEvolutionButton'/);
 assert.match(main,/id:'home_requests'[^\n]+persistAs:'home_requests'[^\n]+advanceOnTarget:true/,'Phase 10 must continue from the durable request checkpoint through a real action');

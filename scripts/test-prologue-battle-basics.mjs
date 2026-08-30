@@ -11,7 +11,7 @@ const packageJson=JSON.parse(read('package.json'));
 
 const order=[
   'battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open',
-  'battle_normal_attack','battle_skill','battle_skill_cost','battle_choose_skill','battle_free'
+  'battle_normal_attack','battle_skill','battle_choose_skill','battle_free'
 ];
 let previous=-1;
 for(const id of order){
@@ -25,7 +25,7 @@ for(const id of ['battle_target']){
 for(const id of ['battle_actor_open','battle_actor_select','battle_attack_open','battle_normal_attack','battle_skill','battle_choose_skill']){
   assert.match(tutorial,new RegExp(`id:'${id}'[^\\n]+externalAdvance:true`),`${id} must wait for a successful battle operation`);
 }
-assert.match(tutorial,/id:'battle_skill_cost'[^\n]+target:'\[data-tutorial-skill-cost\]'/,'skill cost must have its own spotlight checkpoint');
+assert.match(tutorial,/id:'battle_choose_skill'[^\n]+COSTは装備に必要な値だ/,'skill cost must be explained at the real skill-selection action');
 assert.ok(order.every(id=>tutorial.match(new RegExp(`id:'${id}'[^\\n]+persistAs:'elna_rescue_start'`))), 'rescue battle basics must resume at the rescue checkpoint');
 assert.ok(tutorial.includes("function isTutorialRescueBattleActive()")&&tutorial.includes("action==='actor_picker_opened'?'battle_actor_open'")&&tutorial.includes("action==='skill_panel_opened'")&&tutorial.includes("actor_selected:'battle_actor_select'")&&tutorial.includes("normal_attack:'battle_normal_attack'")&&tutorial.includes("skill:'battle_choose_skill'"),'real battle operations must map to their expected blocking step');
 assert.ok(tutorial.includes("queueTutorialActionAdvance"),'successful battle operations must advance after their DOM event completes');

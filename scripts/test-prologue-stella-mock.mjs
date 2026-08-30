@@ -14,7 +14,7 @@ const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
 const steps=[
-  'stella_mock_battle','stella_mock_enemy','stella_mock_actor','stella_mock_skill_open',
+  'stella_mock_battle','stella_mock_enemy','stella_mock_skill_open',
   'stella_mock_advantage','stella_mock_free','stella_mock_victory','stella_mock_retry','lumina_intro'
 ];
 let previous=-1;
@@ -23,7 +23,7 @@ for(const id of steps){
   assert.ok(at>previous,`Stella mock STEP is missing or out of order: ${id}`);
   previous=at;
 }
-const mockFlow=main.slice(main.indexOf("id:'stella_mock_battle'"),main.indexOf("id:'first_hunt'"));
+const mockFlow=main.slice(main.indexOf("id:'stella_mock_battle'"),main.indexOf("id:'battle_enemy'"));
 assert.ok(!mockFlow.includes('カナタ'),'Kanata must not appear in the prologue mock battle');
 assert.match(mockFlow,/id:'stella_mock_battle'[^\n]+transition:'start_stella_mock_battle'[^\n]+nextStepId:'stella_mock_enemy'/);
 assert.match(mockFlow,/id:'stella_mock_skill_open'[^\n]+externalAdvance:true[^\n]+persistAs:'stella_mock_battle'/);
@@ -31,7 +31,7 @@ assert.match(mockFlow,/id:'stella_mock_advantage'[^\n]+data-tutorial-stella-adva
 assert.match(mockFlow,/id:'stella_mock_free'[^\n]+persistAs:'stella_mock_battle'[^\n]+waitForEvent:'battle_outcome'/);
 assert.match(mockFlow,/id:'stella_mock_retry'[^\n]+nextStepId:'stella_mock_battle'[^\n]+persistAs:'stella_mock_battle'/);
 assert.match(mockFlow,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+scene:'workshop'/);
-for(const id of ['stella_mock_enemy','stella_mock_actor','stella_mock_skill_open','stella_mock_advantage','stella_mock_free']){
+for(const id of ['stella_mock_enemy','stella_mock_skill_open','stella_mock_advantage','stella_mock_free']){
   assert.match(mockFlow,new RegExp(`id:'${id}'[^\\n]+persistAs:'stella_mock_battle'`),`interruption must resume from the mock battle checkpoint: ${id}`);
 }
 

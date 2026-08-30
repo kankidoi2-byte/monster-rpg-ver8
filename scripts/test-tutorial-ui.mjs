@@ -48,8 +48,10 @@ assert.ok(tutorial.includes('function tutorialStepRequiresAction(step)')&&tutori
 assert.ok(tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'Next and the Right Arrow must not bypass a required real-screen action');
 assert.ok(tutorial.includes('queueTutorialActionAdvance'),'the guide must advance after the highlighted target operation succeeds');
 [
-  'first_hunt','tutorial_hunt_request','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill',
-  'battle_choose_skill','first_contract','contract_confirm','growth_open','party_edit_open','home_finish'
+  'battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill',
+  'battle_choose_skill','party_save','home_dex_open','menu_dex_open','growth_skill_open',
+  'request_accept','request_reward_claim','stella_skill_open','stella_skill_unequip','stella_skill_equip',
+  'lumina_start','lumina_execute','expedition_member','expedition_dispatch'
 ].forEach(id=>assert.match(tutorial,new RegExp(`id:'${id}'[^\\n]+(?:advanceOnTarget|externalAdvance):true`),`${id} must be classified as a real-screen action`));
 assert.match(tutorial,/id:'gnosis_name'[^\n]+mode:'external_action'/,'player-name entry must be classified as a blocking external action');
 assert.ok(tutorial.includes('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),'the required onboarding flow must use the shared tutorial engine');

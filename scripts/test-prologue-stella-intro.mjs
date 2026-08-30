@@ -21,10 +21,10 @@ const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
 const required=[
-  'stella_intro','stella_encounter','stella_card_offer','stella_card_receive','stella_card_received',
-  'stella_skill_open','stella_skill_current','stella_skill_unequip','stella_skill_card_detail',
+  'stella_intro','stella_encounter','stella_card_receive',
+  'stella_skill_open','stella_skill_unequip',
   'stella_skill_equip','stella_attribute_intro','stella_more_open','stella_type_chart_open',
-  'stella_type_basic','stella_type_special','stella_mock_battle'
+  'stella_type_basic','stella_mock_battle'
 ];
 let previous=-1;
 for(const id of required){
@@ -32,15 +32,15 @@ for(const id of required){
   assert.ok(current>previous,`Stella intro STEP is missing or out of order: ${id}`);
   previous=current;
 }
-const stellaFlow=main.slice(main.indexOf("id:'stella_intro'"),main.indexOf("id:'first_hunt'"));
+const stellaFlow=main.slice(main.indexOf("id:'stella_intro'"),main.indexOf("id:'lumina_intro'"));
 assert.ok(!stellaFlow.includes('カナタ'),'Kanata must not appear in the prologue');
 assert.ok(stellaFlow.includes("portrait:'images/tutorial/characters/stella_apprentice.png'"),'Stella dialogue must use the transparent portrait');
 assert.ok(stellaFlow.includes("transition:'grant_stella_skill_card'"),'card receipt must use the one-time transition');
 assert.match(stellaFlow,/id:'stella_skill_unequip'[^\n]+externalAdvance:true/);
 assert.match(stellaFlow,/id:'stella_skill_equip'[^\n]+externalAdvance:true/);
 assert.match(stellaFlow,/id:'stella_mock_battle'[^\n]+persistAs:'stella_mock_battle'[^\n]+transition:'start_stella_mock_battle'/);
-assert.ok(stellaFlow.includes('ここを押すと、エルナの技カードを組み替えられるぞ！'));
-assert.ok(stellaFlow.includes('ここを押すと、受け取った技カードを装備できるぞ！'));
+assert.ok(stellaFlow.includes('カードの属性・威力・COSTを見て、実際に装備しよう！'));
+assert.ok(stellaFlow.includes('ここを押して装備しよう！'));
 
 for(const token of [
   'id="tutorialStellaCard"','id="tutorialStellaSkillCardVisual"','id="tutorialStellaSkillCardStatus"',
@@ -93,7 +93,7 @@ let result=vm.runInContext('commitTutorialStellaSkillCard()',granted);
 assert.equal(result.granted,true);assert.equal(result.replay,false);
 assert.equal(granted.save.skillCards.skill_elna_middle_01,1);
 assert.equal(granted.save.progress.tutorial.stellaSkillCardGranted,true);
-assert.equal(granted.save.progress.tutorial.stepId,'stella_card_received');
+assert.equal(granted.save.progress.tutorial.stepId,'stella_skill_open');
 result=vm.runInContext('commitTutorialStellaSkillCard()',granted);
 assert.equal(result.granted,false);
 assert.equal(granted.save.skillCards.skill_elna_middle_01,1,'a repeated transition must not grant a duplicate card');

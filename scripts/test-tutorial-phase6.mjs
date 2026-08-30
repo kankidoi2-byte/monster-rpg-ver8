@@ -37,9 +37,10 @@ targets.forEach(selector=>{
 
 const mainFlow=registeredFlows.slice(0,registeredFlows.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID'));
 const requiredMainOrder=[
-  'intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent','elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts','starter_contracts_received','elna_guest_join','elna_rescue_start','battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill','battle_skill_cost','battle_choose_skill','battle_free','elna_rescue_complete',
-  'victory_exp','victory_coin','victory_material','victory_rank','first_contract','contract_confirm',
-  'contract_success','contract_future','growth_open','party_edit_open','home_finish','tutorial_complete'
+  'intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent','elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts','starter_contracts_received','elna_guest_join','elna_rescue_start',
+  'home_party','party_save','home_dex_open','menu_dex_open','growth_skill_open','stella_card_receive','stella_skill_equip','lumina_alchemy','lumina_execute','expedition_intro',
+  'battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill','battle_choose_skill','battle_free','elna_rescue_complete','elna_contract_intro','elna_contract_execute','elna_contract_body',
+  'expedition_dispatch','prologue_complete'
 ];
 let previousIndex=-1;
 requiredMainOrder.forEach(id=>{
@@ -47,8 +48,8 @@ requiredMainOrder.forEach(id=>{
   assert.ok(indexOfStep>previousIndex,`required onboarding checkpoint is missing or out of order: ${id}`);
   previousIndex=indexOfStep;
 });
-assert.ok(mainFlow.includes("persistAs:'first_hunt'")&&mainFlow.includes("persistAs:'first_contract'"),'battle reload checkpoints must remain durable');
-assert.ok(mainFlow.includes("waitForEvent:'battle_outcome'")&&mainFlow.includes("externalAdvance:true"),'battle and contract flows must wait for real gameplay outcomes');
+assert.ok(mainFlow.includes("persistAs:'elna_rescue_start'")&&mainFlow.includes("persistAs:'stella_mock_battle'"),'battle reload checkpoints must remain durable');
+assert.ok(mainFlow.includes("waitForEvent:'battle_outcome'")&&mainFlow.includes("externalAdvance:true"),'battle and external operations must wait for real gameplay outcomes');
 
 const expectedPhaseChecks=['tutorial','tutorial-ui','prologue-battle-basics','prologue-rescue-stability','tutorial-phase4a','tutorial-phase4b','tutorial-phase4c','tutorial-phase5a','tutorial-phase5b','tutorial-phase6'];
 expectedPhaseChecks.forEach(name=>{

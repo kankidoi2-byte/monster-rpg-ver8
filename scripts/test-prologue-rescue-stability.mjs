@@ -83,7 +83,7 @@ assert.ok(flow.includes('if (busy || !livingPartySwitchCandidates()'),'double-ta
 assert.ok(flow.includes('function runAway() {\n  if (busy) return;'),'double-tapped retreat must be rejected');
 assert.match(tutorial,/id:'battle_free'[^\n]+waitForEvent:'battle_outcome'/,'free battle must wait for a real outcome');
 assert.match(tutorial,/id:'elna_rescue_retry'[^\n]+nextStepId:'elna_rescue_start'[^\n]+persistAs:'elna_rescue_start'/,'defeat, retreat, and generation failure must retry from the durable rescue checkpoint');
-for(const id of ['battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill','battle_skill_cost','battle_choose_skill','battle_free']){
+for(const id of ['battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill','battle_choose_skill','battle_free']){
   assert.match(tutorial,new RegExp(`id:'${id}'[^\\n]+persistAs:'elna_rescue_start'`),`interrupted battle step must restart safely: ${id}`);
 }
 

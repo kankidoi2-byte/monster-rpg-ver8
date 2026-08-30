@@ -21,14 +21,14 @@ assert.ok(asset?.validation?.rgba&&asset.validation.transparentPixels>0&&asset.v
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
-const required=['lumina_intro','lumina_encounter','lumina_recipe_offer','lumina_alchemy','lumina_recipe','lumina_materials','lumina_coin','lumina_rate','lumina_start','lumina_confirm','lumina_execute','lumina_wait','lumina_alchemy_result','lumina_alchemy_replay','expedition_intro'];
+const required=['lumina_intro','lumina_encounter','lumina_alchemy','lumina_materials','lumina_start','lumina_confirm','lumina_execute','lumina_wait','lumina_alchemy_result','lumina_alchemy_replay','expedition_intro'];
 let previous=-1;
 for(const id of required){
   const current=main.indexOf(`id:'${id}'`);
   assert.ok(current>previous,`Lumina alchemy STEP is missing or out of order: ${id}`);
   previous=current;
 }
-const luminaFlow=main.slice(main.indexOf("id:'lumina_intro'"),main.indexOf("id:'first_hunt'"));
+const luminaFlow=main.slice(main.indexOf("id:'lumina_intro'"),main.indexOf("id:'battle_enemy'"));
 assert.ok(!luminaFlow.includes('カナタ'),'Kanata must not appear in the prologue');
 assert.ok(luminaFlow.includes("portrait:'images/tutorial/characters/lumina_apprentice.png'"),'Lumina dialogue must use the transparent portrait');
 assert.ok(luminaFlow.includes("scene:'workshop'"),'the workshop must use its own background layer');
@@ -36,6 +36,7 @@ assert.match(luminaFlow,/id:'lumina_alchemy'[^\n]+persistAs:'lumina_alchemy'[^\n
 assert.match(luminaFlow,/id:'lumina_start'[^\n]+externalAdvance:true[^\n]+persistAs:'lumina_alchemy'/);
 assert.match(luminaFlow,/id:'lumina_execute'[^\n]+externalAdvance:true[^\n]+persistAs:'lumina_alchemy'/);
 assert.match(luminaFlow,/id:'lumina_alchemy_result'[^\n]+persistAs:'expedition_intro'/);
+assert.ok(luminaFlow.includes('素材4種類を各1個、250コイン、初回成功率100％'),'the four read-only resource steps must be consolidated');
 
 for(const target of ['tutorialAlchemyRecipeCard','tutorialAlchemyMaterials','tutorialAlchemyCoin','tutorialAlchemyRate','tutorialAlchemyStartButton','tutorialAlchemyResult']){
   assert.ok(alchemy.includes(`id=\"${target}\"`)||alchemy.includes(`id=\"${target}\" `),`missing stable alchemy target: ${target}`);

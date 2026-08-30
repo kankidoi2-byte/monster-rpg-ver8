@@ -943,3 +943,51 @@
 - `check:prologue-mobile-clarity`：既存の技変更STEPが実ボタンを操作し、そのボタンが固定下部ナビより上で見えて押せること、最終STEPがグノーシスを表示する物語会話であることを検証する。
 - `check:prologue-home-front`、`check:prologue-expedition-finale`、`check:prologue-comprehensive`、`check:tutorial-ui`：既存の技編集、完了保存、全フロー、操作対象優先レイアウトを回帰検証する。
 - 次回対象：更新版URLで停止中の `SKILL 30` から「技変更」が下部ナビの直上に表示されること、`PROLOGUE CLEAR` でグノーシスが表示されることをスマホ実機で確認する。
+
+## STEP削減と全体再点検 Phase M〜O
+
+### Phase M：130 STEPの内訳監査
+
+- 序章本線130 STEPを、物語、説明のみ、実操作、外部処理待ちに分類した。実操作を要求する箇所は維持し、直後の操作STEPと内容が重なる説明だけを統合対象にした。
+- 現行フロー内の重複説明21 STEPに加え、旧公開版から定義だけ残り本線から到達不能になっていた23 STEPを確認した。後者は初討伐、旧スライム契約、旧育成・編成・完了導線であり、新序章では使用していなかった。
+- 技関連では、技画面を開く前後に「現在の技」「カード一覧」「カード詳細」「COST」を別々に説明していた。画面を読むだけのSTEPを削り、実際に開く・外す・装備する操作の本文へ必要情報を集約した。
+
+### Phase N：必須操作を維持した86 STEPへの整理
+
+- 序章本線を130 STEPから86 STEPへ44 STEP（33.8％）削減した。会話の導入、名前入力、救援戦、エルナ契約、編成保存、図鑑、依頼報酬、ステラ技装備・模擬戦、ルミナ錬成、遠征、終幕の実処理は維持した。
+- 戦闘の「敵・味方・HP・ターン」、ステラ技カードの「属性・威力・COST・タグ」、錬成の「素材4種・250コイン・成功率100％・仲間非消費」は、それぞれ次の実操作へ進む前の1 STEPへ統合した。
+- 削除した44個すべてのSTEP IDに旧セーブ転送先を定義した。旧STEPで停止中のセーブも初期化せず、安全な現行STEPから再開する。
+- 統合時に残っていた `lumina_alchemy` から削除済み `lumina_recipe` への参照を検出し、現行の `lumina_materials` へ修正した。
+
+### Phase O：過去指摘事項の再発検査
+
+- 進化済みフレイガル／アクアロンの系統判定、スマホのメニュー経由図鑑導線、実際の技変更ボタン、依頼報告・報酬受領、遠征メンバーの明確な操作対象を再検査した。
+- 操作対象を持つ機能説明では全身立ち絵を抑止し、物語会話では背景・透過立ち絵・会話パネルを別レイヤーで維持する配置契約を再検査した。
+- 救援戦、契約、報酬受領、模擬戦、錬成の終了後に案内が消えないこと、序章戦後の自動進化が案内を置き換えないこと、最終場面にグノーシスが表示されることを再検査した。
+- 新しい `check:prologue-step-reduction` で本線86 STEP、ID一意性、削除STEP不在、全旧セーブ転送、必須操作残存、全明示遷移先の存在を固定した。
+
+### 変更ファイル
+
+- `js/tutorial.js`
+- `index.html`
+- `package.json`
+- `scripts/test-prologue-step-reduction.mjs`
+- `scripts/test-prologue-battle-basics.mjs`
+- `scripts/test-prologue-home-back.mjs`
+- `scripts/test-prologue-home-front.mjs`
+- `scripts/test-prologue-lumina-alchemy.mjs`
+- `scripts/test-prologue-rescue-stability.mjs`
+- `scripts/test-prologue-stella-intro.mjs`
+- `scripts/test-prologue-stella-mock.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `scripts/test-tutorial-phase4c.mjs`
+- `scripts/test-tutorial-phase6.mjs`
+- `scripts/test-tutorial-ui.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:prologue-step-reduction`：130→86 STEP、旧セーブ転送、必須操作、統合後の説明、過去のスマホ修正を検証した。
+- 序章区間検査：救援戦、エルナ契約、ホーム前後半、ステラ、模擬戦、ルミナ、遠征、スキップ・再プレイ、連続進行、スマホ表示を個別に再検査した。
+- `check:tutorial-phase4c`、`check:tutorial-phase6`、`check:tutorial-ui`：旧経路との互換性、全登録STEP・画面・操作対象、配置と再開契約を再検査した。
+- 次回対象：更新版URLで、既存の途中セーブが削除STEPから現行STEPへ転送されること、および86 STEPの通し所要時間と説明量をスマホ実機で確認する。

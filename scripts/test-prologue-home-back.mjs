@@ -12,8 +12,7 @@ const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
 const required=[
-  'home_requests','request_board','request_accept','request_reward_preview',
-  'request_reward_claim','request_reward_received','stella_intro'
+  'home_requests','request_accept','request_reward_claim','request_reward_received','stella_intro'
 ];
 let previous=-1;
 for(const id of required){
@@ -26,8 +25,8 @@ assert.match(main,/id:'request_accept'[^\n]+data-tutorial-request-open[^\n]+exte
 assert.match(main,/id:'request_reward_claim'[^\n]+target:'#tutorialRequestClaimButton'[^\n]+externalAdvance:true[^\n]+disableBack:true/);
 assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_intro'/);
 assert.ok(main.includes('ここを押すと、討伐依頼と報酬を確認できるぞ！'));
-assert.ok(main.includes('ここを押すと、依頼を報告して報酬を受け取れるぞ！'));
-assert.ok(main.includes('ここを押すと、依頼報酬を受け取れるぞ！'));
+assert.ok(main.includes('このボタンを押して、報告と報酬の確認へ進もう！'));
+assert.ok(main.includes('報酬はコイン250枚と錬成素材4種類だ'));
 assert.ok(!main.includes('カナタ'),'Kanata must not appear in the prologue');
 
 for(const token of [
