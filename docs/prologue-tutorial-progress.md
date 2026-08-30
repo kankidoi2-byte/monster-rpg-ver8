@@ -912,3 +912,34 @@
 - `check:prologue-rescue-stability`、`check:prologue-elna-contract`、`check:prologue-home-back`、`check:prologue-stella-mock`、`check:prologue-lumina-alchemy`、`check:prologue-comprehensive`：成功。
 - `node --check js/tutorial.js`、`node --check js/battle-flow.js`、`npm run check`、`git diff --check`：成功。ゲームデータ、画像、保存移行、戦闘、契約、錬成、遠征、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
 - 残る確認：更新版URLで、救援戦勝利後に「救援成功」が自動表示され、その後も報酬受領、エルナ契約、ステラ模擬戦、ルミナ錬成の各境界をメニュー操作なしで連続進行できることをスマホ実機で確認する。
+
+## スマートフォン実機確認後の修正 Phase K〜L
+
+### Phase K：技変更ボタンを下部ナビより前面へ表示
+
+- `growth_skill_open` はエルナの詳細欄にある実際の「技変更」ボタンを対象にしていたが、スマホでは固定下部ナビの裏へ潜ったまま強調枠だけが下部メニューへ重なっていた。
+- このSTEP中だけ、実際の「技変更」ボタンを下部ナビの直上へ固定表示する。別の代替ボタンではないため、タップすると従来どおり技編集画面を開き、操作成功時だけ次へ進む。
+- エルナのカードによる切り抜きを解除し、360px幅でも左右16px以上を確保する。既存の `growth_skill_open` STEP IDと途中セーブは維持した。
+
+### Phase L：序章完了シーンのグノーシス表示
+
+- 最終STEPはホームの大きな冒険カードを強調対象にしていたため、機能説明STEPと判定され、UIを隠さないための立ち絵抑止規則がグノーシスにも適用されていた。
+- 最終STEPは「自由行動へ」ボタンで完了する物語会話であり、ホーム画面の直接操作を要求しない。不要な強調対象を外し、背景・グノーシス透過立ち絵・会話パネルを別レイヤーで表示する構成へ戻した。
+- `prologue_complete` STEP ID、完了保存、再プレイ時の二重処理防止は変更していない。
+
+### 変更ファイル
+
+- `js/tutorial.js`
+- `css/tutorial.css`
+- `index.html`
+- `package.json`
+- `scripts/test-prologue-mobile-clarity.mjs`
+- `scripts/test-prologue-expedition-finale.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:prologue-mobile-clarity`：既存の技変更STEPが実ボタンを操作し、そのボタンが固定下部ナビより上で見えて押せること、最終STEPがグノーシスを表示する物語会話であることを検証する。
+- `check:prologue-home-front`、`check:prologue-expedition-finale`、`check:prologue-comprehensive`、`check:tutorial-ui`：既存の技編集、完了保存、全フロー、操作対象優先レイアウトを回帰検証する。
+- 次回対象：更新版URLで停止中の `SKILL 30` から「技変更」が下部ナビの直上に表示されること、`PROLOGUE CLEAR` でグノーシスが表示されることをスマホ実機で確認する。

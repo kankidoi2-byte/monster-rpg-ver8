@@ -26,6 +26,7 @@ assert.match(finale,/id:'expedition_dispatch'[^\n]+externalAdvance:true/);
 assert.match(finale,/id:'expedition_active'[^\n]+persistAs:'prologue_epilogue'/);
 assert.match(tutorial,/\['expedition_distance','expedition_member'\]\.includes\(tutorialCurrentStepId\(\)\)[^\n]+tutorialExpeditionCandidateInstance/,'the member target must already be marked by the distance-step render');
 assert.ok(finale.includes('帰還を待たなくて大丈夫！'),'the prologue must continue without waiting for expedition return');
+assert.match(finale,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'/,'the final story scene must show Gnosis without being converted into a UI-guide step');
 assert.ok(finale.trimEnd().endsWith(']);'),'the new prologue completion STEP must end the main flow');
 
 for(const token of [
