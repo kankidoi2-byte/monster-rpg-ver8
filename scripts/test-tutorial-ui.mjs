@@ -28,6 +28,7 @@ assert.match(css,/\.tutorial-shade\{[^}]*pointer-events:none/,'spotlight shades 
 assert.match(css,/@media\(max-width:480px\)/,'portrait-phone tutorial layout is missing');
 assert.match(css,/\.tutorial-story-backdrop\{/,'story background layer is missing');
 assert.match(css,/\.tutorial-character-layer\{/,'transparent portrait layer is missing');
+assert.match(css,/\.tutorial-overlay\.is-ui-guide-step \.tutorial-character-layer\{display:none\}/,'full-body portraits must not cover highlighted game UI');
 assert.match(css,/@media\(max-width:719px\)/,'story dialogue must have a phone-portrait layout');
 assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion support is missing');
 
@@ -36,6 +37,7 @@ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion suppo
   'function pauseTutorial','function requestTutorialSkip','function openTutorialFromMenu',
   'function resumeTutorialIfNeeded','function handleTutorialScreenChange','function renderTutorialStoryStep','function confirmTutorialPlayerName'
 ].forEach(contract=>assert.ok(tutorial.includes(contract),`missing tutorial engine contract: ${contract}`));
+assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'UI-target steps must activate the portrait-safe layout policy');
 assert.ok(tutorial.includes('必須チュートリアルを全体スキップしますか？'),'required tutorial skip must ask for confirmation');
 assert.ok(tutorial.includes('function skipTutorialDialogue()')&&tutorial.includes('function tutorialDialogueSkipTargetIndex()'),'dialogue-only skipping must stop at the next operation boundary');
 assert.ok(tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must use the shared persisted state');

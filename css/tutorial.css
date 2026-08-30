@@ -16,6 +16,7 @@
 .tutorial-character-layer img{display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 14px 20px rgba(0,0,0,.38))}
 .tutorial-character-layer[data-portrait="elna_beginner"] img{width:auto;height:100%;aspect-ratio:2/3}
 .tutorial-character-layer img[hidden]{display:none}
+.tutorial-overlay.is-ui-guide-step .tutorial-character-layer{display:none}
 .tutorial-bubble{position:fixed;z-index:4;display:grid;width:min(360px,calc(100vw - 20px));max-height:calc(100svh - 20px);overflow-x:hidden;overflow-y:auto;gap:9px;padding:15px;border:2px solid #fff;border-radius:22px;background:linear-gradient(150deg,#f7fcff,#fff9dd);box-shadow:0 18px 48px rgba(0,18,34,.42);pointer-events:auto;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;outline:none;transition:top .18s,left .18s}
 .tutorial-bubble:focus-visible{box-shadow:0 0 0 4px #31a8d8,0 18px 48px rgba(0,18,34,.42)}
 .tutorial-bubble-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.tutorial-bubble-head>div{display:flex;align-items:center;gap:8px}.tutorial-bubble-head span{color:#1778a6;font-size:9px;font-weight:1000;letter-spacing:.14em}.tutorial-bubble-head strong{color:#5d7584;font-size:11px}

@@ -242,6 +242,10 @@ function renderTutorialStoryStep(step){
   const portrait=document.getElementById('tutorialCharacterPortrait');
   const story=Boolean(step?.scene||step?.portrait);
   overlay?.classList.toggle('is-story-step',story);
+  // Full-body portraits support narrative dialogue, but they obscure the game
+  // screen when the current step is explaining or highlighting a real UI target.
+  // In UI-guide steps the speaker name remains in the bubble and the target wins.
+  overlay?.classList.toggle('is-ui-guide-step',Boolean(step?.target));
   if(backdrop){
     backdrop.hidden=!step?.scene;
     backdrop.dataset.scene=step?.scene||'';
@@ -1026,7 +1030,10 @@ function tutorialExpeditionCandidateInstance(){
   return candidates.find(instance=>instance.id===TUTORIAL_LUMINA_ALCHEMY.resultId)||candidates[0]||null;
 }
 function shouldMarkTutorialExpeditionMember(uid){
-  return tutorialCurrentStepId()==='expedition_member'&&uid===tutorialExpeditionCandidateInstance()?.uid;
+  // Distance selection renders the expedition screen before the tutorial engine
+  // advances to expedition_member. Mark the candidate during both steps so the
+  // next render can immediately find, scroll to, and spotlight the real button.
+  return ['expedition_distance','expedition_member'].includes(tutorialCurrentStepId())&&uid===tutorialExpeditionCandidateInstance()?.uid;
 }
 function handleTutorialExpeditionDestinationSelected(mapId){
   if(tutorialCurrentStepId()!=='expedition_destination'||mapId!=='grassland')return false;

@@ -24,6 +24,7 @@ assert.match(finale,/id:'expedition_distance'[^\n]+short[^\n]+externalAdvance:tr
 assert.match(finale,/id:'expedition_member'[^\n]+externalAdvance:true/);
 assert.match(finale,/id:'expedition_dispatch'[^\n]+externalAdvance:true/);
 assert.match(finale,/id:'expedition_active'[^\n]+persistAs:'prologue_epilogue'/);
+assert.match(tutorial,/\['expedition_distance','expedition_member'\]\.includes\(tutorialCurrentStepId\(\)\)[^\n]+tutorialExpeditionCandidateInstance/,'the member target must already be marked by the distance-step render');
 assert.ok(finale.includes('帰還を待たなくて大丈夫！'),'the prologue must continue without waiting for expedition return');
 assert.ok(finale.trimEnd().endsWith(']);'),'the new prologue completion STEP must end the main flow');
 
@@ -57,6 +58,12 @@ function makeTutorialContext({saveSucceeds=true,replaying=false,dispatched=false
 }
 
 const dispatch=makeTutorialContext();
+dispatch.save.progress.tutorial.stepId='expedition_distance';
+assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('alc')",dispatch),true,'the distance-step render must mark the upcoming member target');
+assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('other')",dispatch),false);
+dispatch.save.progress.tutorial.stepId='expedition_member';
+assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('alc')",dispatch),true,'the member step must keep the same target marked');
+dispatch.save.progress.tutorial.stepId='expedition_dispatch';
 const entry={mapId:'grassland',distanceId:'short',memberUids:['alc']};
 assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',dispatch)(entry),true);
 assert.equal(entry.tutorialPrologue,true);
