@@ -24,7 +24,7 @@ for(const id of required){
 assert.match(main,/id:'home_requests'[^\n]+target:'#homeAdventureButton'[^\n]+advanceOnTarget:true/);
 assert.match(main,/id:'request_accept'[^\n]+data-tutorial-request-open[^\n]+externalAdvance:true/);
 assert.match(main,/id:'request_reward_claim'[^\n]+target:'#tutorialRequestClaimButton'[^\n]+externalAdvance:true[^\n]+disableBack:true/);
-assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+waitForEvent:'stella_intro'/);
+assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_intro'/);
 assert.ok(main.includes('ここを押すと、討伐依頼と報酬を確認できるぞ！'));
 assert.ok(main.includes('ここを押すと、依頼を報告して報酬を受け取れるぞ！'));
 assert.ok(main.includes('ここを押すと、依頼報酬を受け取れるぞ！'));

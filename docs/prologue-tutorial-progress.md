@@ -870,3 +870,45 @@
 - `check:prologue-comprehensive`：物語用の背景・透過立ち絵・会話パネルの別レイヤーを維持しながら、機能説明だけを対象優先へ切り替えることを横断確認した。
 - `node --check js/tutorial.js`、`git diff --check`、`npm run check`：成功。ゲームデータ、画像、保存移行、遠征、錬成、技編集、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
 - 次回対象：更新版URLで停止中の遠征から派遣候補が見えること、技編集・錬成結果・遠征適性で立ち絵が強調対象を隠さないことを実機確認する。
+
+## 途中で案内が消える問題の修正 Phase H〜J
+
+### Phase H：外部処理境界の全件監査
+
+- 序章本編で案内UIを閉じる `waitForEvent` を全件抽出した。対象は、エルナ救援戦、ステラ模擬戦、ルミナ錬成、依頼報酬受領後、エルナ契約完了後の5系統だった。
+- エルナ救援戦とステラ模擬戦には戦闘結果ハンドラー、ルミナ錬成には錬成完了ハンドラーがあり、実処理完了後に再開できる設計だった。
+- 依頼報酬受領後の `stella_intro` とエルナ契約完了後の `home_party` は、外部イベント名ではなく次の保存位置だった。待機後に発火するイベントが存在せず、メニューから手動再開しなければならない進行停止点になっていた。
+- エルナ救援戦の勝利後は、案内再開から300ms後に自動進化画面が開く可能性があり、再開した案内と画面を奪い合う経路も確認した。
+
+### Phase I：連続進行と自動再開
+
+- 依頼報酬受領後は `stella_intro`、エルナ契約完了後は `home_party` へ、案内UIを閉じず「次へ」で直接遷移するよう修正した。既存の保存STEP IDは維持している。
+- 戦闘結果、契約演出、錬成結果からの再開を `resumeTutorialMainFlowAfterEvent` に統一した。各処理の最終DOM更新が終わる次のタスクで案内を再表示し、結果画面側の描画に隠されたり置き換えられたりしないようにした。
+- 戦闘セッションを再開処理より先に終了させ、二重結果通知や古いセッション状態を残さないようにした。
+- 序章戦の勝利後は自動進化画面を割り込ませない。通常戦の自動進化処理は従来どおり維持する。
+
+### Phase J：境界回帰検査
+
+- `check:prologue-continuity` を追加し、案内UIを閉じる待機が実イベントを持つ `battle_outcome` と `alchemy_result` だけであることを全件検査した。
+- 救援戦の勝利・敗北・撤退、ステラ模擬戦の勝利・再挑戦、契約演出、錬成完了が共通の自動再開経路を通ることを検査した。
+- 報酬受領後とエルナ契約後が直接次STEPへ進むこと、序章戦後の自動進化が案内を置き換えないこと、スマホの古いJSキャッシュを更新することを検査した。
+
+### 変更ファイル
+
+- `js/tutorial.js`
+- `js/battle-flow.js`
+- `index.html`
+- `package.json`
+- `scripts/test-prologue-continuity.mjs`
+- `scripts/test-prologue-elna-contract.mjs`
+- `scripts/test-prologue-home-back.mjs`
+- `scripts/test-prologue-stella-mock.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:prologue-continuity`：全待機境界、直接継続、外部処理後の自動再開、自動進化との競合防止を検証した。
+- `check:prologue-rescue-stability`、`check:prologue-elna-contract`、`check:prologue-home-back`、`check:prologue-stella-mock`、`check:prologue-lumina-alchemy`、`check:prologue-comprehensive`：成功。
+- `node --check js/tutorial.js`、`node --check js/battle-flow.js`、`npm run check`、`git diff --check`：成功。ゲームデータ、画像、保存移行、戦闘、契約、錬成、遠征、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
+- 残る確認：更新版URLで、救援戦勝利後に「救援成功」が自動表示され、その後も報酬受領、エルナ契約、ステラ模擬戦、ルミナ錬成の各境界をメニュー操作なしで連続進行できることをスマホ実機で確認する。

@@ -68,7 +68,7 @@ const win=flow.slice(flow.indexOf('function win()'));
 assert.ok(win.indexOf('completeTutorialStellaMockVictory')<win.indexOf('if (battleRewardGranted) return;'),'mock victory must settle before normal rewards');
 assert.ok(tutorial.includes("title:'属性模擬戦クリア'")&&tutorial.includes('模擬戦のため通常報酬はありません。'),'mock victory must explicitly grant no normal battle reward');
 assert.ok(tutorial.includes("setTutorialStep(cleared?'lumina_intro':'stella_mock_battle')"),'victory and retry must persist different safe checkpoints');
-assert.ok(tutorial.includes("stepId:cleared?'stella_mock_victory':'stella_mock_retry'"),'victory, defeat, retreat, and invalid clear must route deterministically');
+assert.ok(tutorial.includes("resumeTutorialMainFlowAfterEvent(cleared?'stella_mock_victory':'stella_mock_retry'"),'victory, defeat, retreat, and invalid clear must route deterministically');
 
 for(const file of ['tutorial.js','skills.js','battle-rules.js','battle-flow.js']){
   assert.ok(index.includes(`${file}?v=`)&&index.match(new RegExp(`${file.replace('.','\\.')}\\?v=[^\"']*prologue-stella-mock-1`)),`${file} cache key must refresh`);

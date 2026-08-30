@@ -686,6 +686,19 @@ function resumeTutorialIfNeeded(){
   if(tutorial.status!=='in_progress'&&!tutorial.replaying)return false;
   return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true,replay:tutorial.replaying});
 }
+function resumeTutorialMainFlowAfterEvent(stepId,replay=false){
+  if(!stepId)return false;
+  const resume=()=>{
+    const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+    if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying))return false;
+    return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId,persist:true,replay:replay||tutorial.replaying===true});
+  };
+  // External renderers (battle result, contract animation and alchemy result)
+  // finish their own DOM update in the current call stack. Reopen the guide on
+  // the next task so that their final paint cannot hide or replace it.
+  if(typeof setTimeout==='function'){setTimeout(resume,0);return true;}
+  return resume();
+}
 function tutorialFeatureGuideForScreen(screenId){
   return ({
     alchemy:['alchemy',TUTORIAL_ALCHEMY_FLOW_ID],
@@ -1023,7 +1036,7 @@ function handleTutorialAlchemyExecutionStarted(){
 }
 function handleTutorialLuminaAlchemyCompleted(){
   const replay=typeof currentTutorialState==='function'&&currentTutorialState().replaying===true;
-  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_alchemy_result',persist:true,replay});
+  return resumeTutorialMainFlowAfterEvent('lumina_alchemy_result',replay);
 }
 function tutorialExpeditionCandidateInstance(){
   const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
@@ -1259,23 +1272,23 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   const stellaMock=tutorialBattleSession.kind==='stella_mock';
   if(stellaMock){
     const cleared=kind==='victory'&&tutorialBattleSession.advantageUsed===true;
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
     setTutorialStep(cleared?'lumina_intro':'stella_mock_battle');
     if(typeof saveGame==='function')saveGame();
     if(typeof endPartyRecovery==='function')endPartyRecovery();
-    startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:cleared?'stella_mock_victory':'stella_mock_retry',persist:true,replay:tutorial.replaying});
-    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
+    resumeTutorialMainFlowAfterEvent(cleared?'stella_mock_victory':'stella_mock_retry',tutorial.replaying);
     return true;
   }
   if(kind==='victory'){
     const nextStep=rescue?'elna_rescue_complete':'victory_exp';
+    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
     setTutorialStep(rescue?'elna_contract_intro':'first_contract');
     if(typeof saveGame==='function')saveGame();
-    startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:nextStep,persist:true,replay:tutorial.replaying});
-    tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+    resumeTutorialMainFlowAfterEvent(nextStep,tutorial.replaying);
     return true;
   }
-  startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:rescue?'elna_rescue_retry':'battle_retry',persist:true,replay:tutorial.replaying});
   tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
+  resumeTutorialMainFlowAfterEvent(rescue?'elna_rescue_retry':'battle_retry',tutorial.replaying);
   return true;
 }
 
@@ -1343,7 +1356,7 @@ function handleTutorialContractCommitted(){
 function handleTutorialContractAnimationComplete(){
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   if(!tutorial||tutorial.stepId!=='contract_success'||tutorial.status!=='in_progress')return false;
-  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'contract_success',persist:true});
+  return resumeTutorialMainFlowAfterEvent('contract_success');
 }
 function tutorialContractInstance(){
   if(!Array.isArray(save?.instances))return null;
@@ -1417,7 +1430,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,title:'依頼を報告',text:'ここを押すと、依頼を報告して報酬を受け取れるぞ！',progressLabel:'REQUEST'},
   {id:'request_reward_preview',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardList',persistAs:'request_reward_preview',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'依頼報酬',text:'コイン250枚と、錬成に使う4種類の素材だ！',progressLabel:'REWARD'},
   {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,disableBack:true,title:'報酬を受け取ろう',text:'ここを押すと、依頼報酬を受け取れるぞ！',progressLabel:'REWARD'},
-  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',waitForEvent:'stella_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'次の出会いへ'},
+  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'次の出会いへ'},
   {id:'stella_intro',screenId:'home',persistAs:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE'},
   {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
   {id:'stella_card_offer',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'技カードを受け取ろう',text:'エルナが使える「連続斬り」のカードをあげる。装備して、技と属性を見てみよう！',progressLabel:'SKILL CARD'},
@@ -1479,7 +1492,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナの同意',text:'うん。助けてもらったあなたになら、私の力を預けられる。契約を受け取って！',progressLabel:'CONTRACT'},
   {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'契約書が3回反応して、手形が押されたら成功だ！',progressLabel:'CONTRACT',nextLabel:'契約する'},
   {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'契約は結ばれたよ。呼ばれる契約体は私の力を写した存在。本人の私は、ここでお別れだね。',progressLabel:'CONTRACT'},
-  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',waitForEvent:'home_party',disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'ホームへ'},
+  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'ホームへ'},
   {id:'victory_exp',screenId:'battle',target:'#battleRewardExp',persistAs:'first_contract',title:'勝利：経験値',text:'パーティーの仲間が経験値を獲得します。経験値がたまるとレベルが上がり、強くなります。',progressLabel:'VICTORY'},
   {id:'victory_coin',screenId:'battle',target:'#battleRewardCoins',persistAs:'first_contract',title:'勝利：コイン',text:'コインはショップや育成で使います。今回の獲得数は勝利結果で確認できます。',progressLabel:'VICTORY'},
   {id:'victory_material',screenId:'battle',target:'#battleRewardMaterials',persistAs:'first_contract',title:'勝利：素材',text:'バトルでは錬成などに使う素材を獲得することがあります。出なかった場合も、次の勝利でまた抽選されます。',progressLabel:'VICTORY'},

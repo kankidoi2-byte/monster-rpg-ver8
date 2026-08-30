@@ -21,7 +21,7 @@ for(const id of requiredOrder){
 assert.ok(mainFlow.includes("text:'契約！ 契約を貰って！'"),'the accepted Gnosis line must be exact');
 assert.match(mainFlow,/id:'elna_contract_consent'[^\n]+speaker:'エルナ'/,'Elna herself must consent before the contract');
 assert.match(mainFlow,/id:'elna_contract_execute'[^\n]+input:'elna_contract'[^\n]+nextLabel:'契約する'/,'contract animation must start from an explicit player action');
-assert.match(mainFlow,/id:'elna_contract_body'[^\n]+persistAs:'home_party'[^\n]+waitForEvent:'home_party'/,'the completed contract must checkpoint before the home tutorial');
+assert.match(mainFlow,/id:'elna_contract_body'[^\n]+persistAs:'home_party'[^\n]+nextStepId:'home_party'/,'the completed contract must continue directly into the home tutorial');
 assert.ok(tutorial.includes("stage:3"),'the Elna contract must always use the three-pulse success animation');
 assert.ok(contractAnimation.includes('const zoomLevels = [1.16, 1.32, 1.48]'),'the shared contract animation must contain three zoom levels');
 assert.ok(contractAnimation.includes("if (pulseCount === 3)")&&contractAnimation.includes("paper.classList.add('is-stamping')"),'three zooms must end in the handprint stamp');

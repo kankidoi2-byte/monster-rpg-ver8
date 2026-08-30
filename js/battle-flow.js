@@ -386,5 +386,7 @@ function win() {
   if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
   busy = true;
   renderParty();
-  setTimeout(processNextEvolution, 300);
+  // The prologue resumes its next guide immediately after a tutorial battle.
+  // Do not let an automatic evolution screen replace that resumed guide.
+  if(!tutorialOutcomeHandled)setTimeout(processNextEvolution, 300);
 }
