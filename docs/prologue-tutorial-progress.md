@@ -619,6 +619,7 @@
 - `npm run check` で全検査が成功し、通常錬成の素材選択、触媒必須・消費、成功率上限、外れ候補、ルミナ助言を維持していることを確認した。
 - 変更JavaScriptの構文検査と `git diff --check` が成功した。
 - ルミナ画像がRGBA PNGであり、画像マニフェスト上の透明・半透明ピクセルを保持していることを確認した。
+- `e4af276` のGitHub Actions「Validate game data and assets」run #213で、新しい専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
