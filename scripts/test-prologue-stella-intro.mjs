@@ -38,7 +38,7 @@ assert.ok(stellaFlow.includes("portrait:'images/tutorial/characters/stella_appre
 assert.ok(stellaFlow.includes("transition:'grant_stella_skill_card'"),'card receipt must use the one-time transition');
 assert.match(stellaFlow,/id:'stella_skill_unequip'[^\n]+externalAdvance:true/);
 assert.match(stellaFlow,/id:'stella_skill_equip'[^\n]+externalAdvance:true/);
-assert.match(stellaFlow,/id:'stella_mock_battle'[^\n]+persistAs:'stella_mock_battle'[^\n]+waitForEvent:'stella_mock_battle'/);
+assert.match(stellaFlow,/id:'stella_mock_battle'[^\n]+persistAs:'stella_mock_battle'[^\n]+transition:'start_stella_mock_battle'/);
 assert.ok(stellaFlow.includes('ここを押すと、エルナの技カードを組み替えられるぞ！'));
 assert.ok(stellaFlow.includes('ここを押すと、受け取った技カードを装備できるぞ！'));
 

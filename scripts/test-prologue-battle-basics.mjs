@@ -38,7 +38,7 @@ assert.ok(skills.includes("isTutorialRescueBattleActive()")&&skills.includes('da
 assert.ok(skills.includes('data-tutorial-skill')&&skills.includes('data-tutorial-skill-cost')&&skills.includes('Number.isFinite(mv[5])'),'real equipped skills must expose their real equipment cost');
 assert.ok(battleRules.includes("const tutorialAction=i===-1?'normal_attack':'skill'"),'normal attack and equipped skill events must be distinguished');
 assert.ok(battleRules.includes("i===-1?['通常攻撃',24,'normal',null,null,0]"),'the tutorial normal attack must execute through the real turn engine at COST 0');
-assert.ok(battleRules.indexOf("busy = true;\n  startBattleTurn();")<battleRules.indexOf("handleTutorialBattleAction(tutorialAction)"),'failed or double-tapped actions must not release an operation wait');
+assert.ok(battleRules.indexOf("busy = true;\n  startBattleTurn();")<battleRules.indexOf("handleTutorialBattleAction(tutorialAction,"),'failed or double-tapped actions must not release an operation wait');
 
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1'),'tutorial cache key must refresh');
 assert.ok(index.includes('js/skills.js?v=evolution-skill-cards-1-prologue-battle-basics-1'),'skill UI cache key must refresh');

@@ -78,7 +78,7 @@ assert.ok(winSource.indexOf('continueTutorialRescueWave')<winSource.indexOf('if 
 assert.ok(winSource.includes("const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory'"),'tutorial victory must be resolved before offering a contract');
 assert.ok(winSource.includes('if(!tutorialOutcomeHandled)renderSingleBattleContractPanel()'),'the rescue Slime must not show the legacy post-battle contract offer');
 
-assert.ok(rules.includes('if (busy) return;')&&rules.indexOf('if (busy) return;',rules.indexOf('async function turn'))<rules.indexOf("handleTutorialBattleAction(tutorialAction)",rules.indexOf('async function turn')),'double-tapped attacks must be rejected before STEP advancement');
+assert.ok(rules.includes('if (busy) return;')&&rules.indexOf('if (busy) return;',rules.indexOf('async function turn'))<rules.indexOf("handleTutorialBattleAction(tutorialAction,",rules.indexOf('async function turn')),'double-tapped attacks must be rejected before STEP advancement');
 assert.ok(flow.includes('if (busy || !livingPartySwitchCandidates()'),'double-tapped switches must be rejected');
 assert.ok(flow.includes('function runAway() {\n  if (busy) return;'),'double-tapped retreat must be rejected');
 assert.match(tutorial,/id:'battle_free'[^\n]+waitForEvent:'battle_outcome'/,'free battle must wait for a real outcome');

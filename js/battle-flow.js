@@ -314,6 +314,7 @@ function runAway() {
 function win() {
   if (eHp > 0) return;
   if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
+  if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) return;
   if (battleRewardGranted) return;
   battleRewardGranted = true;
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();

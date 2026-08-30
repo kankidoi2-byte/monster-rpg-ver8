@@ -99,7 +99,8 @@ function renderSkillButtons(){
     const role = power > 0 ? `威力 ${power}` : '補助';
     const cost = Number.isFinite(mv[5]) ? Number(mv[5]) : skillCostFromMove(mv);
     const strength = power >= 50 ? ' is-strong-skill' : '';
-    return `<button onclick="turn(${i})" data-tutorial-skill class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}、COST ${cost}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role} / <b data-tutorial-skill-cost>COST ${cost}</b></small></button>`;
+    const stellaAdvantage=typeof isTutorialStellaMockAdvantageMove==='function'&&isTutorialStellaMockAdvantageMove(mv)?' data-tutorial-stella-advantage':'';
+    return `<button onclick="turn(${i})" data-tutorial-skill${stellaAdvantage} class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}、COST ${cost}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role} / <b data-tutorial-skill-cost>COST ${cost}</b></small></button>`;
   }).join('');
 }
 function openSkillEdit(uid){
