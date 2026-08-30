@@ -698,6 +698,7 @@
 - 360×640、412×915、1366×768の各ビューポートで、画面上部・下部の操作対象と会話UIの配置計算が画面外へ出ず、上下配置時に対象を覆わないことを検証した。スマホ用の立ち絵領域、会話領域、4ボタン配置、ホームの第1章導線のタップ高さもCSS契約で確認した。
 - 4人の実透過PNGについて、PNG署名、RGBAカラー形式、マニフェストの透明・半透明ピクセルを実ファイルと突き合わせた。背景、立ち絵、会話UIのDOM順も検証した。
 - `node --check js/tutorial.js`、`git diff --check`、`npm run check:tutorial`、`npm run check:tutorial-ui`、および `npm run check` の全検査が成功した。
+- `99d1426` のGitHub Actions「Validate game data and assets」run #217で、新しい総合検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
