@@ -271,16 +271,40 @@ function confirmTutorialPlayerName(event){
   return false;
 }
 
+function tutorialOwnedStarterInstance(rootId){
+  if(!Array.isArray(save?.instances))return null;
+  const matches=save.instances.filter(instance=>tutorialMonsterInLineage(instance?.id,rootId));
+  return matches.find(instance=>instance.tutorialContract===true)
+    ||matches.find(instance=>instance.id===rootId)
+    ||matches[0]
+    ||null;
+}
+function tutorialMonsterInLineage(monsterId,rootId){
+  if(!monsterId||!rootId)return false;
+  const pending=[rootId],visited=new Set();
+  while(pending.length){
+    const id=pending.shift();
+    if(!id||visited.has(id))continue;
+    if(id===monsterId)return true;
+    visited.add(id);
+    const monster=typeof by==='function'?by(id):null;
+    if(monster?.evolution)pending.push(monster.evolution);
+    for(const evolution of monster?.evolutions||[])pending.push(evolution?.to);
+  }
+  return false;
+}
 function tutorialInitialPartyReady(party=typeof getPartyInstances==='function'?getPartyInstances():[]){
-  const ids=(party||[]).map(instance=>instance?.id).filter(Boolean);
-  return ids.length===3&&['freigal','aquaron','elna_beginner'].every(id=>ids.includes(id));
+  const members=party||[];
+  return members.length===3
+    &&TUTORIAL_STARTER_CONTRACT_IDS.every(rootId=>members.some(instance=>tutorialMonsterInLineage(instance?.id,rootId)))
+    &&members.some(instance=>instance?.id==='elna_beginner');
 }
 function canConfirmTutorialParty(party){
   if(tutorialCurrentStepId()!=='party_save')return true;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   if(tutorial?.replaying)return true;
   if(tutorialInitialPartyReady(party))return true;
-  if(typeof showUiNotice==='function')showUiNotice('フレイガル、アクアロン、エルナの3体を編成してください。','warning');
+  if(typeof showUiNotice==='function')showUiNotice('フレイガル系統、アクアロン系統、エルナの3体を編成してください。','warning');
   return false;
 }
 function handleTutorialPartySaved(){
@@ -678,9 +702,6 @@ function offerGoldenLandTutorialGuide(){
   return startTutorialFeatureGuide('goldenLand',TUTORIAL_GOLDEN_LAND_FLOW_ID);
 }
 
-function tutorialOwnedStarterInstance(id){
-  return Array.isArray(save?.instances)?save.instances.find(instance=>instance.id===id)||null:null;
-}
 function ensureTutorialStarterContracts(){
   if(typeof currentTutorialState!=='function'||typeof addInstance!=='function')return false;
   const tutorial=currentTutorialState();
@@ -797,7 +818,7 @@ function startTutorialStellaMockBattle(){
     if(!request)throw new Error('stella_mock_request_missing');
     partyBattle=[];
     startChosenBattle(TUTORIAL_STELLA_MOCK.mapId,TUTORIAL_STELLA_MOCK.enemyId,TUTORIAL_STELLA_MOCK.difficultyId,request.requestId);
-    const ready=activeScreenId()==='battle'&&player?.id===TUTORIAL_STELLA_MOCK.actorId&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
+    const ready=activeScreenId()==='battle'&&tutorialMonsterInLineage(player?.id,TUTORIAL_STELLA_MOCK.actorId)&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
     if(!ready)throw new Error('stella_mock_battle_not_ready');
     return true;
   }catch(error){
@@ -811,7 +832,7 @@ function startTutorialStellaMockBattle(){
   }
 }
 function isTutorialStellaMockAdvantageMove(move,actor=typeof activeInstance!=='undefined'?activeInstance:null,target=typeof enemy!=='undefined'?enemy:null){
-  if(!isTutorialStellaMockBattleActive()||actor?.id!==TUTORIAL_STELLA_MOCK.actorId||target?.id!==TUTORIAL_STELLA_MOCK.enemyId)return false;
+  if(!isTutorialStellaMockBattleActive()||!tutorialMonsterInLineage(actor?.id,TUTORIAL_STELLA_MOCK.actorId)||target?.id!==TUTORIAL_STELLA_MOCK.enemyId)return false;
   return Number(move?.[1])>0&&moveTypes(move).includes('fire')&&typeEff(moveTypes(move),target.types)>1;
 }
 function completeTutorialStellaMockVictory(){

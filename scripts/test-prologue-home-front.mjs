@@ -54,12 +54,18 @@ assert.ok(index.includes('js/party.js?v=golden-land-release-1-fixed-hunt-1-tutor
 assert.ok(index.includes('js/dex.js?v=monster-obtain-2-prologue-home-front-1'));
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1'));
 
-const helperStart=tutorial.indexOf('function tutorialInitialPartyReady');
+const helperStart=tutorial.indexOf('function tutorialOwnedStarterInstance');
 const helperEnd=tutorial.indexOf('function tutorialElnaContractInstance',helperStart);
 assert.ok(helperStart>=0&&helperEnd>helperStart);
 const notices=[];
 const helperContext=vm.createContext({
   tutorialUiState:{active:true},step:'party_save',advanced:0,
+  TUTORIAL_STARTER_CONTRACT_IDS:['freigal','aquaron'],
+  by:id=>({
+    freigal:{id:'freigal',evolution:'freiwolf'},freiwolf:{id:'freiwolf'},
+    aquaron:{id:'aquaron',evolution:'highaquaron'},highaquaron:{id:'highaquaron',evolutions:[{to:'shenhairon'},{to:'tienhairon'}]},
+    shenhairon:{id:'shenhairon'},tienhairon:{id:'tienhairon'}
+  })[id]||null,
   tutorialCurrentStepId:()=>helperContext.step,
   currentTutorialState:()=>({replaying:false}),
   getPartyInstances:()=>[],
@@ -72,6 +78,14 @@ helperContext.ready=[
 ];
 helperContext.bad=[{uid:'f',id:'freigal'},{uid:'a',id:'aquaron'}];
 assert.equal(vm.runInContext('tutorialInitialPartyReady(ready)',helperContext),true);
+helperContext.evolved=[
+  {uid:'f',id:'freiwolf',tutorialContract:true},{uid:'a',id:'highaquaron',tutorialContract:true},{uid:'e',id:'elna_beginner'}
+];
+helperContext.branched=[
+  {uid:'f',id:'freiwolf',tutorialContract:true},{uid:'a',id:'tienhairon',tutorialContract:true},{uid:'e',id:'elna_beginner'}
+];
+assert.equal(vm.runInContext('tutorialInitialPartyReady(evolved)',helperContext),true,'the first evolutions must remain valid starter bodies');
+assert.equal(vm.runInContext('tutorialInitialPartyReady(branched)',helperContext),true,'a branched Aquaron evolution must remain valid');
 assert.equal(vm.runInContext('tutorialInitialPartyReady(bad)',helperContext),false);
 assert.equal(vm.runInContext('canConfirmTutorialParty(bad)',helperContext),false);
 assert.equal(notices.length,1,'an incomplete first party must show one warning');

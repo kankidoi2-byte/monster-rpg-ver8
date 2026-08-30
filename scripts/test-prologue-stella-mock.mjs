@@ -38,7 +38,7 @@ for(const id of ['stella_mock_enemy','stella_mock_actor','stella_mock_skill_open
 assert.ok(tutorial.includes("TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'grassland',enemyId:'grassbeat',difficultyId:'easy',actorId:'freigal'})"));
 assert.ok(tutorial.includes("request.tutorialStellaMock=true"),'the mock request needs a stable non-reward identity');
 assert.ok(tutorial.includes("tutorialBattleSession.kind='stella_mock'")&&tutorial.includes("tutorialBattleSession.advantageUsed=false"));
-assert.ok(tutorial.includes("player?.id===TUTORIAL_STELLA_MOCK.actorId")&&tutorial.includes("enemy?.id===TUTORIAL_STELLA_MOCK.enemyId"),'the real battle must start with Freigal against Grassbeat');
+assert.ok(tutorial.includes("tutorialMonsterInLineage(player?.id,TUTORIAL_STELLA_MOCK.actorId)")&&tutorial.includes("enemy?.id===TUTORIAL_STELLA_MOCK.enemyId"),'the real battle must start with the Freigal lineage against Grassbeat');
 assert.ok(tutorial.includes("if(tutorialBattleSession.kind==='stella_mock')")&&tutorial.includes('tutorialElnaContractInstance()'),'the mock party must use owned contract bodies, not the Elna guest');
 
 const advantageStart=tutorial.indexOf('function isTutorialStellaMockAdvantageMove');
@@ -49,11 +49,16 @@ const context=vm.createContext({
   TUTORIAL_STELLA_MOCK:{actorId:'freigal',enemyId:'grassbeat'},
   moveTypes:move=>Array.isArray(move[2])?move[2]:[move[2]],
   typeEff:(types,defense)=>types.includes('fire')&&defense.includes('grass')?1.5:1,
-  activeInstance:{id:'freigal'},enemy:{id:'grassbeat',types:['grass']}
+  activeInstance:{id:'freigal'},enemy:{id:'grassbeat',types:['grass']},
+  by:id=>({freigal:{id:'freigal',evolution:'freiwolf'},freiwolf:{id:'freiwolf'},aquaron:{id:'aquaron'}})[id]||null
 });
 context.isTutorialStellaMockBattleActive=()=>context.tutorialBattleSession.active&&context.tutorialBattleSession.kind==='stella_mock';
+const lineageStart=tutorial.indexOf('function tutorialMonsterInLineage');
+const lineageEnd=tutorial.indexOf('function tutorialInitialPartyReady',lineageStart);
+vm.runInContext(tutorial.slice(lineageStart,lineageEnd),context);
 vm.runInContext(tutorial.slice(advantageStart,advantageEnd),context);
 assert.equal(vm.runInContext("isTutorialStellaMockAdvantageMove(['火炎牙',28,'fire'])",context),true);
+assert.equal(vm.runInContext("isTutorialStellaMockAdvantageMove(['炎狼牙',36,'fire'],{id:'freiwolf'},enemy)",context),true,'evolved Freigal must satisfy the advantage lesson');
 assert.equal(vm.runInContext("isTutorialStellaMockAdvantageMove(['通常攻撃',24,'normal'])",context),false);
 assert.equal(vm.runInContext("isTutorialStellaMockAdvantageMove(['火炎牙',28,'fire'],{id:'aquaron'},enemy)",context),false);
 
