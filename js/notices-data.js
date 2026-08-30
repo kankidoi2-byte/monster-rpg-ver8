@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260830-game-title-cleanup',
+    date: '2026-08-30',
+    category: 'update',
+    title: 'ゲーム名の表示を整理しました',
+    body: 'タイトル画面とブラウザのタブに表示されるゲーム名を「モンスターバトル Ver8.0」に統一しました。ゲーム内容やセーブデータへの変更はありません。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-action-guidance',
     date: '2026-08-29',
     category: 'fix',

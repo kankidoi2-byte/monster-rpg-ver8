@@ -71,11 +71,9 @@ const IMG={
 const MAPIMG={
   magic_academy:'images/maps/magic_academy.webp',
   grassland:'images/maps/grassland.webp',
-  grass:'images/maps/grass.webp',
   volcano:'images/maps/volcano.webp',
   lake:'images/maps/lake.webp',
   snow_mountain:'images/maps/snow_mountain.webp',
-  snow:'images/maps/snow.webp',
   starsea:'images/maps/starsea.webp',
   water_secret:'images/maps/water_secret.webp',
   world_between:'images/maps/world_between.webp',
