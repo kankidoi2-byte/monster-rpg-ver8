@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
@@ -30,6 +31,13 @@ for(const [id,file] of [
   assert.ok(main.includes(`images/tutorial/characters/${file}`),`${id} transparent portrait must be runtime-referenced`);
 }
 assert.equal(manifest.characters.find(entry=>entry.id==='gnosis')?.dexRegistered,false,'Gnosis must stay outside the dex');
+const elnaAsset=manifest.characters.find(entry=>entry.id==='elna_beginner');
+const elnaPng=fs.readFileSync(new URL('../images/tutorial/characters/elna_beginner.png',import.meta.url));
+assert.equal(elnaAsset.width,384,'Elna must use the corrected 2:3 portrait width');
+assert.equal(elnaAsset.height,576,'Elna must use the corrected 2:3 portrait height');
+assert.equal(elnaAsset.validation.backgroundRemoved,true,'Elna must not contain the source scenery');
+assert.equal(crypto.createHash('sha256').update(elnaPng).digest('hex'),elnaAsset.cutoutSha256,'the deployed Elna cutout must match the reviewed transparent asset');
+assert.ok(tutorialCss.includes('[data-portrait="elna_beginner"] img')&&tutorialCss.includes('aspect-ratio:2/3'),'Elna must preserve her portrait ratio in the tutorial layer');
 
 const dialogueStart=tutorial.indexOf('function tutorialLinkedStepIndex');
 const dialogueEnd=tutorial.indexOf('function tutorialStepCanAdvance',dialogueStart);
@@ -149,7 +157,7 @@ assert.ok(index.includes('id="tutorialDialogueSkipButton"')&&index.includes('>�
 assert.ok(index.includes('id="tutorialSkipButton"')&&index.includes('>全体スキップ</button>'));
 assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must remain separate layers');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1'),'tutorial CSS cache key must be refreshed');
-assert.ok(index.includes('prologue-final-scope-1-prologue-evolved-starters-1"></script>'),'tutorial JS cache key must be refreshed');
+assert.ok(index.includes('prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1"></script>'),'tutorial JS cache key must be refreshed');
 assert.equal(packageJson.scripts['check:prologue-comprehensive'],'node scripts/test-prologue-comprehensive.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-comprehensive'));
 

@@ -30,16 +30,17 @@
       "source": "images/monsters/elna_beginner.webp",
       "cutout": "images/tutorial/characters/elna_beginner.png",
       "sourceSha256": "74641f5f474fe23a488769294f07eeac5a0f597aa6caba2372bd6a3174d6d8ae",
-      "cutoutSha256": "bc69b1e04dd3c87df325778dd21dbe9b5cd5bef9789f2237609fd81e8d30f120",
-      "width": 576,
+      "cutoutSha256": "7101bc766c98af1fd867252be7b225bf43d5158b2ae6c7a12a1c1dfc2c951db4",
+      "width": 384,
       "height": 576,
       "validation": {
         "decoded": true,
         "rgba": true,
-        "sourcePixelsRecomposed": true,
-        "transparentPixels": 243706,
-        "opaquePixels": 78825,
-        "partialAlphaPixels": 9245
+        "backgroundRemoved": true,
+        "portraitAspectRatio": "2:3",
+        "transparentPixels": 169608,
+        "opaquePixels": 45386,
+        "partialAlphaPixels": 6190
       }
     },
     {

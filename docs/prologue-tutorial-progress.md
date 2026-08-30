@@ -764,3 +764,36 @@
 - 変更ファイル：`js/tutorial.js`、`index.html`、`scripts/test-prologue-home-front.mjs`、`scripts/test-prologue-stella-mock.mjs`、`scripts/test-prologue-comprehensive.mjs`、本進捗文書。
 - `npm run check` と `git diff --check` が成功した。進化前、第一進化後、アクアロン分岐進化後、不完全編成、進化後の属性模擬戦を検証した。
 - 次回対象：更新版URLで同じ保存データから「この編成を保存」を押し、図鑑・育成・ステラ模擬戦まで実機確認する。
+
+## スマートフォン実機確認後の修正 Phase A/B
+
+### Phase A：図鑑導線の進行停止
+
+- `home_dex_open` がホーム画面から、メニュー画面内にしか存在しない `#homeDexButton` を直接参照していた不整合を修正した。
+- 保存済みSTEP IDは維持したまま、ホームでは常時表示される下部ナビの「メニュー」を操作対象に変更した。続く `menu_dex_open` でメニュー内の「図鑑」を押す2段階の実操作にした。
+- 既に `home_dex_open` で停止している途中セーブも、そのまま再開すれば下部の「メニュー」が強調される。セーブデータの作り直しや全体スキップは不要。
+
+### Phase B：本人エルナの立ち絵
+
+- 街並み、空、地面が残っていた `elna_beginner.png` を、背景を含まない384×576のRGBA立ち絵へ差し替えた。
+- 完全透明169,608px、半透明6,190pxを持つ2:3キャンバスとし、髪、靴、剣を切らずに全身を収めた。
+- エルナ本人の立ち絵だけに2:3の表示比率を明示し、スマホ縦画面でも縦横を歪めない。画像URL、チュートリアルJS、CSSのキャッシュキーも更新した。
+
+### 変更ファイル
+
+- `js/tutorial.js`
+- `css/tutorial.css`
+- `index.html`
+- `images/tutorial/characters/elna_beginner.png`
+- `images/tutorial/characters/manifest.json`
+- `scripts/test-prologue-home-front.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:prologue-home-front`：ホームの「メニュー」からメニュー内の「図鑑」へ進むSTEP順と画面・対象の対応を検証した。
+- `check:prologue-comprehensive`：差し替え画像の寸法、実透過、固定ハッシュ、2:3表示契約、キャッシュ更新を検証した。
+- `check:tutorial-ui`、`check:tutorial-phase6`：成功。165STEP、26画面、131操作対象として全体フローに接続した。
+- `npm run check`、`git diff --check`：成功。ゲームデータ、画像、保存移行、戦闘、図鑑、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
+- 次回対象：更新版URLで、停止していた同じセーブから「メニュー」→「図鑑」→「キャラクター図鑑」と進めること、およびエルナの背景と表示比率を実機確認する。

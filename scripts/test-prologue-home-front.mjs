@@ -13,7 +13,7 @@ const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
 const required=[
-  'home_party','party_review','party_save','home_dex_open','dex_character_open','dex_elna_open','dex_elna_detail',
+  'home_party','party_review','party_save','home_dex_open','menu_dex_open','dex_character_open','dex_elna_open','dex_elna_detail',
   'dex_character_back','dex_monster_open','dex_freigal','dex_aquaron','home_growth_open','home_growth_overview',
   'growth_elna','growth_elna_details','growth_skill_open','growth_skill_current','growth_skill_cards',
   'growth_return','growth_evolution','home_requests'
@@ -31,6 +31,8 @@ assert.ok(ids.length>=111,'later prologue phases must retain every Phase 9 STEP 
 
 assert.match(main,/id:'home_party'[^\n]+target:'#homePartyEditButton'[^\n]+advanceOnTarget:true/);
 assert.match(main,/id:'party_save'[^\n]+target:'#partySetupSaveButton'[^\n]+externalAdvance:true/);
+assert.match(main,/id:'home_dex_open'[^\n]+screenId:'home'[^\n]+target:'\[data-nav="more"\]'[^\n]+advanceOnTarget:true/,'the home STEP must lead through the always-visible mobile menu');
+assert.match(main,/id:'menu_dex_open'[^\n]+screenId:'moreMenu'[^\n]+target:'#homeDexButton'[^\n]+advanceOnTarget:true/,'the Dex button must be targeted only after opening the menu');
 assert.match(main,/id:'dex_elna_open'[^\n]+data-tutorial-character="elna_beginner"/);
 assert.match(main,/id:'dex_freigal'[^\n]+data-tutorial-monster="freigal"/);
 assert.match(main,/id:'dex_aquaron'[^\n]+data-tutorial-monster="aquaron"/);
