@@ -796,4 +796,5 @@
 - `check:prologue-comprehensive`：差し替え画像の寸法、実透過、固定ハッシュ、2:3表示契約、キャッシュ更新を検証した。
 - `check:tutorial-ui`、`check:tutorial-phase6`：成功。165STEP、26画面、131操作対象として全体フローに接続した。
 - `npm run check`、`git diff --check`：成功。ゲームデータ、画像、保存移行、戦闘、図鑑、序章、既存チュートリアル、Rank機能を含む全回帰を確認した。
+- 実装コミット `9a7bf0a7` のGitHub Actions「Validate game data and assets」run #223：成功。
 - 次回対象：更新版URLで、停止していた同じセーブから「メニュー」→「図鑑」→「キャラクター図鑑」と進めること、およびエルナの背景と表示比率を実機確認する。
