@@ -13,6 +13,9 @@ const main=tutorial.slice(flowStart,flowEnd);
 const ids=[...main.matchAll(/\{id:'([^']+)'/g)].map(match=>match[1]);
 assert.equal(ids.length,86,'the reduced prologue must stay at 86 essential steps');
 assert.equal(new Set(ids).size,ids.length,'the reduced prologue must not contain duplicate step IDs');
+assert.equal(ids.indexOf('battle_enemy'),ids.indexOf('elna_rescue_start')+1,'rescue start must advance from 13/86 to the adjacent battle step, not jump to 60/86');
+assert.equal(ids.indexOf('home_party'),ids.indexOf('elna_contract_body')+1,'the contract must continue to the adjacent home guidance');
+assert.equal(ids.indexOf('expedition_home_open'),ids.indexOf('expedition_intro')+1,'the expedition introduction must continue to its adjacent operation');
 
 const removed=[
   'party_review','dex_elna_detail','dex_aquaron','growth_elna','growth_skill_current','growth_skill_cards',
@@ -57,7 +60,7 @@ assert.match(main,/id:'expedition_member'[^\n]+data-tutorial-expedition-member/,
 assert.match(main,/id:'prologue_complete'[^\n]+speaker:'グノーシス'[^\n]+portrait:/,'the finale must retain Gnosis instead of an empty background');
 assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'target steps must keep portraits away from controls');
 
-assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1"></script>'),'the browser must fetch the reduced tutorial logic');
+assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1"></script>'),'the browser must fetch the chronologically ordered tutorial logic');
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 

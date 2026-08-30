@@ -38,8 +38,8 @@ targets.forEach(selector=>{
 const mainFlow=registeredFlows.slice(0,registeredFlows.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID'));
 const requiredMainOrder=[
   'intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent','elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts','starter_contracts_received','elna_guest_join','elna_rescue_start',
-  'home_party','party_save','home_dex_open','menu_dex_open','growth_skill_open','stella_card_receive','stella_skill_equip','lumina_alchemy','lumina_execute','expedition_intro',
   'battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill','battle_choose_skill','battle_free','elna_rescue_complete','elna_contract_intro','elna_contract_execute','elna_contract_body',
+  'home_party','party_save','home_dex_open','menu_dex_open','growth_skill_open','stella_card_receive','stella_skill_equip','lumina_alchemy','lumina_execute','expedition_intro',
   'expedition_dispatch','prologue_complete'
 ];
 let previousIndex=-1;

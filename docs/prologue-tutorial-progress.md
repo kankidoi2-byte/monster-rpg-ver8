@@ -991,3 +991,34 @@
 - 序章区間検査：救援戦、エルナ契約、ホーム前後半、ステラ、模擬戦、ルミナ、遠征、スキップ・再プレイ、連続進行、スマホ表示を個別に再検査した。
 - `check:tutorial-phase4c`、`check:tutorial-phase6`、`check:tutorial-ui`：旧経路との互換性、全登録STEP・画面・操作対象、配置と再開契約を再検査した。
 - 次回対象：更新版URLで、既存の途中セーブが削除STEPから現行STEPへ転送されること、および86 STEPの通し所要時間と説明量をスマホ実機で確認する。
+
+## 進捗表示の飛び修正 Phase P
+
+### 原因
+
+- `elna_rescue_start` は本線配列の13番目だったが、その遷移先 `battle_enemy` が61番目に定義されていた。救援戦の内容を飛ばしたのではなく、実行順と定義順が一致していなかったため、表示が13/86から61/86へ飛んでいた。
+- 進捗表示だけでなく「戻る」と会話スキップも配列順を参照するため、表示番号だけを補正すると別の不整合が残る状態だった。
+
+### 修正
+
+- 救援戦の基本操作、自由戦闘、再挑戦、救援成功、エルナ契約を `elna_rescue_start` の直後へ移動した。
+- 契約完了後の `home_party`、錬成後の `expedition_intro` と遠征操作も実際の進行順で隣接することを確認した。
+- 本線86 STEPの内容とSTEP IDは変更していない。途中セーブ、報酬フラグ、再プレイ状態への影響はない。
+- `check:prologue-step-reduction` に主要な章境界の隣接検査を追加した。救援開始は今後13/86から14/86へ進む。
+
+### 変更ファイル
+
+- `js/tutorial.js`
+- `index.html`
+- `scripts/test-prologue-step-reduction.mjs`
+- `scripts/test-tutorial-phase6.mjs`
+- `scripts/test-prologue-comprehensive.mjs`
+- `scripts/test-prologue-mobile-clarity.mjs`
+- `docs/prologue-tutorial-progress.md`
+
+### 検証
+
+- `check:prologue-step-reduction`：86 STEP維持と救援開始→戦闘、契約→ホーム、遠征導入→遠征操作の連番を検証した。
+- `check:prologue-battle-basics`、`check:prologue-rescue-stability`、`check:prologue-elna-contract`：救援戦と契約の実処理・再開を検証した。
+- `check:prologue-continuity`、`check:prologue-comprehensive`、`check:tutorial-ui`、`check:tutorial-phase6`：自動再開、旧・途中セーブ、戻る・スキップ、スマホ配置を回帰検証した。
+- 次回対象：スマホ実機で13/86の「救援戦を始めよう！」から14/86の「敵・味方・HP」へ連続して進むことを確認する。

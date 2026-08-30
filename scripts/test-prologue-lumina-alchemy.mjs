@@ -28,7 +28,7 @@ for(const id of required){
   assert.ok(current>previous,`Lumina alchemy STEP is missing or out of order: ${id}`);
   previous=current;
 }
-const luminaFlow=main.slice(main.indexOf("id:'lumina_intro'"),main.indexOf("id:'battle_enemy'"));
+const luminaFlow=main.slice(main.indexOf("id:'lumina_intro'"),main.indexOf("id:'expedition_home_open'"));
 assert.ok(!luminaFlow.includes('カナタ'),'Kanata must not appear in the prologue');
 assert.ok(luminaFlow.includes("portrait:'images/tutorial/characters/lumina_apprentice.png'"),'Lumina dialogue must use the transparent portrait');
 assert.ok(luminaFlow.includes("scene:'workshop'"),'the workshop must use its own background layer');

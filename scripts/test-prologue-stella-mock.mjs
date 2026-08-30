@@ -23,7 +23,7 @@ for(const id of steps){
   assert.ok(at>previous,`Stella mock STEP is missing or out of order: ${id}`);
   previous=at;
 }
-const mockFlow=main.slice(main.indexOf("id:'stella_mock_battle'"),main.indexOf("id:'battle_enemy'"));
+const mockFlow=main.slice(main.indexOf("id:'stella_mock_battle'"),main.indexOf("id:'lumina_encounter'"));
 assert.ok(!mockFlow.includes('カナタ'),'Kanata must not appear in the prologue mock battle');
 assert.match(mockFlow,/id:'stella_mock_battle'[^\n]+transition:'start_stella_mock_battle'[^\n]+nextStepId:'stella_mock_enemy'/);
 assert.match(mockFlow,/id:'stella_mock_skill_open'[^\n]+externalAdvance:true[^\n]+persistAs:'stella_mock_battle'/);
