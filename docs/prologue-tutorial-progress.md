@@ -657,6 +657,7 @@
 - 新規 `npm run check:prologue-expedition-finale` で、草原・短距離・派遣メンバーの実選択、適性表示、実保存、一度限りの派遣、長距離拒否、帰還待ちなし、再プレイ安全性、序章完了の原子性、第1章解放とホーム導線を検査する。
 - `npm run check` で全検査が成功し、通常遠征の目的地、距離、最大3枠、編成中個体の除外、適性計算、帰還、報酬処理を維持していることを確認した。
 - `node --check` で変更JavaScriptの構文検査が成功した。
+- `313f693` のGitHub Actions「Validate game data and assets」run #215で、新しい専用検査を含む `npm run check` 全体が成功した。
 
 ### 残る問題
 
