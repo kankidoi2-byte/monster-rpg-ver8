@@ -492,8 +492,16 @@ function finishTutorialFlow(){
   if(!tutorialUiState.active)return;
   const persist=tutorialUiState.persist;
   const returnScreen=tutorialUiState.returnScreen;
-  if(persist){completeTutorial();if(typeof saveGame==='function')saveGame();}
-  clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
+  const flowId=tutorialUiState.flowId;
+  const replay=tutorialUiState.replay;
+  if(persist){
+    if(flowId===TUTORIAL_MAIN_FLOW_ID){if(!commitTutorialPrologueCompletion())return;}
+    else{completeTutorial();if(typeof saveGame==='function'&&!saveGame())return;}
+  }
+  clearTutorialUi();
+  if(flowId===TUTORIAL_MAIN_FLOW_ID&&!replay&&typeof show==='function')show('home');
+  else restoreTutorialReturnScreen(returnScreen);
+  updateTutorialMenuSummary();
 }
 function pauseTutorial(){
   if(tutorialElnaContractBusy||!tutorialUiState.active)return;
@@ -892,6 +900,63 @@ function handleTutorialLuminaAlchemyCompleted(){
   const replay=typeof currentTutorialState==='function'&&currentTutorialState().replaying===true;
   return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_alchemy_result',persist:true,replay});
 }
+function tutorialExpeditionCandidateInstance(){
+  const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
+  return candidates.find(instance=>instance.id===TUTORIAL_LUMINA_ALCHEMY.resultId)||candidates[0]||null;
+}
+function shouldMarkTutorialExpeditionMember(uid){
+  return tutorialCurrentStepId()==='expedition_member'&&uid===tutorialExpeditionCandidateInstance()?.uid;
+}
+function handleTutorialExpeditionDestinationSelected(mapId){
+  if(tutorialCurrentStepId()!=='expedition_destination'||mapId!=='grassland')return false;
+  tutorialNext(true);return true;
+}
+function handleTutorialExpeditionDistanceSelected(distanceId){
+  if(tutorialCurrentStepId()!=='expedition_distance'||distanceId!=='short')return false;
+  tutorialNext(true);return true;
+}
+function handleTutorialExpeditionMemberSelected(uid,selected){
+  if(tutorialCurrentStepId()!=='expedition_member'||selected!==true||uid!==tutorialExpeditionCandidateInstance()?.uid)return false;
+  tutorialNext(true);return true;
+}
+function commitTutorialExpeditionDispatch(entry){
+  if(tutorialCurrentStepId()!=='expedition_dispatch')return true;
+  if(typeof currentTutorialState!=='function'||!entry)return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
+  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length<1)return false;
+  entry.tutorialPrologue=true;
+  if(typeof markTutorialExpeditionDispatched!=='function'||!markTutorialExpeditionDispatched())return false;
+  if(typeof setTutorialStep==='function')setTutorialStep('expedition_active');
+  return true;
+}
+function handleTutorialExpeditionStarted(entry){
+  if(!entry?.tutorialPrologue||tutorialCurrentStepId()!=='expedition_dispatch')return false;
+  tutorialNext(true);return true;
+}
+function commitTutorialPrologueCompletion(){
+  if(typeof currentTutorialState!=='function'||typeof save==='undefined')return false;
+  const snapshot=JSON.stringify(save);
+  try{
+    const tutorial=currentTutorialState();
+    if(tutorial.replaying){
+      completeTutorial();
+    }else{
+      if(tutorial.expeditionDispatched!==true)throw new Error('tutorial_expedition_required');
+      if(tutorial.prologueCompleted!==true&&(typeof markTutorialPrologueCompleted!=='function'||!markTutorialPrologueCompleted()))throw new Error('tutorial_prologue_flag');
+      save.progress.chapterId='chapter1';
+      save.progress.storyFlags={...(save.progress.storyFlags||{}),prologueCompleted:true,chapter1Unlocked:true};
+      completeTutorial();
+    }
+    if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_prologue_save');
+    return true;
+  }catch(error){
+    save=JSON.parse(snapshot);
+    console.error('序章の完了状態を保存できませんでした。',error);
+    if(typeof showUiNotice==='function')showUiNotice('序章の完了状態を保存できませんでした。もう一度お試しください。','warning');
+    return false;
+  }
+}
 
 function tutorialStellaSkillCard(){return typeof SKILL_BY_ID==='object'?SKILL_BY_ID[TUTORIAL_STELLA_SKILL_ID]||null:null;}
 function tutorialStellaSkillTargetInstance(){return tutorialElnaContractInstance();}
@@ -1262,7 +1327,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'素材の反応をひとつに結んでいるよ。もうすぐ新しい契約体が生まれるからね！',progressLabel:'ALCHEMY'},
   {id:'lumina_alchemy_result',screenId:'alchemyResult',target:'#tutorialAlchemyResult',persistAs:'expedition_intro',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'入門錬成成功！',text:'成功だよ！ これで素材とコイン、成功率を確認しながら自分で錬成できるね。',progressLabel:'LUMINA',nextStepId:'expedition_intro'},
   {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成の報酬は一度だけだよ。通常の錬成台は自由に使ってね！',progressLabel:'REPLAY',nextStepId:'expedition_intro'},
-  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',waitForEvent:'expedition_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ 次は仲間を短い遠征へ送り出してみるぞ！',progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
+  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_home_open',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ 次は仲間を短い遠征へ送り出してみるぞ！',progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
   {id:'first_hunt',screenId:'home',target:'#homeAdventureButton',advanceOnTarget:true,title:'最初の依頼へ',text:'「冒険」を押してください。草原で待つスライムの入門依頼へ向かいます。',progressLabel:'FIRST HUNT'},
   {id:'tutorial_hunt_request',screenId:'battleChoices',target:'[data-tutorial-hunt-start]',externalAdvance:true,persistAs:'first_hunt',title:'草原のスライム',text:'この依頼は既存のEasyルールで進みます。「この依頼へ出発」を押してください。',progressLabel:'FIRST HUNT'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'上が敵です',text:'上側が敵のスライムです。HPを0にすると倒せるぞ！',progressLabel:'BATTLE'},
@@ -1304,7 +1369,17 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'party_edit_open',screenId:'growthHub',target:'#growthPartyEditButton',advanceOnTarget:true,title:'パーティー編成',text:'加入したスライムも、ここから最大3体のパーティーへ入れられます。編成はいつでも変更できます。',progressLabel:'GROWTH'},
   {id:'party_edit_contract',screenId:'partySet',target:'[data-tutorial-contract-party]',title:'加入した仲間を編成できます',text:'スライムを今すぐ入れても、控えで育てても構いません。最初の仲間がリーダーというルールは同じです。',progressLabel:'PARTY'},
   {id:'home_finish',screenId:'partySet',target:'[data-nav="home"]',advanceOnTarget:true,title:'ホームへ戻りましょう',text:'最後にホームへ戻って、基本チュートリアルを完了します。',progressLabel:'FINISH'},
-  {id:'tutorial_complete',screenId:'home',target:'#homeGrowthPreview',title:'基本チュートリアル完了',text:'これで準備は完了です。次の討伐へ進むか、ホームの成長目標を見ながら仲間を育ててください。',progressLabel:'GNOSIS',nextLabel:'完了'}
+  {id:'tutorial_complete',screenId:'home',target:'#homeGrowthPreview',title:'基本チュートリアル完了',text:'これで準備は完了です。次の討伐へ進むか、ホームの成長目標を見ながら仲間を育ててください。',progressLabel:'GNOSIS',nextLabel:'完了'},
+  {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_intro',disableBack:true,title:'遠征を開こう',text:'ここを押すと、控えの仲間を遠征へ送り出せるぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_member',screenId:'expedition',target:'[data-tutorial-expedition-member]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'派遣する仲間',text:'ここを押して、控えの仲間を1体選ぼう！',progressLabel:'EXPEDITION'},
+  {id:'expedition_suitability',screenId:'expedition',target:'#expeditionSuitability',persistAs:'expedition_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征適性',text:'属性、レベル、得意な能力から適性が決まる。Sに近いほど大成功しやすいぞ！',progressLabel:'SUITABILITY'},
+  {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離遠征へ派遣',text:'ここを押すと、選んだ仲間が短距離遠征へ出発するぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_active',screenId:'expedition',target:'[data-tutorial-expedition-active]',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征は進行中！',text:'帰還を待たなくて大丈夫！ バトルに勝つと進み、完了したらここで報酬を受け取れるぞ！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
+  {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'再閲覧では新しい遠征を増やさないぞ。遠征画面から進行中の派遣を確認できる！',progressLabel:'REPLAY',nextStepId:'prologue_epilogue'},
+  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房からの見送り',text:'錬成も遠征も、もう自分で進められるね。新しい土地でどんな契約体と出会うのか、楽しみにしているよ！',progressLabel:'PROLOGUE'},
+  {id:'prologue_complete',screenId:'home',target:'#homeAdventureButton',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'ここまで完璧だ！ これからは自由に冒険できるぞ。次は第1章への道を進もう！',progressLabel:'CHAPTER CLEAR',nextLabel:'自由行動へ'}
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},

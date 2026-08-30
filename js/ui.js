@@ -300,10 +300,16 @@ function updateAppNavigation(screenId){
   nav.querySelectorAll('[data-nav]').forEach(button => button.classList.toggle('is-current', button.dataset.nav === section));
 }
 function renderHome(){
+  const storyPreview = document.getElementById('homeStoryPreview');
   const partyPreview = document.getElementById('homePartyPreview');
   const growthPreview = document.getElementById('homeGrowthPreview');
   const expeditionPreview = document.getElementById('homeExpeditionPreview');
   if (typeof renderNoticePreview === 'function') renderNoticePreview();
+  if(storyPreview){
+    const chapterOne=save?.progress?.chapterId==='chapter1'||save?.progress?.storyFlags?.chapter1Unlocked===true;
+    storyPreview.innerHTML=chapterOne?`<button id="homeChapterOneButton" onclick="openChapterOneEntry()"><span><small>STORY</small><strong>第1章への道</strong><em>序章クリア・次の冒険へ進む</em></span><b>物語へ ›</b></button>`:'';
+    storyPreview.hidden=!chapterOne;
+  }
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
   if(partyPreview){
     partyPreview.innerHTML = party.length ? party.map((ins,index)=>{
@@ -326,6 +332,11 @@ function renderHome(){
     const completed=active.filter(entry=>entry?.status==='complete').length;
     expeditionPreview.innerHTML = completed ? `<div><span class="ui-eyebrow">EXPEDITION</span><strong>${completed}件の遠征報酬を受け取れます</strong></div><button onclick="showExpedition()">受け取る</button>` : `<div><span class="ui-eyebrow">EXPEDITION</span><strong>${active.length?'遠征が進行中です':'遠征枠が空いています'}</strong></div><button onclick="showExpedition()">${active.length?'確認':'派遣する'}</button>`;
   }
+}
+function openChapterOneEntry(){
+  if(save?.progress?.chapterId!=='chapter1'&&save?.progress?.storyFlags?.chapter1Unlocked!==true)return false;
+  if(typeof showUiNotice==='function')showUiNotice('第1章への道が開きました。次の討伐依頼から冒険を続けましょう。');
+  openBattleHub();return true;
 }
 function showTypeChart() {
   show('typeChart');
