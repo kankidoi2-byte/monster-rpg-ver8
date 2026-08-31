@@ -348,6 +348,104 @@
     return summarizeSave(safeValue(() => state.saveProvider(), null));
   }
 
+  function safeToken(value) {
+    const token = safeText(value);
+    return /^[A-Za-z][A-Za-z0-9_.:-]{0,79}$/.test(token) ? token : '';
+  }
+
+  function emptyTutorialSummary(available=false) {
+    return {
+      version: 1,
+      available,
+      state: {
+        status: 'unknown',
+        completed: false,
+        skipped: false,
+        replaying: false,
+        active: false,
+        paused: false,
+        persistedStepId: '',
+        flowId: '',
+        stepId: '',
+        stepIndex: null,
+        stepCount: 0
+      },
+      waiting: {
+        mode: 'none',
+        event: '',
+        input: '',
+        continueAt: '',
+        targetRequired: false,
+        targetPresent: false,
+        transitionPending: false
+      },
+      screen: {
+        expected: '',
+        actual: '',
+        matches: null
+      },
+      issues: []
+    };
+  }
+
+  function summarizeTutorial(value) {
+    const source = safeRecord(value);
+    if (!source) return emptyTutorialSummary(false);
+    const summary = emptyTutorialSummary(true);
+    const statuses = new Set(['not_started', 'in_progress', 'completed', 'skipped']);
+    const modes = new Set(['none', 'dialogue', 'target_action', 'external_action', 'event', 'input', 'continue']);
+    const status = safeToken(safeValue(() => source.status, ''));
+    summary.state.status = statuses.has(status) ? status : 'unknown';
+    summary.state.completed = safeValue(() => source.completed, false) === true;
+    summary.state.skipped = safeValue(() => source.skipped, false) === true;
+    summary.state.replaying = safeValue(() => source.replaying, false) === true;
+    summary.state.active = safeValue(() => source.active, false) === true;
+    summary.state.paused = safeValue(() => source.paused, false) === true;
+    summary.state.persistedStepId = safeToken(safeValue(() => source.persistedStepId, ''));
+    summary.state.flowId = safeToken(safeValue(() => source.flowId, ''));
+    summary.state.stepId = safeToken(safeValue(() => source.stepId, ''));
+    summary.state.stepIndex = safeNumber(safeValue(() => source.stepIndex, null));
+    summary.state.stepCount = safeCount(safeValue(() => source.stepCount, 0));
+
+    const mode = safeToken(safeValue(() => source.waitingMode, ''));
+    summary.waiting.mode = modes.has(mode) ? mode : 'none';
+    summary.waiting.event = safeToken(safeValue(() => source.waitForEvent, ''));
+    summary.waiting.input = safeToken(safeValue(() => source.input, ''));
+    summary.waiting.continueAt = safeToken(safeValue(() => source.continueAt, ''));
+    summary.waiting.targetRequired = safeValue(() => source.targetRequired, false) === true;
+    summary.waiting.targetPresent = safeValue(() => source.targetPresent, false) === true;
+    summary.waiting.transitionPending = safeValue(() => source.transitionPending, false) === true;
+
+    summary.screen.expected = safeElementId(safeValue(() => source.expectedScreen, ''));
+    summary.screen.actual = safeElementId(safeValue(() => source.activeScreen, ''));
+    summary.screen.matches = summary.screen.expected && summary.screen.actual
+      ? summary.screen.expected === summary.screen.actual
+      : null;
+
+    const issues = [];
+    if (summary.state.active && !summary.state.stepId) issues.push('missing_active_step');
+    if (summary.state.active && summary.state.stepCount > 0 && summary.state.stepIndex === null) issues.push('invalid_step_index');
+    if (summary.state.active && summary.screen.matches === false) issues.push('screen_mismatch');
+    if (summary.state.active && summary.waiting.targetRequired && !summary.waiting.targetPresent) issues.push('missing_target');
+    if (summary.state.active && !summary.state.replaying && (summary.state.completed || summary.state.skipped || summary.state.status === 'completed' || summary.state.status === 'skipped')) {
+      issues.push('terminal_state_active');
+    }
+    if (summary.state.status === 'in_progress' && !summary.state.persistedStepId) issues.push('missing_persisted_step');
+    summary.issues = issues;
+    return summary;
+  }
+
+  function registerTutorialProvider(provider) {
+    if (typeof provider !== 'function' || typeof state.tutorialProvider === 'function') return false;
+    state.tutorialProvider = provider;
+    return true;
+  }
+
+  function getTutorialSummary() {
+    if (typeof state.tutorialProvider !== 'function') return emptyTutorialSummary(false);
+    return summarizeTutorial(safeValue(() => state.tutorialProvider(), null));
+  }
+
   function record(entry) {
     const last = state.errors[state.errors.length - 1];
     if (last && last.fingerprint === entry.fingerprint) {
@@ -417,10 +515,13 @@
     version: 1,
     environmentVersion: 1,
     saveSummaryVersion: 1,
+    tutorialSummaryVersion: 1,
     maxErrors: MAX_ERRORS,
     getEnvironment: readEnvironment,
     getSaveSummary,
     registerSaveProvider,
+    getTutorialSummary,
+    registerTutorialProvider,
     getErrors,
     clearErrors
   });
