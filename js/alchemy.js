@@ -52,23 +52,22 @@ function alchemyDiagnosticsSnapshot(){
   let plan=null;
   let errors=[];
   let selectionSummary=terminalStage?alchemyDiagnosticsSelection:null;
-  try{
-    if(selectionSummary)throw null;
-    const materialIds=tutorialLesson?[...tutorialAlchemyLessonConfig.materials]:[...selectedAlchemyMaterialIds];
-    const materialCounts=tutorialLesson?[1,1,1,1]:[...selectedAlchemyMaterialCounts];
-    const inferredRecipe=tutorialLesson?null:inferAlchemyRecipe(materialIds);
-    const selection=tutorialLesson?{
-      recipeId:tutorialAlchemyLessonConfig.recipeId,mode:'tutorial_lesson',tutorialLesson:true,instanceUid:'',
-      materialIds,materialCounts,coinOptionId:tutorialAlchemyLessonConfig.coinOptionId
-    }:{
-      recipeId:inferredRecipe?.recipeId||selectedAlchemyRecipeId,mode:'normal',tutorialLesson:false,
-      instanceUid:selectedAlchemyCatalystUid||'',materialIds,materialCounts,coinOptionId:selectedAlchemyCoinOptionId
-    };
-    plan=alchemyPlan(selection);
-    errors=validateAlchemyPlan(plan);
-    selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
-  }catch(error){
-    if(error!==null){
+  if(!selectionSummary){
+    try{
+      const materialIds=tutorialLesson?[...tutorialAlchemyLessonConfig.materials]:[...selectedAlchemyMaterialIds];
+      const materialCounts=tutorialLesson?[1,1,1,1]:[...selectedAlchemyMaterialCounts];
+      const inferredRecipe=tutorialLesson?null:inferAlchemyRecipe(materialIds);
+      const selection=tutorialLesson?{
+        recipeId:tutorialAlchemyLessonConfig.recipeId,mode:'tutorial_lesson',tutorialLesson:true,instanceUid:'',
+        materialIds,materialCounts,coinOptionId:tutorialAlchemyLessonConfig.coinOptionId
+      }:{
+        recipeId:inferredRecipe?.recipeId||selectedAlchemyRecipeId,mode:'normal',tutorialLesson:false,
+        instanceUid:selectedAlchemyCatalystUid||'',materialIds,materialCounts,coinOptionId:selectedAlchemyCoinOptionId
+      };
+      plan=alchemyPlan(selection);
+      errors=validateAlchemyPlan(plan);
+      selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
+    }catch(_error){
       plan=null;
       errors=['diagnostics_unavailable'];
       selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
