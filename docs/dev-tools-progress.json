@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T12:05:00Z",
+  "updated_at": "2026-08-31T12:10:00Z",
   "baseline": {
     "branch": "main",
     "commit": "7d36260d988d6dd918b78d1e2494de921a1792ba",
@@ -13,10 +13,10 @@
   "current_phase": 0,
   "current_work": {
     "branch": "codex/dev-tools-phase0",
-    "pull_request": null,
-    "checkpoint": "roadmap_and_progress_files_created",
-    "next_action": "Open the Phase 0 pull request, confirm its CI result, and wait for explicit merge approval.",
-    "approval_required": false,
+    "pull_request": 62,
+    "checkpoint": "phase0_pull_request_opened",
+    "next_action": "Wait for GitHub Actions, record the result, then request explicit approval to merge PR #62.",
+    "approval_required": true,
     "manual_verification_required": false
   },
   "invariants": {
@@ -34,11 +34,11 @@
       "id": 0,
       "name": "全体仕様と安全境界",
       "group": "foundation",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase0",
-      "pull_request": null,
-      "checkpoint": "documentation_created",
-      "next_action": "Create and validate the Phase 0 pull request."
+      "pull_request": 62,
+      "checkpoint": "pull_request_opened",
+      "next_action": "Confirm CI, then wait for explicit merge approval."
     },
     {
       "id": 1,
