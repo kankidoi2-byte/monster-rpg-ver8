@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260831-prologue-existing-expedition-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: '序章の遠征案内で進めない問題を修正しました',
+    body: '派遣中または完了済みの遠征がある途中セーブで、満員の遠征枠へ新しい派遣を求められ、序章を進められない問題を修正しました。既存の遠征を保持したまま案内済みとして続行します。'
+  }),
+  Object.freeze({
     id: '20260831-completed-alchemy-recap-fix',
     date: '2026-08-31',
     category: 'fix',
