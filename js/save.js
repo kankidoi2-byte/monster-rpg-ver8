@@ -227,6 +227,7 @@ function loadSave(){
   catch(error){safeStorageSet(SAVE_CORRUPT_KEY,raw);const backup=safeStorageGet(SAVE_BACKUP_KEY);if(backup&&typeof confirm==='function'&&confirm('セーブデータが破損しています。直前のバックアップから復旧しますか？')){try{saveRecoveryReport.push('破損データをバックアップから復旧');return parseAndPrepareSave(backup,saveRecoveryReport);}catch(_backupError){}}saveRecoveryReport.push(`破損データを隔離して初期化: ${error.message}`);if(typeof alert==='function')alert('破損したセーブを隔離し、新規データで起動します。メニューの「セーブ管理」から破損内容をコピーできます。');return initSave();}
 }
 let save = loadSave();
+globalThis.GameDiagnostics?.registerSaveProvider?.(() => save);
 
 function currentTutorialState(){
   if(!isSaveObject(save.progress))save.progress=initSave().progress;
