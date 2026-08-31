@@ -95,6 +95,7 @@ const diagnosticsIndex = index.indexOf('js/diagnostics.js');
 const guardIndex = index.indexOf('js/bootstrap-guard.js');
 expect(diagnosticsIndex >= 0, 'diagnostics.js is not loaded by index.html');
 expect(diagnosticsIndex < guardIndex, 'diagnostics must load before bootstrap-guard');
+expect(!index.includes(String.raw`</script>\\n<script`), 'index must not contain literal newline escape text');
 expect(!source.includes('mb_v95c'), 'diagnostics must not read or change the save key');
 expect(!source.includes('localStorage'), 'Phase 1 diagnostics must remain memory-only');
 
