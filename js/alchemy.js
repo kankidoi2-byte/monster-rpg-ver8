@@ -10,6 +10,7 @@ let tutorialAlchemyLessonConfig = null;
 let alchemyDiagnosticsStage = 'idle';
 let alchemyDiagnosticsResultKind = 'none';
 let alchemyDiagnosticsTutorialLesson = false;
+let alchemyDiagnosticsSelection = null;
 
 function activateTutorialAlchemyLesson(config){
   if(!config||!ALCHEMY_RECIPE_BY_ID[config.recipeId]||!Array.isArray(config.materials)||config.materials.length!==4)return false;
@@ -26,16 +27,33 @@ function activateTutorialAlchemyLesson(config){
 function deactivateTutorialAlchemyLesson(){tutorialAlchemyLessonActive=false;tutorialAlchemyLessonConfig=null;}
 function isTutorialAlchemyLessonActive(){return tutorialAlchemyLessonActive&&Boolean(tutorialAlchemyLessonConfig);}
 
+function alchemyDiagnosticsSelectionSummary(plan,errors=[],tutorialLesson=false){
+  const isTutorialLesson=plan?.tutorialLesson===true||tutorialLesson===true;
+  return {
+    mode:isTutorialLesson?'tutorial_lesson':'normal',
+    recipeValid:plan?.recipeSelectionValid===true&&plan?.modeSelectionValid===true,
+    materialSlotCount:Array.isArray(plan?.selection?.materialIds)?plan.selection.materialIds.length:0,
+    materialUnitCount:Array.isArray(plan?.selection?.materialCounts)
+      ?plan.selection.materialCounts.reduce((sum,count)=>sum+Math.max(0,Math.floor(Number(count)||0)),0)
+      :0,
+    catalystRequired:!isTutorialLesson,
+    catalystSelected:isTutorialLesson||Boolean(plan?.instance),
+    coinOptionValid:plan?.coinOptionSelectionValid===true,
+    successCandidateCount:plan?eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).length:0,
+    failureCandidateCount:plan&&!isTutorialLesson?alchemyFailureCandidates(plan.recipe,plan.coinOption).length:0,
+    validationErrorCount:errors.length
+  };
+}
+
 function alchemyDiagnosticsSnapshot(){
   const liveTutorialLesson=isTutorialAlchemyLessonActive();
-  const tutorialLesson=['completed','rolled_back'].includes(alchemyDiagnosticsStage)
-    ?alchemyDiagnosticsTutorialLesson
-    :liveTutorialLesson;
+  const terminalStage=['completed','rolled_back'].includes(alchemyDiagnosticsStage);
+  const tutorialLesson=terminalStage?alchemyDiagnosticsTutorialLesson:liveTutorialLesson;
   let plan=null;
   let errors=[];
-  let successCandidateCount=0;
-  let failureCandidateCount=0;
+  let selectionSummary=terminalStage?alchemyDiagnosticsSelection:null;
   try{
+    if(selectionSummary)throw null;
     const materialIds=tutorialLesson?[...tutorialAlchemyLessonConfig.materials]:[...selectedAlchemyMaterialIds];
     const materialCounts=tutorialLesson?[1,1,1,1]:[...selectedAlchemyMaterialCounts];
     const inferredRecipe=tutorialLesson?null:inferAlchemyRecipe(materialIds);
@@ -48,11 +66,13 @@ function alchemyDiagnosticsSnapshot(){
     };
     plan=alchemyPlan(selection);
     errors=validateAlchemyPlan(plan);
-    successCandidateCount=eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).length;
-    failureCandidateCount=tutorialLesson?0:alchemyFailureCandidates(plan.recipe,plan.coinOption).length;
-  }catch(_error){
-    plan=null;
-    errors=['diagnostics_unavailable'];
+    selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
+  }catch(error){
+    if(error!==null){
+      plan=null;
+      errors=['diagnostics_unavailable'];
+      selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
+    }
   }
   let visible=false;
   try{
@@ -75,18 +95,7 @@ function alchemyDiagnosticsSnapshot(){
     tutorialLesson,
     resultKind:alchemyDiagnosticsResultKind,
     nextAction,
-    mode:tutorialLesson?'tutorial_lesson':'normal',
-    recipeValid:plan?.recipeSelectionValid===true&&plan?.modeSelectionValid===true,
-    materialSlotCount:Array.isArray(plan?.selection?.materialIds)?plan.selection.materialIds.length:0,
-    materialUnitCount:Array.isArray(plan?.selection?.materialCounts)
-      ?plan.selection.materialCounts.reduce((sum,count)=>sum+Math.max(0,Math.floor(Number(count)||0)),0)
-      :0,
-    catalystRequired:!tutorialLesson,
-    catalystSelected:tutorialLesson||Boolean(plan?.instance),
-    coinOptionValid:plan?.coinOptionSelectionValid===true,
-    successCandidateCount,
-    failureCandidateCount,
-    validationErrorCount:errors.length,
+    ...selectionSummary,
     canExecute
   };
 }
@@ -96,6 +105,7 @@ function showAlchemy(){
     alchemyDiagnosticsStage='selecting';
     alchemyDiagnosticsResultKind='none';
     alchemyDiagnosticsTutorialLesson=isTutorialAlchemyLessonActive();
+    alchemyDiagnosticsSelection=null;
   }
   show('alchemy');
   renderAlchemy();
@@ -526,6 +536,7 @@ function executeAlchemyConfirmed(){
     document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
+  alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);
   alchemyBusy = true;
   alchemyDiagnosticsStage='processing';
   alchemyDiagnosticsResultKind='none';
