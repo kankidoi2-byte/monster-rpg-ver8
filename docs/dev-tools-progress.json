@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T22:08:48.468Z",
+  "updated_at": "2026-08-31T22:09:53.525Z",
   "baseline": {
     "branch": "main",
     "commit": "0b844c95eedb954baddaaa107be71d17633e9825",
@@ -13,9 +13,9 @@
   "current_phase": 5,
   "current_work": {
     "branch": "codex/dev-tools-phase5",
-    "pull_request": null,
-    "checkpoint": "implementation_and_targeted_test_complete",
-    "next_action": "Open the Phase 5 pull request, review the complete diff and verify latest-head npm run check, then auto-merge only if every standing safety condition remains satisfied.",
+    "pull_request": 67,
+    "checkpoint": "pull_request_open_ci_pending",
+    "next_action": "Review the complete Phase 5 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -87,11 +87,11 @@
       "id": 5,
       "name": "錬成診断",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase5",
-      "pull_request": null,
-      "checkpoint": "implementation_and_targeted_test_complete",
-      "next_action": "Open the Phase 5 pull request, review the complete diff and verify latest-head npm run check, then auto-merge only if every standing safety condition remains satisfied."
+      "pull_request": 67,
+      "checkpoint": "pull_request_open_ci_pending",
+      "next_action": "Review the complete Phase 5 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass."
     },
     {
       "id": 6,
