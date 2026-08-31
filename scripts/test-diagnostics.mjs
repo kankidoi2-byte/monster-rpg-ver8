@@ -76,6 +76,21 @@ context.document.body.classList.contains = () => false;
 context.document.querySelector = selector => selector === '.screen.active' ? { id: 'unsafe id with spaces' } : null;
 expect(context.GameDiagnostics.getEnvironment().page?.screen === '', 'unsafe screen ids must be discarded');
 
+const sparseContext = {
+  URL,
+  location: { href: 'not-a-url' },
+  addEventListener() {}
+};
+sparseContext.window = sparseContext;
+vm.createContext(sparseContext);
+vm.runInContext(source, sparseContext);
+const sparseEnvironment = sparseContext.GameDiagnostics.getEnvironment();
+expect(sparseEnvironment.page?.url === '', 'invalid page URLs must be discarded');
+expect(sparseEnvironment.runtime?.browser === 'Other' && sparseEnvironment.runtime?.os === 'Other', 'missing runtime details must use broad fallbacks');
+expect(sparseEnvironment.runtime?.deviceClass === 'unknown', 'missing device signals must not be guessed');
+expect(sparseEnvironment.runtime?.online === null, 'missing online state must stay unknown');
+expect(sparseEnvironment.viewport?.width === null && sparseEnvironment.screen?.width === null, 'missing dimensions must stay null');
+
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'loading diagnostics twice must not duplicate the rejection listener');
