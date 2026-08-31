@@ -24,6 +24,14 @@ function normalizeExpeditionSave(){
   save.expeditions.completedCount=Math.max(0,Math.floor(Number(save.expeditions.completedCount)||0));
   if(!Array.isArray(save.expeditions.active))save.expeditions.active=[];
   save.expeditions.active=save.expeditions.active.filter(entry=>entry&&Array.isArray(entry.memberUids)&&entry.memberUids.length>=1&&entry.memberUids.length<=3);
+  save.expeditions.active.forEach(entry=>{
+    const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId];
+    if(!map||!distance)return;
+    entry.requiredWins=distance.wins;
+    entry.progress=Math.min(entry.requiredWins,Math.max(0,Math.floor(Number(entry.progress)||0)));
+    entry.status=entry.status==='complete'?'complete':'active';
+    if(!isValidExpeditionSuitability(entry.suitability))entry.suitability=expeditionSuitability(entry.memberUids,map);
+  });
 }
 function expeditionUnlockedSlots(){const n=save.expeditions?.completedCount||0;return n>=15?3:n>=5?2:1;}
 function isInstanceOnExpedition(uidValue){return !!save.expeditions?.active?.some(entry=>entry.memberUids.includes(uidValue));}
@@ -50,13 +58,17 @@ function expeditionSuitability(memberUids,map){
   if(shortage)reasons.push(`人数不足：-${shortage}点`);
   return {grade,total,greatRate:EXPEDITION_GREAT_RATES[grade],reasons};
 }
+function isValidExpeditionSuitability(value){
+  return !!value&&Object.hasOwn(EXPEDITION_GREAT_RATES,value.grade)&&Number.isFinite(Number(value.total))&&Number.isFinite(Number(value.greatRate))&&Array.isArray(value.reasons);
+}
 function expeditionRewardPlan(map,distance,suitability,randomFn=Math.random,completionFactor=1){
-  const great=randomFn()<suitability.greatRate,boost=great?1.5:1,multiplier=distance.rewardMultiplier*boost*completionFactor;
+  const safeSuitability=isValidExpeditionSuitability(suitability)?suitability:{grade:'D',total:0,greatRate:0,reasons:[]};
+  const great=randomFn()<safeSuitability.greatRate,boost=great?1.5:1,multiplier=distance.rewardMultiplier*boost*completionFactor;
   const coins=Math.max(0,Math.floor(24*multiplier));
   const exp=Math.max(0,Math.floor(18*multiplier));
   const pool=EXPEDITION_MAP_REWARDS[map.id]||['monster_bone','magic_crystal'];
   const primary=pool[0],secondary=pool[1];
-  const rareChance=Math.min(.65,(great?.18:.08)*distance.rareMultiplier+(suitability.grade==='S'?.08:suitability.grade==='A'?.04:0));
+  const rareChance=Math.min(.65,(great?.18:.08)*distance.rareMultiplier+(safeSuitability.grade==='S'?.08:safeSuitability.grade==='A'?.04:0));
   const itemId=randomFn()<rareChance?(EXPEDITION_FINE_ITEM[primary]||secondary):primary;
   const itemCount=Math.max(0,Math.floor(distance.rewardMultiplier*boost*completionFactor));
   const items=itemCount?{[itemId]:itemCount}:{};
@@ -119,7 +131,7 @@ function startExpedition(){
 }
 function progressActiveExpeditions(randomFn=Math.random){
   normalizeExpeditionSave();let changed=false;
-  save.expeditions.active.forEach(entry=>{if(entry.status!=='active')return;entry.progress=Math.min(entry.requiredWins,entry.progress+1);changed=true;if(entry.progress>=entry.requiredWins){const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId];entry.status='complete';entry.reward=expeditionRewardPlan(map,distance,entry.suitability,randomFn,1);}});
+  save.expeditions.active.forEach(entry=>{if(entry.status!=='active')return;const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId];if(!map||!distance)return;entry.progress=Math.min(entry.requiredWins,entry.progress+1);changed=true;if(entry.progress>=entry.requiredWins){entry.status='complete';entry.reward=expeditionRewardPlan(map,distance,entry.suitability,randomFn,1);}});
   if(changed)saveGame();return changed;
 }
 function grantExpeditionReward(entry,reward){

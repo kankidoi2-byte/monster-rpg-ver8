@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260831-legacy-expedition-victory-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: '一部の途中セーブで勝利後に停止する問題を修正しました',
+    body: '古い遠征データを含む途中セーブで、バトルに勝利しても「倒した！」の表示から先へ進まない場合がある問題を修正しました。遠征の適性データがない場合は、派遣中の仲間と遠征先から安全に復元します。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-action-guidance',
     date: '2026-08-29',
     category: 'fix',
