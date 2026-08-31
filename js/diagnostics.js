@@ -15,11 +15,13 @@
   }
 
   function safeNumber(value) {
+    if (value === null || value === undefined || value === '') return null;
     const number = Number(value);
     return Number.isFinite(number) && number >= 0 ? Math.floor(number) : null;
   }
 
   function safeFiniteNumber(value) {
+    if (value === null || value === undefined || value === '') return null;
     const number = Number(value);
     return Number.isFinite(number) && number >= 0 ? number : null;
   }
@@ -110,10 +112,14 @@
     const viewportWidth = safeNumber(safeValue(() => root.innerWidth, null));
     const mobileHint = safeValue(() => navigatorValue?.userAgentData?.mobile, null);
     const touchPoints = safeNumber(safeValue(() => navigatorValue?.maxTouchPoints, 0)) || 0;
+    const onlineHint = safeValue(() => navigatorValue?.onLine, null);
+    const hasDeviceSignals = Boolean(userAgent) || mobileHint !== null || touchPoints > 0 || viewportWidth !== null;
     const isMobile = mobileHint === true || /Mobi/i.test(userAgent);
-    const deviceClass = isMobile
+    const deviceClass = !hasDeviceSignals
+      ? 'unknown'
+      : (isMobile
       ? 'mobile'
-      : (touchPoints > 0 && viewportWidth !== null && viewportWidth <= 1280 ? 'tablet' : 'desktop');
+      : (touchPoints > 0 && viewportWidth !== null && viewportWidth <= 1280 ? 'tablet' : 'desktop'));
 
     return {
       capturedAt: safeTimestamp(),
@@ -129,9 +135,9 @@
         browser: detectBrowser(userAgent),
         os: detectOs(userAgent),
         deviceClass,
-        online: safeValue(() => navigatorValue?.onLine, null) === true
+        online: onlineHint === true
           ? true
-          : (safeValue(() => navigatorValue?.onLine, null) === false ? false : null)
+          : (onlineHint === false ? false : null)
       },
       viewport: {
         width: viewportWidth,
