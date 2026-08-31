@@ -2,20 +2,20 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T15:06:40.458Z",
+  "updated_at": "2026-08-31T15:08:25.362Z",
   "baseline": {
     "branch": "main",
     "commit": "f1099315dcc6f8a4f45d16da31e5363b1f4abec0",
     "ci_status": "success",
-    "open_pull_requests": 0
+    "open_pull_requests": 1
   },
   "overall_status": "in_progress",
   "current_phase": 2,
   "current_work": {
     "branch": "codex/dev-tools-phase2",
-    "pull_request": null,
-    "checkpoint": "phase2_implementation_and_local_test_complete",
-    "next_action": "Open the Phase 2 pull request, confirm the latest-head CI, then auto-merge under the standing safe-publication approval.",
+    "pull_request": 64,
+    "checkpoint": "phase2_pull_request_opened",
+    "next_action": "Confirm the latest-head GitHub Actions result and mergeability, then auto-merge under the standing safe-publication approval.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -57,11 +57,11 @@
       "id": 2,
       "name": "基本実行環境の収集",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase2",
-      "pull_request": null,
-      "checkpoint": "implementation_and_local_test_complete",
-      "next_action": "Open PR and confirm GitHub Actions."
+      "pull_request": 64,
+      "checkpoint": "pull_request_opened",
+      "next_action": "Confirm latest-head CI and mergeability, then auto-merge if all standing safety conditions remain satisfied."
     },
     {
       "id": 3,
