@@ -258,5 +258,177 @@
     summary.monsters.distinctSpeciesCount = species.size;
 
     const party = safeArray(safeValue(() => source.party, []));
-import fs from 'node:fs';
-import path from 'node:path';
+    summary.party.memberCount = safeCount(safeValue(() => party.length, 0));
+    for (let index = 0; index < summary.party.memberCount; index++) {
+      const uid = safeText(safeValue(() => party[index], ''));
+      if (!uid || !seenUids.has(uid)) summary.party.missingReferenceCount++;
+    }
+
+    const items = collectionTotals(safeValue(() => source.items, null));
+    const skillCards = collectionTotals(safeValue(() => source.skillCards, null));
+    summary.economy.coins = safeCount(safeValue(() => source.coins, 0));
+    summary.economy.itemTypeCount = items.stockedTypeCount;
+    summary.economy.totalItemCount = items.totalCount;
+    summary.economy.skillCardTypeCount = skillCards.stockedTypeCount;
+    summary.economy.totalSkillCardCount = skillCards.totalCount;
+
+    summary.collections.caughtCount = safeCount(safeValue(() => safeArray(source.caught).length, 0));
+    summary.collections.itemDexCount = safeCount(safeValue(() => safeArray(source.itemDex).length, 0));
+    summary.collections.mapDexCount = safeCount(safeValue(() => safeArray(source.mapDex).length, 0));
+
+    const expeditions = safeRecord(safeValue(() => source.expeditions, null));
+    summary.expeditions.completedCount = safeCount(safeValue(() => expeditions?.completedCount, 0));
+    summary.expeditions.activeCount = safeCount(safeValue(() => safeArray(expeditions?.active).length, 0));
+
+    const quarantine = safeRecord(safeValue(() => source.quarantine, null));
+    summary.quarantine.unknownInstanceCount = safeCount(safeValue(() => safeArray(quarantine?.unknownInstances).length, 0));
+    summary.quarantine.unknownCaughtIdCount = safeCount(safeValue(() => safeArray(quarantine?.unknownCaughtIds).length, 0));
+    summary.quarantine.invalidExpeditionCount = safeCount(safeValue(() => safeArray(quarantine?.invalidExpeditions).length, 0));
+    return summary;
+  }
+
+  function errorDetails(value, fallbackMessage='') {
+    let name = '';
+    let message = '';
+    try {
+      if (value && typeof value === 'object') {
+        name = safeText(value.name);
+        message = safeText(value.message);
+      } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        message = safeText(value);
+      }
+    } catch (_error) {
+      // A rejection reason can be a Proxy or expose throwing getters.
+    }
+    return {
+      name: name || 'Error',
+      message: message || safeText(fallbackMessage, 'Unknown error') || 'Unknown error'
+    };
+  }
+
+  function fingerprint(entry) {
+    return [
+      entry.kind,
+      entry.name,
+      entry.message,
+      entry.source,
+      entry.line,
+      entry.column
+    ].join('|');
+  }
+
+  let state;
+  try {
+    state = root[STATE_KEY];
+  } catch (_error) {
+    state = null;
+  }
+  if (!state || !Array.isArray(state.errors)) {
+    state = { errors: [], listenersInstalled: false, saveProvider: null };
+    try {
+      Object.defineProperty(root, STATE_KEY, {
+        value: state,
+        configurable: false,
+        enumerable: false,
+        writable: false
+      });
+    } catch (_error) {
+      root[STATE_KEY] = state;
+    }
+  }
+
+  function registerSaveProvider(provider) {
+    if (typeof provider !== 'function' || typeof state.saveProvider === 'function') return false;
+    state.saveProvider = provider;
+    return true;
+  }
+
+  function getSaveSummary() {
+    if (typeof state.saveProvider !== 'function') return emptySaveSummary(false);
+    return summarizeSave(safeValue(() => state.saveProvider(), null));
+  }
+
+  function record(entry) {
+    const last = state.errors[state.errors.length - 1];
+    if (last && last.fingerprint === entry.fingerprint) {
+      last.count = Math.min(Number.MAX_SAFE_INTEGER, (last.count || 1) + 1);
+      last.lastSeenAt = entry.lastSeenAt;
+      return;
+    }
+    state.errors.push(entry);
+    if (state.errors.length > MAX_ERRORS) {
+      state.errors.splice(0, state.errors.length - MAX_ERRORS);
+    }
+  }
+
+  function captureErrorEvent(event) {
+    try {
+      const details = errorDetails(event?.error, event?.message);
+      const timestamp = safeTimestamp();
+      const entry = {
+        kind: 'error',
+        name: details.name,
+        message: details.message,
+        source: safeSourceUrl(event?.filename),
+        line: safeNumber(event?.lineno),
+        column: safeNumber(event?.colno),
+        count: 1,
+        firstSeenAt: timestamp,
+        lastSeenAt: timestamp
+      };
+      entry.fingerprint = fingerprint(entry);
+      record(entry);
+    } catch (_error) {
+      // Diagnostics must never become a new runtime failure.
+    }
+  }
+
+  function captureUnhandledRejection(event) {
+    try {
+      const details = errorDetails(event?.reason, 'Unhandled promise rejection');
+      const timestamp = safeTimestamp();
+      const entry = {
+        kind: 'unhandledrejection',
+        name: details.name,
+        message: details.message,
+        source: '',
+        line: null,
+        column: null,
+        count: 1,
+        firstSeenAt: timestamp,
+        lastSeenAt: timestamp
+      };
+      entry.fingerprint = fingerprint(entry);
+      record(entry);
+    } catch (_error) {
+      // Diagnostics must never become a new runtime failure.
+    }
+  }
+
+  function getErrors() {
+    return state.errors.map(entry => ({ ...entry }));
+  }
+
+  function clearErrors() {
+    state.errors.splice(0, state.errors.length);
+  }
+
+  const api = Object.freeze({
+    version: 1,
+    environmentVersion: 1,
+    saveSummaryVersion: 1,
+    maxErrors: MAX_ERRORS,
+    getEnvironment: readEnvironment,
+    getSaveSummary,
+    registerSaveProvider,
+    getErrors,
+    clearErrors
+  });
+  root.GameDiagnostics = api;
+
+  if (!state.listenersInstalled && typeof root.addEventListener === 'function') {
+    root.addEventListener('error', captureErrorEvent);
+    root.addEventListener('unhandledrejection', captureUnhandledRejection);
+    state.listenersInstalled = true;
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
