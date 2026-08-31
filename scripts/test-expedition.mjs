@@ -7,6 +7,7 @@ const monsters = new Map([
   ['aqua', {id:'aqua', name:'アクア', types:['water'], hp:120, spd:50, moves:[['水撃', 45]]}],
   ['super', {id:'super', name:'超ボス', types:['star'], hp:500, spd:90, moves:[], bossClass:'超ボス級'}]
 ]);
+let expeditionProvider = null;
 const save = {
   coins:0,
   items:{},
@@ -40,6 +41,13 @@ const context = vm.createContext({
   checkEvolution:()=>{},
   saveGame:()=>{},
   registerItemDex:()=>{},
+  GameDiagnostics:{
+    registerExpeditionProvider(provider){
+      if(expeditionProvider)return false;
+      expeditionProvider=provider;
+      return true;
+    }
+  },
   document:{
     getElementById:id=>id==='expeditionNav'||id==='expedition'?{}:null,
     querySelectorAll:()=>[],
@@ -48,6 +56,19 @@ const context = vm.createContext({
   }
 });
 vm.runInContext(fs.readFileSync(new URL('../js/expedition.js', import.meta.url), 'utf8'), context);
+
+assert.equal(typeof expeditionProvider, 'function', 'expedition diagnostics provider must register');
+const emptySelectionDiagnostics = expeditionProvider();
+assert.equal(emptySelectionDiagnostics.selection.destinationSelected, false);
+assert.ok(emptySelectionDiagnostics.selection.blockingReasons.includes('destination_missing'));
+assert.ok(emptySelectionDiagnostics.selection.blockingReasons.includes('no_members_selected'));
+vm.runInContext("expeditionSelectedMapId='volcano'; expeditionSelectedUids=['u1'];", context);
+const readySelectionDiagnostics = expeditionProvider();
+assert.equal(readySelectionDiagnostics.selection.canDispatch, true);
+assert.equal(readySelectionDiagnostics.selection.selectedMemberCount, 1);
+assert.equal(readySelectionDiagnostics.selection.availableMemberCount, 3);
+assert.ok(!JSON.stringify(readySelectionDiagnostics).includes('volcano'), 'diagnostics must not expose map IDs');
+assert.ok(!JSON.stringify(readySelectionDiagnostics).includes('u1'), 'diagnostics must not expose member UIDs');
 
 assert.deepEqual(vm.runInContext('expeditionDestinations().map(map=>map.id)', context), ['volcano'], 'super-boss maps must be excluded');
 assert.equal(vm.runInContext('expeditionUnlockedSlots()', context), 1);
