@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T20:10:06.929Z",
+  "updated_at": "2026-08-31T20:11:10.292Z",
   "baseline": {
     "branch": "main",
     "commit": "b060f7314ab21eb28a7480abfa65668a000051d9",
@@ -13,9 +13,9 @@
   "current_phase": 3,
   "current_work": {
     "branch": "codex/dev-tools-phase3",
-    "pull_request": null,
-    "checkpoint": "implementation_and_local_test_complete",
-    "next_action": "Create the Phase 3 pull request, verify latest-head CI and focused diff, then auto-merge if all standing safety conditions remain satisfied.",
+    "pull_request": 65,
+    "checkpoint": "pull_request_open_ci_pending",
+    "next_action": "Wait for CI on the latest head, review the complete Phase 3 diff and mergeability, then auto-merge only if all safety conditions pass.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -67,11 +67,11 @@
       "id": 3,
       "name": "安全なセーブ要約",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase3",
-      "pull_request": null,
-      "checkpoint": "implementation_and_local_test_complete",
-      "next_action": "Create the Phase 3 pull request, verify latest-head CI and focused diff, then auto-merge if all standing safety conditions remain satisfied."
+      "pull_request": 65,
+      "checkpoint": "pull_request_open_ci_pending",
+      "next_action": "Wait for CI on the latest head, review the complete Phase 3 diff and mergeability, then auto-merge only if all safety conditions pass."
     },
     {
       "id": 4,
