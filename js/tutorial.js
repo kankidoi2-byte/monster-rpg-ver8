@@ -556,6 +556,12 @@ function queueTutorialActionAdvance(stepId=tutorialCurrentStepId()){
   },0);
   return true;
 }
+function tutorialShouldUseReplayNextStep(step){
+  if(tutorialUiState.replay)return true;
+  return step?.transition==='prepare_lumina_alchemy'
+    &&typeof currentTutorialState==='function'
+    &&currentTutorialState()?.alchemyLessonCompleted===true;
+}
 function tutorialNext(actionCompleted=false){
   if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
@@ -564,7 +570,7 @@ function tutorialNext(actionCompleted=false){
   if(!tutorialStepCanAdvance(step))return;
   if(step?.transition&&!runTutorialTransition(step.transition))return;
   if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
-  const nextStepId=tutorialUiState.replay&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
+  const nextStepId=tutorialShouldUseReplayNextStep(step)&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
   if(nextStepId){
     const nextIndex=tutorialStepIndex(tutorialUiState.steps,nextStepId);
     if(nextIndex<0)return;

@@ -24,7 +24,7 @@ assert.match(css,/body\.tutorial-stella-skill-action \[data-tutorial-stella-uneq
 assert.match(main,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'[^\n]+nextLabel:'自由行動へ'/,'the final scene must render Gnosis as story dialogue instead of a target-only background');
 assert.ok(css.includes('.tutorial-overlay.is-ui-guide-step .tutorial-character-layer{display:none}'),'ordinary UI-guide steps must still protect their controls from portrait overlap');
 assert.ok(index.includes('tutorial.css?v=')&&index.includes('prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1'),'the mobile browser must fetch the new tutorial CSS');
-assert.ok(index.includes('prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1"></script>'),'the mobile browser must fetch the new tutorial logic');
+assert.ok(index.includes('prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1"></script>'),'the mobile browser must fetch the new tutorial logic');
 assert.equal(packageJson.scripts['check:prologue-mobile-clarity'],'node scripts/test-prologue-mobile-clarity.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-mobile-clarity'));
 

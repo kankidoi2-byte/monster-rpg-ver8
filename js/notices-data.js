@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260831-completed-alchemy-recap-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: '完了済みの入門錬成案内を修正しました',
+    body: '入門錬成を完了済みの途中セーブで、完了済みの説明が表示されないまま次の案内へ進む問題を修正しました。報酬や素材を重複させず、完了済みであることを確認してから遠征案内へ進みます。'
+  }),
+  Object.freeze({
     id: '20260831-prologue-mobile-skill-action-fix',
     date: '2026-08-31',
     category: 'fix',
