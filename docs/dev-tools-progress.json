@@ -2,20 +2,20 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T15:12:24.138Z",
+  "updated_at": "2026-08-31T20:12:21.470Z",
   "baseline": {
     "branch": "main",
-    "commit": "f1099315dcc6f8a4f45d16da31e5363b1f4abec0",
+    "commit": "b060f7314ab21eb28a7480abfa65668a000051d9",
     "ci_status": "success",
-    "open_pull_requests": 1
+    "open_pull_requests": 0
   },
   "overall_status": "in_progress",
-  "current_phase": 2,
+  "current_phase": 3,
   "current_work": {
-    "branch": "codex/dev-tools-phase2",
-    "pull_request": 64,
-    "checkpoint": "phase2_ci_success_merge_ready",
-    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #64 under the standing safe-publication exception.",
+    "branch": "codex/dev-tools-phase3",
+    "pull_request": 65,
+    "checkpoint": "phase3_ci_success_merge_ready",
+    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #65 under the standing safe-publication exception.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -57,21 +57,21 @@
       "id": 2,
       "name": "基本実行環境の収集",
       "group": "in_game_diagnostics",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase2",
       "pull_request": 64,
-      "checkpoint": "ci_success_merge_ready",
-      "next_action": "Confirm latest-head CI after the safety-record clarification, then auto-merge."
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null
     },
     {
       "id": 3,
       "name": "安全なセーブ要約",
       "group": "in_game_diagnostics",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "in_review",
+      "branch": "codex/dev-tools-phase3",
+      "pull_request": 65,
+      "checkpoint": "ci_success_merge_ready",
+      "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #65 under the standing safe-publication exception."
     },
     {
       "id": 4,

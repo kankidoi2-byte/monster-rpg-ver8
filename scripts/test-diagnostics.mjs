@@ -47,6 +47,7 @@ const emit = (type, event) => {
 
 expect(context.GameDiagnostics?.version === 1, 'diagnostics API version is missing');
 expect(context.GameDiagnostics?.environmentVersion === 1, 'environment schema version is missing');
+expect(context.GameDiagnostics?.saveSummaryVersion === 1, 'save summary schema version is missing');
 expect(context.GameDiagnostics?.maxErrors === 20, 'diagnostics limit must be 20');
 expect((listeners.get('error') || []).length === 1, 'one error listener must be installed');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection listener must be installed');
@@ -90,6 +91,55 @@ expect(sparseEnvironment.runtime?.browser === 'Other' && sparseEnvironment.runti
 expect(sparseEnvironment.runtime?.deviceClass === 'unknown', 'missing device signals must not be guessed');
 expect(sparseEnvironment.runtime?.online === null, 'missing online state must stay unknown');
 expect(sparseEnvironment.viewport?.width === null && sparseEnvironment.screen?.width === null, 'missing dimensions must stay null');
+
+expect(context.GameDiagnostics.getSaveSummary().available === false, 'save summary must be unavailable before provider registration');
+const saveFixture = {
+  schemaVersion: 4,
+  saveMeta: { migrations: ['v1', 'v2'], lastSavedAt: '2026-09-01T00:00:00Z', integrityHash: 'private-hash' },
+  instances: [
+    { uid: 'uid-secret-1', id: 'monster-secret-a', level: 10 },
+    { uid: 'uid-secret-1', id: 'monster-secret-b', level: 20 },
+    { uid: '', id: 'monster-secret-a', level: 30 },
+    null
+  ],
+  party: ['uid-secret-1', 'missing-secret'],
+  items: { potion: 3, secret_item: 2, empty_item: 0, invalid_item: 'many' },
+  coins: 123,
+  skillCards: { secret_skill: 4 },
+  caught: ['monster-secret-a', 'monster-secret-b'],
+  itemDex: ['potion'],
+  mapDex: ['secret-map'],
+  expeditions: { completedCount: 2, active: [{ id: 'expedition-secret' }] },
+  quarantine: { unknownInstances: [{}], unknownCaughtIds: ['unknown-secret'], invalidExpeditions: [{ id: 'invalid-secret' }] },
+  progress: { tutorial: { playerName: 'Private Player' }, storyFlags: { secretStory: true } },
+  history: { logs: ['private free text'] }
+};
+expect(context.GameDiagnostics.registerSaveProvider(() => saveFixture) === true, 'save provider registration failed');
+expect(context.GameDiagnostics.registerSaveProvider(() => ({})) === false, 'save provider must not be replaceable');
+const saveSummary = context.GameDiagnostics.getSaveSummary();
+expect(saveSummary.version === 1 && saveSummary.available === true && saveSummary.schemaVersion === 4, 'save summary header is incorrect');
+expect(saveSummary.saveMeta?.migrationCount === 2 && saveSummary.saveMeta?.hasLastSavedAt === true && saveSummary.saveMeta?.hasIntegrityHash === true, 'save metadata summary is incorrect');
+expect(saveSummary.monsters?.instanceCount === 4, 'instance count is incorrect');
+expect(saveSummary.monsters?.distinctSpeciesCount === 2, 'distinct species count is incorrect');
+expect(saveSummary.monsters?.missingUidCount === 1 && saveSummary.monsters?.duplicateUidCount === 1 && saveSummary.monsters?.invalidInstanceCount === 1, 'instance integrity counts are incorrect');
+expect(saveSummary.party?.memberCount === 2 && saveSummary.party?.missingReferenceCount === 1, 'party summary is incorrect');
+expect(saveSummary.economy?.coins === 123 && saveSummary.economy?.itemTypeCount === 2 && saveSummary.economy?.totalItemCount === 5, 'item and coin summary is incorrect');
+expect(saveSummary.economy?.skillCardTypeCount === 1 && saveSummary.economy?.totalSkillCardCount === 4, 'skill card summary is incorrect');
+expect(saveSummary.collections?.caughtCount === 2 && saveSummary.collections?.itemDexCount === 1 && saveSummary.collections?.mapDexCount === 1, 'collection summary is incorrect');
+expect(saveSummary.expeditions?.completedCount === 2 && saveSummary.expeditions?.activeCount === 1, 'expedition counts are incorrect');
+expect(saveSummary.quarantine?.unknownInstanceCount === 1 && saveSummary.quarantine?.unknownCaughtIdCount === 1 && saveSummary.quarantine?.invalidExpeditionCount === 1, 'quarantine counts are incorrect');
+const serializedSaveSummary = JSON.stringify(saveSummary);
+for (const forbidden of ['uid-secret', 'monster-secret', 'secret_item', 'secret_skill', 'secret-map', 'Private Player', 'private free text', 'private-hash']) {
+  expect(!serializedSaveSummary.includes(forbidden), `save summary leaked forbidden value: ${forbidden}`);
+}
+
+const hostileContext = { URL, addEventListener() {} };
+hostileContext.window = hostileContext;
+vm.createContext(hostileContext);
+vm.runInContext(source, hostileContext);
+hostileContext.GameDiagnostics.registerSaveProvider(() => new Proxy({}, { get() { throw new Error('blocked'); } }));
+const hostileSummary = hostileContext.GameDiagnostics.getSaveSummary();
+expect(hostileSummary.available === true && hostileSummary.schemaVersion === null, 'throwing save getters must produce a safe fixed summary');
 
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
@@ -158,11 +208,11 @@ expect(diagnosticsIndex >= 0, 'diagnostics.js is not loaded by index.html');
 expect(diagnosticsIndex < guardIndex, 'diagnostics must load before bootstrap-guard');
 expect(!index.includes(String.raw`</script>\\n<script`), 'index must not contain literal newline escape text');
 expect(!source.includes('mb_v95c'), 'diagnostics must not read or change the save key');
-expect(!source.includes('localStorage'), 'Phase 2 diagnostics must remain memory-only');
+expect(!source.includes('localStorage'), 'Phase 3 diagnostics must remain memory-only');
 expect(!source.includes('.cookie'), 'diagnostics must not read cookies');
 
 if (errors.length) {
   console.error(errors.map(error => `- ${error}`).join('\n'));
   process.exit(1);
 }
-console.log('Diagnostics environment collector passed');
+console.log('Diagnostics safe save summary passed');

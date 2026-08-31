@@ -151,6 +151,142 @@
     };
   }
 
+  function safeCount(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number <= 0) return 0;
+    return Math.min(Number.MAX_SAFE_INTEGER, Math.floor(number));
+  }
+
+  function safeArray(value) {
+    return Array.isArray(value) ? value : [];
+  }
+
+  function safeRecord(value) {
+    return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+  }
+
+  function collectionTotals(value) {
+    try {
+      const entries = Object.entries(safeRecord(value) || {});
+      let stockedTypeCount = 0;
+      let totalCount = 0;
+      for (const [, rawCount] of entries) {
+        const count = safeCount(rawCount);
+        if (!count) continue;
+        stockedTypeCount++;
+        totalCount = Math.min(Number.MAX_SAFE_INTEGER, totalCount + count);
+      }
+      return { stockedTypeCount, totalCount };
+    } catch (_error) {
+      return { stockedTypeCount: 0, totalCount: 0 };
+    }
+  }
+
+  function emptySaveSummary(available=false) {
+    return {
+      version: 1,
+      available,
+      schemaVersion: null,
+      saveMeta: {
+        migrationCount: 0,
+        hasLastSavedAt: false,
+        hasIntegrityHash: false
+      },
+      monsters: {
+        instanceCount: 0,
+        distinctSpeciesCount: 0,
+        missingUidCount: 0,
+        duplicateUidCount: 0,
+        invalidInstanceCount: 0
+      },
+      party: {
+        memberCount: 0,
+        missingReferenceCount: 0
+      },
+      economy: {
+        coins: 0,
+        itemTypeCount: 0,
+        totalItemCount: 0,
+        skillCardTypeCount: 0,
+        totalSkillCardCount: 0
+      },
+      collections: {
+        caughtCount: 0,
+        itemDexCount: 0,
+        mapDexCount: 0
+      },
+      expeditions: {
+        completedCount: 0,
+        activeCount: 0
+      },
+      quarantine: {
+        unknownInstanceCount: 0,
+        unknownCaughtIdCount: 0,
+        invalidExpeditionCount: 0
+      }
+    };
+  }
+
+  function summarizeSave(value) {
+    const source = safeRecord(value);
+    if (!source) return emptySaveSummary(false);
+    const summary = emptySaveSummary(true);
+    summary.schemaVersion = safeNumber(safeValue(() => source.schemaVersion, null));
+
+    const saveMeta = safeRecord(safeValue(() => source.saveMeta, null));
+    summary.saveMeta.migrationCount = safeCount(safeValue(() => safeArray(saveMeta?.migrations).length, 0));
+    summary.saveMeta.hasLastSavedAt = Boolean(safeText(safeValue(() => saveMeta?.lastSavedAt, '')));
+    summary.saveMeta.hasIntegrityHash = Boolean(safeText(safeValue(() => saveMeta?.integrityHash, '')));
+
+    const instances = safeArray(safeValue(() => source.instances, []));
+    const seenUids = new Set();
+    const species = new Set();
+    summary.monsters.instanceCount = safeCount(safeValue(() => instances.length, 0));
+    for (let index = 0; index < summary.monsters.instanceCount; index++) {
+      const entry = safeRecord(safeValue(() => instances[index], null));
+      if (!entry) {
+        summary.monsters.invalidInstanceCount++;
+        continue;
+      }
+      const id = safeText(safeValue(() => entry.id, ''));
+      const uid = safeText(safeValue(() => entry.uid, ''));
+      if (id) species.add(id); else summary.monsters.invalidInstanceCount++;
+      if (!uid) summary.monsters.missingUidCount++;
+      else if (seenUids.has(uid)) summary.monsters.duplicateUidCount++;
+      else seenUids.add(uid);
+    }
+    summary.monsters.distinctSpeciesCount = species.size;
+
+    const party = safeArray(safeValue(() => source.party, []));
+    summary.party.memberCount = safeCount(safeValue(() => party.length, 0));
+    for (let index = 0; index < summary.party.memberCount; index++) {
+      const uid = safeText(safeValue(() => party[index], ''));
+      if (!uid || !seenUids.has(uid)) summary.party.missingReferenceCount++;
+    }
+
+    const items = collectionTotals(safeValue(() => source.items, null));
+    const skillCards = collectionTotals(safeValue(() => source.skillCards, null));
+    summary.economy.coins = safeCount(safeValue(() => source.coins, 0));
+    summary.economy.itemTypeCount = items.stockedTypeCount;
+    summary.economy.totalItemCount = items.totalCount;
+    summary.economy.skillCardTypeCount = skillCards.stockedTypeCount;
+    summary.economy.totalSkillCardCount = skillCards.totalCount;
+
+    summary.collections.caughtCount = safeCount(safeValue(() => safeArray(source.caught).length, 0));
+    summary.collections.itemDexCount = safeCount(safeValue(() => safeArray(source.itemDex).length, 0));
+    summary.collections.mapDexCount = safeCount(safeValue(() => safeArray(source.mapDex).length, 0));
+
+    const expeditions = safeRecord(safeValue(() => source.expeditions, null));
+    summary.expeditions.completedCount = safeCount(safeValue(() => expeditions?.completedCount, 0));
+    summary.expeditions.activeCount = safeCount(safeValue(() => safeArray(expeditions?.active).length, 0));
+
+    const quarantine = safeRecord(safeValue(() => source.quarantine, null));
+    summary.quarantine.unknownInstanceCount = safeCount(safeValue(() => safeArray(quarantine?.unknownInstances).length, 0));
+    summary.quarantine.unknownCaughtIdCount = safeCount(safeValue(() => safeArray(quarantine?.unknownCaughtIds).length, 0));
+    summary.quarantine.invalidExpeditionCount = safeCount(safeValue(() => safeArray(quarantine?.invalidExpeditions).length, 0));
+    return summary;
+  }
+
   function errorDetails(value, fallbackMessage='') {
     let name = '';
     let message = '';
@@ -188,7 +324,7 @@
     state = null;
   }
   if (!state || !Array.isArray(state.errors)) {
-    state = { errors: [], listenersInstalled: false };
+    state = { errors: [], listenersInstalled: false, saveProvider: null };
     try {
       Object.defineProperty(root, STATE_KEY, {
         value: state,
@@ -199,6 +335,17 @@
     } catch (_error) {
       root[STATE_KEY] = state;
     }
+  }
+
+  function registerSaveProvider(provider) {
+    if (typeof provider !== 'function' || typeof state.saveProvider === 'function') return false;
+    state.saveProvider = provider;
+    return true;
+  }
+
+  function getSaveSummary() {
+    if (typeof state.saveProvider !== 'function') return emptySaveSummary(false);
+    return summarizeSave(safeValue(() => state.saveProvider(), null));
   }
 
   function record(entry) {
@@ -269,8 +416,11 @@
   const api = Object.freeze({
     version: 1,
     environmentVersion: 1,
+    saveSummaryVersion: 1,
     maxErrors: MAX_ERRORS,
     getEnvironment: readEnvironment,
+    getSaveSummary,
+    registerSaveProvider,
     getErrors,
     clearErrors
   });
