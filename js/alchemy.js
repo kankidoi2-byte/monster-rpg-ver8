@@ -9,6 +9,7 @@ let tutorialAlchemyLessonActive = false;
 let tutorialAlchemyLessonConfig = null;
 let alchemyDiagnosticsStage = 'idle';
 let alchemyDiagnosticsResultKind = 'none';
+let alchemyDiagnosticsTutorialLesson = false;
 
 function activateTutorialAlchemyLesson(config){
   if(!config||!ALCHEMY_RECIPE_BY_ID[config.recipeId]||!Array.isArray(config.materials)||config.materials.length!==4)return false;
@@ -26,7 +27,10 @@ function deactivateTutorialAlchemyLesson(){tutorialAlchemyLessonActive=false;tut
 function isTutorialAlchemyLessonActive(){return tutorialAlchemyLessonActive&&Boolean(tutorialAlchemyLessonConfig);}
 
 function alchemyDiagnosticsSnapshot(){
-  const tutorialLesson=isTutorialAlchemyLessonActive();
+  const liveTutorialLesson=isTutorialAlchemyLessonActive();
+  const tutorialLesson=['completed','rolled_back'].includes(alchemyDiagnosticsStage)
+    ?alchemyDiagnosticsTutorialLesson
+    :liveTutorialLesson;
   let plan=null;
   let errors=[];
   let successCandidateCount=0;
@@ -91,6 +95,7 @@ function showAlchemy(){
   if(!alchemyBusy){
     alchemyDiagnosticsStage='selecting';
     alchemyDiagnosticsResultKind='none';
+    alchemyDiagnosticsTutorialLesson=isTutorialAlchemyLessonActive();
   }
   show('alchemy');
   renderAlchemy();
@@ -524,6 +529,7 @@ function executeAlchemyConfirmed(){
   alchemyBusy = true;
   alchemyDiagnosticsStage='processing';
   alchemyDiagnosticsResultKind='none';
+  alchemyDiagnosticsTutorialLesson=plan.tutorialLesson===true;
   const button = document.getElementById('alchemyExecuteButton');
   if(button) button.disabled = true;
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyExecutionStarted==='function')handleTutorialAlchemyExecutionStarted();
