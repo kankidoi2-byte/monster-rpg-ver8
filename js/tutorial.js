@@ -1254,6 +1254,60 @@ function tutorialFirstHuntIsPending(){
   const tutorial=currentTutorialState();
   return (tutorial.status==='in_progress'||tutorial.replaying)&&tutorial.stepId==='first_hunt';
 }
+function tutorialDiagnosticsWaitingMode(step){
+  if(!step)return 'none';
+  if(step.input)return 'input';
+  if(step.waitForEvent)return 'event';
+  const mode=tutorialStepMode(step);
+  if(mode===TUTORIAL_STEP_MODE.TARGET_ACTION)return 'target_action';
+  if(mode===TUTORIAL_STEP_MODE.EXTERNAL_ACTION)return 'external_action';
+  if(step.continueAt)return 'continue';
+  return 'dialogue';
+}
+function tutorialDiagnosticsSnapshot(){
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  const active=tutorialUiState.active===true;
+  const mainSteps=tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID);
+  const persistedStepId=typeof tutorial?.stepId==='string'?tutorial.stepId:'';
+  const persistedIndex=persistedStepId?tutorialStepIndex(mainSteps,persistedStepId):-1;
+  const activeStep=active?tutorialUiState.steps[tutorialUiState.index]||null:null;
+  const persistedStep=persistedIndex>=0?mainSteps[persistedIndex]||null:null;
+  const step=activeStep||persistedStep;
+  const steps=active?tutorialUiState.steps:mainSteps;
+  const stepIndex=active?tutorialUiState.index:persistedIndex;
+  const targetRequired=active&&tutorialStepRequiresAction(step)&&Boolean(step?.target);
+  let targetPresent=false;
+  let screen='';
+  try{
+    targetPresent=targetRequired&&Boolean(tutorialUiState.target||document.querySelector(step.target));
+    screen=active?activeScreenId()||'':'';
+  }catch(_error){
+    targetPresent=false;
+    screen='';
+  }
+  return {
+    status:tutorial?.status,
+    completed:tutorial?.completed===true,
+    skipped:tutorial?.skipped===true,
+    replaying:tutorial?.replaying===true,
+    active,
+    paused:!active&&(tutorial?.status==='in_progress'||tutorial?.replaying===true),
+    persistedStepId,
+    flowId:active?tutorialUiState.flowId:(persistedStep?TUTORIAL_MAIN_FLOW_ID:''),
+    stepId:step?.id||'',
+    stepIndex:Number.isInteger(stepIndex)&&stepIndex>=0?stepIndex:null,
+    stepCount:Array.isArray(steps)?steps.length:0,
+    waitingMode:tutorialDiagnosticsWaitingMode(step),
+    waitForEvent:step?.waitForEvent||'',
+    input:step?.input||'',
+    continueAt:step?.continueAt||'',
+    targetRequired,
+    targetPresent,
+    transitionPending:active&&tutorialUiState.advancePendingStepId===step?.id,
+    expectedScreen:active?step?.screenId||'':'',
+    activeScreen:screen
+  };
+}
 function tutorialCurrentStepId(){return tutorialUiState.active?tutorialUiState.steps[tutorialUiState.index]?.id:null;}
 function shouldOfferTutorialHunt(){
   return tutorialFirstHuntIsPending()||['first_hunt','tutorial_hunt_request','battle_retry'].includes(tutorialCurrentStepId());
@@ -1606,6 +1660,8 @@ registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[
   {id:'titles_equip',screenId:'contractorTitles',target:'#contractorTitleContent',title:'獲得した称号を1つ装備',text:'条件を達成した称号から、表示したいものを選べます。あとから何度でも変更できます。',progressLabel:'CONTRACTOR RANK'},
   {id:'titles_cosmetic',screenId:'contractorTitles',target:'#contractorTitleContent',title:'称号に能力補正はありません',text:'称号は冒険の実績を示す表示要素です。装備しても戦闘能力や利用できる機能は変わりません。',progressLabel:'CONTRACTOR RANK',nextLabel:'称号へ戻る'}
 ]);
+globalThis.GameDiagnostics?.registerTutorialProvider?.(tutorialDiagnosticsSnapshot);
+
 document.addEventListener('click',event=>{
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
