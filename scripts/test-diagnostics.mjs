@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const source = fs.readFileSync(path.join(root, 'js/diagnostics.js'), 'utf8');
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const tutorialSource = fs.existsSync(path.join(root, 'js/tutorial.js'))
+  ? fs.readFileSync(path.join(root, 'js/tutorial.js'), 'utf8')
+  : '';
 const listeners = new Map();
 const context = {
   URL,
@@ -48,6 +51,7 @@ const emit = (type, event) => {
 expect(context.GameDiagnostics?.version === 1, 'diagnostics API version is missing');
 expect(context.GameDiagnostics?.environmentVersion === 1, 'environment schema version is missing');
 expect(context.GameDiagnostics?.saveSummaryVersion === 1, 'save summary schema version is missing');
+expect(context.GameDiagnostics?.tutorialSummaryVersion === 1, 'tutorial summary schema version is missing');
 expect(context.GameDiagnostics?.maxErrors === 20, 'diagnostics limit must be 20');
 expect((listeners.get('error') || []).length === 1, 'one error listener must be installed');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection listener must be installed');
@@ -141,6 +145,50 @@ hostileContext.GameDiagnostics.registerSaveProvider(() => new Proxy({}, { get() 
 const hostileSummary = hostileContext.GameDiagnostics.getSaveSummary();
 expect(hostileSummary.available === true && hostileSummary.schemaVersion === null, 'throwing save getters must produce a safe fixed summary');
 
+expect(context.GameDiagnostics.getTutorialSummary().available === false, 'tutorial summary must be unavailable before provider registration');
+const tutorialFixture = {
+  status: 'in_progress',
+  completed: false,
+  skipped: false,
+  replaying: false,
+  active: true,
+  paused: false,
+  persistedStepId: 'battle_target',
+  flowId: 'prologue',
+  stepId: 'battle_target',
+  stepIndex: 14,
+  stepCount: 72,
+  waitingMode: 'target_action',
+  waitForEvent: '',
+  input: '',
+  continueAt: '',
+  targetRequired: true,
+  targetPresent: false,
+  transitionPending: false,
+  expectedScreen: 'battle',
+  activeScreen: 'home',
+  playerName: 'Private Player',
+  dialogue: 'private free text'
+};
+expect(context.GameDiagnostics.registerTutorialProvider(() => tutorialFixture) === true, 'tutorial provider registration failed');
+expect(context.GameDiagnostics.registerTutorialProvider(() => ({})) === false, 'tutorial provider must not be replaceable');
+const tutorialSummary = context.GameDiagnostics.getTutorialSummary();
+expect(tutorialSummary.version === 1 && tutorialSummary.available === true, 'tutorial summary header is incorrect');
+expect(tutorialSummary.state?.status === 'in_progress' && tutorialSummary.state?.stepId === 'battle_target', 'tutorial stage is incorrect');
+expect(tutorialSummary.waiting?.mode === 'target_action' && tutorialSummary.waiting?.targetRequired === true, 'tutorial waiting action is incorrect');
+expect(tutorialSummary.screen?.matches === false, 'tutorial screen mismatch was not detected');
+expect(tutorialSummary.issues?.includes('screen_mismatch') && tutorialSummary.issues?.includes('missing_target'), 'tutorial contradictions were not reported');
+expect(!JSON.stringify(tutorialSummary).includes('Private Player'), 'tutorial summary leaked a player name');
+expect(!JSON.stringify(tutorialSummary).includes('private free text'), 'tutorial summary leaked dialogue text');
+
+const hostileTutorialContext = { URL, addEventListener() {} };
+hostileTutorialContext.window = hostileTutorialContext;
+vm.createContext(hostileTutorialContext);
+vm.runInContext(source, hostileTutorialContext);
+hostileTutorialContext.GameDiagnostics.registerTutorialProvider(() => new Proxy({}, { get() { throw new Error('blocked'); } }));
+const hostileTutorialSummary = hostileTutorialContext.GameDiagnostics.getTutorialSummary();
+expect(hostileTutorialSummary.available === true && hostileTutorialSummary.state?.status === 'unknown', 'throwing tutorial getters must produce a safe fixed summary');
+
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'loading diagnostics twice must not duplicate the rejection listener');
@@ -210,9 +258,12 @@ expect(!index.includes(String.raw`</script>\\n<script`), 'index must not contain
 expect(!source.includes('mb_v95c'), 'diagnostics must not read or change the save key');
 expect(!source.includes('localStorage'), 'Phase 3 diagnostics must remain memory-only');
 expect(!source.includes('.cookie'), 'diagnostics must not read cookies');
+if (tutorialSource) {
+  expect(tutorialSource.includes('registerTutorialProvider?.(tutorialDiagnosticsSnapshot)'), 'tutorial runtime must register its diagnostics provider');
+}
 
 if (errors.length) {
   console.error(errors.map(error => `- ${error}`).join('\n'));
   process.exit(1);
 }
-console.log('Diagnostics safe save summary passed');
+console.log('Diagnostics tutorial summary passed');
