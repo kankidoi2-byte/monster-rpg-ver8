@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T13:08:00Z",
+  "updated_at": "2026-08-31T13:10:00Z",
   "baseline": {
     "branch": "main",
     "commit": "cc1239d16aee7a7f3896c40bc4d9660199f6f726",
@@ -13,10 +13,10 @@
   "current_phase": 1,
   "current_work": {
     "branch": "codex/dev-tools-phase1",
-    "pull_request": null,
-    "checkpoint": "error_recorder_and_tests_added",
-    "next_action": "Validate the Phase 1 branch with GitHub Actions, open its pull request, and wait for explicit merge approval.",
-    "approval_required": false,
+    "pull_request": 63,
+    "checkpoint": "phase1_pull_request_opened",
+    "next_action": "Confirm all checks on PR #63, then wait for explicit merge approval.",
+    "approval_required": true,
     "manual_verification_required": false
   },
   "invariants": {
@@ -44,11 +44,11 @@
       "id": 1,
       "name": "エラー記録基盤",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase1",
-      "pull_request": null,
-      "checkpoint": "implementation_and_tests_added",
-      "next_action": "Open and validate the Phase 1 pull request."
+      "pull_request": 63,
+      "checkpoint": "pull_request_opened",
+      "next_action": "Confirm CI, then wait for explicit merge approval."
     },
     {
       "id": 2,
