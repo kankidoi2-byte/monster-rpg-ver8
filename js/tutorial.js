@@ -259,6 +259,7 @@ function renderTutorialStoryStep(step){
   const portrait=document.getElementById('tutorialCharacterPortrait');
   const story=Boolean(step?.scene||step?.portrait);
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
+  document.body.classList.toggle('tutorial-stella-skill-action',['stella_skill_unequip','stella_skill_equip'].includes(step?.id));
   overlay?.classList.toggle('is-story-step',story);
   // Full-body portraits support narrative dialogue, but they obscure the game
   // screen when the current step is explaining or highlighting a real UI target.

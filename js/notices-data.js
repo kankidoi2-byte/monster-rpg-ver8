@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260831-prologue-mobile-skill-action-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: 'スマートフォンの技カード案内を修正しました',
+    body: '序章の技カード変更で、案内された「外す」または「装備」ボタンが説明パネルの背後に隠れ、先へ進めない場合がある問題を修正しました。操作中の実際のボタンを下部メニューの直上へ表示します。'
+  }),
+  Object.freeze({
     id: '20260831-legacy-expedition-victory-fix',
     date: '2026-08-31',
     category: 'fix',
