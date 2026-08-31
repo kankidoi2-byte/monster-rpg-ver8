@@ -12,6 +12,9 @@ const tutorialSource = fs.existsSync(path.join(root, 'js/tutorial.js'))
 const alchemySource = fs.existsSync(path.join(root, 'js/alchemy.js'))
   ? fs.readFileSync(path.join(root, 'js/alchemy.js'), 'utf8')
   : '';
+const expeditionSource = fs.existsSync(path.join(root, 'js/expedition.js'))
+  ? fs.readFileSync(path.join(root, 'js/expedition.js'), 'utf8')
+  : '';
 const listeners = new Map();
 const context = {
   URL,
@@ -56,6 +59,7 @@ expect(context.GameDiagnostics?.environmentVersion === 1, 'environment schema ve
 expect(context.GameDiagnostics?.saveSummaryVersion === 1, 'save summary schema version is missing');
 expect(context.GameDiagnostics?.tutorialSummaryVersion === 1, 'tutorial summary schema version is missing');
 expect(context.GameDiagnostics?.alchemySummaryVersion === 1, 'alchemy summary schema version is missing');
+expect(context.GameDiagnostics?.expeditionSummaryVersion === 1, 'expedition summary schema version is missing');
 expect(context.GameDiagnostics?.maxErrors === 20, 'diagnostics limit must be 20');
 expect((listeners.get('error') || []).length === 1, 'one error listener must be installed');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection listener must be installed');
@@ -239,6 +243,72 @@ hostileAlchemyContext.GameDiagnostics.registerAlchemyProvider(() => new Proxy({}
 const hostileAlchemySummary = hostileAlchemyContext.GameDiagnostics.getAlchemySummary();
 expect(hostileAlchemySummary.available === true && hostileAlchemySummary.state?.stage === 'unknown', 'throwing alchemy getters must produce a safe fixed summary');
 
+expect(context.GameDiagnostics.getExpeditionSummary().available === false, 'expedition summary must be unavailable before provider registration');
+const expeditionFixture = {
+  state: {
+    visible: true,
+    unlockedSlotCount: 1,
+    usedSlotCount: 2,
+    availableSlotCount: 0,
+    completedCount: 4,
+    inProgressCount: 1,
+    readyToClaimCount: 0
+  },
+  selection: {
+    destinationSelected: true,
+    destinationValid: true,
+    distanceValid: true,
+    selectedMemberCount: 4,
+    availableMemberCount: 2,
+    canDispatch: true,
+    blockingReasons: ['slots_full', 'private-map-id']
+  },
+  expeditions: [
+    {
+      status: 'active',
+      progress: 3,
+      requiredWins: 2,
+      memberCount: 4,
+      rewardReady: false,
+      tutorialPrologue: false,
+      mapId: 'private-map-id',
+      memberUids: ['private-member-uid']
+    },
+    {
+      status: 'complete',
+      progress: 2,
+      requiredWins: 2,
+      memberCount: 1,
+      rewardReady: false,
+      rewardText: 'private reward text'
+    }
+  ]
+};
+expect(context.GameDiagnostics.registerExpeditionProvider(() => expeditionFixture) === true, 'expedition provider registration failed');
+expect(context.GameDiagnostics.registerExpeditionProvider(() => ({})) === false, 'expedition provider must not be replaceable');
+const expeditionSummary = context.GameDiagnostics.getExpeditionSummary();
+expect(expeditionSummary.version === 1 && expeditionSummary.available === true, 'expedition summary header is incorrect');
+expect(expeditionSummary.state?.usedSlotCount === 2 && expeditionSummary.selection?.selectedMemberCount === 4, 'expedition slot or selection count is incorrect');
+expect(expeditionSummary.expeditions?.length === 2 && expeditionSummary.expeditions[0]?.progress === 3, 'expedition progress summary is incorrect');
+expect(expeditionSummary.selection?.blockingReasons?.length === 1 && expeditionSummary.selection.blockingReasons[0] === 'slots_full', 'expedition blockers must use fixed allowed codes');
+expect(expeditionSummary.issues?.includes('slots_over_capacity'), 'expedition slot contradiction was not detected');
+expect(expeditionSummary.issues?.includes('dispatchable_with_blockers'), 'expedition dispatch contradiction was not detected');
+expect(expeditionSummary.issues?.includes('active_at_completion_threshold'), 'expedition progress contradiction was not detected');
+expect(expeditionSummary.issues?.includes('complete_without_reward'), 'expedition reward contradiction was not detected');
+expect(expeditionSummary.issues?.includes('invalid_member_count'), 'expedition member contradiction was not detected');
+const serializedExpeditionSummary = JSON.stringify(expeditionSummary);
+for (const forbidden of ['private-map-id', 'private-member-uid', 'private reward text']) {
+  expect(!serializedExpeditionSummary.includes(forbidden), `expedition summary leaked forbidden value: ${forbidden}`);
+}
+
+const hostileExpeditionContext = { URL, addEventListener() {} };
+hostileExpeditionContext.window = hostileExpeditionContext;
+vm.createContext(hostileExpeditionContext);
+vm.runInContext(source, hostileExpeditionContext);
+hostileExpeditionContext.GameDiagnostics.registerExpeditionProvider(() => new Proxy({}, { get() { throw new Error('blocked'); } }));
+const hostileExpeditionSummary = hostileExpeditionContext.GameDiagnostics.getExpeditionSummary();
+expect(hostileExpeditionSummary.available === true && hostileExpeditionSummary.state?.usedSlotCount === 0, 'throwing expedition getters must produce a safe fixed summary');
+
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'loading diagnostics twice must not duplicate the rejection listener');
@@ -314,9 +384,12 @@ if (tutorialSource) {
 if (alchemySource) {
   expect(alchemySource.includes('registerAlchemyProvider?.(alchemyDiagnosticsSnapshot)'), 'alchemy runtime must register its diagnostics provider');
 }
+if (expeditionSource) {
+  expect(expeditionSource.includes('registerExpeditionProvider?.(expeditionDiagnosticsSnapshot)'), 'expedition runtime must register its diagnostics provider');
+}
 
 if (errors.length) {
   console.error(errors.map(error => `- ${error}`).join('\n'));
   process.exit(1);
 }
-console.log('Diagnostics alchemy summary passed');
+console.log('Diagnostics expedition summary passed');
