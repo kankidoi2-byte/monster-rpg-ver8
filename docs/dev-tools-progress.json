@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T15:08:25.362Z",
+  "updated_at": "2026-08-31T15:12:24.138Z",
   "baseline": {
     "branch": "main",
     "commit": "f1099315dcc6f8a4f45d16da31e5363b1f4abec0",
@@ -14,8 +14,8 @@
   "current_work": {
     "branch": "codex/dev-tools-phase2",
     "pull_request": 64,
-    "checkpoint": "phase2_pull_request_opened",
-    "next_action": "Confirm the latest-head GitHub Actions result and mergeability, then auto-merge under the standing safe-publication approval.",
+    "checkpoint": "phase2_ci_success_merge_ready",
+    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #64 under the standing safe-publication exception.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -26,8 +26,8 @@
     "preserve_existing_ids": true,
     "preserve_existing_save_fields": true,
     "secrets_in_repository": false,
-    "merge_requires_explicit_approval": false,
-    "production_requires_explicit_approval": false,
+    "merge_requires_explicit_approval": true,
+    "production_requires_explicit_approval": true,
     "safe_merge_preapproved": true,
     "safe_pages_publication_preapproved": true,
     "unsafe_or_manual_changes_require_explicit_approval": true
@@ -60,8 +60,8 @@
       "status": "in_review",
       "branch": "codex/dev-tools-phase2",
       "pull_request": 64,
-      "checkpoint": "pull_request_opened",
-      "next_action": "Confirm latest-head CI and mergeability, then auto-merge if all standing safety conditions remain satisfied."
+      "checkpoint": "ci_success_merge_ready",
+      "next_action": "Confirm latest-head CI after the safety-record clarification, then auto-merge."
     },
     {
       "id": 3,
