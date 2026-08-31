@@ -3,13 +3,33 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const source = fs.readFileSync(path.join(root, 'js/diagnostics.js'), 'utf8');
-const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const source = fs.readFileSync(path.join(root, 'phase2/js/diagnostics.js'), 'utf8');
+const index = fs.readFileSync(path.join(root, 'phase2/index.html'), 'utf8');
 const listeners = new Map();
 const context = {
   URL,
   location: { href: 'https://example.test/game/index.html?session=private#secret' },
+  navigator: {
+    userAgent: 'Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36 private-agent-token',
+    userAgentData: { mobile: true },
+    maxTouchPoints: 5,
+    onLine: true
+  },
+  document: {
+    title: 'モンスターバトル Ver8.0',
+    body: { classList: { contains: () => false } },
+    querySelector(selector) {
+      if (selector === '.screen.active') return { id: 'home' };
+      if (selector.includes('app-version')) return null;
+      if (selector.includes('build-commit')) return null;
+      return null;
+    }
+  },
+  screen: { width: 1080, height: 2340 },
+  innerWidth: 412,
+  innerHeight: 915,
+  devicePixelRatio: 2.625,
   addEventListener(type, handler) {
     if (!listeners.has(type)) listeners.set(type, []);
     listeners.get(type).push(handler);
@@ -26,9 +46,35 @@ const emit = (type, event) => {
 };
 
 expect(context.GameDiagnostics?.version === 1, 'diagnostics API version is missing');
+expect(context.GameDiagnostics?.environmentVersion === 1, 'environment schema version is missing');
 expect(context.GameDiagnostics?.maxErrors === 20, 'diagnostics limit must be 20');
 expect((listeners.get('error') || []).length === 1, 'one error listener must be installed');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection listener must be installed');
+
+const environment = context.GameDiagnostics.getEnvironment();
+expect(!Number.isNaN(Date.parse(environment.capturedAt)), 'environment timestamp must be ISO formatted');
+expect(environment.app?.version === '8.0', 'app version must be read without exposing title text');
+expect(environment.app?.buildCommit === '', 'unknown build commit must stay empty');
+expect(environment.page?.url === 'https://example.test/game/index.html', 'page URL must omit query and fragment');
+expect(environment.page?.screen === 'home', 'active screen id was not collected');
+expect(environment.runtime?.browser === 'Chrome', 'browser must be reduced to a broad family');
+expect(environment.runtime?.os === 'Android', 'OS must be reduced to a broad family');
+expect(environment.runtime?.deviceClass === 'mobile', 'mobile device class was not detected');
+expect(environment.runtime?.online === true, 'online state was not collected');
+expect(environment.viewport?.width === 412 && environment.viewport?.height === 915, 'viewport dimensions are incorrect');
+expect(environment.viewport?.pixelRatio === 2.625, 'pixel ratio is incorrect');
+expect(environment.screen?.width === 1080 && environment.screen?.height === 2340, 'screen dimensions are incorrect');
+const serializedEnvironment = JSON.stringify(environment);
+expect(!serializedEnvironment.includes('private'), 'environment must not retain private URL or user-agent text');
+expect(!serializedEnvironment.includes('secret'), 'environment must not retain URL fragments or query values');
+expect(!serializedEnvironment.includes('140.0.0.0'), 'environment must not retain browser versions');
+expect(!serializedEnvironment.includes('cookie'), 'environment must not include cookies');
+
+context.document.body.classList.contains = value => value === 'title-mode';
+expect(context.GameDiagnostics.getEnvironment().page?.screen === 'titleScreen', 'title screen must be detected');
+context.document.body.classList.contains = () => false;
+context.document.querySelector = selector => selector === '.screen.active' ? { id: 'unsafe id with spaces' } : null;
+expect(context.GameDiagnostics.getEnvironment().page?.screen === '', 'unsafe screen ids must be discarded');
 
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
@@ -97,10 +143,11 @@ expect(diagnosticsIndex >= 0, 'diagnostics.js is not loaded by index.html');
 expect(diagnosticsIndex < guardIndex, 'diagnostics must load before bootstrap-guard');
 expect(!index.includes(String.raw`</script>\\n<script`), 'index must not contain literal newline escape text');
 expect(!source.includes('mb_v95c'), 'diagnostics must not read or change the save key');
-expect(!source.includes('localStorage'), 'Phase 1 diagnostics must remain memory-only');
+expect(!source.includes('localStorage'), 'Phase 2 diagnostics must remain memory-only');
+expect(!source.includes('.cookie'), 'diagnostics must not read cookies');
 
 if (errors.length) {
   console.error(errors.map(error => `- ${error}`).join('\n'));
   process.exit(1);
 }
-console.log('Diagnostics error recorder passed');
+console.log('Diagnostics environment collector passed');
