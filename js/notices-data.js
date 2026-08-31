@@ -14,6 +14,13 @@ const GAME_NOTICES = Object.freeze([
     body: '古い遠征データを含む途中セーブで、バトルに勝利しても「倒した！」の表示から先へ進まない場合がある問題を修正しました。遠征の適性データがない場合は、派遣中の仲間と遠征先から安全に復元します。'
   }),
   Object.freeze({
+    id: '20260830-game-title-cleanup',
+    date: '2026-08-30',
+    category: 'update',
+    title: 'ゲーム名の表示を整理しました',
+    body: 'タイトル画面とブラウザのタブに表示されるゲーム名を「モンスターバトル Ver8.0」に統一しました。ゲーム内容やセーブデータへの変更はありません。'
+  }),
+  Object.freeze({
     id: '20260829-tutorial-action-guidance',
     date: '2026-08-29',
     category: 'fix',
