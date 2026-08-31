@@ -30,6 +30,7 @@
 .tutorial-target-active{outline:4px solid #ffe175!important;outline-offset:5px!important}
 body.tutorial-growth-skill-open [data-monster-id="elna_beginner"]{overflow:visible}
 body.tutorial-growth-skill-open [data-monster-id="elna_beginner"] [data-tutorial-skill-edit]{position:fixed;z-index:81;right:50%;bottom:calc(var(--ui-nav-height) + 14px);width:min(300px,calc(100vw - 32px));min-height:52px;margin:0;transform:translateX(50%);border:3px solid #fff;border-radius:16px;background:linear-gradient(135deg,#35b8dc,#176fae);color:#fff;font-size:16px;font-weight:900;box-shadow:0 9px 24px #173f5966}
+body.tutorial-stella-skill-action [data-tutorial-stella-unequip],body.tutorial-stella-skill-action [data-tutorial-stella-skill-equip]{position:fixed;z-index:81;right:50%;bottom:calc(var(--ui-nav-height) + 14px);width:min(300px,calc(100vw - 32px));min-height:52px;margin:0;transform:translateX(50%);border:3px solid #fff;border-radius:16px;color:#fff;font-size:16px;font-weight:900;box-shadow:0 9px 24px #173f5966}
 .tutorial-stella-card-screen{background:radial-gradient(circle at 50% 8%,rgba(159,111,255,.18),transparent 34%)}
 .tutorial-stella-card-panel{display:grid;gap:14px;width:min(560px,100%);margin:0 auto}
 .tutorial-stella-skill-card{display:grid;gap:10px;padding:18px;border:2px solid rgba(130,91,213,.42);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(236,229,255,.95));box-shadow:0 15px 38px rgba(33,23,66,.2);color:#27203c}

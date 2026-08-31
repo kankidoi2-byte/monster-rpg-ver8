@@ -69,6 +69,14 @@ assert.equal(save.expeditions.active[0].progress, 1);
 const fixedReward=JSON.stringify(save.expeditions.active[0].reward);
 vm.runInContext('progressActiveExpeditions(()=>0)', context);
 assert.equal(JSON.stringify(save.expeditions.active[0].reward), fixedReward, 'completed rewards must not reroll');
+
+save.expeditions.active=[{id:'legacy_short',mapId:'volcano',distanceId:'short',memberUids:['u1'],requiredWins:1,progress:0,status:'active'}];
+assert.doesNotThrow(()=>vm.runInContext('progressActiveExpeditions(()=>0.99)', context),
+  'a legacy expedition without suitability must not stop the post-battle victory flow');
+assert.equal(save.expeditions.active[0].status, 'complete');
+assert.equal(save.expeditions.active[0].suitability.grade, solo.grade, 'legacy suitability must be reconstructed from its members and map');
+assert.ok(save.expeditions.active[0].reward, 'legacy expedition completion must still create its reward');
+
 assert.equal(vm.runInContext('EXPEDITION_GOLDEN_MAP_RATES.short', context), .01, 'short map rate must be 1%');
 assert.equal(vm.runInContext('EXPEDITION_GOLDEN_MAP_RATES.medium', context), .03, 'medium map rate must be 3%');
 assert.equal(vm.runInContext('EXPEDITION_GOLDEN_MAP_RATES.long', context), .05, 'long map rate must be 5%');

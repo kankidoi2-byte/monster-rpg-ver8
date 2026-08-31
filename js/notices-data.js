@@ -7,6 +7,34 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260831-prologue-existing-expedition-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: '序章の遠征案内で進めない問題を修正しました',
+    body: '派遣中または完了済みの遠征がある途中セーブで、満員の遠征枠へ新しい派遣を求められ、序章を進められない問題を修正しました。既存の遠征を保持したまま案内済みとして続行します。'
+  }),
+  Object.freeze({
+    id: '20260831-completed-alchemy-recap-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: '完了済みの入門錬成案内を修正しました',
+    body: '入門錬成を完了済みの途中セーブで、完了済みの説明が表示されないまま次の案内へ進む問題を修正しました。報酬や素材を重複させず、完了済みであることを確認してから遠征案内へ進みます。'
+  }),
+  Object.freeze({
+    id: '20260831-prologue-mobile-skill-action-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: 'スマートフォンの技カード案内を修正しました',
+    body: '序章の技カード変更で、案内された「外す」または「装備」ボタンが説明パネルの背後に隠れ、先へ進めない場合がある問題を修正しました。操作中の実際のボタンを下部メニューの直上へ表示します。'
+  }),
+  Object.freeze({
+    id: '20260831-legacy-expedition-victory-fix',
+    date: '2026-08-31',
+    category: 'fix',
+    title: '一部の途中セーブで勝利後に停止する問題を修正しました',
+    body: '古い遠征データを含む途中セーブで、バトルに勝利しても「倒した！」の表示から先へ進まない場合がある問題を修正しました。遠征の適性データがない場合は、派遣中の仲間と遠征先から安全に復元します。'
+  }),
+  Object.freeze({
     id: '20260830-game-title-cleanup',
     date: '2026-08-30',
     category: 'update',

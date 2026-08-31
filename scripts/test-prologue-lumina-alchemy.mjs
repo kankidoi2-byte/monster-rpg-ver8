@@ -107,6 +107,21 @@ assert.equal(vm.runInContext('prepareTutorialLuminaAlchemy()',replay),true);
 assert.equal(replay.shown,true);assert.equal(replay.deactivated,true);
 assert.equal(replay.save.coins,0,'replay must not grant resources');
 
+const routeStart=tutorial.indexOf('function tutorialShouldUseReplayNextStep');
+const routeEnd=tutorial.indexOf('function tutorialNext',routeStart);
+assert.ok(routeStart>=0&&routeEnd>routeStart,'completed-lesson routing helper is missing');
+const routeContext=vm.createContext({tutorialUiState:{replay:false},currentTutorialState:()=>({alchemyLessonCompleted:true})});
+vm.runInContext(tutorial.slice(routeStart,routeEnd),routeContext);
+assert.equal(vm.runInContext("tutorialShouldUseReplayNextStep({transition:'prepare_lumina_alchemy'})",routeContext),true,
+  'a normally resumed completed lesson must use the completion recap instead of silently skipping it');
+routeContext.currentTutorialState=()=>({alchemyLessonCompleted:false});
+assert.equal(vm.runInContext("tutorialShouldUseReplayNextStep({transition:'prepare_lumina_alchemy'})",routeContext),false,
+  'an incomplete lesson must retain the hands-on alchemy route');
+routeContext.tutorialUiState.replay=true;
+assert.equal(vm.runInContext('tutorialShouldUseReplayNextStep({})',routeContext),true,'tutorial replay must retain replay routing');
+assert.ok(tutorial.includes('tutorialShouldUseReplayNextStep(step)&&step?.replayNextStepId'),
+  'the shared Next handler must apply the completed-lesson route');
+
 const completion=makeContext({prepared:true,coins:250,owned:1});
 assert.equal(vm.runInContext('commitTutorialLuminaAlchemySuccess()',completion),true);
 assert.equal(completion.save.progress.tutorial.alchemyLessonCompleted,true);

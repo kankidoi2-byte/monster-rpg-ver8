@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 const tutorial=read('js/tutorial.js');
@@ -33,6 +34,91 @@ for(const id of removed){
 }
 assert.ok(tutorial.includes('const resolvedId=TUTORIAL_REMOVED_STEP_REDIRECTS[stepId]||stepId'),'removed-step redirects must be applied before resuming');
 
+const mainSteps=[...main.matchAll(/\{id:'([^']+)'([^\n]*)/g)].map(([,id,rest])=>{
+  const persistAs=rest.match(/\bpersistAs:'([^']+)'/)?.[1]||null;
+  return {id,...(persistAs?{persistAs}:{})};
+});
+const redirectStart=tutorial.indexOf('const TUTORIAL_REMOVED_STEP_REDIRECTS');
+const redirectEnd=tutorial.indexOf('function calculateTutorialStoryPlacement',redirectStart);
+const startFlowStart=tutorial.indexOf('function startTutorialFlow');
+const startFlowEnd=tutorial.indexOf('function tutorialPrevious',startFlowStart);
+assert.ok(redirectStart>=0&&redirectEnd>redirectStart&&startFlowStart>=0&&startFlowEnd>startFlowStart,
+  'the runtime resume functions must be available for old-save execution checks');
+
+const resumeContext=vm.createContext({
+  document:{activeElement:null},
+  tutorialUiState:{active:false,flowId:null,steps:[],index:0,persist:false,replay:false,returnScreen:null,previousFocus:null,lastFocusedStep:null},
+  tutorialFlowSteps:()=>mainSteps,
+  resolveTutorialExpeditionResumeStep:(_flowId,stepId)=>stepId,
+  clearTutorialUi:()=>{resumeContext.tutorialUiState.active=false;resumeContext.tutorialUiState.steps=[];resumeContext.tutorialUiState.index=0;},
+  renderTutorialStep:()=>{resumeContext.rendered=true;},
+  updateTutorialMenuSummary:()=>{},
+  setTutorialStep:id=>{resumeContext.save.progress.tutorial.stepId=id;resumeContext.save.progress.tutorial.status='in_progress';},
+  beginTutorialReplay:id=>{resumeContext.save.progress.tutorial.replaying=true;resumeContext.save.progress.tutorial.stepId=id;},
+  saveGame:()=>{resumeContext.saveCalls+=1;return true;}
+});
+vm.runInContext(`${tutorial.slice(redirectStart,redirectEnd)}\n${tutorial.slice(startFlowStart,startFlowEnd)}`,resumeContext);
+const runtimeRedirects=vm.runInContext('Object.fromEntries(Object.entries(TUTORIAL_REMOVED_STEP_REDIRECTS))',resumeContext);
+assert.deepEqual(Object.keys(runtimeRedirects).sort(),removed.slice().sort(),'every deleted STEP must be exercised by the runtime migration test');
+
+const legacyRewardSnapshot=()=>({
+  instances:[
+    {uid:'legacy_freigal',id:'freigal',level:7,exp:3},
+    {uid:'legacy_aquaron',id:'aquaron',level:7,exp:3},
+    {uid:'legacy_elna',id:'elna_beginner',level:7,exp:3},
+    {uid:'legacy_alchemion',id:'alchemion',level:1,exp:0}
+  ],
+  coins:777,
+  items:{monster_bone:7,magic_crystal:7,metal_ore:7,unstable_alchemy_matter:7},
+  skillCards:{skill_elna_middle_01:2},
+  expeditions:{completedCount:4,active:[{id:'legacy_short',mapId:'grassland',distanceId:'short',memberUids:['legacy_alchemion'],progress:0,status:'active'}]},
+  progress:{tutorial:{
+    id:'prologue',version:2,status:'in_progress',stepId:null,replaying:false,
+    starterContractsGranted:true,elnaContractGranted:true,stellaSkillCardGranted:true,
+    alchemySuppliesGranted:true,alchemyLessonPrepared:true,alchemyLessonCompleted:true,
+    expeditionDispatched:true,prologueCompleted:false
+  }}
+});
+const rewardDigest=save=>JSON.stringify({
+  instances:save.instances,coins:save.coins,items:save.items,skillCards:save.skillCards,expeditions:save.expeditions,
+  flags:Object.fromEntries(['starterContractsGranted','elnaContractGranted','stellaSkillCardGranted','alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted','expeditionDispatched'].map(flag=>[flag,save.progress.tutorial[flag]]))
+});
+for(const replay of [false,true]){
+  for(const oldStepId of removed){
+    resumeContext.save=legacyRewardSnapshot();
+    resumeContext.save.progress.tutorial.stepId=oldStepId;
+    resumeContext.save.progress.tutorial.replaying=replay;
+    resumeContext.saveCalls=0;resumeContext.rendered=false;
+    const before=rewardDigest(resumeContext.save);
+    resumeContext.oldStepId=oldStepId;resumeContext.replay=replay;
+    assert.equal(vm.runInContext("startTutorialFlow('prologue',{stepId:oldStepId,persist:true,replay})",resumeContext),true,
+      `deleted STEP must resume in ${replay?'replay':'normal'} mode: ${oldStepId}`);
+    const target=runtimeRedirects[oldStepId];
+    const targetStep=mainSteps.find(step=>step.id===target);
+    assert.ok(targetStep,`redirect target must exist at runtime: ${oldStepId} -> ${target}`);
+    assert.equal(resumeContext.tutorialUiState.steps[resumeContext.tutorialUiState.index].id,target,
+      `deleted STEP must open its safe current target: ${oldStepId}`);
+    assert.notEqual(resumeContext.tutorialUiState.index,0,`deleted STEP must not reset to the prologue start: ${oldStepId}`);
+    assert.equal(resumeContext.save.progress.tutorial.stepId,targetStep.persistAs||target,
+      `the migrated current checkpoint must be persisted: ${oldStepId}`);
+    assert.equal(resumeContext.saveCalls,1,`the migrated checkpoint must be saved once: ${oldStepId}`);
+    assert.equal(resumeContext.rendered,true,`the migrated checkpoint must render: ${oldStepId}`);
+    assert.equal(rewardDigest(resumeContext.save),before,
+      `resume must not duplicate contracts, coins, materials, cards, or expeditions: ${oldStepId}`);
+  }
+}
+
+for(const stepId of ['first_hunt','request_reward_preview','stella_card_offer','lumina_recipe_offer']){
+  const fixture=JSON.parse(read(`test-fixtures/prologue-legacy-steps/${stepId}.json`));
+  assert.equal(fixture.schemaVersion,4,`device fixture must use the current additive save schema: ${stepId}`);
+  assert.equal(fixture.progress?.tutorial?.version,2,`device fixture must represent a v2 STEP save: ${stepId}`);
+  assert.equal(fixture.progress?.tutorial?.stepId,stepId,`device fixture must stop at its named deleted STEP: ${stepId}`);
+  assert.ok(removed.includes(stepId),`device fixture must target a deleted STEP: ${stepId}`);
+  assert.equal(fixture.coins,777,`device fixture must expose a stable coin sentinel: ${stepId}`);
+  assert.equal(fixture.skillCards?.skill_elna_middle_01,2,`device fixture must expose a stable card sentinel: ${stepId}`);
+  assert.equal(fixture.instances.length,4,`device fixture must expose a stable companion count: ${stepId}`);
+}
+
 const requiredActions=[
   'gnosis_name','elna_rescue_start','battle_actor_open','battle_actor_select','battle_target','battle_normal_attack',
   'battle_choose_skill','battle_free','elna_contract_execute','party_save','home_dex_open','menu_dex_open',
@@ -60,7 +146,7 @@ assert.match(main,/id:'expedition_member'[^\n]+data-tutorial-expedition-member/,
 assert.match(main,/id:'prologue_complete'[^\n]+speaker:'グノーシス'[^\n]+portrait:/,'the finale must retain Gnosis instead of an empty background');
 assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'target steps must keep portraits away from controls');
 
-assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1"></script>'),'the browser must fetch the counterless, chronologically ordered tutorial logic');
+assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1"></script>'),'the browser must fetch the counterless, chronologically ordered tutorial logic');
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 

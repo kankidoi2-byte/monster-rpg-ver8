@@ -37,14 +37,14 @@ for(const token of [
 assert.ok(expedition.includes("entry.status!=='active'"),'dispatch must remain active until a later battle win');
 assert.ok(expedition.includes("distanceId:distance.id")&&expedition.includes("requiredWins:distance.wins"),'the tutorial must use the normal distance contract');
 
-const helperStart=tutorial.indexOf('function tutorialExpeditionCandidateInstance()');
+const helperStart=tutorial.indexOf('const TUTORIAL_EXPEDITION_OPERATION_STEPS');
 const helperEnd=tutorial.indexOf('function tutorialStellaSkillCard()',helperStart);
 assert.ok(helperStart>=0&&helperEnd>helperStart);
-function makeTutorialContext({saveSucceeds=true,replaying=false,dispatched=false,completed=false}={}){
+function makeTutorialContext({saveSucceeds=true,replaying=false,dispatched=false,completed=false,active=[],completedCount=0}={}){
   const state={status:'in_progress',stepId:'expedition_dispatch',replaying,expeditionDispatched:dispatched,prologueCompleted:completed};
   const context=vm.createContext({
     console:{error:()=>{}},TUTORIAL_LUMINA_ALCHEMY:{resultId:'alchemion'},TUTORIAL_MAIN_FLOW_ID:'prologue',
-    save:{progress:{chapterId:'prologue',storyFlags:{},tutorial:state},instances:[{uid:'alc',id:'alchemion'}],party:[],expeditions:{active:[]}},
+    save:{progress:{chapterId:'prologue',storyFlags:{},tutorial:state},instances:[{uid:'alc',id:'alchemion'}],party:[],expeditions:{active:structuredClone(active),completedCount}},
     currentTutorialState:()=>context.save.progress.tutorial,tutorialCurrentStepId:()=>context.save.progress.tutorial.stepId,
     expeditionAvailableInstances:()=>context.save.instances,
     markTutorialExpeditionDispatched:()=>{const t=context.save.progress.tutorial;if(t.expeditionDispatched)return false;t.expeditionDispatched=true;return true;},
@@ -78,6 +78,31 @@ const wrong=makeTutorialContext();
 assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',wrong)({mapId:'grassland',distanceId:'long',memberUids:['alc']}),false,'only a short tutorial expedition may commit');
 assert.equal(wrong.save.progress.tutorial.expeditionDispatched,false);
 
+const busyLegacy=makeTutorialContext({active:[{id:'legacy',mapId:'grassland',distanceId:'short',memberUids:['alc'],status:'active'}]});
+busyLegacy.save.progress.tutorial.stepId='expedition_destination';
+const busyBefore=JSON.stringify(busyLegacy.save.expeditions);
+assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_destination',false)",busyLegacy),'expedition_replay',
+  'a full legacy slot must resume at the already-guided explanation');
+assert.equal(busyLegacy.save.progress.tutorial.expeditionDispatched,true,'existing activity must satisfy the one-time expedition requirement');
+assert.equal(JSON.stringify(busyLegacy.save.expeditions),busyBefore,'routing must preserve the existing expedition exactly');
+
+const completedLegacy=makeTutorialContext({completedCount:2});
+completedLegacy.save.progress.tutorial.stepId='expedition_home_open';
+assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_home_open',false)",completedLegacy),'expedition_replay',
+  'completed expedition history must not force another dispatch');
+assert.equal(completedLegacy.save.progress.tutorial.expeditionDispatched,true);
+
+const freshRoute=makeTutorialContext();
+freshRoute.save.progress.tutorial.stepId='expedition_destination';
+assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_destination',false)",freshRoute),'expedition_destination',
+  'a fresh save with an open slot must retain the hands-on dispatch route');
+assert.equal(freshRoute.save.progress.tutorial.expeditionDispatched,false);
+
+const justDispatched=makeTutorialContext({dispatched:true,active:[{id:'tutorial',mapId:'grassland',distanceId:'short',memberUids:['alc'],status:'active',tutorialPrologue:true}]});
+justDispatched.save.progress.tutorial.stepId='expedition_active';
+assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_active',false)",justDispatched),'expedition_active',
+  'a newly dispatched tutorial expedition must still show its active-expedition explanation after reload');
+
 dispatch.save.progress.tutorial.stepId='prologue_complete';
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',dispatch),true);
 assert.equal(dispatch.save.progress.chapterId,'prologue');
@@ -107,4 +132,4 @@ for(const file of ['tutorial.js','expedition.js','ui.js'])assert.match(index,new
 assert.equal(packageJson.scripts['check:prologue-expedition-finale'],'node scripts/test-prologue-expedition-finale.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-expedition-finale'));
 
-console.log('Prologue expedition/finale validation passed (short dispatch, suitability, real save lock, no-wait continuation, replay/idempotency, atomic completion, and free play without Chapter 1).');
+console.log('Prologue expedition/finale validation passed (fresh dispatch, occupied/completed legacy routing, suitability, save lock, no-wait continuation, replay/idempotency, atomic completion, and free play without Chapter 1).');
