@@ -2,20 +2,20 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T20:12:21.470Z",
+  "updated_at": "2026-08-31T21:05:39.630Z",
   "baseline": {
     "branch": "main",
-    "commit": "b060f7314ab21eb28a7480abfa65668a000051d9",
+    "commit": "aafebfbf2702beb575692665fdee0fb5ba8be4f3",
     "ci_status": "success",
     "open_pull_requests": 0
   },
   "overall_status": "in_progress",
-  "current_phase": 3,
+  "current_phase": 4,
   "current_work": {
-    "branch": "codex/dev-tools-phase3",
-    "pull_request": 65,
-    "checkpoint": "phase3_ci_success_merge_ready",
-    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #65 under the standing safe-publication exception.",
+    "branch": "codex/dev-tools-phase4",
+    "pull_request": null,
+    "checkpoint": "implementation_and_targeted_test_complete",
+    "next_action": "Open the Phase 4 pull request, verify the complete diff and latest-head npm run check, then auto-merge only if every standing safety condition remains satisfied.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -67,21 +67,21 @@
       "id": 3,
       "name": "安全なセーブ要約",
       "group": "in_game_diagnostics",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase3",
       "pull_request": 65,
-      "checkpoint": "ci_success_merge_ready",
-      "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #65 under the standing safe-publication exception."
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null
     },
     {
       "id": 4,
       "name": "チュートリアル診断",
       "group": "in_game_diagnostics",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase4",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "implementation_and_targeted_test_complete",
+      "next_action": "Open the Phase 4 pull request, verify the complete diff and latest-head npm run check, then auto-merge only if every standing safety condition remains satisfied."
     },
     {
       "id": 5,
