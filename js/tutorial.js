@@ -1275,11 +1275,11 @@ function tutorialDiagnosticsSnapshot(){
   const step=activeStep||persistedStep;
   const steps=active?tutorialUiState.steps:mainSteps;
   const stepIndex=active?tutorialUiState.index:persistedIndex;
-  const targetRequired=active&&tutorialStepRequiresAction(step)&&Boolean(step?.target);
+  const targetRequired=active&&Boolean(step?.target);
   let targetPresent=false;
   let screen='';
   try{
-    targetPresent=targetRequired&&Boolean(tutorialUiState.target||document.querySelector(step.target));
+    targetPresent=targetRequired&&Boolean(document.querySelector(step.target));
     screen=active?activeScreenId()||'':'';
   }catch(_error){
     targetPresent=false;
