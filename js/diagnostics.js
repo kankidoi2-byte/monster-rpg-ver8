@@ -19,6 +19,11 @@
     return Number.isFinite(number) && number >= 0 ? Math.floor(number) : null;
   }
 
+  function safeFiniteNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) && number >= 0 ? number : null;
+  }
+
   function safeTimestamp() {
     try {
       return new Date().toISOString();
@@ -38,6 +43,106 @@
     } catch (_error) {
       return '';
     }
+  }
+
+  function safeValue(read, fallback=null) {
+    try {
+      const value = read();
+      return value === undefined ? fallback : value;
+    } catch (_error) {
+      return fallback;
+    }
+  }
+
+  function detectBrowser(userAgent) {
+    if (/Edg(?:e|A|iOS)?\//i.test(userAgent)) return 'Edge';
+    if (/(?:Firefox|FxiOS)\//i.test(userAgent)) return 'Firefox';
+    if (/(?:Chrome|CriOS)\//i.test(userAgent)) return 'Chrome';
+    if (/Safari\//i.test(userAgent)) return 'Safari';
+    return 'Other';
+  }
+
+  function detectOs(userAgent) {
+    if (/Android/i.test(userAgent)) return 'Android';
+    if (/CrOS/i.test(userAgent)) return 'ChromeOS';
+    if (/(?:iPhone|iPad|iPod)/i.test(userAgent)) return 'iOS';
+    if (/Windows/i.test(userAgent)) return 'Windows';
+    if (/(?:Macintosh|Mac OS X)/i.test(userAgent)) return 'macOS';
+    if (/Linux/i.test(userAgent)) return 'Linux';
+    return 'Other';
+  }
+
+  function safeElementId(value) {
+    const id = safeText(value);
+    return /^[A-Za-z][A-Za-z0-9_:.-]{0,79}$/.test(id) ? id : '';
+  }
+
+  function readAppVersion(documentValue) {
+    const metaVersion = safeValue(
+      () => documentValue?.querySelector?.('meta[name="app-version"], meta[name="application-version"]')?.content,
+      ''
+    );
+    const candidate = safeText(metaVersion);
+    if (/^[0-9]+(?:\.[0-9]+){0,3}$/.test(candidate)) return candidate;
+    const title = safeText(safeValue(() => documentValue?.title, ''));
+    return title.match(/\bVer(?:sion)?\s*([0-9]+(?:\.[0-9]+){0,3})/i)?.[1] || '';
+  }
+
+  function readBuildCommit(documentValue) {
+    const value = safeText(safeValue(
+      () => documentValue?.querySelector?.('meta[name="build-commit"]')?.content,
+      ''
+    ));
+    return /^[0-9a-f]{7,40}$/i.test(value) ? value.toLowerCase() : '';
+  }
+
+  function readCurrentScreen(documentValue) {
+    const titleMode = safeValue(() => documentValue?.body?.classList?.contains('title-mode'), false);
+    if (titleMode) return 'titleScreen';
+    return safeElementId(safeValue(() => documentValue?.querySelector?.('.screen.active')?.id, ''));
+  }
+
+  function readEnvironment() {
+    const navigatorValue = safeValue(() => root.navigator, null);
+    const documentValue = safeValue(() => root.document, null);
+    const screenValue = safeValue(() => root.screen, null);
+    const userAgent = safeText(safeValue(() => navigatorValue?.userAgent, ''));
+    const viewportWidth = safeNumber(safeValue(() => root.innerWidth, null));
+    const mobileHint = safeValue(() => navigatorValue?.userAgentData?.mobile, null);
+    const touchPoints = safeNumber(safeValue(() => navigatorValue?.maxTouchPoints, 0)) || 0;
+    const isMobile = mobileHint === true || /Mobi/i.test(userAgent);
+    const deviceClass = isMobile
+      ? 'mobile'
+      : (touchPoints > 0 && viewportWidth !== null && viewportWidth <= 1280 ? 'tablet' : 'desktop');
+
+    return {
+      capturedAt: safeTimestamp(),
+      app: {
+        version: readAppVersion(documentValue),
+        buildCommit: readBuildCommit(documentValue)
+      },
+      page: {
+        url: safeSourceUrl(safeValue(() => root.location?.href, '')),
+        screen: readCurrentScreen(documentValue)
+      },
+      runtime: {
+        browser: detectBrowser(userAgent),
+        os: detectOs(userAgent),
+        deviceClass,
+        online: safeValue(() => navigatorValue?.onLine, null) === true
+          ? true
+          : (safeValue(() => navigatorValue?.onLine, null) === false ? false : null)
+      },
+      viewport: {
+        width: viewportWidth,
+        height: safeNumber(safeValue(() => root.innerHeight, null)),
+        pixelRatio: safeFiniteNumber(safeValue(() => root.devicePixelRatio, null))
+      },
+      screen: {
+        width: safeNumber(safeValue(() => screenValue?.width, null)),
+        height: safeNumber(safeValue(() => screenValue?.height, null))
+      }
+    };
   }
 
   function errorDetails(value, fallbackMessage='') {
@@ -157,7 +262,9 @@
 
   const api = Object.freeze({
     version: 1,
+    environmentVersion: 1,
     maxErrors: MAX_ERRORS,
+    getEnvironment: readEnvironment,
     getErrors,
     clearErrors
   });
