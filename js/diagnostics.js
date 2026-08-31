@@ -529,6 +529,124 @@
     return summarizeAlchemy(safeValue(() => state.alchemyProvider(), null));
   }
 
+  function emptyExpeditionSummary(available=false) {
+    return {
+      version: 1,
+      available,
+      state: {
+        visible: false,
+        unlockedSlotCount: 0,
+        usedSlotCount: 0,
+        availableSlotCount: 0,
+        completedCount: 0,
+        inProgressCount: 0,
+        readyToClaimCount: 0
+      },
+      selection: {
+        destinationSelected: false,
+        destinationValid: false,
+        distanceValid: false,
+        selectedMemberCount: 0,
+        availableMemberCount: 0,
+        canDispatch: false,
+        blockingReasons: []
+      },
+      expeditions: [],
+      issues: []
+    };
+  }
+
+  function summarizeExpedition(value) {
+    const source = safeRecord(value);
+    if (!source) return emptyExpeditionSummary(false);
+    const summary = emptyExpeditionSummary(true);
+    const stateSource = safeRecord(safeValue(() => source.state, null));
+    const selectionSource = safeRecord(safeValue(() => source.selection, null));
+    summary.state.visible = safeValue(() => stateSource?.visible, false) === true;
+    summary.state.unlockedSlotCount = safeCount(safeValue(() => stateSource?.unlockedSlotCount, 0));
+    summary.state.usedSlotCount = safeCount(safeValue(() => stateSource?.usedSlotCount, 0));
+    summary.state.availableSlotCount = safeCount(safeValue(() => stateSource?.availableSlotCount, 0));
+    summary.state.completedCount = safeCount(safeValue(() => stateSource?.completedCount, 0));
+    summary.state.inProgressCount = safeCount(safeValue(() => stateSource?.inProgressCount, 0));
+    summary.state.readyToClaimCount = safeCount(safeValue(() => stateSource?.readyToClaimCount, 0));
+    summary.selection.destinationSelected = safeValue(() => selectionSource?.destinationSelected, false) === true;
+    summary.selection.destinationValid = safeValue(() => selectionSource?.destinationValid, false) === true;
+    summary.selection.distanceValid = safeValue(() => selectionSource?.distanceValid, false) === true;
+    summary.selection.selectedMemberCount = safeCount(safeValue(() => selectionSource?.selectedMemberCount, 0));
+    summary.selection.availableMemberCount = safeCount(safeValue(() => selectionSource?.availableMemberCount, 0));
+    summary.selection.canDispatch = safeValue(() => selectionSource?.canDispatch, false) === true;
+
+    const allowedReasons = new Set([
+      'slots_full',
+      'destination_missing',
+      'destination_unavailable',
+      'distance_invalid',
+      'no_members_selected',
+      'member_count_exceeded',
+      'member_unavailable'
+    ]);
+    const rawReasons = safeArray(safeValue(() => selectionSource?.blockingReasons, []));
+    const reasonCount = Math.min(safeCount(safeValue(() => rawReasons.length, 0)), 7);
+    for (let index = 0; index < reasonCount; index++) {
+      const reason = safeToken(safeValue(() => rawReasons[index], ''));
+      if (allowedReasons.has(reason) && !summary.selection.blockingReasons.includes(reason)) {
+        summary.selection.blockingReasons.push(reason);
+      }
+    }
+
+    const statuses = new Set(['active', 'complete']);
+    const rawExpeditions = safeArray(safeValue(() => source.expeditions, []));
+    const expeditionCount = Math.min(safeCount(safeValue(() => rawExpeditions.length, 0)), 3);
+    for (let index = 0; index < expeditionCount; index++) {
+      const entry = safeRecord(safeValue(() => rawExpeditions[index], null));
+      if (!entry) continue;
+      const status = safeToken(safeValue(() => entry.status, ''));
+      summary.expeditions.push({
+        status: statuses.has(status) ? status : 'unknown',
+        progress: safeCount(safeValue(() => entry.progress, 0)),
+        requiredWins: safeCount(safeValue(() => entry.requiredWins, 0)),
+        memberCount: safeCount(safeValue(() => entry.memberCount, 0)),
+        rewardReady: safeValue(() => entry.rewardReady, false) === true,
+        tutorialPrologue: safeValue(() => entry.tutorialPrologue, false) === true
+      });
+    }
+
+    const issues = [];
+    const expectedAvailable = Math.max(0, summary.state.unlockedSlotCount - summary.state.usedSlotCount);
+    const activeEntries = summary.expeditions.filter(entry => entry.status === 'active').length;
+    const completeEntries = summary.expeditions.filter(entry => entry.status === 'complete').length;
+    if (summary.state.usedSlotCount > summary.state.unlockedSlotCount) issues.push('slots_over_capacity');
+    if (summary.state.usedSlotCount !== summary.expeditions.length) issues.push('slot_count_mismatch');
+    if (summary.state.availableSlotCount !== expectedAvailable) issues.push('available_slot_mismatch');
+    if (summary.state.inProgressCount !== activeEntries) issues.push('in_progress_count_mismatch');
+    if (summary.state.readyToClaimCount !== completeEntries) issues.push('ready_count_mismatch');
+    if (summary.selection.canDispatch && summary.selection.blockingReasons.length) issues.push('dispatchable_with_blockers');
+    if (summary.selection.canDispatch && summary.state.availableSlotCount === 0) issues.push('dispatchable_without_slot');
+    if (summary.selection.canDispatch && (summary.selection.selectedMemberCount < 1 || summary.selection.selectedMemberCount > 3)) {
+      issues.push('dispatchable_with_invalid_member_count');
+    }
+    for (const entry of summary.expeditions) {
+      if (!entry.requiredWins) issues.push('missing_required_wins');
+      if (entry.requiredWins && entry.progress > entry.requiredWins) issues.push('progress_out_of_range');
+      if (entry.status === 'active' && entry.requiredWins && entry.progress >= entry.requiredWins) issues.push('active_at_completion_threshold');
+      if (entry.status === 'complete' && !entry.rewardReady) issues.push('complete_without_reward');
+      if (entry.memberCount < 1 || entry.memberCount > 3) issues.push('invalid_member_count');
+    }
+    summary.issues = [...new Set(issues)];
+    return summary;
+  }
+
+  function registerExpeditionProvider(provider) {
+    if (typeof provider !== 'function' || typeof state.expeditionProvider === 'function') return false;
+    state.expeditionProvider = provider;
+    return true;
+  }
+
+  function getExpeditionSummary() {
+    if (typeof state.expeditionProvider !== 'function') return emptyExpeditionSummary(false);
+    return summarizeExpedition(safeValue(() => state.expeditionProvider(), null));
+  }
+
   function record(entry) {
     const last = state.errors[state.errors.length - 1];
     if (last && last.fingerprint === entry.fingerprint) {
@@ -600,6 +718,7 @@
     saveSummaryVersion: 1,
     tutorialSummaryVersion: 1,
     alchemySummaryVersion: 1,
+    expeditionSummaryVersion: 1,
     maxErrors: MAX_ERRORS,
     getEnvironment: readEnvironment,
     getSaveSummary,
@@ -608,6 +727,8 @@
     registerTutorialProvider,
     getAlchemySummary,
     registerAlchemyProvider,
+    getExpeditionSummary,
+    registerExpeditionProvider,
     getErrors,
     clearErrors
   });
