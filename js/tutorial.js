@@ -479,9 +479,10 @@ function persistTutorialStep(){
 function startTutorialFlow(flowId,{stepId=null,persist=false,replay=false,returnScreen=null}={}){
   const steps=tutorialFlowSteps(flowId);
   if(!steps.length)return false;
+  const resolvedStepId=resolveTutorialExpeditionResumeStep(flowId,stepId,replay);
   clearTutorialUi();
   tutorialUiState.active=true;tutorialUiState.flowId=flowId;tutorialUiState.steps=steps;
-  tutorialUiState.index=tutorialStepIndex(steps,stepId);tutorialUiState.persist=persist;
+  tutorialUiState.index=tutorialStepIndex(steps,resolvedStepId);tutorialUiState.persist=persist;
   if(tutorialUiState.index<0){clearTutorialUi();return false;}
   tutorialUiState.replay=replay;tutorialUiState.returnScreen=returnScreen;
   tutorialUiState.previousFocus=document.activeElement;tutorialUiState.lastFocusedStep=null;
@@ -558,9 +559,13 @@ function queueTutorialActionAdvance(stepId=tutorialCurrentStepId()){
 }
 function tutorialShouldUseReplayNextStep(step){
   if(tutorialUiState.replay)return true;
-  return step?.transition==='prepare_lumina_alchemy'
+  if(step?.transition==='prepare_lumina_alchemy'
     &&typeof currentTutorialState==='function'
-    &&currentTutorialState()?.alchemyLessonCompleted===true;
+    &&currentTutorialState()?.alchemyLessonCompleted===true)return true;
+  if(step?.id==='expedition_intro'&&tutorialShouldUseExistingExpeditionPath(step.id)){
+    return markTutorialExistingExpeditionGuided();
+  }
+  return false;
 }
 function tutorialNext(actionCompleted=false){
   if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
@@ -1062,6 +1067,38 @@ function handleTutorialLuminaAlchemyCompleted(){
   const replay=typeof currentTutorialState==='function'&&currentTutorialState().replaying===true;
   return resumeTutorialMainFlowAfterEvent('lumina_alchemy_result',replay);
 }
+const TUTORIAL_EXPEDITION_OPERATION_STEPS=Object.freeze([
+  'expedition_intro','expedition_home_open','expedition_destination','expedition_distance',
+  'expedition_member','expedition_suitability','expedition_dispatch','expedition_active'
+]);
+function tutorialHasExistingExpeditionActivity(){
+  const expeditions=save?.expeditions;
+  return Array.isArray(expeditions?.active)&&expeditions.active.length>0
+    ||Math.max(0,Math.floor(Number(expeditions?.completedCount)||0))>0;
+}
+function tutorialHasActivePrologueExpedition(){
+  return Array.isArray(save?.expeditions?.active)
+    &&save.expeditions.active.some(entry=>entry?.tutorialPrologue===true);
+}
+function tutorialShouldUseExistingExpeditionPath(stepId=tutorialCurrentStepId()){
+  if(!TUTORIAL_EXPEDITION_OPERATION_STEPS.includes(stepId))return false;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  if(!tutorial)return false;
+  if(stepId==='expedition_active'&&tutorialHasActivePrologueExpedition())return false;
+  return tutorial.replaying===true||tutorial.expeditionDispatched===true||tutorialHasExistingExpeditionActivity();
+}
+function markTutorialExistingExpeditionGuided(){
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  if(!tutorial)return false;
+  if(tutorial.replaying===true||tutorial.expeditionDispatched===true)return true;
+  if(!tutorialHasExistingExpeditionActivity())return false;
+  return typeof markTutorialExpeditionDispatched==='function'&&markTutorialExpeditionDispatched();
+}
+function resolveTutorialExpeditionResumeStep(flowId,stepId,replay=false){
+  if(flowId!==TUTORIAL_MAIN_FLOW_ID||!stepId||!tutorialShouldUseExistingExpeditionPath(stepId))return stepId;
+  if(!replay&&!markTutorialExistingExpeditionGuided())return stepId;
+  return 'expedition_replay';
+}
 function tutorialExpeditionCandidateInstance(){
   const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
   return candidates.find(instance=>instance.id===TUTORIAL_LUMINA_ALCHEMY.resultId)||candidates[0]||null;
@@ -1498,7 +1535,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'expedition_suitability',screenId:'expedition',target:'#expeditionSuitability',persistAs:'expedition_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征適性',text:'属性、レベル、得意な能力から適性が決まる。Sに近いほど大成功しやすいぞ！',progressLabel:'SUITABILITY'},
   {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離遠征へ派遣',text:'ここを押すと、選んだ仲間が短距離遠征へ出発するぞ！',progressLabel:'EXPEDITION'},
   {id:'expedition_active',screenId:'expedition',target:'[data-tutorial-expedition-active]',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征は進行中！',text:'帰還を待たなくて大丈夫！ バトルに勝つと進み、完了したらここで報酬を受け取れるぞ！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
-  {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'再閲覧では新しい遠征を増やさないぞ。遠征画面から進行中の派遣を確認できる！',progressLabel:'REPLAY',nextStepId:'prologue_epilogue'},
+  {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'派遣中または完了済みの遠征があるから、新しい遠征は増やさないぞ。遠征画面からいつでも状況を確認できる！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
   {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房からの見送り',text:'錬成も遠征も、もう自分で進められるね。新しい土地でどんな契約体と出会うのか、楽しみにしているよ！',progressLabel:'PROLOGUE'},
   {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'ここまで完璧だ！ これからは自分のペースで、自由に冒険できるぞ！',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
 ]);
