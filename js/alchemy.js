@@ -535,7 +535,8 @@ function executeAlchemyConfirmed(){
     document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
-  alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);
+  try{alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);}
+  catch(_error){alchemyDiagnosticsSelection=null;}
   alchemyBusy = true;
   alchemyDiagnosticsStage='processing';
   alchemyDiagnosticsResultKind='none';
