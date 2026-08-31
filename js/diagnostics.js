@@ -446,6 +446,89 @@
     return summarizeTutorial(safeValue(() => state.tutorialProvider(), null));
   }
 
+  function emptyAlchemySummary(available=false) {
+    return {
+      version: 1,
+      available,
+      state: {
+        stage: 'unknown',
+        busy: false,
+        visible: false,
+        tutorialLesson: false,
+        resultKind: 'none',
+        nextAction: 'none'
+      },
+      selection: {
+        mode: 'unknown',
+        recipeValid: false,
+        materialSlotCount: 0,
+        materialUnitCount: 0,
+        catalystRequired: false,
+        catalystSelected: false,
+        coinOptionValid: false,
+        successCandidateCount: 0,
+        failureCandidateCount: 0,
+        validationErrorCount: 0,
+        canExecute: false
+      },
+      issues: []
+    };
+  }
+
+  function summarizeAlchemy(value) {
+    const source = safeRecord(value);
+    if (!source) return emptyAlchemySummary(false);
+    const summary = emptyAlchemySummary(true);
+    const stages = new Set(['idle', 'selecting', 'confirming', 'processing', 'completed', 'rolled_back']);
+    const results = new Set(['none', 'success', 'fallback', 'error']);
+    const actions = new Set(['none', 'fix_selection', 'open_confirmation', 'execute', 'wait', 'continue_tutorial', 'view_party_or_retry', 'return_to_alchemy']);
+    const modes = new Set(['normal', 'tutorial_lesson']);
+    const stage = safeToken(safeValue(() => source.stage, ''));
+    const resultKind = safeToken(safeValue(() => source.resultKind, ''));
+    const nextAction = safeToken(safeValue(() => source.nextAction, ''));
+    const mode = safeToken(safeValue(() => source.mode, ''));
+    summary.state.stage = stages.has(stage) ? stage : 'unknown';
+    summary.state.busy = safeValue(() => source.busy, false) === true;
+    summary.state.visible = safeValue(() => source.visible, false) === true;
+    summary.state.tutorialLesson = safeValue(() => source.tutorialLesson, false) === true;
+    summary.state.resultKind = results.has(resultKind) ? resultKind : 'none';
+    summary.state.nextAction = actions.has(nextAction) ? nextAction : 'none';
+    summary.selection.mode = modes.has(mode) ? mode : 'unknown';
+    summary.selection.recipeValid = safeValue(() => source.recipeValid, false) === true;
+    summary.selection.materialSlotCount = safeCount(safeValue(() => source.materialSlotCount, 0));
+    summary.selection.materialUnitCount = safeCount(safeValue(() => source.materialUnitCount, 0));
+    summary.selection.catalystRequired = safeValue(() => source.catalystRequired, false) === true;
+    summary.selection.catalystSelected = safeValue(() => source.catalystSelected, false) === true;
+    summary.selection.coinOptionValid = safeValue(() => source.coinOptionValid, false) === true;
+    summary.selection.successCandidateCount = safeCount(safeValue(() => source.successCandidateCount, 0));
+    summary.selection.failureCandidateCount = safeCount(safeValue(() => source.failureCandidateCount, 0));
+    summary.selection.validationErrorCount = safeCount(safeValue(() => source.validationErrorCount, 0));
+    summary.selection.canExecute = safeValue(() => source.canExecute, false) === true;
+
+    const issues = [];
+    if (summary.state.busy && summary.state.stage !== 'processing') issues.push('busy_stage_mismatch');
+    if (!summary.state.busy && summary.state.stage === 'processing') issues.push('processing_without_busy');
+    if (summary.selection.canExecute && summary.selection.validationErrorCount > 0) issues.push('executable_with_errors');
+    if (summary.selection.canExecute && summary.selection.successCandidateCount === 0) issues.push('executable_without_success_candidate');
+    if (summary.selection.canExecute && summary.selection.mode === 'normal' && summary.selection.failureCandidateCount === 0) issues.push('executable_without_failure_candidate');
+    if (summary.state.stage === 'completed' && summary.state.resultKind === 'none') issues.push('completed_without_result');
+    if (summary.state.stage === 'rolled_back' && summary.state.resultKind !== 'error') issues.push('rollback_without_error');
+    if (summary.state.stage === 'confirming' && summary.selection.validationErrorCount > 0) issues.push('confirmation_invalid');
+    summary.issues = issues;
+    return summary;
+  }
+
+  function registerAlchemyProvider(provider) {
+    if (typeof provider !== 'function' || typeof state.alchemyProvider === 'function') return false;
+    state.alchemyProvider = provider;
+    return true;
+  }
+
+  function getAlchemySummary() {
+    if (typeof state.alchemyProvider !== 'function') return emptyAlchemySummary(false);
+    return summarizeAlchemy(safeValue(() => state.alchemyProvider(), null));
+  }
+
   function record(entry) {
     const last = state.errors[state.errors.length - 1];
     if (last && last.fingerprint === entry.fingerprint) {
@@ -516,12 +599,15 @@
     environmentVersion: 1,
     saveSummaryVersion: 1,
     tutorialSummaryVersion: 1,
+    alchemySummaryVersion: 1,
     maxErrors: MAX_ERRORS,
     getEnvironment: readEnvironment,
     getSaveSummary,
     registerSaveProvider,
     getTutorialSummary,
     registerTutorialProvider,
+    getAlchemySummary,
+    registerAlchemyProvider,
     getErrors,
     clearErrors
   });

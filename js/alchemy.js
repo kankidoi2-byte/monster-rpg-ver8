@@ -7,6 +7,10 @@ let selectedAlchemyCoinOptionId = 'standard';
 let alchemyGuideOpen = false;
 let tutorialAlchemyLessonActive = false;
 let tutorialAlchemyLessonConfig = null;
+let alchemyDiagnosticsStage = 'idle';
+let alchemyDiagnosticsResultKind = 'none';
+let alchemyDiagnosticsTutorialLesson = false;
+let alchemyDiagnosticsSelection = null;
 
 function activateTutorialAlchemyLesson(config){
   if(!config||!ALCHEMY_RECIPE_BY_ID[config.recipeId]||!Array.isArray(config.materials)||config.materials.length!==4)return false;
@@ -23,7 +27,85 @@ function activateTutorialAlchemyLesson(config){
 function deactivateTutorialAlchemyLesson(){tutorialAlchemyLessonActive=false;tutorialAlchemyLessonConfig=null;}
 function isTutorialAlchemyLessonActive(){return tutorialAlchemyLessonActive&&Boolean(tutorialAlchemyLessonConfig);}
 
+function alchemyDiagnosticsSelectionSummary(plan,errors=[],tutorialLesson=false){
+  const isTutorialLesson=plan?.tutorialLesson===true||tutorialLesson===true;
+  return {
+    mode:isTutorialLesson?'tutorial_lesson':'normal',
+    recipeValid:plan?.recipeSelectionValid===true&&plan?.modeSelectionValid===true,
+    materialSlotCount:Array.isArray(plan?.selection?.materialIds)?plan.selection.materialIds.length:0,
+    materialUnitCount:Array.isArray(plan?.selection?.materialCounts)
+      ?plan.selection.materialCounts.reduce((sum,count)=>sum+Math.max(0,Math.floor(Number(count)||0)),0)
+      :0,
+    catalystRequired:!isTutorialLesson,
+    catalystSelected:isTutorialLesson||Boolean(plan?.instance),
+    coinOptionValid:plan?.coinOptionSelectionValid===true,
+    successCandidateCount:plan?eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).length:0,
+    failureCandidateCount:plan&&!isTutorialLesson?alchemyFailureCandidates(plan.recipe,plan.coinOption).length:0,
+    validationErrorCount:errors.length
+  };
+}
+
+function alchemyDiagnosticsSnapshot(){
+  const liveTutorialLesson=isTutorialAlchemyLessonActive();
+  const terminalStage=['completed','rolled_back'].includes(alchemyDiagnosticsStage);
+  const tutorialLesson=terminalStage?alchemyDiagnosticsTutorialLesson:liveTutorialLesson;
+  let plan=null;
+  let errors=[];
+  let selectionSummary=terminalStage?alchemyDiagnosticsSelection:null;
+  if(!selectionSummary){
+    try{
+      const materialIds=tutorialLesson?[...tutorialAlchemyLessonConfig.materials]:[...selectedAlchemyMaterialIds];
+      const materialCounts=tutorialLesson?[1,1,1,1]:[...selectedAlchemyMaterialCounts];
+      const inferredRecipe=tutorialLesson?null:inferAlchemyRecipe(materialIds);
+      const selection=tutorialLesson?{
+        recipeId:tutorialAlchemyLessonConfig.recipeId,mode:'tutorial_lesson',tutorialLesson:true,instanceUid:'',
+        materialIds,materialCounts,coinOptionId:tutorialAlchemyLessonConfig.coinOptionId
+      }:{
+        recipeId:inferredRecipe?.recipeId||selectedAlchemyRecipeId,mode:'normal',tutorialLesson:false,
+        instanceUid:selectedAlchemyCatalystUid||'',materialIds,materialCounts,coinOptionId:selectedAlchemyCoinOptionId
+      };
+      plan=alchemyPlan(selection);
+      errors=validateAlchemyPlan(plan);
+      selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
+    }catch(_error){
+      plan=null;
+      errors=['diagnostics_unavailable'];
+      selectionSummary=alchemyDiagnosticsSelectionSummary(plan,errors,tutorialLesson);
+    }
+  }
+  let visible=false;
+  try{
+    visible=['alchemy','alchemyConfirm','alchemyResult'].includes(document.querySelector('.screen.active')?.id||'');
+  }catch(_error){
+    visible=false;
+  }
+  const stage=alchemyDiagnosticsStage;
+  const canExecute=Boolean(plan)&&!alchemyBusy&&errors.length===0&&(stage==='selecting'||stage==='confirming');
+  let nextAction='none';
+  if(stage==='selecting')nextAction=canExecute?'open_confirmation':'fix_selection';
+  else if(stage==='confirming')nextAction=canExecute?'execute':'fix_selection';
+  else if(stage==='processing')nextAction='wait';
+  else if(stage==='completed')nextAction=tutorialLesson?'continue_tutorial':'view_party_or_retry';
+  else if(stage==='rolled_back')nextAction='return_to_alchemy';
+  return {
+    stage,
+    busy:alchemyBusy===true,
+    visible,
+    tutorialLesson,
+    resultKind:alchemyDiagnosticsResultKind,
+    nextAction,
+    ...selectionSummary,
+    canExecute
+  };
+}
+
 function showAlchemy(){
+  if(!alchemyBusy){
+    alchemyDiagnosticsStage='selecting';
+    alchemyDiagnosticsResultKind='none';
+    alchemyDiagnosticsTutorialLesson=isTutorialAlchemyLessonActive();
+    alchemyDiagnosticsSelection=null;
+  }
   show('alchemy');
   renderAlchemy();
 }
@@ -430,6 +512,8 @@ function openAlchemyConfirmation(){
   if(errors.length){ updateAlchemyPreview(); return; }
   const target = document.getElementById('alchemyConfirmContent');
   if(!target) return;
+  alchemyDiagnosticsStage='confirming';
+  alchemyDiagnosticsResultKind='none';
   target.innerHTML = `<div class="alchemy-confirm-card">
     ${plan.instance ? vis(by(plan.instance.id)) : '<div class="alchemy-core">⚗</div>'}
     <h2>錬成の最終確認</h2>
@@ -451,7 +535,12 @@ function executeAlchemyConfirmed(){
     document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
+  try{alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);}
+  catch(_error){alchemyDiagnosticsSelection=null;}
   alchemyBusy = true;
+  alchemyDiagnosticsStage='processing';
+  alchemyDiagnosticsResultKind='none';
+  alchemyDiagnosticsTutorialLesson=plan.tutorialLesson===true;
   const button = document.getElementById('alchemyExecuteButton');
   if(button) button.disabled = true;
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyExecutionStarted==='function')handleTutorialAlchemyExecutionStarted();
@@ -494,6 +583,8 @@ function finalizeAlchemy(originalPlan){
       <button onclick="show('party')">完成個体を手持ちで確認</button>
       <button onclick="showAlchemy()" class="secondary-button">もう一度錬成する</button>
     </div>`;
+    alchemyDiagnosticsStage='completed';
+    alchemyDiagnosticsResultKind=success?'success':'fallback';
     if(typeof replayUiMotion==='function')replayUiMotion(content.firstElementChild,'ui-reward-pop',1000);
     if(typeof showUiNotice==='function')showUiNotice(`${resultMonster.name}が完成！`);
     renderParty();
@@ -504,6 +595,8 @@ function finalizeAlchemy(originalPlan){
       if(typeof handleTutorialLuminaAlchemyCompleted==='function')handleTutorialLuminaAlchemyCompleted();
     }
   }catch(error){
+    alchemyDiagnosticsStage='rolled_back';
+    alchemyDiagnosticsResultKind='error';
     save = JSON.parse(snapshot);
     try{ localStorage.setItem('mb_v95c', snapshot); }catch(restoreError){ console.error('alchemy rollback save failed:', restoreError); }
     document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-errors"><h2>錬成を中止しました</h2><p>消費前の状態へ戻しました。</p><p>${String(error?.message || error).replaceAll('\n','<br>')}</p></div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
@@ -512,3 +605,5 @@ function finalizeAlchemy(originalPlan){
     alchemyBusy = false;
   }
 }
+
+globalThis.GameDiagnostics?.registerAlchemyProvider?.(alchemyDiagnosticsSnapshot);

@@ -9,6 +9,9 @@ const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const tutorialSource = fs.existsSync(path.join(root, 'js/tutorial.js'))
   ? fs.readFileSync(path.join(root, 'js/tutorial.js'), 'utf8')
   : '';
+const alchemySource = fs.existsSync(path.join(root, 'js/alchemy.js'))
+  ? fs.readFileSync(path.join(root, 'js/alchemy.js'), 'utf8')
+  : '';
 const listeners = new Map();
 const context = {
   URL,
@@ -52,6 +55,7 @@ expect(context.GameDiagnostics?.version === 1, 'diagnostics API version is missi
 expect(context.GameDiagnostics?.environmentVersion === 1, 'environment schema version is missing');
 expect(context.GameDiagnostics?.saveSummaryVersion === 1, 'save summary schema version is missing');
 expect(context.GameDiagnostics?.tutorialSummaryVersion === 1, 'tutorial summary schema version is missing');
+expect(context.GameDiagnostics?.alchemySummaryVersion === 1, 'alchemy summary schema version is missing');
 expect(context.GameDiagnostics?.maxErrors === 20, 'diagnostics limit must be 20');
 expect((listeners.get('error') || []).length === 1, 'one error listener must be installed');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection listener must be installed');
@@ -189,6 +193,52 @@ hostileTutorialContext.GameDiagnostics.registerTutorialProvider(() => new Proxy(
 const hostileTutorialSummary = hostileTutorialContext.GameDiagnostics.getTutorialSummary();
 expect(hostileTutorialSummary.available === true && hostileTutorialSummary.state?.status === 'unknown', 'throwing tutorial getters must produce a safe fixed summary');
 
+expect(context.GameDiagnostics.getAlchemySummary().available === false, 'alchemy summary must be unavailable before provider registration');
+const alchemyFixture = {
+  stage: 'processing',
+  busy: false,
+  visible: true,
+  tutorialLesson: false,
+  resultKind: 'none',
+  nextAction: 'execute',
+  mode: 'normal',
+  recipeValid: true,
+  materialSlotCount: 4,
+  materialUnitCount: 6,
+  catalystRequired: true,
+  catalystSelected: true,
+  coinOptionValid: true,
+  successCandidateCount: 0,
+  failureCandidateCount: 0,
+  validationErrorCount: 1,
+  canExecute: true,
+  recipeId: 'private-recipe-id',
+  catalystUid: 'private-catalyst-uid',
+  materialIds: ['private-item-id'],
+  errorMessage: 'private free text'
+};
+expect(context.GameDiagnostics.registerAlchemyProvider(() => alchemyFixture) === true, 'alchemy provider registration failed');
+expect(context.GameDiagnostics.registerAlchemyProvider(() => ({})) === false, 'alchemy provider must not be replaceable');
+const alchemySummary = context.GameDiagnostics.getAlchemySummary();
+expect(alchemySummary.version === 1 && alchemySummary.available === true, 'alchemy summary header is incorrect');
+expect(alchemySummary.state?.stage === 'processing' && alchemySummary.state?.nextAction === 'execute', 'alchemy stage or next action is incorrect');
+expect(alchemySummary.selection?.materialSlotCount === 4 && alchemySummary.selection?.materialUnitCount === 6, 'alchemy material counts are incorrect');
+expect(alchemySummary.issues?.includes('processing_without_busy'), 'alchemy busy contradiction was not detected');
+expect(alchemySummary.issues?.includes('executable_with_errors'), 'alchemy validation contradiction was not detected');
+expect(alchemySummary.issues?.includes('executable_without_success_candidate'), 'alchemy candidate contradiction was not detected');
+const serializedAlchemySummary = JSON.stringify(alchemySummary);
+for (const forbidden of ['private-recipe-id', 'private-catalyst-uid', 'private-item-id', 'private free text']) {
+  expect(!serializedAlchemySummary.includes(forbidden), `alchemy summary leaked forbidden value: ${forbidden}`);
+}
+
+const hostileAlchemyContext = { URL, addEventListener() {} };
+hostileAlchemyContext.window = hostileAlchemyContext;
+vm.createContext(hostileAlchemyContext);
+vm.runInContext(source, hostileAlchemyContext);
+hostileAlchemyContext.GameDiagnostics.registerAlchemyProvider(() => new Proxy({}, { get() { throw new Error('blocked'); } }));
+const hostileAlchemySummary = hostileAlchemyContext.GameDiagnostics.getAlchemySummary();
+expect(hostileAlchemySummary.available === true && hostileAlchemySummary.state?.stage === 'unknown', 'throwing alchemy getters must produce a safe fixed summary');
+
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'loading diagnostics twice must not duplicate the rejection listener');
@@ -261,9 +311,12 @@ expect(!source.includes('.cookie'), 'diagnostics must not read cookies');
 if (tutorialSource) {
   expect(tutorialSource.includes('registerTutorialProvider?.(tutorialDiagnosticsSnapshot)'), 'tutorial runtime must register its diagnostics provider');
 }
+if (alchemySource) {
+  expect(alchemySource.includes('registerAlchemyProvider?.(alchemyDiagnosticsSnapshot)'), 'alchemy runtime must register its diagnostics provider');
+}
 
 if (errors.length) {
   console.error(errors.map(error => `- ${error}`).join('\n'));
   process.exit(1);
 }
-console.log('Diagnostics tutorial summary passed');
+console.log('Diagnostics alchemy summary passed');
