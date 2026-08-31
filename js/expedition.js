@@ -19,6 +19,61 @@ const EXPEDITION_MAP_REWARDS=Object.freeze({
 const EXPEDITION_FINE_ITEM=Object.freeze({monster_bone:'fine_monster_bone',magic_crystal:'fine_magic_crystal',metal_ore:'fine_metal_ore',unstable_alchemy_matter:'fine_unstable_alchemy_matter',raptor_feather:'fine_raptor_feather',venom_carapace:'fine_venom_carapace'});
 let expeditionSelectedMapId=null,expeditionSelectedDistanceId='short',expeditionSelectedUids=[];
 
+function expeditionDiagnosticsSnapshot(){
+  const expeditionSave=save?.expeditions&&typeof save.expeditions==='object'?save.expeditions:null;
+  const completedCount=Math.max(0,Math.floor(Number(expeditionSave?.completedCount)||0));
+  const expeditions=Array.isArray(expeditionSave?.active)?expeditionSave.active.filter(Boolean):[];
+  const unlockedSlotCount=completedCount>=15?3:completedCount>=5?2:1;
+  const usedSlotCount=expeditions.length;
+  let visible=false;
+  try{visible=document.querySelector('.screen.active')?.id==='expedition';}catch(_error){visible=false;}
+  let destinations=[];
+  try{destinations=expeditionDestinations();}catch(_error){destinations=[];}
+  const destinationSelected=typeof expeditionSelectedMapId==='string'&&expeditionSelectedMapId.length>0;
+  const destinationValid=destinationSelected&&destinations.some(map=>map?.id===expeditionSelectedMapId);
+  const distanceValid=Boolean(EXPEDITION_DISTANCES[expeditionSelectedDistanceId]);
+  let availableInstances=[];
+  try{availableInstances=expeditionAvailableInstances();}catch(_error){availableInstances=[];}
+  const availableUids=new Set(availableInstances.map(instance=>instance?.uid).filter(Boolean));
+  const selectedUids=Array.isArray(expeditionSelectedUids)?expeditionSelectedUids:[];
+  const blockingReasons=[];
+  if(usedSlotCount>=unlockedSlotCount)blockingReasons.push('slots_full');
+  if(!destinationSelected)blockingReasons.push('destination_missing');
+  else if(!destinationValid)blockingReasons.push('destination_unavailable');
+  if(!distanceValid)blockingReasons.push('distance_invalid');
+  if(!selectedUids.length)blockingReasons.push('no_members_selected');
+  if(selectedUids.length>3)blockingReasons.push('member_count_exceeded');
+  if(selectedUids.some(uid=>!availableUids.has(uid)))blockingReasons.push('member_unavailable');
+  return {
+    state:{
+      visible,
+      unlockedSlotCount,
+      usedSlotCount,
+      availableSlotCount:Math.max(0,unlockedSlotCount-usedSlotCount),
+      completedCount,
+      inProgressCount:expeditions.filter(entry=>entry?.status==='active').length,
+      readyToClaimCount:expeditions.filter(entry=>entry?.status==='complete'&&Boolean(entry?.reward)).length
+    },
+    selection:{
+      destinationSelected,
+      destinationValid,
+      distanceValid,
+      selectedMemberCount:selectedUids.length,
+      availableMemberCount:availableInstances.length,
+      canDispatch:blockingReasons.length===0,
+      blockingReasons
+    },
+    expeditions:expeditions.slice(0,3).map(entry=>({
+      status:entry?.status==='active'||entry?.status==='complete'?entry.status:'unknown',
+      progress:Math.max(0,Math.floor(Number(entry?.progress)||0)),
+      requiredWins:Math.max(0,Math.floor(Number(entry?.requiredWins)||0)),
+      memberCount:Array.isArray(entry?.memberUids)?entry.memberUids.length:0,
+      rewardReady:Boolean(entry?.reward),
+      tutorialPrologue:entry?.tutorialPrologue===true
+    }))
+  };
+}
+
 function normalizeExpeditionSave(){
   if(!save.expeditions||typeof save.expeditions!=='object')save.expeditions={completedCount:0,active:[]};
   save.expeditions.completedCount=Math.max(0,Math.floor(Number(save.expeditions.completedCount)||0));
@@ -156,3 +211,4 @@ function renderExpedition(){
     (active.length>=unlocked?'<div class="panel"><p>使用可能な遠征枠が埋まっています。</p></div>':`<div class="panel"><h2>1. 遠征先</h2>${Object.entries(groups).map(([label,maps])=>`<div class="expedition-region"><h3>${label}</h3><div class="expedition-map-grid">${maps.map(map=>`<button class="${map.id===expeditionSelectedMapId?'is-selected':''}" data-tutorial-expedition-map="${map.id}" onclick="selectExpeditionDestination('${map.id}')">${map.name}</button>`).join('')}</div></div>`).join('')}</div><div class="panel"><h2>2. 距離</h2><div class="expedition-distance-grid">${Object.values(EXPEDITION_DISTANCES).map(distance=>`<button class="${distance.id===expeditionSelectedDistanceId?'is-selected':''}" data-tutorial-expedition-distance="${distance.id}" onclick="selectExpeditionDistance('${distance.id}')">${distance.label}<small>${distance.wins}勝・報酬×${distance.rewardMultiplier}</small></button>`).join('')}</div></div><div class="panel"><h2>3. 派遣編成（1～3体）</h2><div class="expedition-member-grid">${available.length?available.map(ins=>{const mon=by(ins.id),selected=expeditionSelectedUids.includes(ins.uid),score=expeditionMemberScore(ins,selectedMap),tutorialTarget=typeof shouldMarkTutorialExpeditionMember==='function'&&shouldMarkTutorialExpeditionMember(ins.uid);return `<button class="expedition-member ${selected?'is-selected':''}"${tutorialTarget?' data-tutorial-expedition-member="true"':''} onclick="toggleExpeditionMember('${ins.uid}')">${mon.name}<small>Lv.${ins.level}・${score.total}点</small></button>`;}).join(''):'<p>派遣可能なモンスターがいません。パーティーから外してください。</p>'}</div><div id="expeditionSuitability" class="expedition-evaluation"><b>総合適性 ${suitability.grade}（${suitability.total}点）</b><span>大成功率 ${Math.round(suitability.greatRate*100)}％</span><ul>${suitability.reasons.map(x=>`<li>${x}</li>`).join('')}</ul></div><button id="expeditionStartButton" onclick="startExpedition()" ${expeditionSelectedUids.length?'':'disabled'}>${selectedMap?.name||'遠征先未選択'}へ${selectedDistance?.label||''}遠征</button></div>`);
 }
 ensureExpeditionDom();
+globalThis.GameDiagnostics?.registerExpeditionProvider?.(expeditionDiagnosticsSnapshot);
