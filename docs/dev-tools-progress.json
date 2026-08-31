@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T23:04:57.640Z",
+  "updated_at": "2026-08-31T23:05:48.942Z",
   "baseline": {
     "branch": "main",
     "commit": "9bf0b813c14d1c7ec9bd5df795171fe1833317be",
@@ -14,12 +14,15 @@
   "current_work": {
     "branch": "codex/dev-tools-phase6",
     "pull_request": 68,
-    "checkpoint": "pull_request_open_ci_pending",
-    "next_action": "Review the complete Phase 6 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass.",
+    "checkpoint": "phase6_ci_success_merge_ready",
+    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #68 under the standing safe-publication exception.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 282,
-    "baseline_pages_run": 110
+    "baseline_pages_run": 110,
+    "verified_implementation_commit": "7d5ab01d8a39639579eefb8f464aa8aebf6f5d2d",
+    "ci_run": 284,
+    "ci_status": "success"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -108,8 +111,11 @@
       "status": "in_review",
       "branch": "codex/dev-tools-phase6",
       "pull_request": 68,
-      "checkpoint": "pull_request_open_ci_pending",
-      "next_action": "Review the complete Phase 6 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass."
+      "checkpoint": "ci_success_merge_ready",
+      "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #68 under the standing safe-publication exception.",
+      "verified_implementation_commit": "7d5ab01d8a39639579eefb8f464aa8aebf6f5d2d",
+      "ci_run": 284,
+      "ci_status": "success"
     },
     {
       "id": 7,
