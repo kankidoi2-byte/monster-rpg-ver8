@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T23:00:37.132Z",
+  "updated_at": "2026-08-31T23:04:57.640Z",
   "baseline": {
     "branch": "main",
     "commit": "9bf0b813c14d1c7ec9bd5df795171fe1833317be",
@@ -13,9 +13,9 @@
   "current_phase": 6,
   "current_work": {
     "branch": "codex/dev-tools-phase6",
-    "pull_request": null,
-    "checkpoint": "phase6_design_and_implementation_started",
-    "next_action": "Implement a fixed, privacy-safe expedition diagnostic provider and dedicated tests without changing expedition or save behavior.",
+    "pull_request": 68,
+    "checkpoint": "pull_request_open_ci_pending",
+    "next_action": "Review the complete Phase 6 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 282,
@@ -105,11 +105,11 @@
       "id": 6,
       "name": "遠征診断",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase6",
-      "pull_request": null,
-      "checkpoint": "design_and_implementation_started",
-      "next_action": "Implement a fixed, privacy-safe expedition diagnostic provider and dedicated tests without changing expedition or save behavior."
+      "pull_request": 68,
+      "checkpoint": "pull_request_open_ci_pending",
+      "next_action": "Review the complete Phase 6 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass."
     },
     {
       "id": 7,
