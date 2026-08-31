@@ -3,9 +3,9 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const source = fs.readFileSync(path.join(root, 'phase2/js/diagnostics.js'), 'utf8');
-const index = fs.readFileSync(path.join(root, 'phase2/index.html'), 'utf8');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const source = fs.readFileSync(path.join(root, 'js/diagnostics.js'), 'utf8');
+const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const listeners = new Map();
 const context = {
   URL,
