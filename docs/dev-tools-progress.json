@@ -2,21 +2,21 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T13:10:00Z",
+  "updated_at": "2026-08-31T15:06:40.458Z",
   "baseline": {
     "branch": "main",
-    "commit": "cc1239d16aee7a7f3896c40bc4d9660199f6f726",
+    "commit": "f1099315dcc6f8a4f45d16da31e5363b1f4abec0",
     "ci_status": "success",
     "open_pull_requests": 0
   },
   "overall_status": "in_progress",
-  "current_phase": 1,
+  "current_phase": 2,
   "current_work": {
-    "branch": "codex/dev-tools-phase1",
-    "pull_request": 63,
-    "checkpoint": "phase1_pull_request_opened",
-    "next_action": "Confirm all checks on PR #63, then wait for explicit merge approval.",
-    "approval_required": true,
+    "branch": "codex/dev-tools-phase2",
+    "pull_request": null,
+    "checkpoint": "phase2_implementation_and_local_test_complete",
+    "next_action": "Open the Phase 2 pull request, confirm the latest-head CI, then auto-merge under the standing safe-publication approval.",
+    "approval_required": false,
     "manual_verification_required": false
   },
   "invariants": {
@@ -26,8 +26,11 @@
     "preserve_existing_ids": true,
     "preserve_existing_save_fields": true,
     "secrets_in_repository": false,
-    "merge_requires_explicit_approval": true,
-    "production_requires_explicit_approval": true
+    "merge_requires_explicit_approval": false,
+    "production_requires_explicit_approval": false,
+    "safe_merge_preapproved": true,
+    "safe_pages_publication_preapproved": true,
+    "unsafe_or_manual_changes_require_explicit_approval": true
   },
   "phases": [
     {
@@ -44,21 +47,21 @@
       "id": 1,
       "name": "エラー記録基盤",
       "group": "in_game_diagnostics",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase1",
       "pull_request": 63,
-      "checkpoint": "pull_request_opened",
-      "next_action": "Confirm CI, then wait for explicit merge approval."
+      "checkpoint": "merged",
+      "next_action": null
     },
     {
       "id": 2,
       "name": "基本実行環境の収集",
       "group": "in_game_diagnostics",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase2",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "implementation_and_local_test_complete",
+      "next_action": "Open PR and confirm GitHub Actions."
     },
     {
       "id": 3,
