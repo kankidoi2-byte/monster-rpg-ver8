@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T21:05:39.630Z",
+  "updated_at": "2026-08-31T21:06:43.511Z",
   "baseline": {
     "branch": "main",
     "commit": "aafebfbf2702beb575692665fdee0fb5ba8be4f3",
@@ -13,9 +13,9 @@
   "current_phase": 4,
   "current_work": {
     "branch": "codex/dev-tools-phase4",
-    "pull_request": null,
-    "checkpoint": "implementation_and_targeted_test_complete",
-    "next_action": "Open the Phase 4 pull request, verify the complete diff and latest-head npm run check, then auto-merge only if every standing safety condition remains satisfied.",
+    "pull_request": 66,
+    "checkpoint": "pull_request_open_ci_pending",
+    "next_action": "Review the complete Phase 4 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass.",
     "approval_required": false,
     "manual_verification_required": false
   },
@@ -77,11 +77,11 @@
       "id": 4,
       "name": "チュートリアル診断",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase4",
-      "pull_request": null,
-      "checkpoint": "implementation_and_targeted_test_complete",
-      "next_action": "Open the Phase 4 pull request, verify the complete diff and latest-head npm run check, then auto-merge only if every standing safety condition remains satisfied."
+      "pull_request": 66,
+      "checkpoint": "pull_request_open_ci_pending",
+      "next_action": "Review the complete Phase 4 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass."
     },
     {
       "id": 5,
