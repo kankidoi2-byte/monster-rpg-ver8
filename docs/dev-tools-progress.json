@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "roadmap": "docs/dev-tools-roadmap.md",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "updated_at": "2026-08-31T12:10:00Z",
+  "baseline": {
+    "branch": "main",
+    "commit": "7d36260d988d6dd918b78d1e2494de921a1792ba",
+    "ci_status": "success",
+    "open_pull_requests": 0
+  },
+  "overall_status": "in_progress",
+  "current_phase": 0,
+  "current_work": {
+    "branch": "codex/dev-tools-phase0",
+    "pull_request": 62,
+    "checkpoint": "phase0_pull_request_opened",
+    "next_action": "Wait for GitHub Actions, record the result, then request explicit approval to merge PR #62.",
+    "approval_required": true,
+    "manual_verification_required": false
+  },
+  "invariants": {
+    "direct_main_writes": false,
+    "force_push": false,
+    "save_key": "mb_v95c",
+    "preserve_existing_ids": true,
+    "preserve_existing_save_fields": true,
+    "secrets_in_repository": false,
+    "merge_requires_explicit_approval": true,
+    "production_requires_explicit_approval": true
+  },
+  "phases": [
+    {
+      "id": 0,
+      "name": "全体仕様と安全境界",
+      "group": "foundation",
+      "status": "in_review",
+      "branch": "codex/dev-tools-phase0",
+      "pull_request": 62,
+      "checkpoint": "pull_request_opened",
+      "next_action": "Confirm CI, then wait for explicit merge approval."
+    },
+    {
+      "id": 1,
+      "name": "エラー記録基盤",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 2,
+      "name": "基本実行環境の収集",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 3,
+      "name": "安全なセーブ要約",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 4,
+      "name": "チュートリアル診断",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 5,
+      "name": "錬成診断",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 6,
+      "name": "遠征診断",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 7,
+      "name": "診断レポート生成",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 8,
+      "name": "診断画面",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 9,
+      "name": "コピー・保存・共有",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 10,
+      "name": "診断機能の総合検査",
+      "group": "in_game_diagnostics",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 11,
+      "name": "開発司令塔の要件定義",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 12,
+      "name": "別プロジェクト基盤",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 13,
+      "name": "GitHubリポジトリ情報の取得",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 14,
+      "name": "自動チェック状態の取得",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 15,
+      "name": "本番公開状態の取得",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 16,
+      "name": "統一ステータスモデル",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 17,
+      "name": "次の作業判定ルール",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 18,
+      "name": "スマホ用ダッシュボード",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 19,
+      "name": "診断レポートの取り込み",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 20,
+      "name": "GitHub Issue下書き生成",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 21,
+      "name": "承認付きIssue作成",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 22,
+      "name": "司令塔の総合検査",
+      "group": "development_command_center",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 23,
+      "name": "エージェント実行契約",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 24,
+      "name": "手動起動・読み取り専用分析",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 25,
+      "name": "自動起動トリガー",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 26,
+      "name": "自動調査レポート",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 27,
+      "name": "自動Issue下書き",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 28,
+      "name": "隔離された修正環境",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 29,
+      "name": "修正案の生成",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 30,
+      "name": "承認付きブランチ・PR作成",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 31,
+      "name": "限定自律運用",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    },
+    {
+      "id": 32,
+      "name": "正式な自動点検エージェント",
+      "group": "autonomous_inspection_agent",
+      "status": "pending",
+      "branch": null,
+      "pull_request": null,
+      "checkpoint": null,
+      "next_action": null
+    }
+  ]
+}
