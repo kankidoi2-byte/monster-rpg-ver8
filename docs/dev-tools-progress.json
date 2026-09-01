@@ -2,24 +2,25 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T07:17:15.000Z",
+  "updated_at": "2026-09-01T08:09:30.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "41d94f870e62a195d382455de6e9fc4399ff142a",
+    "commit": "6cc40a3cc5555f7ea17d7a5e60e0654dedc0dc4f",
     "ci_status": "success",
     "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 9,
+  "current_phase": 15,
   "current_work": {
-    "branch": "codex/dev-tools-phase9",
-    "pull_request": 72,
-    "checkpoint": "ci_success_awaiting_device_verification",
-    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
-    "approval_required": true,
-    "manual_verification_required": true,
-    "baseline_ci_run": 323,
-    "baseline_pages_run": 119
+    "branch": "codex/dev-tools-phase15",
+    "pull_request": 79,
+    "checkpoint": "phase15_pr_open_ci_pending",
+    "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
+    "approval_required": false,
+    "manual_verification_required": false,
+    "baseline_ci_run": 325,
+    "baseline_pages_run": 120,
+    "advanced_while_waiting_for_phase": 9
   },
   "invariants": {
     "direct_main_writes": false,
@@ -260,11 +261,15 @@
       "id": 15,
       "name": "本番公開状態の取得",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "in_review",
+      "branch": "codex/dev-tools-phase15",
+      "pull_request": 79,
+      "checkpoint": "pr_open_ci_pending",
+      "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
+      "depends_on": [
+        14
+      ],
+      "advanced_while_waiting_for_phase": 9
     },
     {
       "id": 16,

@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "start": "node src/start.mjs",
-    "check": "npm run check:foundation && npm run check:github-reader && npm run check:github-actions-reader",
+    "check": "npm run check:foundation && npm run check:github-reader && npm run check:github-actions-reader && npm run check:github-pages-reader",
     "check:foundation": "node test/foundation.test.mjs",
     "check:github-reader": "node test/github-reader.test.mjs",
-    "check:github-actions-reader": "node test/github-actions-reader.test.mjs"
+    "check:github-actions-reader": "node test/github-actions-reader.test.mjs",
+    "check:github-pages-reader": "node test/github-pages-reader.test.mjs"
   },
   "engines": {
     "node": ">=20"
