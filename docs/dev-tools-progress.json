@@ -2,24 +2,25 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T08:13:12.000Z",
+  "updated_at": "2026-09-01T09:10:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "8aacd76c1ca6221999e62d968e85f56c8a1db077",
+    "commit": "a303c9631c81878dde0102342bc24c44ef53366a",
     "ci_status": "success",
     "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 9,
+  "current_phase": 16,
   "current_work": {
-    "branch": "codex/dev-tools-phase9",
-    "pull_request": 72,
-    "checkpoint": "ci_success_awaiting_device_verification",
-    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
-    "approval_required": true,
-    "manual_verification_required": true,
-    "baseline_ci_run": 329,
-    "baseline_pages_run": 121
+    "branch": "codex/dev-tools-phase16",
+    "pull_request": 81,
+    "checkpoint": "phase16_pr_open_ci_pending",
+    "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
+    "approval_required": false,
+    "manual_verification_required": false,
+    "baseline_ci_run": 331,
+    "baseline_pages_run": 122,
+    "advanced_while_waiting_for_phase": 9
   },
   "invariants": {
     "direct_main_writes": false,
@@ -281,11 +282,18 @@
       "id": 16,
       "name": "統一ステータスモデル",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "in_review",
+      "branch": "codex/dev-tools-phase16",
+      "pull_request": 81,
+      "checkpoint": "pr_open_ci_pending",
+      "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
+      "depends_on": [
+        13,
+        14,
+        15
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "implementation_commit": "a5ab4577ad027b981584727469d83c14de3a7826"
     },
     {
       "id": 17,
