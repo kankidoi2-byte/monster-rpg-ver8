@@ -66,6 +66,7 @@ assert.equal(partial.sections.issues.status, 'unavailable');
 assert.equal(partial.sections.issues.reason_code, 'permission_denied');
 assert.equal(JSON.stringify(partial).includes(token), false);
 assert.equal(partial.sections.commits.status, 'available');
+assert.equal(partial.sections.commits.rate_limit.remaining, null);
 
 assert.throws(() => createGitHubRepositoryReader({ owner: '../secret', repository: 'repo', fetchImpl }), error => error instanceof GitHubReadError && error.code === 'invalid_github_owner');
 assert.throws(() => createGitHubRepositoryReader({ owner: 'owner', repository: '', fetchImpl }), error => error instanceof GitHubReadError && error.code === 'invalid_github_repository');
