@@ -2,10 +2,10 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T10:15:00.000Z",
+  "updated_at": "2026-09-01T11:02:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "e51ededcbe7581416e8c3e49edeb6b2bd8cf743c",
+    "commit": "b10b363fb52be8441f9bc2dfd5dcb3474a46c882",
     "ci_status": "success",
     "open_pull_requests": 1
   },
@@ -18,8 +18,8 @@
     "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
     "approval_required": true,
     "manual_verification_required": true,
-    "baseline_ci_run": 340,
-    "baseline_pages_run": 125
+    "baseline_ci_run": 342,
+    "baseline_pages_run": 126
   },
   "invariants": {
     "direct_main_writes": false,
@@ -328,11 +328,20 @@
       "id": 18,
       "name": "スマホ用ダッシュボード",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase18",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "mobile_dashboard_design_started",
+      "next_action": "Implement and validate the loopback-only mobile dashboard, then request Android or Chromebook verification before merge.",
+      "depends_on": [
+        16,
+        17
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "baseline_commit": "b10b363fb52be8441f9bc2dfd5dcb3474a46c882",
+      "baseline_ci_run": 342,
+      "baseline_pages_run": 126,
+      "manual_verification_required": true
     },
     {
       "id": 19,
