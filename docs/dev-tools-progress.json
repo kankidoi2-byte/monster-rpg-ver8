@@ -2,25 +2,27 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T05:09:00.000Z",
+  "updated_at": "2026-09-01T05:12:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955",
+    "commit": "ccac49cd62e8ed511442cef31238f82344249af0",
     "ci_status": "success",
-    "open_pull_requests": 2
+    "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 12,
+  "current_phase": 9,
   "current_work": {
-    "branch": "codex/dev-tools-phase12",
-    "pull_request": 73,
-    "checkpoint": "phase12_pr_open_ci_pending",
-    "next_action": "Confirm the dedicated foundation check and full GitHub Actions run, then auto-merge if the latest diff remains safe.",
-    "approval_required": false,
-    "manual_verification_required": false,
-    "baseline_ci_run": 300,
-    "baseline_pages_run": 114,
-    "advanced_while_waiting_for_phase": 9
+    "branch": "codex/dev-tools-phase9",
+    "pull_request": 72,
+    "checkpoint": "phase9_ci_success_awaiting_device_verification",
+    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
+    "approval_required": true,
+    "manual_verification_required": true,
+    "baseline_ci_run": 310,
+    "baseline_pages_run": 115,
+    "verified_implementation_commit": "864c827d90e40498ca6c20f18fc94698e5be8338",
+    "ci_run": 307,
+    "ci_status": "success"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -198,15 +200,22 @@
       "id": 12,
       "name": "別プロジェクト基盤",
       "group": "development_command_center",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase12",
       "pull_request": 73,
-      "checkpoint": "pr_open_ci_pending",
-      "next_action": "Confirm dedicated and full CI, then auto-merge if safe.",
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
       "depends_on": [
         11
       ],
-      "advanced_while_waiting_for_phase": 9
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "ec1f333ebb5ef6f52b5f1da0600a3dc35249aa4d",
+      "ci_run": 310,
+      "ci_status": "success",
+      "merge_commit": "ccac49cd62e8ed511442cef31238f82344249af0",
+      "pages_run": 115,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 13,
