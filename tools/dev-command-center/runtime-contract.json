@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 12,
+  "status": "foundation_ready",
+  "runtime": {
+    "visibility": "private_only",
+    "default_host": "127.0.0.1",
+    "default_port": 4174,
+    "public_game_imports_runtime": false
+  },
+  "environment": {
+    "allowed": [
+      "DEV_COMMAND_CENTER_HOST",
+      "DEV_COMMAND_CENTER_PORT",
+      "DEV_COMMAND_CENTER_PRIVATE_NETWORK_CONFIRMED"
+    ],
+    "secrets_configured": [],
+    "local_files_ignored": [
+      ".env",
+      ".env.*"
+    ],
+    "non_loopback_rule": "DEV_COMMAND_CENTER_PRIVATE_NETWORK_CONFIRMED must equal true; network access control remains an external deployment responsibility."
+  },
+  "authentication": {
+    "mode": "none",
+    "reason": "Phase 12 exposes only a private health check; authentication begins in a later approved phase."
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "authentication": "none",
+      "response_fields": [
+        "schema_version",
+        "service",
+        "status",
+        "checked_at"
+      ]
+    }
+  ],
+  "forbidden": [
+    "GitHub API access",
+    "GitHub token storage",
+    "game save access",
+    "external messaging",
+    "write endpoints",
+    "public deployment"
+  ],
+  "next_phase": 13
+}
