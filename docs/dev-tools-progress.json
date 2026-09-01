@@ -2,29 +2,28 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T15:20:00.000Z",
+  "updated_at": "2026-09-01T20:55:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "589493a9b8bdc77d6b72c7ef8419086ba3526967",
+    "commit": "ac4a496ed689375fa9257e766c24c7e65e994f84",
     "ci_status": "success",
-    "open_pull_requests": 2
+    "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 18,
+  "current_phase": 19,
   "current_work": {
-    "branch": "codex/dev-tools-phase18",
-    "pull_request": 85,
-    "checkpoint": "ci_success_preview_ready_awaiting_device_verification",
-    "next_action": "Open the Android preview, verify the 360px layout, reload, source links, focus order, and status cards, then explicitly approve PR #85 for merge.",
-    "approval_required": true,
-    "manual_verification_required": true,
-    "baseline_ci_run": 357,
-    "baseline_pages_run": 130,
-    "ci_run": 358,
+    "branch": "codex/dev-tools-phase19",
+    "pull_request": 86,
+    "checkpoint": "import_core_complete_rebase_and_dashboard_connection_pending",
+    "next_action": "Update PR #86 from latest main, resolve the former Phase 18 dependency, connect the validated import core to the loopback-only dashboard for session-only use, and run the Phase 19 checks.",
+    "approval_required": false,
+    "manual_verification_required": false,
+    "baseline_ci_run": 361,
+    "baseline_pages_run": 131,
+    "ci_run": 348,
     "ci_status": "success",
-    "verified_implementation_commit": "ddb7b7fe5ba46840d194557581b7fc275e85a7f3",
-    "user_device_verification": "pending",
-    "preview_url": "https://effective-funicular-gxvgrwj9v5qfvv7j-4174.app.github.dev/"
+    "verified_implementation_commit": "d8d79e974a521c40b0dddd81e81c15e11120e84a",
+    "user_device_verification": "not_required"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -345,11 +344,11 @@
       "id": 18,
       "name": "スマホ用ダッシュボード",
       "group": "development_command_center",
-      "status": "awaiting_approval",
+      "status": "completed",
       "branch": "codex/dev-tools-phase18",
       "pull_request": 85,
-      "checkpoint": "ci_success_preview_ready_awaiting_device_verification",
-      "next_action": "Open the Android preview, verify the 360px layout, reload, source links, focus order, and status cards, then explicitly approve PR #85 for merge.",
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
       "depends_on": [
         16,
         17
@@ -359,21 +358,32 @@
       "baseline_ci_run": 357,
       "baseline_pages_run": 130,
       "verified_implementation_commit": "ddb7b7fe5ba46840d194557581b7fc275e85a7f3",
-      "ci_run": 358,
+      "ci_run": 360,
       "ci_status": "success",
       "manual_verification_required": true,
-      "user_device_verification": "pending",
-      "preview_url": "https://effective-funicular-gxvgrwj9v5qfvv7j-4174.app.github.dev/"
+      "user_device_verification": "approved",
+      "merge_commit": "ac4a496ed689375fa9257e766c24c7e65e994f84",
+      "post_merge_ci_run": 361,
+      "post_merge_ci_status": "success",
+      "pages_run": 131,
+      "pages_status": "success"
     },
     {
       "id": 19,
       "name": "診断レポートの取り込み",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase19",
+      "pull_request": 86,
+      "checkpoint": "import_core_complete_rebase_and_dashboard_connection_pending",
+      "next_action": "Update the Draft PR from latest main, connect the validated import core to the loopback-only dashboard for session-only use, and run the Phase 19 checks.",
+      "depends_on": [
+        18
+      ],
+      "verified_implementation_commit": "d8d79e974a521c40b0dddd81e81c15e11120e84a",
+      "ci_run": 348,
+      "ci_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 20,
