@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "mode": "manual_session_only",
+  "supported_report_versions": [1],
+  "input_limits": {
+    "max_source_bytes": 262144,
+    "max_depth": 16,
+    "max_nodes": 10000,
+    "max_array_length": 100,
+    "max_string_length": 2048,
+    "max_error_count": 20
+  },
+  "accepted_output": [
+    "schema_version",
+    "generated_at",
+    "app.version",
+    "app.build_commit",
+    "related_commit",
+    "context.screen",
+    "context.device_class",
+    "summary.health_status",
+    "summary.issue_count",
+    "summary.error_count",
+    "summary.unavailable_sections",
+    "summary.text",
+    "sections.*.available",
+    "sections.errors.count"
+  ],
+  "never_retained": [
+    "input JSON",
+    "save data",
+    "instance UID",
+    "error message",
+    "error source URL",
+    "query",
+    "fragment",
+    "cookie",
+    "authentication token",
+    "API key",
+    "unknown field"
+  ],
+  "validation_statuses": ["accepted", "rejected"],
+  "rejection_reason_codes": [
+    "input_too_large",
+    "invalid_json",
+    "invalid_input",
+    "invalid_json_value",
+    "input_limit_exceeded",
+    "url_details_forbidden",
+    "invalid_url",
+    "sensitive_field_present",
+    "sensitive_value_present",
+    "unsupported_report_version",
+    "invalid_generated_at",
+    "required_field_missing",
+    "invalid_section",
+    "invalid_error_section",
+    "inconsistent_counts",
+    "invalid_health",
+    "invalid_unavailable_sections",
+    "inconsistent_sections",
+    "inconsistent_health_status"
+  ],
+  "side_effects": {
+    "persistent_storage": false,
+    "external_requests": false,
+    "github_writes": false,
+    "game_save_writes": false
+  }
+}
