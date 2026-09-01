@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 16,
+  "status": "unified_status_ready",
+  "inputs": [
+    "phase13_repository_snapshot",
+    "phase14_actions_snapshot",
+    "phase15_pages_snapshot"
+  ],
+  "allowed_statuses": {
+    "healthy": "正常",
+    "in_progress": "作業中",
+    "awaiting_confirmation": "確認待ち",
+    "failed": "失敗",
+    "publish_pending": "公開待ち",
+    "stale": "情報が古い",
+    "unavailable": "取得不能"
+  },
+  "required_status_fields": [
+    "code",
+    "label_ja",
+    "reason_code",
+    "observed_at",
+    "source"
+  ],
+  "precedence": [
+    "unavailable",
+    "stale",
+    "failed",
+    "in_progress",
+    "publish_pending",
+    "awaiting_confirmation",
+    "healthy"
+  ],
+  "rules": {
+    "stale_after_ms": 900000,
+    "maximum_clock_skew_ms": 300000,
+    "ci_matches_main_by_sha": true,
+    "pages_matches_main_by_sha": true,
+    "open_pull_request_means_confirmation_pending_after_ci_and_pages_are_healthy": true,
+    "free_text_decision_logic": false,
+    "ai_decision_required": false
+  },
+  "output_signals": [
+    "main_sha",
+    "open_pull_request_count",
+    "ci.matched_main",
+    "ci.status",
+    "ci.conclusion",
+    "ci.head_sha",
+    "pages.site_status",
+    "pages.build_status",
+    "pages.published_sha"
+  ],
+  "privacy": {
+    "raw_responses": false,
+    "pull_request_titles": false,
+    "logs": false,
+    "credentials": false,
+    "free_text_errors": false
+  },
+  "side_effects": [],
+  "forbidden": [
+    "network request",
+    "repository write",
+    "workflow rerun",
+    "Pages configuration change",
+    "secret access",
+    "game client integration"
+  ],
+  "manual_verification_required": false,
+  "next_phase": 17
+}

@@ -36,3 +36,9 @@ Phase 12の独立したNode.js実行基盤です。ゲーム本体から読み�
 `src/github-pages-reader.mjs` はPagesサイト情報と最新ビルドをGETだけで取得し、公開状態、公開URL、公開元、対象SHA、公開時刻を固定形式へ正規化します。
 
 公開URLのqueryとfragment、pusher情報、エラー本文、CNAME、証明書情報、レスポンス生データは保持しません。Pages設定変更、ビルド要求、デプロイ作成・取消などの書き込み操作も実装しません。
+
+## Phase 16: 統一ステータス
+
+`src/unified-status.mjs` はPhase 13〜15の読み取り結果を、正常、作業中、確認待ち、失敗、公開待ち、情報が古い、取得不能の7状態へ決定的に統合します。
+
+判定は固定された優先順位とreason codeだけを使い、AIや自由文の解釈、追加の通信、GitHubやPagesへの書き込みは行いません。mainのコミット、CI対象SHA、Pages公開対象SHAを照合し、古い情報や部分的な取得不能を正常扱いしません。
