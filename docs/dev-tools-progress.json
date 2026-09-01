@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T00:05:56.933Z",
+  "updated_at": "2026-09-01T00:09:11.016Z",
   "baseline": {
     "branch": "main",
     "commit": "23e0d19e119ea9a46128cc7ab6f4abe4528d958c",
@@ -13,9 +13,9 @@
   "current_phase": 7,
   "current_work": {
     "branch": "codex/dev-tools-phase7",
-    "pull_request": null,
-    "checkpoint": "phase7_design_and_implementation_started",
-    "next_action": "Implement a versioned aggregate diagnostic report and privacy-safe human summary with per-section failure isolation and dedicated tests.",
+    "pull_request": 69,
+    "checkpoint": "pull_request_open_ci_pending",
+    "next_action": "Review the complete Phase 7 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 286,
@@ -121,11 +121,11 @@
       "id": 7,
       "name": "診断レポート生成",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase7",
-      "pull_request": null,
-      "checkpoint": "design_and_implementation_started",
-      "next_action": "Implement a versioned aggregate diagnostic report and privacy-safe human summary with per-section failure isolation and dedicated tests."
+      "pull_request": 69,
+      "checkpoint": "pull_request_open_ci_pending",
+      "next_action": "Review the complete Phase 7 diff and wait for CI on the latest head, then auto-merge only if all standing safety conditions pass."
     },
     {
       "id": 8,
