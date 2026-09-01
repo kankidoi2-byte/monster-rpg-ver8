@@ -2,27 +2,25 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T06:14:00.000Z",
+  "updated_at": "2026-09-01T07:05:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "ed9e4146b81de4335b3ff1874f2bfba196a5a56a",
+    "commit": "13f8074c49db78c5855562c3c9b5fd90c3a4080c",
     "ci_status": "success",
     "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 9,
+  "current_phase": 14,
   "current_work": {
-    "branch": "codex/dev-tools-phase9",
-    "pull_request": 72,
-    "checkpoint": "phase9_ci_success_awaiting_device_verification",
-    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
-    "approval_required": true,
-    "manual_verification_required": true,
-    "baseline_ci_run": 317,
-    "baseline_pages_run": 117,
-    "verified_implementation_commit": "864c827d90e40498ca6c20f18fc94698e5be8338",
-    "ci_run": 307,
-    "ci_status": "success"
+    "branch": "codex/dev-tools-phase14",
+    "pull_request": null,
+    "checkpoint": "phase14_branch_created",
+    "next_action": "Implement and test the bounded read-only GitHub Actions run and job status adapter.",
+    "approval_required": false,
+    "manual_verification_required": false,
+    "baseline_ci_run": 319,
+    "baseline_pages_run": 118,
+    "advanced_while_waiting_for_phase": 9
   },
   "invariants": {
     "direct_main_writes": false,
@@ -242,11 +240,15 @@
       "id": 14,
       "name": "自動チェック状態の取得",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase14",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "branch_created",
+      "next_action": "Implement and test the bounded read-only GitHub Actions run and job status adapter.",
+      "depends_on": [
+        13
+      ],
+      "advanced_while_waiting_for_phase": 9
     },
     {
       "id": 15,
