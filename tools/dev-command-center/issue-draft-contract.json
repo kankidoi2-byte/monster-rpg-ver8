@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 20,
+  "status": "unposted_issue_draft_ready",
+  "inputs": [
+    "phase18_dashboard_view_model",
+    "phase19_accepted_diagnostic_summary"
+  ],
+  "output_statuses": [
+    "generated",
+    "not_actionable",
+    "rejected"
+  ],
+  "required_draft_fields": [
+    "posting_status",
+    "title",
+    "evidence",
+    "reproduction",
+    "impact",
+    "duplicate_candidates",
+    "labels",
+    "source_links",
+    "body"
+  ],
+  "rules": {
+    "posting_status": "not_posted",
+    "session_memory_only": true,
+    "deterministic": true,
+    "fixed_fields_only": true,
+    "free_text_input": false,
+    "explicit_generate_action_required": true,
+    "explicit_clear_action_available": true,
+    "healthy_or_transient_status_is_not_actionable": true,
+    "duplicate_check_deferred_to_phase": 21
+  },
+  "side_effects": [],
+  "forbidden": [
+    "GitHub Issue creation",
+    "network request",
+    "repository write",
+    "external message",
+    "credential access",
+    "persistent storage",
+    "game save change"
+  ],
+  "manual_verification_required": false,
+  "next_phase": 21
+}

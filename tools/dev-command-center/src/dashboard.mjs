@@ -243,7 +243,51 @@ function diagnosticImportHtml(value) {
   </section>`;
 }
 
-export function renderDashboardHtml(viewModel, diagnosticImport = null) {
+function issueDraftHtml(value) {
+  const generated = value?.schema_version === 1 && value.status === 'generated' && value.draft?.posting_status === 'not_posted';
+  const notActionable = value?.schema_version === 1 && value.status === 'not_actionable';
+  const rejected = value?.schema_version === 1 && value.status === 'rejected';
+  let result = '';
+  if (generated) {
+    const draft = value.draft;
+    const evidence = Array.isArray(draft.evidence) ? draft.evidence.map(item => `<li>${escapeHtml(item)}</li>`).join('') : '';
+    const reproduction = Array.isArray(draft.reproduction) ? draft.reproduction.map(item => `<li>${escapeHtml(item)}</li>`).join('') : '';
+    const labels = Array.isArray(draft.labels) ? draft.labels.map(item => `<li><code>${escapeHtml(item)}</code></li>`).join('') : '';
+    const links = Array.isArray(draft.source_links) && draft.source_links.length
+      ? draft.source_links.map((link, index) => `<li><a href="${escapeHtml(link)}" rel="noreferrer">根拠リンク ${index + 1}</a></li>`).join('')
+      : '<li>確認リンクなし</li>';
+    result = `<div class="issue-draft-result" role="status">
+      <p class="not-posted">未投稿の下書き</p>
+      <h3>${escapeHtml(draft.title)}</h3>
+      <h4>根拠</h4><ul>${evidence}</ul>
+      <h4>再現条件</h4><ol>${reproduction}</ol>
+      <h4>影響</h4><p>${escapeHtml(draft.impact)}</p>
+      <h4>重複候補</h4><p>未確認（Phase 21で既存Issueと照合）</p>
+      <h4>ラベル候補</h4><ul class="label-list">${labels}</ul>
+      <h4>確認リンク</h4><ul>${links}</ul>
+      <details><summary>GitHubへ貼り付ける本文</summary><pre>${escapeHtml(draft.body)}</pre></details>
+    </div>`;
+  } else if (notActionable) {
+    result = '<p class="issue-draft-message" role="status">現在の状態ではIssue下書きは不要です。</p>';
+  } else if (rejected) {
+    result = '<p class="issue-draft-message issue-draft-error" role="alert">安全な下書きを生成できませんでした。最新状態を再取得してください。</p>';
+  }
+  const clear = value?.schema_version === 1
+    ? '<form method="post" action="/issues/draft/clear"><button class="button button-secondary" type="submit">下書き結果を消去</button></form>'
+    : '';
+  return `<section class="issue-draft" aria-labelledby="issue-draft-title">
+    <p class="eyebrow">端末内・未投稿</p>
+    <h2 id="issue-draft-title">GitHub Issue下書き</h2>
+    <p>固定された状態と安全な診断要約だけから下書きを生成します。GitHubへの投稿、外部通信、永続保存は行いません。</p>
+    <form method="post" action="/issues/draft">
+      <button class="button" type="submit">未投稿の下書きを生成</button>
+    </form>
+    ${result}
+    ${clear}
+  </section>`;
+}
+
+export function renderDashboardHtml(viewModel, diagnosticImport = null, issueDraft = null) {
   const view = buildDashboardViewModel({
     unifiedStatus: {
       schema_version: 1,
@@ -300,6 +344,7 @@ export function renderDashboardHtml(viewModel, diagnosticImport = null) {
     </div>
     <details class="sources"><summary>確認リンク</summary><ul>${links}</ul></details>
     ${diagnosticImportHtml(diagnosticImport)}
+    ${issueDraftHtml(issueDraft)}
   </main>
   <footer>GitHub書き込み・外部送信・永続保存なし</footer>
 </body>
