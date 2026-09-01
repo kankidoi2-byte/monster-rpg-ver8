@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import vm from 'node:vm';
 import {
   DIAGNOSTIC_IMPORT_LIMITS,
   importDiagnosticReport
@@ -58,6 +60,16 @@ for (const discarded of ['render failed', '/js/app.js', 'Chrome', 'Android', 'ka
 
 const fromJson = importDiagnosticReport(JSON.stringify(validReport()), { now });
 assert.equal(fromJson.validation.status, 'accepted');
+
+const diagnosticsSource = await readFile(new URL('../../../js/diagnostics.js', import.meta.url), 'utf8');
+const gameContext = { URL, addEventListener() {} };
+gameContext.window = gameContext;
+vm.createContext(gameContext);
+vm.runInContext(diagnosticsSource, gameContext);
+const liveContractResult = importDiagnosticReport(gameContext.GameDiagnostics.getDiagnosticReport(), { now });
+assert.equal(liveContractResult.validation.status, 'accepted');
+assert.equal(liveContractResult.report.summary.health_status, 'warning');
+assert.deepEqual(liveContractResult.report.summary.unavailable_sections, ['save', 'tutorial', 'alchemy', 'expedition']);
 
 const unavailable = validReport();
 unavailable.save.available = false;
