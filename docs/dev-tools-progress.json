@@ -2,25 +2,24 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T08:09:30.000Z",
+  "updated_at": "2026-09-01T08:13:12.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "6cc40a3cc5555f7ea17d7a5e60e0654dedc0dc4f",
+    "commit": "8aacd76c1ca6221999e62d968e85f56c8a1db077",
     "ci_status": "success",
     "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 15,
+  "current_phase": 9,
   "current_work": {
-    "branch": "codex/dev-tools-phase15",
-    "pull_request": 79,
-    "checkpoint": "phase15_pr_open_ci_pending",
-    "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
-    "approval_required": false,
-    "manual_verification_required": false,
-    "baseline_ci_run": 325,
-    "baseline_pages_run": 120,
-    "advanced_while_waiting_for_phase": 9
+    "branch": "codex/dev-tools-phase9",
+    "pull_request": 72,
+    "checkpoint": "ci_success_awaiting_device_verification",
+    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
+    "approval_required": true,
+    "manual_verification_required": true,
+    "baseline_ci_run": 329,
+    "baseline_pages_run": 121
   },
   "invariants": {
     "direct_main_writes": false,
@@ -261,15 +260,22 @@
       "id": 15,
       "name": "本番公開状態の取得",
       "group": "development_command_center",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase15",
       "pull_request": 79,
-      "checkpoint": "pr_open_ci_pending",
-      "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
       "depends_on": [
         14
       ],
-      "advanced_while_waiting_for_phase": 9
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "07171bd18c0e20e41da4685591686cacbd8bccaf",
+      "ci_run": 329,
+      "ci_status": "success",
+      "merge_commit": "8aacd76c1ca6221999e62d968e85f56c8a1db077",
+      "pages_run": 121,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 16,
