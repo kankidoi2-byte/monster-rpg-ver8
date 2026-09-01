@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 17,
+  "status": "next_action_rule_ready",
+  "input": "phase16_unified_status",
+  "priority_rule": "lower_number_is_higher_priority",
+  "status_actions": {
+    "failed": { "priority": 1, "action_code": "inspect_failed_check", "reason_code": "blocking_failure_detected" },
+    "unavailable": { "priority": 2, "action_code": "restore_source_access", "reason_code": "required_source_unavailable" },
+    "stale": { "priority": 3, "action_code": "refresh_status_sources", "reason_code": "source_observation_stale" },
+    "in_progress": { "priority": 4, "action_code": "wait_for_ci_completion", "reason_code": "ci_still_running" },
+    "publish_pending": { "priority": 5, "action_code": "wait_for_pages_publication", "reason_code": "pages_publication_pending" },
+    "awaiting_confirmation": { "priority": 6, "action_code": "review_open_pull_request", "reason_code": "human_confirmation_required" },
+    "healthy": { "priority": 7, "action_code": "no_action", "reason_code": "system_healthy" }
+  },
+  "invalid_input_action": {
+    "priority": 1,
+    "action_code": "restore_status_input",
+    "reason_code": "unified_status_invalid",
+    "blocking_status": "unavailable"
+  },
+  "required_decision_fields": [
+    "priority",
+    "action_code",
+    "reason_code",
+    "source_links",
+    "blocking_status"
+  ],
+  "source_link_policy": {
+    "maximum_count": 5,
+    "https_only": true,
+    "allowed_hosts": ["github.com", "*.github.io"],
+    "credentials_forbidden": true,
+    "query_and_fragment_removed": true
+  },
+  "rules": {
+    "deterministic": true,
+    "free_text_decision_logic": false,
+    "ai_decision_required": false,
+    "unknown_status_is_unavailable": true
+  },
+  "side_effects": [],
+  "forbidden": [
+    "network request",
+    "repository write",
+    "workflow rerun",
+    "Pages configuration change",
+    "secret access",
+    "automatic approval",
+    "game client integration"
+  ],
+  "manual_verification_required": false,
+  "next_phase": 18
+}

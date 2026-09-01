@@ -2,10 +2,10 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T04:10:30.000Z",
+  "updated_at": "2026-09-01T12:00:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955",
+    "commit": "e51ededcbe7581416e8c3e49edeb6b2bd8cf743c",
     "ci_status": "success",
     "open_pull_requests": 1
   },
@@ -14,15 +14,16 @@
   "current_work": {
     "branch": "codex/dev-tools-phase9",
     "pull_request": 72,
-    "checkpoint": "phase9_ci_success_awaiting_device_verification",
-    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then request merge approval.",
-    "approval_required": true,
-    "manual_verification_required": true,
-    "baseline_ci_run": 300,
-    "baseline_pages_run": 114,
-    "ci_run": 306,
+    "checkpoint": "device_verification_approved_awaiting_latest_ci",
+    "next_action": "Run the full CI suite against the latest main, then merge the approved pull request.",
+    "approval_required": false,
+    "manual_verification_required": false,
+    "baseline_ci_run": 340,
+    "baseline_pages_run": 125,
+    "ci_run": 307,
     "ci_status": "success",
-    "verified_implementation_commit": "4e44a071df13938756cda28a0ab8b3d0104419ac"
+    "verified_implementation_commit": "864c827d90e40498ca6c20f18fc94698e5be8338",
+    "user_device_verification": "approved"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -132,6 +133,7 @@
       "verified_implementation_commit": "6a761fd015c045c4f30ecfa7064b1212023955b3",
       "ci_run": 290,
       "ci_status": "success",
+      "merge_commit": "a0fc9a4d686d5c1bc715be22d541d9d45bac9c11",
       "pages_run": 112,
       "pages_status": "success"
     },
@@ -149,23 +151,24 @@
       "ci_status": "success",
       "manual_verification_required": false,
       "user_device_verification": "approved",
+      "merge_commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955",
       "pages_run": 114,
-      "pages_status": "success",
-      "merge_commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955"
+      "pages_status": "success"
     },
     {
       "id": 9,
       "name": "コピー・保存・共有",
       "group": "in_game_diagnostics",
-      "status": "awaiting_approval",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase9",
       "pull_request": 72,
-      "checkpoint": "ci_success_awaiting_device_verification",
-      "next_action": "Verify the export controls on Android or Chromebook, then approve merge.",
-      "manual_verification_required": true,
-      "ci_run": 306,
+      "checkpoint": "device_verification_approved_awaiting_latest_ci",
+      "next_action": "Run the full CI suite against the latest main, then merge the approved pull request.",
+      "verified_implementation_commit": "864c827d90e40498ca6c20f18fc94698e5be8338",
+      "ci_run": 307,
       "ci_status": "success",
-      "verified_implementation_commit": "4e44a071df13938756cda28a0ab8b3d0104419ac"
+      "manual_verification_required": false,
+      "user_device_verification": "approved"
     },
     {
       "id": 10,
@@ -199,61 +202,132 @@
       "id": 12,
       "name": "別プロジェクト基盤",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "completed",
+      "branch": "codex/dev-tools-phase12",
+      "pull_request": 73,
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
+      "depends_on": [
+        11
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "ec1f333ebb5ef6f52b5f1da0600a3dc35249aa4d",
+      "ci_run": 310,
+      "ci_status": "success",
+      "merge_commit": "ccac49cd62e8ed511442cef31238f82344249af0",
+      "pages_run": 115,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 13,
       "name": "GitHubリポジトリ情報の取得",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "completed",
+      "branch": "codex/dev-tools-phase13",
+      "pull_request": 75,
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
+      "depends_on": [
+        12
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "f9cdd1a6ba5a6b79ba543f69a8a9da8ca30a30a2",
+      "ci_run": 317,
+      "ci_status": "success",
+      "merge_commit": "ed9e4146b81de4335b3ff1874f2bfba196a5a56a",
+      "pages_run": 117,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 14,
       "name": "自動チェック状態の取得",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "completed",
+      "branch": "codex/dev-tools-phase14",
+      "pull_request": 77,
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
+      "depends_on": [
+        13
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "8ad11bc3e3a2651d752dd5cb470437e4479fef42",
+      "ci_run": 323,
+      "ci_status": "success",
+      "merge_commit": "41d94f870e62a195d382455de6e9fc4399ff142a",
+      "pages_run": 119,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 15,
       "name": "本番公開状態の取得",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "completed",
+      "branch": "codex/dev-tools-phase15",
+      "pull_request": 79,
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
+      "depends_on": [
+        14
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "07171bd18c0e20e41da4685591686cacbd8bccaf",
+      "ci_run": 329,
+      "ci_status": "success",
+      "merge_commit": "8aacd76c1ca6221999e62d968e85f56c8a1db077",
+      "pages_run": 121,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 16,
       "name": "統一ステータスモデル",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "completed",
+      "branch": "codex/dev-tools-phase16",
+      "pull_request": 81,
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
+      "depends_on": [
+        13,
+        14,
+        15
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "verified_implementation_commit": "bef444ec106a9a27aff4fe723fccaa22f182965f",
+      "ci_run": 335,
+      "ci_status": "success",
+      "merge_commit": "b4bfa8f7034ba1bcdb1ea32fc030706709a90ff4",
+      "pages_run": 123,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 17,
       "name": "次の作業判定ルール",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "completed",
+      "branch": "codex/dev-tools-phase17",
+      "pull_request": 83,
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
+      "depends_on": [
+        16
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "baseline_commit": "657ab633a4ad7c9c8e24961137b37f7cb4aa4200",
+      "baseline_ci_run": 337,
+      "baseline_pages_run": 124,
+      "verified_implementation_commit": "c11fed67c6b22177d9d0ebebcbff705c8b3fc535",
+      "ci_run": 339,
+      "ci_status": "success",
+      "merge_commit": "e51ededcbe7581416e8c3e49edeb6b2bd8cf743c",
+      "pages_run": 125,
+      "pages_status": "success",
+      "manual_verification_required": false
     },
     {
       "id": 18,
