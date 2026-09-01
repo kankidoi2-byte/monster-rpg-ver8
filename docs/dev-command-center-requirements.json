@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "title": "モンスターバトルRPG 開発司令塔",
+  "phase": 11,
+  "status": "requirements_defined",
+  "purpose": "GitHub、CI、GitHub Pages、診断レポートの状態を一画面へ集約し、次に確認すべき作業を安全に示す。",
+  "users": [
+    {
+      "role": "owner",
+      "description": "リポジトリ所有者。閲覧と承認判断を行う。"
+    }
+  ],
+  "scope": {
+    "included": [
+      "GitHubのコミット、ブランチ、PR、Issueの読み取り",
+      "GitHub Actionsの状態とログ導線の読み取り",
+      "GitHub Pagesの対象コミットと公開状態の読み取り",
+      "版付き診断レポートの手動取り込みと形式検証",
+      "決定的な次作業候補の表示",
+      "明示承認前のIssue下書き"
+    ],
+    "excluded": [
+      "ゲームクライアントへの認証情報の保存",
+      "Phase 11でのGitHub書き込み、マージ、公開操作",
+      "セーブデータ全文、個体UID、自由入力の収集",
+      "自動課金、購入、外部メッセージ送信",
+      "自動修正または自動PR作成"
+    ]
+  },
+  "deployment_boundary": {
+    "public_game": "GitHub Pages上のゲーム本体。認証情報を持たず、開発司令塔を読み込まない。",
+    "private_command_center": "Phase 12以降に分離して構築する非公開実行領域。GitHub認証と集約処理を担当する。",
+    "repository": "公開リポジトリには仕様、公開可能なUIコード、検証コードだけを置く。",
+    "secrets": "環境変数または接続先の秘密管理機構だけに保存し、ブラウザ、URL、ログ、診断レポート、リポジトリへ出力しない。"
+  },
+  "screens": [
+    {
+      "id": "overview",
+      "title": "概要",
+      "required": true,
+      "shows": [
+        "総合状態",
+        "mainの最新コミット",
+        "オープンPR数",
+        "CI状態",
+        "Pages状態",
+        "更新時刻",
+        "次作業候補"
+      ]
+    },
+    {
+      "id": "pull_requests",
+      "title": "PR",
+      "required": true,
+      "shows": [
+        "番号",
+        "タイトル",
+        "head SHA",
+        "マージ可否",
+        "CI",
+        "承認待ち理由",
+        "GitHub導線"
+      ]
+    },
+    {
+      "id": "automation",
+      "title": "自動チェック",
+      "required": true,
+      "shows": [
+        "workflow名",
+        "状態",
+        "対象SHA",
+        "開始・終了時刻",
+        "失敗ジョブ",
+        "ログ導線"
+      ]
+    },
+    {
+      "id": "publication",
+      "title": "公開",
+      "required": true,
+      "shows": [
+        "Pages状態",
+        "対象SHA",
+        "公開時刻",
+        "mainとの差分",
+        "公開URL"
+      ]
+    },
+    {
+      "id": "diagnostics_import",
+      "title": "診断取込",
+      "required": true,
+      "shows": [
+        "形式版",
+        "検証結果",
+        "生成時刻",
+        "アプリ版",
+        "関連コミット",
+        "安全な要約"
+      ]
+    },
+    {
+      "id": "issue_draft",
+      "title": "Issue下書き",
+      "required": true,
+      "shows": [
+        "題名",
+        "根拠",
+        "再現条件",
+        "影響",
+        "重複候補",
+        "未投稿表示"
+      ]
+    }
+  ],
+  "data_sources": [
+    {
+      "id": "github_repository",
+      "mode": "read_only",
+      "required_fields": [
+        "default_branch",
+        "latest_commit",
+        "branches",
+        "pull_requests",
+        "issues"
+      ],
+      "phase": 13
+    },
+    {
+      "id": "github_actions",
+      "mode": "read_only",
+      "required_fields": [
+        "workflow",
+        "run_id",
+        "status",
+        "conclusion",
+        "head_sha",
+        "timestamps",
+        "logs_url"
+      ],
+      "phase": 14
+    },
+    {
+      "id": "github_pages",
+      "mode": "read_only",
+      "required_fields": [
+        "status",
+        "published_sha",
+        "published_at",
+        "url"
+      ],
+      "phase": 15
+    },
+    {
+      "id": "diagnostic_report",
+      "mode": "manual_import",
+      "required_fields": [
+        "schema_version",
+        "generated_at",
+        "app",
+        "summary",
+        "sections"
+      ],
+      "phase": 19
+    }
+  ],
+  "status_contract": {
+    "phase_owner": 16,
+    "allowed": [
+      "healthy",
+      "in_progress",
+      "awaiting_confirmation",
+      "failed",
+      "publish_pending",
+      "stale",
+      "unavailable"
+    ],
+    "every_status_requires": [
+      "code",
+      "label_ja",
+      "reason_code",
+      "observed_at",
+      "source"
+    ],
+    "no_free_text_decision_logic": true
+  },
+  "next_action_contract": {
+    "phase_owner": 17,
+    "deterministic": true,
+    "requires": [
+      "priority",
+      "action_code",
+      "reason_code",
+      "source_links",
+      "blocking_status"
+    ],
+    "ai_required_for_decision": false
+  },
+  "authentication": {
+    "phase11_mode": "none",
+    "future_mode": "server_side_github_app_or_oauth",
+    "client_token_storage_forbidden": true,
+    "tokens_in_repository_forbidden": true,
+    "tokens_in_url_forbidden": true,
+    "session_cookie_requirements": [
+      "Secure",
+      "HttpOnly",
+      "SameSite=Strict",
+      "short_lived"
+    ],
+    "reauthentication_state": "unavailable"
+  },
+  "permissions": {
+    "default": "deny",
+    "initial": [
+      "metadata:read",
+      "contents:read",
+      "pull_requests:read",
+      "issues:read",
+      "actions:read",
+      "pages:read"
+    ],
+    "approval_gated": [
+      "issues:write"
+    ],
+    "forbidden": [
+      "contents:write",
+      "pull_requests:write",
+      "workflows:write",
+      "administration:write",
+      "secrets:write",
+      "packages:write"
+    ],
+    "expansion_rule": "権限追加はPhaseごとに目的、対象操作、失敗時影響、取消手順を記録し、明示承認後に行う。"
+  },
+  "privacy": {
+    "accepted_diagnostic_data": [
+      "固定コード",
+      "件数",
+      "真偽値",
+      "時刻",
+      "版",
+      "画面種別",
+      "端末区分"
+    ],
+    "rejected_diagnostic_data": [
+      "セーブ全文",
+      "個体UID",
+      "自由入力",
+      "Cookie",
+      "認証トークン",
+      "APIキー",
+      "URL query",
+      "URL fragment"
+    ],
+    "retention_default": "session_only",
+    "external_transmission_default": false
+  },
+  "failure_states": [
+    {
+      "code": "auth_expired",
+      "safe_behavior": "unavailableとして表示し、再認証導線だけを示す。"
+    },
+    {
+      "code": "rate_limited",
+      "safe_behavior": "最終成功時刻を残し、再試行可能時刻まで書き込みを行わない。"
+    },
+    {
+      "code": "partial_api_failure",
+      "safe_behavior": "取得済みセクションを表示し、未取得部分をunavailableにする。"
+    },
+    {
+      "code": "stale_data",
+      "safe_behavior": "古い状態を成功扱いせずstaleとして観測時刻を示す。"
+    },
+    {
+      "code": "schema_unsupported",
+      "safe_behavior": "診断レポートを取り込まず、対応版を示す。"
+    },
+    {
+      "code": "permission_denied",
+      "safe_behavior": "権限を自動拡大せず、必要権限と対象操作を示す。"
+    }
+  ],
+  "non_functional": {
+    "mobile_min_width_css_px": 360,
+    "keyboard_access_required": true,
+    "japanese_primary_ui": true,
+    "timestamps": [
+      "UTC",
+      "Asia/Tokyo"
+    ],
+    "freshness_seconds": {
+      "github": 300,
+      "actions": 300,
+      "pages": 600
+    },
+    "destructive_actions_in_ui": false,
+    "raw_error_body_player_visible": false
+  },
+  "acceptance_criteria": [
+    {
+      "id": "AC-11-01",
+      "text": "画面、データ源、認証境界、権限境界が機械可読な固定項目で定義されている。"
+    },
+    {
+      "id": "AC-11-02",
+      "text": "公開ゲームと非公開司令塔の境界が明記され、ゲーム側にトークンを置かない。"
+    },
+    {
+      "id": "AC-11-03",
+      "text": "初期権限は読み取り専用で、Issue書き込みは明示承認対象になっている。"
+    },
+    {
+      "id": "AC-11-04",
+      "text": "認証切れ、API失敗、古いデータ、非対応レポートの安全な挙動が定義されている。"
+    },
+    {
+      "id": "AC-11-05",
+      "text": "360px幅、キーボード操作、日本語UI、時刻表示の要件が定義されている。"
+    },
+    {
+      "id": "AC-11-06",
+      "text": "Phase 12〜22の責務がPhase 11の実装範囲へ混入していない。"
+    }
+  ],
+  "phase_handoffs": [
+    {
+      "phase": 12,
+      "deliverable": "非公開実行領域、環境変数、認証なしヘルスチェック"
+    },
+    {
+      "phase": 13,
+      "deliverable": "GitHubリポジトリ情報の読み取りアダプター"
+    },
+    {
+      "phase": 14,
+      "deliverable": "Actions状態とログ導線"
+    },
+    {
+      "phase": 15,
+      "deliverable": "Pages対象SHAと公開状態"
+    },
+    {
+      "phase": 16,
+      "deliverable": "統一ステータスモデル"
+    },
+    {
+      "phase": 17,
+      "deliverable": "決定的な次作業ルール"
+    },
+    {
+      "phase": 18,
+      "deliverable": "スマホ用ダッシュボード"
+    },
+    {
+      "phase": 19,
+      "deliverable": "診断レポート取込"
+    },
+    {
+      "phase": 20,
+      "deliverable": "未投稿Issue下書き"
+    },
+    {
+      "phase": 21,
+      "deliverable": "明示承認付きIssue作成"
+    },
+    {
+      "phase": 22,
+      "deliverable": "認証、API、スマホ、権限の総合検査"
+    }
+  ]
+}
