@@ -220,3 +220,32 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 /* The prologue request has no map artwork, so its heading belongs in document
    flow instead of using the absolutely positioned hunt-card image caption. */
 .tutorial-request-card .hunt-card-body{position:relative;padding-top:48px}.tutorial-request-summary{display:grid;gap:3px;color:var(--ui-ink);text-shadow:none}.tutorial-request-summary small{color:var(--ui-sky-700);font-size:9px;font-weight:1000;letter-spacing:.1em}.tutorial-request-summary h2{margin:0;color:var(--ui-ink);font-size:18px;line-height:1.35;white-space:normal}.tutorial-request-summary p{margin:0;color:var(--ui-muted);font-size:11px;line-height:1.55}.tutorial-request-card .hunt-accept-button{display:flex;align-items:center;justify-content:center;min-width:0;padding:11px 12px;line-height:1.35;text-align:center;white-space:normal}
+
+
+/* Phase 8: mobile diagnostic report viewer. */
+.diagnostics-screen{color:var(--ui-ink)}
+.diagnostics-toolbar{display:flex;width:min(100%,780px);justify-content:flex-end;margin:0 auto 10px}
+.diagnostics-toolbar button{min-height:44px;margin:0;padding:9px 14px;border-radius:14px;background:linear-gradient(135deg,#35b8dc,#176fae);color:#fff;font-size:11px;font-weight:900}
+.diagnostics-content{display:grid;width:min(100%,780px);gap:10px;margin:0 auto}
+.diagnostics-hero{display:grid;grid-template-columns:54px minmax(0,1fr);align-items:center;gap:12px;padding:14px 16px;border:1px solid #b9dce9;border-radius:20px;background:linear-gradient(135deg,#eaf9ff,#fff);box-shadow:var(--ui-shadow);text-align:left}
+.diagnostics-hero.is-ok{border-color:#a9dfbf;background:linear-gradient(135deg,#e8faef,#fff)}
+.diagnostics-hero.is-warning{border-color:#ebd18a;background:linear-gradient(135deg,#fff7d9,#fff)}
+.diagnostics-hero.is-error{border-color:#efb0aa;background:linear-gradient(135deg,#fff0ed,#fff)}
+.diagnostics-status-icon{display:grid;width:54px;height:54px;place-items:center;border-radius:17px;background:#2488b3;color:#fff;font-size:28px;font-weight:1000;box-shadow:0 6px 16px #195f8238}
+.diagnostics-hero.is-ok .diagnostics-status-icon{background:#36a565}.diagnostics-hero.is-warning .diagnostics-status-icon{background:#d69a25}.diagnostics-hero.is-error .diagnostics-status-icon{background:#d45149}
+.diagnostics-hero h2,.diagnostics-hero p{margin:0}.diagnostics-hero h2{font-size:20px}.diagnostics-hero p{margin-top:3px;color:var(--ui-muted);font-size:10px}
+.diagnostics-kicker{color:var(--ui-sky-700);font-size:8px;font-weight:1000;letter-spacing:.12em}
+.diagnostics-summary{overflow:auto;margin:0;padding:13px 15px;border:1px solid #d5e6ed;border-radius:17px;background:#173247;color:#e9f7ff;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;line-height:1.7;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}
+.diagnostics-privacy{margin:0;padding:9px 12px;border-radius:13px;background:#eaf6fb;color:#3c6f85;font-size:9px;line-height:1.5;text-align:left}
+.diagnostics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.diagnostics-card{display:grid;align-content:start;gap:9px;min-width:0;padding:13px 14px;border:1px solid #d6e6ed;border-radius:18px;background:#fff;color:var(--ui-ink);box-shadow:0 6px 18px #275b7518;text-align:left}
+.diagnostics-card h2{margin:0;color:var(--ui-sky-700);font-family:Georgia,"Noto Serif JP",serif;font-size:15px}
+.diagnostics-stats{display:grid;gap:6px;margin:0}
+.diagnostics-stats>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);align-items:start;gap:8px;padding-bottom:6px;border-bottom:1px solid #edf3f5}
+.diagnostics-stats>div:last-child{padding-bottom:0;border-bottom:0}.diagnostics-stats dt{color:var(--ui-muted);font-size:9px}.diagnostics-stats dd{min-width:0;margin:0;color:var(--ui-ink);font-size:10px;font-weight:900;text-align:right;overflow-wrap:anywhere}
+.diagnostics-error-card{grid-column:1/-1}.diagnostics-error-list{display:grid;max-height:360px;gap:7px;overflow:auto}
+.diagnostics-error-entry{display:grid;gap:3px;padding:9px 10px;border-left:4px solid #da6a5e;border-radius:11px;background:#fff6f4}
+.diagnostics-error-entry strong{font-size:10px}.diagnostics-error-entry p{margin:0;color:#654b49;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:9px;line-height:1.5;overflow-wrap:anywhere}.diagnostics-error-entry small{color:#98726e;font-size:8px;overflow-wrap:anywhere}
+.diagnostics-empty,.diagnostics-unavailable p{margin:0;color:var(--ui-muted);font-size:10px}.diagnostics-unavailable{padding:18px;border:1px solid #efb0aa;border-radius:18px;background:#fff0ed;text-align:left}.diagnostics-unavailable h2{margin:0 0 6px;font-size:16px}
+@media(max-width:520px){.diagnostics-toolbar button{width:100%}.diagnostics-grid{grid-template-columns:1fr}.diagnostics-error-card{grid-column:auto}.diagnostics-summary{font-size:9px}.diagnostics-hero{grid-template-columns:46px minmax(0,1fr);padding:12px}.diagnostics-status-icon{width:46px;height:46px;border-radius:14px;font-size:24px}}
+@media(max-width:350px){.diagnostics-stats>div{grid-template-columns:1fr}.diagnostics-stats dd{text-align:left}}
