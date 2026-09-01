@@ -45,7 +45,8 @@ const renderBody = ui.slice(renderStart, renderEnd);
   expect(!renderBody.includes(action), `render must not trigger export action: ${action}`);
 });
 
-expect((ui.match(/getDiagnosticReport\(\)/g) || []).length >= 4, 'each export action must obtain a fresh safe report');
+expect(ui.includes('const report=api.getDiagnosticReport();'), 'export helper must obtain a fresh safe report');
+expect((ui.match(/const payload=getDiagnosticExport\(\);/g) || []).length === 3, 'each explicit export action must obtain its own fresh safe payload');
 expect(ui.includes("title:'モンスターバトル 診断要約'") && ui.includes('text:payload.summary'), 'share must use the fixed title and safe summary');
 expect(!ui.includes('url:root.location') && !ui.includes('url:location'), 'share must not include the current URL');
 expect(ui.includes('monster-rpg-diagnostics-') && ui.includes("type:'application/json;charset=utf-8'"), 'JSON download contract is missing');
