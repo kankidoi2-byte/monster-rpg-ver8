@@ -64,7 +64,7 @@ for (const required of [
   'GitHub Issue下書き',
   'action="/issues/draft"',
   '未投稿の下書きを生成',
-  'GitHub書き込み・外部送信・永続保存なし',
+  'Issue投稿は重複確認後の完全一致・5分以内・1回限りの明示確認が必要',
   'href="/dashboard.css"'
 ]) assert.equal(html.includes(required), true, required);
 assert.equal(html.includes('<script>'), false);
@@ -98,6 +98,33 @@ const rejectedHtml = renderDashboardHtml(view, {
   report: null
 });
 assert.equal(rejectedHtml.includes('秘密情報または保存情報らしい項目を検出しました'), true);
+
+const issueDraft = {
+  schema_version: 1,
+  status: 'generated',
+  draft: {
+    posting_status: 'not_posted',
+    title: '[開発司令塔] 自動チェック失敗を調査',
+    body: '## 根拠\n\nこのIssueは未投稿の下書きです。',
+    evidence: [], reproduction: [], labels: [], source_links: [], impact: 'CI失敗'
+  }
+};
+const publicationHtml = renderDashboardHtml(view, null, issueDraft, {
+  schema_version: 1,
+  status: 'awaiting_approval',
+  reason_code: 'explicit_approval_required',
+  draft_fingerprint: 'b'.repeat(64),
+  approval_request: {
+    repository: 'kankidoi2-byte/monster-rpg-ver8',
+    required_permission: 'issues:write',
+    expires_at: '2026-09-01T00:05:00.000Z',
+    confirmation_text: 'この下書きをGitHub Issueとして投稿する'
+  }
+});
+for (const required of ['投稿前の最終確認', 'action="/issues/publication/confirm"', 'action="/issues/publication/cancel"', 'この承認で1回だけ']) {
+  assert.equal(publicationHtml.includes(required), true, required);
+}
+assert.equal(publicationHtml.includes('test-only-write-token'), false);
 
 const invalid = buildDashboardViewModel({
   unifiedStatus: { schema_version: 9, status: { code: 'healthy' } },

@@ -70,6 +70,10 @@ function fingerprint(draft) {
   return createHash('sha256').update(draft.title).update('\n').update(draft.body).digest('hex');
 }
 
+function approvalId(draftFingerprint, preparedAt, expiresAt) {
+  return createHash('sha256').update(draftFingerprint).update('\n').update(preparedAt).update('\n').update(expiresAt).digest('hex');
+}
+
 function duplicateCandidates(snapshot, title) {
   const section = snapshot?.schema_version === 1 ? snapshot.sections?.issues : null;
   if (section?.status !== 'available' || !Array.isArray(section.items)) return null;
@@ -95,12 +99,14 @@ export function prepareIssuePublication(draftResult, repositorySnapshot, options
     approval_request: null
   });
   const expiresAt = new Date(Date.parse(preparedAt) + APPROVAL_TTL_MS).toISOString();
+  const draftFingerprint = fingerprint(draft);
   return result('awaiting_approval', 'explicit_approval_required', {
     prepared_at: preparedAt,
-    draft_fingerprint: fingerprint(draft),
+    draft_fingerprint: draftFingerprint,
     duplicate_candidates: [],
     approval_request: {
       action: 'create_github_issue',
+      approval_id: approvalId(draftFingerprint, preparedAt, expiresAt),
       repository: REPOSITORY,
       required_permission: 'issues:write',
       confirmation_text: ISSUE_PUBLICATION_CONFIRMATION,
@@ -131,6 +137,7 @@ export function confirmIssuePublication(preparation, input = {}, options = {}) {
     confirmed_at: confirmedAt,
     authorization: {
       action: 'create_github_issue',
+      approval_id: preparation.approval_request.approval_id,
       repository: REPOSITORY,
       draft_fingerprint: preparation.draft_fingerprint,
       expires_at: preparation.approval_request.expires_at,
