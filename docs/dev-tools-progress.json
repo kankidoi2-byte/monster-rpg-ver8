@@ -2,10 +2,10 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T09:23:00.000Z",
+  "updated_at": "2026-09-01T10:06:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "b4bfa8f7034ba1bcdb1ea32fc030706709a90ff4",
+    "commit": "657ab633a4ad7c9c8e24961137b37f7cb4aa4200",
     "ci_status": "success",
     "open_pull_requests": 1
   },
@@ -18,8 +18,8 @@
     "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
     "approval_required": true,
     "manual_verification_required": true,
-    "baseline_ci_run": 335,
-    "baseline_pages_run": 123
+    "baseline_ci_run": 337,
+    "baseline_pages_run": 124
   },
   "invariants": {
     "direct_main_writes": false,
@@ -304,11 +304,18 @@
       "id": 17,
       "name": "次の作業判定ルール",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase17",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "next_action_rule_design_started",
+      "next_action": "Implement and validate a deterministic next-action decision from the Phase 16 unified status.",
+      "depends_on": [
+        16
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "baseline_commit": "657ab633a4ad7c9c8e24961137b37f7cb4aa4200",
+      "baseline_ci_run": 337,
+      "baseline_pages_run": 124
     },
     {
       "id": 18,
