@@ -2,28 +2,28 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T13:10:00.000Z",
+  "updated_at": "2026-09-01T14:05:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "ed4537d9fd46f5e9b498239310b52b7a85382797",
+    "commit": "205ea4baf27056d01d6df19b683359fd2c953d4d",
     "ci_status": "success",
     "open_pull_requests": 2
   },
   "overall_status": "in_progress",
   "current_phase": 10,
   "current_work": {
-    "branch": null,
+    "branch": "codex/dev-tools-phase10",
     "pull_request": null,
-    "checkpoint": "phase9_merged_and_pages_published",
-    "next_action": "Start Phase 10 comprehensive diagnostics verification from the latest main.",
+    "checkpoint": "comprehensive_gate_implemented_awaiting_ci",
+    "next_action": "Run the Phase 10 gate and full CI, then merge if the fixed compatibility and device-evidence contract remains satisfied.",
     "approval_required": false,
     "manual_verification_required": false,
-    "baseline_ci_run": 351,
-    "baseline_pages_run": 127,
-    "ci_run": 351,
-    "ci_status": "success",
-    "verified_implementation_commit": "bb37a844b81e0d57f0706d457a364f56396504bd",
-    "user_device_verification": "approved"
+    "baseline_ci_run": 353,
+    "baseline_pages_run": 128,
+    "ci_run": null,
+    "ci_status": "pending",
+    "verified_implementation_commit": null,
+    "user_device_verification": "approved_via_phase8_and_phase9_evidence"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -177,11 +177,13 @@
       "id": 10,
       "name": "診断機能の総合検査",
       "group": "in_game_diagnostics",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase10",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "comprehensive_gate_implemented_awaiting_ci",
+      "next_action": "Run the dedicated comprehensive gate and full CI.",
+      "manual_verification_required": false,
+      "user_device_verification": "approved_via_phase8_and_phase9_evidence"
     },
     {
       "id": 11,
