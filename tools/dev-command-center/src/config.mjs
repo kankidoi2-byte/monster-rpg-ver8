@@ -1,5 +1,9 @@
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', '::1', 'localhost']);
 
+export function isLoopbackHost(host) {
+  return LOOPBACK_HOSTS.has(host);
+}
+
 function parsePort(value) {
   const text = String(value ?? '4174');
   if (!/^\d+$/.test(text)) throw new Error('invalid_port');
@@ -20,7 +24,7 @@ export function readRuntimeConfig(env = process.env) {
   const port = parsePort(env.DEV_COMMAND_CENTER_PORT);
   const privateNetworkConfirmed = parsePrivateNetworkConfirmation(env.DEV_COMMAND_CENTER_PRIVATE_NETWORK_CONFIRMED);
   if (!host) throw new Error('invalid_host');
-  if (!LOOPBACK_HOSTS.has(host) && !privateNetworkConfirmed) {
+  if (!isLoopbackHost(host) && !privateNetworkConfirmed) {
     throw new Error('non_loopback_requires_private_network_confirmation');
   }
   return Object.freeze({ host, port, privateNetworkConfirmed });

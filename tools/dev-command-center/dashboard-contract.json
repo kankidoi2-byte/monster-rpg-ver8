@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 18,
+  "status": "mobile_dashboard_ready",
+  "route": "/",
+  "minimum_width_css_px": 360,
+  "sections": [
+    "overall_status",
+    "next_action",
+    "repository",
+    "continuous_integration",
+    "publication",
+    "timestamps",
+    "source_links"
+  ],
+  "inputs": [
+    "phase16_unified_status",
+    "phase17_next_action"
+  ],
+  "accessibility": {
+    "japanese_primary_ui": true,
+    "keyboard_navigation": true,
+    "skip_link": true,
+    "visible_focus": true,
+    "minimum_control_height_css_px": 44,
+    "reduced_motion_supported": true
+  },
+  "security": {
+    "loopback_only_until_authentication_exists": true,
+    "content_security_policy": true,
+    "referrer_policy": "no-referrer",
+    "external_scripts": false,
+    "client_side_storage": false,
+    "raw_errors": false,
+    "free_text_decision_values": false
+  },
+  "refresh": {
+    "mode": "explicit_page_reload",
+    "server_cache_ms": 60000
+  },
+  "side_effects": [],
+  "forbidden": [
+    "GitHub write",
+    "workflow rerun",
+    "Pages configuration change",
+    "secret display",
+    "game client integration"
+  ],
+  "manual_verification_required": true,
+  "next_phase": 19
+}

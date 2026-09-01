@@ -2,10 +2,10 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T14:12:00.000Z",
+  "updated_at": "2026-09-01T15:20:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "a10395b049d0cdb9a4b0f43f107529066c2389bc",
+    "commit": "589493a9b8bdc77d6b72c7ef8419086ba3526967",
     "ci_status": "success",
     "open_pull_requests": 2
   },
@@ -14,16 +14,17 @@
   "current_work": {
     "branch": "codex/dev-tools-phase18",
     "pull_request": 85,
-    "checkpoint": "ci_success_awaiting_device_verification",
-    "next_action": "Refresh PR #85 from the latest main, provide an Android preview URL, and await explicit device approval before merge.",
+    "checkpoint": "ci_success_preview_ready_awaiting_device_verification",
+    "next_action": "Open the Android preview, verify the 360px layout, reload, source links, focus order, and status cards, then explicitly approve PR #85 for merge.",
     "approval_required": true,
     "manual_verification_required": true,
-    "baseline_ci_run": 355,
-    "baseline_pages_run": 129,
-    "ci_run": 344,
+    "baseline_ci_run": 357,
+    "baseline_pages_run": 130,
+    "ci_run": 358,
     "ci_status": "success",
-    "verified_implementation_commit": "79900cc35c93975ffa9a7d5e910727ceccf618b4",
-    "user_device_verification": "pending"
+    "verified_implementation_commit": "ddb7b7fe5ba46840d194557581b7fc275e85a7f3",
+    "user_device_verification": "pending",
+    "preview_url": "https://effective-funicular-gxvgrwj9v5qfvv7j-4174.app.github.dev/"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -344,11 +345,25 @@
       "id": 18,
       "name": "スマホ用ダッシュボード",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "awaiting_approval",
+      "branch": "codex/dev-tools-phase18",
+      "pull_request": 85,
+      "checkpoint": "ci_success_preview_ready_awaiting_device_verification",
+      "next_action": "Open the Android preview, verify the 360px layout, reload, source links, focus order, and status cards, then explicitly approve PR #85 for merge.",
+      "depends_on": [
+        16,
+        17
+      ],
+      "advanced_while_waiting_for_phase": 9,
+      "baseline_commit": "589493a9b8bdc77d6b72c7ef8419086ba3526967",
+      "baseline_ci_run": 357,
+      "baseline_pages_run": 130,
+      "verified_implementation_commit": "ddb7b7fe5ba46840d194557581b7fc275e85a7f3",
+      "ci_run": 358,
+      "ci_status": "success",
+      "manual_verification_required": true,
+      "user_device_verification": "pending",
+      "preview_url": "https://effective-funicular-gxvgrwj9v5qfvv7j-4174.app.github.dev/"
     },
     {
       "id": 19,

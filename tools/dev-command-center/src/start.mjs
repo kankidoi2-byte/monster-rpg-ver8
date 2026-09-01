@@ -1,6 +1,7 @@
 import { createCommandCenterServer } from './server.mjs';
+import { createDashboardProviderFromEnv } from './dashboard-provider.mjs';
 
-const app = createCommandCenterServer();
+const app = createCommandCenterServer({ dashboardProvider: createDashboardProviderFromEnv() });
 const address = await app.listen();
 console.log('Development command center health service listening on ' + address.address + ':' + address.port);
 
