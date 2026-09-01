@@ -42,8 +42,10 @@ function headerValue(headers, name) {
 }
 
 function rateLimitFrom(headers) {
-  const remaining = Number(headerValue(headers, 'x-ratelimit-remaining'));
-  const reset = Number(headerValue(headers, 'x-ratelimit-reset'));
+  const remainingText = headerValue(headers, 'x-ratelimit-remaining');
+  const resetText = headerValue(headers, 'x-ratelimit-reset');
+  const remaining = remainingText ? Number(remainingText) : NaN;
+  const reset = resetText ? Number(resetText) : NaN;
   return Object.freeze({
     remaining: Number.isSafeInteger(remaining) && remaining >= 0 ? remaining : null,
     reset_at: Number.isSafeInteger(reset) && reset > 0 ? new Date(reset * 1000).toISOString() : null
