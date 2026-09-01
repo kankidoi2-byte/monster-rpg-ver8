@@ -1,0 +1,13 @@
+{
+  "name": "@monster-rpg/dev-command-center",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/start.mjs",
+    "check": "node test/foundation.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
