@@ -2,25 +2,28 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T02:03:10.310Z",
+  "updated_at": "2026-09-01T02:10:59.505Z",
   "baseline": {
     "branch": "main",
     "commit": "a0fc9a4d686d5c1bc715be22d541d9d45bac9c11",
     "ci_status": "success",
-    "open_pull_requests": 1
+    "open_pull_requests": 2
   },
   "overall_status": "in_progress",
   "current_phase": 11,
   "current_work": {
     "branch": "codex/dev-tools-phase11",
-    "pull_request": null,
-    "checkpoint": "phase11_requirements_started",
-    "next_action": "Define the command center screens, data model, authentication boundary, permissions, failure states, and acceptance criteria in human- and machine-readable artifacts.",
+    "pull_request": 71,
+    "checkpoint": "phase11_requirements_ci_success_ready_for_safe_merge",
+    "next_action": "Revalidate the latest head CI and focused diff, then merge PR #71 under the safe conditional approval.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 290,
     "baseline_pages_run": 112,
-    "advanced_while_waiting_for_phase": 8
+    "advanced_while_waiting_for_phase": 8,
+    "verified_implementation_commit": "52077d3c84c49d33eebdac8b7857ddc8816c5d9a",
+    "ci_run": 296,
+    "ci_status": "success"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -169,13 +172,16 @@
       "id": 11,
       "name": "開発司令塔の要件定義",
       "group": "development_command_center",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase11",
-      "pull_request": null,
-      "checkpoint": "requirements_started",
-      "next_action": "Create human-readable and machine-readable requirements plus a deterministic validator.",
+      "pull_request": 71,
+      "checkpoint": "requirements_ci_success_ready_for_safe_merge",
+      "next_action": "Revalidate latest head CI and merge PR #71.",
       "depends_on": [],
-      "advanced_while_waiting_for_phase": 8
+      "advanced_while_waiting_for_phase": 8,
+      "verified_implementation_commit": "52077d3c84c49d33eebdac8b7857ddc8816c5d9a",
+      "ci_run": 296,
+      "ci_status": "success"
     },
     {
       "id": 12,
