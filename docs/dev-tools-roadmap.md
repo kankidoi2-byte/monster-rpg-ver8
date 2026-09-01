@@ -10,7 +10,7 @@
 
 - Phase 13「GitHubリポジトリ情報の取得」は完了・公開済み。
 - Phase 9「コピー・保存・共有」はPR #72のAndroidまたはChromebook確認待ち。
-- Phase 9の確認待ち中に、独立したPhase 14「自動チェック状態の取得」を最新 `main` から進行中。
+- Phase 9の確認待ち中に、独立したPhase 14「自動チェック状態の取得」をPR #77で検証中。
 
 ## 完了判定
 
@@ -165,6 +165,15 @@
 - トークンはサーバー側環境変数からだけ受け取り、アダプターの公開状態、結果、例外、ログへ含めない。
 - 一部の一覧取得に失敗しても他の取得結果を保持し、失敗部分は固定reason code付きの `unavailable` とする。
 - POST、PUT、PATCH、DELETE、GraphQL mutation、権限自動拡大、ゲームクライアントへの組み込みを禁止する。
+
+### 自動チェック状態取得の契約
+
+- GitHub Actionsの直近20 workflow runと、最新runの最大100 jobを固定REST APIからGETだけで取得する。
+- workflow名、run番号と試行番号、イベント、対象ブランチとSHA、状態、結果、開始・終了時刻を固定形式で返す。
+- job名、状態、結果、失敗判定、開始・終了時刻、最大100 step、GitHub上のログ確認URLを返す。
+- ログ本文、レスポンス生データ、runner名、actor情報、コミット本文、認証情報は保持しない。
+- job取得だけが失敗した場合はrun一覧を保持し、job部分を固定reason code付きの `unavailable` とする。
+- workflow dispatch、再実行、キャンセル、ログの自動ダウンロード、権限自動拡大、ゲームクライアントへの組み込みを禁止する。
 
 ## Phase一覧
 
