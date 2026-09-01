@@ -22,7 +22,7 @@
     "baseline_pages_run": 132,
     "ci_run": 348,
     "ci_status": "success",
-    "verified_implementation_commit": "93ca2b4248ace4859dd9b56e0fbd5cebeac5f022",
+    "verified_implementation_commit": "082b68b215ff95892ad3d60cb8256b0fe7c9b63d",
     "user_device_verification": "not_required"
   },
   "invariants": {
@@ -386,7 +386,7 @@
       "baseline_commit": "13587a3d52c99f1ed680b3b5f79c35eb782cb27d",
       "baseline_ci_run": 363,
       "baseline_pages_run": 132,
-      "verified_implementation_commit": "93ca2b4248ace4859dd9b56e0fbd5cebeac5f022",
+      "verified_implementation_commit": "082b68b215ff95892ad3d60cb8256b0fe7c9b63d",
       "ci_run": 348,
       "ci_status": "success",
       "local_check": "Phase 19 targeted checks and npm run check succeeded after dashboard integration",
