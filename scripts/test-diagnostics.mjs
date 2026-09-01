@@ -340,6 +340,16 @@ expect(isolatedReport.health?.status === 'warning', 'unavailable sections must p
 expect(isolatedReport.health?.unavailableSections?.length === 4, 'all unavailable sections must be reported');
 expect(isolatedReportContext.GameDiagnostics.formatDiagnosticSummary(isolatedReport).includes('未取得: save, tutorial, alchemy, expedition'), 'human summary must list unavailable sections');
 
+const hostileHumanSummary = context.GameDiagnostics.formatDiagnosticSummary({
+  version: 1,
+  environment: {
+    app: { version: 'private version text', buildCommit: 'private commit text' },
+    page: { screen: 'home' }
+  },
+  health: { status: 'ok', issueCount: 0, errorCount: 0, unavailableSections: [] }
+});
+expect(!hostileHumanSummary.includes('private version text') && !hostileHumanSummary.includes('private commit text'), 'human summary must whitelist version fields');
+
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'loading diagnostics twice must not duplicate the rejection listener');
