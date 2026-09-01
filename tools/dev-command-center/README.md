@@ -30,3 +30,9 @@ Phase 12の独立したNode.js実行基盤です。ゲーム本体から読み�
 `src/github-actions-reader.mjs` は直近20件のworkflow runと、最新runの最大100 jobをGETだけで取得します。workflow、対象SHA、状態、開始・終了時刻、失敗job、GitHub上の確認URLを固定形式へ正規化します。
 
 ログ本文は秘密情報が混入する可能性があるためダウンロードしません。`log_url` はGitHub上で人間が確認するためのHTTPS URLだけです。workflowの再実行、キャンセル、dispatchなどの書き込み操作も実装しません。
+
+## Phase 15: GitHub Pages読み取り
+
+`src/github-pages-reader.mjs` はPagesサイト情報と最新ビルドをGETだけで取得し、公開状態、公開URL、公開元、対象SHA、公開時刻を固定形式へ正規化します。
+
+公開URLのqueryとfragment、pusher情報、エラー本文、CNAME、証明書情報、レスポンス生データは保持しません。Pages設定変更、ビルド要求、デプロイ作成・取消などの書き込み操作も実装しません。
