@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
-import { readRuntimeConfig } from '../src/config.mjs';
+import { isLoopbackHost, readRuntimeConfig } from '../src/config.mjs';
 import { createCommandCenterServer } from '../src/server.mjs';
 
 const defaults = readRuntimeConfig({});
 assert.deepEqual(defaults, { host: '127.0.0.1', port: 4174, privateNetworkConfirmed: false });
+assert.equal(isLoopbackHost('127.0.0.1'), true);
+assert.equal(isLoopbackHost('localhost'), true);
+assert.equal(isLoopbackHost('0.0.0.0'), false);
 assert.throws(() => readRuntimeConfig({ DEV_COMMAND_CENTER_HOST: '0.0.0.0' }), /non_loopback_requires_private_network_confirmation/);
 assert.deepEqual(readRuntimeConfig({
   DEV_COMMAND_CENTER_HOST: '0.0.0.0',

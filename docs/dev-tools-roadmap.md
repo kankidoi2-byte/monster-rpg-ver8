@@ -10,7 +10,7 @@
 
 - Phase 17「次の作業判定ルール」はPR #83で完了・公開済み。
 - Phase 9「コピー・保存・共有」はPR #72のAndroidまたはChromebook確認待ち。
-- Phase 9の確認待ち中に、独立したPhase 18「スマホ用ダッシュボード」を実装中。
+- Phase 18「スマホ用ダッシュボード」はPR #85のAndroidまたはChromebook確認待ち。
 
 ## 完了判定
 
