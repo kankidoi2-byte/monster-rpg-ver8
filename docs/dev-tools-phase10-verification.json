@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "phase": 10,
+  "name": "診断機能の総合検査",
+  "scope": [
+    "error_capture",
+    "environment_summary",
+    "save_summary",
+    "tutorial_summary",
+    "alchemy_summary",
+    "expedition_summary",
+    "report_generation",
+    "mobile_ui",
+    "copy",
+    "json_download",
+    "os_share",
+    "legacy_save"
+  ],
+  "automated_checks": [
+    {
+      "id": "diagnostics_core",
+      "command": "node scripts/test-diagnostics.mjs",
+      "success_marker": "Diagnostics aggregate report passed"
+    },
+    {
+      "id": "legacy_save_compatibility",
+      "command": "node scripts/test-save-migrations.mjs",
+      "success_marker": "Save migration validation passed"
+    },
+    {
+      "id": "mobile_ui_contract",
+      "command": "node scripts/test-ui-contract.mjs",
+      "success_marker": "UI compatibility validation passed"
+    },
+    {
+      "id": "diagnostics_export",
+      "command": "node scripts/test-diagnostics-export.mjs",
+      "success_marker": "Diagnostics export validation passed"
+    }
+  ],
+  "device_evidence": [
+    {
+      "phase": 8,
+      "pull_request": 70,
+      "platform": "Android",
+      "status": "approved",
+      "covers": ["mobile_ui", "refresh", "back_navigation", "long_error_wrapping"]
+    },
+    {
+      "phase": 9,
+      "pull_request": 72,
+      "platform": "Android",
+      "status": "approved",
+      "covers": ["copy", "json_download", "os_share", "share_cancel", "narrow_viewport"]
+    }
+  ],
+  "compatibility": {
+    "save_key": "mb_v95c",
+    "existing_ids_unchanged": true,
+    "existing_save_fields_preserved": true,
+    "diagnostics_read_only": true,
+    "automatic_external_transmission": false
+  },
+  "release_decision": {
+    "new_device_verification_required": false,
+    "reason": "Phase 10 adds only a test gate and documentation; the unchanged Phase 8 and Phase 9 interfaces already have approved Android evidence."
+  }
+}

@@ -72,7 +72,10 @@
     "check:dev-command-center-github-pages-reader": "node tools/dev-command-center/test/github-pages-reader.test.mjs",
     "check:dev-command-center-unified-status": "node tools/dev-command-center/test/unified-status.test.mjs",
     "check:dev-command-center-next-action": "node tools/dev-command-center/test/next-action.test.mjs",
-    "check:dev-command-center-dashboard": "node tools/dev-command-center/test/dashboard.test.mjs"
+    "check:dev-command-center-dashboard": "node tools/dev-command-center/test/dashboard.test.mjs",
+    "postcheck": "npm run check:diagnostics-export && npm run check:diagnostics-comprehensive",
+    "check:diagnostics-export": "node scripts/test-diagnostics-export.mjs",
+    "check:diagnostics-comprehensive": "node scripts/test-diagnostics-comprehensive.mjs"
   },
   "engines": {
     "node": ">=20"
