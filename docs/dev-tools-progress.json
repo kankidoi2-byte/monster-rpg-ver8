@@ -2,10 +2,10 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T10:11:00.000Z",
+  "updated_at": "2026-09-01T10:15:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "657ab633a4ad7c9c8e24961137b37f7cb4aa4200",
+    "commit": "e51ededcbe7581416e8c3e49edeb6b2bd8cf743c",
     "ci_status": "success",
     "open_pull_requests": 1
   },
@@ -18,8 +18,8 @@
     "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
     "approval_required": true,
     "manual_verification_required": true,
-    "baseline_ci_run": 337,
-    "baseline_pages_run": 124
+    "baseline_ci_run": 340,
+    "baseline_pages_run": 125
   },
   "invariants": {
     "direct_main_writes": false,
@@ -304,11 +304,11 @@
       "id": 17,
       "name": "次の作業判定ルール",
       "group": "development_command_center",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase17",
       "pull_request": 83,
-      "checkpoint": "implementation_validated_ci_pending",
-      "next_action": "Confirm CI on the latest PR head, review the Phase 17 diff, and merge if every safe-merge condition remains satisfied.",
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
       "depends_on": [
         16
       ],
@@ -316,7 +316,12 @@
       "baseline_commit": "657ab633a4ad7c9c8e24961137b37f7cb4aa4200",
       "baseline_ci_run": 337,
       "baseline_pages_run": 124,
-      "verified_implementation_commit": "4c3f468362ea13bb344350a3305da44a870abb5e",
+      "verified_implementation_commit": "c11fed67c6b22177d9d0ebebcbff705c8b3fc535",
+      "ci_run": 339,
+      "ci_status": "success",
+      "merge_commit": "e51ededcbe7581416e8c3e49edeb6b2bd8cf743c",
+      "pages_run": 125,
+      "pages_status": "success",
       "manual_verification_required": false
     },
     {
