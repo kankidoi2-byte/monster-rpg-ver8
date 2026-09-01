@@ -121,23 +121,23 @@ expect(read('js/battle-view.js').includes('is-revealing'), 'staged battle reward
 
 expect(index.includes('id="diagnosticsMenuButton"') && index.includes('onclick="showDiagnosticsScreen()"'), 'diagnostics menu entry is missing');
 expect(index.includes('id="diagnosticsContent"') && index.includes('aria-live="polite"'), 'diagnostics live region is missing');
-expect(index.includes('js/diagnostics-ui.js?v=dev-tools-phase8'), 'diagnostics UI script or cache buster is missing');
-['diagnostics.js?v=dev-tools-phase8', 'save.js?v=', 'tutorial.js?v=', 'alchemy.js?v=', 'expedition.js?v='].forEach(script => {
+expect(index.includes('js/diagnostics-ui.js?v=dev-tools-phase9'), 'diagnostics UI script or cache buster is missing');
+['diagnostics.js?v=dev-tools-phase9', 'save.js?v=', 'tutorial.js?v=', 'alchemy.js?v=', 'expedition.js?v='].forEach(script => {
   expect(index.includes(script), `diagnostics provider script is missing: ${script}`);
 });
 ['save.js', 'tutorial.js', 'alchemy.js', 'expedition.js'].forEach(file => {
   const scriptTag = index.match(new RegExp(`<script src="js/${file.replace('.', '\\.') }\\?v=([^"]+)"`));
-  expect(Boolean(scriptTag && scriptTag[1].includes('dev-tools-phase8')), `diagnostics provider cache buster is missing: ${file}`);
+  expect(Boolean(scriptTag && scriptTag[1].includes('dev-tools-phase9')), `diagnostics provider cache buster is missing: ${file}`);
 });
 expect(diagnosticsUi.includes('function showDiagnosticsScreen'), 'diagnostics screen controller is missing');
 expect(diagnosticsUi.includes('getDiagnosticReport') && diagnosticsUi.includes('formatDiagnosticSummary'), 'diagnostics screen is not wired to the report provider');
 expect(diagnosticsUi.includes('replaceChildren'), 'diagnostics screen must replace stale content safely');
-['.innerHTML', 'localStorage', 'navigator.clipboard', 'fetch(', 'XMLHttpRequest', 'WebSocket'].forEach(forbidden => {
+['.innerHTML', 'localStorage', 'sessionStorage', 'fetch(', 'XMLHttpRequest', 'WebSocket'].forEach(forbidden => {
   expect(!diagnosticsUi.includes(forbidden), `diagnostics screen must not use ${forbidden}`);
 });
 expect(uiCss.includes('.diagnostics-grid') && uiCss.includes('@media(max-width:520px)'), 'responsive diagnostics layout is missing');
 expect(uiCss.includes('.diagnostics-summary') && uiCss.includes('overflow-wrap:anywhere'), 'diagnostics wrapping safeguards are missing');
-expect(read('js/notices-data.js').includes('20260901-diagnostics-screen'), 'diagnostics screen player notice is missing');
+expect(read('js/notices-data.js').includes('20260901-diagnostics-export'), 'diagnostics export player notice is missing');
 
 const requiredScripts = [
   'diagnostics.js', 'data.js', 'bootstrap-guard.js', 'core.js', 'kokoro-link.js', 'state.js', 'save.js', 'contractor-rank.js', 'ui.js', 'tutorial.js',
