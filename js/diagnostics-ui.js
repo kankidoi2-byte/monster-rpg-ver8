@@ -67,10 +67,102 @@
     grid.append(card);
   }
 
+
+  function setActionStatus(message,state){
+    const status=root.document?.getElementById?.('diagnosticsActionStatus');
+    if(!status)return;
+    status.textContent=String(message||'');
+    status.dataset.state=state||'info';
+  }
+
+  function getDiagnosticExport(){
+    const api=root.GameDiagnostics;
+    if(!api||typeof api.getDiagnosticReport!=='function'||typeof api.formatDiagnosticSummary!=='function'){
+      throw new Error('diagnostics_unavailable');
+    }
+    const report=api.getDiagnosticReport();
+    return {
+      report,
+      summary:api.formatDiagnosticSummary(report),
+      json:`${JSON.stringify(report,null,2)}\n`
+    };
+  }
+
+  function diagnosticFilename(report){
+    const stamp=String(report?.generatedAt||new Date().toISOString()).replace(/\D/g,'').slice(0,14)||'latest';
+    return `monster-rpg-diagnostics-${stamp}.json`;
+  }
+
+  async function copyDiagnosticSummary(){
+    try{
+      const clipboard=root.navigator?.clipboard;
+      if(!clipboard||typeof clipboard.writeText!=='function')throw new Error('clipboard_unavailable');
+      const payload=getDiagnosticExport();
+      await clipboard.writeText(payload.summary);
+      setActionStatus('診断要約をクリップボードへコピーしました。','success');
+      return true;
+    }catch(error){
+      setActionStatus('コピーできませんでした。ブラウザの権限設定をご確認ください。','error');
+      return false;
+    }
+  }
+
+  function saveDiagnosticJson(){
+    try{
+      const payload=getDiagnosticExport();
+      const blob=new root.Blob([payload.json],{type:'application/json;charset=utf-8'});
+      const objectUrl=root.URL.createObjectURL(blob);
+      const link=root.document.createElement('a');
+      link.href=objectUrl;
+      link.download=diagnosticFilename(payload.report);
+      link.hidden=true;
+      root.document.body.append(link);
+      link.click();
+      link.remove();
+      root.setTimeout(()=>root.URL.revokeObjectURL(objectUrl),0);
+      setActionStatus('診断JSONの保存を開始しました。','success');
+      return true;
+    }catch(error){
+      setActionStatus('診断JSONを保存できませんでした。','error');
+      return false;
+    }
+  }
+
+  async function shareDiagnosticSummary(){
+    try{
+      const share=root.navigator?.share;
+      if(typeof share!=='function')throw new Error('share_unavailable');
+      const payload=getDiagnosticExport();
+      await share.call(root.navigator,{
+        title:'モンスターバトル 診断要約',
+        text:payload.summary
+      });
+      setActionStatus('共有操作が完了しました。','success');
+      return true;
+    }catch(error){
+      if(error?.name==='AbortError'){
+        setActionStatus('共有をキャンセルしました。','info');
+        return false;
+      }
+      setActionStatus('この端末では共有画面を開けませんでした。','error');
+      return false;
+    }
+  }
+
+  function updateExportAvailability(){
+    const shareButton=root.document?.getElementById?.('diagnosticsShareButton');
+    if(!shareButton)return;
+    const available=typeof root.navigator?.share==='function';
+    shareButton.disabled=!available;
+    shareButton.title=available?'OSの共有画面を開きます':'このブラウザは共有に対応していません';
+  }
+
   function renderDiagnosticsScreen(){
     const container=root.document?.getElementById?.('diagnosticsContent');
     if(!container)return false;
     container.replaceChildren();
+    setActionStatus('','info');
+    updateExportAvailability();
     const api=root.GameDiagnostics;
     if(!api||typeof api.getDiagnosticReport!=='function'||typeof api.formatDiagnosticSummary!=='function'){
       const unavailable=element('div','diagnostics-unavailable');
@@ -149,6 +241,9 @@
     renderDiagnosticsScreen();
   }
 
+  root.copyDiagnosticSummary=copyDiagnosticSummary;
+  root.saveDiagnosticJson=saveDiagnosticJson;
+  root.shareDiagnosticSummary=shareDiagnosticSummary;
   root.renderDiagnosticsScreen=renderDiagnosticsScreen;
   root.refreshDiagnosticsScreen=renderDiagnosticsScreen;
   root.showDiagnosticsScreen=showDiagnosticsScreen;
