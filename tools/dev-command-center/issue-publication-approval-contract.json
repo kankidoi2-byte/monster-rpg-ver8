@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 21,
+  "checkpoint": "approval_and_duplicate_check_core",
+  "status": "safe_preparation_ready",
+  "inputs": [
+    "phase20_generated_issue_draft",
+    "phase13_open_issue_snapshot"
+  ],
+  "preparation_statuses": [
+    "awaiting_approval",
+    "duplicate_detected",
+    "blocked"
+  ],
+  "authorization_statuses": [
+    "authorized",
+    "expired",
+    "cancelled",
+    "blocked"
+  ],
+  "approval": {
+    "exact_confirmation_text": "この下書きをGitHub Issueとして投稿する",
+    "expires_after_ms": 300000,
+    "draft_fingerprint": "sha256",
+    "one_time": true,
+    "required_permission": "issues:write",
+    "duplicate_check_before_approval": true,
+    "draft_change_invalidates_approval": true
+  },
+  "failure_behavior": {
+    "issue_snapshot_unavailable": "blocked",
+    "duplicate_detected": "no_approval",
+    "wrong_confirmation": "blocked",
+    "expired_approval": "no_authorization",
+    "cancelled": "no_authorization"
+  },
+  "side_effects": [],
+  "forbidden_in_this_checkpoint": [
+    "GitHub Issue POST",
+    "token access",
+    "permission configuration",
+    "external message",
+    "persistent approval storage",
+    "automatic approval"
+  ],
+  "manual_verification_required": false,
+  "remaining_phase21_work": "Add the external writer only after explicit approval of the permission and posting impact."
+}
