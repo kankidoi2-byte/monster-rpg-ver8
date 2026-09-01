@@ -2,20 +2,20 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T03:59:30.000Z",
+  "updated_at": "2026-09-01T04:06:30.000Z",
   "baseline": {
     "branch": "main",
     "commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955",
     "ci_status": "success",
-    "open_pull_requests": 0
+    "open_pull_requests": 1
   },
   "overall_status": "in_progress",
   "current_phase": 9,
   "current_work": {
     "branch": "codex/dev-tools-phase9",
-    "pull_request": null,
-    "checkpoint": "phase9_branch_created",
-    "next_action": "Implement user-gesture-only copy, JSON download, and OS share actions with dedicated tests; then open a PR and verify CI.",
+    "pull_request": 72,
+    "checkpoint": "phase9_pr_open_ci_pending",
+    "next_action": "Confirm GitHub Actions, then wait for Android or Chromebook verification before merge.",
     "approval_required": true,
     "manual_verification_required": true,
     "baseline_ci_run": 300,
@@ -154,11 +154,11 @@
       "id": 9,
       "name": "コピー・保存・共有",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase9",
-      "pull_request": null,
-      "checkpoint": "branch_created",
-      "next_action": "Implement and test explicit copy, JSON download, and OS share controls.",
+      "pull_request": 72,
+      "checkpoint": "pr_open_ci_pending",
+      "next_action": "Confirm CI, then request Android or Chromebook verification before merge.",
       "manual_verification_required": true
     },
     {
