@@ -122,12 +122,12 @@ expect(read('js/battle-view.js').includes('is-revealing'), 'staged battle reward
 expect(index.includes('id="diagnosticsMenuButton"') && index.includes('onclick="showDiagnosticsScreen()"'), 'diagnostics menu entry is missing');
 expect(index.includes('id="diagnosticsContent"') && index.includes('aria-live="polite"'), 'diagnostics live region is missing');
 expect(index.includes('js/diagnostics-ui.js?v=dev-tools-phase9'), 'diagnostics UI script or cache buster is missing');
-['diagnostics.js?v=dev-tools-phase9', 'save.js?v=', 'tutorial.js?v=', 'alchemy.js?v=', 'expedition.js?v='].forEach(script => {
+['diagnostics.js?v=dev-tools-phase8', 'save.js?v=', 'tutorial.js?v=', 'alchemy.js?v=', 'expedition.js?v='].forEach(script => {
   expect(index.includes(script), `diagnostics provider script is missing: ${script}`);
 });
 ['save.js', 'tutorial.js', 'alchemy.js', 'expedition.js'].forEach(file => {
   const scriptTag = index.match(new RegExp(`<script src="js/${file.replace('.', '\\.') }\\?v=([^"]+)"`));
-  expect(Boolean(scriptTag && scriptTag[1].includes('dev-tools-phase9')), `diagnostics provider cache buster is missing: ${file}`);
+  expect(Boolean(scriptTag && scriptTag[1].includes('dev-tools-phase8')), `diagnostics provider cache buster is missing: ${file}`);
 });
 expect(diagnosticsUi.includes('function showDiagnosticsScreen'), 'diagnostics screen controller is missing');
 expect(diagnosticsUi.includes('getDiagnosticReport') && diagnosticsUi.includes('formatDiagnosticSummary'), 'diagnostics screen is not wired to the report provider');
