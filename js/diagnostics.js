@@ -712,6 +712,138 @@
     state.errors.splice(0, state.errors.length);
   }
 
+  function reportErrorEntries() {
+    const rawErrors = safeArray(safeValue(() => getErrors(), []));
+    const length = safeCount(safeValue(() => rawErrors.length, 0));
+    const start = Math.max(0, length - MAX_ERRORS);
+    const entries = [];
+    for (let index = start; index < length; index++) {
+      const source = safeRecord(safeValue(() => rawErrors[index], null));
+      if (!source) continue;
+      const kind = safeToken(safeValue(() => source.kind, ''));
+      entries.push({
+        kind: kind === 'error' || kind === 'unhandledrejection' ? kind : 'error',
+        name: safeText(safeValue(() => source.name, 'Error'), 'Error'),
+        message: safeText(safeValue(() => source.message, 'Unknown error'), 'Unknown error'),
+        source: safeSourceUrl(safeValue(() => source.source, '')),
+        line: safeNumber(safeValue(() => source.line, null)),
+        column: safeNumber(safeValue(() => source.column, null)),
+        count: Math.max(1, safeCount(safeValue(() => source.count, 1))),
+        firstSeenAt: safeText(safeValue(() => source.firstSeenAt, '')),
+        lastSeenAt: safeText(safeValue(() => source.lastSeenAt, ''))
+      });
+    }
+    return entries;
+  }
+
+  function addDiagnosticCount(total, value) {
+    return Math.min(Number.MAX_SAFE_INTEGER, total + safeCount(value));
+  }
+
+  function saveDiagnosticIssueCount(summary) {
+    let total = 0;
+    const monsters = safeRecord(safeValue(() => summary?.monsters, null));
+    const party = safeRecord(safeValue(() => summary?.party, null));
+    const quarantine = safeRecord(safeValue(() => summary?.quarantine, null));
+    for (const value of [
+      safeValue(() => monsters?.missingUidCount, 0),
+      safeValue(() => monsters?.duplicateUidCount, 0),
+      safeValue(() => monsters?.invalidInstanceCount, 0),
+      safeValue(() => party?.missingReferenceCount, 0),
+      safeValue(() => quarantine?.unknownInstanceCount, 0),
+      safeValue(() => quarantine?.unknownCaughtIdCount, 0),
+      safeValue(() => quarantine?.invalidExpeditionCount, 0)
+    ]) {
+      total = addDiagnosticCount(total, value);
+    }
+    return total;
+  }
+
+  function sectionIssueCount(summary) {
+    return safeCount(safeValue(() => safeArray(summary?.issues).length, 0));
+  }
+
+  function getDiagnosticReport() {
+    const environment = safeValue(() => readEnvironment(), {
+      capturedAt: '',
+      app: { version: '', buildCommit: '' },
+      page: { url: '', screen: '' },
+      runtime: { browser: 'Other', os: 'Other', deviceClass: 'unknown', online: null },
+      viewport: { width: null, height: null, pixelRatio: null },
+      screen: { width: null, height: null }
+    });
+    const saveSummary = safeValue(() => getSaveSummary(), emptySaveSummary(false));
+    const tutorialSummary = safeValue(() => getTutorialSummary(), emptyTutorialSummary(false));
+    const alchemySummary = safeValue(() => getAlchemySummary(), emptyAlchemySummary(false));
+    const expeditionSummary = safeValue(() => getExpeditionSummary(), emptyExpeditionSummary(false));
+    const errorItems = safeValue(() => reportErrorEntries(), []);
+    const unavailableSections = [];
+    if (safeValue(() => saveSummary.available, false) !== true) unavailableSections.push('save');
+    if (safeValue(() => tutorialSummary.available, false) !== true) unavailableSections.push('tutorial');
+    if (safeValue(() => alchemySummary.available, false) !== true) unavailableSections.push('alchemy');
+    if (safeValue(() => expeditionSummary.available, false) !== true) unavailableSections.push('expedition');
+
+    let issueCount = saveDiagnosticIssueCount(saveSummary);
+    issueCount = addDiagnosticCount(issueCount, sectionIssueCount(tutorialSummary));
+    issueCount = addDiagnosticCount(issueCount, sectionIssueCount(alchemySummary));
+    issueCount = addDiagnosticCount(issueCount, sectionIssueCount(expeditionSummary));
+    const errorCount = safeCount(errorItems.length);
+    const status = errorCount > 0 ? 'error' : (issueCount > 0 || unavailableSections.length > 0 ? 'warning' : 'ok');
+    return {
+      version: 1,
+      generatedAt: safeTimestamp(),
+      environment,
+      save: saveSummary,
+      tutorial: tutorialSummary,
+      alchemy: alchemySummary,
+      expedition: expeditionSummary,
+      errors: {
+        version: 1,
+        limit: MAX_ERRORS,
+        count: errorCount,
+        items: errorItems
+      },
+      health: {
+        status,
+        issueCount,
+        errorCount,
+        unavailableSections
+      }
+    };
+  }
+
+  function formatDiagnosticSummary(value=getDiagnosticReport()) {
+    const report = safeRecord(value);
+    const environment = safeRecord(safeValue(() => report?.environment, null));
+    const app = safeRecord(safeValue(() => environment?.app, null));
+    const page = safeRecord(safeValue(() => environment?.page, null));
+    const health = safeRecord(safeValue(() => report?.health, null));
+    const version = safeCount(safeValue(() => report?.version, 1)) || 1;
+    const rawStatus = safeToken(safeValue(() => health?.status, ''));
+    const status = ['ok', 'warning', 'error'].includes(rawStatus) ? rawStatus : 'warning';
+    const statusLabel = { ok: '正常', warning: '要確認', error: 'エラーあり' }[status];
+    const appVersion = safeText(safeValue(() => app?.version, '')) || '不明';
+    const buildCommit = safeText(safeValue(() => app?.buildCommit, ''));
+    const screen = safeElementId(safeValue(() => page?.screen, '')) || '不明';
+    const issueCount = safeCount(safeValue(() => health?.issueCount, 0));
+    const errorCount = safeCount(safeValue(() => health?.errorCount, 0));
+    const allowedSections = new Set(['save', 'tutorial', 'alchemy', 'expedition']);
+    const rawUnavailable = safeArray(safeValue(() => health?.unavailableSections, []));
+    const unavailable = [];
+    const unavailableCount = Math.min(safeCount(safeValue(() => rawUnavailable.length, 0)), 4);
+    for (let index = 0; index < unavailableCount; index++) {
+      const section = safeToken(safeValue(() => rawUnavailable[index], ''));
+      if (allowedSections.has(section) && !unavailable.includes(section)) unavailable.push(section);
+    }
+    return [
+      `診断レポート v${version}（${statusLabel}）`,
+      `アプリ: ${appVersion}${buildCommit ? ` / ${buildCommit.slice(0, 12)}` : ''}`,
+      `画面: ${screen}`,
+      `検出事項: ${issueCount}件 / JavaScriptエラー: ${errorCount}件`,
+      `未取得: ${unavailable.length ? unavailable.join(', ') : 'なし'}`
+    ].join('\n');
+  }
+
   const api = Object.freeze({
     version: 1,
     environmentVersion: 1,
@@ -719,6 +851,7 @@
     tutorialSummaryVersion: 1,
     alchemySummaryVersion: 1,
     expeditionSummaryVersion: 1,
+    diagnosticReportVersion: 1,
     maxErrors: MAX_ERRORS,
     getEnvironment: readEnvironment,
     getSaveSummary,
@@ -729,6 +862,8 @@
     registerAlchemyProvider,
     getExpeditionSummary,
     registerExpeditionProvider,
+    getDiagnosticReport,
+    formatDiagnosticSummary,
     getErrors,
     clearErrors
   });
