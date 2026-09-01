@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T07:05:00.000Z",
+  "updated_at": "2026-09-01T07:10:00.000Z",
   "baseline": {
     "branch": "main",
     "commit": "13f8074c49db78c5855562c3c9b5fd90c3a4080c",
@@ -14,8 +14,8 @@
   "current_work": {
     "branch": "codex/dev-tools-phase14",
     "pull_request": null,
-    "checkpoint": "phase14_branch_created",
-    "next_action": "Implement and test the bounded read-only GitHub Actions run and job status adapter.",
+    "checkpoint": "phase14_implementation_complete_local_checks_passed",
+    "next_action": "Publish the focused Phase 14 diff, open its PR, and confirm GitHub Actions on the latest head.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 319,
@@ -243,8 +243,8 @@
       "status": "in_progress",
       "branch": "codex/dev-tools-phase14",
       "pull_request": null,
-      "checkpoint": "branch_created",
-      "next_action": "Implement and test the bounded read-only GitHub Actions run and job status adapter.",
+      "checkpoint": "implementation_complete_local_checks_passed",
+      "next_action": "Publish the focused Phase 14 diff, open its PR, and confirm GitHub Actions on the latest head.",
       "depends_on": [
         13
       ],
