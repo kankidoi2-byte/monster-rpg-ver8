@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260901-diagnostics-screen',
+    date: '2026-09-01',
+    category: 'update',
+    title: 'ゲームの状態を確認できる診断画面を追加しました',
+    body: 'メニューの「診断」から、端末環境やセーブの件数、チュートリアル・錬成・遠征の状態、エラー件数を確認できます。セーブ全文や個体IDは表示せず、診断内容が外部へ自動送信されることもありません。'
+  }),
+  Object.freeze({
     id: '20260831-prologue-existing-expedition-fix',
     date: '2026-08-31',
     category: 'fix',
