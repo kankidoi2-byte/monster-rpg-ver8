@@ -24,3 +24,9 @@ Phase 12の独立したNode.js実行基盤です。ゲーム本体から読み�
 `src/github-reader.mjs` は固定GitHub REST APIへGETだけを送り、コミット、ブランチ、オープンPR、オープンIssueを制限付きで取得します。Issue/PR本文とコメントは保持しません。
 
 公開リポジトリはトークンなしでも取得できます。トークンを使う場合は `DEV_COMMAND_CENTER_GITHUB_TOKEN` を秘密管理機構から実行環境へ渡し、ファイル、URL、ログには保存しません。Phase 13では実トークン設定や外部ホスティングを行いません。
+
+## Phase 14: GitHub Actions読み取り
+
+`src/github-actions-reader.mjs` は直近20件のworkflow runと、最新runの最大100 jobをGETだけで取得します。workflow、対象SHA、状態、開始・終了時刻、失敗job、GitHub上の確認URLを固定形式へ正規化します。
+
+ログ本文は秘密情報が混入する可能性があるためダウンロードしません。`log_url` はGitHub上で人間が確認するためのHTTPS URLだけです。workflowの再実行、キャンセル、dispatchなどの書き込み操作も実装しません。
