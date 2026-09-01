@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 13,
+  "status": "reader_ready",
+  "source": {
+    "service": "GitHub REST API",
+    "base_url": "https://api.github.com",
+    "repository_default": "kankidoi2-byte/monster-rpg-ver8"
+  },
+  "transport": {
+    "methods": [
+      "GET"
+    ],
+    "redirects": "rejected",
+    "max_response_characters": 1000000,
+    "pagination": {
+      "commits": 20,
+      "branches": 100,
+      "pull_requests": 100,
+      "issues": 100
+    }
+  },
+  "permissions": [
+    "metadata:read",
+    "contents:read",
+    "pull_requests:read",
+    "issues:read"
+  ],
+  "authentication": {
+    "token_environment": "DEV_COMMAND_CENTER_GITHUB_TOKEN",
+    "token_optional_for_public_repository": true,
+    "token_returned": false,
+    "token_logged": false,
+    "secret_value_in_repository": false
+  },
+  "output": {
+    "schema_version": 1,
+    "sections": [
+      "commits",
+      "branches",
+      "pull_requests",
+      "issues"
+    ],
+    "raw_bodies": false,
+    "pull_request_bodies": false,
+    "issue_bodies": false,
+    "comments": false
+  },
+  "partial_failure": {
+    "supported": true,
+    "section_status": [
+      "available",
+      "unavailable"
+    ],
+    "reason_codes": [
+      "authentication_required",
+      "rate_limited",
+      "permission_denied",
+      "not_found",
+      "github_unavailable",
+      "github_request_failed",
+      "github_response_too_large",
+      "invalid_github_response"
+    ]
+  },
+  "forbidden": [
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "GraphQL mutation",
+    "credential logging",
+    "response body logging",
+    "automatic permission expansion",
+    "game client integration"
+  ],
+  "next_phase": 14
+}
