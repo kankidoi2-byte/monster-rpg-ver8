@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 14,
+  "status": "actions_reader_ready",
+  "source": {
+    "service": "GitHub Actions REST API",
+    "base_url": "https://api.github.com",
+    "repository_default": "kankidoi2-byte/monster-rpg-ver8"
+  },
+  "transport": {
+    "methods": [
+      "GET"
+    ],
+    "redirects": "rejected",
+    "max_response_characters": 1000000,
+    "pagination": {
+      "workflow_runs": 20,
+      "latest_run_jobs": 100,
+      "steps_per_job": 100
+    }
+  },
+  "permissions": [
+    "actions:read"
+  ],
+  "authentication": {
+    "token_environment": "DEV_COMMAND_CENTER_GITHUB_TOKEN",
+    "token_optional_for_public_repository": true,
+    "token_returned": false,
+    "token_logged": false,
+    "secret_value_in_repository": false
+  },
+  "output": {
+    "schema_version": 1,
+    "run_fields": [
+      "workflow_name",
+      "run_number",
+      "run_attempt",
+      "event",
+      "head_branch",
+      "head_sha",
+      "status",
+      "conclusion",
+      "started_at",
+      "completed_at",
+      "details_url"
+    ],
+    "job_fields": [
+      "name",
+      "status",
+      "conclusion",
+      "failed",
+      "started_at",
+      "completed_at",
+      "log_url",
+      "steps"
+    ],
+    "raw_logs": false,
+    "raw_responses": false
+  },
+  "partial_failure": {
+    "latest_run_jobs_supported": true,
+    "section_status": [
+      "available",
+      "unavailable"
+    ],
+    "reason_codes": [
+      "authentication_required",
+      "rate_limited",
+      "permission_denied",
+      "not_found",
+      "github_unavailable",
+      "github_request_failed",
+      "github_response_too_large",
+      "invalid_github_response"
+    ]
+  },
+  "forbidden": [
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "workflow dispatch",
+    "workflow rerun",
+    "workflow cancellation",
+    "raw log download",
+    "credential logging",
+    "response body logging",
+    "automatic permission expansion",
+    "game client integration"
+  ],
+  "next_phase": 15
+}
