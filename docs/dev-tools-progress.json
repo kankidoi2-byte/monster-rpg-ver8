@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T04:06:30.000Z",
+  "updated_at": "2026-09-01T04:10:30.000Z",
   "baseline": {
     "branch": "main",
     "commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955",
@@ -14,12 +14,15 @@
   "current_work": {
     "branch": "codex/dev-tools-phase9",
     "pull_request": 72,
-    "checkpoint": "phase9_pr_open_ci_pending",
-    "next_action": "Confirm GitHub Actions, then wait for Android or Chromebook verification before merge.",
+    "checkpoint": "phase9_ci_success_awaiting_device_verification",
+    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then request merge approval.",
     "approval_required": true,
     "manual_verification_required": true,
     "baseline_ci_run": 300,
-    "baseline_pages_run": 114
+    "baseline_pages_run": 114,
+    "ci_run": 306,
+    "ci_status": "success",
+    "verified_implementation_commit": "4e44a071df13938756cda28a0ab8b3d0104419ac"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -154,12 +157,15 @@
       "id": 9,
       "name": "コピー・保存・共有",
       "group": "in_game_diagnostics",
-      "status": "in_review",
+      "status": "awaiting_approval",
       "branch": "codex/dev-tools-phase9",
       "pull_request": 72,
-      "checkpoint": "pr_open_ci_pending",
-      "next_action": "Confirm CI, then request Android or Chromebook verification before merge.",
-      "manual_verification_required": true
+      "checkpoint": "ci_success_awaiting_device_verification",
+      "next_action": "Verify the export controls on Android or Chromebook, then approve merge.",
+      "manual_verification_required": true,
+      "ci_run": 306,
+      "ci_status": "success",
+      "verified_implementation_commit": "4e44a071df13938756cda28a0ab8b3d0104419ac"
     },
     {
       "id": 10,
