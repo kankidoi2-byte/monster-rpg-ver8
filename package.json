@@ -71,7 +71,9 @@
     "check:dev-command-center-github-actions-reader": "node tools/dev-command-center/test/github-actions-reader.test.mjs",
     "check:dev-command-center-github-pages-reader": "node tools/dev-command-center/test/github-pages-reader.test.mjs",
     "check:dev-command-center-unified-status": "node tools/dev-command-center/test/unified-status.test.mjs",
-    "check:dev-command-center-next-action": "node tools/dev-command-center/test/next-action.test.mjs"
+    "check:dev-command-center-next-action": "node tools/dev-command-center/test/next-action.test.mjs",
+    "postcheck": "npm run check:diagnostics-export",
+    "check:diagnostics-export": "node scripts/test-diagnostics-export.mjs"
   },
   "engines": {
     "node": ">=20"

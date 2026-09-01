@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260901-diagnostics-export',
+    date: '2026-09-01',
+    category: 'update',
+    title: '診断結果をコピー・保存・共有できるようにしました',
+    body: '診断画面から要約のコピー、JSONファイルの保存、OSの共有画面を開けます。いずれもボタンを押したときだけ動作し、共有先への送信は自動では行いません。'
+  }),
+  Object.freeze({
     id: '20260901-diagnostics-screen',
     date: '2026-09-01',
     category: 'update',

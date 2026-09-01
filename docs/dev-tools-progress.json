@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T10:15:00.000Z",
+  "updated_at": "2026-09-01T12:00:00.000Z",
   "baseline": {
     "branch": "main",
     "commit": "e51ededcbe7581416e8c3e49edeb6b2bd8cf743c",
@@ -14,12 +14,16 @@
   "current_work": {
     "branch": "codex/dev-tools-phase9",
     "pull_request": 72,
-    "checkpoint": "ci_success_awaiting_device_verification",
-    "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
-    "approval_required": true,
-    "manual_verification_required": true,
+    "checkpoint": "device_verification_approved_awaiting_latest_ci",
+    "next_action": "Run the full CI suite against the latest main, then merge the approved pull request.",
+    "approval_required": false,
+    "manual_verification_required": false,
     "baseline_ci_run": 340,
-    "baseline_pages_run": 125
+    "baseline_pages_run": 125,
+    "ci_run": 307,
+    "ci_status": "success",
+    "verified_implementation_commit": "864c827d90e40498ca6c20f18fc94698e5be8338",
+    "user_device_verification": "approved"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -155,15 +159,16 @@
       "id": 9,
       "name": "コピー・保存・共有",
       "group": "in_game_diagnostics",
-      "status": "awaiting_approval",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase9",
       "pull_request": 72,
-      "checkpoint": "ci_success_awaiting_device_verification",
-      "next_action": "Verify copy, JSON download, Web Share, cancellation, and narrow layout on Android or Chromebook; then approve merge.",
+      "checkpoint": "device_verification_approved_awaiting_latest_ci",
+      "next_action": "Run the full CI suite against the latest main, then merge the approved pull request.",
       "verified_implementation_commit": "864c827d90e40498ca6c20f18fc94698e5be8338",
       "ci_run": 307,
       "ci_status": "success",
-      "manual_verification_required": true
+      "manual_verification_required": false,
+      "user_device_verification": "approved"
     },
     {
       "id": 10,
