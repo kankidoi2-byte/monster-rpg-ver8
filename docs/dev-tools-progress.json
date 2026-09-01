@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T08:06:16.000Z",
+  "updated_at": "2026-09-01T08:09:30.000Z",
   "baseline": {
     "branch": "main",
     "commit": "6cc40a3cc5555f7ea17d7a5e60e0654dedc0dc4f",
@@ -13,9 +13,9 @@
   "current_phase": 15,
   "current_work": {
     "branch": "codex/dev-tools-phase15",
-    "pull_request": null,
-    "checkpoint": "phase15_local_checks_passed_ready_for_pr",
-    "next_action": "Publish the focused implementation to the Phase 15 branch, open a pull request, and confirm GitHub Actions.",
+    "pull_request": 79,
+    "checkpoint": "phase15_pr_open_ci_pending",
+    "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 325,
@@ -261,11 +261,11 @@
       "id": 15,
       "name": "本番公開状態の取得",
       "group": "development_command_center",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase15",
-      "pull_request": null,
-      "checkpoint": "local_checks_passed_ready_for_pr",
-      "next_action": "Publish the focused implementation, open a pull request, and confirm GitHub Actions.",
+      "pull_request": 79,
+      "checkpoint": "pr_open_ci_pending",
+      "next_action": "Confirm the latest head GitHub Actions run, review the focused diff, and auto-merge if safe.",
       "depends_on": [
         14
       ],
