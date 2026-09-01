@@ -17,4 +17,10 @@ Phase 12の独立したNode.js実行基盤です。ゲーム本体から読み�
 3. `npm --prefix tools/dev-command-center start` を実行します。
 4. `http://127.0.0.1:4174/healthz` を開きます。
 
-実際の非公開ホスティング、アクセス制御、秘密情報の設定はPhase 12の対象外です。Phase 13で読み取り専用GitHubアダプターを追加します。
+実際の非公開ホスティング、アクセス制御、秘密情報の設定はPhase 12の対象外です。
+
+## Phase 13: GitHub読み取り
+
+`src/github-reader.mjs` は固定GitHub REST APIへGETだけを送り、コミット、ブランチ、オープンPR、オープンIssueを制限付きで取得します。Issue/PR本文とコメントは保持しません。
+
+公開リポジトリはトークンなしでも取得できます。トークンを使う場合は `DEV_COMMAND_CENTER_GITHUB_TOKEN` を秘密管理機構から実行環境へ渡し、ファイル、URL、ログには保存しません。Phase 13では実トークン設定や外部ホスティングを行いません。
