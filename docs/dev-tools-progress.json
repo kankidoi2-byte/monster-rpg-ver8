@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T14:58:00.000Z",
+  "updated_at": "2026-09-01T15:05:00.000Z",
   "baseline": {
     "branch": "main",
     "commit": "589493a9b8bdc77d6b72c7ef8419086ba3526967",
@@ -14,15 +14,15 @@
   "current_work": {
     "branch": "codex/dev-tools-phase18",
     "pull_request": 85,
-    "checkpoint": "latest_main_merged_locally",
-    "next_action": "Run the refreshed Phase 18 checks, update PR #85, provide an Android preview URL, and await explicit device approval before merge.",
+    "checkpoint": "local_checks_success_remote_ci_pending",
+    "next_action": "Update PR #85, confirm remote CI, provide an Android preview URL, and await explicit device approval before merge.",
     "approval_required": true,
     "manual_verification_required": true,
     "baseline_ci_run": 357,
     "baseline_pages_run": 130,
     "ci_run": null,
     "ci_status": "pending",
-    "verified_implementation_commit": null,
+    "verified_implementation_commit": "ddb7b7fe5ba46840d194557581b7fc275e85a7f3",
     "user_device_verification": "pending"
   },
   "invariants": {
@@ -347,8 +347,8 @@
       "status": "awaiting_approval",
       "branch": "codex/dev-tools-phase18",
       "pull_request": 85,
-      "checkpoint": "latest_main_merged_locally",
-      "next_action": "Run refreshed CI, provide the Android preview URL, verify the 360px layout, reload, source links, focus order, and status cards, then approve merge.",
+      "checkpoint": "local_checks_success_remote_ci_pending",
+      "next_action": "Confirm refreshed CI, provide the Android preview URL, verify the 360px layout, reload, source links, focus order, and status cards, then approve merge.",
       "depends_on": [
         16,
         17
@@ -357,7 +357,7 @@
       "baseline_commit": "589493a9b8bdc77d6b72c7ef8419086ba3526967",
       "baseline_ci_run": 357,
       "baseline_pages_run": 130,
-      "verified_implementation_commit": null,
+      "verified_implementation_commit": "ddb7b7fe5ba46840d194557581b7fc275e85a7f3",
       "ci_run": null,
       "ci_status": "pending",
       "manual_verification_required": true,
