@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { isLoopbackHost, readRuntimeConfig } from './config.mjs';
 import { buildDashboardViewModel, renderDashboardHtml } from './dashboard.mjs';
 import { importDiagnosticReport } from './diagnostic-import.mjs';
+import { generateIssueDraft } from './issue-draft.mjs';
 
 const MAX_FORM_BYTES = 1024 * 1024;
 
@@ -73,7 +74,9 @@ export function createCommandCenterServer(options = {}) {
     async getDashboard() { return buildDashboardViewModel(); }
   });
   const diagnosticImporter = options.diagnosticImporter || importDiagnosticReport;
+  const issueDraftGenerator = options.issueDraftGenerator || generateIssueDraft;
   let diagnosticImport = null;
+  let issueDraft = null;
 
   async function handle(request, response) {
     const pathname = new URL(request.url || '/', 'http://command-center.invalid').pathname;
@@ -94,7 +97,7 @@ export function createCommandCenterServer(options = {}) {
     if (request.method === 'GET' && pathname === '/' && isLoopbackHost(config.host)) {
       const dashboard = await dashboardProvider.getDashboard();
       response.writeHead(200, DASHBOARD_HEADERS);
-      response.end(renderDashboardHtml(dashboard, diagnosticImport));
+      response.end(renderDashboardHtml(dashboard, diagnosticImport, issueDraft));
       return;
     }
     if (request.method === 'POST' && pathname === '/diagnostics/import' && isLoopbackHost(config.host) && sameOriginForm(request)) {
@@ -113,6 +116,19 @@ export function createCommandCenterServer(options = {}) {
     }
     if (request.method === 'POST' && pathname === '/diagnostics/clear' && isLoopbackHost(config.host) && sameOriginForm(request)) {
       diagnosticImport = null;
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/issues/draft' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      const dashboard = await dashboardProvider.getDashboard();
+      issueDraft = issueDraftGenerator(dashboard, diagnosticImport, { now: now() });
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/issues/draft/clear' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      issueDraft = null;
       response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
       response.end();
       return;

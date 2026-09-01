@@ -61,6 +61,9 @@ for (const required of [
   '更新時刻',
   '診断レポート取込',
   'action="/diagnostics/import"',
+  'GitHub Issue下書き',
+  'action="/issues/draft"',
+  '未投稿の下書きを生成',
   'GitHub書き込み・外部送信・永続保存なし',
   'href="/dashboard.css"'
 ]) assert.equal(html.includes(required), true, required);
