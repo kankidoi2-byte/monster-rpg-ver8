@@ -2,24 +2,27 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T01:03:30.323Z",
+  "updated_at": "2026-09-01T01:14:56.550Z",
   "baseline": {
     "branch": "main",
     "commit": "a0fc9a4d686d5c1bc715be22d541d9d45bac9c11",
     "ci_status": "success",
-    "open_pull_requests": 0
+    "open_pull_requests": 1
   },
   "overall_status": "in_progress",
   "current_phase": 8,
   "current_work": {
     "branch": "codex/dev-tools-phase8",
-    "pull_request": null,
-    "checkpoint": "phase8_design_and_implementation_started",
-    "next_action": "Implement the mobile-readable diagnostic screen, menu entry, player notice, responsive styles, and UI contract tests.",
+    "pull_request": 70,
+    "checkpoint": "implementation_ci_success_manual_device_check_required",
+    "next_action": "On Android or Chromebook, open Menu > Diagnostics, confirm there is no horizontal overflow, refresh works, back works, and long errors remain inside the card; then provide explicit approval to merge PR #70.",
     "approval_required": true,
     "manual_verification_required": true,
     "baseline_ci_run": 290,
-    "baseline_pages_run": 112
+    "baseline_pages_run": 112,
+    "verified_implementation_commit": "37692968dc47af3cc241f2ab93a9bcc02ed84be2",
+    "ci_run": 294,
+    "ci_status": "success"
   },
   "invariants": {
     "direct_main_writes": false,
@@ -137,11 +140,15 @@
       "id": 8,
       "name": "診断画面",
       "group": "in_game_diagnostics",
-      "status": "in_progress",
+      "status": "awaiting_approval",
       "branch": "codex/dev-tools-phase8",
-      "pull_request": null,
-      "checkpoint": "design_and_implementation_started",
-      "next_action": "Implement the mobile-readable diagnostic screen, menu entry, player notice, responsive styles, and UI contract tests."
+      "pull_request": 70,
+      "checkpoint": "implementation_ci_success_manual_device_check_required",
+      "next_action": "Complete Android or Chromebook UI verification for PR #70, then explicitly approve the merge.",
+      "verified_implementation_commit": "37692968dc47af3cc241f2ab93a9bcc02ed84be2",
+      "ci_run": 294,
+      "ci_status": "success",
+      "manual_verification_required": true
     },
     {
       "id": 9,
