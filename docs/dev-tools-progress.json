@@ -2,20 +2,20 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T05:04:30.000Z",
+  "updated_at": "2026-09-01T05:09:00.000Z",
   "baseline": {
     "branch": "main",
     "commit": "aeb30b23d957f686ecb68212aeab2ffd3c9d8955",
     "ci_status": "success",
-    "open_pull_requests": 1
+    "open_pull_requests": 2
   },
   "overall_status": "in_progress",
   "current_phase": 12,
   "current_work": {
     "branch": "codex/dev-tools-phase12",
-    "pull_request": null,
-    "checkpoint": "phase12_branch_created",
-    "next_action": "Create the isolated command-center runtime scaffold, environment contract, unauthenticated health check, and dedicated tests.",
+    "pull_request": 73,
+    "checkpoint": "phase12_pr_open_ci_pending",
+    "next_action": "Confirm the dedicated foundation check and full GitHub Actions run, then auto-merge if the latest diff remains safe.",
     "approval_required": false,
     "manual_verification_required": false,
     "baseline_ci_run": 300,
@@ -198,11 +198,11 @@
       "id": 12,
       "name": "別プロジェクト基盤",
       "group": "development_command_center",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase12",
-      "pull_request": null,
-      "checkpoint": "branch_created",
-      "next_action": "Create and validate the isolated runtime scaffold.",
+      "pull_request": 73,
+      "checkpoint": "pr_open_ci_pending",
+      "next_action": "Confirm dedicated and full CI, then auto-merge if safe.",
       "depends_on": [
         11
       ],
