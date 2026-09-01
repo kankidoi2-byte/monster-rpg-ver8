@@ -2,27 +2,24 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-08-31T23:05:48.942Z",
+  "updated_at": "2026-09-01T00:05:56.933Z",
   "baseline": {
     "branch": "main",
-    "commit": "9bf0b813c14d1c7ec9bd5df795171fe1833317be",
+    "commit": "23e0d19e119ea9a46128cc7ab6f4abe4528d958c",
     "ci_status": "success",
     "open_pull_requests": 0
   },
   "overall_status": "in_progress",
-  "current_phase": 6,
+  "current_phase": 7,
   "current_work": {
-    "branch": "codex/dev-tools-phase6",
-    "pull_request": 68,
-    "checkpoint": "phase6_ci_success_merge_ready",
-    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #68 under the standing safe-publication exception.",
+    "branch": "codex/dev-tools-phase7",
+    "pull_request": null,
+    "checkpoint": "phase7_design_and_implementation_started",
+    "next_action": "Implement a versioned aggregate diagnostic report and privacy-safe human summary with per-section failure isolation and dedicated tests.",
     "approval_required": false,
     "manual_verification_required": false,
-    "baseline_ci_run": 282,
-    "baseline_pages_run": 110,
-    "verified_implementation_commit": "7d5ab01d8a39639579eefb8f464aa8aebf6f5d2d",
-    "ci_run": 284,
-    "ci_status": "success"
+    "baseline_ci_run": 286,
+    "baseline_pages_run": 111
   },
   "invariants": {
     "direct_main_writes": false,
@@ -108,24 +105,27 @@
       "id": 6,
       "name": "遠征診断",
       "group": "in_game_diagnostics",
-      "status": "in_review",
+      "status": "completed",
       "branch": "codex/dev-tools-phase6",
       "pull_request": 68,
-      "checkpoint": "ci_success_merge_ready",
-      "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #68 under the standing safe-publication exception.",
+      "checkpoint": "merged_and_pages_published",
+      "next_action": null,
       "verified_implementation_commit": "7d5ab01d8a39639579eefb8f464aa8aebf6f5d2d",
-      "ci_run": 284,
-      "ci_status": "success"
+      "ci_run": 286,
+      "ci_status": "success",
+      "merge_commit": "23e0d19e119ea9a46128cc7ab6f4abe4528d958c",
+      "pages_run": 111,
+      "pages_status": "success"
     },
     {
       "id": 7,
       "name": "診断レポート生成",
       "group": "in_game_diagnostics",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase7",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "design_and_implementation_started",
+      "next_action": "Implement a versioned aggregate diagnostic report and privacy-safe human summary with per-section failure isolation and dedicated tests."
     },
     {
       "id": 8,
