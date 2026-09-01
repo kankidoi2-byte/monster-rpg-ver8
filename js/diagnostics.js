@@ -822,8 +822,10 @@
     const rawStatus = safeToken(safeValue(() => health?.status, ''));
     const status = ['ok', 'warning', 'error'].includes(rawStatus) ? rawStatus : 'warning';
     const statusLabel = { ok: '正常', warning: '要確認', error: 'エラーあり' }[status];
-    const appVersion = safeText(safeValue(() => app?.version, '')) || '不明';
-    const buildCommit = safeText(safeValue(() => app?.buildCommit, ''));
+    const rawAppVersion = safeText(safeValue(() => app?.version, ''));
+    const appVersion = /^[0-9]+(?:\.[0-9]+){0,3}$/.test(rawAppVersion) ? rawAppVersion : '不明';
+    const rawBuildCommit = safeText(safeValue(() => app?.buildCommit, ''));
+    const buildCommit = /^[0-9a-f]{7,40}$/i.test(rawBuildCommit) ? rawBuildCommit.toLowerCase() : '';
     const screen = safeElementId(safeValue(() => page?.screen, '')) || '不明';
     const issueCount = safeCount(safeValue(() => health?.issueCount, 0));
     const errorCount = safeCount(safeValue(() => health?.errorCount, 0));
