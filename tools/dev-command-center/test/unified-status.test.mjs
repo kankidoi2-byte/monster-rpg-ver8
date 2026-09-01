@@ -106,6 +106,24 @@ assert.equal(unavailableResult.status.code, 'unavailable');
 assert.equal(unavailableResult.status.reason_code, 'rate_limited');
 assert.equal(unavailableResult.status.source, 'github_actions');
 
+const untrusted = snapshots();
+untrusted.actionsSnapshot.runs = { status: 'unavailable', items: [], reason_code: 'secret reason text' };
+const untrustedResult = deriveUnifiedStatus(untrusted);
+assert.equal(untrustedResult.status.reason_code, 'actions_runs_unavailable');
+assert.equal(JSON.stringify(untrustedResult).includes('secret reason text'), false);
+
+const untrustedSignals = snapshots();
+untrustedSignals.actionsSnapshot.runs.items[0].status = 'secret status text';
+untrustedSignals.actionsSnapshot.runs.items[0].conclusion = 'secret conclusion text';
+untrustedSignals.pagesSnapshot.site.value.status = 'secret site text';
+untrustedSignals.pagesSnapshot.latest_build.value.status = 'secret build text';
+const untrustedSignalsResult = deriveUnifiedStatus(untrustedSignals);
+assert.equal(untrustedSignalsResult.signals.ci.status, 'unknown');
+assert.equal(untrustedSignalsResult.signals.ci.conclusion, null);
+assert.equal(untrustedSignalsResult.signals.pages.site_status, 'unknown');
+assert.equal(untrustedSignalsResult.signals.pages.build_status, 'unknown');
+assert.equal(JSON.stringify(untrustedSignalsResult).includes('secret'), false);
+
 const mismatched = snapshots();
 mismatched.pagesSnapshot.repository.name = 'another-repository';
 assert.equal(deriveUnifiedStatus(mismatched).status.reason_code, 'repository_mismatch');
@@ -121,6 +139,9 @@ assert.equal(deriveUnifiedStatus(ahead).status.reason_code, 'source_clock_ahead'
 const missing = deriveUnifiedStatus({ now });
 assert.equal(missing.status.code, 'unavailable');
 assert.equal(missing.signals, null);
+
+const invalidTime = deriveUnifiedStatus({ now: 'not-a-time' });
+assert.equal(invalidTime.status.reason_code, 'evaluation_time_invalid');
 
 const original = snapshots();
 const before = JSON.stringify(original);

@@ -17,6 +17,16 @@ const FAILED_CONCLUSIONS = new Set([
   'stale'
 ]);
 const WORKING_RUN_STATUSES = new Set(['queued', 'in_progress', 'requested', 'waiting', 'pending']);
+const RUN_STATUSES = new Set([...WORKING_RUN_STATUSES, 'completed', 'unknown']);
+const RUN_CONCLUSIONS = new Set([
+  'success', 'failure', 'cancelled', 'timed_out', 'action_required', 'neutral', 'skipped', 'stale', 'startup_failure'
+]);
+const SITE_STATUSES = new Set(['built', 'building', 'errored', 'unknown']);
+const BUILD_STATUSES = new Set(['built', 'building', 'queued', 'errored', 'unknown']);
+const SOURCE_REASON_CODES = new Set([
+  'authentication_required', 'rate_limited', 'permission_denied', 'not_found', 'github_unavailable',
+  'github_request_failed', 'github_response_too_large', 'invalid_github_response', 'fetch_unavailable'
+]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const DEFAULT_STALE_AFTER_MS = 15 * 60 * 1000;
 const MAX_CLOCK_SKEW_MS = 5 * 60 * 1000;
@@ -34,6 +44,14 @@ function safeSha(value) {
 function nonNegativeInteger(value) {
   const number = Number(value);
   return Number.isSafeInteger(number) && number >= 0 ? number : null;
+}
+
+function fixedValue(value, allowed, fallback) {
+  return allowed.has(value) ? value : fallback;
+}
+
+function sourceReason(value, fallback) {
+  return fixedValue(value, SOURCE_REASON_CODES, fallback);
 }
 
 function makeStatus(code, reasonCode, observedAt, source) {
@@ -83,19 +101,19 @@ function validateSources(repository, actions, pages, observedAt) {
   if (new Set(identities).size !== 1) return unavailable(observedAt, 'repository_mismatch');
 
   if (!requiredSectionAvailable(repository.sections?.commits)) {
-    return unavailable(observedAt, repository.sections?.commits?.reason_code || 'repository_commits_unavailable', 'github_repository');
+    return unavailable(observedAt, sourceReason(repository.sections?.commits?.reason_code, 'repository_commits_unavailable'), 'github_repository');
   }
   if (!requiredSectionAvailable(repository.sections?.pull_requests)) {
-    return unavailable(observedAt, repository.sections?.pull_requests?.reason_code || 'repository_pull_requests_unavailable', 'github_repository');
+    return unavailable(observedAt, sourceReason(repository.sections?.pull_requests?.reason_code, 'repository_pull_requests_unavailable'), 'github_repository');
   }
   if (!requiredSectionAvailable(actions.runs)) {
-    return unavailable(observedAt, actions.runs?.reason_code || 'actions_runs_unavailable', 'github_actions');
+    return unavailable(observedAt, sourceReason(actions.runs?.reason_code, 'actions_runs_unavailable'), 'github_actions');
   }
   if (!requiredValueAvailable(pages.site)) {
-    return unavailable(observedAt, pages.site?.reason_code || 'pages_site_unavailable', 'github_pages');
+    return unavailable(observedAt, sourceReason(pages.site?.reason_code, 'pages_site_unavailable'), 'github_pages');
   }
   if (!requiredValueAvailable(pages.latest_build)) {
-    return unavailable(observedAt, pages.latest_build?.reason_code || 'pages_build_unavailable', 'github_pages');
+    return unavailable(observedAt, sourceReason(pages.latest_build?.reason_code, 'pages_build_unavailable'), 'github_pages');
   }
   return null;
 }
@@ -128,13 +146,13 @@ function publicSignals(repository, actions, pages, mainSha, run) {
     open_pull_request_count: nonNegativeInteger(repository.sections.pull_requests.items.length),
     ci: Object.freeze({
       matched_main: run !== null,
-      status: run?.status || 'not_observed',
-      conclusion: run?.conclusion || null,
+      status: run ? fixedValue(run.status, RUN_STATUSES, 'unknown') : 'not_observed',
+      conclusion: run ? fixedValue(run.conclusion, RUN_CONCLUSIONS, null) : null,
       head_sha: safeSha(run?.head_sha)
     }),
     pages: Object.freeze({
-      site_status: String(pages.site.value.status || 'unknown'),
-      build_status: String(pages.latest_build.value.status || 'unknown'),
+      site_status: fixedValue(pages.site.value.status, SITE_STATUSES, 'unknown'),
+      build_status: fixedValue(pages.latest_build.value.status, BUILD_STATUSES, 'unknown'),
       published_sha: safeSha(pages.latest_build.value.published_sha)
     })
   });
@@ -150,6 +168,14 @@ export function deriveUnifiedStatus(options = {}) {
   const repository = options.repositorySnapshot;
   const actions = options.actionsSnapshot;
   const pages = options.pagesSnapshot;
+
+  if (!Number.isFinite(nowMs)) {
+    return Object.freeze({
+      schema_version: 1,
+      status: unavailable(observedAt, 'evaluation_time_invalid'),
+      signals: null
+    });
+  }
 
   const sourceError = validateSources(repository, actions, pages, observedAt);
   if (sourceError) {
