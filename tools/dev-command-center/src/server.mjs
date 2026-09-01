@@ -3,6 +3,9 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { isLoopbackHost, readRuntimeConfig } from './config.mjs';
 import { buildDashboardViewModel, renderDashboardHtml } from './dashboard.mjs';
+import { importDiagnosticReport } from './diagnostic-import.mjs';
+
+const MAX_FORM_BYTES = 1024 * 1024;
 
 const JSON_HEADERS = Object.freeze({
   'Cache-Control': 'no-store',
@@ -13,7 +16,7 @@ const JSON_HEADERS = Object.freeze({
 });
 const DASHBOARD_HEADERS = Object.freeze({
   'Cache-Control': 'no-store',
-  'Content-Security-Policy': "default-src 'none'; style-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+  'Content-Security-Policy': "default-src 'none'; style-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
   'Content-Type': 'text/html; charset=utf-8',
   'Referrer-Policy': 'no-referrer',
   'X-Content-Type-Options': 'nosniff',
@@ -32,12 +35,45 @@ function writeJson(response, statusCode, value) {
   response.end(JSON.stringify(value) + '\n');
 }
 
+function readFormBody(request) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    let tooLarge = false;
+    request.on('data', chunk => {
+      size += chunk.length;
+      if (size > MAX_FORM_BYTES) {
+        tooLarge = true;
+        chunks.length = 0;
+      } else if (!tooLarge) chunks.push(chunk);
+    });
+    request.once('end', () => resolve(tooLarge ? null : Buffer.concat(chunks).toString('utf8')));
+    request.once('error', reject);
+  });
+}
+
+function rejectedImport(reasonCode, importedAt) {
+  return Object.freeze({
+    schema_version: 1,
+    validation: Object.freeze({ status: 'rejected', reason_code: reasonCode, report_version: null }),
+    imported_at: importedAt,
+    report: null
+  });
+}
+
+function sameOriginForm(request) {
+  const fetchSite = String(request.headers['sec-fetch-site'] || '');
+  return fetchSite === '' || fetchSite === 'same-origin' || fetchSite === 'none';
+}
+
 export function createCommandCenterServer(options = {}) {
   const config = options.config || readRuntimeConfig();
   const now = options.now || (() => new Date());
   const dashboardProvider = options.dashboardProvider || Object.freeze({
     async getDashboard() { return buildDashboardViewModel(); }
   });
+  const diagnosticImporter = options.diagnosticImporter || importDiagnosticReport;
+  let diagnosticImport = null;
 
   async function handle(request, response) {
     const pathname = new URL(request.url || '/', 'http://command-center.invalid').pathname;
@@ -58,7 +94,27 @@ export function createCommandCenterServer(options = {}) {
     if (request.method === 'GET' && pathname === '/' && isLoopbackHost(config.host)) {
       const dashboard = await dashboardProvider.getDashboard();
       response.writeHead(200, DASHBOARD_HEADERS);
-      response.end(renderDashboardHtml(dashboard));
+      response.end(renderDashboardHtml(dashboard, diagnosticImport));
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/diagnostics/import' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      const body = await readFormBody(request);
+      if (body === null) {
+        diagnosticImport = rejectedImport('input_too_large', now().toISOString());
+      } else if (!String(request.headers['content-type'] || '').startsWith('application/x-www-form-urlencoded')) {
+        diagnosticImport = rejectedImport('invalid_input', now().toISOString());
+      } else {
+        const source = new URLSearchParams(body).get('report');
+        diagnosticImport = diagnosticImporter(source, { now: now() });
+      }
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/diagnostics/clear' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      diagnosticImport = null;
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
       return;
     }
     writeJson(response, 404, { schema_version: 1, status: 'not_found' });

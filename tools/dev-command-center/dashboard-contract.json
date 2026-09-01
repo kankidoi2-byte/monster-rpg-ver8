@@ -2,7 +2,7 @@
   "schema_version": 1,
   "system_id": "monster-rpg-dev-command-center",
   "phase": 18,
-  "status": "mobile_dashboard_ready",
+  "status": "mobile_dashboard_with_diagnostic_import",
   "route": "/",
   "minimum_width_css_px": 360,
   "sections": [
@@ -12,11 +12,13 @@
     "continuous_integration",
     "publication",
     "timestamps",
-    "source_links"
+    "source_links",
+    "diagnostic_import"
   ],
   "inputs": [
     "phase16_unified_status",
-    "phase17_next_action"
+    "phase17_next_action",
+    "phase19_manual_diagnostic_json"
   ],
   "accessibility": {
     "japanese_primary_ui": true,
@@ -32,6 +34,7 @@
     "referrer_policy": "no-referrer",
     "external_scripts": false,
     "client_side_storage": false,
+    "session_result_memory_only": true,
     "raw_errors": false,
     "free_text_decision_values": false
   },

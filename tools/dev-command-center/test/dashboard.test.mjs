@@ -59,7 +59,9 @@ for (const required of [
   '自動チェック',
   '公開',
   '更新時刻',
-  '読み取り専用・書き込み操作なし',
+  '診断レポート取込',
+  'action="/diagnostics/import"',
+  'GitHub書き込み・外部送信・永続保存なし',
   'href="/dashboard.css"'
 ]) assert.equal(html.includes(required), true, required);
 assert.equal(html.includes('<script>'), false);
@@ -67,6 +69,32 @@ assert.equal(html.includes('untrusted'), false);
 assert.equal(html.includes('must not leak'), false);
 assert.equal(html.includes('token=secret'), false);
 assert.equal(html.includes('evil.example'), false);
+
+const importHtml = renderDashboardHtml(view, {
+  schema_version: 1,
+  validation: { status: 'accepted', reason_code: 'report_accepted', report_version: 1 },
+  imported_at: observedAt,
+  report: {
+    schema_version: 1,
+    generated_at: observedAt,
+    app: { version: '8.0', build_commit: sha },
+    related_commit: sha,
+    context: { screen: 'diagnosticsScreen', device_class: 'mobile' },
+    summary: { health_status: 'ok', issue_count: 0, error_count: 0, unavailable_sections: [], text: '診断レポート v1（正常）／検出0件／エラー0件' },
+    sections: { errors: { available: true, count: 0 } }
+  }
+});
+assert.equal(importHtml.includes('診断レポートを取り込みました'), true);
+assert.equal(importHtml.includes('diagnosticsScreen'), true);
+assert.equal(importHtml.includes('action="/diagnostics/clear"'), true);
+
+const rejectedHtml = renderDashboardHtml(view, {
+  schema_version: 1,
+  validation: { status: 'rejected', reason_code: 'sensitive_field_present', report_version: 1 },
+  imported_at: observedAt,
+  report: null
+});
+assert.equal(rejectedHtml.includes('秘密情報または保存情報らしい項目を検出しました'), true);
 
 const invalid = buildDashboardViewModel({
   unifiedStatus: { schema_version: 9, status: { code: 'healthy' } },

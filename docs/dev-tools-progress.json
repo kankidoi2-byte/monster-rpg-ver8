@@ -2,10 +2,10 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T20:55:00.000Z",
+  "updated_at": "2026-09-01T21:16:00.000Z",
   "baseline": {
     "branch": "main",
-    "commit": "ac4a496ed689375fa9257e766c24c7e65e994f84",
+    "commit": "13587a3d52c99f1ed680b3b5f79c35eb782cb27d",
     "ci_status": "success",
     "open_pull_requests": 1
   },
@@ -14,15 +14,15 @@
   "current_work": {
     "branch": "codex/dev-tools-phase19",
     "pull_request": 86,
-    "checkpoint": "import_core_complete_rebase_and_dashboard_connection_pending",
-    "next_action": "Update PR #86 from latest main, resolve the former Phase 18 dependency, connect the validated import core to the loopback-only dashboard for session-only use, and run the Phase 19 checks.",
+    "checkpoint": "full_local_checks_passed_awaiting_pr_ci",
+    "next_action": "Publish the completed Phase 19 integration to PR #86, confirm CI on the fixed head SHA, then merge if the safe auto-merge conditions remain satisfied.",
     "approval_required": false,
     "manual_verification_required": false,
-    "baseline_ci_run": 361,
-    "baseline_pages_run": 131,
+    "baseline_ci_run": 363,
+    "baseline_pages_run": 132,
     "ci_run": 348,
     "ci_status": "success",
-    "verified_implementation_commit": "d8d79e974a521c40b0dddd81e81c15e11120e84a",
+    "verified_implementation_commit": "082b68b215ff95892ad3d60cb8256b0fe7c9b63d",
     "user_device_verification": "not_required"
   },
   "invariants": {
@@ -372,17 +372,24 @@
       "id": 19,
       "name": "診断レポートの取り込み",
       "group": "development_command_center",
-      "status": "in_progress",
+      "status": "in_review",
       "branch": "codex/dev-tools-phase19",
       "pull_request": 86,
-      "checkpoint": "import_core_complete_rebase_and_dashboard_connection_pending",
-      "next_action": "Update the Draft PR from latest main, connect the validated import core to the loopback-only dashboard for session-only use, and run the Phase 19 checks.",
+      "checkpoint": "full_local_checks_passed_awaiting_pr_ci",
+      "next_action": "Publish the completed integration, confirm PR CI on the fixed head SHA, then merge if the safe auto-merge conditions remain satisfied.",
       "depends_on": [
+        7,
+        12,
         18
       ],
-      "verified_implementation_commit": "d8d79e974a521c40b0dddd81e81c15e11120e84a",
+      "advanced_while_waiting_for_phase": 9,
+      "baseline_commit": "13587a3d52c99f1ed680b3b5f79c35eb782cb27d",
+      "baseline_ci_run": 363,
+      "baseline_pages_run": 132,
+      "verified_implementation_commit": "082b68b215ff95892ad3d60cb8256b0fe7c9b63d",
       "ci_run": 348,
       "ci_status": "success",
+      "local_check": "Phase 19 targeted checks and npm run check succeeded after dashboard integration",
       "manual_verification_required": false
     },
     {

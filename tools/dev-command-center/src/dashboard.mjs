@@ -23,6 +23,28 @@ const CI_STATUSES = new Set(['queued', 'in_progress', 'requested', 'waiting', 'p
 const CI_CONCLUSIONS = new Set(['success', 'failure', 'cancelled', 'timed_out', 'action_required', 'neutral', 'skipped', 'stale', 'startup_failure']);
 const PAGE_STATUSES = new Set(['built', 'building', 'queued', 'errored', 'unknown']);
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
+const IMPORT_REASON_LABELS = Object.freeze({
+  report_accepted: '診断レポートを取り込みました',
+  input_too_large: '入力サイズが上限を超えています',
+  invalid_json: 'JSON形式を確認してください',
+  invalid_input: '入力を確認してください',
+  invalid_json_value: 'JSONに扱えない値があります',
+  input_limit_exceeded: '入力の深さまたは要素数が上限を超えています',
+  url_details_forbidden: 'queryまたはfragmentを含むURLは取り込めません',
+  invalid_url: 'URL形式を確認してください',
+  sensitive_field_present: '秘密情報または保存情報らしい項目を検出しました',
+  sensitive_value_present: '秘密情報らしい値を検出しました',
+  unsupported_report_version: '対応していない診断レポート版です',
+  invalid_generated_at: '生成日時を確認してください',
+  required_field_missing: '必須項目が不足しています',
+  invalid_section: '診断セクションの形式を確認してください',
+  invalid_error_section: 'エラー診断の形式を確認してください',
+  inconsistent_counts: '診断件数が一致しません',
+  invalid_health: '総合診断の形式を確認してください',
+  invalid_unavailable_sections: '未取得セクションの形式を確認してください',
+  inconsistent_sections: '未取得セクションの状態が一致しません',
+  inconsistent_health_status: '総合状態と診断件数が一致しません'
+});
 
 function fixedValue(value, allowed, fallback) {
   return allowed.has(value) ? value : fallback;
@@ -185,7 +207,43 @@ function displayValue(value) {
   return value === null || value === '' || value === 'unknown' || value === 'not_observed' ? '未取得' : value;
 }
 
-export function renderDashboardHtml(viewModel) {
+function diagnosticImportHtml(value) {
+  const validation = value?.schema_version === 1 && value.validation && typeof value.validation === 'object'
+    ? value.validation
+    : null;
+  const accepted = validation?.status === 'accepted' && value.report?.schema_version === 1;
+  const reason = Object.hasOwn(IMPORT_REASON_LABELS, validation?.reason_code)
+    ? IMPORT_REASON_LABELS[validation.reason_code]
+    : 'まだ診断レポートを取り込んでいません';
+  const result = accepted ? `<div class="import-result import-accepted" role="status">
+      <h3>${escapeHtml(reason)}</h3>
+      <p>${escapeHtml(value.report.summary.text)}</p>
+      <dl>
+        <div><dt>生成日時</dt><dd>${escapeHtml(displayValue(value.report.generated_at))}</dd></div>
+        <div><dt>アプリ版</dt><dd>${escapeHtml(displayValue(value.report.app.version))}</dd></div>
+        <div><dt>関連コミット</dt><dd><code>${escapeHtml(shortSha(value.report.related_commit))}</code></dd></div>
+        <div><dt>画面</dt><dd>${escapeHtml(displayValue(value.report.context.screen))}</dd></div>
+        <div><dt>端末区分</dt><dd>${escapeHtml(displayValue(value.report.context.device_class))}</dd></div>
+        <div><dt>検出件数</dt><dd>${escapeHtml(value.report.summary.issue_count)}</dd></div>
+        <div><dt>エラー件数</dt><dd>${escapeHtml(value.report.summary.error_count)}</dd></div>
+      </dl>
+    </div>` : validation ? `<p class="import-result import-rejected" role="alert">${escapeHtml(reason)}</p>` : '';
+  const clear = validation ? '<form method="post" action="/diagnostics/clear"><button class="button button-secondary" type="submit">取込結果を消去</button></form>' : '';
+  return `<section class="diagnostic-import" aria-labelledby="diagnostic-import-title">
+    <p class="eyebrow">端末内・手動操作のみ</p>
+    <h2 id="diagnostic-import-title">診断レポート取込</h2>
+    <p>ゲームの診断画面で保存したJSONを貼り付けます。元のJSONは保持せず、安全な要約だけを再起動または消去までメモリー内に置きます。</p>
+    <form method="post" action="/diagnostics/import">
+      <label for="diagnostic-report">診断JSON</label>
+      <textarea id="diagnostic-report" name="report" maxlength="262144" required spellcheck="false" autocomplete="off"></textarea>
+      <button class="button" type="submit">形式を確認して取り込む</button>
+    </form>
+    ${result}
+    ${clear}
+  </section>`;
+}
+
+export function renderDashboardHtml(viewModel, diagnosticImport = null) {
   const view = buildDashboardViewModel({
     unifiedStatus: {
       schema_version: 1,
@@ -241,8 +299,9 @@ export function renderDashboardHtml(viewModel) {
       <section class="card"><h2>更新時刻</h2><dl><div><dt>日本時間</dt><dd>${escapeHtml(view.observed_at_jst)}</dd></div><div><dt>UTC</dt><dd>${escapeHtml(view.observed_at_utc)}</dd></div></dl></section>
     </div>
     <details class="sources"><summary>確認リンク</summary><ul>${links}</ul></details>
+    ${diagnosticImportHtml(diagnosticImport)}
   </main>
-  <footer>読み取り専用・書き込み操作なし</footer>
+  <footer>GitHub書き込み・外部送信・永続保存なし</footer>
 </body>
 </html>`;
 }
