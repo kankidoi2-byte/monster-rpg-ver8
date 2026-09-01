@@ -2,27 +2,25 @@
   "schema_version": 1,
   "roadmap": "docs/dev-tools-roadmap.md",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
-  "updated_at": "2026-09-01T00:09:56.412Z",
+  "updated_at": "2026-09-01T02:03:10.310Z",
   "baseline": {
     "branch": "main",
-    "commit": "23e0d19e119ea9a46128cc7ab6f4abe4528d958c",
+    "commit": "a0fc9a4d686d5c1bc715be22d541d9d45bac9c11",
     "ci_status": "success",
-    "open_pull_requests": 0
+    "open_pull_requests": 1
   },
   "overall_status": "in_progress",
-  "current_phase": 7,
+  "current_phase": 11,
   "current_work": {
-    "branch": "codex/dev-tools-phase7",
-    "pull_request": 69,
-    "checkpoint": "phase7_ci_success_merge_ready",
-    "next_action": "Confirm CI on this documentation-only checkpoint, then auto-merge PR #69 under the standing safe-publication exception.",
+    "branch": "codex/dev-tools-phase11",
+    "pull_request": null,
+    "checkpoint": "phase11_requirements_started",
+    "next_action": "Define the command center screens, data model, authentication boundary, permissions, failure states, and acceptance criteria in human- and machine-readable artifacts.",
     "approval_required": false,
     "manual_verification_required": false,
-    "baseline_ci_run": 286,
-    "baseline_pages_run": 111,
-    "verified_implementation_commit": "6a761fd015c045c4f30ecfa7064b1212023955b3",
-    "ci_run": 288,
-    "ci_status": "success"
+    "baseline_ci_run": 290,
+    "baseline_pages_run": 112,
+    "advanced_while_waiting_for_phase": 8
   },
   "invariants": {
     "direct_main_writes": false,
@@ -137,11 +135,15 @@
       "id": 8,
       "name": "診断画面",
       "group": "in_game_diagnostics",
-      "status": "pending",
-      "branch": null,
-      "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "status": "awaiting_approval",
+      "branch": "codex/dev-tools-phase8",
+      "pull_request": 70,
+      "checkpoint": "implementation_ci_success_manual_device_check_required",
+      "next_action": "Complete Android or Chromebook UI verification for PR #70, then explicitly approve the merge.",
+      "verified_implementation_commit": "c43f2856f7446e4a71d94c11a3aa15dc60fc36f7",
+      "ci_run": 295,
+      "ci_status": "success",
+      "manual_verification_required": true
     },
     {
       "id": 9,
@@ -167,11 +169,13 @@
       "id": 11,
       "name": "開発司令塔の要件定義",
       "group": "development_command_center",
-      "status": "pending",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "codex/dev-tools-phase11",
       "pull_request": null,
-      "checkpoint": null,
-      "next_action": null
+      "checkpoint": "requirements_started",
+      "next_action": "Create human-readable and machine-readable requirements plus a deterministic validator.",
+      "depends_on": [],
+      "advanced_while_waiting_for_phase": 8
     },
     {
       "id": 12,
