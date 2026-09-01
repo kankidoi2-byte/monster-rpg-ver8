@@ -1,5 +1,8 @@
 import http from 'node:http';
-import { readRuntimeConfig } from './config.mjs';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { isLoopbackHost, readRuntimeConfig } from './config.mjs';
+import { buildDashboardViewModel, renderDashboardHtml } from './dashboard.mjs';
 
 const JSON_HEADERS = Object.freeze({
   'Cache-Control': 'no-store',
@@ -8,6 +11,21 @@ const JSON_HEADERS = Object.freeze({
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY'
 });
+const DASHBOARD_HEADERS = Object.freeze({
+  'Cache-Control': 'no-store',
+  'Content-Security-Policy': "default-src 'none'; style-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+  'Content-Type': 'text/html; charset=utf-8',
+  'Referrer-Policy': 'no-referrer',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY'
+});
+const CSS_HEADERS = Object.freeze({
+  'Cache-Control': 'public, max-age=300',
+  'Content-Type': 'text/css; charset=utf-8',
+  'Referrer-Policy': 'no-referrer',
+  'X-Content-Type-Options': 'nosniff'
+});
+const DASHBOARD_CSS_PATH = fileURLToPath(new URL('../dashboard.css', import.meta.url));
 
 function writeJson(response, statusCode, value) {
   response.writeHead(statusCode, JSON_HEADERS);
@@ -17,7 +35,11 @@ function writeJson(response, statusCode, value) {
 export function createCommandCenterServer(options = {}) {
   const config = options.config || readRuntimeConfig();
   const now = options.now || (() => new Date());
-  const server = http.createServer((request, response) => {
+  const dashboardProvider = options.dashboardProvider || Object.freeze({
+    async getDashboard() { return buildDashboardViewModel(); }
+  });
+
+  async function handle(request, response) {
     const pathname = new URL(request.url || '/', 'http://command-center.invalid').pathname;
     if (request.method === 'GET' && pathname === '/healthz') {
       writeJson(response, 200, {
@@ -28,7 +50,25 @@ export function createCommandCenterServer(options = {}) {
       });
       return;
     }
+    if (request.method === 'GET' && pathname === '/dashboard.css') {
+      response.writeHead(200, CSS_HEADERS);
+      response.end(await readFile(DASHBOARD_CSS_PATH, 'utf8'));
+      return;
+    }
+    if (request.method === 'GET' && pathname === '/' && isLoopbackHost(config.host)) {
+      const dashboard = await dashboardProvider.getDashboard();
+      response.writeHead(200, DASHBOARD_HEADERS);
+      response.end(renderDashboardHtml(dashboard));
+      return;
+    }
     writeJson(response, 404, { schema_version: 1, status: 'not_found' });
+  }
+
+  const server = http.createServer((request, response) => {
+    handle(request, response).catch(() => {
+      if (response.headersSent) return response.destroy();
+      writeJson(response, 503, { schema_version: 1, status: 'unavailable' });
+    });
   });
 
   return Object.freeze({
