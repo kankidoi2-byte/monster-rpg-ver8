@@ -5,6 +5,7 @@ import {
   DIAGNOSTIC_IMPORT_LIMITS,
   importDiagnosticReport
 } from '../src/diagnostic-import.mjs';
+import { createCommandCenterServer } from '../src/server.mjs';
 
 const now = new Date('2026-09-01T12:10:00.000Z');
 
@@ -146,5 +147,54 @@ assert.equal(normalized.report.app.build_commit, '');
 assert.equal(normalized.report.context.screen, 'unknown');
 assert.equal(normalized.report.context.device_class, 'unknown');
 assert.equal(JSON.stringify(normalized).includes('private'), false);
+
+const app = createCommandCenterServer({
+  config: { host: '127.0.0.1', port: 0, privateNetworkConfirmed: false },
+  now: () => now
+});
+try {
+  const address = await app.listen();
+  const base = 'http://127.0.0.1:' + address.port;
+  const acceptedResponse = await fetch(base + '/diagnostics/import', {
+    method: 'POST',
+    redirect: 'manual',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ report: JSON.stringify(validReport()) })
+  });
+  assert.equal(acceptedResponse.status, 303);
+  assert.equal(acceptedResponse.headers.get('location'), '/');
+  const acceptedPage = await (await fetch(base + '/')).text();
+  assert.equal(acceptedPage.includes('診断レポートを取り込みました'), true);
+  assert.equal(acceptedPage.includes('diagnosticsScreen'), true);
+  assert.equal(acceptedPage.includes('render failed'), false);
+  assert.equal(acceptedPage.includes('/js/app.js'), false);
+
+  const sensitive = validReport();
+  sensitive.apiKey = 'must-not-appear';
+  await fetch(base + '/diagnostics/import', {
+    method: 'POST',
+    redirect: 'manual',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ report: JSON.stringify(sensitive) })
+  });
+  const rejectedPage = await (await fetch(base + '/')).text();
+  assert.equal(rejectedPage.includes('秘密情報または保存情報らしい項目を検出しました'), true);
+  assert.equal(rejectedPage.includes('must-not-appear'), false);
+
+  const crossSiteResponse = await fetch(base + '/diagnostics/clear', {
+    method: 'POST',
+    redirect: 'manual',
+    headers: { 'sec-fetch-site': 'cross-site' }
+  });
+  assert.equal(crossSiteResponse.status, 404);
+  assert.equal((await (await fetch(base + '/')).text()).includes('取込結果を消去'), true);
+
+  const clearResponse = await fetch(base + '/diagnostics/clear', { method: 'POST', redirect: 'manual' });
+  assert.equal(clearResponse.status, 303);
+  const clearedPage = await (await fetch(base + '/')).text();
+  assert.equal(clearedPage.includes('取込結果を消去'), false);
+} finally {
+  await app.close();
+}
 
 console.log('Development command center diagnostic import validation passed.');

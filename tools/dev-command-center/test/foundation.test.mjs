@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
-import { readRuntimeConfig } from '../src/config.mjs';
+import { isLoopbackHost, readRuntimeConfig } from '../src/config.mjs';
 import { createCommandCenterServer } from '../src/server.mjs';
 
 const defaults = readRuntimeConfig({});
 assert.deepEqual(defaults, { host: '127.0.0.1', port: 4174, privateNetworkConfirmed: false });
+assert.equal(isLoopbackHost('127.0.0.1'), true);
+assert.equal(isLoopbackHost('localhost'), true);
+assert.equal(isLoopbackHost('0.0.0.0'), false);
 assert.throws(() => readRuntimeConfig({ DEV_COMMAND_CENTER_HOST: '0.0.0.0' }), /non_loopback_requires_private_network_confirmation/);
 assert.deepEqual(readRuntimeConfig({
   DEV_COMMAND_CENTER_HOST: '0.0.0.0',
@@ -40,7 +43,15 @@ try {
 
   const postResponse = await fetch(base + '/healthz', { method: 'POST' });
   assert.equal(postResponse.status, 404);
-  const missingResponse = await fetch(base + '/');
+  const dashboardResponse = await fetch(base + '/');
+  assert.equal(dashboardResponse.status, 200);
+  assert.equal(dashboardResponse.headers.get('content-security-policy').includes("default-src 'none'"), true);
+  assert.equal(dashboardResponse.headers.get('x-frame-options'), 'DENY');
+  assert.equal((await dashboardResponse.text()).includes('開発司令塔'), true);
+  const cssResponse = await fetch(base + '/dashboard.css');
+  assert.equal(cssResponse.status, 200);
+  assert.equal(cssResponse.headers.get('content-type'), 'text/css; charset=utf-8');
+  const missingResponse = await fetch(base + '/missing');
   assert.equal(missingResponse.status, 404);
   assert.deepEqual(await missingResponse.json(), { schema_version: 1, status: 'not_found' });
 } finally {

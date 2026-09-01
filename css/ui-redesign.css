@@ -249,3 +249,14 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .diagnostics-empty,.diagnostics-unavailable p{margin:0;color:var(--ui-muted);font-size:10px}.diagnostics-unavailable{padding:18px;border:1px solid #efb0aa;border-radius:18px;background:#fff0ed;text-align:left}.diagnostics-unavailable h2{margin:0 0 6px;font-size:16px}
 @media(max-width:520px){.diagnostics-toolbar button{width:100%}.diagnostics-grid{grid-template-columns:1fr}.diagnostics-error-card{grid-column:auto}.diagnostics-summary{font-size:9px}.diagnostics-hero{grid-template-columns:46px minmax(0,1fr);padding:12px}.diagnostics-status-icon{width:46px;height:46px;border-radius:14px;font-size:24px}}
 @media(max-width:350px){.diagnostics-stats>div{grid-template-columns:1fr}.diagnostics-stats dd{text-align:left}}
+
+/* Phase 9: explicit, user-controlled diagnostic export actions. */
+.diagnostics-toolbar{flex-wrap:wrap;gap:7px}
+.diagnostics-toolbar button:disabled{cursor:not-allowed;filter:grayscale(.65);opacity:.55}
+.diagnostics-export-note,.diagnostics-action-status{width:min(100%,780px);margin:0 auto 10px;text-align:left}
+.diagnostics-export-note{padding:9px 12px;border-radius:13px;background:#fff7d9;color:#71561d;font-size:9px;line-height:1.55}
+.diagnostics-action-status{min-height:18px;padding:0 3px;color:var(--ui-muted);font-size:9px;font-weight:800}
+.diagnostics-action-status[data-state="success"]{color:#247c4c}
+.diagnostics-action-status[data-state="error"]{color:#b73e38}
+@media(max-width:520px){.diagnostics-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch}.diagnostics-toolbar button{width:100%}}
+@media(max-width:350px){.diagnostics-toolbar{grid-template-columns:1fr}}
