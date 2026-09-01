@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "node src/start.mjs",
-    "check": "node test/foundation.test.mjs"
+    "check": "npm run check:foundation && npm run check:github-reader",
+    "check:foundation": "node test/foundation.test.mjs",
+    "check:github-reader": "node test/github-reader.test.mjs"
   },
   "engines": {
     "node": ">=20"
