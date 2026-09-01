@@ -60,6 +60,7 @@ expect(context.GameDiagnostics?.saveSummaryVersion === 1, 'save summary schema v
 expect(context.GameDiagnostics?.tutorialSummaryVersion === 1, 'tutorial summary schema version is missing');
 expect(context.GameDiagnostics?.alchemySummaryVersion === 1, 'alchemy summary schema version is missing');
 expect(context.GameDiagnostics?.expeditionSummaryVersion === 1, 'expedition summary schema version is missing');
+expect(context.GameDiagnostics?.diagnosticReportVersion === 1, 'diagnostic report schema version is missing');
 expect(context.GameDiagnostics?.maxErrors === 20, 'diagnostics limit must be 20');
 expect((listeners.get('error') || []).length === 1, 'one error listener must be installed');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection listener must be installed');
@@ -309,6 +310,36 @@ hostileExpeditionContext.GameDiagnostics.registerExpeditionProvider(() => new Pr
 const hostileExpeditionSummary = hostileExpeditionContext.GameDiagnostics.getExpeditionSummary();
 expect(hostileExpeditionSummary.available === true && hostileExpeditionSummary.state?.usedSlotCount === 0, 'throwing expedition getters must produce a safe fixed summary');
 
+const diagnosticReport = context.GameDiagnostics.getDiagnosticReport();
+expect(diagnosticReport.version === 1 && typeof diagnosticReport.generatedAt === 'string', 'diagnostic report header is incorrect');
+expect(diagnosticReport.environment && diagnosticReport.save?.available === true, 'diagnostic report must include environment and save sections');
+expect(diagnosticReport.tutorial?.available === true && diagnosticReport.alchemy?.available === true && diagnosticReport.expedition?.available === true, 'diagnostic report must include feature summaries');
+expect(diagnosticReport.errors?.version === 1 && diagnosticReport.errors.count <= 20, 'diagnostic report error section is invalid');
+expect(['ok', 'warning', 'error'].includes(diagnosticReport.health?.status), 'diagnostic report health status is invalid');
+expect(diagnosticReport.health?.issueCount >= diagnosticReport.tutorial.issues.length + diagnosticReport.alchemy.issues.length + diagnosticReport.expedition.issues.length, 'diagnostic report issue total is incomplete');
+const humanDiagnosticSummary = context.GameDiagnostics.formatDiagnosticSummary(diagnosticReport);
+expect(humanDiagnosticSummary.split('\n').length === 5, 'human diagnostic summary must stay concise');
+expect(humanDiagnosticSummary.includes('診断レポート v1') && humanDiagnosticSummary.includes('JavaScriptエラー'), 'human diagnostic summary is missing required headings');
+for (const forbidden of ['private-map-id', 'private-member-uid', 'private reward text', 'private-recipe-id', 'private-catalyst-uid']) {
+  expect(!JSON.stringify(diagnosticReport).includes(forbidden), `aggregate diagnostic report leaked forbidden value: ${forbidden}`);
+  expect(!humanDiagnosticSummary.includes(forbidden), `human diagnostic summary leaked forbidden value: ${forbidden}`);
+}
+
+const isolatedReportContext = { URL, addEventListener() {} };
+isolatedReportContext.window = isolatedReportContext;
+vm.createContext(isolatedReportContext);
+vm.runInContext(source, isolatedReportContext);
+const throwingProvider = () => { throw new Error('provider unavailable'); };
+isolatedReportContext.GameDiagnostics.registerSaveProvider(throwingProvider);
+isolatedReportContext.GameDiagnostics.registerTutorialProvider(throwingProvider);
+isolatedReportContext.GameDiagnostics.registerAlchemyProvider(throwingProvider);
+isolatedReportContext.GameDiagnostics.registerExpeditionProvider(throwingProvider);
+const isolatedReport = isolatedReportContext.GameDiagnostics.getDiagnosticReport();
+expect(isolatedReport.version === 1, 'one failed section must not prevent report generation');
+expect(isolatedReport.health?.status === 'warning', 'unavailable sections must produce a warning report');
+expect(isolatedReport.health?.unavailableSections?.length === 4, 'all unavailable sections must be reported');
+expect(isolatedReportContext.GameDiagnostics.formatDiagnosticSummary(isolatedReport).includes('未取得: save, tutorial, alchemy, expedition'), 'human summary must list unavailable sections');
+
 vm.runInContext(source, context);
 expect((listeners.get('error') || []).length === 1, 'loading diagnostics twice must not duplicate the error listener');
 expect((listeners.get('unhandledrejection') || []).length === 1, 'loading diagnostics twice must not duplicate the rejection listener');
@@ -392,4 +423,4 @@ if (errors.length) {
   console.error(errors.map(error => `- ${error}`).join('\n'));
   process.exit(1);
 }
-console.log('Diagnostics expedition summary passed');
+console.log('Diagnostics aggregate report passed');
