@@ -6,6 +6,12 @@
 
 進捗の機械可読な正本は `docs/dev-tools-progress.json` とする。各作業は原則として1 Phase・1ブランチ・1 PRで実施する。Phaseは番号順を優先するが、承認待ちのPhaseに依存せず最新 `main` から独立して作業できる後続Phaseは先行してよい。
 
+## 現在地
+
+- Phase 13「GitHubリポジトリ情報の取得」はPR #75で完了し、マージ後CI #317とGitHub Pages #117の成功を確認済み。
+- Phase 9「コピー・保存・共有」はPR #72のAndroidまたはChromebook確認待ち。
+- Phase 9の確認待ち中も、独立して進められる次の候補はPhase 14「自動チェック状態の取得」とする。
+
 ## 完了判定
 
 各Phaseは次の条件をすべて満たした時点で完了とする。
