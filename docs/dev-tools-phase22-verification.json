@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "phase": 22,
+  "name": "司令塔の総合検査",
+  "scope": [
+    "runtime_boundary",
+    "authentication_failure",
+    "rate_limit_failure",
+    "repository_partial_failure",
+    "actions_job_partial_failure",
+    "pages_partial_failure",
+    "stale_status",
+    "mobile_360_layout",
+    "secret_non_disclosure",
+    "least_privilege_readers",
+    "explicit_issue_confirmation",
+    "one_time_issue_authorization",
+    "no_automatic_issue_post"
+  ],
+  "automated_checks": [
+    {
+      "id": "foundation",
+      "command": "node tools/dev-command-center/test/foundation.test.mjs",
+      "success_marker": "Development command center foundation validation passed."
+    },
+    {
+      "id": "repository_reader",
+      "command": "node tools/dev-command-center/test/github-reader.test.mjs",
+      "success_marker": "Development command center GitHub reader validation passed."
+    },
+    {
+      "id": "actions_reader",
+      "command": "node tools/dev-command-center/test/github-actions-reader.test.mjs",
+      "success_marker": "Development command center GitHub Actions reader validation passed."
+    },
+    {
+      "id": "pages_reader",
+      "command": "node tools/dev-command-center/test/github-pages-reader.test.mjs",
+      "success_marker": "Development command center GitHub Pages reader validation passed."
+    },
+    {
+      "id": "unified_status",
+      "command": "node tools/dev-command-center/test/unified-status.test.mjs",
+      "success_marker": "Development command center unified status validation passed."
+    },
+    {
+      "id": "mobile_dashboard",
+      "command": "node tools/dev-command-center/test/dashboard.test.mjs",
+      "success_marker": "Development command center mobile dashboard validation passed."
+    },
+    {
+      "id": "issue_approval",
+      "command": "node tools/dev-command-center/test/issue-publication-approval.test.mjs",
+      "success_marker": "Development command center Issue publication approval core validation passed."
+    },
+    {
+      "id": "issue_writer",
+      "command": "node tools/dev-command-center/test/github-issue-writer.test.mjs",
+      "success_marker": "Development command center GitHub Issue writer validation passed."
+    }
+  ],
+  "device_evidence": [
+    {
+      "phase": 18,
+      "pull_request": 85,
+      "platform": "Android",
+      "status": "approved",
+      "covers": [
+        "mobile_360_layout",
+        "refresh",
+        "source_links",
+        "no_horizontal_overflow"
+      ]
+    }
+  ],
+  "permission_boundary": {
+    "repository_actions_pages": "GET only",
+    "issue_write_token_environment": "DEV_COMMAND_CENTER_GITHUB_ISSUE_TOKEN",
+    "issue_write_token_storage": "server process only",
+    "issue_post_requires_fresh_confirmation": true,
+    "issue_confirmation_expires_after_ms": 300000,
+    "issue_authorization_one_time": true,
+    "automatic_issue_post": false,
+    "background_issue_post": false
+  },
+  "compatibility": {
+    "game_runtime_changed": false,
+    "save_key": "mb_v95c",
+    "existing_ids_unchanged": true,
+    "existing_save_fields_preserved": true,
+    "player_notice_required": false
+  },
+  "verified_baseline": {
+    "main_commit": "bb7e009f8f7df2db6deebc3f4b0d73d688f805d0",
+    "main_ci_run": 388,
+    "pages_run": 140,
+    "open_pull_requests": 0,
+    "real_issue_posted": false,
+    "write_token_configured": false
+  },
+  "release_decision": {
+    "new_device_verification_required": false,
+    "reason": "Phase 22 adds only deterministic tests and verification records; runtime UI and posting behavior are unchanged, and the Phase 18 Android layout evidence remains applicable."
+  }
+}
