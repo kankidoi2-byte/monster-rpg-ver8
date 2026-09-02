@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "phase": 30,
-  "checkpoint": "fresh_confirmation_approval_core",
+  "checkpoint": "fresh_confirmation_approval_core_with_bounded_writer",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "input": "phase29_unpublished_minimal_patch_proposal_and_fresh_repository_snapshot",
   "approval": {
@@ -40,7 +40,7 @@
     "explicit_capability_approval": true,
     "fresh_confirmation_per_materialization": true,
     "permissions": ["contents:write", "pull_requests:write"],
-    "writer_connected": false
+    "writer_connected": true
   },
   "failure_mode": "fail_closed"
 }

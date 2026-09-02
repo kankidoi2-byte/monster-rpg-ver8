@@ -99,7 +99,7 @@ assert.deepEqual(preparation.approval_request.required_permissions, ['contents:w
 assert.equal(preparation.approval_request.one_time, true);
 assert.equal(Date.parse(preparation.approval_request.expires_at) - Date.parse(preparation.prepared_at),
   PATCH_PUBLICATION_APPROVAL_LIMITS.approval_ttl_ms);
-assert.equal(PATCH_PUBLICATION_APPROVAL_LIMITS.writer_connected, false);
+assert.equal(PATCH_PUBLICATION_APPROVAL_LIMITS.writer_connected, true);
 assert.equal(Object.isFrozen(preparation), true);
 assert.equal(Object.isFrozen(preparation.plan), true);
 assert.equal(Object.isFrozen(preparation.approval_request.required_permissions), true);
@@ -195,7 +195,7 @@ for (const forbidden of ['fetch(', 'api.github.com', 'Authorization', 'process.e
 const contract = JSON.parse(await readFile(new URL('../patch-publication-approval-contract.json', import.meta.url), 'utf8'));
 assert.equal(contract.effects_in_this_checkpoint.branch_creation, false);
 assert.equal(contract.effects_in_this_checkpoint.pull_request_creation, false);
-assert.equal(contract.required_for_future_writer.writer_connected, false);
+assert.equal(contract.required_for_future_writer.writer_connected, true);
 assert.equal(contract.required_for_future_writer.fresh_confirmation_per_materialization, true);
 
 console.log('Development inspection agent patch publication approval core validation passed.');

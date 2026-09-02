@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "phase": 30,
+  "checkpoint": "bounded_github_branch_commit_pull_request_writer",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "authorization": {
+    "implementation_approved": true,
+    "fresh_confirmation_per_materialization": true,
+    "ttl_seconds": 300,
+    "one_time": true,
+    "merge_authorized": false
+  },
+  "limits": {
+    "maximum_files": 3,
+    "maximum_replacements": 5,
+    "maximum_changed_lines": 120,
+    "maximum_response_characters": 256000
+  },
+  "preflight": [
+    "revalidate_phase29_proposal_and_result_blobs",
+    "revalidate_exact_reviewed_plan",
+    "revalidate_fresh_one_time_authorization",
+    "revalidate_current_main_sha",
+    "reject_matching_open_pull_request",
+    "fetch_and_verify_every_source_blob_before_any_write"
+  ],
+  "effects": {
+    "new_git_blobs": true,
+    "one_git_tree": true,
+    "one_commit": true,
+    "one_branch": true,
+    "one_pull_request": true,
+    "merge": false,
+    "main_direct_write": false,
+    "force_push": false,
+    "issue_post": false,
+    "workflow_action": false,
+    "repository_settings_change": false
+  },
+  "failure_mode": "fail_closed_without_destructive_cleanup"
+}

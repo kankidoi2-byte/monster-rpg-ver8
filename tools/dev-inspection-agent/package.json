@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "analyze:manual": "node src/manual-analysis-cli.mjs",
-    "check": "node test/manual-readonly-analysis.test.mjs && node test/trigger-coordinator.test.mjs && node test/automatic-inspection-report.test.mjs && node test/automatic-issue-draft.test.mjs && node test/isolated-remediation-environment.test.mjs && node test/minimal-patch-proposal.test.mjs && node test/patch-publication-approval.test.mjs",
+    "check": "node test/manual-readonly-analysis.test.mjs && node test/trigger-coordinator.test.mjs && node test/automatic-inspection-report.test.mjs && node test/automatic-issue-draft.test.mjs && node test/isolated-remediation-environment.test.mjs && node test/minimal-patch-proposal.test.mjs && node test/patch-publication-approval.test.mjs && node test/github-patch-writer.test.mjs",
     "check:triggers": "node test/trigger-coordinator.test.mjs",
     "check:reports": "node test/automatic-inspection-report.test.mjs",
-    "check:publication-approval": "node test/patch-publication-approval.test.mjs"
+    "check:publication-approval": "node test/patch-publication-approval.test.mjs",
+    "check:github-writer": "node test/github-patch-writer.test.mjs"
   },
   "engines": {
     "node": ">=20"
