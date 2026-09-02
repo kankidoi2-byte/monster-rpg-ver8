@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "phase": 31,
+  "status": "limited_autonomy_gate_enabled",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "default_decision": "deny",
+  "eligibility": {
+    "finding_kinds": ["test_failure", "broken_reference"],
+    "requires_failed_ci_bound_to_current_main": true,
+    "requires_allowlisted_declared_check": true,
+    "requires_safe_fixed_target_paths": true,
+    "maximum_attempts_per_trial": 1
+  },
+  "scope": {
+    "maximum_target_paths": 3,
+    "workspace": "ephemeral_memory_overlay_only",
+    "proposal": "exact_once_replacements_only",
+    "result": "unpublished"
+  },
+  "automatic_actions": [
+    "read_fixed_source_blobs",
+    "prepare_ephemeral_memory_overlay",
+    "generate_exact_once_patch_proposal",
+    "run_declared_test_plan"
+  ],
+  "external_writes": {
+    "branch": false,
+    "commit": false,
+    "pull_request": false,
+    "issue": false,
+    "workflow": false,
+    "merge": false
+  },
+  "publication": {
+    "fresh_confirmation_per_materialization": true,
+    "implementation_approval_is_materialization_approval": false,
+    "merge_authorized": false
+  },
+  "compatibility": {
+    "save_key": "mb_v95c",
+    "save_and_data_sources_are_not_writable": true,
+    "existing_ids_unchanged": true,
+    "governance_workflows_secrets_and_assets_are_not_writable": true
+  },
+  "cost": {
+    "maximum_direct_cost_usd": 0,
+    "paid_actions": false
+  }
+}
