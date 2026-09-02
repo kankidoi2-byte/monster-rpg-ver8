@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "phase": 32,
+  "contract_id": "monster-rpg-formal-bounded-inspection-operation",
+  "status": "formal_operation_core_enabled",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "entrypoint": "runFormalInspectionCycle",
+  "trigger_sources": ["pull_request", "main_push", "ci_completed", "pages_completed", "schedule"],
+  "continuous_operation": {
+    "one_bounded_cycle_per_trigger": true,
+    "duplicate_suppression_hours": 24,
+    "maximum_attempts_per_trigger": 1,
+    "maximum_target_paths": 3,
+    "maximum_cycle_input_bytes": 1048576,
+    "caller_supplies_normalized_snapshots": true,
+    "scheduler_or_webhook_installed_by_this_phase": false
+  },
+  "pipeline": [
+    "deduplicate_trigger",
+    "normalize_read_only_status",
+    "create_unpublished_investigation_report",
+    "create_unpublished_issue_draft_for_actionable_incident",
+    "authorize_only_allowlisted_main_bound_failure",
+    "prepare_ephemeral_memory_overlay",
+    "accept_one_verified_exact_once_patch_proposal",
+    "prepare_fresh_confirmation_request"
+  ],
+  "automatic_external_writes": {
+    "issue_post": false,
+    "branch": false,
+    "commit": false,
+    "pull_request": false,
+    "merge": false,
+    "workflow_action": false,
+    "manual_publish": false
+  },
+  "fresh_confirmation_required": [
+    "post_each_issue",
+    "materialize_each_remediation_branch_commit_and_pull_request"
+  ],
+  "never_authorized_by_cycle": [
+    "direct_main_write",
+    "force_push",
+    "merge",
+    "workflow_action",
+    "manual_publish",
+    "repository_or_pages_setting_change",
+    "permission_expansion",
+    "paid_action"
+  ],
+  "compatibility": {
+    "save_key": "mb_v95c",
+    "preserve_existing_ids": true,
+    "preserve_existing_save_fields": true,
+    "game_data_and_save_sources_not_in_autonomous_scope": true
+  },
+  "failure_behavior": {
+    "default_decision": "deny",
+    "unknown_is_success": false,
+    "partial_failure_is_success": false,
+    "stale_main_is_rejected": true,
+    "unobserved_validation_is_rejected": true,
+    "unsafe_path_is_rejected": true
+  }
+}
