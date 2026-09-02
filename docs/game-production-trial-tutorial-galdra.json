@@ -19,7 +19,7 @@
     {"phase": 40, "owner_line": "system_and_content_serialized", "status": "completed", "deliverable": "use Galdra for the first alchemy recipe, material reward, full skip, and following expedition", "branch": "codex/tutorial-galdra-alchemy", "pull_request": 129, "commit": "872d0821541f6346791dcb14122218a47d913232"},
     {"phase": 41, "owner_line": "command_qa", "status": "completed", "deliverable": "focused tests, full regression, diff review, CI, and safe merge", "pull_request_run": 33689838532, "main_ci_run": 33689915131, "merge_commit": "836acaa891254c2c596bb55d1d838307a6dc993b"},
     {"phase": 42, "owner_line": "command_qa", "status": "completed", "deliverable": "Pages publication and published verification", "pages_run": 33689913438, "published_url": "https://kankidoi2-byte.github.io/monster-rpg-ver8/"},
-    {"phase": 43, "owner_line": "command", "status": "completed", "deliverable": "update canonical progress and stop", "completion_pull_request": null}
+    {"phase": 43, "owner_line": "command", "status": "completed", "deliverable": "update canonical progress and stop", "completion_pull_request": 130}
   ],
   "acceptance_criteria": [
     "the tutorial lesson uses recipe galdra_standard and result galdra",
