@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "trial_id": "tutorial-galdra-20260903",
+  "status": "completed",
+  "goal": "Change the first prologue alchemy result from Alchemion to Galdra.",
+  "activation_scope": "this_goal_only",
+  "continue_to_next_backlog_item": false,
+  "stopped_after_trial": true,
+  "next_start_point": "Wait for explicit user activation; do not select or start another backlog item.",
+  "compatibility": {
+    "save_key": "mb_v95c",
+    "change_save_structure": false,
+    "change_existing_ids": false,
+    "change_encyclopedia_numbers": false,
+    "migrate_or_delete_existing_alchemion_instances": false
+  },
+  "phases": [
+    {"phase": 39, "owner_line": "command", "status": "completed", "deliverable": "fixed scope, compatibility boundary, tests, notice, publication checks, and stop condition"},
+    {"phase": 40, "owner_line": "system_and_content_serialized", "status": "completed", "deliverable": "use Galdra for the first alchemy recipe, material reward, full skip, and following expedition", "branch": "codex/tutorial-galdra-alchemy", "pull_request": 129, "commit": "872d0821541f6346791dcb14122218a47d913232"},
+    {"phase": 41, "owner_line": "command_qa", "status": "completed", "deliverable": "focused tests, full regression, diff review, CI, and safe merge", "pull_request_run": 33689838532, "main_ci_run": 33689915131, "merge_commit": "836acaa891254c2c596bb55d1d838307a6dc993b"},
+    {"phase": 42, "owner_line": "command_qa", "status": "completed", "deliverable": "Pages publication and published verification", "pages_run": 33689913438, "published_url": "https://kankidoi2-byte.github.io/monster-rpg-ver8/"},
+    {"phase": 43, "owner_line": "command", "status": "completed", "deliverable": "update canonical progress and stop", "completion_pull_request": 130}
+  ],
+  "acceptance_criteria": [
+    "the tutorial lesson uses recipe galdra_standard and result galdra",
+    "the one-time material reward matches the Galdra recipe",
+    "the first lesson still costs 250 coins, succeeds at 100 percent, and consumes no companion",
+    "full tutorial skip grants Galdra exactly once",
+    "the following short expedition prefers the tutorial Galdra instance",
+    "existing Alchemion IDs, recipes, owned instances, old saves, and encyclopedia numbers remain compatible",
+    "the player-facing notice is newest and the changed tutorial script has a fresh cache key",
+    "focused tests, full checks, PR CI, main CI, Pages, and published verification succeed"
+  ],
+  "verification": {
+    "tests": [
+      "npm run check:prologue-lumina-alchemy",
+      "npm run check:prologue-comprehensive",
+      "npm run check:prologue-expedition-finale",
+      "npm run check:notices",
+      "node --check js/tutorial.js",
+      "git diff --check",
+      "npm run check"
+    ],
+    "pull_request": 129,
+    "pull_request_ci_run": 33689838532,
+    "main_ci_run": 33689915131,
+    "pages_run": 33689913438,
+    "published_commit": "836acaa891254c2c596bb55d1d838307a6dc993b",
+    "published_checks": [
+      "the title screen loads as Monster Battle Ver8.0",
+      "the home screen shows the 2026-09-03 Galdra first-alchemy notice",
+      "the published index references the prologue-tutorial-galdra-1 tutorial cache key"
+    ]
+  }
+}
