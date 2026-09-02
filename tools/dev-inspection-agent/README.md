@@ -51,6 +51,14 @@ The draft title, body, suggested labels, repository, and links are assembled onl
 
 Every result remains in memory with `publication.state: unpublished` and `requires_fresh_confirmation: true`. This Phase does not call the Phase 21 writer, post an Issue, read a token, add permissions, persist a ledger, or perform any network or filesystem write.
 
+## Isolated remediation environments
+
+Phase 28 prepares a deterministic remediation environment manifest with `prepareIsolatedRemediation(request, { now })`. It accepts only a valid unpublished Phase 27 draft, an immutable `main` SHA, and at most 20 bounded text-file metadata records. Governance files, workflows, Git internals, credentials, save/data sources, and image assets fail closed.
+
+The prepared workspace is an empty in-memory overlay. It identifies the exact read-only source snapshot, the only paths a future proposal may change, and a fixed allowlisted test plan. The session expires after one hour, permits one attempt, retains no patch content, and is discarded rather than persisted.
+
+This Phase does not materialize files, run generated code, access environment variables, create Git branches or Pull Requests, call GitHub, or modify the repository. Phase 29 may consume the manifest to produce an unpublished minimal patch proposal inside the declared overlay.
+
 ## Validation
 
 ```sh
@@ -58,6 +66,7 @@ npm run check:dev-inspection-agent-manual
 npm run check:dev-inspection-agent-triggers
 npm run check:dev-inspection-agent-reports
 npm run check:dev-inspection-agent-issue-drafts
+npm run check:dev-inspection-agent-isolation
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
