@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260902-map-dex-ecosystem',
+    date: '2026-09-02',
+    category: 'update',
+    title: 'マップ図鑑に生態系を追加しました',
+    body: '発見済みマップの詳細で、その土地の生態解説、出現データから集計した属性傾向、主な生息種を確認できるようになりました。'
+  }),
+  Object.freeze({
     id: '20260901-diagnostics-export',
     date: '2026-09-01',
     category: 'update',
