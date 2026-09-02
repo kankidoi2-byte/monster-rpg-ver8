@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "contract_id": "monster-rpg-autonomous-inspection-agent",
+  "phase": 23,
+  "status": "contract_defined",
+  "default_decision": "deny",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "scope": {
+    "purpose": "Inspect repository, CI, Pages, and privacy-safe diagnostics under bounded, reviewable rules.",
+    "actual_agent_execution_enabled": false,
+    "external_write_enabled": false,
+    "phase23_is_contract_only": true,
+    "next_enablement_phase": 24
+  },
+  "automatic_permissions": [
+    "read_repository_metadata",
+    "read_repository_files",
+    "read_pull_request_metadata",
+    "read_issue_metadata",
+    "read_ci_status_and_failure_metadata",
+    "read_pages_publication_status",
+    "read_privacy_safe_diagnostic_summary",
+    "run_declared_local_tests",
+    "produce_unpublished_analysis",
+    "record_phase_checkpoint_on_dedicated_branch"
+  ],
+  "approval_gates": [
+    {
+      "action": "post_github_issue",
+      "approval": "fresh_per_action_exact_confirmation",
+      "reusable": false
+    },
+    {
+      "action": "create_agent_generated_remediation_branch_or_pull_request",
+      "approval": "fresh_per_action_confirmation",
+      "reusable": false,
+      "earliest_phase": 30
+    },
+    {
+      "action": "configure_secret_token_oauth_or_permission",
+      "approval": "explicit_configuration_approval",
+      "reusable": false
+    },
+    {
+      "action": "unsafe_or_manual_merge",
+      "approval": "explicit_merge_approval",
+      "reusable": false
+    },
+    {
+      "action": "android_or_chromebook_verification",
+      "approval": "explicit_manual_verification",
+      "reusable": false
+    },
+    {
+      "action": "manual_publish_or_publication_setting_change",
+      "approval": "explicit_publication_approval",
+      "reusable": false
+    }
+  ],
+  "prohibited_actions": [
+    "write_directly_to_main",
+    "force_push_or_rewrite_history",
+    "change_save_key_mb_v95c",
+    "rename_reuse_or_change_existing_id_meaning",
+    "remove_existing_save_fields",
+    "commit_or_log_secrets_tokens_cookies_or_api_keys",
+    "post_issue_or_message_without_fresh_confirmation",
+    "trigger_or_rerun_workflow_without_explicit_approval",
+    "change_pages_or_repository_settings",
+    "purchase_or_enable_paid_service",
+    "expand_permissions_automatically",
+    "delete_unrelated_files_or_data",
+    "treat_unknown_or_unobserved_test_as_success"
+  ],
+  "limits": {
+    "max_phases_per_run": 1,
+    "max_parallel_phase_pull_requests": 1,
+    "max_commits_read": 20,
+    "max_workflow_runs_read": 20,
+    "max_branches_read": 100,
+    "max_pull_requests_read": 100,
+    "max_issues_read": 100,
+    "max_jobs_read": 100,
+    "max_steps_per_job_read": 100,
+    "max_diagnostic_errors_read": 20,
+    "max_remediation_attempts_per_trigger": 1,
+    "network_hosts": [
+      "api.github.com",
+      "github.com",
+      "kankidoi2-byte.github.io"
+    ]
+  },
+  "stop_conditions": [
+    "ci_failed_or_not_observed",
+    "merge_conflict_or_not_mergeable",
+    "required_test_result_unknown",
+    "specification_materially_ambiguous",
+    "authentication_or_permission_failure",
+    "rate_limit_prevents_required_verification",
+    "secret_or_personal_data_detected",
+    "save_compatibility_or_existing_id_risk",
+    "destructive_or_unrelated_diff_detected",
+    "manual_device_verification_required",
+    "external_write_lacks_fresh_confirmation",
+    "cost_or_permission_expansion_required"
+  ],
+  "cost_policy": {
+    "maximum_direct_cost_usd": 0,
+    "paid_services_allowed": false,
+    "purchases_allowed": false,
+    "billing_changes_allowed": false,
+    "unbounded_retry_allowed": false,
+    "on_cost_required": "stop_and_request_explicit_approval"
+  },
+  "logging_policy": {
+    "required_records": [
+      "machine_readable_progress",
+      "human_readable_roadmap",
+      "dedicated_branch_commit_or_pull_request_checkpoint",
+      "tests_and_ci_result",
+      "next_start_point"
+    ],
+    "checkpoint_before_long_operation": true,
+    "checkpoint_after_meaningful_unit": true,
+    "log_secrets": false,
+    "log_raw_api_responses": false,
+    "log_full_diagnostic_payload": false,
+    "log_free_form_personal_data": false,
+    "retain_only_normalized_bounded_metadata": true
+  },
+  "compatibility_invariants": {
+    "save_key": "mb_v95c",
+    "preserve_existing_ids": true,
+    "preserve_existing_save_fields": true,
+    "main_direct_writes": false,
+    "force_push": false,
+    "secrets_in_repository": false
+  },
+  "failure_behavior": {
+    "fail_closed": true,
+    "partial_failure_is_success": false,
+    "unknown_is_success": false,
+    "retry_policy": "bounded_and_idempotent_only",
+    "report_required": true
+  },
+  "phase_handoffs": [
+    { "phase": 24, "capability": "manual_read_only_analysis" },
+    { "phase": 25, "capability": "deduplicated_automatic_triggers" },
+    { "phase": 26, "capability": "unpublished_investigation_report" },
+    { "phase": 27, "capability": "unpublished_issue_draft" },
+    { "phase": 28, "capability": "isolated_remediation_environment" },
+    { "phase": 29, "capability": "unpublished_minimal_patch_proposal" },
+    { "phase": 30, "capability": "approval_gated_branch_and_pull_request" },
+    { "phase": 31, "capability": "narrow_allowlisted_autonomy" },
+    { "phase": 32, "capability": "formal_bounded_operation" }
+  ],
+  "acceptance_criteria": [
+    "deny_by_default",
+    "read_only_first",
+    "bounded_inputs_and_retries",
+    "fail_closed_stop_conditions",
+    "zero_direct_cost_without_approval",
+    "privacy_safe_audit_log",
+    "fresh_confirmation_for_every_issue_post",
+    "no_runtime_enablement_in_phase23"
+  ]
+}
