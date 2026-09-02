@@ -85,6 +85,16 @@ An authorized trial may read fixed blobs, use the Phase 28 memory overlay, gener
 
 The policy does not invoke the Phase 30 writer. Every real remediation branch, commit, and Pull Request still requires a new proposal-specific five-minute confirmation; merge and Issue publication remain unauthorized.
 
+## Formal bounded operation
+
+Phase 32 adds `runFormalInspectionCycle(input, runtimeState, { now })` as the single fail-closed operation entrypoint. One invocation accepts one normalized trigger and current repository, CI, and Pages snapshots. It composes duplicate suppression, read-only analysis, an unpublished incident report and Issue draft, the Phase 31 allowlist, one Phase 28 memory overlay, one Phase 29 verified exact-once proposal, and Phase 30 publication preparation.
+
+Healthy observations stop with no action. Running checks and pending Pages deployments remain in monitoring. Existing Pull Requests remain awaiting review. Failed, stale, and unavailable observations create only an unpublished Issue draft unless the caller also supplies complete bounded remediation evidence. Only a current-main CI failure with an allowlisted test failure or broken reference can reach a verified patch plan.
+
+The formal cycle deliberately stops at a five-minute, one-time confirmation request. It does not call the GitHub writer, post an Issue, create a branch, commit, or Pull Request, merge, start a workflow, change settings, or publish manually. After a fresh proposal-specific confirmation, the separately tested Phase 30 writer may materialize exactly the reviewed branch, commit, and Pull Request; merge remains outside this cycle.
+
+The operation core processes every accepted PR, main, CI, Pages, or hourly trigger once and returns bounded ledgers to its caller. It does not install a scheduler, webhook, token, or persistence adapter. The existing scheduled automation or another trusted adapter supplies observations and safely retains the returned ledgers.
+
 ## Validation
 
 ```sh
@@ -97,6 +107,7 @@ npm run check:dev-inspection-agent-proposals
 npm run check:dev-inspection-agent-publication-approval
 npm run check:dev-inspection-agent-github-writer
 npm run check:dev-inspection-agent-limited-autonomy
+npm run check:dev-inspection-agent-formal-operation
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
