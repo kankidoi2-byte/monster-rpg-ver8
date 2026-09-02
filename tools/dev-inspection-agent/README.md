@@ -43,12 +43,21 @@ Reports contain bounded cause candidates, impact, a deterministic recommendation
 
 The function returns data in memory only. It does not install persistence, Issue creation, messaging, workflow, or network adapters. Phase 27 will consume the safe report separately when creating an unpublished Issue draft.
 
+## Automatic unpublished Issue drafts
+
+Phase 27 composes the Phase 26 report pipeline with `runAutomaticIssueDraft(input, triggerLedger, draftLedger, { now })`. Only the fixed `failed`, `stale`, and `unavailable` states create a deterministic Issue draft. Healthy, processing, publication-waiting, and human-confirmation states do not create Issue noise.
+
+The draft title, body, suggested labels, repository, and links are assembled only from fixed codes and already-sanitized Phase 26 evidence. Arbitrary input text and credentials are never copied. A second caller-owned 24-hour, 100-entry ledger suppresses duplicate drafts even when the trigger ledger is unavailable.
+
+Every result remains in memory with `publication.state: unpublished` and `requires_fresh_confirmation: true`. This Phase does not call the Phase 21 writer, post an Issue, read a token, add permissions, persist a ledger, or perform any network or filesystem write.
+
 ## Validation
 
 ```sh
 npm run check:dev-inspection-agent-manual
 npm run check:dev-inspection-agent-triggers
 npm run check:dev-inspection-agent-reports
+npm run check:dev-inspection-agent-issue-drafts
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
