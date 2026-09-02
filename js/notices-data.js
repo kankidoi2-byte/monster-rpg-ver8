@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-tutorial-growth-guidance-fix',
+    date: '2026-09-03',
+    category: 'fix',
+    title: '育成チュートリアルの操作案内を修正しました',
+    body: 'スマートフォンで「育成・個体情報」の操作先が説明パネルの下に隠れて分かりにくい問題を修正しました。押す場所を画面下部へ大きく表示し、案内文も具体的にしました。'
+  }),
+  Object.freeze({
     id: '20260903-tutorial-replay-battle-fix',
     date: '2026-09-03',
     category: 'fix',
