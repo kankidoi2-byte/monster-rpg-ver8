@@ -59,6 +59,14 @@ The prepared workspace is an empty in-memory overlay. It identifies the exact re
 
 This Phase does not materialize files, run generated code, access environment variables, create Git branches or Pull Requests, call GitHub, or modify the repository. Phase 29 may consume the manifest to produce an unpublished minimal patch proposal inside the declared overlay.
 
+## Unpublished minimal patch proposals
+
+Phase 29 consumes an unexpired Phase 28 manifest with `generateMinimalPatchProposal(request, { now })`. It verifies every supplied source body against the immutable Git blob SHA and byte size, then permits at most three files, five exact-once text replacements, 8 KiB per replacement fragment, and 120 changed lines.
+
+Proposals fail closed if a path is outside the Phase 28 allowlist, source content does not match its blob, a replacement is ambiguous, a secret pattern or protected save/starter literal is touched, or the bounded isolated test plan is incomplete or failed. Test evidence is bound to the environment, base SHA, and resulting blob SHAs; raw logs are not retained.
+
+The result remains an unpublished in-memory proposal. It creates no file, branch, commit, Pull Request, Issue, workflow action, message, or network request. Phase 30 must obtain fresh confirmation before materializing an approved proposal as a branch and Pull Request.
+
 ## Validation
 
 ```sh
@@ -67,6 +75,7 @@ npm run check:dev-inspection-agent-triggers
 npm run check:dev-inspection-agent-reports
 npm run check:dev-inspection-agent-issue-drafts
 npm run check:dev-inspection-agent-isolation
+npm run check:dev-inspection-agent-proposals
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
