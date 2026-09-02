@@ -67,4 +67,21 @@ const agents = await readFile(new URL('../../../AGENTS.md', import.meta.url), 'u
 assert.equal(agents.includes('risk-approval-contract.json'), true);
 assert.equal(agents.includes('Do not post an Issue without explicit approval'), true);
 
+const progress = JSON.parse(await readFile(new URL('../../../docs/game-production-progress.json', import.meta.url), 'utf8'));
+assert.equal(progress.product_version, 'v1');
+assert.equal(progress.overall_status, 'completed');
+assert.equal(progress.activation_mode, 'user_goal_only');
+assert.equal(progress.production_lines_active, false);
+assert.equal(progress.next_activation_required, true);
+assert.deepEqual(progress.phases.map(phase => phase.status), Array(progress.phases.length).fill('completed'));
+assert.deepEqual(new Set(progress.v2_deferred.map(item => item.id)), new Set([
+  'continuous_autonomous_backlog_selection',
+  'large_feature_and_story_autonomy'
+]));
+
+const roadmap = await readFile(new URL('../../../docs/game-production-automation-roadmap.md', import.meta.url), 'utf8');
+assert.equal(roadmap.includes('ゲーム制作自動化システムv1は完成済み'), true);
+assert.equal(roadmap.includes('次の仕事を自動選択せず停止'), true);
+assert.equal(roadmap.includes('v2候補（v1には含めない）'), true);
+
 console.log('Game production orchestrator risk-based approval policy validation passed.');
