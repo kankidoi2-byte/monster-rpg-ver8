@@ -3,9 +3,22 @@
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "roadmap": "docs/game-production-automation-roadmap.md",
   "risk_contract": "tools/game-production-orchestrator/risk-approval-contract.json",
-  "updated_at": "2026-09-02T14:01:00.000Z",
-  "overall_status": "in_progress",
+  "updated_at": "2026-09-02T14:48:00.000Z",
+  "overall_status": "awaiting_approval",
   "current_phase": 34,
+  "current_activity": "stopped_after_map_dex_ecosystem_trial",
+  "production_lines_active": false,
+  "next_activation_required": true,
+  "latest_trial": {
+    "id": "map-dex-ecosystem-20260902",
+    "status": "completed",
+    "record": "docs/game-production-trial-map-ecosystem.json",
+    "system_pull_request": 125,
+    "content_pull_request": 126,
+    "published_commit": "e56a5a9b652542cb317227e6429c63c994153a63",
+    "pages_run": 33643721594,
+    "game_progress": "Map Dex now shows a map-specific ecosystem explanation, encounter-derived type trends, and main resident species for discovered maps."
+  },
   "allowed_states": ["pending", "in_progress", "in_review", "awaiting_approval", "completed", "blocked"],
   "invariants": {
     "save_key": "mb_v95c",
@@ -132,6 +145,23 @@
     }
   ],
   "backlog": [
+    {
+      "id": "map-dex-ecosystem",
+      "title": "マップ図鑑の生態系",
+      "status": "completed",
+      "owner_line": "system_and_content",
+      "dependencies": [33],
+      "branches": ["codex/map-dex-ecosystem-system", "codex/map-dex-ecosystem-content"],
+      "pull_requests": [125, 126],
+      "commit": "e56a5a9b652542cb317227e6429c63c994153a63",
+      "tests": ["npm run check:map-dex", "npm run check:notices", "npm run check"],
+      "ci": {"pull_request_runs": [33642426959, 33643501284], "main_run": 33643722963, "status": "success"},
+      "pages": {"run": 33643721594, "status": "success"},
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Adds map-specific ecosystem explanations plus encounter-derived type and resident-species trends to all 19 Map Dex records."
+    },
     {
       "id": "system-kokoro-link-activation-animation",
       "title": "ココロリンク発動演出",
