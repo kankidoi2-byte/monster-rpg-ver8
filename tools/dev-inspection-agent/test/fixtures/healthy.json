@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "mode": "manual_read_only",
+  "repository_snapshot": {
+    "schema_version": 1,
+    "observed_at": "2026-09-02T03:00:00.000Z",
+    "repository": {
+      "full_name": "kankidoi2-byte/monster-rpg-ver8",
+      "default_branch": "main"
+    },
+    "sections": {
+      "commits": {
+        "status": "available",
+        "items": [{ "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }]
+      },
+      "branches": { "status": "available", "items": [] },
+      "pull_requests": { "status": "available", "items": [] },
+      "issues": { "status": "available", "items": [] }
+    }
+  },
+  "actions_snapshot": {
+    "schema_version": 1,
+    "observed_at": "2026-09-02T03:00:00.000Z",
+    "repository": { "owner": "kankidoi2-byte", "name": "monster-rpg-ver8" },
+    "runs": {
+      "status": "available",
+      "items": [{
+        "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "completed",
+        "conclusion": "success"
+      }]
+    },
+    "latest_run_jobs": { "status": "available", "items": [] }
+  },
+  "pages_snapshot": {
+    "schema_version": 1,
+    "observed_at": "2026-09-02T03:00:00.000Z",
+    "repository": { "owner": "kankidoi2-byte", "name": "monster-rpg-ver8" },
+    "site": { "status": "available", "value": { "status": "built" } },
+    "latest_build": {
+      "status": "available",
+      "value": {
+        "status": "built",
+        "published_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    }
+  },
+  "source_links": [
+    "https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/396?token=remove#job",
+    "https://kankidoi2-byte.github.io/monster-rpg-ver8/?private=value"
+  ],
+  "untrusted_secret": "must-not-appear"
+}

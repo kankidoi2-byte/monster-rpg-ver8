@@ -1,0 +1,13 @@
+{
+  "name": "@monster-rpg/dev-inspection-agent",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "analyze:manual": "node src/manual-analysis-cli.mjs",
+    "check": "node test/manual-readonly-analysis.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
