@@ -32,14 +32,14 @@ const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_begi
 const TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime']);
 const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
   coins:250,
-  materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])
+  materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])
 });
 const TUTORIAL_STELLA_SKILL_ID='skill_elna_middle_01';
 const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'grassland',enemyId:'grassbeat',difficultyId:'easy',actorId:'freigal'});
 const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
-  recipeId:'alchemion_standard',displayName:'ルミナの入門錬成',resultId:'alchemion',
+  recipeId:'galdra_standard',displayName:'ルミナの入門錬成',resultId:'galdra',
   coinOptionId:'high',coins:250,
-  materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])
+  materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])
 });
 const TUTORIAL_REQUIRED_SKIP_FLAGS=Object.freeze([
   'starterContractsGranted','elnaContractGranted','stellaSkillCardGranted',
@@ -626,9 +626,9 @@ function commitTutorialFullSkip(){
     }
     const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(id=>tutorialSkipRewardInstance(id,{tutorialContract:true}));
     const elna=tutorialSkipRewardInstance('elna_beginner',{tutorialContract:true,tutorialRole:'contract_body'});
-    const alchemion=tutorialSkipRewardInstance(TUTORIAL_LUMINA_ALCHEMY.resultId,{tutorialAlchemyLesson:true});
-    if(starters.some(instance=>!instance)||!elna||!alchemion)throw new Error('tutorial_skip_contract_reward');
-    elna.tutorialContract=true;elna.tutorialRole='contract_body';alchemion.tutorialAlchemyLesson=true;
+    const alchemyPartner=tutorialSkipRewardInstance(TUTORIAL_LUMINA_ALCHEMY.resultId,{tutorialAlchemyLesson:true});
+    if(starters.some(instance=>!instance)||!elna||!alchemyPartner)throw new Error('tutorial_skip_contract_reward');
+    elna.tutorialContract=true;elna.tutorialRole='contract_body';alchemyPartner.tutorialAlchemyLesson=true;
 
     const cardWasGranted=currentTutorialState().stellaSkillCardGranted===true;
     if(typeof SKILL_BY_ID!=='object'||!SKILL_BY_ID[TUTORIAL_STELLA_SKILL_ID])throw new Error('tutorial_skip_skill_missing');

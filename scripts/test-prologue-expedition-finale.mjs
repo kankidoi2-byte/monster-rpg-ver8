@@ -43,8 +43,8 @@ assert.ok(helperStart>=0&&helperEnd>helperStart);
 function makeTutorialContext({saveSucceeds=true,replaying=false,dispatched=false,completed=false,active=[],completedCount=0}={}){
   const state={status:'in_progress',stepId:'expedition_dispatch',replaying,expeditionDispatched:dispatched,prologueCompleted:completed};
   const context=vm.createContext({
-    console:{error:()=>{}},TUTORIAL_LUMINA_ALCHEMY:{resultId:'alchemion'},TUTORIAL_MAIN_FLOW_ID:'prologue',
-    save:{progress:{chapterId:'prologue',storyFlags:{},tutorial:state},instances:[{uid:'alc',id:'alchemion'}],party:[],expeditions:{active:structuredClone(active),completedCount}},
+    console:{error:()=>{}},TUTORIAL_LUMINA_ALCHEMY:{resultId:'galdra'},TUTORIAL_MAIN_FLOW_ID:'prologue',
+    save:{progress:{chapterId:'prologue',storyFlags:{},tutorial:state},instances:[{uid:'galdra',id:'galdra'}],party:[],expeditions:{active:structuredClone(active),completedCount}},
     currentTutorialState:()=>context.save.progress.tutorial,tutorialCurrentStepId:()=>context.save.progress.tutorial.stepId,
     expeditionAvailableInstances:()=>context.save.instances,
     markTutorialExpeditionDispatched:()=>{const t=context.save.progress.tutorial;if(t.expeditionDispatched)return false;t.expeditionDispatched=true;return true;},
@@ -60,12 +60,12 @@ function makeTutorialContext({saveSucceeds=true,replaying=false,dispatched=false
 
 const dispatch=makeTutorialContext();
 dispatch.save.progress.tutorial.stepId='expedition_distance';
-assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('alc')",dispatch),true,'the distance-step render must mark the upcoming member target');
+assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('galdra')",dispatch),true,'the distance-step render must mark the upcoming member target');
 assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('other')",dispatch),false);
 dispatch.save.progress.tutorial.stepId='expedition_member';
-assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('alc')",dispatch),true,'the member step must keep the same target marked');
+assert.equal(vm.runInContext("shouldMarkTutorialExpeditionMember('galdra')",dispatch),true,'the member step must keep the same target marked');
 dispatch.save.progress.tutorial.stepId='expedition_dispatch';
-const entry={mapId:'grassland',distanceId:'short',memberUids:['alc']};
+const entry={mapId:'grassland',distanceId:'short',memberUids:['galdra']};
 assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',dispatch)(entry),true);
 assert.equal(entry.tutorialPrologue,true);
 assert.equal(dispatch.save.progress.tutorial.expeditionDispatched,true);
@@ -75,10 +75,10 @@ assert.equal(vm.runInContext('handleTutorialExpeditionStarted',dispatch)(entry),
 assert.equal(dispatch.advanced,true);
 
 const wrong=makeTutorialContext();
-assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',wrong)({mapId:'grassland',distanceId:'long',memberUids:['alc']}),false,'only a short tutorial expedition may commit');
+assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',wrong)({mapId:'grassland',distanceId:'long',memberUids:['galdra']}),false,'only a short tutorial expedition may commit');
 assert.equal(wrong.save.progress.tutorial.expeditionDispatched,false);
 
-const busyLegacy=makeTutorialContext({active:[{id:'legacy',mapId:'grassland',distanceId:'short',memberUids:['alc'],status:'active'}]});
+const busyLegacy=makeTutorialContext({active:[{id:'legacy',mapId:'grassland',distanceId:'short',memberUids:['galdra'],status:'active'}]});
 busyLegacy.save.progress.tutorial.stepId='expedition_destination';
 const busyBefore=JSON.stringify(busyLegacy.save.expeditions);
 assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_destination',false)",busyLegacy),'expedition_replay',
@@ -98,7 +98,7 @@ assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','ex
   'a fresh save with an open slot must retain the hands-on dispatch route');
 assert.equal(freshRoute.save.progress.tutorial.expeditionDispatched,false);
 
-const justDispatched=makeTutorialContext({dispatched:true,active:[{id:'tutorial',mapId:'grassland',distanceId:'short',memberUids:['alc'],status:'active',tutorialPrologue:true}]});
+const justDispatched=makeTutorialContext({dispatched:true,active:[{id:'tutorial',mapId:'grassland',distanceId:'short',memberUids:['galdra'],status:'active',tutorialPrologue:true}]});
 justDispatched.save.progress.tutorial.stepId='expedition_active';
 assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_active',false)",justDispatched),'expedition_active',
   'a newly dispatched tutorial expedition must still show its active-expedition explanation after reload');

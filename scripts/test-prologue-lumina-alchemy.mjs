@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 const tutorial=read('js/tutorial.js');
 const alchemy=read('js/alchemy.js');
+const data=read('js/data.js');
 const saveSource=read('js/save.js');
 const index=read('index.html');
 const tutorialCss=read('css/tutorial.css');
@@ -42,9 +43,11 @@ for(const target of ['tutorialAlchemyRecipeCard','tutorialAlchemyMaterials','tut
   assert.ok(alchemy.includes(`id=\"${target}\"`)||alchemy.includes(`id=\"${target}\" `),`missing stable alchemy target: ${target}`);
 }
 for(const token of [
-  "recipeId:'alchemion_standard'","resultId:'alchemion'","coinOptionId:'high'","coins:250",
-  "materials:Object.freeze(['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'])"
+  "recipeId:'galdra_standard'","resultId:'galdra'","coinOptionId:'high'","coins:250",
+  "materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])"
 ])assert.ok(tutorial.includes(token),`missing tutorial recipe contract: ${token}`);
+assert.ok(data.includes("recipeId:'galdra_standard'")&&data.includes("monsterId:'galdra', weight:1, alchemyInstance:true"),'Galdra must remain an eligible alchemy result');
+assert.ok(data.includes("id:'alchemion'")&&data.includes("recipeId:'alchemion_standard'"),'the existing Alchemion ID and normal recipe must remain compatible');
 assert.ok(alchemy.includes("mode:'tutorial_lesson'"),'lesson selection must be isolated from normal alchemy');
 assert.ok(alchemy.includes('rate:tutorialLesson?100:'),'the first lesson must force 100% success');
 assert.ok(alchemy.includes('if(!plan.tutorialLesson){\n      save.instances = save.instances.filter'),'the lesson must not consume a companion');
@@ -64,12 +67,12 @@ for(const token of [
 const helperStart=tutorial.indexOf('function tutorialLuminaAlchemyResourceEntries()');
 const helperEnd=tutorial.indexOf('function tutorialStellaSkillCard()',helperStart);
 assert.ok(helperStart>=0&&helperEnd>helperStart);
-const materials=['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'];
+const materials=['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'];
 function makeContext({saveSucceeds=true,replaying=false,prepared=false,completed=false,coins=0,owned=0}={}){
   const state={status:'in_progress',stepId:'lumina_alchemy',replaying,alchemyLessonPrepared:prepared,alchemyLessonCompleted:completed};
   const context=vm.createContext({
     console:{error:()=>{}},
-    TUTORIAL_LUMINA_ALCHEMY:{recipeId:'alchemion_standard',displayName:'ルミナの入門錬成',resultId:'alchemion',coinOptionId:'high',coins:250,materials},
+    TUTORIAL_LUMINA_ALCHEMY:{recipeId:'galdra_standard',displayName:'ルミナの入門錬成',resultId:'galdra',coinOptionId:'high',coins:250,materials},
     ITEM_BY_ID:Object.fromEntries(materials.map(id=>[id,{id,alchemyMaterial:true}])),
     save:{coins,items:Object.fromEntries(materials.map(id=>[id,owned])),progress:{tutorial:state}},
     currentTutorialState:()=>context.save.progress.tutorial,
@@ -91,7 +94,7 @@ assert.equal(fresh.save.coins,250);
 assert.deepEqual(Object.values(fresh.save.items),[1,1,1,1]);
 assert.equal(fresh.save.progress.tutorial.alchemyLessonPrepared,true);
 assert.equal(fresh.save.progress.tutorial.stepId,'lumina_alchemy');
-assert.equal(fresh.activated.recipeId,'alchemion_standard');
+assert.equal(fresh.activated.recipeId,'galdra_standard');
 
 const failed=makeContext({saveSucceeds:false});
 assert.equal(vm.runInContext('prepareTutorialLuminaAlchemy()',failed),false);
@@ -131,4 +134,6 @@ assert.equal(vm.runInContext('commitTutorialLuminaAlchemySuccess()',completion),
 assert.equal(packageJson.scripts['check:prologue-lumina-alchemy'],'node scripts/test-prologue-lumina-alchemy.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-lumina-alchemy'));
 
-console.log('Prologue Lumina alchemy validation passed (transparent portrait, dedicated catalyst-free recipe, fixed resources, 100% first success, persistence rollback, replay safety, and Phase 14 checkpoint).');
+assert.ok(index.includes('prologue-tutorial-galdra-1'),'the changed tutorial script must have a fresh cache key');
+
+console.log('Prologue Lumina alchemy validation passed (Galdra reward, transparent portrait, dedicated catalyst-free recipe, fixed resources, 100% first success, persistence rollback, replay safety, and Phase 14 checkpoint).');

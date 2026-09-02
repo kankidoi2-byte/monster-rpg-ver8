@@ -41,7 +41,7 @@ assert.ok(!/data-tutorial-request-report>[\s\S]{0,500}hunt-card-title/.test(tuto
 assert.match(uiCss,/\.tutorial-request-summary\{[^}]*display:grid/,'the prologue request summary must remain in normal layout flow');
 assert.match(uiCss,/\.tutorial-request-card \.hunt-accept-button\{[^}]*white-space:normal/,'the report button label must wrap instead of overlapping adjacent content');
 assert.match(tutorial,/coins:250/);
-for(const id of ['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter']){
+for(const id of ['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather']){
   assert.ok(tutorial.includes(`'${id}'`),`missing guaranteed alchemy material: ${id}`);
 }
 assert.ok(tutorial.includes("markTutorialAlchemySuppliesGranted()"));
@@ -53,7 +53,7 @@ const helperStart=tutorial.indexOf('function tutorialSupplyRewardMaterialEntries
 const helperEnd=tutorial.indexOf('function tutorialFirstHuntIsPending',helperStart);
 assert.ok(constantStart>=0&&constantEnd>constantStart&&helperStart>=0&&helperEnd>helperStart);
 const helperSource=`${tutorial.slice(constantStart,constantEnd)}\n${tutorial.slice(helperStart,helperEnd)}`;
-const materialIds=['monster_bone','magic_crystal','metal_ore','unstable_alchemy_matter'];
+const materialIds=['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'];
 function makeContext({saveSucceeds=true,replaying=false,alreadyGranted=false}={}){
   const context=vm.createContext({
     console:{error:()=>{}},
