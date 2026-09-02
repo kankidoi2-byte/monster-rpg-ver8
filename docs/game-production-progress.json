@@ -3,9 +3,9 @@
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "roadmap": "docs/game-production-automation-roadmap.md",
   "risk_contract": "tools/game-production-orchestrator/risk-approval-contract.json",
-  "updated_at": "2026-09-02T13:50:00.000Z",
+  "updated_at": "2026-09-02T14:01:00.000Z",
   "overall_status": "in_progress",
-  "current_phase": 33,
+  "current_phase": 34,
   "allowed_states": ["pending", "in_progress", "in_review", "awaiting_approval", "completed", "blocked"],
   "invariants": {
     "save_key": "mb_v95c",
@@ -22,18 +22,27 @@
     {
       "id": 33,
       "name": "オーケストレーター基盤とリスク別承認",
-      "status": "in_progress",
+      "status": "completed",
       "owner_line": "command",
       "dependencies": [32],
       "branch": "codex/game-production-phase33",
-      "pull_request": null,
-      "commit": null,
+      "pull_request": 123,
+      "commit": "4625b8e2e9a820de98906a06c2fdd783c86e1870",
       "tests": ["npm run check:game-production-orchestrator", "npm run check"],
-      "ci": null,
-      "pages": null,
+      "ci": {
+        "pull_request_run": 33638962235,
+        "pull_request_status": "success",
+        "main_run": 33639111775,
+        "main_status": "success",
+        "merge_commit": "1fd865be0aa97356507d61df5e74f49e23e2f67d"
+      },
+      "pages": {
+        "run": 33639110400,
+        "status": "success"
+      },
       "risk_class": "low",
       "approval_required": false,
-      "next_start_point": "Run dedicated and full checks, open the Phase 33 PR, then verify CI and Pages.",
+      "next_start_point": null,
       "game_progress": "Enables low-risk production work to proceed from backlog selection through safe merge without per-action approval."
     },
     {
