@@ -1,11 +1,13 @@
 {
   "schema_version": 1,
   "trial_id": "map-dex-ecosystem-20260902",
-  "status": "in_progress",
+  "status": "completed",
   "goal": "Add an Ecosystem section to the published Map Dex.",
   "user_choice": "ecosystem_explanation_plus_species_and_type_trends",
   "activation_scope": "this_trial_only",
   "continue_to_next_backlog_item": false,
+  "stopped_after_trial": true,
+  "next_start_point": "Wait for explicit user activation; do not select or start another backlog item.",
   "compatibility": {
     "save_key": "mb_v95c",
     "change_save_structure": false,
@@ -15,10 +17,26 @@
   "phases": [
     {"phase": 34, "owner_line": "command", "status": "completed", "deliverable": "fixed goal, scope, ordering, acceptance criteria, and stop-after-trial rule"},
     {"phase": 35, "owner_line": "system", "status": "completed", "deliverable": "derive species and type trends and render the Ecosystem section", "branch": "codex/map-dex-ecosystem-system", "pull_request": 125, "commit": "2d736a390848db4dcb7cf227abe77933c8df7c7d", "ci_run": 33642426959, "pages_run": 33642600948},
-    {"phase": 36, "owner_line": "content", "status": "in_review", "deliverable": "add a setting-consistent ecosystem explanation to all maps"},
-    {"phase": 37, "owner_line": "command_qa", "status": "pending", "deliverable": "dedicated tests, full checks, diff and conflict review"},
-    {"phase": 38, "owner_line": "command", "status": "pending", "deliverable": "pull requests, safe merges, Pages and published-game verification, then stop"}
+    {"phase": 36, "owner_line": "content", "status": "completed", "deliverable": "add a setting-consistent ecosystem explanation to all maps", "branch": "codex/map-dex-ecosystem-content", "pull_request": 126, "commit": "e56a5a9b652542cb317227e6429c63c994153a63", "ci_run": 33643501284, "pages_run": 33643721594},
+    {"phase": 37, "owner_line": "command_qa", "status": "completed", "deliverable": "dedicated tests, full checks, diff and conflict review", "tests": ["npm run check:map-dex", "npm run check:notices", "node --check js/data.js", "node --check js/dex.js", "git diff --check", "npm run check"], "main_ci_run": 33643722963},
+    {"phase": 38, "owner_line": "command", "status": "completed", "deliverable": "pull requests, safe merges, Pages and published-game verification, then stop", "published_url": "https://kankidoi2-byte.github.io/monster-rpg-ver8/", "pages_run": 33643721594, "verified_at": "2026-09-02T14:48:00.000Z"}
   ],
+  "published_verification": {
+    "status": "completed",
+    "title": "モンスターバトル Ver8.0",
+    "data_asset": "js/data.js?v=skill-taxonomy-1-fixed-hunt-1-elixion-neutral-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-prologue-final-scope-1-map-ecosystem-copy-1",
+    "dex_asset": "js/dex.js?v=monster-obtain-2-prologue-home-front-1-map-ecosystem-1",
+    "visible_checks": [
+      "the home screen shows the 2026-09-02 Map Dex ecosystem notice",
+      "the Map Dex shows all 19 map entries",
+      "a fresh save keeps undiscovered map names and ecosystem information locked"
+    ],
+    "automated_detail_checks": [
+      "unlocked details render the ecosystem explanation, type trends, and main resident species",
+      "all 19 maps have a substantial map-specific ecosystem explanation",
+      "species and type trends are derived from the existing weighted encounter data"
+    ]
+  },
   "acceptance_criteria": [
     "an unlocked map detail has a visible Ecosystem heading",
     "the section includes a map-specific ecosystem explanation",
