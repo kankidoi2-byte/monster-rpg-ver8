@@ -13,27 +13,32 @@ const expect = (condition, message) => {
 };
 const unique = values => new Set(values).size === values.length;
 
-expect(contract.schema_version === 1, 'contract schema version must remain 1');
+expect(contract.schema_version === 2, 'contract schema version must describe the Phase 33 transition');
 expect(contract.contract_id === 'monster-rpg-autonomous-inspection-agent', 'stable contract id is missing');
-expect(contract.phase === 23 && contract.status === 'contract_defined', 'Phase 23 state is invalid');
+expect(contract.phase === 33 && contract.status === 'risk_based_production_transition', 'Phase 33 transition state is invalid');
 expect(contract.default_decision === 'deny', 'contract must deny undeclared actions');
-expect(contract.scope?.phase23_is_contract_only === true, 'Phase 23 must remain contract-only');
-expect(contract.scope?.actual_agent_execution_enabled === false, 'Phase 23 must not enable agent execution');
-expect(contract.scope?.external_write_enabled === false, 'Phase 23 must not enable external writes');
+expect(contract.scope?.historical_contract_phase === 23, 'historical Phase 23 boundary is missing');
+expect(contract.scope?.actual_agent_execution_enabled === true, 'Phase 33 must enable bounded agent execution');
+expect(contract.scope?.external_write_enabled === true, 'Phase 33 must enable bounded external writes');
+expect(contract.scope?.production_contract === 'tools/game-production-orchestrator/risk-approval-contract.json', 'Phase 33 production contract link is missing');
 
 const automaticPermissions = contract.automatic_permissions || [];
 expect(unique(automaticPermissions), 'automatic permissions must be unique');
 ['read_repository_metadata', 'read_ci_status_and_failure_metadata', 'read_pages_publication_status', 'run_declared_local_tests', 'produce_unpublished_analysis'].forEach(permission => {
   expect(automaticPermissions.includes(permission), `required bounded permission is missing: ${permission}`);
 });
-expect(automaticPermissions.every(permission => !permission.includes('post_') && !permission.includes('write_main')), 'automatic permissions must not include external posting or main writes');
+expect(automaticPermissions.every(permission => !permission.includes('post_') && !permission.includes('write_main')), 'automatic permissions must not include external posting or direct main writes');
+['create_verified_low_risk_branch_commit_and_pull_request', 'merge_verified_low_risk_pull_request'].forEach(permission => {
+  expect(automaticPermissions.includes(permission), `Phase 33 permission is missing: ${permission}`);
+});
 
 const gates = contract.approval_gates || [];
 expect(unique(gates.map(gate => gate.action)), 'approval gates must be unique');
 const issueGate = gates.find(gate => gate.action === 'post_github_issue');
 expect(issueGate?.approval === 'fresh_per_action_exact_confirmation' && issueGate?.reusable === false, 'every Issue post must require a fresh non-reusable exact confirmation');
 const remediationGate = gates.find(gate => gate.action === 'create_agent_generated_remediation_branch_or_pull_request');
-expect(remediationGate?.earliest_phase === 30 && remediationGate?.reusable === false, 'agent-generated branch or PR must remain gated until Phase 30');
+expect(remediationGate?.earliest_phase === 33 && remediationGate?.approval === 'phase33_risk_contract'
+  && remediationGate?.automatic_when === 'verified_low_risk_and_no_stop_condition', 'agent-generated branch or PR must follow the Phase 33 risk contract');
 
 const prohibited = contract.prohibited_actions || [];
 ['write_directly_to_main', 'force_push_or_rewrite_history', 'change_save_key_mb_v95c', 'commit_or_log_secrets_tokens_cookies_or_api_keys', 'post_issue_or_message_without_fresh_confirmation', 'purchase_or_enable_paid_service', 'treat_unknown_or_unobserved_test_as_success'].forEach(action => {
@@ -50,7 +55,7 @@ expect(JSON.stringify(limits.network_hosts) === JSON.stringify(['api.github.com'
 
 const stopConditions = contract.stop_conditions || [];
 expect(unique(stopConditions), 'stop conditions must be unique');
-['ci_failed_or_not_observed', 'required_test_result_unknown', 'secret_or_personal_data_detected', 'save_compatibility_or_existing_id_risk', 'external_write_lacks_fresh_confirmation', 'cost_or_permission_expansion_required'].forEach(condition => {
+['ci_failed_or_not_observed', 'required_test_result_unknown', 'secret_or_personal_data_detected', 'save_compatibility_or_existing_id_risk', 'external_write_not_allowed_by_phase33_risk_contract', 'cost_or_permission_expansion_required'].forEach(condition => {
   expect(stopConditions.includes(condition), `required fail-closed stop is missing: ${condition}`);
 });
 
@@ -74,9 +79,9 @@ expect(contract.failure_behavior?.unknown_is_success === false, 'unknown state m
 
 const handoffPhases = contract.phase_handoffs?.map(item => item.phase) || [];
 expect(JSON.stringify(handoffPhases) === JSON.stringify(Array.from({ length: 9 }, (_, index) => index + 24)), 'Phase 24-32 handoffs must be complete and ordered');
-expect((contract.acceptance_criteria || []).includes('no_runtime_enablement_in_phase23'), 'Phase 23 runtime prohibition criterion is missing');
+expect((contract.acceptance_criteria || []).includes('verified_low_risk_writes_follow_phase33_contract'), 'Phase 33 risk-contract criterion is missing');
 
-['## 許可する操作', '## 明示承認が必要な操作', '## 禁止する操作', '## 上限', '## 停止条件', '## 費用規則', '## ログ規則', '## Phase 23の完了条件'].forEach(heading => {
+['## 許可する操作', '## 明示承認が必要な操作', '## 禁止する操作', '## 上限', '## 停止条件', '## 費用規則', '## ログ規則', '## Phase 33移行の完了条件'].forEach(heading => {
   expect(guide.includes(heading), `human-readable contract heading is missing: ${heading}`);
 });
 expect(guide.includes('docs/dev-tools-agent-execution-contract.json'), 'guide must identify the machine-readable source of truth');

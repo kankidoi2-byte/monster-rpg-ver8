@@ -1,0 +1,12 @@
+{
+  "name": "@monster-rpg/game-production-orchestrator",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node test/risk-approval-policy.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

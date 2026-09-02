@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "phase": 33,
+  "contract_id": "monster-rpg-risk-based-production-approval",
+  "default_decision": "require_approval",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "save_key": "mb_v95c",
+  "automatic_actions": [
+    "inspect_and_plan",
+    "update_backlog_and_progress",
+    "create_isolated_branch_or_worktree",
+    "implement_bounded_change",
+    "add_and_run_tests",
+    "commit_and_push_feature_branch",
+    "create_or_update_pull_request",
+    "repair_safe_ci_failure",
+    "merge_verified_low_risk_pull_request",
+    "observe_automatic_pages_publication",
+    "verify_published_game"
+  ],
+  "automatic_change_classes": [
+    "internal_tool_or_test",
+    "documentation_or_progress",
+    "small_bugfix_within_existing_spec",
+    "ui_improvement_without_rule_change",
+    "additive_content_with_new_ids",
+    "player_visible_copy_without_lore_change"
+  ],
+  "approval_required_flags": [
+    "save_structure_or_migration_impact",
+    "save_key_change",
+    "existing_id_or_encyclopedia_meaning_change",
+    "possible_player_data_loss",
+    "major_game_rule_change",
+    "major_story_setting_change",
+    "material_user_preference_choice",
+    "manual_android_or_chromebook_verification_required",
+    "secret_token_or_permission_required",
+    "paid_action_required",
+    "github_issue_or_external_message_post",
+    "destructive_or_bulk_delete",
+    "publication_setting_change",
+    "ci_failed_or_unobserved",
+    "merge_conflict",
+    "material_specification_ambiguity"
+  ],
+  "merge_requirements": [
+    "head_started_from_current_main",
+    "one_bounded_work_item_per_pull_request",
+    "declared_tests_passed",
+    "full_check_passed_when_required",
+    "required_ci_observed_success",
+    "no_merge_conflict",
+    "no_approval_required_flag",
+    "diff_contains_no_unrelated_change",
+    "notice_decision_recorded"
+  ],
+  "prohibited_actions": [
+    "write_directly_to_main",
+    "force_push_or_rewrite_history",
+    "change_save_key_mb_v95c_without_approval",
+    "rename_reuse_or_change_existing_id_meaning_without_approval",
+    "remove_existing_save_field_without_approved_migration",
+    "commit_or_log_secrets",
+    "post_issue_or_message_without_approval",
+    "treat_unknown_or_unobserved_test_as_success",
+    "start_from_an_unmerged_feature_branch",
+    "mix_unrelated_work_items"
+  ]
+}
