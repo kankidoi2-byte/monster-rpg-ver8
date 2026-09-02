@@ -66,8 +66,11 @@
 
 - Work on a feature branch. Do not write directly to `main`.
 - Keep unrelated changes out of the branch.
-- Show the diff and validation result before asking to merge.
-- Do not merge until the user has approved the change and completed any requested hands-on check.
+- Show the diff and validation result before merging or asking for approval.
+- Apply the risk-based approval contract in `tools/game-production-orchestrator/risk-approval-contract.json`.
+- Low-risk work may create a branch, commit, push, open/update a pull request, repair safe CI failures, and merge after every declared test and required CI check succeeds, the head is based on current `main`, and no stop condition applies.
+- Require explicit user approval for save or migration impact, changes to the meaning of existing IDs or encyclopedia numbers, destructive changes, major game-rule or story-setting decisions, external Issue/message posts, secrets or permission changes, paid actions, publication-setting changes, required Android/Chromebook verification, unresolved conflicts, failed or unobserved CI, and materially ambiguous specifications.
+- GitHub Issues are optional. Do not post an Issue without explicit approval; use the repository backlog and pull requests for normal work tracking.
 
 ## Code Review Rules
 

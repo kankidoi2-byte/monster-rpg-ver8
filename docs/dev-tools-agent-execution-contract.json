@@ -1,16 +1,18 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "contract_id": "monster-rpg-autonomous-inspection-agent",
-  "phase": 23,
-  "status": "contract_defined",
+  "phase": 33,
+  "status": "risk_based_production_transition",
   "default_decision": "deny",
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "scope": {
-    "purpose": "Inspect repository, CI, Pages, and privacy-safe diagnostics under bounded, reviewable rules.",
-    "actual_agent_execution_enabled": false,
-    "external_write_enabled": false,
-    "phase23_is_contract_only": true,
-    "next_enablement_phase": 24
+    "purpose": "Preserve the Phase 23-32 inspection boundary while delegating Phase 33+ production writes to a risk-based contract.",
+    "actual_agent_execution_enabled": true,
+    "external_write_enabled": true,
+    "phase23_is_contract_only": false,
+    "historical_contract_phase": 23,
+    "production_contract": "tools/game-production-orchestrator/risk-approval-contract.json",
+    "external_write_limit": "verified_low_risk_production_actions_only"
   },
   "automatic_permissions": [
     "read_repository_metadata",
@@ -22,7 +24,10 @@
     "read_privacy_safe_diagnostic_summary",
     "run_declared_local_tests",
     "produce_unpublished_analysis",
-    "record_phase_checkpoint_on_dedicated_branch"
+    "record_phase_checkpoint_on_dedicated_branch",
+    "create_verified_low_risk_branch_commit_and_pull_request",
+    "merge_verified_low_risk_pull_request",
+    "observe_automatic_pages_publication_and_verify_result"
   ],
   "approval_gates": [
     {
@@ -32,9 +37,10 @@
     },
     {
       "action": "create_agent_generated_remediation_branch_or_pull_request",
-      "approval": "fresh_per_action_confirmation",
-      "reusable": false,
-      "earliest_phase": 30
+      "approval": "phase33_risk_contract",
+      "reusable": true,
+      "earliest_phase": 33,
+      "automatic_when": "verified_low_risk_and_no_stop_condition"
     },
     {
       "action": "configure_secret_token_oauth_or_permission",
@@ -101,7 +107,7 @@
     "save_compatibility_or_existing_id_risk",
     "destructive_or_unrelated_diff_detected",
     "manual_device_verification_required",
-    "external_write_lacks_fresh_confirmation",
+    "external_write_not_allowed_by_phase33_risk_contract",
     "cost_or_permission_expansion_required"
   ],
   "cost_policy": {
@@ -162,6 +168,6 @@
     "zero_direct_cost_without_approval",
     "privacy_safe_audit_log",
     "fresh_confirmation_for_every_issue_post",
-    "no_runtime_enablement_in_phase23"
+    "verified_low_risk_writes_follow_phase33_contract"
   ]
 }
