@@ -84,6 +84,20 @@ assert.equal(context.save.instances.length,0,'failed persistence must roll back 
 assert.equal(context.save.progress.tutorial.starterContractsGranted,false);
 assert.equal(context.save.progress.tutorial.elnaGuestActive,false);
 
+context.save={instances:[],party:[],progress:{tutorial:{replaying:true,starterContractsGranted:false,elnaGuestActive:false}}};
+context.saveSucceeds=true;
+assert.equal(vm.runInContext('ensureTutorialStarterContracts()',context),true,'replay must not stall when an old completed save has no current starter bodies');
+const replayRescueParty=vm.runInContext('tutorialBattlePartyInstances([])',context);
+assert.deepEqual(Array.from(replayRescueParty,instance=>instance.id),['freigal','aquaron','elna_beginner']);
+assert.ok(replayRescueParty.every(instance=>instance.guest===true),'missing replay members must be temporary battle-only instances');
+assert.equal(context.save.instances.length,0,'building the replay rescue party must not grant or persist a body');
+assert.equal(context.save.party.length,0,'building the replay rescue party must not overwrite the current saved party');
+
+context.tutorialBattleSession.kind='stella_mock';
+const replayMockParty=vm.runInContext('tutorialBattlePartyInstances([])',context);
+assert.deepEqual(Array.from(replayMockParty,instance=>instance.id),['freigal','aquaron','elna_beginner'],'the later replay mock battle must use the same safe fallback');
+assert.equal(context.save.instances.length,0,'the replay mock battle must also remain reward-free');
+
 assert.ok(tutorial.includes("request.battleMode='single'")&&tutorial.includes("request.enemyIds=[...TUTORIAL_RESCUE_ENEMY_IDS]"),'the rescue request must guarantee its enemy roster without random three-way or invasion rolls');
 assert.ok(tutorial.includes("partyBattle.length===3")&&tutorial.includes("enemy?.id==='slime'")&&tutorial.includes("entry.inst?.guest===true"),'combat must not advance until enemy, two bodies, and Elna GUEST all exist');
 assert.ok(flow.includes("tutorialBattlePartyInstances(savedParty)"),'the real battle party builder must accept the temporary GUEST layer');

@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-tutorial-replay-battle-fix',
+    date: '2026-09-03',
+    category: 'fix',
+    title: 'チュートリアル再閲覧の停止を修正しました',
+    body: '旧セーブなどで序章の契約体を所持していない場合でも、再閲覧用の一時パーティーで救援戦と模擬戦を開始できるようにしました。仲間や報酬、現在の編成は変更されません。'
+  }),
+  Object.freeze({
     id: '20260903-prologue-tutorial-galdra',
     date: '2026-09-03',
     category: 'update',
