@@ -188,7 +188,12 @@ function validProposal(resultValue, nowMs) {
     short_id: match[1].slice(0, 12),
     base_sha: proposal.base.sha,
     expires_at: proposal.source_environment.expires_at,
-    files: Object.freeze(files.map((file) => Object.freeze({ path: file.path }))),
+    files: Object.freeze(files.map((file) => Object.freeze({
+      path: file.path,
+      base_blob_sha: file.base_blob_sha,
+      result_blob_sha: file.result_blob_sha,
+      edits: Object.freeze(file.edits.map((edit) => Object.freeze({ ...edit })))
+    }))),
     scope: Object.freeze({
       file_count: proposal.scope.file_count,
       edit_count: proposal.scope.edit_count,
@@ -241,6 +246,18 @@ function publicationPlan(proposal) {
     source_proposal_id: proposal.proposal_id
   };
   return Object.freeze({ ...plan, fingerprint: sha256(JSON.stringify(plan)) });
+}
+
+export function validatePatchPublicationProposal(proposalResult, options = {}) {
+  if (inputBytes(proposalResult) > MAX_INPUT_BYTES) return null;
+  const validatedAt = isoTime(options.now);
+  if (!validatedAt) return null;
+  return validProposal(proposalResult, fixedTime(validatedAt));
+}
+
+export function buildPatchPublicationPlan(proposalResult, options = {}) {
+  const proposal = validatePatchPublicationProposal(proposalResult, options);
+  return proposal ? publicationPlan(proposal) : null;
 }
 
 export function preparePatchPublication(proposalResult, repositorySnapshot, options = {}) {
@@ -314,6 +331,8 @@ export function confirmPatchPublication(preparation, input = {}, options = {}) {
       repository: REPOSITORY,
       base_sha: preparation.plan.base_sha,
       branch_name: preparation.plan.branch_name,
+      prepared_at: preparation.prepared_at,
+      confirmed_at: confirmedAt,
       expires_at: preparation.approval_request.expires_at,
       one_time: true,
       merge_authorized: false
@@ -337,5 +356,5 @@ export const PATCH_PUBLICATION_APPROVAL_LIMITS = Object.freeze({
   approval_ttl_ms: APPROVAL_TTL_MS,
   max_input_bytes: MAX_INPUT_BYTES,
   one_time: true,
-  writer_connected: false
+  writer_connected: true
 });
