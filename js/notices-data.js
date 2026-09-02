@@ -11,7 +11,7 @@ const GAME_NOTICES = Object.freeze([
     date: '2026-09-02',
     category: 'update',
     title: 'マップ図鑑に生態系を追加しました',
-    body: '発見済みマップの詳細で、その土地の生態解説、出現データから集計した属性傾向、主な生息種を確認できるようになりました。'
+    body: '発見済みマップの詳細で、全19マップ固有の生態解説、出現データから集計した属性傾向、主な生息種を確認できるようになりました。'
   }),
   Object.freeze({
     id: '20260901-diagnostics-export',
