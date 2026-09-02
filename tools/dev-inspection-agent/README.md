@@ -77,6 +77,14 @@ The separately approved writer is `createGitHubPatchWriter(...)`. It accepts onl
 
 After all preflight reads succeed, the writer may create at most three blobs, one tree, one commit, one `codex/agent-fix-*` branch, and one Pull Request. It cannot merge, write directly to `main`, force push, post Issues, start workflows, or change repository settings. A token is read only by the explicit environment adapter, is never returned, and no real writer invocation is part of validation. Every actual materialization requires a newly prepared exact confirmation; implementation approval does not authorize any branch or Pull Request by itself.
 
+## Limited autonomous trials
+
+Phase 31 adds `authorizeLimitedAutonomyTrial(request, ledger, { now })`, a deny-by-default policy gate for one isolated remediation attempt. It accepts only a high-confidence CI failure bound to the current immutable `main` SHA, an allowlisted failed check, and one of two fixed finding kinds: a declared test failure or a broken reference.
+
+An authorized trial may read fixed blobs, use the Phase 28 memory overlay, generate the Phase 29 exact-once proposal, and run the declared test plan once. It targets at most three safe text paths, expires after one hour, and is deduplicated in a caller-owned 24-hour ledger. Save/data sources, existing IDs, governance, workflows, secrets, images, assets, external writes, retries, and paid actions remain outside the scope.
+
+The policy does not invoke the Phase 30 writer. Every real remediation branch, commit, and Pull Request still requires a new proposal-specific five-minute confirmation; merge and Issue publication remain unauthorized.
+
 ## Validation
 
 ```sh
@@ -88,6 +96,7 @@ npm run check:dev-inspection-agent-isolation
 npm run check:dev-inspection-agent-proposals
 npm run check:dev-inspection-agent-publication-approval
 npm run check:dev-inspection-agent-github-writer
+npm run check:dev-inspection-agent-limited-autonomy
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
