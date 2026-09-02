@@ -1,6 +1,6 @@
 # Development inspection agent
 
-Phase 24 provides a manual, local-input, read-only analysis path. It does not fetch data, change files, call GitHub write APIs, create branches or PRs, post Issues, start workflows, or publish anything.
+Phase 24 provides a manual, local-input, read-only analysis path. Phase 25 adds a pure automatic-event coordinator that rejects malformed events and suppresses duplicates before an analysis is enqueued. Neither path fetches data, changes files, calls GitHub write APIs, creates branches or PRs, posts Issues, starts workflows, or publishes anything.
 
 ## Manual invocation
 
@@ -25,12 +25,21 @@ The input file must be 256 KiB or smaller and use this envelope:
 
 Extra or untrusted fields are not copied to the result. The result contains only the fixed unified status, bounded public signals, a deterministic next-action code, and explicit zero-side-effect flags.
 
-The CLI reads exactly one local input file and writes only the normalized result to standard output. It does not read tokens or environment variables. Phase 25 will handle automatic triggers separately.
+The CLI reads exactly one local input file and writes only the normalized result to standard output. It does not read tokens or environment variables.
+
+## Deduplicated automatic triggers
+
+`coordinateTrigger(event, ledger, { now })` accepts only versioned events for this repository from five fixed sources: pull requests, main pushes, completed CI runs, completed Pages runs, and hourly scheduled checks. It creates a deterministic SHA-256 trigger ID from bounded identifiers; arbitrary titles, bodies, tokens, and other untrusted fields are never copied.
+
+The caller owns the returned ledger. Entries expire after 24 hours and are capped at 100, so a long-running adapter cannot grow state without bound. A repeated event returns `duplicate_trigger`; a changed PR head, a new run attempt, or a new hourly bucket can enqueue once. Invalid data fails closed with `invalid_event`.
+
+This Phase does not install a webhook, scheduler, GitHub App, token, workflow permission, or persistence adapter. Future adapters must supply and safely persist the returned ledger while continuing to obey the Phase 23 execution contract.
 
 ## Validation
 
 ```sh
 npm run check:dev-inspection-agent-manual
+npm run check:dev-inspection-agent-triggers
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
