@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "phase": 30,
+  "checkpoint": "fresh_confirmation_approval_core",
+  "repository": "kankidoi2-byte/monster-rpg-ver8",
+  "input": "phase29_unpublished_minimal_patch_proposal_and_fresh_repository_snapshot",
+  "approval": {
+    "exact_confirmation": true,
+    "ttl_seconds": 300,
+    "one_time": true,
+    "bound_fields": [
+      "proposal_id",
+      "main_base_sha",
+      "branch_name",
+      "commit_message",
+      "pull_request_title",
+      "pull_request_body",
+      "plan_fingerprint"
+    ],
+    "merge_authorized": false
+  },
+  "preconditions": [
+    "proposal_is_unpublished_and_unexpired",
+    "proposal_validation_passed",
+    "save_and_existing_id_invariants_preserved",
+    "fresh_main_sha_matches_proposal_base",
+    "matching_open_pull_request_absent"
+  ],
+  "effects_in_this_checkpoint": {
+    "network_requests": false,
+    "file_writes": false,
+    "repository_writes": false,
+    "git_writes": false,
+    "branch_creation": false,
+    "commit_creation": false,
+    "pull_request_creation": false,
+    "merge": false
+  },
+  "required_for_future_writer": {
+    "explicit_capability_approval": true,
+    "fresh_confirmation_per_materialization": true,
+    "permissions": ["contents:write", "pull_requests:write"],
+    "writer_connected": false
+  },
+  "failure_mode": "fail_closed"
+}
