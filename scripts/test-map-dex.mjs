@@ -20,6 +20,8 @@ maps.forEach(map=>{
   expect(typeof map.chapter==='string'&&map.chapter,'every map needs a chapter label');
   expect(typeof map.region==='string'&&map.region,'every map needs a region label');
   expect(typeof map.desc==='string'&&map.desc,'every map needs a dex description');
+  expect(typeof map.ecosystem==='string'&&map.ecosystem.trim().length>=30,`${map.id} needs a substantial ecosystem explanation`);
+  expect(map.ecosystem!==map.desc,`${map.id} ecosystem explanation must add information beyond its description`);
   expect(Array.isArray(map.enemyIds)&&map.enemyIds.length>0,'every map needs an encounter list');
   const profile=ecosystemProfile(map);
   expect(profile.species.length===new Set(map.enemyIds).size,'ecosystem species must match unique encounter species');

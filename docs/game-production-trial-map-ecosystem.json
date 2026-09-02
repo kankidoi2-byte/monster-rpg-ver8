@@ -14,8 +14,8 @@
   },
   "phases": [
     {"phase": 34, "owner_line": "command", "status": "completed", "deliverable": "fixed goal, scope, ordering, acceptance criteria, and stop-after-trial rule"},
-    {"phase": 35, "owner_line": "system", "status": "in_review", "deliverable": "derive species and type trends and render the Ecosystem section"},
-    {"phase": 36, "owner_line": "content", "status": "pending", "deliverable": "add a setting-consistent ecosystem explanation to all maps"},
+    {"phase": 35, "owner_line": "system", "status": "completed", "deliverable": "derive species and type trends and render the Ecosystem section", "branch": "codex/map-dex-ecosystem-system", "pull_request": 125, "commit": "2d736a390848db4dcb7cf227abe77933c8df7c7d", "ci_run": 33642426959, "pages_run": 33642600948},
+    {"phase": 36, "owner_line": "content", "status": "in_review", "deliverable": "add a setting-consistent ecosystem explanation to all maps"},
     {"phase": 37, "owner_line": "command_qa", "status": "pending", "deliverable": "dedicated tests, full checks, diff and conflict review"},
     {"phase": 38, "owner_line": "command", "status": "pending", "deliverable": "pull requests, safe merges, Pages and published-game verification, then stop"}
   ],
