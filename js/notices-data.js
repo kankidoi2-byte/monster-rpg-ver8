@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-prologue-tutorial-galdra',
+    date: '2026-09-03',
+    category: 'update',
+    title: '入門錬成でガルドラが仲間になります',
+    body: '序章のルミナの入門錬成で、最初の錬成モンスターとしてガルドラが完成するようになりました。すでに仲間にしたモンスターやセーブデータはそのまま保持されます。'
+  }),
+  Object.freeze({
     id: '20260902-map-dex-ecosystem',
     date: '2026-09-02',
     category: 'update',

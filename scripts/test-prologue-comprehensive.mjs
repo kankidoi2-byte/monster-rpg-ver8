@@ -71,7 +71,7 @@ function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress'
   const context=vm.createContext({
     console:{error:()=>{}},
     TUTORIAL_STARTER_CONTRACT_IDS:['freigal','aquaron'],TUTORIAL_STELLA_SKILL_ID:'skill_elna_middle_01',
-    TUTORIAL_LUMINA_ALCHEMY:{resultId:'alchemion'},TUTORIAL_REQUIRED_SKIP_FLAGS:requiredFlags,
+    TUTORIAL_LUMINA_ALCHEMY:{resultId:'galdra'},TUTORIAL_REQUIRED_SKIP_FLAGS:requiredFlags,
     SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01'}},
     tutorialBattleSession:{active:true,kind:'elna_rescue',enemyQueue:['slime']},
     save:{instances:structuredClone(instances),caught:instances.map(entry=>entry.id),party:[],skillCards:{},equippedSkills:{},progress:{chapterId:'prologue',storyFlags:{},tutorial:tutorialState}},
@@ -90,7 +90,7 @@ function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress'
 
 const fresh=makeSkipContext();
 assert.equal(vm.runInContext('commitTutorialFullSkip()',fresh),true);
-assert.deepEqual(Array.from(fresh.save.instances,entry=>entry.id).sort(),['alchemion','aquaron','elna_beginner','freigal']);
+assert.deepEqual(Array.from(fresh.save.instances,entry=>entry.id).sort(),['aquaron','elna_beginner','freigal','galdra']);
 assert.deepEqual(Array.from(fresh.save.party,uid=>fresh.save.instances.find(entry=>entry.uid===uid)?.id),['freigal','aquaron','elna_beginner']);
 assert.equal(fresh.save.skillCards.skill_elna_middle_01,1);
 for(const flag of requiredFlags)assert.equal(fresh.save.progress.tutorial[flag],true,`full skip must finalize ${flag}`);
@@ -106,7 +106,7 @@ assert.equal(fresh.save.skillCards.skill_elna_middle_01,1,'repeating a full skip
 const partial=makeSkipContext({instances:[{uid:'owned_freigal',id:'freigal',level:7,exp:3,locked:false}],flags:{starterContractsGranted:true}});
 assert.equal(vm.runInContext('commitTutorialFullSkip()',partial),true);
 assert.equal(partial.save.instances.filter(entry=>entry.id==='freigal').length,1,'partial progress must preserve an owned starter');
-assert.ok(['aquaron','elna_beginner','alchemion'].every(id=>partial.save.instances.some(entry=>entry.id===id)),'partial progress must fill every missing mandatory reward');
+assert.ok(['aquaron','elna_beginner','galdra'].every(id=>partial.save.instances.some(entry=>entry.id===id)),'partial progress must fill every missing mandatory reward');
 
 const repairedCard=makeSkipContext({flags:{stellaSkillCardGranted:true}});
 assert.equal(vm.runInContext('commitTutorialFullSkip()',repairedCard),true);
@@ -158,7 +158,7 @@ assert.ok(index.includes('id="tutorialDialogueSkipButton"')&&index.includes('>�
 assert.ok(index.includes('id="tutorialSkipButton"')&&index.includes('>全体スキップ</button>'));
 assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must remain separate layers');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1'),'tutorial CSS cache key must be refreshed');
-assert.ok(index.includes('prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8"></script>'),'tutorial JS cache key must be refreshed');
+assert.ok(index.includes('prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1"></script>'),'tutorial JS cache key must be refreshed');
 assert.equal(packageJson.scripts['check:prologue-comprehensive'],'node scripts/test-prologue-comprehensive.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-comprehensive'));
 
