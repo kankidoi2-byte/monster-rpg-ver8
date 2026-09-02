@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "trial_id": "map-dex-ecosystem-20260902",
+  "status": "in_progress",
+  "goal": "Add an Ecosystem section to the published Map Dex.",
+  "user_choice": "ecosystem_explanation_plus_species_and_type_trends",
+  "activation_scope": "this_trial_only",
+  "continue_to_next_backlog_item": false,
+  "compatibility": {
+    "save_key": "mb_v95c",
+    "change_save_structure": false,
+    "change_existing_ids": false,
+    "change_encounter_tables_or_rates": false
+  },
+  "phases": [
+    {"phase": 34, "owner_line": "command", "status": "completed", "deliverable": "fixed goal, scope, ordering, acceptance criteria, and stop-after-trial rule"},
+    {"phase": 35, "owner_line": "system", "status": "in_review", "deliverable": "derive species and type trends and render the Ecosystem section"},
+    {"phase": 36, "owner_line": "content", "status": "pending", "deliverable": "add a setting-consistent ecosystem explanation to all maps"},
+    {"phase": 37, "owner_line": "command_qa", "status": "pending", "deliverable": "dedicated tests, full checks, diff and conflict review"},
+    {"phase": 38, "owner_line": "command", "status": "pending", "deliverable": "pull requests, safe merges, Pages and published-game verification, then stop"}
+  ],
+  "acceptance_criteria": [
+    "an unlocked map detail has a visible Ecosystem heading",
+    "the section includes a map-specific ecosystem explanation",
+    "the section includes type trends derived from existing weighted encounter data",
+    "the section includes main resident species derived from existing encounter data",
+    "locked maps reveal no ecosystem information",
+    "all existing map IDs, encounters, rates, encyclopedia numbers, and saves remain compatible",
+    "mobile layout and reduced-width behavior are covered by automated checks",
+    "the published game is verified after Pages succeeds"
+  ]
+}

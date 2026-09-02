@@ -142,6 +142,27 @@ function mapEnemyFrequencyLabel(map,id){
   const rate=total?count/total:0;
   return rate>=.35?'よく出現':rate>=.15?'出現':'まれに出現';
 }
+function mapDexEcosystemProfile(map){
+  const speciesCounts=new Map(),typeCounts=new Map();
+  (map.enemyIds||[]).forEach(id=>{
+    const unit=by(id);if(!unit)return;
+    speciesCounts.set(id,(speciesCounts.get(id)||0)+1);
+    [...new Set(unit.types||[])].forEach(type=>typeCounts.set(type,(typeCounts.get(type)||0)+1));
+  });
+  const species=[...speciesCounts.entries()].map(([id,count])=>({unit:by(id),count})).filter(entry=>entry.unit)
+    .sort((a,b)=>b.count-a.count||((a.unit.dexNo??a.unit.no??999)-(b.unit.dexNo??b.unit.no??999))||a.unit.name.localeCompare(b.unit.name,'ja'));
+  const totalTypeCount=[...typeCounts.values()].reduce((sum,count)=>sum+count,0);
+  const typeTrends=[...typeCounts.entries()].map(([type,count])=>({type,count,rate:totalTypeCount?Math.round(count/totalTypeCount*100):0}))
+    .sort((a,b)=>b.count-a.count||a.type.localeCompare(b.type));
+  return {species,typeTrends};
+}
+function mapDexEcosystemFallback(map,profile){
+  const common=profile.species.slice(0,3).map(entry=>entry.unit.name).join('、');
+  const types=profile.typeTrends.slice(0,2).map(entry=>TN[entry.type]||entry.type).join('・');
+  if(common&&types)return `${common}を中心に、${types}属性の生物が多く確認されている。`;
+  if(common)return `${common}を中心とした生物相が確認されている。`;
+  return 'この土地の生態記録はまだ整理されていない。';
+}
 function showMapDexDetail(mapId){
   const map=MAPS.find(entry=>entry.id===mapId),detail=document.getElementById('mapDexDetail');
   if(!map||!detail)return;
@@ -149,9 +170,12 @@ function showMapDexDetail(mapId){
     detail.innerHTML='<div class="dex-detail ui-dex-detail map-dex-locked-detail"><span>🔒</span><h2>未発見のマップ</h2><p>討伐依頼でこの土地を発見すると、詳しい情報が登録されます。</p></div>';
     return;
   }
-  const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean);
+  const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean),ecosystem=mapDexEcosystemProfile(map);
   detail.innerHTML=`<article class="dex-detail ui-dex-detail map-dex-detail">
     <img class="map-dex-hero" src="${map.image}" alt="${map.name}"><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
+    <section class="map-dex-ecosystem" aria-labelledby="mapDexEcosystemHeading"><h3 id="mapDexEcosystemHeading">生態系</h3><p>${map.ecosystem||mapDexEcosystemFallback(map,ecosystem)}</p>
+    <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${skillTypeIcon(entry.type)} ${TN[entry.type]||entry.type}<small>${entry.rate}%</small></span>`).join('')}</div>
+    <h4>主な生息種</h4><div class="map-dex-ecosystem-species">${ecosystem.species.slice(0,5).map(entry=>`<span>${entry.unit.name}<small>${mapEnemyFrequencyLabel(map,entry.unit.id)}</small></span>`).join('')}</div></section>
     <h3>挑戦できる難易度</h3><div class="map-dex-tags">${mapDexDifficulties(map).map(label=>`<span>${label}</span>`).join('')}</div>
     <h3>特殊イベント</h3><div class="map-dex-tags">${mapDexEvents(map).map(label=>`<span>${label}</span>`).join('')}</div>
     <h3>出現モンスター</h3><div class="map-dex-enemies">${enemies.map(unit=>`<button onclick="openUnitFromMapDex('${unit.id}')">${vis(unit,'loading="lazy" decoding="async"')}<strong>${unit.name}</strong><small>${mapEnemyFrequencyLabel(map,unit.id)}・${isCharacterUnit(unit)?'キャラクター':'モンスター'} ›</small></button>`).join('')}</div></div>
