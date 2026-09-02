@@ -35,11 +35,20 @@ The caller owns the returned ledger. Entries expire after 24 hours and are cappe
 
 This Phase does not install a webhook, scheduler, GitHub App, token, workflow permission, or persistence adapter. Future adapters must supply and safely persist the returned ledger while continuing to obey the Phase 23 execution contract.
 
+## Automatic unpublished reports
+
+Phase 26 composes the Phase 25 coordinator with Phase 24 normalization. `runAutomaticInspection(input, ledger, { now })` creates a fixed-schema, unpublished report only when the event is valid and not already present in the caller-owned ledger.
+
+Reports contain bounded cause candidates, impact, a deterministic recommendation, confidence, sanitized evidence, and an `unpublished` publication state. Arbitrary titles, bodies, diagnostic payloads, credentials, and free text are not copied. A repeated trigger, invalid envelope, or input over 256 KiB produces no report and performs no retry or publication.
+
+The function returns data in memory only. It does not install persistence, Issue creation, messaging, workflow, or network adapters. Phase 27 will consume the safe report separately when creating an unpublished Issue draft.
+
 ## Validation
 
 ```sh
 npm run check:dev-inspection-agent-manual
 npm run check:dev-inspection-agent-triggers
+npm run check:dev-inspection-agent-reports
 ```
 
 No player-visible behavior changes in this project, so `js/notices-data.js` is not updated.
