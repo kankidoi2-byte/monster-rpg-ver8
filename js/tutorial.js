@@ -756,7 +756,11 @@ function offerGoldenLandTutorialGuide(){
 function ensureTutorialStarterContracts(){
   if(typeof currentTutorialState!=='function'||typeof addInstance!=='function')return false;
   const tutorial=currentTutorialState();
-  if(tutorial.replaying)return TUTORIAL_STARTER_CONTRACT_IDS.every(id=>tutorialOwnedStarterInstance(id));
+  // A replay can start from an old completed save that never received the
+  // current prologue party, or after one of those bodies is no longer owned.
+  // The battle layer supplies temporary replay-only instances in that case;
+  // never grant or save rewards merely to make a replay work.
+  if(tutorial.replaying)return TUTORIAL_STARTER_CONTRACT_IDS.every(id=>typeof by==='function'&&by(id));
   const snapshot=JSON.stringify(save);
   try{
     const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(id=>tutorialOwnedStarterInstance(id)||addInstance(id,1,0,{tutorialContract:true}));
@@ -777,12 +781,21 @@ function ensureTutorialStarterContracts(){
 function tutorialElnaGuestInstance(){
   return {...TUTORIAL_ELNA_GUEST,equippedSkills:[]};
 }
+function tutorialReplayContractInstance(id,index=0){
+  return {
+    uid:`tutorial_replay_${id}_${index}`,id,sourceId:id,level:1,exp:0,
+    locked:true,guest:true,tutorialRole:'replay_contract',equippedSkills:[]
+  };
+}
 function tutorialBattlePartyInstances(defaultParty=[]){
   if(!tutorialBattleSession.active)return defaultParty;
-  const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(tutorialOwnedStarterInstance).filter(Boolean);
+  const replaying=typeof currentTutorialState==='function'&&currentTutorialState()?.replaying===true;
+  const starters=TUTORIAL_STARTER_CONTRACT_IDS.map((id,index)=>
+    tutorialOwnedStarterInstance(id)||(replaying?tutorialReplayContractInstance(id,index):null)
+  ).filter(Boolean);
   if(starters.length!==TUTORIAL_STARTER_CONTRACT_IDS.length)return defaultParty;
   if(tutorialBattleSession.kind==='stella_mock'){
-    const elna=tutorialElnaContractInstance();
+    const elna=tutorialElnaContractInstance()||(replaying?tutorialReplayContractInstance('elna_beginner',2):null);
     return elna?[...starters,elna]:starters;
   }
   if(tutorialBattleSession.kind!=='elna_rescue')return defaultParty;
