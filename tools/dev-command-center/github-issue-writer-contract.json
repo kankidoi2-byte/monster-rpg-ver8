@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "system_id": "monster-rpg-dev-command-center",
+  "phase": 21,
+  "checkpoint": "explicitly_confirmed_issue_writer",
+  "target_repository": "kankidoi2-byte/monster-rpg-ver8",
+  "operation": "POST /repos/{owner}/{repository}/issues",
+  "required_permission": "issues:write",
+  "token_environment": "DEV_COMMAND_CENTER_GITHUB_ISSUE_TOKEN",
+  "token_storage": "server_process_environment_only",
+  "preconditions": [
+    "loopback_dashboard",
+    "same_origin_form",
+    "phase20_fixed_draft",
+    "fresh_open_issue_duplicate_check",
+    "no_exact_title_duplicate",
+    "exact_confirmation_text",
+    "matching_draft_sha256",
+    "approval_not_expired",
+    "approval_not_previously_used"
+  ],
+  "approval": {
+    "exact_confirmation_text": "この下書きをGitHub Issueとして投稿する",
+    "expires_after_ms": 300000,
+    "approval_id": "sha256(draft_fingerprint, prepared_at, expires_at)",
+    "one_time": true,
+    "fresh_confirmation_for_every_post": true
+  },
+  "request_fields": [
+    "title",
+    "body"
+  ],
+  "omitted_fields": [
+    "labels",
+    "assignees",
+    "milestone"
+  ],
+  "failure_behavior": {
+    "missing_token": "fail_closed",
+    "wrong_or_expired_approval": "no_request",
+    "duplicate_confirmation": "no_request",
+    "github_error": "fixed_reason_code_only",
+    "retry": "requires_new_duplicate_check_and_new_confirmation"
+  },
+  "forbidden": [
+    "automatic_posting",
+    "background_posting",
+    "token_in_browser",
+    "token_in_log",
+    "token_in_repository",
+    "permission_auto_expansion",
+    "posting_during_tests"
+  ]
+}

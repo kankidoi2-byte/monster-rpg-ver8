@@ -5,6 +5,11 @@ import { isLoopbackHost, readRuntimeConfig } from './config.mjs';
 import { buildDashboardViewModel, renderDashboardHtml } from './dashboard.mjs';
 import { importDiagnosticReport } from './diagnostic-import.mjs';
 import { generateIssueDraft } from './issue-draft.mjs';
+import {
+  cancelIssuePublication,
+  confirmIssuePublication,
+  prepareIssuePublication
+} from './issue-publication-approval.mjs';
 
 const MAX_FORM_BYTES = 1024 * 1024;
 
@@ -67,6 +72,17 @@ function sameOriginForm(request) {
   return fetchSite === '' || fetchSite === 'same-origin' || fetchSite === 'none';
 }
 
+function publicationFailure(reasonCode, at) {
+  return Object.freeze({
+    schema_version: 1,
+    status: 'failed',
+    reason_code: reasonCode,
+    failed_at: at,
+    authorization: null,
+    issue: null
+  });
+}
+
 export function createCommandCenterServer(options = {}) {
   const config = options.config || readRuntimeConfig();
   const now = options.now || (() => new Date());
@@ -75,8 +91,12 @@ export function createCommandCenterServer(options = {}) {
   });
   const diagnosticImporter = options.diagnosticImporter || importDiagnosticReport;
   const issueDraftGenerator = options.issueDraftGenerator || generateIssueDraft;
+  const repositoryProvider = options.repositoryProvider || null;
+  const issueWriter = options.issueWriter || null;
   let diagnosticImport = null;
   let issueDraft = null;
+  let issuePublication = null;
+  let publicationConsumed = false;
 
   async function handle(request, response) {
     const pathname = new URL(request.url || '/', 'http://command-center.invalid').pathname;
@@ -97,7 +117,7 @@ export function createCommandCenterServer(options = {}) {
     if (request.method === 'GET' && pathname === '/' && isLoopbackHost(config.host)) {
       const dashboard = await dashboardProvider.getDashboard();
       response.writeHead(200, DASHBOARD_HEADERS);
-      response.end(renderDashboardHtml(dashboard, diagnosticImport, issueDraft));
+      response.end(renderDashboardHtml(dashboard, diagnosticImport, issueDraft, issuePublication));
       return;
     }
     if (request.method === 'POST' && pathname === '/diagnostics/import' && isLoopbackHost(config.host) && sameOriginForm(request)) {
@@ -123,12 +143,61 @@ export function createCommandCenterServer(options = {}) {
     if (request.method === 'POST' && pathname === '/issues/draft' && isLoopbackHost(config.host) && sameOriginForm(request)) {
       const dashboard = await dashboardProvider.getDashboard();
       issueDraft = issueDraftGenerator(dashboard, diagnosticImport, { now: now() });
+      issuePublication = null;
+      publicationConsumed = false;
       response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
       response.end();
       return;
     }
     if (request.method === 'POST' && pathname === '/issues/draft/clear' && isLoopbackHost(config.host) && sameOriginForm(request)) {
       issueDraft = null;
+      issuePublication = null;
+      publicationConsumed = false;
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/issues/publication/prepare' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      let snapshot = null;
+      try { snapshot = await repositoryProvider?.getSnapshot?.(); } catch { snapshot = null; }
+      issuePublication = prepareIssuePublication(issueDraft, snapshot, { now: now() });
+      publicationConsumed = false;
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/issues/publication/cancel' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      issuePublication = cancelIssuePublication(issuePublication, { now: now() });
+      publicationConsumed = true;
+      response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
+      response.end();
+      return;
+    }
+    if (request.method === 'POST' && pathname === '/issues/publication/confirm' && isLoopbackHost(config.host) && sameOriginForm(request)) {
+      const body = await readFormBody(request);
+      const contentType = String(request.headers['content-type'] || '');
+      if (body === null || !contentType.startsWith('application/x-www-form-urlencoded') || publicationConsumed) {
+        issuePublication = publicationFailure(publicationConsumed ? 'authorization_already_used' : 'invalid_confirmation_input', now().toISOString());
+      } else {
+        const input = new URLSearchParams(body);
+        const confirmation = confirmIssuePublication(issuePublication, {
+          draft_fingerprint: input.get('draft_fingerprint'),
+          confirmation_text: input.get('confirmation_text')
+        }, { now: now() });
+        issuePublication = confirmation;
+        if (confirmation.status === 'authorized') {
+          publicationConsumed = true;
+          try {
+            issuePublication = await issueWriter?.createIssue?.(issueDraft, confirmation.authorization)
+              || publicationFailure('issue_writer_unavailable', now().toISOString());
+          } catch (error) {
+            const code = typeof error?.code === 'string' && /^[a-z0-9_]{3,60}$/.test(error.code)
+              ? error.code
+              : 'github_write_failed';
+            issuePublication = publicationFailure(code, now().toISOString());
+          }
+        }
+      }
       response.writeHead(303, { ...DASHBOARD_HEADERS, Location: '/' });
       response.end();
       return;

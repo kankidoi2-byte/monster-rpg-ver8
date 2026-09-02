@@ -44,6 +44,7 @@ assert.equal(preparation.reason_code, 'explicit_approval_required');
 assert.equal(preparation.approval_request.required_permission, 'issues:write');
 assert.equal(preparation.approval_request.confirmation_text, ISSUE_PUBLICATION_CONFIRMATION);
 assert.equal(preparation.approval_request.one_time, true);
+assert.equal(preparation.approval_request.approval_id.length, 64);
 assert.equal(preparation.draft_fingerprint.length, 64);
 assert.equal(Date.parse(preparation.approval_request.expires_at) - preparedAt.getTime(), ISSUE_PUBLICATION_APPROVAL_LIMITS.approval_ttl_ms);
 assert.equal(Object.isFrozen(preparation), true);
@@ -103,6 +104,7 @@ const authorized = confirmIssuePublication(preparation, {
 assert.equal(authorized.status, 'authorized');
 assert.equal(authorized.authorization.action, 'create_github_issue');
 assert.equal(authorized.authorization.one_time, true);
+assert.equal(authorized.authorization.approval_id, preparation.approval_request.approval_id);
 assert.equal(Object.isFrozen(authorized.authorization), true);
 
 const cancelled = cancelIssuePublication(preparation, { now: new Date('2026-09-01T23:11:00.000Z') });

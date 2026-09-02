@@ -266,7 +266,10 @@ function issueDraftHtml(value) {
       <h4>ラベル候補</h4><ul class="label-list">${labels}</ul>
       <h4>確認リンク</h4><ul>${links}</ul>
       <details><summary>GitHubへ貼り付ける本文</summary><pre>${escapeHtml(draft.body)}</pre></details>
-    </div>`;
+    </div>
+    <form method="post" action="/issues/publication/prepare">
+      <button class="button" type="submit">重複を確認して投稿準備</button>
+    </form>`;
   } else if (notActionable) {
     result = '<p class="issue-draft-message" role="status">現在の状態ではIssue下書きは不要です。</p>';
   } else if (rejected) {
@@ -287,7 +290,57 @@ function issueDraftHtml(value) {
   </section>`;
 }
 
-export function renderDashboardHtml(viewModel, diagnosticImport = null, issueDraft = null) {
+function issuePublicationHtml(draftResult, value) {
+  if (value?.schema_version !== 1) return '';
+  let content = '';
+  if (value.status === 'awaiting_approval' && value.approval_request) {
+    const request = value.approval_request;
+    const title = draftResult?.draft?.title || '下書き';
+    content = `<div class="publication-warning" role="alert">
+      <p class="approval-required">投稿前の最終確認</p>
+      <h3>${escapeHtml(title)}</h3>
+      <dl>
+        <div><dt>投稿先</dt><dd><code>${escapeHtml(request.repository)}</code></dd></div>
+        <div><dt>必要権限</dt><dd><code>${escapeHtml(request.required_permission)}</code></dd></div>
+        <div><dt>有効期限</dt><dd>${escapeHtml(request.expires_at)}</dd></div>
+        <div><dt>回数</dt><dd>この承認で1回だけ</dd></div>
+      </dl>
+      <p>下の確認文を完全一致で入力した場合だけ、公開GitHub Issueを1件作成します。</p>
+      <p class="confirmation-phrase"><code>${escapeHtml(request.confirmation_text)}</code></p>
+      <form method="post" action="/issues/publication/confirm">
+        <input type="hidden" name="draft_fingerprint" value="${escapeHtml(value.draft_fingerprint)}">
+        <label for="issue-confirmation">確認文</label>
+        <input id="issue-confirmation" name="confirmation_text" type="text" required maxlength="80" autocomplete="off" spellcheck="false">
+        <button class="button button-danger" type="submit">確認文を照合してIssueを投稿</button>
+      </form>
+      <form method="post" action="/issues/publication/cancel">
+        <button class="button button-secondary" type="submit">投稿を取り消す</button>
+      </form>
+    </div>`;
+  } else if (value.status === 'duplicate_detected') {
+    const candidates = Array.isArray(value.duplicate_candidates)
+      ? value.duplicate_candidates.map(issue => `<li><a href="${escapeHtml(issue.html_url)}" rel="noreferrer">#${escapeHtml(issue.number)} ${escapeHtml(issue.title)}</a></li>`).join('')
+      : '';
+    content = `<div class="publication-blocked" role="alert"><h3>同名のオープンIssueがあります</h3><ul>${candidates}</ul><p>重複投稿は停止しました。</p></div>`;
+  } else if (value.status === 'published' && value.issue) {
+    content = `<div class="publication-success" role="status"><h3>GitHub Issueを作成しました</h3><p><a href="${escapeHtml(value.issue.html_url)}" rel="noreferrer">#${escapeHtml(value.issue.number)} ${escapeHtml(value.issue.title)}</a></p><p>この承認は使用済みです。次の投稿には新しい準備と確認が必要です。</p></div>`;
+  } else {
+    const message = {
+      blocked: '投稿準備を完了できませんでした。下書きとGitHub情報を確認してください。',
+      expired: '確認期限が切れました。投稿準備をやり直してください。',
+      cancelled: '投稿を取り消しました。GitHub Issueは作成されていません。',
+      failed: 'Issueを作成できませんでした。権限・認証・GitHub状態を確認し、投稿準備からやり直してください。'
+    }[value.status] || '投稿状態を確認できません。';
+    content = `<p class="publication-blocked" role="alert">${escapeHtml(message)} <code>${escapeHtml(value.reason_code || 'unknown')}</code></p>`;
+  }
+  return `<section class="issue-publication" aria-labelledby="issue-publication-title">
+    <p class="eyebrow">GitHubへの外部投稿</p>
+    <h2 id="issue-publication-title">Issue投稿</h2>
+    ${content}
+  </section>`;
+}
+
+export function renderDashboardHtml(viewModel, diagnosticImport = null, issueDraft = null, issuePublication = null) {
   const view = buildDashboardViewModel({
     unifiedStatus: {
       schema_version: 1,
@@ -345,8 +398,9 @@ export function renderDashboardHtml(viewModel, diagnosticImport = null, issueDra
     <details class="sources"><summary>確認リンク</summary><ul>${links}</ul></details>
     ${diagnosticImportHtml(diagnosticImport)}
     ${issueDraftHtml(issueDraft)}
+    ${issuePublicationHtml(issueDraft, issuePublication)}
   </main>
-  <footer>GitHub書き込み・外部送信・永続保存なし</footer>
+  <footer>Issue投稿は重複確認後の完全一致・5分以内・1回限りの明示確認が必要</footer>
 </body>
 </html>`;
 }

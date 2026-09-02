@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/start.mjs",
-    "check": "npm run check:foundation && npm run check:github-reader && npm run check:github-actions-reader && npm run check:github-pages-reader && npm run check:unified-status && npm run check:next-action && npm run check:dashboard && npm run check:diagnostic-import && npm run check:issue-draft && npm run check:issue-publication-approval",
+    "check": "npm run check:foundation && npm run check:github-reader && npm run check:github-actions-reader && npm run check:github-pages-reader && npm run check:unified-status && npm run check:next-action && npm run check:dashboard && npm run check:diagnostic-import && npm run check:issue-draft && npm run check:issue-publication-approval && npm run check:github-issue-writer",
     "check:foundation": "node test/foundation.test.mjs",
     "check:github-reader": "node test/github-reader.test.mjs",
     "check:github-actions-reader": "node test/github-actions-reader.test.mjs",
@@ -15,7 +15,8 @@
     "check:dashboard": "node test/dashboard.test.mjs",
     "check:diagnostic-import": "node test/diagnostic-import.test.mjs",
     "check:issue-draft": "node test/issue-draft.test.mjs",
-    "check:issue-publication-approval": "node test/issue-publication-approval.test.mjs"
+    "check:issue-publication-approval": "node test/issue-publication-approval.test.mjs",
+    "check:github-issue-writer": "node test/github-issue-writer.test.mjs"
   },
   "engines": {
     "node": ">=20"
