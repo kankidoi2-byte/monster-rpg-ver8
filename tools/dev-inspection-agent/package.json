@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "analyze:manual": "node src/manual-analysis-cli.mjs",
-    "check": "node test/manual-readonly-analysis.test.mjs && node test/trigger-coordinator.test.mjs",
-    "check:triggers": "node test/trigger-coordinator.test.mjs"
+    "check": "node test/manual-readonly-analysis.test.mjs && node test/trigger-coordinator.test.mjs && node test/automatic-inspection-report.test.mjs",
+    "check:triggers": "node test/trigger-coordinator.test.mjs",
+    "check:reports": "node test/automatic-inspection-report.test.mjs"
   },
   "engines": {
     "node": ">=20"
