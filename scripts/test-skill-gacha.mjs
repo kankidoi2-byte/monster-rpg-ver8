@@ -60,6 +60,8 @@ const cssSource=read('css/ui-redesign.css');
 assert(skillGachaSource.includes("matchMedia('(prefers-reduced-motion: reduce)')"),'presentation must respect reduced-motion preference');
 assert(skillGachaSource.includes('skipSkillGachaPresentation')&&skillGachaSource.includes('repeatSkillGachaPresentation')&&skillGachaSource.includes('openSkillInventoryFromGacha'),'presentation actions are incomplete');
 assert(htmlSource.includes('id="skillGachaPresentation"')&&htmlSource.includes('data-skill-gacha-speed="quick"'),'presentation overlay or speed control is missing');
+assert(!htmlSource.includes('id="skillGachaResult"')&&!skillGachaSource.includes('renderSkillGachaResults'),'persistent skill-card result list must be removed');
+assert(htmlSource.includes('id="skillGachaCardDetail"')&&skillGachaSource.includes('openSkillGachaCardDetail'),'tap-only card detail is missing');
 assert(cssSource.includes('.skill-gacha-presentation')&&cssSource.includes('.skill-gacha-card-inner'),'presentation styles are missing');
 
-console.log('Skill gacha validation passed (existing draw rules, inventory safety, rarity presentation, NEW/owned tracking, reduced motion, and result actions).');
+console.log('Skill gacha validation passed (existing draw rules, inventory safety, compact result grid, tap-only detail, reduced motion, and result actions).');
