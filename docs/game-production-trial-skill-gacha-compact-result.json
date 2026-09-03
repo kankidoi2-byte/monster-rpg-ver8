@@ -33,7 +33,7 @@
   "branch": "codex/skill-gacha-compact-result",
   "pull_request": 142,
   "completion_branch": "codex/skill-gacha-compact-result-completion",
-  "completion_pull_request": null,
+  "completion_pull_request": 143,
   "merge_commit": "62441998de535515db9163a0fbdcacb40228e93a",
   "ci": {
     "pull_request_run": 33737516031,
