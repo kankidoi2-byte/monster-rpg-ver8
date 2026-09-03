@@ -279,7 +279,7 @@ function kokoroLinkTargetStats(){
 }
 let pendingKokoroLinkStatusSourceUid=null;
 let pendingKokoroLinkTacticsMode=null;
-const KOKORO_LINK_ANIMATION_DURATION=600;
+const KOKORO_LINK_ANIMATION_DURATION=1000;
 let kokoroLinkAnimationTimer=null;
 function syncKokoroLinkAura(){
   const target=document.getElementById('singlePlayerBox');
@@ -298,19 +298,16 @@ function playKokoroLinkActivationAnimation(source,link){
   effect.setAttribute('aria-hidden','true');
   const flash=document.createElement('i');
   flash.className='kokoro-link-flash';
-  const visual=document.createElement('div');
-  visual.className='kokoro-link-center-visual';
-  visual.innerHTML=typeof vis==='function'?vis(source.entry.mon):'💞';
-  const copy=document.createElement('div');
-  copy.className='kokoro-link-activation-copy';
   const title=document.createElement('strong');
   title.className='kokoro-link-activation-title';
   title.textContent='ココロリンク！';
+  const visual=document.createElement('div');
+  visual.className='kokoro-link-center-visual';
+  visual.innerHTML=typeof vis==='function'?vis(source.entry.mon):'💞';
   const targetCue=document.createElement('small');
   targetCue.className='kokoro-link-activation-target';
   targetCue.textContent=`${link.targetName}へ効果付与`;
-  copy.append(title,targetCue);
-  effect.append(flash,visual,copy);
+  effect.append(flash,title,visual,targetCue);
   target.classList.remove('is-kokoro-link-receive');
   void target.offsetWidth;
   target.classList.add('is-kokoro-link-receive','is-kokoro-linked');
