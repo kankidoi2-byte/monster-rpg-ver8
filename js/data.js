@@ -110,40 +110,242 @@ const MAPS = [
    },
    enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray']},
   {id:'volcano', name:'火山', image:MAPIMG.volcano, chapter:'序章', region:'南部火山帯', desc:'灼熱の溶岩と火山灰に覆われた危険地帯。火に適応したモンスターが多い。', ecosystem:'高熱に耐える火属性種が中心。火山灰の岩場にはゴブリンも入り込み、炎の精霊や獣と生息域を分け合っている。',
+   ecosystemDiagram:{
+    heading:'火山の生態系ピラミッド',
+    note:'矢印は火山の熱と地熱魔力が生物へ渡る流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・火口の大型獣',ids:['ignaros'],detail:'火口付近を縄張りとし、熱を鎧へ変えて過酷な環境を占有する。'},
+      {role:'第3層・岩場の捕食者',ids:['freiwolf'],detail:'火山斜面を巡回し、小型種の増えすぎを抑える。'},
+      {role:'第2層・耐熱生物',ids:['freigal','tsubaki'],detail:'地熱や火の魔力を取り込み、溶岩から離れた岩場にも活動域を広げる。'},
+      {role:'第1層・生産基盤',labels:['耐熱苔・地衣類','火山灰の鉱物','地熱と火の魔力'],detail:'わずかな植生と鉱物、地熱魔力が火山の生命を支える入口となる。'}
+    ],
+    cycles:[{role:'外部からの採集者',ids:['goblin'],detail:'火山灰の岩場へ入り、耐熱植物や鉱石を持ち帰る。'}]
+   },
    enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin','ignaros']},
   {id:'lake', name:'湖', image:MAPIMG.lake, chapter:'序章', region:'中央水域', desc:'澄んだ水をたたえる静かな湖。水辺を好むモンスターが集まる。', ecosystem:'アクアロン系など水辺を好む種が主役。冷気を帯びた個体や陸から訪れる種も見られ、水際に生物が集まる。',
+   ecosystemDiagram:{
+    heading:'湖の生態系ピラミッド',
+    note:'矢印は水草などから水辺の生物へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第3層・湖の大型竜',ids:['highaquaron'],detail:'深みと岸辺を行き来し、小型の水棲生物が増えすぎるのを抑える。'},
+      {role:'第2層・浅瀬の採食者',ids:['aquaron'],detail:'水草や小さな水生生物を求めて浅瀬に集まる。'},
+      {role:'第1層・生産基盤',labels:['水草・藻類','小さな水生生物','陽光と清水'],detail:'浅瀬へ届く光が水草や藻類を育て、湖の食物網を支える。'}
+    ],
+    cycles:[
+      {role:'水の循環者',ids:['suiren'],detail:'清流の魔力を巡らせ、水の濁りや淀みを抑える。'},
+      {role:'湖畔への来訪者',ids:['goblin'],detail:'岸辺で木の実や水生素材を集める雑食者。'},
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'氷核で動く存在で、自然の食物連鎖とは別に湖畔を巡回する。'}
+    ]
+   },
    enemyIds:['aquaron','highaquaron','suiren','goblin','proto_icegolem']},
   {id:'seikai_irie', name:'蒼海の入り江', image:MAPIMG.seikai_irie, chapter:'序章', region:'蒼海地方', desc:'青い海と岩礁が入り組む入り江。浅瀬から外洋性の水棲種まで姿を見せる。', ecosystem:'浅瀬にはアクアロン系が多く、岩礁の外側にはオルカーナ系や海竜が現れる。岸から沖へ進むほど大型の水棲種が増える。',
+   ecosystemDiagram:{
+    heading:'蒼海の入り江の生態系ピラミッド',
+    note:'矢印は浅瀬の生産基盤から沖の大型種へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・沖の海竜',ids:['shenhairon','tienhairon'],detail:'入り江の外縁を回遊し、広い海域の均衡を保つ大型種。'},
+      {role:'第3層・高速遊泳者',ids:['orca_stream'],detail:'岩礁の外側を疾走し、群れの動きを整える。'},
+      {role:'第2層・沿岸の遊泳者',ids:['highaquaron','orcana'],detail:'小魚や漂う魔力を求め、浅瀬と沖の境界を行き来する。'},
+      {role:'第1層・浅瀬の採食者',ids:['aquaron'],labels:['海草・藻類','プランクトン'],detail:'光の届く浅瀬で育つ海草や小さな生物を利用する。'}
+    ]
+   },
    enemyIds:['aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','highaquaron','highaquaron','highaquaron','highaquaron','orcana','orcana','orcana','orcana','shenhairon','tienhairon','orca_stream']},
   {id:'kaiyu_kaiiki', name:'回遊海域', image:MAPIMG.kaiyu_kaiiki, chapter:'序章', region:'蒼海地方', desc:'巨大な海流が巡る外洋。群れとともに強力な水棲モンスターが回遊する。', ecosystem:'海流に沿ってハイアクアロンとオルカーナ系の群れが回遊する。海竜や大型種も混ざる、水属性に大きく偏った外洋生態系。',
+   ecosystemDiagram:{
+    heading:'回遊海域の生態系ピラミッド',
+    note:'矢印は海流が運ぶ栄養から大型の回遊種へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・深海の支配種',ids:['orca_abyss'],detail:'深みから回遊路へ現れ、大型種が集中する場所を支配する。'},
+      {role:'第3層・大型回遊種',ids:['shenhairon','tienhairon','orca_stream'],detail:'広い海域を移動し、海流に沿う群れの上位を占める。'},
+      {role:'第2層・群れの遊泳者',ids:['highaquaron','orcana'],detail:'海流が運ぶ小魚や魔力を追って大きな群れをつくる。'},
+      {role:'第1層・外洋の生産基盤',labels:['植物プランクトン','小魚・微小生物','海流の栄養塩'],detail:'日光と湧昇流が微小な生物を育て、長い回遊路を支える。'}
+    ]
+   },
    enemyIds:['highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','orcana','orcana','orcana','orcana','orcana','orcana','orcana','orcana','orcana','orcana','shenhairon','shenhairon','shenhairon','shenhairon','tienhairon','tienhairon','tienhairon','tienhairon','orca_stream','orca_stream','orca_stream','orca_abyss']},
   {id:'deep_sea_end', name:'深き海の果て', image:MAPIMG.deep_sea_end, chapter:'序章', region:'蒼海地方', desc:'光の届かない深海の最奥。深淵に適応した強大な存在が潜む。', ecosystem:'暗い深海にはオルカストリームと海竜が定着し、最奥ではオルカアビスが姿を見せる。少数の強力な水棲種へ集中した生態系。',
+   ecosystemDiagram:{
+    heading:'深き海の果ての生態系ピラミッド',
+    note:'矢印は沈降物や深海魔力から大型種へ渡る推定上の流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・深淵の支配種',ids:['orca_abyss'],detail:'最奥の高密度な魔力域を占有し、ほかの大型種を遠ざける。'},
+      {role:'第3層・定着する海竜',ids:['shenhairon','tienhairon'],detail:'海底地形に沿って移動し、深海の限られた資源を利用する。'},
+      {role:'第2層・深海の遊泳者',ids:['orca_stream'],detail:'上層から沈む餌や魔力を追い、暗い水層を広く巡る。'},
+      {role:'第1層・深海の供給源',labels:['マリンスノー','海底の微小生物','深海の魔力'],detail:'上層から沈む有機物と海底の魔力が、光のない環境を支える。'}
+    ]
+   },
    enemyIds:['orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','shenhairon','shenhairon','shenhairon','shenhairon','tienhairon','tienhairon','tienhairon','tienhairon','orca_abyss','orca_abyss','orca_abyss']},
   {id:'snow_mountain', name:'雪山', image:MAPIMG.snow_mountain, chapter:'序章', region:'北部山岳', desc:'一年を通じて雪と氷に閉ざされた山岳。寒冷地に強い種が生息する。', ecosystem:'氷に適応したゴーレム類を中心に、水辺の種や一般種も寒冷地へ入り込む。種数は限られるが、耐寒性の高い生物が残る。',
+   ecosystemDiagram:{
+    heading:'雪山の生態系ピラミッド',
+    note:'矢印は乏しい植生と雪解け水から耐寒種へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第3層・氷雪の大型個体',ids:['icegolem'],detail:'氷河の魔力から生まれ、雪原の広い範囲をゆっくり巡る。'},
+      {role:'第2層・雪解け水の住人',ids:['aquaron'],detail:'凍らない水場へ集まり、小さな水生生物を利用する。'},
+      {role:'第1層・寒冷地の基盤',labels:['地衣類・寒地苔','雪解け水','氷河の魔力'],detail:'短い日照と雪解け水が、限られた生命活動の入口となる。'}
+    ],
+    cycles:[
+      {role:'分解・循環者',ids:['slime'],detail:'雪の下の枯葉や残留魔力を取り込み、わずかな土へ養分を戻す。'},
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'氷核で動く試作体で、自然の食物連鎖とは別に雪原を歩く。'},
+      {role:'山越えの来訪者',ids:['goblin'],detail:'風の弱い岩陰をたどり、食料や鉱石を探す。'}
+    ]
+   },
    enemyIds:['icegolem','proto_icegolem','slime','aquaron','goblin']},
   {id:'forest', name:'森林', image:MAPIMG.forest, chapter:'序章', region:'緑樹地方', desc:'深い緑と古木が広がる森林。森の力を宿す多様な生命が暮らす。', ecosystem:'グラスビート系が個体数の中心を占め、草木に紛れる獣や小型種が共存する。同じ系統の成長段階を一つの森で確認できる。',
+   ecosystemDiagram:{
+    heading:'森林の生態系ピラミッド',
+    note:'矢印は木々が蓄えた力から採食者や夜の捕食者へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・夜の捕食者',ids:['nightmare'],detail:'暗い林床で小型種を狙い、夜間の生物相へ影響する。'},
+      {role:'第3層・森の大型守護者',ids:['granbeat','seralphia'],detail:'成長した森属性種として広い縄張りを使い、植生の均衡を守る。'},
+      {role:'第2層・若葉の採食者',ids:['grassbeat','thornbeat','rikasheef'],detail:'葉や樹液を利用しながら、花粉や種子の移動にも関わる。'},
+      {role:'第1層・生産基盤',labels:['古木・若木','下草・花','陽光と大地の魔力'],detail:'幾層もの植生が光を受け止め、多くの生物へ食物と隠れ場所を与える。'}
+    ],
+    cycles:[
+      {role:'分解・循環者',ids:['slime'],detail:'落ち葉と残留魔力を取り込み、森の土へ養分を戻す。'},
+      {role:'外部からの採集者',ids:['goblin'],detail:'木の実や枝を求めて林縁から入り込む雑食者。'}
+    ]
+   },
    enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare']},
   {id:'light_plain', name:'光の平原', image:MAPIMG.light_plain, chapter:'序章', region:'光明地方', desc:'柔らかな光が絶えず降り注ぐ平原。光属性のモンスターが力を得る。', ecosystem:'ヒカリの群れと光竜系が、光の強い環境を利用する。水辺由来の種や一般種も暮らすが、光属性種が生態系の核となる。',
+   ecosystemDiagram:{
+    heading:'光の平原の生態系ピラミッド',
+    note:'矢印は豊かな光と水辺から生物へ渡る力の流れを示す。神格や精霊を含むため、戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・光の守護者',ids:['hikari'],detail:'平原へ光を巡らせ、光属性種が活動できる環境を保つ。'},
+      {role:'第3層・成長した光竜',ids:['luxiard'],detail:'広い陽だまりを巡り、仲間を導きながら光の偏りをならす。'},
+      {role:'第2層・小型の水辺種',ids:['aquaron','luxseed'],detail:'水草や若葉、小さな水生生物を利用して成長する。'},
+      {role:'第1層・生産基盤',labels:['光を蓄える草花','清らかな小川','絶えず降る光'],detail:'強い光と清水が植物を育て、平原全体へ生命力を供給する。'}
+    ],
+    cycles:[
+      {role:'光と水の循環者',ids:['suiren'],detail:'小川の水と光の魔力を巡らせ、生産基盤を整える。'},
+      {role:'分解・循環者',ids:['slime'],detail:'枯草や残留魔力を取り込み、土へ養分を戻す。'},
+      {role:'外部からの来訪者',ids:['goblin'],detail:'林縁から入り、木の実や光る素材を集める。'}
+    ]
+   },
    enemyIds:['hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','slime','slime','slime','goblin','goblin','suiren','aquaron','luxseed','luxseed','luxseed','luxiard']},
   {id:'starry_plain', name:'星空の平原', image:MAPIMG.starry_plain, chapter:'序章', region:'星見地方', desc:'昼夜を問わず星が瞬く不思議な平原。星の力を宿す種が現れる。', ecosystem:'ネメス系が星の力に応じて広く分布する。雷や闇など夜空と相性のよい種も混ざり、星属性を中心に多様性が保たれる。',
+   ecosystemDiagram:{
+    heading:'星空の平原の生態系ピラミッド',
+    note:'矢印は星明かりを蓄える草原から大型種へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・星空の大型竜',ids:['nemesion'],detail:'星の魔力が濃い上空を巡り、広い領域の頂点を占める。'},
+      {role:'第3層・夜空の捕食者',ids:['nemesia','spaquinn','nightmare'],detail:'空と暗がりを使い分け、小型種が集中する場所を巡る。'},
+      {role:'第2層・星草原の小型種',ids:['nemes','volteck','astralepis'],detail:'星露を含む草や小さな生物を利用し、星の魔力を体内へ蓄える。'},
+      {role:'第1層・生産基盤',labels:['星露草・夜花','小さな虫','星明かりと大地'],detail:'星の光を蓄える植物が、夜も活動する生物を支える。'}
+    ],
+    cycles:[
+      {role:'分解・循環者',ids:['slime'],detail:'枯れた夜花や残留魔力を土へ戻す。'},
+      {role:'外部からの来訪者',ids:['goblin'],detail:'光る実や星石を求めて平原へ入る。'}
+    ]
+   },
    enemyIds:['nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemesia','nemesia','nemesia','nemesia','nemesion','slime','slime','goblin','goblin','volteck','spaquinn','nightmare','astralepis']},
   {id:'highland_ruins', name:'高原遺跡', image:MAPIMG.highland_ruins, chapter:'序章', region:'雷鳴高原', desc:'風雨にさらされた古代遺跡。高所に集まる雷と風の力が残響する。', ecosystem:'ヴォルテック系やスパクインが高所の雷を利用し、翼を持つ風属性種も遺跡周辺を回遊する。雷と風が生物相を二分する。',
+   ecosystemDiagram:{
+    heading:'高原遺跡の生態系ピラミッド',
+    note:'矢印は高原の植生と帯電した大気から飛翔種へ渡る主な力の流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・嵐の支配種',ids:['voltax','tempestray'],detail:'雷雲と暴風の中心を縄張りとし、上空の活動域を分け合う。'},
+      {role:'第3層・高所の大型種',ids:['spaquinn','volmoog','zephyray'],detail:'遺跡上空と岩場を使い、風に運ばれる小型生物を追う。'},
+      {role:'第2層・小型飛翔種',ids:['volteck','sylphin'],detail:'上昇気流を利用し、草の種子や小さな虫を取り込む。'},
+      {role:'第1層・高原の基盤',labels:['高山草・地衣類','風に舞う種子','雷と上昇気流'],detail:'低い植生と大気の魔力が、飛翔種の活動を支える。'}
+    ],
+    cycles:[
+      {role:'分解・循環者',ids:['slime'],detail:'遺跡の窪みにたまる枯草や残留魔力を分解する。'},
+      {role:'遺跡への来訪者',ids:['goblin'],detail:'風を避けられる石壁をたどり、遺物や素材を探す。'}
+    ]
+   },
    enemyIds:['volteck','volteck','volteck','volteck','volteck','volteck','volteck','volteck','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','volmoog','volmoog','volmoog','voltax','voltax','slime','goblin','sylphin','sylphin','zephyray','tempestray']},
   {id:'arena', name:'闘技場', image:MAPIMG.arena, chapter:'序章', region:'王都地方', desc:'戦士たちが腕を競う石造りの闘技場。鍛え上げられた剣士と対峙する。', ecosystem:'野生の生態系ではなく、修練段階の異なるエルナが対戦者として現れる人工的な戦闘環境。出現傾向は剣士の成長段階を反映する。',
+   ecosystemDiagram:{
+    heading:'闘技場の戦闘環境構造図',
+    note:'自然の食物連鎖ではなく、対戦者の修練段階と闘技場を支える仕組みを下から順に示す。',
+    layers:[
+      {role:'第3段階・上級対戦者',ids:['elna_advanced'],detail:'磨き抜かれた剣技を持ち、闘技場の最上位で挑戦を待つ。'},
+      {role:'第2段階・中級対戦者',ids:['elna_middle'],detail:'基礎を身につけた剣士が、実戦形式で応用力を鍛える。'},
+      {role:'第1段階・初級対戦者',ids:['elna_beginner'],detail:'基本の構えと間合いを学び、繰り返し模擬戦へ参加する。'},
+      {role:'運営基盤',labels:['訓練場・観客席','審判と整備員','模擬戦の規則'],detail:'安全な対戦と段階的な修練を維持する人工的な環境。'}
+    ]
+   },
    enemyIds:['elna_beginner','elna_beginner','elna_beginner','elna_beginner','elna_beginner','elna_middle','elna_middle','elna_middle','elna_advanced']},
   {id:'magic_academy', name:'魔導学園', image:MAPIMG.magic_academy, chapter:'序章', region:'王都地方', desc:'魔法を学ぶ者たちが集う学園。星と無属性の術式が研究されている。', ecosystem:'ステラとルミナの各成長段階が、術式の研究や修練に応じて現れる。星属性を共通基盤に、異なる術者の系統が並存する。',
+   ecosystemDiagram:{
+    heading:'魔導学園の修練環境構造図',
+    note:'自然の食物連鎖ではなく、二つの術者系統が同じ学習基盤から成長する流れを示す。',
+    layers:[
+      {role:'第3段階・高位魔導師',ids:['stella_sorcerer','lumina_sorcerer'],detail:'星辰の知識と高位術式を修め、それぞれの魔法体系を完成へ導く。'},
+      {role:'第2段階・魔法使い',ids:['stella_wizard','lumina_wizard'],detail:'基礎術式を組み合わせ、実戦で安定して星魔法を扱う。'},
+      {role:'第1段階・見習い',ids:['stella_apprentice','lumina_apprentice'],detail:'共通の基礎を学びながら、光と闇の異なる資質を伸ばす。'},
+      {role:'学習基盤',labels:['魔導書・講義','星辰観測','演習用の術式'],detail:'知識、観測、反復練習が二系統の成長を支える。'}
+    ]
+   },
    enemyIds:['stella_apprentice','stella_apprentice','stella_apprentice','stella_apprentice','stella_wizard','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_apprentice','lumina_apprentice','lumina_wizard','lumina_wizard','lumina_sorcerer']},
   {id:'ruined_village', name:'廃村跡', image:MAPIMG.ruined_village, chapter:'序章', region:'影森地方', desc:'人の気配が絶えた村の跡。夜になると闇のモンスターが徘徊する。', ecosystem:'ナイトメアと闇竜系が放棄された建物を活動域とし、一般種も廃墟へ入り込む。暗所に適応した闇属性種が優位。',
+   ecosystemDiagram:{
+    heading:'廃村跡の生態系ピラミッド',
+    note:'矢印は廃墟に残る有機物や魔力から夜行性種へ渡る主な流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・夜竜の支配種',ids:['noxvelg'],detail:'深い闇に覆われた廃屋を中心に、広い活動域を持つ。'},
+      {role:'第3層・夜の捕食者',ids:['noclaid','nightmare'],detail:'屋根や影を使って移動し、小型種が集まる場所を狙う。'},
+      {role:'第2層・廃墟の小型種',ids:['nocle','goblin'],detail:'虫や残された食料、廃材を利用して建物の隙間に潜む。'},
+      {role:'第1層・廃墟の基盤',labels:['苔・菌類','小さな虫','残留魔力と廃材'],detail:'朽ちた木材や湿気、闇の魔力が夜行性の生物を支える。'}
+    ],
+    cycles:[{role:'分解・循環者',ids:['slime'],detail:'朽ちた有機物や残留魔力を取り込み、廃墟の土へ戻す。'}]
+   },
    enemyIds:['nightmare','nightmare','nightmare','nightmare','goblin','slime','nocle','nocle','nocle','noclaid','noxvelg']},
   {id:'starsea', name:'遥かなる星の海', image:MAPIMG.starsea, chapter:'序章', region:'星界', desc:'地上から隔絶された星の海。滅亡の力を帯びた存在へ至る特異領域。', ecosystem:'ネメシオンとドゥームネメシオンだけが確認される閉じた領域。種数は極端に少なく、星の力を帯びた強大な個体へ集中する。',
+   ecosystemDiagram:{
+    heading:'遥かなる星の海の存在構造図',
+    note:'通常の食物連鎖が確認できない閉鎖領域のため、星の力が二つの存在へ集中する関係を示す。',
+    layers:[
+      {role:'集中点・滅亡の星',ids:['doom_nemesion'],detail:'周囲の星力を取り込み、終焉の光へ変える極端な存在。'},
+      {role:'星界の大型竜',ids:['nemesion'],detail:'星の海を巡り、領域に満ちる星力を直接利用する。'},
+      {role:'領域基盤',labels:['星屑・星雲','漂う星の魔力'],detail:'地上の植物に代わり、空間そのものに満ちる星力が活動源となる。'}
+    ]
+   },
    enemyIds:['nemesion','doom_nemesion'], bossOnly:true, appearRate:0.10},
   {id:'water_secret', name:'流水の秘境', image:MAPIMG.water_secret, chapter:'序章', region:'蒼海地方', desc:'清流と水鏡に守られた秘境。選ばれた水の使い手だけが姿を見せる。', ecosystem:'水の使い手エルナとスイレンが現れる限定的な環境。一般的な水棲種の群れではなく、水の力に選ばれた存在だけが確認される。',
+   ecosystemDiagram:{
+    heading:'流水の秘境の共生構造図',
+    note:'自然の食物連鎖ではなく、清流、精霊、選ばれた守り手が保つ限定的な共生関係を示す。',
+    layers:[
+      {role:'秘境の守り手',ids:['elna_water'],detail:'水鏡の力を受け、流れを乱す脅威から秘境を守る。'},
+      {role:'水の循環者',ids:['suiren'],detail:'清流の魔力を巡らせ、水鏡が力を保てる環境を整える。'},
+      {role:'環境基盤',labels:['清流・湧水','水鏡の魔力','水辺の草花'],detail:'澄んだ水と水鏡の力が、秘境の閉じた環境を支える。'}
+    ]
+   },
    enemyIds:['elna_water','suiren'], rareOnly:true, appearRate:0.12},
   {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。法則から外れた偽竜が出現する。', ecosystem:'三体の偽竜だけが出現し、通常の地域生態系から隔絶されている。無と光の性質を備えた機械竜で構成される特異な生物相。',
+   ecosystemDiagram:{
+    heading:'世界の狭間の存在構造図',
+    note:'自然の食物連鎖ではなく、境界エネルギーを利用する三体の偽竜の完成段階を示す。',
+    layers:[
+      {role:'第3段階・完成個体',ids:['false_dragon_gamma'],detail:'光と虚無を同時に操り、狭間へ最も強く適応した偽竜。'},
+      {role:'第2段階・拡張個体',ids:['false_dragon_beta'],detail:'装甲翼を広げ、境界空間を移動する能力を高めた個体。'},
+      {role:'第1段階・基礎個体',ids:['false_dragon_alfa'],detail:'神に似せた構造を持ち、境界の力を取り込む偽竜の基礎形。'},
+      {role:'領域基盤',labels:['空間の裂け目','光と虚無の残響'],detail:'世界同士の境界から漏れる不安定な力が、三体の活動源となる。'}
+    ]
+   },
    enemyIds:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], bossOnly:true, appearRate:0.08},
   {id:'kaen_village', name:'華炎の里', image:MAPIMG.kaen_village, chapter:'序章', region:'南部火山帯', desc:'火の恵みとともに暮らす里。炎を操る戦士とモンスターが集う。', ecosystem:'炎の精霊ツバキが里の周辺に多く、華炎のエルナも現れる。火の力と共存する者だけでまとまった、火属性中心の環境。',
+   ecosystemDiagram:{
+    heading:'華炎の里の共生構造図',
+    note:'自然の食物連鎖ではなく、地熱、炎の精霊、里の守り手が支え合う関係を示す。',
+    layers:[
+      {role:'里の守り手',ids:['elna_kaen'],detail:'炎玉の力を剣へ宿し、里と精霊の活動域を守る。'},
+      {role:'炎の循環者',ids:['tsubaki'],detail:'地熱の魔力を炎として巡らせ、里の周辺に多く集まる。'},
+      {role:'環境基盤',labels:['火山の地熱','炎玉の魔力','耐熱の草花'],detail:'地熱を暮らしへ取り込みながら、精霊が定着できる環境を維持する。'}
+    ]
+   },
    enemyIds:['tsubaki','tsubaki','tsubaki','elna_kaen']},
   {id:'golden_land', name:'黄金郷', image:MAPIMG.golden_land, chapter:'序章', region:'幻の領域', desc:'黄金の輝きに満ちた希少領域。莫大なコインをもたらす存在が棲む。', ecosystem:'確認されるのはスライムゴールドのみ。多様性よりも希少個体の集中が特徴で、黄金郷そのものが限定的な生息条件となる。',
+   ecosystemDiagram:{
+    heading:'黄金郷の生息条件図',
+    note:'一種しか確認されておらず、完全な食物連鎖ではない。希少個体を支える観測済みの条件を示す。',
+    layers:[
+      {role:'確認される唯一の種',ids:['slime_gold'],detail:'黄金の魔力が濃い場所へ集まり、輝く残留物を体内へ取り込む。'},
+      {role:'限定的な生息基盤',labels:['黄金の残留魔力','鉱物を含む地面','閉じた幻の領域'],detail:'特殊な魔力と鉱物条件が重なるため、ほかの地域では見られない集中が起きる。'}
+    ]
+   },
    enemyIds:['slime_gold'], rareOnly:true, goldenLand:true, expeditionExcluded:true}
 
 ];
