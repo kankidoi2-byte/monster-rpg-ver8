@@ -3,7 +3,7 @@
   "trial_id": "grassland-ecosystem-pyramid-20260903",
   "goal": "Complete the Map Dex ecosystem feature for Grassland with a substantial explanation and an illustrated ecosystem pyramid.",
   "scope": "grassland_only",
-  "status": "in_progress",
+  "status": "completed",
   "started_from_main": "22db4dc0d1b092293b9ff5f06135be41c56912f3",
   "risk_class": "low",
   "approval_required": false,
@@ -25,13 +25,30 @@
   "phases": [
     {"phase":44,"name":"goal_and_boundary","status":"completed","deliverable":"Fix Grassland-only scope, acceptance criteria, risk, tests, and stop condition."},
     {"phase":45,"name":"system_and_content_implementation","status":"completed","deliverable":"Add the Grassland explanation, four trophic layers, circulation and visitor notes, linked species cards, responsive styling, notice, and dedicated checks."},
-    {"phase":46,"name":"integration_qa_and_safe_merge","status":"pending","deliverable":"Pass dedicated and full checks, open a focused PR, observe successful CI, verify current-main ancestry and no conflict, then merge."},
-    {"phase":47,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe successful main CI and Pages deployment, then verify the published assets and Grassland content."},
-    {"phase":48,"name":"completion_and_stop","status":"pending","deliverable":"Record final PR, commits, runs, publication evidence, restore v1 waiting state, and stop."}
+    {"phase":46,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #136 CI succeeded from current main without conflict and was squash-merged."},
+    {"phase":47,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI and Pages succeeded; published HTML, data, renderer, notice, and responsive CSS contain the new Grassland feature."},
+    {"phase":48,"name":"completion_and_stop","status":"completed","deliverable":"Final evidence is recorded, v1 waiting state is restored, and no further backlog item is selected."}
   ],
   "branch": "codex/grassland-ecosystem-pyramid",
-  "pull_request": null,
-  "merge_commit": null,
-  "pages_run": null,
+  "pull_request": 136,
+  "completion_branch": "codex/grassland-ecosystem-pyramid-completion",
+  "completion_pull_request": null,
+  "merge_commit": "481d0dc6b5e8482369385d914d52c1955a7d66b7",
+  "ci": {
+    "pull_request_run": 33712907229,
+    "pull_request_status": "success",
+    "main_run": 33712973814,
+    "main_status": "success"
+  },
+  "pages_run": 33712973069,
+  "pages_status": "success",
+  "published_verification": [
+    "The published title is Monster Battle Ver8.0.",
+    "The published HTML references cache-busted Grassland pyramid data, renderer, and responsive CSS.",
+    "The published data contains the four trophic layers and the battle-strength disclaimer.",
+    "The published renderer links diagram species to existing encyclopedia details.",
+    "The published notice and mobile responsive rules are present."
+  ],
+  "completed_at": "2026-09-03T03:58:23.000Z",
   "stop_condition": "After Phase 48 is recorded and published, do not select or start another backlog item."
 }
