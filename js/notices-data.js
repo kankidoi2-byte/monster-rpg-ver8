@@ -7,11 +7,18 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-tutorial-main-growth-display-fix',
+    date: '2026-09-03',
+    category: 'fix',
+    title: '本編の育成チュートリアル表示を修正しました',
+    body: '再閲覧向けの大きな「育成・個体情報」ボタンが、最初から遊ぶチュートリアルにも表示されていた問題を修正しました。本編はカード上の黄色い枠、再閲覧は画面下の大きなボタンで案内します。'
+  }),
+  Object.freeze({
     id: '20260903-tutorial-growth-guidance-fix',
     date: '2026-09-03',
     category: 'fix',
     title: '育成チュートリアルの操作案内を修正しました',
-    body: 'スマートフォンで「育成・個体情報」の操作先が説明パネルの下に隠れて分かりにくい問題を修正しました。押す場所を画面下部へ大きく表示し、案内文も具体的にしました。'
+    body: 'スマートフォンでチュートリアルを再閲覧した際に、「育成・個体情報」の操作先が分かりにくい問題を修正しました。再閲覧中は押す場所を画面下部へ大きく表示し、案内文も具体的にします。'
   }),
   Object.freeze({
     id: '20260903-tutorial-replay-battle-fix',
