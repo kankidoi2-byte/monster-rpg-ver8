@@ -3,7 +3,7 @@
   "trial_id": "all-map-ecosystem-diagrams-20260903",
   "goal": "Extend the completed Grassland ecosystem diagram treatment to every other Map Dex entry.",
   "scope": "remaining_18_maps",
-  "status": "in_review",
+  "status": "completed",
   "started_from_main": "9aaadb7db4120df60797ce2c643afa76e54fd264",
   "risk_class": "low",
   "approval_required": false,
@@ -25,24 +25,29 @@
   "phases": [
     {"phase":49,"name":"goal_and_boundary","status":"completed","deliverable":"Fix the remaining-18-map scope, ecological interpretation rules, checks, and stop condition."},
     {"phase":50,"name":"content_and_validation","status":"completed","deliverable":"Added map-specific diagrams, generalized checks, player notice, and cache busting; dedicated and full checks passed."},
-    {"phase":51,"name":"integration_qa_and_safe_merge","status":"in_progress","deliverable":"Pass dedicated and full checks, observe PR CI, confirm current-main ancestry and no conflict, then merge."},
-    {"phase":52,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe main CI and Pages, then verify published HTML, data, renderer, and notice."},
-    {"phase":53,"name":"completion_and_stop","status":"pending","deliverable":"Record final evidence, restore the v1 waiting state, and select no further backlog item."}
+    {"phase":51,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #138 CI succeeded from current main without conflict and was squash-merged."},
+    {"phase":52,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI and Pages succeeded; published HTML, diagram data, renderer, and notice were verified."},
+    {"phase":53,"name":"completion_and_stop","status":"completed","deliverable":"Final evidence is recorded, v1 waiting state is restored, and no further backlog item is selected."}
   ],
   "branch": "codex/all-map-ecosystem-diagrams",
   "pull_request": 138,
   "completion_branch": "codex/all-map-ecosystem-diagrams-completion",
   "completion_pull_request": null,
-  "merge_commit": null,
+  "merge_commit": "51d79547ebe1fd908e2f9191a0b4526b0e67c9e7",
   "ci": {
-    "pull_request_run": null,
-    "pull_request_status": "pending",
-    "main_run": null,
-    "main_status": "pending"
+    "pull_request_run": 33725863311,
+    "pull_request_status": "success",
+    "main_run": 33725976472,
+    "main_status": "success"
   },
-  "pages_run": null,
-  "pages_status": "pending",
-  "published_verification": [],
-  "completed_at": null,
+  "pages_run": 33725975301,
+  "pages_status": "success",
+  "published_verification": [
+    "The published HTML references the all-map ecosystem diagram cache key.",
+    "The published data includes natural ecosystem pyramids and adapted structures for artificial, sacred, and otherworldly maps.",
+    "The published notice announces diagrams for all maps.",
+    "The published renderer still links diagram species to existing encyclopedia details."
+  ],
+  "completed_at": "2026-09-03T07:04:14.000Z",
   "stop_condition": "After Phase 53 is recorded and published, do not select or start another backlog item."
 }
