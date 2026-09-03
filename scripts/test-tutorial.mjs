@@ -33,7 +33,7 @@ function resetNewSave(){evaluate('save=initSave()');}
 const fresh=plain(evaluate('initSave()'));
 assert.equal(fresh.schemaVersion,4);
 assert.deepEqual(fresh.progress.tutorial,{
-  id:'prologue',version:2,status:'not_started',stepId:null,
+  id:'prologue',version:2,status:'not_started',stepId:null,chapterGate:false,
   completed:false,skipped:false,replaying:false,
   playerName:null,playerNamed:false,
   starterContractsGranted:false,elnaGuestActive:false,elnaContractGranted:false,

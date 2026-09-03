@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-prologue-story-mode',
+    date: '2026-09-03',
+    category: 'update',
+    title: '序章を6話のストーリーとして楽しめます',
+    body: 'ホームの「次の冒険へ」からストーリーモードへ進めるようになりました。序章は区切りのよい全6話で進み、話の終わりには一覧へ戻ります。完了した話はあらすじで振り返れます。'
+  }),
+  Object.freeze({
     id: '20260903-skill-gacha-compact-result',
     date: '2026-09-03',
     category: 'update',

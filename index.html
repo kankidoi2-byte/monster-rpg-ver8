@@ -6,7 +6,7 @@
 <title>モンスターバトル Ver8.0</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/style.css?v=mobile-load-phase2-1">
-<link rel="stylesheet" href="css/ui-redesign.css?v=kokoro-link-scaling-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-2">
+<link rel="stylesheet" href="css/ui-redesign.css?v=kokoro-link-scaling-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-2-prologue-story-mode-1">
 <link rel="stylesheet" href="css/contract-animation.css?v=contract-animation-1">
 <link rel="stylesheet" href="css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1-prologue-mobile-dex-elna-1-prologue-readable-panel-1-prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1-tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1">
 </head>
@@ -53,15 +53,15 @@
     <p class="ui-eyebrow">新しい冒険が待っている</p>
     <h1>冒険の拠点</h1>
   </div>
-  <button id="homeAdventureButton" class="home-adventure" onclick="openBattleHub()">
-    <img src="images/maps/grassland.webp" alt="草原のマップ">
+  <button id="homeAdventureButton" class="home-adventure" onclick="openHomeAdventure()">
+    <img id="homeAdventureImage" src="images/maps/world_between.webp" alt="ストーリーの舞台">
     <span class="home-adventure-shade"></span>
     <span class="home-adventure-copy">
-      <small>おすすめ討伐</small>
-      <strong>次の冒険へ</strong>
-      <span>3つの討伐依頼から相手を選ぶ</span>
+      <small id="homeAdventureKicker">メインストーリー</small>
+      <strong id="homeAdventureTitle">序章 第1話</strong>
+      <span id="homeAdventureSummary">グノーシスの声をたどり、物語を始める</span>
     </span>
-    <span class="home-adventure-action">冒険へ ›</span>
+    <span id="homeAdventureAction" class="home-adventure-action">物語を進める ›</span>
   </button>
   <section id="homeNoticePreview" class="home-notice-preview" aria-label="最新のお知らせ"></section>
   <section class="home-block" aria-labelledby="homePartyTitle">
@@ -73,6 +73,15 @@
   </section>
   <section id="homeGrowthPreview" class="home-next-card"></section>
   <section id="homeExpeditionPreview" class="home-expedition-card"></section>
+</section>
+
+<!-- ストーリーモード -->
+<section id="storyMode" class="screen story-mode-screen">
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('home')">‹ ホーム</button><span class="ui-eyebrow">STORY</span><h1>ストーリーモード</h1><p>物語を話ごとに進めます。完了した話は、あらすじとして振り返れます。</p></div>
+  <section id="storyContinueCard" class="story-continue-card" aria-live="polite"></section>
+  <div class="story-section-heading"><span class="ui-eyebrow">MAIN STORY</span><h2>序章</h2></div>
+  <div id="storyEpisodeList" class="story-episode-list"></div>
+  <article class="story-coming-soon" aria-label="第1章は準備中です"><span>LOCKED</span><div><small>メインストーリー</small><h2>第1章</h2><p>序章クリア後の物語は、今後追加されます。</p></div></article>
 </section>
 
 <!-- 育成ハブ -->
@@ -507,11 +516,12 @@
 <script src="js/core.js?v=kokoro-link-phase4-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-elixion-neutral-1"></script>
 <script src="js/kokoro-link.js?v=kokoro-link-phase5-1"></script>
 <script src="js/state.js?v=tutorial-phase1-1-fixed-hunt-1-post-battle-contract-1"></script>
-<script src="js/save.js?v=skill-inventory-1-fixed-hunt-1-contractor-rank-ui-1-tutorial-phase3a-1-prologue-v2-save-1-prologue-lumina-alchemy-1-dev-tools-phase8-tutorial-replay-retired-1"></script>
+<script src="js/save.js?v=skill-inventory-1-fixed-hunt-1-contractor-rank-ui-1-tutorial-phase3a-1-prologue-v2-save-1-prologue-lumina-alchemy-1-dev-tools-phase8-tutorial-replay-retired-1-prologue-story-mode-1"></script>
 <script src="js/contractor-rank.js?v=contractor-rank-ui-1-contractor-reward-1"></script>
-<script src="js/ui.js?v=skill-gacha-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-stella-intro-1-prologue-expedition-finale-1-prologue-final-scope-1"></script>
-<script src="js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1-prologue-stella-mock-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1-prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1"></script>
-<script src="js/notices-data.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-skill-gacha-compact-result-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1"></script>
+<script src="js/ui.js?v=skill-gacha-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-stella-intro-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-story-mode-1"></script>
+<script src="js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1-prologue-stella-mock-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1-prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1"></script>
+<script src="js/story.js?v=prologue-story-mode-1"></script>
+<script src="js/notices-data.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-skill-gacha-compact-result-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1"></script>
 <script src="js/notices.js?v=notice-center-1"></script>
 <script src="js/skills.js?v=evolution-skill-cards-1-prologue-battle-basics-1-prologue-stella-intro-1-prologue-stella-mock-1"></script>
 <script src="js/skill-gacha.js?v=skill-gacha-1-presentation-2"></script>

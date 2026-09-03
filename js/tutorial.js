@@ -488,6 +488,8 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}=
   if(persist){
     const persistedStepId=persistedTutorialStepId(steps[tutorialUiState.index]);
     setTutorialStep(persistedStepId);
+    const tutorialState=typeof currentTutorialState==='function'?currentTutorialState():null;
+    if(tutorialState)tutorialState.chapterGate=false;
     if(typeof saveGame==='function')saveGame();
   }
   renderTutorialStep();
@@ -546,6 +548,19 @@ function checkpointTutorialFlow(step){
   }
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
+function checkpointTutorialChapter(nextStepId){
+  if(!tutorialUiState.persist||!nextStepId)return false;
+  setTutorialStep(nextStepId);
+  currentTutorialState().chapterGate=true;
+  if(typeof saveGame==='function'&&!saveGame()){
+    currentTutorialState().chapterGate=false;
+    return false;
+  }
+  clearTutorialUi();
+  if(typeof show==='function')show('storyMode');
+  updateTutorialMenuSummary();
+  return true;
+}
 function queueTutorialActionAdvance(stepId=tutorialCurrentStepId()){
   if(!tutorialUiState.active||!stepId||tutorialCurrentStepId()!==stepId||tutorialUiState.advancePendingStepId===stepId)return false;
   tutorialUiState.advancePendingStepId=stepId;
@@ -574,6 +589,7 @@ function tutorialNext(actionCompleted=false){
   if(step?.transition&&!runTutorialTransition(step.transition))return;
   if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
   const nextStepId=tutorialShouldUseReplayNextStep(step)&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
+  if(step?.chapterBreak&&nextStepId){checkpointTutorialChapter(nextStepId);return;}
   if(nextStepId){
     const nextIndex=tutorialStepIndex(tutorialUiState.steps,nextStepId);
     if(nextIndex<0)return;
@@ -681,7 +697,7 @@ function updateTutorialMenuSummary(){
   if(!button||!summary||typeof currentTutorialState!=='function')return;
   const tutorial=currentTutorialState();
   button.hidden=tutorial.status!=='in_progress';
-  summary.textContent='中断したところから再開';
+  summary.textContent=tutorial.chapterGate?'次の話を始める':'中断したところから再開';
 }
 function openTutorialFromMenu(){
   const returnScreen=activeScreenId()||'moreMenu';
@@ -689,6 +705,7 @@ function openTutorialFromMenu(){
   if(mainSteps.length&&typeof currentTutorialState==='function'){
     const tutorial=currentTutorialState();
     if(tutorial.status!=='in_progress')return false;
+    tutorial.chapterGate=false;
     return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{
       stepId:tutorial.stepId||mainSteps[0].id,persist:true,returnScreen
     });
@@ -700,6 +717,7 @@ function resumeTutorialIfNeeded(){
   const tutorial=currentTutorialState();
   if(tutorialShouldAutoStart())return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{persist:true});
   if(tutorial.status!=='in_progress')return false;
+  if(tutorial.chapterGate){if(typeof show==='function')show('storyMode');return true;}
   return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true});
 }
 function resumeTutorialMainFlowAfterEvent(stepId){
@@ -1512,7 +1530,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス。契約の力を案内するぞ！',progressLabel:'GNOSIS'},
   {id:'gnosis_name',screenId:'home',mode:'external_action',input:'player_name',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'名前を教えて！',text:'君の名前は？ 呼びやすい名前にしてくれ！',progressLabel:'GNOSIS'},
   {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界では、契約した相手の力を「契約体」として呼び出せる。ボクの力を少し貸すぞ！',progressLabel:'CONTRACT'},
-  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'世界へ降りる'},
+  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',chapterBreak:true,title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'第1話を終える'},
   {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'スライムに囲まれた少女',text:'くっ……数が多い。でも、ここで退くわけには……！',progressLabel:'ENCOUNTER'},
   {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入ろう！',progressLabel:'RESCUE'},
   {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'フレイガルとアクアロンの契約体を貸すぞ！ ふたりを呼び出して戦おう！',progressLabel:'CONTRACT'},
@@ -1534,7 +1552,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナの同意',text:'うん。助けてもらったあなたになら、私の力を預けられる。契約を受け取って！',progressLabel:'CONTRACT'},
   {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'契約書が3回反応して、手形が押されたら成功だ！',progressLabel:'CONTRACT',nextLabel:'契約する'},
   {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'契約は結ばれたよ。呼ばれる契約体は私の力を写した存在。本人の私は、ここでお別れだね。',progressLabel:'CONTRACT'},
-  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'ホームへ'},
+  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',chapterBreak:true,disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'第2話を終える'},
   {id:'home_party',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'編成を確認しよう',text:'ここを押すと、冒険へ連れていく仲間を編成できるぞ！',progressLabel:'HOME'},
   {id:'party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,disableBack:true,title:'3体の編成を保存',text:'フレイガル、アクアロン、エルナを確認したら「この編成を保存」を押そう！ 先頭がリーダーだぞ！',progressLabel:'PARTY'},
   {id:'home_dex_open',screenId:'home',target:'[data-nav="more"]',advanceOnTarget:true,title:'メニューを開こう',text:'図鑑はメニューの中だ。まずは下の「メニュー」を押そう！',progressLabel:'DEX'},
@@ -1553,7 +1571,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',advanceOnTarget:true,title:'依頼を見よう',text:'ここを押すと、討伐依頼と報酬を確認できるぞ！',progressLabel:'REQUEST'},
   {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,persistAs:'request_accept',title:'エルナ救援を報告',text:'救援が依頼として認められたぞ！ このボタンを押して、報告と報酬の確認へ進もう！',progressLabel:'REQUEST'},
   {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚と錬成素材4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
-  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'次の出会いへ'},
+  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
   {id:'stella_intro',screenId:'home',persistAs:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE'},
   {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
   {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるね。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
@@ -1569,7 +1587,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'技を開こう',text:'ここを押すと、フレイガルの技を選べるぞ！',progressLabel:'MOCK BATTLE'},
   {id:'stella_mock_advantage',screenId:'battle',target:'[data-tutorial-stella-advantage]',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'炎属性で攻撃',text:'炎属性の技を押して、効果抜群のダメージを確かめよう！',progressLabel:'MOCK BATTLE'},
   {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'効果抜群！',text:'今のが有利属性だよ！ あとは自由に戦って、グラスビートを倒してみよう！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_victory',screenId:'battle',persistAs:'lumina_intro',nextStepId:'lumina_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'属性模擬戦クリア！',text:'ばっちり！ 相手の属性を見て、有利な技を選べば戦いを有利に進められるよ！',progressLabel:'STELLA',nextLabel:'次へ'},
+  {id:'stella_mock_victory',screenId:'battle',persistAs:'lumina_intro',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'属性模擬戦クリア！',text:'ばっちり！ 相手の属性を見て、有利な技を選べば戦いを有利に進められるよ！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
   {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'模擬戦を再開しよう',text:'進行は失われていないぞ！ 「依頼を選び直す」を押して、炎属性の技をもう一度試そう！',progressLabel:'RETRY'},
   {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'工房へ'},
   {id:'lumina_encounter',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'見習い錬金術師ルミナ',text:'ようこそ！ 練習用の錬成核は用意したよ。仲間を消費せず、素材4つと250コインで入門錬成を試そう。',progressLabel:'LUMINA'},
@@ -1579,8 +1597,8 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'lumina_confirm',screenId:'alchemyConfirm',target:'#alchemyConfirmContent',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'消費内容を確認',text:'素材4個と250コイン、成功率100％を確認してね。今回は仲間を消費しないよ！',progressLabel:'CONFIRM'},
   {id:'lumina_execute',screenId:'alchemyConfirm',target:'#alchemyExecuteButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を実行',text:'ここを押すと、素材とコインを使って錬成を実行するぞ！',progressLabel:'ALCHEMY'},
   {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'素材の反応をひとつに結んでいるよ。もうすぐ新しい契約体が生まれるからね！',progressLabel:'ALCHEMY'},
-  {id:'lumina_alchemy_result',screenId:'alchemyResult',target:'#tutorialAlchemyResult',persistAs:'expedition_intro',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'入門錬成成功！',text:'成功だよ！ これで素材とコイン、成功率を確認しながら自分で錬成できるね。',progressLabel:'LUMINA',nextStepId:'expedition_intro'},
-  {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成の報酬は一度だけだよ。通常の錬成台は自由に使ってね！',progressLabel:'REPLAY',nextStepId:'expedition_intro'},
+  {id:'lumina_alchemy_result',screenId:'alchemyResult',target:'#tutorialAlchemyResult',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'入門錬成成功！',text:'成功だよ！ これで素材とコイン、成功率を確認しながら自分で錬成できるね。',progressLabel:'LUMINA',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
+  {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成の報酬は一度だけだよ。通常の錬成台は自由に使ってね！',progressLabel:'REPLAY',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
   {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_home_open',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ 次は仲間を短い遠征へ送り出してみるぞ！',progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
   {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_intro',disableBack:true,title:'遠征を開こう',text:'ここを押すと、控えの仲間を遠征へ送り出せるぞ！',progressLabel:'EXPEDITION'},
   {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
