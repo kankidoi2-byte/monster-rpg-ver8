@@ -258,6 +258,7 @@ function renderTutorialStoryStep(step){
   const layer=document.getElementById('tutorialCharacterLayer');
   const portrait=document.getElementById('tutorialCharacterPortrait');
   const story=Boolean(step?.scene||step?.portrait);
+  document.body.classList.toggle('tutorial-growth-details-open',step?.id==='growth_elna_details');
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
   document.body.classList.toggle('tutorial-stella-skill-action',['stella_skill_unequip','stella_skill_equip'].includes(step?.id));
   overlay?.classList.toggle('is-story-step',story);
@@ -1559,7 +1560,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'dex_freigal',screenId:'dex',target:'[data-tutorial-monster="freigal"]',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'契約体の記録',text:'フレイガルとアクアロンはモンスター図鑑へ記録される。属性、進化先、主な入手方法を確認できるぞ！',progressLabel:'MONSTER DEX'},
   {id:'home_growth_open',screenId:'dex',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
   {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
-  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。ここを押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'画面下に出ている、エルナの「育成・個体情報」を押そう！ 装備中の技や詳しい個体情報を確認できるぞ！',progressLabel:'GROWTH'},
   {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
   {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'詳しい技編集は、このあと実際にカードを装備しながら覚えるぞ。育成を押して進化を確認しよう！',progressLabel:'GROWTH'},
   {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},

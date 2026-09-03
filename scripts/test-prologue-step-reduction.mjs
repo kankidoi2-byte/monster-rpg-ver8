@@ -146,7 +146,7 @@ assert.match(main,/id:'expedition_member'[^\n]+data-tutorial-expedition-member/,
 assert.match(main,/id:'prologue_complete'[^\n]+speaker:'グノーシス'[^\n]+portrait:/,'the finale must retain Gnosis instead of an empty background');
 assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'target steps must keep portraits away from controls');
 
-assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1"></script>'),'the browser must fetch the counterless, chronologically ordered tutorial logic');
+assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1"></script>'),'the browser must fetch the counterless, chronologically ordered tutorial logic');
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 
