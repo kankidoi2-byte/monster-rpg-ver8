@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-tutorial-skill-button-layout-fix',
+    date: '2026-09-03',
+    category: 'fix',
+    title: '技カード変更のチュートリアル表示を修正しました',
+    body: '技を外す・装備する場面で、操作ボタンがチュートリアル専用の大きな表示へ変わっていた問題を修正しました。通常と同じ技カード内のボタンを黄色い枠で案内します。'
+  }),
+  Object.freeze({
     id: '20260903-tutorial-replay-retired',
     date: '2026-09-03',
     category: 'update',
