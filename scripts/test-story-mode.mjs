@@ -18,6 +18,7 @@ assert.ok(story.includes("state==='locked'")&&story.includes("state==='current'"
 assert.ok(!story.includes('replaying=true')&&!story.includes('beginTutorialReplay'),'retired tutorial replay must not return');
 assert.ok(ui.includes("tutorialCurrentStepId()==='home_requests'")&&ui.includes('openBattleHub()'),'the guided request step must retain its battle route');
 assert.equal((tutorial.match(/chapterBreak:true/g)||[]).length,6,'five episode breaks plus the safe completed-alchemy branch are required');
+assert.ok(tutorial.includes('chapterBreak:step.chapterBreak===true'),'episode break flags must survive STEP normalization');
 assert.ok(tutorial.includes('function checkpointTutorialChapter')&&tutorial.includes("show('storyMode')"),'episode endings must return to story mode');
 assert.ok(save.includes('chapterGate:false')&&save.includes('chapterGate:source.chapterGate===true'),'old saves need a safe chapter-gate default');
 assert.ok(css.includes('.story-episode-card')&&css.includes('@media(max-width:480px)'),'mobile story layout is missing');

@@ -90,6 +90,7 @@ function normalizeTutorialStep(step,index){
     persistAs:typeof step.persistAs==='string'&&step.persistAs?step.persistAs:null,
     waitForEvent:typeof step.waitForEvent==='string'&&step.waitForEvent?step.waitForEvent:null,
     externalAdvance:mode===TUTORIAL_STEP_MODE.EXTERNAL_ACTION,
+    chapterBreak:step.chapterBreak===true,
     disableBack:step.disableBack===true,
     requiredPartyMin:Math.max(0,Math.floor(Number(step.requiredPartyMin)||0)),
     requiredPartyMax:Math.max(0,Math.floor(Number(step.requiredPartyMax)||0)),
