@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "cycle": 2,
+  "goal_id": "kokoro-link-centered-animation-20260903",
+  "goal": "Correct the Kokoro Link presentation to show the selected reserve monster large in the center without slowing battle input.",
+  "status": "completed",
+  "started_from_main": "5c8de3092daa7a861b938520bd49187d9fbcea56",
+  "risk_class": "low",
+  "approval_required": false,
+  "acceptance_criteria": [
+    "Each activation presents only the selected reserve monster large in the center.",
+    "The monster, Kokoro Link title, strong flash, and target receipt cue share one 600ms sequence.",
+    "The superseded side cut-in, attribute beam, and circular shock are removed.",
+    "No 300ms alternate sequence exists and battle busy state is not changed by the animation.",
+    "Reduced-motion users keep a calm centered presentation.",
+    "Save data, IDs, effect values, target binding, and activation rules remain unchanged."
+  ],
+  "phases": [
+    {"phase":1,"name":"goal_and_boundary","status":"completed","deliverable":"Fixed the centered single-source, 600ms, non-blocking presentation and compatibility boundary."},
+    {"phase":2,"name":"implementation","status":"completed","deliverable":"Replaced the side cut-in, beam, and circular shock with a centered source, simultaneous title, strong flash, target cue, aura, reduced-motion treatment, notice, cache keys, and dedicated test."},
+    {"phase":3,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #148 CI #502 succeeded from current main without conflict and was squash-merged."},
+    {"phase":4,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI #503 and Pages #190 succeeded; published HTML, JavaScript, CSS, and notice were verified."},
+    {"phase":5,"name":"completion_record_and_stop","status":"completed","deliverable":"Recorded Cycle 2 and stopped without selecting another backlog item."}
+  ],
+  "branch": "codex/cycle2-kokoro-link-centered-animation",
+  "pull_request": 148,
+  "completion_branch": "docs/cycle2-kokoro-link-centered-animation-completion",
+  "completion_pull_request": 149,
+  "merge_commit": "dd8d9a9abc6bf3b0dcee2f5dc1e7e413c56b44df",
+  "ci": {
+    "pull_request_run": 33754720264,
+    "pull_request_status": "success",
+    "main_run": 33754840850,
+    "main_status": "success"
+  },
+  "pages_run": 33754839814,
+  "pages_status": "success",
+  "published_verification": [
+    "Published HTML references Kokoro Link animation cache key 2.",
+    "Published JavaScript contains the centered source, flash, target cue, and 600ms non-blocking activation path.",
+    "Published JavaScript and CSS no longer contain the superseded side cut-in, beam, or circular shock selectors.",
+    "Published CSS contains the centered presentation, persistent aura, and reduced-motion treatment.",
+    "Published notices include the corrected Kokoro Link animation update."
+  ],
+  "completed_at": "2026-09-03T12:31:56.000Z",
+  "stop_condition": "After Cycle 2 Phase 5 is recorded and published, do not select or start another backlog item."
+}

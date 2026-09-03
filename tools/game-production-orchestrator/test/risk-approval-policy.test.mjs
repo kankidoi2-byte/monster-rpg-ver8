@@ -71,9 +71,9 @@ const progress = JSON.parse(await readFile(new URL('../../../docs/game-productio
 assert.equal(progress.schema_version, 2);
 assert.equal(progress.product_version, 'v1');
 assert.equal(progress.overall_status, 'completed');
-assert.equal(progress.current_cycle, 1);
+assert.equal(progress.current_cycle, 2);
 assert.equal(progress.current_phase, 5);
-assert.equal(progress.next_cycle, 2);
+assert.equal(progress.next_cycle, 3);
 assert.equal(progress.phase_numbering.mode, 'per_production_cycle');
 assert.deepEqual(progress.phase_numbering.legacy_phase_history, {first: 0, last: 63, status: 'archived'});
 assert.deepEqual(progress.phase_numbering.phase_range_per_cycle, {first: 1, last: 5});
@@ -82,7 +82,7 @@ assert.equal(progress.phase_numbering.reset_boundary.decision.includes('Cycle 1 
 assert.equal(progress.activation_mode, 'user_goal_only');
 assert.equal(progress.production_lines_active, false);
 assert.equal(progress.next_activation_required, true);
-assert.equal(progress.latest_trial.id, 'kokoro-link-animation-20260903');
+assert.equal(progress.latest_trial.id, 'kokoro-link-centered-animation-20260903');
 assert.deepEqual(progress.phases.map(phase => phase.status), Array(progress.phases.length).fill('completed'));
 assert.deepEqual(new Set(progress.v2_deferred.map(item => item.id)), new Set([
   'continuous_autonomous_backlog_selection',
@@ -91,7 +91,7 @@ assert.deepEqual(new Set(progress.v2_deferred.map(item => item.id)), new Set([
 
 const roadmap = await readFile(new URL('../../../docs/game-production-automation-roadmap.md', import.meta.url), 'utf8');
 assert.equal(roadmap.includes('ゲーム制作自動化システムv1は完成済み'), true);
-assert.equal(roadmap.includes('Cycle 2 / Phase 1'), true);
+assert.equal(roadmap.includes('Cycle 3 / Phase 1'), true);
 assert.equal(roadmap.includes('旧Phase 0〜63'), true);
 assert.equal(roadmap.includes('次の仕事を自動選択せず停止'), true);
 assert.equal(roadmap.includes('v2候補（v1には含めない）'), true);
