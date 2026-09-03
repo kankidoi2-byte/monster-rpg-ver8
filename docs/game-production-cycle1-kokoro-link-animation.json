@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "cycle": 1,
+  "goal_id": "kokoro-link-animation-20260903",
+  "goal": "Complete a fast and impactful Kokoro Link activation without slowing battle input.",
+  "status": "completed",
+  "started_from_main": "05fe3b45748080724cc041632cc723ff6ff36ced",
+  "risk_class": "low",
+  "approval_required": false,
+  "acceptance_criteria": [
+    "Each activation presents only the selected reserve monster.",
+    "Cut-in, attribute-colored light, compact impact, aura, and the Kokoro Link title share one 600ms sequence.",
+    "No 300ms alternate sequence exists and battle busy state is not changed by the animation.",
+    "Reduced-motion users receive a calm title treatment.",
+    "Save data, IDs, effect values, target binding, and switch behavior remain unchanged."
+  ],
+  "phases": [
+    {"phase":1,"name":"goal_and_boundary","status":"completed","deliverable":"Fixed the one-source, 600ms, non-blocking presentation and compatibility boundary."},
+    {"phase":2,"name":"implementation","status":"completed","deliverable":"Added the activation layers, persistent aura, reduced-motion treatment, notice, cache keys, and dedicated test."},
+    {"phase":3,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #146 CI succeeded from current main without conflict and was squash-merged."},
+    {"phase":4,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI #499 and Pages #188 succeeded; published HTML, JavaScript, CSS, and notice were verified."},
+    {"phase":5,"name":"completion_record_and_stop","status":"completed","deliverable":"Recorded Cycle 1 and stopped without selecting another backlog item."}
+  ],
+  "branch": "codex/cycle1-kokoro-link-animation",
+  "pull_request": 146,
+  "completion_branch": "docs/cycle1-kokoro-link-animation-completion",
+  "completion_pull_request": 147,
+  "merge_commit": "995c12c5761bb5d9faa304044de21ec6cc62e4e6",
+  "ci": {
+    "pull_request_run": 33751429738,
+    "pull_request_status": "success",
+    "main_run": 33751513705,
+    "main_status": "success"
+  },
+  "pages_run": 33751512668,
+  "pages_status": "success",
+  "published_verification": [
+    "Published HTML references the Kokoro Link animation cache keys.",
+    "Published JavaScript contains the 600ms non-blocking activation path.",
+    "Published CSS contains the cut-in, beam, impact, aura, title, and reduced-motion treatments.",
+    "Published notices include the Kokoro Link animation update."
+  ],
+  "completed_at": "2026-09-03T11:49:10.000Z",
+  "stop_condition": "After Cycle 1 Phase 5 is recorded and published, do not select or start another backlog item."
+}
