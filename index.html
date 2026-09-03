@@ -6,7 +6,7 @@
 <title>モンスターバトル Ver8.0</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/style.css?v=mobile-load-phase2-1">
-<link rel="stylesheet" href="css/ui-redesign.css?v=kokoro-link-scaling-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-1">
+<link rel="stylesheet" href="css/ui-redesign.css?v=kokoro-link-scaling-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-2">
 <link rel="stylesheet" href="css/contract-animation.css?v=contract-animation-1">
 <link rel="stylesheet" href="css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1-prologue-mobile-dex-elna-1-prologue-readable-panel-1-prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1-tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1">
 </head>
@@ -316,7 +316,6 @@
     <div class="ui-page-heading"><span class="ui-eyebrow">SKILL DRAW</span><h1>技ガチャ</h1><p>技コストがレアリティ。モンスター技とキャラクター技を選んで獲得できます。</p></div>
     <p class="ui-coin-balance">所持コイン <strong id="skillGachaCoinView">0</strong>枚</p>
     <div class="skill-gacha-speed" role="group" aria-label="技ガチャの演出速度"><span>演出速度</span><button type="button" data-skill-gacha-speed="standard" aria-pressed="true" onclick="setSkillGachaPresentationSpeed('standard')">標準</button><button type="button" data-skill-gacha-speed="quick" aria-pressed="false" onclick="setSkillGachaPresentationSpeed('quick')">高速</button></div>
-    <div id="skillGachaResult" class="log">🃏 ガチャを選んで技カードを獲得しよう。</div>
     <div id="skillGachaRateList" class="skill-gacha-pools"></div>
   </div>
   <div id="skillGachaPresentation" class="skill-gacha-presentation" data-tier="basic" hidden aria-hidden="true">
@@ -328,6 +327,7 @@
       <p id="skillGachaPresentationProphecy" class="skill-gacha-prophecy">技紋が空のカードへ宿っていく</p>
       <p id="skillGachaPresentationStatus" class="skill-gacha-presentation-status" aria-live="polite"></p>
       <div id="skillGachaPresentationCards" class="skill-gacha-presentation-cards"></div>
+      <div id="skillGachaCardDetail" class="skill-gacha-card-detail" role="region" aria-label="選択した技の詳細" hidden></div>
       <div id="skillGachaPresentationActions" class="skill-gacha-presentation-actions" hidden>
         <button type="button" onclick="openSkillInventoryFromGacha()">仲間の技を変更</button>
         <button id="skillGachaRepeatButton" type="button" onclick="repeatSkillGachaPresentation()">もう一度</button>
@@ -511,10 +511,10 @@
 <script src="js/contractor-rank.js?v=contractor-rank-ui-1-contractor-reward-1"></script>
 <script src="js/ui.js?v=skill-gacha-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-stella-intro-1-prologue-expedition-finale-1-prologue-final-scope-1"></script>
 <script src="js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1-prologue-stella-mock-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1-prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1"></script>
-<script src="js/notices-data.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1"></script>
+<script src="js/notices-data.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-skill-gacha-compact-result-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1"></script>
 <script src="js/notices.js?v=notice-center-1"></script>
 <script src="js/skills.js?v=evolution-skill-cards-1-prologue-battle-basics-1-prologue-stella-intro-1-prologue-stella-mock-1"></script>
-<script src="js/skill-gacha.js?v=skill-gacha-1-presentation-1"></script>
+<script src="js/skill-gacha.js?v=skill-gacha-1-presentation-2"></script>
 <script src="js/dex.js?v=monster-obtain-2-prologue-home-front-1-map-ecosystem-1-grassland-pyramid-1"></script>
 <script src="js/party.js?v=golden-land-release-1-fixed-hunt-1-tutorial-phase4c-1-prologue-home-front-1"></script>
 <script src="js/progression.js?v=evolution-skill-cards-1-fixed-hunt-1"></script>
