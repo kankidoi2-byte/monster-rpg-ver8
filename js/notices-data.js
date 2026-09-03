@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-prologue-episode-break-fix',
+    date: '2026-09-03',
+    category: 'fix',
+    title: '序章の話の区切りを修正しました',
+    body: '「第○話を終える」を押したあと、そのまま次の話へ進んでいた問題を修正しました。各話の終了時にストーリー一覧へ戻り、次の話を自分で選んで始められます。'
+  }),
+  Object.freeze({
     id: '20260903-kokoro-link-one-second-layout',
     date: '2026-09-03',
     category: 'update',
