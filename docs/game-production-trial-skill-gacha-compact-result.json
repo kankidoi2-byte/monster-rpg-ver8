@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "trial_id": "skill-gacha-compact-result-20260903",
+  "goal": "Remove the redundant persistent acquired-skill list and keep a compact, repeat-friendly result experience inside the summon presentation.",
+  "scope": "existing_skill_gacha_result_ui_only",
+  "status": "in_review",
+  "started_from_main": "163d6bf730ab13a9eb2d47a1298e95fe9d85bdcf",
+  "risk_class": "low",
+  "approval_required": false,
+  "compatibility": {
+    "save_key_changed": false,
+    "save_structure_changed": false,
+    "existing_ids_changed": false,
+    "draw_rates_changed": false,
+    "draw_prices_changed": false,
+    "ten_draw_guarantee_changed": false,
+    "publication_settings_changed": false
+  },
+  "acceptance_criteria": [
+    "The persistent vertical acquired-skill list is removed from the skill-gacha screen.",
+    "One-draw and ten-draw results remain visible in the summon presentation, with ten draws using the compact five-by-two grid on narrow screens.",
+    "After the reveal completes, tapping or keyboard-activating one card shows only that card's type, power, effect, and acquisition count.",
+    "Repeat draw, skill-change routing, close, quick mode, skip, reduced motion, and pre-presentation reward saving remain available.",
+    "Pools, COST weights, prices, guarantee, IDs, saves, and inventory semantics remain unchanged."
+  ],
+  "phases": [
+    {"phase":59,"name":"goal_and_boundary","status":"completed","deliverable":"Limited the follow-up to redundant result UI while preserving all draw and persistence contracts."},
+    {"phase":60,"name":"compact_result_implementation","status":"completed","deliverable":"Removed the persistent list and added a compact result grid with tap-only single-card detail."},
+    {"phase":61,"name":"integration_qa_and_safe_merge","status":"in_review","deliverable":"Run dedicated and full checks, open a pull request, observe CI, and merge only if current and conflict-free."},
+    {"phase":62,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe main CI and Pages, then verify published HTML, JavaScript, CSS, and notice contracts."},
+    {"phase":63,"name":"completion_and_stop","status":"pending","deliverable":"Record final evidence, restore the waiting state, and stop without selecting another item."}
+  ],
+  "branch": "codex/skill-gacha-compact-result",
+  "pull_request": null,
+  "completion_branch": null,
+  "completion_pull_request": null,
+  "merge_commit": null,
+  "ci": null,
+  "pages_run": null,
+  "pages_status": null,
+  "published_verification": [],
+  "completed_at": null,
+  "stop_condition": "After Phase 63 is recorded and published, do not select or start another backlog item."
+}
