@@ -3,7 +3,7 @@
   "trial_id": "skill-gacha-presentation-20260903",
   "goal": "Complete the presentation for the existing skill-card gacha so drawing cards is satisfying, readable, repeatable, and connected to skill editing.",
   "scope": "existing_skill_gacha_presentation_only",
-  "status": "in_progress",
+  "status": "completed",
   "started_from_main": "a3743d75f80c23ee7204d9f9d8a840ff6aedcfee",
   "risk_class": "low",
   "approval_required": false,
@@ -26,20 +26,31 @@
   ],
   "phases": [
     {"phase":54,"name":"goal_and_boundary","status":"completed","deliverable":"Fixed the existing-skill-gacha-only scope, compatibility boundary, acceptance criteria, checks, publication verification, and stop condition."},
-    {"phase":55,"name":"presentation_implementation","status":"in_progress","deliverable":"Implement the Skill Sigil summon, exact rarity anticipation, staged card reveal, acquisition labels, speed controls, and result actions."},
-    {"phase":56,"name":"integration_qa_and_safe_merge","status":"pending","deliverable":"Pass the dedicated and full checks, open a focused PR, observe CI, confirm current-main ancestry and no conflict, and safely merge."},
-    {"phase":57,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe main CI and Pages success, then verify published HTML, JavaScript, CSS, notice, and live interaction."},
-    {"phase":58,"name":"completion_and_stop","status":"pending","deliverable":"Record final evidence, restore the v1 waiting state, and stop without selecting another backlog item."}
+    {"phase":55,"name":"presentation_implementation","status":"completed","deliverable":"Implemented the Skill Sigil summon, exact rarity anticipation, staged card reveal, acquisition labels, speed controls, haptics, and result actions."},
+    {"phase":56,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #140 CI succeeded from current main without conflict and was squash-merged."},
+    {"phase":57,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI and Pages succeeded; published HTML, JavaScript, CSS, notice, and interaction contracts were verified."},
+    {"phase":58,"name":"completion_and_stop","status":"completed","deliverable":"Final evidence is recorded, the v1 waiting state is restored, and no further backlog item is selected."}
   ],
   "branch": "codex/skill-gacha-presentation",
-  "pull_request": null,
+  "pull_request": 140,
   "completion_branch": "codex/skill-gacha-presentation-completion",
   "completion_pull_request": null,
-  "merge_commit": null,
-  "ci": null,
-  "pages_run": null,
-  "pages_status": null,
-  "published_verification": [],
-  "completed_at": null,
+  "merge_commit": "4f29f614187964f46420ccc1a18fbc930443be4f",
+  "ci": {
+    "pull_request_run": 33733540196,
+    "pull_request_status": "success",
+    "main_run": 33733671315,
+    "main_status": "success"
+  },
+  "pages_run": 33733670528,
+  "pages_status": "success",
+  "published_verification": [
+    "The published HTML references the skill-gacha presentation cache keys and includes the summon dialog plus standard/quick controls.",
+    "The published JavaScript includes exact highest-COST anticipation, sequential reveal, NEW and owned tracking, skip, repeat draw, skill-change routing, haptics, and reduced-motion handling.",
+    "The published CSS includes the full-screen summon, COST-tier treatment, card flips, and a narrow-screen two-row layout for ten cards.",
+    "The published notice announces the Skill Sigil presentation and its player-facing controls.",
+    "Dedicated and full automated checks preserve the existing pools, rates, prices, guarantee, inventory behavior, and save compatibility."
+  ],
+  "completed_at": "2026-09-03T08:34:29.000Z",
   "stop_condition": "After Phase 58 is recorded and published, do not select or start another backlog item."
 }
