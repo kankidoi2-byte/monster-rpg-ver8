@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "cycle": 3,
+  "goal_id": "kokoro-link-one-second-layout-20260903",
+  "goal": "Refine the Kokoro Link presentation to one second with the title above the centered source and effect recipient below.",
+  "status": "completed",
+  "started_from_main": "6bc3005938270862724b74444fc472f81f2f694d",
+  "risk_class": "low",
+  "approval_required": false,
+  "acceptance_criteria": [
+    "Each activation presents only the selected reserve monster large in the center for one 1000ms sequence.",
+    "The Kokoro Link title is above the monster and the named effect recipient is centered below it.",
+    "The monster holds through the middle of the sequence, flashes strongly from 700ms to 850ms, and exits by 1000ms.",
+    "Battle busy state is not changed and the linked aura remains after the sequence.",
+    "Reduced-motion users keep a calm one-second centered presentation.",
+    "Save data, IDs, effect values, target binding, and activation rules remain unchanged."
+  ],
+  "phases": [
+    {"phase":1,"name":"goal_and_boundary","status":"completed","deliverable":"Fixed the one-second vertical presentation, non-blocking behavior, and compatibility boundary."},
+    {"phase":2,"name":"implementation","status":"completed","deliverable":"Moved the title above and centered target cue below, adjusted one-second timing and late flash, retained aura and reduced motion, updated notice/cache keys, and extended the dedicated test."},
+    {"phase":3,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #150 CI #506 succeeded from current main without conflict and was squash-merged."},
+    {"phase":4,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI #507 and Pages #192 succeeded; published HTML, JavaScript, CSS, and notice were verified."},
+    {"phase":5,"name":"completion_record_and_stop","status":"completed","deliverable":"Recorded Cycle 3 and stopped without selecting another backlog item."}
+  ],
+  "branch": "codex/cycle3-kokoro-link-timing-layout",
+  "pull_request": 150,
+  "completion_branch": "docs/cycle3-kokoro-link-one-second-layout-completion",
+  "completion_pull_request": 151,
+  "merge_commit": "3eb80ba885211ecddac20c09c28d9d541bc16a82",
+  "ci": {
+    "pull_request_run": 33758653646,
+    "pull_request_status": "success",
+    "main_run": 33758770720,
+    "main_status": "success"
+  },
+  "pages_run": 33758769098,
+  "pages_status": "success",
+  "published_verification": [
+    "Published HTML references Kokoro Link animation cache key 3.",
+    "Published JavaScript contains the 1000ms duration and title-source-target vertical append order.",
+    "Published CSS places the title above, keeps the target cue centered below, and contains one-second timing and reduced-motion treatment.",
+    "Published notices include the one-second Kokoro Link layout update."
+  ],
+  "completed_at": "2026-09-03T13:05:47.000Z",
+  "stop_condition": "After Cycle 3 Phase 5 is recorded and published, do not select or start another backlog item."
+}
