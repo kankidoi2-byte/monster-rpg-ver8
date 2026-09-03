@@ -34,7 +34,7 @@
   "branch": "codex/skill-gacha-presentation",
   "pull_request": 140,
   "completion_branch": "codex/skill-gacha-presentation-completion",
-  "completion_pull_request": null,
+  "completion_pull_request": 141,
   "merge_commit": "4f29f614187964f46420ccc1a18fbc930443be4f",
   "ci": {
     "pull_request_run": 33733540196,
