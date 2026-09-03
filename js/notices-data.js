@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-skill-gacha-compact-result',
+    date: '2026-09-03',
+    category: 'update',
+    title: '技ガチャの結果表示を見やすくしました',
+    body: '召喚後に同じ技カードを縦長に並べ直す表示をなくしました。10連結果は召喚画面内でまとめて確認でき、気になるカードをタップしたときだけ技の詳細が開きます。'
+  }),
+  Object.freeze({
     id: '20260903-skill-gacha-presentation',
     date: '2026-09-03',
     category: 'update',
