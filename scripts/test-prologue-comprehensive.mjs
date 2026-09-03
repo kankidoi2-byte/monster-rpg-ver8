@@ -118,14 +118,8 @@ assert.equal(vm.runInContext('commitTutorialFullSkip()',failed),false);
 assert.equal(JSON.stringify(failed.save),failedBefore,'failed skip persistence must roll back inventory, chapter, and status');
 assert.equal(failed.notices.length,1);
 
-const replay=makeSkipContext({replaying:true,status:'completed',instances:[{uid:'existing',id:'freigal',level:4,exp:0,locked:false}],flags:Object.fromEntries(requiredFlags.map(flag=>[flag,true]))});
-const replayInventory=JSON.stringify(replay.save.instances);
-assert.equal(vm.runInContext('commitTutorialFullSkip()',replay),true);
-assert.equal(replay.save.progress.tutorial.status,'completed','closing replay must preserve the original completion state');
-assert.equal(replay.save.progress.tutorial.replaying,false);
-assert.equal(JSON.stringify(replay.save.instances),replayInventory,'closing replay must not grant anything');
-
 assert.ok(saveSource.includes('sourceVersion<TUTORIAL_VERSION')&&saveSource.includes("normalized.status=keepSkipped?'skipped':'completed'"),'published v1 completed/skipped saves must stay protected');
+assert.ok(saveSource.includes("source.replaying===true")&&saveSource.includes("tutorial_replay_retired_v1"),'retired replay saves must return to their resolved state through migration');
 assert.ok(saveSource.includes("if((normalized.completed||normalized.skipped)&&!normalized.replaying)normalized.stepId=null"),'completed and skipped saves must not auto-resume');
 
 const placementStart=tutorial.indexOf('function calculateTutorialPlacement');
@@ -158,8 +152,8 @@ assert.ok(index.includes('id="tutorialDialogueSkipButton"')&&index.includes('>�
 assert.ok(index.includes('id="tutorialSkipButton"')&&index.includes('>全体スキップ</button>'));
 assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must remain separate layers');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1'),'tutorial CSS cache key must be refreshed');
-assert.ok(index.includes('prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1"></script>'),'tutorial JS cache key must be refreshed');
+assert.ok(index.includes('tutorial-replay-scope-1-tutorial-replay-retired-1"></script>'),'tutorial JS cache key must be refreshed');
 assert.equal(packageJson.scripts['check:prologue-comprehensive'],'node scripts/test-prologue-comprehensive.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-comprehensive'));
 
-console.log('Prologue comprehensive validation passed (dialogue/full skip, atomic mandatory rewards, replay, new/v1/mid-save safety, 360/412/1366 layouts, transparent portraits, and no Kanata).');
+console.log('Prologue comprehensive validation passed (dialogue/full skip, atomic mandatory rewards, retired replay migration, new/v1/mid-save safety, 360/412/1366 layouts, transparent portraits, and no Kanata).');

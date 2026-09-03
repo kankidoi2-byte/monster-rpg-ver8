@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-tutorial-replay-retired',
+    date: '2026-09-03',
+    category: 'update',
+    title: 'チュートリアルの再閲覧を終了しました',
+    body: '通常チュートリアルとの表示・進行の混在を防ぐため、完了後の再閲覧を廃止しました。途中で閉じた通常チュートリアルは、メニューの「チュートリアルを続ける」から再開できます。'
+  }),
+  Object.freeze({
     id: '20260903-tutorial-main-growth-display-fix',
     date: '2026-09-03',
     category: 'fix',

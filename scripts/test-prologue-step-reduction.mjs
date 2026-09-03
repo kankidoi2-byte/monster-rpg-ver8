@@ -54,7 +54,6 @@ const resumeContext=vm.createContext({
   renderTutorialStep:()=>{resumeContext.rendered=true;},
   updateTutorialMenuSummary:()=>{},
   setTutorialStep:id=>{resumeContext.save.progress.tutorial.stepId=id;resumeContext.save.progress.tutorial.status='in_progress';},
-  beginTutorialReplay:id=>{resumeContext.save.progress.tutorial.replaying=true;resumeContext.save.progress.tutorial.stepId=id;},
   saveGame:()=>{resumeContext.saveCalls+=1;return true;}
 });
 vm.runInContext(`${tutorial.slice(redirectStart,redirectEnd)}\n${tutorial.slice(startFlowStart,startFlowEnd)}`,resumeContext);
@@ -83,16 +82,14 @@ const rewardDigest=save=>JSON.stringify({
   instances:save.instances,coins:save.coins,items:save.items,skillCards:save.skillCards,expeditions:save.expeditions,
   flags:Object.fromEntries(['starterContractsGranted','elnaContractGranted','stellaSkillCardGranted','alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted','expeditionDispatched'].map(flag=>[flag,save.progress.tutorial[flag]]))
 });
-for(const replay of [false,true]){
-  for(const oldStepId of removed){
+for(const oldStepId of removed){
     resumeContext.save=legacyRewardSnapshot();
     resumeContext.save.progress.tutorial.stepId=oldStepId;
-    resumeContext.save.progress.tutorial.replaying=replay;
     resumeContext.saveCalls=0;resumeContext.rendered=false;
     const before=rewardDigest(resumeContext.save);
-    resumeContext.oldStepId=oldStepId;resumeContext.replay=replay;
-    assert.equal(vm.runInContext("startTutorialFlow('prologue',{stepId:oldStepId,persist:true,replay})",resumeContext),true,
-      `deleted STEP must resume in ${replay?'replay':'normal'} mode: ${oldStepId}`);
+    resumeContext.oldStepId=oldStepId;
+    assert.equal(vm.runInContext("startTutorialFlow('prologue',{stepId:oldStepId,persist:true})",resumeContext),true,
+      `deleted STEP must resume in the main tutorial: ${oldStepId}`);
     const target=runtimeRedirects[oldStepId];
     const targetStep=mainSteps.find(step=>step.id===target);
     assert.ok(targetStep,`redirect target must exist at runtime: ${oldStepId} -> ${target}`);
@@ -105,7 +102,6 @@ for(const replay of [false,true]){
     assert.equal(resumeContext.rendered,true,`the migrated checkpoint must render: ${oldStepId}`);
     assert.equal(rewardDigest(resumeContext.save),before,
       `resume must not duplicate contracts, coins, materials, cards, or expeditions: ${oldStepId}`);
-  }
 }
 
 for(const stepId of ['first_hunt','request_reward_preview','stella_card_offer','lumina_recipe_offer']){
@@ -146,7 +142,7 @@ assert.match(main,/id:'expedition_member'[^\n]+data-tutorial-expedition-member/,
 assert.match(main,/id:'prologue_complete'[^\n]+speaker:'グノーシス'[^\n]+portrait:/,'the finale must retain Gnosis instead of an empty background');
 assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'target steps must keep portraits away from controls');
 
-assert.ok(index.includes('prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1"></script>'),'the browser must fetch the counterless, chronologically ordered tutorial logic');
+assert.ok(index.includes('tutorial-replay-scope-1-tutorial-replay-retired-1"></script>'),'the browser must fetch the counterless tutorial logic with replay retired');
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 

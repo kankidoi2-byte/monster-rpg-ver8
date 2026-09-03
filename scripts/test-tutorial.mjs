@@ -81,13 +81,14 @@ assert.equal(resumed.progress.tutorial.stepId,'party_select');
 evaluate('completeTutorial()');
 assert.equal(evaluate('save.progress.tutorial.completed'),true);
 assert.equal(evaluate('tutorialShouldAutoStart()'),false);
-evaluate("beginTutorialReplay('intro')");
-assert.equal(evaluate('save.progress.tutorial.status'),'completed','replay must not erase the original completion');
-assert.equal(evaluate('save.progress.tutorial.replaying'),true);
-assert.equal(evaluate('save.progress.tutorial.stepId'),'intro');
-evaluate('completeTutorial()');
-assert.equal(evaluate('save.progress.tutorial.replaying'),false);
-assert.equal(evaluate('save.progress.tutorial.status'),'completed');
+assert.equal(evaluate('typeof beginTutorialReplay'),'undefined','retired replay entry point must not remain callable');
+
+const retiredCompleted=plain(prepare({schemaVersion:4,saveMeta:{migrations:[]},progress:{tutorial:{version:2,status:'completed',completed:true,replaying:true,stepId:'intro'}}}));
+assert.equal(retiredCompleted.progress.tutorial.status,'completed');
+assert.equal(retiredCompleted.progress.tutorial.completed,true);
+assert.equal(retiredCompleted.progress.tutorial.replaying,false);
+assert.equal(retiredCompleted.progress.tutorial.stepId,null,'an old replay must return to the completed state');
+assert.ok(retiredCompleted.saveMeta.migrations.includes('tutorial_replay_retired_v1'));
 
 resetNewSave();
 evaluate("setTutorialStep('home')");
@@ -95,10 +96,11 @@ evaluate('skipTutorial()');
 assert.equal(evaluate('save.progress.tutorial.status'),'skipped');
 assert.equal(evaluate('save.progress.tutorial.skipped'),true);
 assert.equal(evaluate('tutorialShouldAutoStart()'),false);
-evaluate("beginTutorialReplay('intro')");
-evaluate('skipTutorial()');
-assert.equal(evaluate('save.progress.tutorial.status'),'skipped','leaving replay must preserve the original skipped state');
-assert.equal(evaluate('save.progress.tutorial.replaying'),false);
+const retiredSkipped=plain(prepare({schemaVersion:4,saveMeta:{migrations:[]},progress:{tutorial:{version:2,status:'skipped',skipped:true,replaying:true,stepId:'growth_elna_details'}}}));
+assert.equal(retiredSkipped.progress.tutorial.status,'skipped','an old replay must preserve the original skipped state');
+assert.equal(retiredSkipped.progress.tutorial.skipped,true);
+assert.equal(retiredSkipped.progress.tutorial.replaying,false);
+assert.equal(retiredSkipped.progress.tutorial.stepId,null);
 
 resetNewSave();
 assert.equal(evaluate("markTutorialGuideSeen('threeWay')"),true);
@@ -118,4 +120,4 @@ assert.equal(evaluate('markTutorialElnaContractGranted()'),true);
 assert.equal(evaluate('markTutorialElnaContractGranted()'),false,'the Elna contract must only be claimed once');
 assert.equal(evaluate("markTutorialOnce('unknownReward')"),false,'unknown reward flags must not enter the save contract');
 
-console.log('Tutorial save validation passed (v2 new save, v1 protection, resume, complete, skip, replay, guides, and idempotent grant flags).');
+console.log('Tutorial save validation passed (v2 new save, v1 protection, resume, complete, skip, retired replay migration, guides, and idempotent grant flags).');
