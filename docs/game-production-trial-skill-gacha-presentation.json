@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "trial_id": "skill-gacha-presentation-20260903",
+  "goal": "Complete the presentation for the existing skill-card gacha so drawing cards is satisfying, readable, repeatable, and connected to skill editing.",
+  "scope": "existing_skill_gacha_presentation_only",
+  "status": "in_progress",
+  "started_from_main": "a3743d75f80c23ee7204d9f9d8a840ff6aedcfee",
+  "risk_class": "low",
+  "approval_required": false,
+  "compatibility": {
+    "save_key_changed": false,
+    "save_structure_changed": false,
+    "existing_ids_changed": false,
+    "draw_rates_changed": false,
+    "draw_prices_changed": false,
+    "ten_draw_guarantee_changed": false,
+    "publication_settings_changed": false
+  },
+  "acceptance_criteria": [
+    "The existing monster and character skill pools, COST rarity weights, 100/900 coin prices, and COST 2+ ten-draw guarantee remain unchanged.",
+    "A staged full-screen summon presents exact highest-COST anticipation followed by individual card reveals and stronger high-COST treatment.",
+    "Results identify first acquisitions and sequential owned counts without adding save fields or changing inventory semantics.",
+    "Players can skip, use a quick presentation, repeat the same draw when affordable, close the result, or continue to party skill editing.",
+    "Reduced-motion preference bypasses prolonged motion and the draw is saved before presentation so interruption cannot lose rewards.",
+    "The presentation remains usable on narrow mobile screens and a player-facing notice describes the completed change."
+  ],
+  "phases": [
+    {"phase":54,"name":"goal_and_boundary","status":"completed","deliverable":"Fixed the existing-skill-gacha-only scope, compatibility boundary, acceptance criteria, checks, publication verification, and stop condition."},
+    {"phase":55,"name":"presentation_implementation","status":"in_progress","deliverable":"Implement the Skill Sigil summon, exact rarity anticipation, staged card reveal, acquisition labels, speed controls, and result actions."},
+    {"phase":56,"name":"integration_qa_and_safe_merge","status":"pending","deliverable":"Pass the dedicated and full checks, open a focused PR, observe CI, confirm current-main ancestry and no conflict, and safely merge."},
+    {"phase":57,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe main CI and Pages success, then verify published HTML, JavaScript, CSS, notice, and live interaction."},
+    {"phase":58,"name":"completion_and_stop","status":"pending","deliverable":"Record final evidence, restore the v1 waiting state, and stop without selecting another backlog item."}
+  ],
+  "branch": "codex/skill-gacha-presentation",
+  "pull_request": null,
+  "completion_branch": "codex/skill-gacha-presentation-completion",
+  "completion_pull_request": null,
+  "merge_commit": null,
+  "ci": null,
+  "pages_run": null,
+  "pages_status": null,
+  "published_verification": [],
+  "completed_at": null,
+  "stop_condition": "After Phase 58 is recorded and published, do not select or start another backlog item."
+}
