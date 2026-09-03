@@ -32,7 +32,7 @@
   "branch": "codex/all-map-ecosystem-diagrams",
   "pull_request": 138,
   "completion_branch": "codex/all-map-ecosystem-diagrams-completion",
-  "completion_pull_request": null,
+  "completion_pull_request": 139,
   "merge_commit": "51d79547ebe1fd908e2f9191a0b4526b0e67c9e7",
   "ci": {
     "pull_request_run": 33725863311,
