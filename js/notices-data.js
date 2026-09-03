@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-kokoro-link-centered-animation',
+    date: '2026-09-03',
+    category: 'update',
+    title: 'ココロリンクの発動演出を見直しました',
+    body: '選んだ控えモンスターが画面中央へ大きく現れ、「ココロリンク！」の文字と強い発光に続いて、戦闘中のモンスターへ効果が付与されたことを約0.6秒で確認できます。'
+  }),
+  Object.freeze({
     id: '20260903-kokoro-link-animation',
     date: '2026-09-03',
     category: 'update',
