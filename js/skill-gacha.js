@@ -80,7 +80,7 @@ function setSkillGachaPresentationSpeed(speed){
 function skillGachaCardMarkup(entry,index,faceDown=false){
   const card=entry.card;
   const acquisition=entry.isNew?'<span class="skill-gacha-new">NEW</span>':`<span class="skill-gacha-owned">所持 ×${entry.after}</span>`;
-  return `<article class="skill-gacha-reveal-card skill-gacha-tier-${entry.tier}${faceDown?' is-facedown':''}" data-skill-gacha-card="${index}" data-cost="${card.cost}"><div class="skill-gacha-card-inner"><div class="skill-gacha-card-back"><span>✦</span><small>技紋</small></div><div class="skill-gacha-card-front card ${skillCardClass(skillTypes(card))}">${acquisition}${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p class="small">${moveEffectText(skillToMove(card.id))}</p></div></div></article>`;
+  return `<article class="skill-gacha-reveal-card skill-gacha-tier-${entry.tier}${faceDown?' is-facedown':''}" data-skill-gacha-card="${index}" data-cost="${card.cost}" role="button" tabindex="${faceDown?'-1':'0'}" aria-expanded="false" onclick="openSkillGachaCardDetail(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSkillGachaCardDetail(${index});}"><div class="skill-gacha-card-inner"><div class="skill-gacha-card-back"><span>✦</span><small>技紋</small></div><div class="skill-gacha-card-front card ${skillCardClass(skillTypes(card))}">${acquisition}${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p class="small">${moveEffectText(skillToMove(card.id))}</p></div></div></article>`;
 }
 function renderSkillGacha(){
   const coin=document.getElementById('skillGachaCoinView');
@@ -92,12 +92,30 @@ function renderSkillGacha(){
     return `<article class="skill-gacha-pool"><h2>${kind==='monster'?'🐾':'⚔️'} ${config.label}ガチャ</h2><p>${config.pool.length}種類から抽選</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('${kind}',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('${kind}',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・COST 2以上1枚保証</small></button></div><ul>${rows}</ul></article>`;
   }).join('');
 }
-function renderSkillGachaResults(result,entries=skillGachaInventorySnapshots(result.cards,{})){
-  const el=document.getElementById('skillGachaResult');
-  if(!el) return;
-  const highest=Math.max(...result.cards.map(card=>card.cost));
-  el.innerHTML=`<div class="skill-gacha-result-heading"><div><span>DRAW COMPLETE</span><h2>獲得した技カード</h2></div><b>${skillGachaRarityLabel(highest)}</b></div><div class="skill-gacha-results">${entries.map((entry,index)=>skillGachaCardMarkup(entry,index)).join('')}</div>`;
-  if(typeof replayUiMotion==='function') replayUiMotion(el,'ui-reward-pop',850);
+function closeSkillGachaCardDetail(){
+  if(typeof document==='undefined') return;
+  const detail=document.getElementById('skillGachaCardDetail');
+  if(detail){detail.hidden=true;detail.innerHTML='';}
+  document.querySelectorAll('#skillGachaPresentationCards .is-selected').forEach(card=>{
+    card.classList.remove('is-selected');
+    card.setAttribute('aria-expanded','false');
+  });
+}
+function openSkillGachaCardDetail(index){
+  if(!activeSkillGachaPresentation||typeof document==='undefined') return;
+  const overlay=document.getElementById('skillGachaPresentation');
+  const cardElement=overlay?.querySelector(`[data-skill-gacha-card="${index}"]`);
+  const detail=document.getElementById('skillGachaCardDetail');
+  const entry=activeSkillGachaPresentation.entries[index];
+  if(!overlay?.classList.contains('is-complete')||!cardElement||!detail||!entry) return;
+  if(cardElement.classList.contains('is-selected')){closeSkillGachaCardDetail();return;}
+  closeSkillGachaCardDetail();
+  const card=entry.card;
+  const acquisition=entry.isNew?'NEW・初獲得':`所持 ×${entry.after}`;
+  detail.innerHTML=`<div>${skillCardHeader(card)}<b>${acquisition}</b></div><p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p>${moveEffectText(skillToMove(card.id))}</p><button type="button" onclick="closeSkillGachaCardDetail()">詳細を閉じる</button>`;
+  detail.hidden=false;
+  cardElement.classList.add('is-selected');
+  cardElement.setAttribute('aria-expanded','true');
 }
 function skillGachaProphecy(highestCost){
   if(highestCost>=6) return {label:'虹の技紋――最高位の力を感知',tier:'mythic'};
@@ -116,6 +134,7 @@ function finishSkillGachaPresentation(token=skillGachaPresentationToken){
   const overlay=document.getElementById('skillGachaPresentation');
   if(!overlay) return;
   overlay.querySelectorAll('.skill-gacha-reveal-card.is-facedown').forEach(card=>card.classList.remove('is-facedown'));
+  overlay.querySelectorAll('.skill-gacha-reveal-card').forEach(card=>card.tabIndex=0);
   overlay.classList.remove('is-summoning','is-revealing');
   overlay.classList.add('is-complete');
   const status=document.getElementById('skillGachaPresentationStatus');
@@ -148,11 +167,15 @@ function presentSkillGachaResult(result,entries){
   if(typeof document==='undefined') return;
   const overlay=document.getElementById('skillGachaPresentation');
   const cards=document.getElementById('skillGachaPresentationCards');
-  if(!overlay||!cards){renderSkillGachaResults(result,entries);return;}
+  if(!overlay||!cards){
+    if(typeof showUiNotice==='function') showUiNotice(`${result.count}枚の技カードを獲得しました。`);
+    return;
+  }
   const highestCost=Math.max(...result.cards.map(card=>card.cost));
   const prophecy=skillGachaProphecy(highestCost);
   const token=++skillGachaPresentationToken;
   activeSkillGachaPresentation={result,entries,highestCost};
+  closeSkillGachaCardDetail();
   document.body.classList.add('skill-gacha-presentation-open');
   overlay.hidden=false;
   overlay.setAttribute('aria-hidden','false');
@@ -184,6 +207,7 @@ function closeSkillGachaPresentation(){
   if(typeof document==='undefined') return;
   const overlay=document.getElementById('skillGachaPresentation');
   if(overlay){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.className='skill-gacha-presentation';}
+  closeSkillGachaCardDetail();
   document.body.classList.remove('skill-gacha-presentation-open');
   activeSkillGachaPresentation=null;
 }
@@ -204,7 +228,6 @@ function rollSkillGacha(kind,count){
   if(!result.ok){alert(result.error);return;}
   const entries=skillGachaInventorySnapshots(result.cards,beforeInventory);
   saveGame();
-  renderSkillGachaResults(result,entries);
   renderSkillGacha();
   if(typeof updateAppResourceBar==='function') updateAppResourceBar();
   presentSkillGachaResult(result,entries);
