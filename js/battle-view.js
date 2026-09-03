@@ -279,6 +279,50 @@ function kokoroLinkTargetStats(){
 }
 let pendingKokoroLinkStatusSourceUid=null;
 let pendingKokoroLinkTacticsMode=null;
+const KOKORO_LINK_ANIMATION_DURATION=600;
+let kokoroLinkAnimationTimer=null;
+function syncKokoroLinkAura(){
+  const target=document.getElementById('singlePlayerBox');
+  const active=typeof kokoroLinkEffectForInstance==='function'&&kokoroLinkEffectForInstance(activeInstance);
+  target?.classList.toggle('is-kokoro-linked',!!active);
+}
+function playKokoroLinkActivationAnimation(source,link){
+  const stage=document.querySelector('#battle .battle-arena');
+  const target=document.getElementById('singlePlayerBox');
+  if(!stage||!target||!source?.entry?.mon||!link)return false;
+  stage.querySelector('.kokoro-link-activation')?.remove();
+  if(kokoroLinkAnimationTimer)clearTimeout(kokoroLinkAnimationTimer);
+  const primaryType=battleImpactType(source.profile?.primaryType||source.entry.mon.types);
+  const effect=document.createElement('div');
+  effect.className=`kokoro-link-activation is-${primaryType}`;
+  effect.setAttribute('aria-hidden','true');
+  const cutIn=document.createElement('div');
+  cutIn.className='kokoro-link-cut-in';
+  const visual=document.createElement('div');
+  visual.className='kokoro-link-cut-in-visual';
+  visual.innerHTML=typeof vis==='function'?vis(source.entry.mon):'💞';
+  const sourceName=document.createElement('strong');
+  sourceName.textContent=link.sourceName;
+  cutIn.append(visual,sourceName);
+  const beam=document.createElement('i');
+  beam.className='kokoro-link-beam';
+  const shock=document.createElement('i');
+  shock.className='kokoro-link-shock';
+  const title=document.createElement('strong');
+  title.className='kokoro-link-activation-title';
+  title.textContent='ココロリンク！';
+  effect.append(cutIn,beam,shock,title);
+  target.classList.remove('is-kokoro-link-impact');
+  void target.offsetWidth;
+  target.classList.add('is-kokoro-link-impact','is-kokoro-linked');
+  stage.appendChild(effect);
+  kokoroLinkAnimationTimer=setTimeout(()=>{
+    effect.remove();
+    target.classList.remove('is-kokoro-link-impact');
+    kokoroLinkAnimationTimer=null;
+  },KOKORO_LINK_ANIMATION_DURATION);
+  return true;
+}
 function kokoroLinkStatusAbilityStateText(ability){
   if(!ability)return '';
   if(!ability.resolved)return '対象選択後に1回判定';
@@ -310,6 +354,7 @@ function renderKokoroLinkPanel(){
   const available=sources.filter(source=>source.available).length;
   button.disabled=!targetEligible||(!current&&available===0);
   button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}`;
+  syncKokoroLinkAura();
   const tacticsActionHtml=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved?'<button onclick="beginKokoroLinkOriginChoice()">原初選択を決める</button>':current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0?'<button onclick="beginKokoroLinkFreeSwitch()">無消費交代を使う</button>':'';
   const activeHtml=current
     ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}${current.statusAbility?`<small>★2リンク能力：${current.statusAbility.label}（${kokoroLinkStatusAbilityStateText(current.statusAbility)}）</small>`:''}${current.tacticsAbility?`<small>★3リンク能力：${current.tacticsAbility.label}（${kokoroLinkTacticsAbilityStatus(activeInstance)}）</small>${tacticsActionHtml}`:''}</div>`
@@ -392,6 +437,7 @@ function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   renderKokoroLinkPanel();
   update();
+  playKokoroLinkActivationAnimation(source,link);
   if(link.tacticsAbility?.id==='origin_choice'&&!link.tacticsAbility.resolved)beginKokoroLinkOriginChoice();
   if(link.tacticsAbility?.id==='free_switch'&&link.tacticsAbility.charges>0)beginKokoroLinkFreeSwitch();
 }
