@@ -3,7 +3,7 @@
   "trial_id": "skill-gacha-compact-result-20260903",
   "goal": "Remove the redundant persistent acquired-skill list and keep a compact, repeat-friendly result experience inside the summon presentation.",
   "scope": "existing_skill_gacha_result_ui_only",
-  "status": "in_review",
+  "status": "completed",
   "started_from_main": "163d6bf730ab13a9eb2d47a1298e95fe9d85bdcf",
   "risk_class": "low",
   "approval_required": false,
@@ -26,19 +26,30 @@
   "phases": [
     {"phase":59,"name":"goal_and_boundary","status":"completed","deliverable":"Limited the follow-up to redundant result UI while preserving all draw and persistence contracts."},
     {"phase":60,"name":"compact_result_implementation","status":"completed","deliverable":"Removed the persistent list and added a compact result grid with tap-only single-card detail."},
-    {"phase":61,"name":"integration_qa_and_safe_merge","status":"in_review","deliverable":"Run dedicated and full checks, open a pull request, observe CI, and merge only if current and conflict-free."},
-    {"phase":62,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe main CI and Pages, then verify published HTML, JavaScript, CSS, and notice contracts."},
-    {"phase":63,"name":"completion_and_stop","status":"pending","deliverable":"Record final evidence, restore the waiting state, and stop without selecting another item."}
+    {"phase":61,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #142 CI succeeded from current main without conflict and was squash-merged."},
+    {"phase":62,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI and Pages succeeded; published HTML, JavaScript, CSS, cache keys, and notice contracts were verified."},
+    {"phase":63,"name":"completion_and_stop","status":"completed","deliverable":"Final evidence is recorded, the v1 waiting state is preserved, and no further backlog item is selected."}
   ],
   "branch": "codex/skill-gacha-compact-result",
-  "pull_request": null,
-  "completion_branch": null,
-  "completion_pull_request": null,
-  "merge_commit": null,
-  "ci": null,
-  "pages_run": null,
-  "pages_status": null,
-  "published_verification": [],
-  "completed_at": null,
+  "pull_request": 142,
+  "completion_branch": "codex/skill-gacha-compact-result-completion",
+  "completion_pull_request": 143,
+  "merge_commit": "62441998de535515db9163a0fbdcacb40228e93a",
+  "ci": {
+    "pull_request_run": 33737516031,
+    "pull_request_status": "success",
+    "main_run": 33737675922,
+    "main_status": "success"
+  },
+  "pages_run": 33737675566,
+  "pages_status": "success",
+  "published_verification": [
+    "The published HTML uses the new cache keys, includes the one-card detail region, and no longer includes the persistent skillGachaResult list.",
+    "The published JavaScript keeps pre-presentation saveGame behavior, compact card selection, tap/keyboard detail, skip, repeat draw, and skill-change routing.",
+    "The published CSS keeps the five-column two-row ten-draw grid and adds selected-card and on-demand detail treatment.",
+    "The published notice explains the shorter result flow to players.",
+    "Cloud-browser interaction was unavailable due to a browser connection timeout; public HTML and assets plus dedicated and full automated checks supplied the postdeployment evidence."
+  ],
+  "completed_at": "2026-09-03T09:19:50.000Z",
   "stop_condition": "After Phase 63 is recorded and published, do not select or start another backlog item."
 }

@@ -3,11 +3,11 @@
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "roadmap": "docs/game-production-automation-roadmap.md",
   "risk_contract": "tools/game-production-orchestrator/risk-approval-contract.json",
-  "updated_at": "2026-09-03T08:34:29.000Z",
+  "updated_at": "2026-09-03T09:19:50.000Z",
   "product_version": "v1",
   "overall_status": "completed",
-  "completed_at": "2026-09-03T08:34:29.000Z",
-  "current_phase": 58,
+  "completed_at": "2026-09-03T09:19:50.000Z",
+  "current_phase": 63,
   "current_activity": "v1_completed_waiting_for_user_goal",
   "activation_mode": "user_goal_only",
   "production_lines_active": false,
@@ -26,14 +26,14 @@
     }
   ],
   "latest_trial": {
-    "id": "skill-gacha-presentation-20260903",
+    "id": "skill-gacha-compact-result-20260903",
     "status": "completed",
-    "record": "docs/game-production-trial-skill-gacha-presentation.json",
-    "content_pull_request": 140,
-    "completion_pull_request": 141,
-    "published_commit": "4f29f614187964f46420ccc1a18fbc930443be4f",
-    "pages_run": 33733670528,
-    "game_progress": "The existing skill-card gacha now has a staged Skill Sigil summon, exact rarity anticipation, individual reveals, acquisition labels, speed controls, and useful result actions."
+    "record": "docs/game-production-trial-skill-gacha-compact-result.json",
+    "content_pull_request": 142,
+    "completion_pull_request": 143,
+    "published_commit": "62441998de535515db9163a0fbdcacb40228e93a",
+    "pages_run": 33737675566,
+    "game_progress": "The redundant persistent acquired-skill list is removed; summon results stay compact and one-card details open only on demand."
   },
   "allowed_states": ["pending", "in_progress", "in_review", "awaiting_approval", "completed", "blocked"],
   "invariants": {
@@ -417,6 +417,71 @@
       "approval_required": false,
       "next_start_point": "Wait for the user to provide the next production goal; do not select or start backlog work autonomously.",
       "game_progress": "Records the completed skill-gacha presentation cycle and stops without selecting another backlog item."
+    },
+    {
+      "id": 59,
+      "name": "技ガチャ結果簡素化の目標受領・境界確定",
+      "status": "completed",
+      "owner_line": "command",
+      "dependencies": [58],
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Limited the follow-up to redundant result UI while preserving saves, IDs, pools, rates, prices, and the ten-draw guarantee."
+    },
+    {
+      "id": 60,
+      "name": "技ガチャのコンパクト結果表示",
+      "status": "completed",
+      "owner_line": "system_and_content_serialized",
+      "dependencies": [59],
+      "branch": "codex/skill-gacha-compact-result",
+      "pull_request": 142,
+      "commit": "200877ee389703ad26942f7275659c53d679c79b",
+      "tests": ["npm run check:skill-gacha", "npm run check:notices", "npm run check:game-production-orchestrator", "node --check js/skill-gacha.js", "git diff --check", "npm run check"],
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Removed the persistent vertical result list and kept a compact reveal grid with optional single-card details."
+    },
+    {
+      "id": 61,
+      "name": "技ガチャ結果簡素化の統合QA・安全マージ",
+      "status": "completed",
+      "owner_line": "command_qa",
+      "dependencies": [60],
+      "tests": ["npm run check:skill-gacha", "npm run check:notices", "npm run check:game-production-orchestrator", "node --check js/skill-gacha.js", "git diff --check", "npm run check"],
+      "ci": {"pull_request_run":33737516031,"pull_request_status":"success","main_run":33737675922,"main_status":"success"},
+      "merge_commit": "62441998de535515db9163a0fbdcacb40228e93a",
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Verified unchanged draw and save contracts, the focused seven-file diff, full regression suite, current-main ancestry, and a conflict-free squash merge."
+    },
+    {
+      "id": 62,
+      "name": "Pages公開・技ガチャ簡素化の公開後確認",
+      "status": "completed",
+      "owner_line": "command_qa",
+      "dependencies": [61],
+      "pages": {"run":33737675566,"status":"success","published_commit":"62441998de535515db9163a0fbdcacb40228e93a"},
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Verified the published HTML has no persistent result list and serves the compact detail DOM, updated JavaScript, CSS, cache keys, and notice."
+    },
+    {
+      "id": 63,
+      "name": "技ガチャ結果簡素化サイクル完成・停止",
+      "status": "completed",
+      "owner_line": "command",
+      "dependencies": [62],
+      "branch": "codex/skill-gacha-compact-result-completion",
+      "pull_request": 143,
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": "Wait for the user to provide the next production goal; do not select or start backlog work autonomously.",
+      "game_progress": "Records the completed compact-result follow-up and stops without selecting another backlog item."
     }
   ],
   "backlog": [
@@ -572,6 +637,23 @@
       "approval_required": false,
       "next_start_point": "Treat the existing item-gacha presentation separately and request approval before deciding unimplemented character-gacha rules.",
       "game_progress": "Keeps future item and character gacha work outside the completed skill-gacha cycle."
+    },
+    {
+      "id": "skill-gacha-compact-result",
+      "title": "技ガチャ結果表示の簡素化",
+      "status": "completed",
+      "owner_line": "system_and_content_serialized",
+      "dependencies": [58],
+      "branches": ["codex/skill-gacha-compact-result", "codex/skill-gacha-compact-result-completion"],
+      "pull_requests": [142, 143],
+      "commit": "62441998de535515db9163a0fbdcacb40228e93a",
+      "tests": ["npm run check:skill-gacha", "npm run check:notices", "npm run check:game-production-orchestrator", "node --check js/skill-gacha.js", "git diff --check", "npm run check"],
+      "ci": {"pull_request_run":33737516031,"main_run":33737675922,"status":"success"},
+      "pages": {"run":33737675566,"status":"success"},
+      "risk_class": "low",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Removes the duplicate vertical acquired-skill list and keeps compact results with optional details."
     },
     {
       "id": "chapter1-production",
