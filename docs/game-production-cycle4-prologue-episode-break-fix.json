@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "cycle": 4,
+  "goal_id": "prologue-episode-break-fix-20260903",
+  "goal": "Restore the intended stop at every prologue episode ending so the player returns to Story Mode and explicitly starts the next episode.",
+  "status": "completed",
+  "started_from_main": "797aea5397001e30620109a8c118702b2fd3c63a",
+  "risk_class": "low",
+  "approval_required": false,
+  "acceptance_criteria": [
+    "Selecting an episode-ending button persists the next episode start STEP and closes the tutorial overlay.",
+    "Story Mode is shown after each episode ending instead of rendering the next episode immediately.",
+    "The next episode remains available but does not start until the player selects it.",
+    "Ordinary dialogue STEP normalization does not create an episode break.",
+    "Save key, save fields, existing IDs, rewards, dialogue order, and game rules remain unchanged."
+  ],
+  "phases": [
+    {"phase":1,"name":"goal_and_boundary","status":"completed","deliverable":"Confirmed the intended six-episode boundary behavior, isolated the dropped normalized flag, and fixed the compatibility and stop boundaries."},
+    {"phase":2,"name":"implementation","status":"completed","deliverable":"Preserved chapterBreak during STEP normalization, added regression coverage, refreshed cache keys, and published a player-facing fix notice."},
+    {"phase":3,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Dedicated and full checks passed; PR #152 CI #510 succeeded from current main without conflict and was squash-merged."},
+    {"phase":4,"name":"pages_and_published_verification","status":"completed","deliverable":"Main CI #511 and Pages #194 succeeded; published HTML, tutorial JavaScript, and notice data were verified."},
+    {"phase":5,"name":"completion_record_and_stop","status":"completed","deliverable":"Recorded Cycle 4 and stopped without selecting another backlog item."}
+  ],
+  "branch": "codex/cycle4-prologue-episode-break-fix",
+  "pull_request": 152,
+  "completion_branch": "docs/cycle4-prologue-episode-break-fix-completion",
+  "completion_pull_request": 153,
+  "merge_commit": "e8ae458da3c9d871243a0bf9075177c3da14cd84",
+  "ci": {
+    "pull_request_run": 33762918586,
+    "pull_request_status": "success",
+    "main_run": 33763012553,
+    "main_status": "success"
+  },
+  "pages_run": 33763010750,
+  "pages_status": "success",
+  "published_verification": [
+    "Published HTML references the prologue episode-break cache key.",
+    "Published tutorial JavaScript preserves chapterBreak through STEP normalization.",
+    "Published tutorial JavaScript contains the Story Mode checkpoint and chapter-gate resume path.",
+    "Published notices include the prologue episode-break correction."
+  ],
+  "completed_at": "2026-09-03T13:47:18.000Z",
+  "stop_condition": "After Cycle 4 Phase 5 is recorded and published, do not select or start another backlog item."
+}
