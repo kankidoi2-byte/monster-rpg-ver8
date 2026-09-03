@@ -32,7 +32,7 @@
   "branch": "codex/grassland-ecosystem-pyramid",
   "pull_request": 136,
   "completion_branch": "codex/grassland-ecosystem-pyramid-completion",
-  "completion_pull_request": null,
+  "completion_pull_request": 137,
   "merge_commit": "481d0dc6b5e8482369385d914d52c1955a7d66b7",
   "ci": {
     "pull_request_run": 33712907229,
