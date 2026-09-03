@@ -1,18 +1,40 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "roadmap": "docs/game-production-automation-roadmap.md",
   "risk_contract": "tools/game-production-orchestrator/risk-approval-contract.json",
-  "updated_at": "2026-09-03T09:19:50.000Z",
+  "updated_at": "2026-09-03T11:04:34.000Z",
   "product_version": "v1",
   "overall_status": "completed",
   "completed_at": "2026-09-03T09:19:50.000Z",
-  "current_phase": 63,
-  "current_activity": "v1_completed_waiting_for_user_goal",
+  "current_cycle": 0,
+  "current_phase": 0,
+  "next_cycle": 1,
+  "current_activity": "phase_numbering_reset_waiting_for_user_goal",
   "activation_mode": "user_goal_only",
   "production_lines_active": false,
   "next_activation_required": true,
   "completion_scope": "The user supplies one production goal; the orchestrator plans and executes bounded system/content work through tests, pull requests, safe merges, Pages deployment, published verification, and then stops.",
+  "phase_numbering": {
+    "mode": "per_production_cycle",
+    "legacy_phase_history": {"first": 0, "last": 63, "status": "archived"},
+    "phase_range_per_cycle": {"first": 1, "last": 5},
+    "phase_names": {
+      "1": "goal_and_boundary",
+      "2": "implementation",
+      "3": "integration_qa_and_safe_merge",
+      "4": "pages_and_published_verification",
+      "5": "completion_record_and_stop"
+    },
+    "reset_boundary": {
+      "date": "2026-09-03",
+      "after_delivery": "prologue-story-mode",
+      "pull_request": 144,
+      "published_commit": "caa497374cd5d53ba9237e69a4d9f4185ed3770b",
+      "pages_run": 33742194140,
+      "decision": "Do not continue with legacy Phase 64. Start the next user goal as Cycle 1 Phase 1."
+    }
+  },
   "v2_deferred": [
     {
       "id": "continuous_autonomous_backlog_selection",
@@ -485,6 +507,24 @@
     }
   ],
   "backlog": [
+    {
+      "id": "prologue-story-mode",
+      "title": "序章6話のストーリーモード",
+      "status": "completed",
+      "owner_line": "system_and_content_serialized",
+      "dependencies": [63],
+      "branches": ["feat/prologue-story-mode"],
+      "pull_requests": [144],
+      "commit": "caa497374cd5d53ba9237e69a4d9f4185ed3770b",
+      "tests": ["npm run check:story-mode", "npm run check", "git diff --check"],
+      "ci": {"pull_request_run":33742064685,"main_run":33742195498,"status":"success"},
+      "pages": {"run":33742194140,"status":"success"},
+      "risk_class": "approved_story_structure_and_low_risk_implementation",
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "Adds a six-episode prologue story screen entered from the home adventure card while preserving existing tutorial saves and keeping replay retired.",
+      "numbering_note": "This delivery is the reset boundary and is intentionally not labeled as legacy Phase 64-68."
+    },
     {
       "id": "all-map-ecosystem-diagrams",
       "title": "全マップの生態系・環境構造図",
