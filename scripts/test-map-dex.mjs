@@ -29,10 +29,26 @@ maps.forEach(map=>{
   expect(profile.species.every((entry,index,list)=>index===0||list[index-1].count>=entry.count),'ecosystem species must be ordered by encounter weight');
   expect(profile.typeTrends.every(entry=>Number.isInteger(entry.rate)&&entry.rate>=0&&entry.rate<=100),'ecosystem type rates must be bounded percentages');
 });
+const grassland=maps.find(map=>map.id==='grassland');
+expect(grassland&&grassland.ecosystemDiagram,'grassland needs an ecosystem diagram');
+if(grassland?.ecosystemDiagram){
+  const diagram=grassland.ecosystemDiagram;
+  expect(typeof diagram.heading==='string'&&diagram.heading.includes('生態系ピラミッド'),'grassland diagram needs a clear heading');
+  expect(typeof diagram.note==='string'&&diagram.note.includes('戦闘での強さ順ではない'),'grassland diagram must distinguish ecology from battle strength');
+  expect(Array.isArray(diagram.layers)&&diagram.layers.length===4,'grassland diagram needs four trophic layers');
+  expect(Array.isArray(diagram.cycles)&&diagram.cycles.length===2,'grassland diagram needs circulation and visitor notes');
+  const diagramIds=[...diagram.layers,...diagram.cycles].flatMap(entry=>entry.ids||[]);
+  const encounterIds=[...new Set(grassland.enemyIds)];
+  expect(diagramIds.length===new Set(diagramIds).size,'grassland diagram must not assign a species twice');
+  expect(diagramIds.every(id=>encounterIds.includes(id)),'grassland diagram species must belong to grassland encounters');
+  expect(encounterIds.every(id=>diagramIds.includes(id)),'grassland diagram must explain every encountered species');
+  expect(diagram.layers.every(entry=>typeof entry.role==='string'&&typeof entry.detail==='string'&&entry.detail),'every trophic layer needs a role and explanation');
+}
 expect(dex.includes('function renderDexHub'),'dex hub renderer is missing');
 expect(dex.includes('function renderMapDex'),'map dex renderer is missing');
 expect(dex.includes('function showMapDexDetail'),'map detail renderer is missing');
 expect(dex.includes('map-dex-ecosystem')&&dex.includes('属性傾向')&&dex.includes('主な生息種'),'map ecosystem detail UI is missing');
+expect(dex.includes('function mapDexEcosystemDiagram')&&dex.includes('map-dex-pyramid'),'map ecosystem diagram UI is missing');
 expect(dex.includes('function openMapFromMonsterDex')&&dex.includes('function openUnitFromMapDex'),'dex cross-links are missing');
 expect(save.includes('mapDex:[]')&&save.includes('function registerMapDex'),'map discovery persistence is missing');
 expect(battle.includes("registerMapDex(map.id)"),'hunt requests must register discovered maps');

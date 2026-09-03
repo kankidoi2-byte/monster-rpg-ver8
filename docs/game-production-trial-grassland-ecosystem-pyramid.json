@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "trial_id": "grassland-ecosystem-pyramid-20260903",
+  "goal": "Complete the Map Dex ecosystem feature for Grassland with a substantial explanation and an illustrated ecosystem pyramid.",
+  "scope": "grassland_only",
+  "status": "in_progress",
+  "started_from_main": "22db4dc0d1b092293b9ff5f06135be41c56912f3",
+  "risk_class": "low",
+  "approval_required": false,
+  "compatibility": {
+    "save_key_changed": false,
+    "save_structure_changed": false,
+    "existing_ids_changed": false,
+    "game_rules_changed": false,
+    "publication_settings_changed": false
+  },
+  "acceptance_criteria": [
+    "Grassland has a substantial ecosystem explanation beyond its general map description.",
+    "The unlocked Grassland detail shows a four-layer ecosystem pyramid and explains that it is not a battle-strength ranking.",
+    "Every species in the Grassland encounter list appears exactly once in the pyramid, circulation notes, or visitor notes.",
+    "Monster entries in the diagram link to the existing encyclopedia detail.",
+    "Undiscovered maps continue to hide ecosystem information.",
+    "The layout remains usable at mobile width without changing save data or game rules."
+  ],
+  "phases": [
+    {"phase":44,"name":"goal_and_boundary","status":"completed","deliverable":"Fix Grassland-only scope, acceptance criteria, risk, tests, and stop condition."},
+    {"phase":45,"name":"system_and_content_implementation","status":"completed","deliverable":"Add the Grassland explanation, four trophic layers, circulation and visitor notes, linked species cards, responsive styling, notice, and dedicated checks."},
+    {"phase":46,"name":"integration_qa_and_safe_merge","status":"pending","deliverable":"Pass dedicated and full checks, open a focused PR, observe successful CI, verify current-main ancestry and no conflict, then merge."},
+    {"phase":47,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe successful main CI and Pages deployment, then verify the published assets and Grassland content."},
+    {"phase":48,"name":"completion_and_stop","status":"pending","deliverable":"Record final PR, commits, runs, publication evidence, restore v1 waiting state, and stop."}
+  ],
+  "branch": "codex/grassland-ecosystem-pyramid",
+  "pull_request": null,
+  "merge_commit": null,
+  "pages_run": null,
+  "stop_condition": "After Phase 48 is recorded and published, do not select or start another backlog item."
+}

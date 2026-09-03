@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-grassland-ecosystem-pyramid',
+    date: '2026-09-03',
+    category: 'update',
+    title: '草原の生態系を図で確認できます',
+    body: 'マップ図鑑の草原に、生態系の詳しい解説と4層の生態系ピラミッドを追加しました。草木から採食者、空の捕食者へつながる関係に加え、スライムによる循環やゴブリンの立ち位置も確認できます。'
+  }),
+  Object.freeze({
     id: '20260903-tutorial-skill-button-layout-fix',
     date: '2026-09-03',
     category: 'fix',
