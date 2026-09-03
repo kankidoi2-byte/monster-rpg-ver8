@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-all-map-ecosystem-diagrams',
+    date: '2026-09-03',
+    category: 'update',
+    title: '全マップの生態系を図で確認できます',
+    body: '草原に続き、残り18マップにも生態系や環境の構造図を追加しました。自然地域では命と魔力の流れを、闘技場・秘境・異界などでは、その場所を成り立たせる関係を確認できます。'
+  }),
+  Object.freeze({
     id: '20260903-grassland-ecosystem-pyramid',
     date: '2026-09-03',
     category: 'update',

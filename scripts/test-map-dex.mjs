@@ -28,6 +28,22 @@ maps.forEach(map=>{
   expect(profile.typeTrends.length>0,'every map needs at least one ecosystem type trend');
   expect(profile.species.every((entry,index,list)=>index===0||list[index-1].count>=entry.count),'ecosystem species must be ordered by encounter weight');
   expect(profile.typeTrends.every(entry=>Number.isInteger(entry.rate)&&entry.rate>=0&&entry.rate<=100),'ecosystem type rates must be bounded percentages');
+  const diagram=map.ecosystemDiagram;
+  expect(diagram&&typeof diagram==='object',`${map.id} needs an ecosystem or environment diagram`);
+  if(diagram){
+    expect(typeof diagram.heading==='string'&&diagram.heading.length>=8,`${map.id} diagram needs a clear heading`);
+    expect(typeof diagram.note==='string'&&diagram.note.length>=20,`${map.id} diagram needs an interpretation note`);
+    expect(Array.isArray(diagram.layers)&&diagram.layers.length>=2,`${map.id} diagram needs at least two structural layers`);
+    expect(!diagram.cycles||Array.isArray(diagram.cycles),`${map.id} diagram cycles must be an array when present`);
+    const entries=[...(diagram.layers||[]),...(diagram.cycles||[])];
+    expect(entries.every(entry=>typeof entry.role==='string'&&entry.role&&typeof entry.detail==='string'&&entry.detail),`${map.id} diagram entries need roles and explanations`);
+    expect(entries.every(entry=>(Array.isArray(entry.ids)&&entry.ids.length)||(Array.isArray(entry.labels)&&entry.labels.length)),`${map.id} diagram entries need species or environment labels`);
+    const diagramIds=entries.flatMap(entry=>entry.ids||[]);
+    const encounterIds=[...new Set(map.enemyIds)];
+    expect(diagramIds.length===new Set(diagramIds).size,`${map.id} diagram must not assign a species twice`);
+    expect(diagramIds.every(id=>encounterIds.includes(id)),`${map.id} diagram species must belong to its encounters`);
+    expect(encounterIds.every(id=>diagramIds.includes(id)),`${map.id} diagram must explain every encountered species`);
+  }
 });
 const grassland=maps.find(map=>map.id==='grassland');
 expect(grassland&&grassland.ecosystemDiagram,'grassland needs an ecosystem diagram');
@@ -37,11 +53,6 @@ if(grassland?.ecosystemDiagram){
   expect(typeof diagram.note==='string'&&diagram.note.includes('戦闘での強さ順ではない'),'grassland diagram must distinguish ecology from battle strength');
   expect(Array.isArray(diagram.layers)&&diagram.layers.length===4,'grassland diagram needs four trophic layers');
   expect(Array.isArray(diagram.cycles)&&diagram.cycles.length===2,'grassland diagram needs circulation and visitor notes');
-  const diagramIds=[...diagram.layers,...diagram.cycles].flatMap(entry=>entry.ids||[]);
-  const encounterIds=[...new Set(grassland.enemyIds)];
-  expect(diagramIds.length===new Set(diagramIds).size,'grassland diagram must not assign a species twice');
-  expect(diagramIds.every(id=>encounterIds.includes(id)),'grassland diagram species must belong to grassland encounters');
-  expect(encounterIds.every(id=>diagramIds.includes(id)),'grassland diagram must explain every encountered species');
   expect(diagram.layers.every(entry=>typeof entry.role==='string'&&typeof entry.detail==='string'&&entry.detail),'every trophic layer needs a role and explanation');
 }
 expect(dex.includes('function renderDexHub'),'dex hub renderer is missing');

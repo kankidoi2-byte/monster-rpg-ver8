@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "trial_id": "all-map-ecosystem-diagrams-20260903",
+  "goal": "Extend the completed Grassland ecosystem diagram treatment to every other Map Dex entry.",
+  "scope": "remaining_18_maps",
+  "status": "in_review",
+  "started_from_main": "9aaadb7db4120df60797ce2c643afa76e54fd264",
+  "risk_class": "low",
+  "approval_required": false,
+  "compatibility": {
+    "save_key_changed": false,
+    "save_structure_changed": false,
+    "existing_ids_changed": false,
+    "game_rules_changed": false,
+    "publication_settings_changed": false
+  },
+  "acceptance_criteria": [
+    "All 19 maps have an ecosystem or environment structure diagram, retaining the completed Grassland treatment.",
+    "Every unique encounter species appears exactly once in its map diagram and links to the existing encyclopedia detail.",
+    "Natural maps explain energy or magic flow and state that the diagram is not a battle-strength ranking.",
+    "Artificial, sacred, and otherworldly maps explicitly avoid presenting their structure as a natural food chain.",
+    "Undiscovered maps continue to hide ecosystem information and the existing responsive renderer remains unchanged.",
+    "No save data, existing ID meaning, battle rule, or publication setting changes."
+  ],
+  "phases": [
+    {"phase":49,"name":"goal_and_boundary","status":"completed","deliverable":"Fix the remaining-18-map scope, ecological interpretation rules, checks, and stop condition."},
+    {"phase":50,"name":"content_and_validation","status":"completed","deliverable":"Added map-specific diagrams, generalized checks, player notice, and cache busting; dedicated and full checks passed."},
+    {"phase":51,"name":"integration_qa_and_safe_merge","status":"in_progress","deliverable":"Pass dedicated and full checks, observe PR CI, confirm current-main ancestry and no conflict, then merge."},
+    {"phase":52,"name":"pages_and_published_verification","status":"pending","deliverable":"Observe main CI and Pages, then verify published HTML, data, renderer, and notice."},
+    {"phase":53,"name":"completion_and_stop","status":"pending","deliverable":"Record final evidence, restore the v1 waiting state, and select no further backlog item."}
+  ],
+  "branch": "codex/all-map-ecosystem-diagrams",
+  "pull_request": null,
+  "completion_branch": "codex/all-map-ecosystem-diagrams-completion",
+  "completion_pull_request": null,
+  "merge_commit": null,
+  "ci": {
+    "pull_request_run": null,
+    "pull_request_status": "pending",
+    "main_run": null,
+    "main_status": "pending"
+  },
+  "pages_run": null,
+  "pages_status": "pending",
+  "published_verification": [],
+  "completed_at": null,
+  "stop_condition": "After Phase 53 is recorded and published, do not select or start another backlog item."
+}

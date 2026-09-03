@@ -1,737 +1,672 @@
-// --- ç”»åƒãƒ‡ãƒ¼ã‚¿ã¯ã“ã“ã«æŒ¿å…¥ã•ã‚Œã‚‹ ---
-const IMG={
-  orca_abyss:'images/monsters/orca_abyss.webp',
-  orca_stream:'images/monsters/orca_stream.webp',
-  orcana:'images/monsters/orcana.webp',
-  lumina_sorcerer:'images/monsters/lumina_sorcerer.webp',
-  lumina_wizard:'images/monsters/lumina_wizard.webp',
-  lumina_apprentice:'images/monsters/lumina_apprentice.webp',
-  stella_sorcerer:'images/monsters/stella_sorcerer.webp',
-  stella_wizard:'images/monsters/stella_wizard.webp',
-  stella_apprentice:'images/monsters/stella_apprentice.webp',
-  gran_volmoog:'images/monsters/gran_volmoog.webp',
-  volmoog:'images/monsters/volmoog.webp',
-  proto_icegolem:'images/monsters/proto_icegolem.webp',
-  seralphia:'images/monsters/seralphia.webp',
-  rikasheef:'images/monsters/rikasheef.webp',
-  false_dragon_gamma:"images/monsters/false_dragon_gamma.webp",
-  false_dragon_beta:"images/monsters/false_dragon_beta.webp",
-  false_dragon_alfa:"images/monsters/false_dragon_alfa.webp",
-  voltax:"images/monsters/voltax.webp",
-  spaquinn:"images/monsters/spaquinn.webp",
-  goblin:"images/monsters/goblin.webp",
-  slime_gold:"images/monsters/slime_gold.webp",
-  slime:"images/monsters/slime.webp",
-  granbeat:"images/monsters/granbeat.webp",
-  thornbeat:"images/monsters/thornbeat.webp",
-  elnaWater:"images/monsters/elna_water.webp",
-  suiren:"images/monsters/suiren.webp",
-  elnaAdvanced:"images/monsters/elna_advanced.webp",
-  elnaMiddle:"images/monsters/elna_middle.webp",
-  elna:"images/monsters/elna_beginner.webp",
-  doomNemesion:"images/monsters/doom_nemesion.webp",
-  nemesion:"images/monsters/nemesion.webp",
-  nemesia:"images/monsters/nemesia.webp",
-  nemes:"images/monsters/nemes.webp",
-  basicChart:"images/monsters/basicChart.webp",
-  specialChart:"images/monsters/specialChart.webp",
-  icegolem:"images/monsters/icegolem.webp",
-  volteck:"images/monsters/volteck.webp",
-  nightmare:"images/monsters/nightmare.webp",
-  shenhairon:"images/monsters/shenhairon.webp",
-  tienhairon:"images/monsters/tienhairon.webp",
-  highaquaron:"images/monsters/highaquaron.webp",
-  grassbeat:"images/monsters/grassbeat.webp",
-  aquaron:"images/monsters/aquaron.webp",
-  freiwolf:"images/monsters/freiwolf.webp",
-  freigal:"images/monsters/freigal.webp",
-  goddess:"images/monsters/hikari.webp",
-  elysia_prologue:"images/monsters/elysia_prologue_v1.webp",
-  elysia_prayer:"images/monsters/elysia_prayer_v1.webp",
-  elysia_goddess:"images/monsters/elysia_goddess_v1.webp",
-  galdra:"images/monsters/galdra_v1.webp",
-  tsubaki:'images/monsters/tsubaki.webp',
-  elnaKaen:'images/monsters/elna_kaen.webp',
-  alchemion:'images/monsters/alchemion.webp',
-  kimeragna:'images/monsters/kimeragna.webp',
-  sylphin:'images/monsters/sylphin.webp',
-  zephyray:'images/monsters/zephyray.webp',
-  tempestray:'images/monsters/tempestray.webp',
-  ignaros:'images/monsters/ignaros.webp',
-  nocle:'images/monsters/nocle.webp',
-  noclaid:'images/monsters/noclaid.webp',
-  noxvelg:'images/monsters/noxvelg.webp',
-  luxseed:'images/monsters/luxseed.webp',
-  luxiard:'images/monsters/luxiard.webp',
-  lux_galdion:'images/monsters/lux_galdion.webp',
-  astralepis:'images/monsters/astralepis.webp',
-  kimeragna_apex:'images/monsters/kimeragna_apex.webp',
-  elixion:'images/monsters/elixion.webp'
-};
-const MAPIMG={
-  magic_academy:'images/maps/magic_academy.webp',
-  grassland:'images/maps/grassland.webp',
-  volcano:'images/maps/volcano.webp',
-  lake:'images/maps/lake.webp',
-  snow_mountain:'images/maps/snow_mountain.webp',
-  starsea:'images/maps/starsea.webp',
-  water_secret:'images/maps/water_secret.webp',
-  world_between:'images/maps/world_between.webp',
-  forest:"images/maps/forest.webp",
-  ruined_village:"images/maps/ruined_village.webp",
-  light_plain:"images/maps/light_plain.webp",
-  starry_plain:'images/maps/starry_plain.webp'
-,
-  highland_ruins:'images/maps/highland_ruins.webp',
-  arena:'images/maps/arena.webp',
-  seikai_irie:'images/maps/seikai_irie.webp',
-  kaiyu_kaiiki:'images/maps/kaiyu_kaiiki.webp',
-  deep_sea_end:'images/maps/deep_sea_end.webp',
-  kaen_village:'images/maps/kaen_village.webp',
-  golden_land:'images/maps/golden_land.webp'
-};
-
-/* ===== ãƒžãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ ===== */
-const MAPS = [
-  {id:'grassland', name:'è‰åŽŸ', image:MAPIMG.grassland, chapter:'åºç« ', region:'ä¸­å¤®å¹³åŽŸ', desc:'æ—…ã®å§‹ã¾ã‚Šã«åºƒãŒã‚‹ç©ã‚„ã‹ãªè‰åŽŸã€‚æ£®ãƒ»é›·ãƒ»ç„¡å±žæ€§ã®ç”Ÿãç‰©ãŒè¡Œãäº¤ã†ã€‚', ecosystem:'ä¸­å¤®å¹³åŽŸã§ã¯ã€è‰æœ¨ã¨å¤§åœ°ã«æº€ã¡ã‚‹é­”åŠ›ã‚’èµ·ç‚¹ã«ã€å°åž‹ç¨®ã€è‰é£Ÿç¨®ã€ç©ºã®æ•é£Ÿè€…ã¸ã¨å‘½ãŒã¤ãªãŒã£ã¦ã„ã‚‹ã€‚ã‚¹ãƒ©ã‚¤ãƒ ã¯æž¯è‰ã‚„æ®‹ç•™é­”åŠ›ã‚’å–ã‚Šè¾¼ã‚“ã§é¤Šåˆ†ã‚’åœŸã¸æˆ»ã—ã€é¢¨ã‚’æ³³ãã‚·ãƒ«ãƒ•ã‚£ãƒ³ç³»ã¯èŠ±ç²‰ã‚„ç¨®å­ã‚’é‹ã¶ã€‚é›·é›²ãŒè¿‘ã¥ãã¨ãƒœãƒ«ãƒ†ãƒƒã‚¯ç³»ã‚‚é›†ã¾ã‚Šã€é–‹ã‘ãŸç©ºã¨åœ°ä¸Šã‚’åˆ†ã‘åˆã†å¤šå±žæ€§ã®ç”Ÿæ…‹ç³»ãŒå½¢ã¥ãã‚‰ã‚Œã‚‹ã€‚',
-   ecosystemDiagram:{
-    heading:'è‰åŽŸã®ç”Ÿæ…‹ç³»ãƒ”ãƒ©ãƒŸãƒƒãƒ‰',
-    note:'çŸ¢å°ã¯ã€é£Ÿã¹ã‚‰ã‚Œã‚‹å´ã‹ã‚‰é£Ÿã¹ã‚‹å´ã¸æ¸¡ã‚‹ä¸»ãªã‚¨ãƒãƒ«ã‚®ãƒ¼ã®æµã‚Œã‚’ç¤ºã™ã€‚æˆ¦é—˜ã§ã®å¼·ã•é †ã§ã¯ãªã„ã€‚',
-    layers:[
-      {role:'ç¬¬4å±¤ãƒ»é ‚ç‚¹æ•é£Ÿè€…',ids:['voltax'],detail:'é›·é›²ä¸‹ã®ä¸Šç©ºã‚’ç¸„å¼µã‚Šã¨ã—ã€å°åž‹ç¨®ã‚„è‹¥ã„å€‹ä½“ã‚’ç‹™ã†ã€‚'},
-      {role:'ç¬¬3å±¤ãƒ»ç©ºã®æ•é£Ÿè€…',ids:['volteck','spaquinn'],detail:'è‰è™«ã‚„å°åž‹ç¨®ã‚’æ•ã‚‰ãˆã€è‰åŽŸã§å¢—ãˆã™ãŽã‚‹ç”Ÿç‰©ã‚’æŠ‘ãˆã‚‹ã€‚'},
-      {role:'ç¬¬2å±¤ãƒ»æŽ¡é£Ÿè€…',ids:['grassbeat','rikasheef','seralphia','sylphin','zephyray'],detail:'è‰ã‚„è‹¥è‘‰ã‚’é£Ÿã¹ã€èŠ±ç²‰ã‚„ç¨®å­ã‚’é‹ã‚“ã§è‰åŽŸã®æ¤ç”Ÿã‚’åºƒã’ã‚‹ã€‚'},
-      {role:'ç¬¬1å±¤ãƒ»ç”Ÿç”£åŸºç›¤',labels:['è‰ãƒ»é‡ŽèŠ±ãƒ»ä½Žæœ¨','é™½å…‰ã¨é›¨','å¤§åœ°ã®é­”åŠ›'],detail:'æ¤ç‰©ãŒå…‰ã€æ°´ã€åœŸå£Œã®é­”åŠ›ã‚’å–ã‚Šè¾¼ã¿ã€ç”Ÿæ…‹ç³»ã®å…¥å£ã‚’ã¤ãã‚‹ã€‚'}
-    ],
-    cycles:[
-      {role:'åˆ†è§£ãƒ»å¾ªç’°è€…',ids:['slime','slime_gold'],detail:'æž¯è‰ã‚„æ®‹ç•™é­”åŠ›ã‚’å–ã‚Šè¾¼ã¿ã€é¤Šåˆ†ã‚’åœŸã¸æˆ»ã™ã€‚'},
-      {role:'å¤–éƒ¨ã‹ã‚‰ã®æ¥è¨ªè€…',ids:['goblin'],detail:'ç¾¤ã‚Œã§è‰åŽŸã‚’æ¨ªæ–­ã—ã€æœ¨ã®å®Ÿã‚„ç´ æã‚’é›†ã‚ã‚‹éŠå‹•æ€§ã®é›‘é£Ÿè€…ã€‚'}
-    ]
-   },
-   enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray']},
-  {id:'volcano', name:'ç«å±±', image:MAPIMG.volcano, chapter:'åºç« ', region:'å—éƒ¨ç«å±±å¸¯', desc:'ç¼ç†±ã®æº¶å²©ã¨ç«å±±ç°ã«è¦†ã‚ã‚ŒãŸå±é™ºåœ°å¸¯ã€‚ç«ã«é©å¿œã—ãŸãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒå¤šã„ã€‚', ecosystem:'é«˜ç†±ã«è€ãˆã‚‹ç«å±žæ€§ç¨®ãŒä¸­å¿ƒã€‚ç«å±±ç°ã®å²©å ´ã«ã¯ã‚´ãƒ–ãƒªãƒ³ã‚‚å…¥ã‚Šè¾¼ã¿ã€ç‚Žã®ç²¾éœŠã‚„ç£ã¨ç”Ÿæ¯åŸŸã‚’åˆ†ã‘åˆã£ã¦ã„ã‚‹ã€‚',
-   enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin','ignaros']},
-  {id:'lake', name:'æ¹–', image:MAPIMG.lake, chapter:'åºç« ', region:'ä¸­å¤®æ°´åŸŸ', desc:'æ¾„ã‚“ã æ°´ã‚’ãŸãŸãˆã‚‹é™ã‹ãªæ¹–ã€‚æ°´è¾ºã‚’å¥½ã‚€ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒé›†ã¾ã‚‹ã€‚', ecosystem:'ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³ç³»ãªã©æ°´è¾ºã‚’å¥½ã‚€ç¨®ãŒä¸»å½¹ã€‚å†·æ°—ã‚’å¸¯ã³ãŸå€‹ä½“ã‚„é™¸ã‹ã‚‰è¨ªã‚Œã‚‹ç¨®ã‚‚è¦‹ã‚‰ã‚Œã€æ°´éš›ã«ç”Ÿç‰©ãŒé›†ã¾ã‚‹ã€‚',
-   enemyIds:['aquaron','highaquaron','suiren','goblin','proto_icegolem']},
-  {id:'seikai_irie', name:'è’¼æµ·ã®å…¥ã‚Šæ±Ÿ', image:MAPIMG.seikai_irie, chapter:'åºç« ', region:'è’¼æµ·åœ°æ–¹', desc:'é’ã„æµ·ã¨å²©ç¤ãŒå…¥ã‚Šçµ„ã‚€å…¥ã‚Šæ±Ÿã€‚æµ…ç€¬ã‹ã‚‰å¤–æ´‹æ€§ã®æ°´æ£²ç¨®ã¾ã§å§¿ã‚’è¦‹ã›ã‚‹ã€‚', ecosystem:'æµ…ç€¬ã«ã¯ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³ç³»ãŒå¤šãã€å²©ç¤ã®å¤–å´ã«ã¯ã‚ªãƒ«ã‚«ãƒ¼ãƒŠç³»ã‚„æµ·ç«œãŒç¾ã‚Œã‚‹ã€‚å²¸ã‹ã‚‰æ²–ã¸é€²ã‚€ã»ã©å¤§åž‹ã®æ°´æ£²ç¨®ãŒå¢—ãˆã‚‹ã€‚',
-   enemyIds:['aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','aquaron','highaquaron','highaquaron','highaquaron','highaquaron','orcana','orcana','orcana','orcana','shenhairon','tienhairon','orca_stream']},
-  {id:'kaiyu_kaiiki', name:'å›žéŠæµ·åŸŸ', image:MAPIMG.kaiyu_kaiiki, chapter:'åºç« ', region:'è’¼æµ·åœ°æ–¹', desc:'å·¨å¤§ãªæµ·æµãŒå·¡ã‚‹å¤–æ´‹ã€‚ç¾¤ã‚Œã¨ã¨ã‚‚ã«å¼·åŠ›ãªæ°´æ£²ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒå›žéŠã™ã‚‹ã€‚', ecosystem:'æµ·æµã«æ²¿ã£ã¦ãƒã‚¤ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³ã¨ã‚ªãƒ«ã‚«ãƒ¼ãƒŠç³»ã®ç¾¤ã‚ŒãŒå›žéŠã™ã‚‹ã€‚æµ·ç«œã‚„å¤§åž‹ç¨®ã‚‚æ··ã–ã‚‹ã€æ°´å±žæ€§ã«å¤§ããåã£ãŸå¤–æ´‹ç”Ÿæ…‹ç³»ã€‚',
-   enemyIds:['highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','highaquaron','orcana','orcana','orcana','orcana','orcana','orcana','orcana','orcana','orcana','orcana','shenhairon','shenhairon','shenhairon','shenhairon','tienhairon','tienhairon','tienhairon','tienhairon','orca_stream','orca_stream','orca_stream','orca_abyss']},
-  {id:'deep_sea_end', name:'æ·±ãæµ·ã®æžœã¦', image:MAPIMG.deep_sea_end, chapter:'åºç« ', region:'è’¼æµ·åœ°æ–¹', desc:'å…‰ã®å±Šã‹ãªã„æ·±æµ·ã®æœ€å¥¥ã€‚æ·±æ·µã«é©å¿œã—ãŸå¼·å¤§ãªå­˜åœ¨ãŒæ½œã‚€ã€‚', ecosystem:'æš—ã„æ·±æµ·ã«ã¯ã‚ªãƒ«ã‚«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã¨æµ·ç«œãŒå®šç€ã—ã€æœ€å¥¥ã§ã¯ã‚ªãƒ«ã‚«ã‚¢ãƒ“ã‚¹ãŒå§¿ã‚’è¦‹ã›ã‚‹ã€‚å°‘æ•°ã®å¼·åŠ›ãªæ°´æ£²ç¨®ã¸é›†ä¸­ã—ãŸç”Ÿæ…‹ç³»ã€‚',
-   enemyIds:['orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','shenhairon','shenhairon','shenhairon','shenhairon','tienhairon','tienhairon','tienhairon','tienhairon','orca_abyss','orca_abyss','orca_abyss']},
-  {id:'snow_mountain', name:'é›ªå±±', image:MAPIMG.snow_mountain, chapter:'åºç« ', region:'åŒ—éƒ¨å±±å²³', desc:'ä¸€å¹´ã‚’é€šã˜ã¦é›ªã¨æ°·ã«é–‰ã–ã•ã‚ŒãŸå±±å²³ã€‚å¯’å†·åœ°ã«å¼·ã„ç¨®ãŒç”Ÿæ¯ã™ã‚‹ã€‚', ecosystem:'æ°·ã«é©å¿œã—ãŸã‚´ãƒ¼ãƒ¬ãƒ é¡žã‚’ä¸­å¿ƒã«ã€æ°´è¾ºã®ç¨®ã‚„ä¸€èˆ¬ç¨®ã‚‚å¯’å†·åœ°ã¸å…¥ã‚Šè¾¼ã‚€ã€‚ç¨®æ•°ã¯é™ã‚‰ã‚Œã‚‹ãŒã€è€å¯’æ€§ã®é«˜ã„ç”Ÿç‰©ãŒæ®‹ã‚‹ã€‚',
-   enemyIds:['icegolem','proto_icegolem','slime','aquaron','goblin']},
-  {id:'forest', name:'æ£®æž—', image:MAPIMG.forest, chapter:'åºç« ', region:'ç·‘æ¨¹åœ°æ–¹', desc:'æ·±ã„ç·‘ã¨å¤æœ¨ãŒåºƒãŒã‚‹æ£®æž—ã€‚æ£®ã®åŠ›ã‚’å®¿ã™å¤šæ§˜ãªç”Ÿå‘½ãŒæš®ã‚‰ã™ã€‚', ecosystem:'ã‚°ãƒ©ã‚¹ãƒ“ãƒ¼ãƒˆç³»ãŒå€‹ä½“æ•°ã®ä¸­å¿ƒã‚’å ã‚ã€è‰æœ¨ã«ç´›ã‚Œã‚‹ç£ã‚„å°åž‹ç¨®ãŒå…±å­˜ã™ã‚‹ã€‚åŒã˜ç³»çµ±ã®æˆé•·æ®µéšŽã‚’ä¸€ã¤ã®æ£®ã§ç¢ºèªã§ãã‚‹ã€‚',
-   enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare']},
-  {id:'light_plain', name:'å…‰ã®å¹³åŽŸ', image:MAPIMG.light_plain, chapter:'åºç« ', region:'å…‰æ˜Žåœ°æ–¹', desc:'æŸ”ã‚‰ã‹ãªå…‰ãŒçµ¶ãˆãšé™ã‚Šæ³¨ãå¹³åŽŸã€‚å…‰å±žæ€§ã®ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒåŠ›ã‚’å¾—ã‚‹ã€‚', ecosystem:'ãƒ’ã‚«ãƒªã®ç¾¤ã‚Œã¨å…‰ç«œç³»ãŒã€å…‰ã®å¼·ã„ç’°å¢ƒã‚’åˆ©ç”¨ã™ã‚‹ã€‚æ°´è¾ºç”±æ¥ã®ç¨®ã‚„ä¸€èˆ¬ç¨®ã‚‚æš®ã‚‰ã™ãŒã€å…‰å±žæ€§ç¨®ãŒç”Ÿæ…‹ç³»ã®æ ¸ã¨ãªã‚‹ã€‚',
-   enemyIds:['hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','slime','slime','slime','goblin','goblin','suiren','aquaron','luxseed','luxseed','luxseed','luxiard']},
-  {id:'starry_plain', name:'æ˜Ÿç©ºã®å¹³åŽŸ', image:MAPIMG.starry_plain, chapter:'åºç« ', region:'æ˜Ÿè¦‹åœ°æ–¹', desc:'æ˜¼å¤œã‚’å•ã‚ãšæ˜ŸãŒçž¬ãä¸æ€è­°ãªå¹³åŽŸã€‚æ˜Ÿã®åŠ›ã‚’å®¿ã™ç¨®ãŒç¾ã‚Œã‚‹ã€‚', ecosystem:'ãƒãƒ¡ã‚¹ç³»ãŒæ˜Ÿã®åŠ›ã«å¿œã˜ã¦åºƒãåˆ†å¸ƒã™ã‚‹ã€‚é›·ã‚„é—‡ãªã©å¤œç©ºã¨ç›¸æ€§ã®ã‚ˆã„ç¨®ã‚‚æ··ã–ã‚Šã€æ˜Ÿå±žæ€§ã‚’ä¸­å¿ƒã«å¤šæ§˜æ€§ãŒä¿ãŸã‚Œã‚‹ã€‚',
-   enemyIds:['nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemes','nemesia','nemesia','nemesia','nemesia','nemesion','slime','slime','goblin','goblin','volteck','spaquinn','nightmare','astralepis']},
-  {id:'highland_ruins', name:'é«˜åŽŸéºè·¡', image:MAPIMG.highland_ruins, chapter:'åºç« ', region:'é›·é³´é«˜åŽŸ', desc:'é¢¨é›¨ã«ã•ã‚‰ã•ã‚ŒãŸå¤ä»£éºè·¡ã€‚é«˜æ‰€ã«é›†ã¾ã‚‹é›·ã¨é¢¨ã®åŠ›ãŒæ®‹éŸ¿ã™ã‚‹ã€‚', ecosystem:'ãƒ´ã‚©ãƒ«ãƒ†ãƒƒã‚¯ç³»ã‚„ã‚¹ãƒ‘ã‚¯ã‚¤ãƒ³ãŒé«˜æ‰€ã®é›·ã‚’åˆ©ç”¨ã—ã€ç¿¼ã‚’æŒã¤é¢¨å±žæ€§ç¨®ã‚‚éºè·¡å‘¨è¾ºã‚’å›žéŠã™ã‚‹ã€‚é›·ã¨é¢¨ãŒç”Ÿç‰©ç›¸ã‚’äºŒåˆ†ã™ã‚‹ã€‚',
-   enemyIds:['volteck','volteck','volteck','volteck','volteck','volteck','volteck','volteck','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','volmoog','volmoog','volmoog','voltax','voltax','slime','goblin','sylphin','sylphin','zephyray','tempestray']},
-  {id:'arena', name:'é—˜æŠ€å ´', image:MAPIMG.arena, chapter:'åºç« ', region:'çŽ‹éƒ½åœ°æ–¹', desc:'æˆ¦å£«ãŸã¡ãŒè…•ã‚’ç«¶ã†çŸ³é€ ã‚Šã®é—˜æŠ€å ´ã€‚é›ãˆä¸Šã’ã‚‰ã‚ŒãŸå‰£å£«ã¨å¯¾å³™ã™ã‚‹ã€‚', ecosystem:'é‡Žç”Ÿã®ç”Ÿæ…‹ç³»ã§ã¯ãªãã€ä¿®ç·´æ®µéšŽã®ç•°ãªã‚‹ã‚¨ãƒ«ãƒŠãŒå¯¾æˆ¦è€…ã¨ã—ã¦ç¾ã‚Œã‚‹äººå·¥çš„ãªæˆ¦é—˜ç’°å¢ƒã€‚å‡ºç¾å‚¾å‘ã¯å‰£å£«ã®æˆé•·æ®µéšŽã‚’åæ˜ ã™ã‚‹ã€‚',
-   enemyIds:['elna_beginner','elna_beginner','elna_beginner','elna_beginner','elna_beginner','elna_middle','elna_middle','elna_middle','elna_advanced']},
-  {id:'magic_academy', name:'é­”å°Žå­¦åœ’', image:MAPIMG.magic_academy, chapter:'åºç« ', region:'çŽ‹éƒ½åœ°æ–¹', desc:'é­”æ³•ã‚’å­¦ã¶è€…ãŸã¡ãŒé›†ã†å­¦åœ’ã€‚æ˜Ÿã¨ç„¡å±žæ€§ã®è¡“å¼ãŒç ”ç©¶ã•ã‚Œã¦ã„ã‚‹ã€‚', ecosystem:'ã‚¹ãƒ†ãƒ©ã¨ãƒ«ãƒŸãƒŠã®å„æˆé•·æ®µéšŽãŒã€è¡“å¼ã®ç ”ç©¶ã‚„ä¿®ç·´ã«å¿œã˜ã¦ç¾ã‚Œã‚‹ã€‚æ˜Ÿå±žæ€§ã‚’å…±é€šåŸºç›¤ã«ã€ç•°ãªã‚‹è¡“è€…ã®ç³»çµ±ãŒä¸¦å­˜ã™ã‚‹ã€‚',
-   enemyIds:['stella_apprentice','stella_apprentice','stella_apprentice','stella_apprentice','stella_wizard','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_apprentice','lumina_apprentice','lumina_wizard','lumina_wizard','lumina_sorcerer']},
-  {id:'ruined_village', name:'å»ƒæ‘è·¡', image:MAPIMG.ruined_village, chapter:'åºç« ', region:'å½±æ£®åœ°æ–¹', desc:'äººã®æ°—é…ãŒçµ¶ãˆãŸæ‘ã®è·¡ã€‚å¤œã«ãªã‚‹ã¨é—‡ã®ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒå¾˜å¾Šã™ã‚‹ã€‚', ecosystem:'ãƒŠã‚¤ãƒˆãƒ¡ã‚¢ã¨é—‡ç«œç³»ãŒæ”¾æ£„ã•ã‚ŒãŸå»ºç‰©ã‚’æ´»å‹•åŸŸã¨ã—ã€ä¸€èˆ¬ç¨®ã‚‚å»ƒå¢Ÿã¸å…¥ã‚Šè¾¼ã‚€ã€‚æš—æ‰€ã«é©å¿œã—ãŸé—‡å±žæ€§ç¨®ãŒå„ªä½ã€‚',
-   enemyIds:['nightmare','nightmare','nightmare','nightmare','goblin','slime','nocle','nocle','nocle','noclaid','noxvelg']},
-  {id:'starsea', name:'é¥ã‹ãªã‚‹æ˜Ÿã®æµ·', image:MAPIMG.starsea, chapter:'åºç« ', region:'æ˜Ÿç•Œ', desc:'åœ°ä¸Šã‹ã‚‰éš”çµ¶ã•ã‚ŒãŸæ˜Ÿã®æµ·ã€‚æ»…äº¡ã®åŠ›ã‚’å¸¯ã³ãŸå­˜åœ¨ã¸è‡³ã‚‹ç‰¹ç•°é ˜åŸŸã€‚', ecosystem:'ãƒãƒ¡ã‚·ã‚ªãƒ³ã¨ãƒ‰ã‚¥ãƒ¼ãƒ ãƒãƒ¡ã‚·ã‚ªãƒ³ã ã‘ãŒç¢ºèªã•ã‚Œã‚‹é–‰ã˜ãŸé ˜åŸŸã€‚ç¨®æ•°ã¯æ¥µç«¯ã«å°‘ãªãã€æ˜Ÿã®åŠ›ã‚’å¸¯ã³ãŸå¼·å¤§ãªå€‹ä½“ã¸é›†ä¸­ã™ã‚‹ã€‚',
-   enemyIds:['nemesion','doom_nemesion'], bossOnly:true, appearRate:0.10},
-  {id:'water_secret', name:'æµæ°´ã®ç§˜å¢ƒ', image:MAPIMG.water_secret, chapter:'åºç« ', region:'è’¼æµ·åœ°æ–¹', desc:'æ¸…æµã¨æ°´é¡ã«å®ˆã‚‰ã‚ŒãŸç§˜å¢ƒã€‚é¸ã°ã‚ŒãŸæ°´ã®ä½¿ã„æ‰‹ã ã‘ãŒå§¿ã‚’è¦‹ã›ã‚‹ã€‚', ecosystem:'æ°´ã®ä½¿ã„æ‰‹ã‚¨ãƒ«ãƒŠã¨ã‚¹ã‚¤ãƒ¬ãƒ³ãŒç¾ã‚Œã‚‹é™å®šçš„ãªç’°å¢ƒã€‚ä¸€èˆ¬çš„ãªæ°´æ£²ç¨®ã®ç¾¤ã‚Œã§ã¯ãªãã€æ°´ã®åŠ›ã«é¸ã°ã‚ŒãŸå­˜åœ¨ã ã‘ãŒç¢ºèªã•ã‚Œã‚‹ã€‚',
-   enemyIds:['elna_water','suiren'], rareOnly:true, appearRate:0.12},
-  {id:'world_between', name:'ä¸–ç•Œã®ç‹­é–“', image:MAPIMG.world_between, chapter:'åºç« ', region:'å¢ƒç•Œé ˜åŸŸ', desc:'ä¸–ç•Œã¨ä¸–ç•Œã®å¢ƒç›®ã«ç”Ÿã˜ãŸè£‚ã‘ç›®ã€‚æ³•å‰‡ã‹ã‚‰å¤–ã‚ŒãŸå½ç«œãŒå‡ºç¾ã™ã‚‹ã€‚', ecosystem:'ä¸‰ä½“ã®å½ç«œã ã‘ãŒå‡ºç¾ã—ã€é€šå¸¸ã®åœ°åŸŸç”Ÿæ…‹ç³»ã‹ã‚‰éš”çµ¶ã•ã‚Œã¦ã„ã‚‹ã€‚ç„¡ã¨å…‰ã®æ€§è³ªã‚’å‚™ãˆãŸæ©Ÿæ¢°ç«œã§æ§‹æˆã•ã‚Œã‚‹ç‰¹ç•°ãªç”Ÿç‰©ç›¸ã€‚',
-   enemyIds:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], bossOnly:true, appearRate:0.08},
-  {id:'kaen_village', name:'è¯ç‚Žã®é‡Œ', image:MAPIMG.kaen_village, chapter:'åºç« ', region:'å—éƒ¨ç«å±±å¸¯', desc:'ç«ã®æµã¿ã¨ã¨ã‚‚ã«æš®ã‚‰ã™é‡Œã€‚ç‚Žã‚’æ“ã‚‹æˆ¦å£«ã¨ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãŒé›†ã†ã€‚', ecosystem:'ç‚Žã®ç²¾éœŠãƒ„ãƒã‚­ãŒé‡Œã®å‘¨è¾ºã«å¤šãã€è¯ç‚Žã®ã‚¨ãƒ«ãƒŠã‚‚ç¾ã‚Œã‚‹ã€‚ç«ã®åŠ›ã¨å…±å­˜ã™ã‚‹è€…ã ã‘ã§ã¾ã¨ã¾ã£ãŸã€ç«å±žæ€§ä¸­å¿ƒã®ç’°å¢ƒã€‚',
-   enemyIds:['tsubaki','tsubaki','tsubaki','elna_kaen']},
-  {id:'golden_land', name:'é»„é‡‘éƒ·', image:MAPIMG.golden_land, chapter:'åºç« ', region:'å¹»ã®é ˜åŸŸ', desc:'é»„é‡‘ã®è¼ãã«æº€ã¡ãŸå¸Œå°‘é ˜åŸŸã€‚èŽ«å¤§ãªã‚³ã‚¤ãƒ³ã‚’ã‚‚ãŸã‚‰ã™å­˜åœ¨ãŒæ£²ã‚€ã€‚', ecosystem:'ç¢ºèªã•ã‚Œã‚‹ã®ã¯ã‚¹ãƒ©ã‚¤ãƒ ã‚´ãƒ¼ãƒ«ãƒ‰ã®ã¿ã€‚å¤šæ§˜æ€§ã‚ˆã‚Šã‚‚å¸Œå°‘å€‹ä½“ã®é›†ä¸­ãŒç‰¹å¾´ã§ã€é»„é‡‘éƒ·ãã®ã‚‚ã®ãŒé™å®šçš„ãªç”Ÿæ¯æ¡ä»¶ã¨ãªã‚‹ã€‚',
-   enemyIds:['slime_gold'], rareOnly:true, goldenLand:true, expeditionExcluded:true}
-
-];
-
-/* ===== å±žæ€§å ===== */
-const TN = {
-  fire:'ç«', water:'æ°´', thunder:'é›·', wind:'é¢¨', grass:'æ£®',
-  light:'å…‰', dark:'é—‡', star:'æ˜Ÿ', dragon:'ç«œ', normal:'ç„¡'
-};
-
-const TYPE_ICONS={fire:'ðŸ”¥',water:'ðŸ’§',thunder:'âš¡',wind:'ðŸŒªï¸',grass:'ðŸŒ³',light:'âœ¨',dark:'ðŸŒ‘',star:'â­',dragon:'ðŸ‰',normal:'âšª'};
-const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron']);
-const ADV = {
-  fire:    {grass:1.5, water:.7},
-  water:   {fire:1.5, thunder:.7},
-  thunder: {water:1.5, wind:.7},
-  wind:    {thunder:1.5, grass:.7},
-  grass:   {wind:1.5, fire:.7},
-  light:   {dark:1.5, star:.7},
-  dark:    {star:1.5, light:.7},
-  star:    {light:1.5, dark:.7},
-  dragon:  {dragon:1.2}
-};
-const BATTLE_STATUS_EFFECTS = Object.freeze({
-  poison:Object.freeze({duration:3, maxHpDamageRate:.10})
-});
-
-/* ===== ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ãƒ‡ãƒ¼ã‚¿ ===== */
-const M = [
-  {id:'freigal',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'freigal',no:1,name:'ãƒ•ãƒ¬ã‚¤ã‚¬ãƒ«',rarity:'â˜…',types:['fire'],huntLevels:{normal:8},
-   hp:120,spd:70,catchRate:.35,evolution:'freiwolf',evolutionLevel:2,
-   desc:'ç‚Žã‚’ã¾ã¨ã†å­ç‹¼ã€‚',
-   moves:[["ç«ç‚Žç‰™",28,"fire",null,null,null,null,null,"skill_freigal_01"],["ãƒ•ãƒ¬ã‚¤ãƒ ã‚¯ãƒ­ãƒ¼",24,"fire",null,null,null,null,null,"skill_freigal_02"],["çˆ†ç‚Žãƒãƒ£ãƒ¼ã‚¸",42,"fire","recoil",null,null,null,null,"skill_freigal_03"],["ãƒ•ãƒ¬ã‚¢ãƒãƒ£ãƒ¼ã‚¸",35,"fire","flare_charge",null,2,"ç‚Žã‚’ã¾ã¨ã£ã¦çªæ’ƒã—ã€æ¬¡ã®æ”»æ’ƒã®å¨åŠ›ã‚’é«˜ã‚ã‚‹ã€‚",null,"skill_freigal_04"]]},
-  {id:'freiwolf',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'freiwolf',no:2,name:'ãƒ•ãƒ¬ã‚¤ã‚¦ãƒ«ãƒ•',rarity:'â˜…â˜…',types:['fire'],huntLevels:{normal:20,hard:46},
-   evolutionOnly:true,hp:155,spd:82,catchRate:.18,
-   desc:'ãƒ•ãƒ¬ã‚¤ã‚¬ãƒ«ãŒé€²åŒ–ã—ãŸå§¿ã€‚',
-   moves:[["ç‚Žç‹¼ç‰™",36,"fire",null,null,null,null,null,"skill_freiwolf_01"],["ãƒ•ãƒ¬ã‚¢ãƒ©ãƒƒã‚·ãƒ¥",45,"fire","recoil",null,null,null,null,"skill_freiwolf_02"],["çŒ›ç«ã®å’†å“®",0,"fire","buff",null,null,null,null,"skill_freiwolf_03"]]},
-  {id:'aquaron',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'aquaron',no:3,name:'ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³',rarity:'â˜…',types:['water','dragon'],huntLevels:{normal:7},
-   hp:130,spd:55,catchRate:.35,evolution:'highaquaron',evolutionLevel:2,
-   desc:'æ°´è¾ºã«ã™ã‚€å°ã•ãªé¾ã€‚',
-   moves:[["æ°´æµå¼¾",26,"water",null,null,null,null,null,"skill_aquaron_01"],["ã—ã£ã½æ‰“ã¡",20,"normal",null,null,null,null,null,"skill_aquaron_02"],["å¤§æ³¢å¬å–š",38,"water",null,null,null,null,null,"skill_aquaron_03"],["ã‚¢ã‚¯ã‚¢ã‚·ãƒ¼ãƒ«ãƒ‰",0,"water","aqua_shield",null,2,"æ°´ã®ç›¾ã‚’å±•é–‹ã—ã€æ¬¡ã«å—ã‘ã‚‹æ”»æ’ƒãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’åŠæ¸›ã™ã‚‹ã€‚",null,"skill_aquaron_04"]]},
-  {id:'highaquaron',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'highaquaron',no:4,name:'ãƒã‚¤ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³',rarity:'â˜…â˜…',types:['water','dragon'],huntLevels:{normal:20,hard:48},
-   evolutionOnly:true,hp:165,spd:68,catchRate:.16,
-   evolutions:[{level:3,to:'shenhairon'},{level:3,to:'tienhairon'}],
-   desc:'ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³ãŒé€²åŒ–ã—ãŸå§¿ã€‚æ°´æµã¨ç«œã®åŠ›ã‚’ã‚ˆã‚Šå¼·ãæ“ã‚‹ã€‚',
-   moves:[["æ°´ç«œå¼¾",36,"water",null,null,null,null,null,"skill_highaquaron_01"],["ç«œã®å°¾æ’ƒ",32,"dragon",null,null,null,null,null,"skill_highaquaron_02"],["ãƒã‚¤ãƒ‰ãƒ­ã‚¹ãƒ‘ã‚¤ãƒ©ãƒ«",52,"water",null,null,null,null,null,"skill_highaquaron_03"]]},
-  {id:'shenhairon',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'shenhairon',no:5,name:'ã‚·ã‚§ãƒ³ãƒã‚¤ãƒ­ãƒ³',rarity:'â˜…â˜…â˜…',types:['water','dragon'],huntLevels:{normal:44,hard:74},
-   evolutionOnly:true,hp:210,spd:58,catchRate:.08,
-   desc:'ãƒã‚¤ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³ãŒç¥žæµ·ã®åŠ›ã‚’å¾—ã¦é€²åŒ–ã—ãŸå§¿ã€‚æ°´ã®çŽ‹ã®ã‚ˆã†ãªå¨åŽ³ã‚’æŒã¤ã€‚',
-   moves:[["ç¥žæµ·ã®çˆª",46,"water",null,null,null,null,null,"skill_shenhairon_01"],["è’¼ç«œã®å’†å“®",42,"dragon","buff",null,null,null,null,"skill_shenhairon_02"],["æµ·çŽ‹ç€‘æµ",68,"water",null,null,null,null,null,"skill_shenhairon_03"]]},
-  {id:'tienhairon',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'tienhairon',no:6,name:'ãƒ†ã‚£ã‚¨ãƒ³ãƒã‚¤ãƒ­ãƒ³',rarity:'â˜…â˜…â˜…',types:['water','dragon'],huntLevels:{normal:44,hard:74},
-   evolutionOnly:true,hp:200,spd:76,catchRate:.08,
-   desc:'ãƒã‚¤ã‚¢ã‚¯ã‚¢ãƒ­ãƒ³ãŒå¤©æµ·ã®åŠ›ã‚’å¾—ã¦é€²åŒ–ã—ãŸå§¿ã€‚å„ªé›…ã•ã¨å¼·å¤§ãªæ°´æµã‚’æŒã¤ã€‚',
-   moves:[["å¤©æµ·ã®èˆž",0,"water","heal",null,null,null,null,"skill_tienhairon_01"],["æœˆè¯æ°´åˆƒ",48,"water",null,null,null,null,null,"skill_tienhairon_02"],["è’¼å¤©é¾æ³¢",66,"dragon",null,null,null,null,null,"skill_tienhairon_03"]]},
-  {id:'grassbeat',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'grassbeat',no:7,name:'ã‚°ãƒ©ã‚¹ãƒ“ãƒ¼ãƒˆ',rarity:'â˜…',types:['grass'],huntLevels:{normal:6},
-   hp:110,spd:62,catchRate:.45,evolution:'thornbeat',evolutionLevel:2,
-   desc:'è‰ã‚€ã‚‰ã®å°åž‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["ãƒªãƒ¼ãƒ•ã‚«ãƒƒã‚¿ãƒ¼",27,"grass",null,null,null,null,null,"skill_grassbeat_01"],["å¸åŽ",18,"grass","drain",null,null,null,null,"skill_grassbeat_02"],["æ£®ã®ä¸€æ’ƒ",40,"grass",null,null,null,null,null,"skill_grassbeat_03"],["ãƒã‚¤ã‚ºãƒ³ãƒ‹ãƒ¼ãƒ‰ãƒ«",18,"grass","poison",0.6,1,"æ¯’ã‚’å¸¯ã³ãŸé‡ã‚’æ”¾ã¡ã€ç›¸æ‰‹ã‚’æ¯’çŠ¶æ…‹ã«ã™ã‚‹ã€‚",null,"skill_grassbeat_04"],["ã‚¹ãƒªãƒ¼ãƒ—ãƒ‘ã‚¦ãƒ€ãƒ¼",0,"grass","sleep",0.7,2,"çœ ã‚Šã‚’èª˜ã†ç²‰ã‚’ã¾ãã€ç›¸æ‰‹ã‚’æ·±ã„çœ ã‚Šã«è½ã¨ã™ã€‚",null,"skill_grassbeat_05"],["ãƒˆã‚­ã‚·ãƒƒã‚¯ã‚¬ãƒ¼ãƒ‡ãƒ³",40,"grass","poison",0.7,4,"çŒ›æ¯’ã®æ¤ç‰©åœ’ã‚’ç”Ÿã¿å‡ºã—ã€ç›¸æ‰‹ã‚’å¼·ã„æ¯’ã§åŒ…ã¿è¾¼ã‚€ã€‚",null,"skill_grassbeat_06"]]},
-  {id:'thornbeat',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'thornbeat',no:8,name:'ã‚½ãƒ¼ãƒ³ãƒ“ãƒ¼ãƒˆ',rarity:'â˜…â˜…',types:['grass'],huntLevels:{normal:19,hard:47},
-   evolutionOnly:true,evolution:'granbeat',evolutionLevel:3,hp:155,spd:48,catchRate:.18,
-   desc:'ã‚°ãƒ©ã‚¹ãƒ“ãƒ¼ãƒˆãŒé€²åŒ–ã—ãŸå§¿ã€‚é‹­ã„æ£˜ã¨ç¡¬ã„ç”²æ®»ã§æ£®ã‚’å®ˆã‚‹å®ˆè­·è™«ã€‚',
-   moves:[["ã‚½ãƒ¼ãƒ³ãƒ›ãƒ¼ãƒ³",36,"grass",null,null,null,null,null,"skill_thornbeat_01"],["æ£®ã®ç”²æ®»",0,"grass","guard",null,null,null,null,"skill_thornbeat_02"],["ã‚¹ãƒ‘ã‚¤ã‚¯ãƒ©ãƒƒã‚·ãƒ¥",54,"grass",null,null,null,null,null,"skill_thornbeat_03"]]},
-  {id:'granbeat',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'granbeat',no:9,name:'ã‚°ãƒ©ãƒ³ãƒ“ãƒ¼ãƒˆ',rarity:'â˜…â˜…â˜…',types:['grass'],huntLevels:{normal:42,hard:72},
-   evolutionOnly:true,hp:215,spd:35,catchRate:.08,
-   desc:'ã‚½ãƒ¼ãƒ³ãƒ“ãƒ¼ãƒˆãŒé€²åŒ–ã—ãŸæ£®ã®é‡è£…å®ˆè­·è€…ã€‚',
-   moves:[["ã‚°ãƒ©ãƒ³ãƒ›ãƒ¼ãƒ³",50,"grass",null,null,null,null,null,"skill_granbeat_01"],["æ£®çŽ‹ã®è£…ç”²",0,"grass","guard",null,null,null,null,"skill_granbeat_02"],["ã‚¬ã‚¤ã‚¢ã‚¹ãƒ©ãƒƒã‚·ãƒ¥",72,"grass",null,null,null,null,null,"skill_granbeat_03"]]},
-  {id:'rikasheef',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'rikasheef',no:32,name:'ãƒªã‚«ã‚·ãƒ¼ãƒ•',rarity:'â˜…',types:['grass'],huntLevels:{normal:10},
-   hp:95,spd:78,catchRate:.38,evolution:'seralphia',evolutionLevel:3,
-   desc:'æ£®ã®å…‰ã‚’å®¿ã—ãŸå°é¹¿ã®ã‚ˆã†ãªãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚è‹¥è‘‰ã®è§’ã‹ã‚‰ç”Ÿå‘½åŠ›ã‚’æ”¾ã¤ã€‚',
-   moves:[["è‹¥è‘‰ã®çªé€²",24,"grass",null,null,null,null,null,"skill_rikasheef_01"],["ç™’ã—ã®èŠ½å¹ã",0,"grass","heal",null,null,null,null,"skill_rikasheef_02"],["ãƒªãƒ¼ãƒ•ã‚¹ãƒ‘ãƒ¼ã‚¯",36,"grass",null,null,null,null,null,"skill_rikasheef_03"]]},
-  {id:'seralphia',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'seralphia',no:33,name:'ã‚»ãƒ©ãƒ«ãƒ•ã‚£ã‚¢',rarity:'â˜…â˜…â˜…',types:['grass'],huntLevels:{normal:46,hard:76},
-   hp:225,spd:92,catchRate:.10,
-   desc:'ãƒªã‚«ã‚·ãƒ¼ãƒ•ãŒé€²åŒ–ã—ãŸç¥žç§˜ã®æ£®é¹¿ã€‚èŠ±å’²ãè§’ã¨ç¿ ã®ç¿¼ã§æ£®ã«æ¸…æµ„ãªé¢¨ã‚’å·¡ã‚‰ã›ã‚‹ã€‚',
-   moves:[["ç¿ ç¿¼ã®çªé¢¨",42,"grass",null,null,null,null,null,"skill_seralphia_01"],["æ£®ç²¾ã®ç¥ç¦",0,"grass","heal",null,null,null,null,"skill_seralphia_02"],["ã‚»ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒªãƒ¼ãƒ•",68,"grass",null,null,null,null,null,"skill_seralphia_03"]]},
-  {id:'nightmare',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nightmare',no:10,name:'ãƒŠã‚¤ãƒˆãƒ¡ã‚¢',rarity:'â˜…â˜…',types:['dark'],huntLevels:{normal:28,hard:58},
-   hp:105,spd:88,catchRate:.24,
-   desc:'æš—é—‡ã‹ã‚‰ç¾ã‚Œã‚‹å½±ã®é­”ç‰©ã€‚',
-   moves:[["å½±æ‰“ã¡",25,"dark",null,null,null,null,null,"skill_nightmare_01"],["å‘ªã„ã®è¦–ç·š",18,"dark","debuff",null,null,null,null,"skill_nightmare_02"],["é—‡ã®æ³¢å‹•",44,"dark",null,null,null,null,null,"skill_nightmare_03"]]},
-  {id:'volteck',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'volteck',no:11,name:'ãƒœãƒ«ãƒ†ãƒƒã‚¯',rarity:'â˜…',types:['thunder','wind'],huntLevels:{normal:9},
-   hp:100,spd:95,catchRate:.35,evolution:'spaquinn',evolutionLevel:2,
-   desc:'é›·é›²ã‚’é£›ã¶é³¥åž‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["é›·ã¤ã¤ã",30,"thunder",null,null,null,null,null,"skill_volteck_01"],["æ€¥é™ä¸‹",24,"wind",null,null,null,null,null,"skill_volteck_02"],["é›·é³´å¼¾",46,"thunder",null,null,null,null,null,"skill_volteck_03"],["ã‚µãƒ³ãƒ€ãƒ¼ãƒœãƒ«ãƒˆ",30,"thunder","paralysis",0.3,2,"å¼·åŠ›ãªé›»æ’ƒã‚’æ”¾ã¡ã€æ•µã®èº«ä½“ã‚’ã—ã³ã‚Œã•ã›ã‚‹ã€‚",null,"skill_volteck_04"],["ãƒ‘ãƒ©ãƒ©ã‚¤ã‚ºã‚·ãƒ§ãƒƒã‚¯",15,"thunder","paralysis",0.8,2,"å¼·çƒˆãªã—ã³ã‚Œã‚’å¼•ãèµ·ã“ã™é›»æ’ƒã‚’æ”¾ã¤ã€‚",null,"skill_volteck_05"],["ã‚µãƒ³ãƒ€ãƒ¼ã‚¹ãƒˆãƒ¼ãƒ ",45,"thunder","paralysis",0.5,4,"æ¿€ã—ã„é›·åµã‚’å·»ãèµ·ã“ã—ã€ç›¸æ‰‹ã‚’éº»ç—ºã•ã›ã‚‹ã€‚",null,"skill_volteck_06"],["ãƒ©ã‚¤ãƒˆãƒ‹ãƒ³ã‚°ãƒã‚§ã‚¤ãƒ³",28,"thunder","repeat_attack",0.3,3,"é€£éŽ–ã™ã‚‹é›»æ’ƒã‚’æ”¾ã¡ã€ä¸€å®šç¢ºçŽ‡ã§ã‚‚ã†ä¸€åº¦æ”»æ’ƒã™ã‚‹ã€‚",null,"skill_volteck_07"]]},
-  {id:'spaquinn',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'spaquinn',no:12,name:'ã‚¹ãƒ‘ã‚¯ã‚¤ãƒ³',rarity:'â˜…â˜…',types:['thunder','wind'],huntLevels:{normal:21,hard:50},
-   evolutionOnly:true,evolution:'voltax',evolutionLevel:3,hp:170,spd:105,catchRate:.35,
-   desc:'ãƒœãƒ«ãƒ†ãƒƒã‚¯ãŒé€²åŒ–ã—ãŸé›·é¢¨ã®çŒ›ç¦½ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚é›·ã‚’ã¾ã¨ã„ã€ç©ºä¸­ã‹ã‚‰é‹­ãè¥²ã„ã‹ã‹ã‚‹ã€‚',
-   moves:[["é›·æ’ƒ",34,"thunder",null,null,null,null,null,"skill_spaquinn_01"],["çªé¢¨",28,"wind",null,null,null,null,null,"skill_spaquinn_02"],["ã‚¹ãƒ‘ãƒ¼ã‚¯ãƒ€ã‚¤ãƒ–",42,"thunder",null,null,null,null,null,"skill_spaquinn_03"]]},
-  {id:'voltax',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'voltax',no:13,name:'ãƒœãƒ«ã‚¿ãƒƒã‚¯ã‚¹',rarity:'â˜…â˜…â˜…',types:['thunder','wind'],huntLevels:{normal:43,hard:73},
-   evolutionOnly:true,hp:240,spd:115,catchRate:.22,
-   desc:'ã‚¹ãƒ‘ã‚¯ã‚¤ãƒ³ãŒé€²åŒ–ã—ãŸé›·é¢¨ã®çŽ‹ã€‚é»’é‡‘ã®ç¿¼ã§åµã‚’è£‚ãã€é›·é›²ãã®ã‚‚ã®ã‚’æ“ã‚‹ã€‚',
-   moves:[["é›·åµ",48,"thunder",null,null,null,null,null,"skill_voltax_01"],["æš´é¢¨åˆƒ",42,"wind",null,null,null,null,null,"skill_voltax_02"],["ãƒœãƒ«ãƒ†ãƒƒã‚¯ã‚¹ãƒˆãƒ¼ãƒ ",62,"thunder",null,null,null,null,null,"skill_voltax_03"],["ç–¾é¢¨è¿…é›·",58,["thunder","wind"],null,null,6,"é›·ã¨é¢¨ã‚’åŒæ™‚ã«ã¾ã¨ã„ã€ç¥žé€Ÿã®ä¸€æ’ƒã‚’æ”¾ã¤ã€‚",null,"skill_voltax_04"]]},
-  {id:'icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'icegolem',no:15,name:'ã‚¢ã‚¤ã‚¹ã‚´ãƒ¼ãƒ¬ãƒ ',rarity:'â˜…â˜…',types:['water'],huntLevels:{normal:26,hard:56},
-   hp:145,spd:32,catchRate:.28,
-   desc:'æ°·æ²³ã‹ã‚‰ç”Ÿã¾ã‚ŒãŸæ°´å±žæ€§ã®ã‚´ãƒ¼ãƒ¬ãƒ ã€‚',
-   moves:[["æ°·ã®æ‹³",26,"water",null,null,null,null,null,"skill_icegolem_01"],["å®ˆã‚Šã‚’å›ºã‚ã‚‹",0,"normal","guard",null,null,null,null,"skill_icegolem_02"],["å‡çµã‚¯ãƒ©ãƒƒã‚·ãƒ¥",40,"water",null,null,null,null,null,"skill_icegolem_03"]]},
-  {id:'proto_icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'proto_icegolem',no:14,name:'ãƒ—ãƒ­ãƒˆã‚¢ã‚¤ã‚¹ã‚´ãƒ¼ãƒ¬ãƒ ',rarity:'â˜…â˜…',types:['water'],huntLevels:{normal:18,hard:44},
-   hp:180,spd:18,catchRate:.16,
-   desc:'å¤ä»£ã®æ°·æ ¸ã‹ã‚‰é€ ã‚‰ã‚ŒãŸè©¦ä½œåž‹ã‚´ãƒ¼ãƒ¬ãƒ ã€‚ã‚¢ã‚¤ã‚¹ã‚´ãƒ¼ãƒ¬ãƒ ã‚ˆã‚Šéˆé‡ã ãŒã€ç ´å£ŠåŠ›ã«å„ªã‚Œã‚‹ã€‚',
-   moves:[["æ°·å¡Šæ‹³",44,"water",null,null,null,null,null,"skill_proto_icegolem_01"],["é‡è£…é˜²å¾¡",0,"normal","guard",null,null,null,null,"skill_proto_icegolem_02"],["å¤§æ°·æ²³ã‚¯ãƒ©ãƒƒã‚·ãƒ¥",70,"water",null,null,null,null,null,"skill_proto_icegolem_03"]]},
-  {id:'elysia',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_prologue',no:62,name:'ã‚¨ãƒªã‚·ã‚¢',rarity:'â˜…â˜…',types:['light'],unitType:'character',characterNo:12,contractable:false,
-   hp:120,spd:82,catchRate:0,evolution:'elysia_prayer',evolutionLevel:2,
-   desc:'å¤ä»£æ–‡æ˜Žã§æš®ã‚‰ã™ã€æ˜Žã‚‹ãå¿ƒå„ªã—ã„å°‘å¥³ã€‚è‡ªã‚‰ã«å®¿ã‚‹å¤§ããªå…‰ã®åŠ›ã«ã¯ã€ã¾ã æ°—ã¥ã„ã¦ã„ãªã„ã€‚',
-   moves:[["å…‰é›«å¼¾",30,"light",null,null,null,null,null,"skill_elysia_01"],["ç¥ˆã‚Šã®ç™’ã—",0,"light","heal",null,null,null,null,"skill_elysia_02"],["å¸Œæœ›ã®å…‰",0,"light","buff",null,null,null,null,"skill_elysia_03"]]},
-  {id:'elysia_prayer',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_prayer',no:63,name:'å…‰ç¥ˆã®å·«å¥³ã‚¨ãƒªã‚·ã‚¢',rarity:'â˜…â˜…â˜…',types:['light'],unitType:'character',characterNo:13,contractable:false,
-   evolutionOnly:true,evolution:'hikari',evolutionLevel:3,hp:158,spd:88,catchRate:0,
-   desc:'äººã€…ã®å®‰å¯§ã‚’é¡˜ã„ã€è–ãªã‚‹å…‰ã¸ç¥ˆã‚Šã‚’æ§ã’ã‚‹å·«å¥³ã€‚ã‚„ãŒã¦å¥³ç¥žã¸è‡³ã‚‹åŠ›ãŒé™ã‹ã«ç›®è¦šã‚å§‹ã‚ã¦ã„ã‚‹ã€‚',
-   moves:[["ç¥ˆå…‰å¼¾",42,"light",null,null,null,null,null,"skill_elysia_prayer_01"],["è–ç¥ˆã®ç™’ã—",0,"light","heal",null,null,null,null,"skill_elysia_prayer_02"],["å…‰ç¥ˆçµç•Œ",0,"light","guard",null,null,null,null,"skill_elysia_prayer_03"]]},
-  {id:'hikari',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_goddess',no:16,name:'å…‰ã®å¥³ç¥žã‚¨ãƒªã‚·ã‚¢',rarity:'â˜…â˜…â˜…â˜…',types:['light'],huntLevels:{hard:88},unitType:'character',characterNo:14,contractable:false,
-   evolutionOnly:true,hp:175,spd:90,catchRate:0,bossClass:'ãƒœã‚¹ç´š',
-   desc:'ç¥ˆã‚Šã¨å…‰ã®åŠ›ã«ã‚ˆã£ã¦ç¥žæ ¼ã¸è‡³ã£ãŸã‚¨ãƒªã‚·ã‚¢ã€‚å¤±ã‚ã‚ŒãŸå¤ä»£æ–‡æ˜Žã®è¨˜æ†¶ã‚’èƒ¸ã®å¥¥ã«å®¿ã—ã¦ã„ã‚‹ã€‚',
-   moves:[["è–å…‰ã®æ§",38,"light",null,null,null,null,null,"skill_hikari_01"],["ãƒ’ãƒ¼ãƒ«ã‚ªãƒ¼ãƒ©",0,"light","heal",null,null,null,null,"skill_hikari_02"],["ã‚¸ãƒ£ãƒƒã‚¸ãƒ¡ãƒ³ãƒˆ",58,"light",null,null,null,null,null,"skill_hikari_03"]]},
-  {id:'nemes',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nemes',no:17,name:'ãƒãƒ¡ã‚¹',rarity:'â˜…â˜…',types:['star','dragon'],huntLevels:{normal:24,hard:52},
-   hp:125,spd:78,catchRate:.22,evolution:'nemesia',evolutionLevel:2,
-   desc:'æ˜Ÿã®åŠ›ã‚’å®¿ã—ãŸå¹¼ãç«œã€‚',
-   moves:[["æ˜Ÿå±‘ã®ç‰™",32,"star",null,null,null,null,null,"skill_nemes_01"],["ç«œã®ã²ã£ã‹ã",26,"dragon",null,null,null,null,null,"skill_nemes_02"],["ã‚³ã‚¹ãƒ¢ãƒ–ãƒ¬ã‚¹",44,"star",null,null,null,null,null,"skill_nemes_03"],["ã‚¤ãƒªãƒ¥ãƒ¼ã‚¸ãƒ§ãƒ³",15,"star","confusion",0.6,2,"å¹»è¦šã‚’è¦‹ã›ã€æ•µã®åˆ¤æ–­ã‚’ç‹‚ã‚ã›ã‚‹ã€‚",null,"skill_nemes_04"],["ãƒ™ãƒŽãƒ ãƒ–ãƒ¬ã‚¹",30,"dragon","poison",0.4,2,"æ¯’ã‚’å«ã‚“ã ç«œã®æ¯å¹ã‚’æµ´ã³ã›ã‚‹ã€‚",null,"skill_nemes_05"]]},
-  {id:'nemesia',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nemesia',no:18,name:'ãƒãƒ¡ã‚·ã‚¢',rarity:'â˜…â˜…â˜…',types:['star','dragon'],huntLevels:{normal:48,hard:78},
-   evolutionOnly:true,evolution:'nemesion',evolutionLevel:3,hp:185,spd:92,catchRate:.1,
-   desc:'ãƒãƒ¡ã‚¹ãŒé€²åŒ–ã—ãŸæ˜Ÿç«œã€‚æ˜Ÿé›²ã®é­”åŠ›ã‚’ç¿¼ã«å®¿ã™ã€‚',
-   moves:[["æ˜Ÿé›²ã®çˆª",42,"star",null,null,null,null,null,"skill_nemesia_01"],["ç«œæ˜Ÿãƒ–ãƒ¬ã‚¹",50,"dragon",null,null,null,null,null,"skill_nemesia_02"],["ã‚³ã‚ºãƒŸãƒƒã‚¯ãƒŽãƒ´ã‚¡",68,"star",null,null,null,null,null,"skill_nemesia_03"]]},
-  {id:'nemesion',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'nemesion',no:19,name:'ãƒãƒ¡ã‚·ã‚ªãƒ³',rarity:'â˜…â˜…â˜…â˜…',types:['star','dragon'],huntLevels:{hard:92},
-   evolutionOnly:true,hp:240,spd:100,catchRate:.04,bossClass:'ãƒœã‚¹ç´š',
-   desc:'ãƒãƒ¡ã‚·ã‚¢ãŒé€²åŒ–ã—ãŸæ˜Ÿç«œã®æœ€çµ‚å½¢æ…‹ã€‚éŠ€æ²³ã‚’è£‚ãåŠ›ã‚’æŒã¤ã€‚',
-   moves:[["æ˜Ÿç•Œã®çˆª",56,"star",null,null,null,null,null,"skill_nemesion_01"],["éŠ€æ²³ç«œæ³¢",62,"dragon",null,null,null,null,null,"skill_nemesion_02"],["ã‚¢ã‚¹ãƒˆãƒ©ãƒ«ã‚¨ãƒ³ãƒ‰",82,"star",null,null,null,null,null,"skill_nemesion_03"]]},
-  {id:'doom_nemesion',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'doomNemesion',no:20,name:'æ»…äº¡ã®æ˜Ÿ ãƒãƒ¡ã‚·ã‚ªãƒ³',rarity:'â˜…â˜…â˜…â˜…â˜…',types:['star','dragon'],
-   evolutionOnly:true,hp:300,spd:85,catchRate:.02,bossClass:'è¶…ãƒœã‚¹ç´š',dropItem:'doom_fragment',dropItemName:'æ»…äº¡ã®ã‚«ã‚±ãƒ©',
-   desc:'ãƒãƒ¡ã‚·ã‚ªãƒ³ãŒæ»…äº¡ã®æ˜Ÿã®åŠ›ã‚’å¾—ãŸæœ€çµ‚å½¢æ…‹ã€‚æ˜Ÿã‚’å–°ã‚‰ã„çµ‚ç„‰ã®å…‰ã‚’æ”¾ã¤ã€‚å€’ã™ã¨ã€Œæ»…äº¡ã®ã‚«ã‚±ãƒ©ã€ã‚’è½ã¨ã™ã€‚',
-   moves:[["æ»…æ˜Ÿçˆª",70,"star",null,null,null,null,null,"skill_doom_nemesion_01"],["çµ‚ç„‰ç«œæ³¢",78,"dragon",null,null,null,null,null,"skill_doom_nemesion_02"],["ã‚¢ãƒã‚«ãƒªãƒ—ã‚¹ãƒŽãƒ´ã‚¡",100,"star","recoil",null,null,null,null,"skill_doom_nemesion_03"]]},
-  {id:'elna_beginner',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elna',no:21,name:'åˆç´šå‰£å£«ã‚¨ãƒ«ãƒŠ',rarity:'â˜…',types:['normal'],huntLevels:{normal:10},unitType:'character',characterNo:1,contractable:false,
-   hp:115,spd:65,catchRate:.35,evolution:'elna_middle',evolutionLevel:2,
-   desc:'å†’é™ºè€…ã¨ã—ã¦æ­©ã¿å§‹ã‚ãŸã°ã‹ã‚Šã®å°‘å¥³å‰£å£«ã€‚',
-   moves:[["æ–¬ã‚Šã¤ã‘",24,"normal",null,null,null,null,null,"skill_elna_beginner_01"],["è¦‹ç¿’ã„ã®æ§‹ãˆ",0,"normal","guard",null,null,null,null,"skill_elna_beginner_02"],["å‹‡æ°—ã®ä¸€æ’ƒ",36,"normal",null,null,null,null,null,"skill_elna_beginner_03"]]},
-  {id:'elna_middle',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elnaMiddle',no:22,name:'ä¸­ç´šå‰£å£«ã‚¨ãƒ«ãƒŠ',rarity:'â˜…â˜…',types:['normal'],huntLevels:{normal:24,hard:52},unitType:'character',characterNo:2,contractable:false,
-   evolutionOnly:true,evolution:'elna_advanced',evolutionLevel:3,hp:150,spd:78,catchRate:.18,
-   desc:'åˆç´šå‰£å£«ã‚¨ãƒ«ãƒŠãŒæˆé•·ã—ãŸå§¿ã€‚å®‰å®šã—ãŸå‰£æŠ€ã‚’èº«ã«ã¤ã‘ãŸã€‚',
-   moves:[["é€£ç¶šæ–¬ã‚Š",34,"normal",null,null,null,null,null,"skill_elna_middle_01"],["å—ã‘æµã—",0,"normal","guard",null,null,null,null,"skill_elna_middle_02"],["ç™½åˆƒä¸€é–ƒ",50,"normal",null,null,null,null,null,"skill_elna_middle_03"]]},
-  {id:'elna_advanced',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elnaAdvanced',no:23,name:'ä¸Šç´šå‰£å£«ã‚¨ãƒ«ãƒŠ',rarity:'â˜…â˜…â˜…',types:['normal'],huntLevels:{normal:45,hard:75},unitType:'character',characterNo:3,contractable:false,
-   evolutionOnly:true,hp:190,spd:88,catchRate:.1,
-   desc:'ä¸­ç´šå‰£å£«ã‚¨ãƒ«ãƒŠãŒã•ã‚‰ã«æˆé•·ã—ãŸå§¿ã€‚ç£¨ãæŠœã‹ã‚ŒãŸå‰£æŠ€ã§æˆ¦å ´ã‚’åˆ‡ã‚Šé–‹ãã€‚',
-   moves:[["é–ƒå…‰æ–¬ã‚Š",46,"normal",null,null,null,null,null,"skill_elna_advanced_01"],["å‰£å£«ã®é›†ä¸­",0,"normal","buff",null,null,null,null,"skill_elna_advanced_02"],["ç™½éŠ€é€£æ–¬",64,"normal",null,null,null,null,null,"skill_elna_advanced_03"]]},
-  {id:'suiren',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'suiren',no:24,name:'æ°´ã®ç²¾éœŠã‚¹ã‚¤ãƒ¬ãƒ³',rarity:'â˜…â˜…',types:['water'],huntLevels:{normal:27,hard:58},
-   hp:135,spd:72,catchRate:.2,dropItem:'water_mirror',dropItemName:'æ°´é¡',
-   desc:'æ¸…ã‚‰ã‹ãªæ°´è¾ºã«ç¾ã‚Œã‚‹æ°´ã®ç²¾éœŠã€‚å€’ã™ã¨ã€Œæ°´é¡ã€ã‚’è½ã¨ã™ã€‚',
-   moves:[["æ°´éœŠå¼¾",32,"water",null,null,null,null,null,"skill_suiren_01"],["ç™’ã—ã®æ°´",0,"water","heal",null,null,null,null,"skill_suiren_02"],["æ°´é¡ã®æ³¢ç´‹",46,"water",null,null,null,null,null,"skill_suiren_03"]]},
-  {id:'elna_water',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elnaWater',no:25,name:'æµæ°´ã®å‰£å£«ã‚¨ãƒ«ãƒŠ',rarity:'â˜…â˜…â˜…â˜…',types:['water','normal'],huntLevels:{hard:90},unitType:'character',characterNo:4,contractable:false,
-   evolutionOnly:true,hp:220,spd:96,catchRate:.06,bossClass:'ãƒœã‚¹ç´š',
-   desc:'ä¸Šç´šå‰£å£«ã‚¨ãƒ«ãƒŠãŒæ°´é¡ã®åŠ›ã§é€²åŒ–ã—ãŸå§¿ã€‚æµã‚Œã‚‹æ°´ã®ã‚ˆã†ãªå‰£æŠ€ã§æ•µã‚’ç¿»å¼„ã™ã‚‹ã€‚',
-   moves:[["æµæ°´æ–¬ã‚Š",54,"water",null,null,null,null,null,"skill_elna_water_01"],["æ°´é¡ã®æ§‹ãˆ",0,"water","guard",null,null,null,null,"skill_elna_water_02"],["è’¼æµé€£é–ƒ",76,"water",null,null,null,null,null,"skill_elna_water_03"]]},
-  {id:'slime',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'slime',no:26,name:'ã‚¹ãƒ©ã‚¤ãƒ ',rarity:'â˜…',types:['normal'],huntLevels:{normal:5},
-   hp:55,spd:40,catchRate:.45,expBonus:80,
-   desc:'ã·ã‚‹ã·ã‚‹ã—ãŸå¼±ã‚ã®ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚å€’ã™ã¨å¤§é‡ã®çµŒé¨“å€¤ã‚’å¾—ã‚‰ã‚Œã‚‹ã€‚',
-   moves:[["ãŸã„ã‚ãŸã‚Š",14,"normal",null,null,null,null,null,"skill_slime_01"],["ã·ã‚‹ã·ã‚‹",0,"normal","guard",null,null,null,null,"skill_slime_02"],["ã‚¹ãƒ©ã‚¤ãƒ ã‚¢ã‚¿ãƒƒã‚¯",22,"normal",null,null,null,null,null,"skill_slime_03"]]},
-  {id:'slime_gold',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'slime_gold',no:27,name:'ã‚¹ãƒ©ã‚¤ãƒ ã‚´ãƒ¼ãƒ«ãƒ‰',rarity:'â˜…â˜…',types:['normal'],huntLevels:{normal:30,hard:60},
-   hp:70,spd:85,catchRate:.25,coinBonus:200,
-   desc:'é‡‘è‰²ã«è¼ãçã—ã„ã‚¹ãƒ©ã‚¤ãƒ ã€‚å€’ã™ã¨å¤§é‡ã®ã‚³ã‚¤ãƒ³ã‚’è½ã¨ã™ã€‚',
-   moves:[["ãŸã„ã‚ãŸã‚Š",16,"normal",null,null,null,null,null,"skill_slime_gold_01"],["ãã‚“ã„ã‚ãƒœãƒ‡ã‚£",0,"normal","guard",null,null,null,null,"skill_slime_gold_02"],["ã‚´ãƒ¼ãƒ«ãƒ‰ã‚¢ã‚¿ãƒƒã‚¯",25,"normal",null,null,null,null,null,"skill_slime_gold_03"]]},
-  {id:'goblin',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'goblin',no:28,name:'ã‚´ãƒ–ãƒªãƒ³',rarity:'â˜…',types:['normal'],huntLevels:{normal:7},
-   hp:80,spd:50,catchRate:.70,coinBonus:5,expBonus:10,
-   desc:'ã©ã®ãƒžãƒƒãƒ—ã«ã‚‚ç¾ã‚Œã‚‹é›‘é­šãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚åŽŸå§‹çš„ãªæ­¦å™¨ã‚’æŒã¡ã€ç¾¤ã‚Œã§è¡Œå‹•ã™ã‚‹ã“ã¨ãŒå¤šã„ã€‚',
-   moves:[["æ£æ£’æ”»æ’ƒ",18,"normal",null,null,null,null,null,"skill_goblin_01"],["å¨åš‡",0,"normal","guard",null,null,null,null,"skill_goblin_02"],["æ¯’ã®çŸ­å‰£",22,"normal","poison",null,null,null,null,"skill_goblin_03"]]},
-  {id:'false_dragon_alfa',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_alfa',no:29,name:'å½ç«œ code:alfa',rarity:'â˜…â˜…â˜…â˜…â˜…',types:['normal','light'],
-   hp:360,spd:82,catchRate:.05,bossClass:'è¶…ãƒœã‚¹ç´š',
-   desc:'ç¥žã«ä¼¼ã›ã¦é€ ã‚‰ã‚ŒãŸéŠ€è‰²ã®å½ç«œã€‚ç„¡æ©Ÿè³ªãªè£…ç”²ã¨å…‰ã®åŠ›ã‚’æŒã¤ã€è¶…ãƒœã‚¹ç´šãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["è™šå…‰ç ²",70,"light",null,null,null,null,null,"skill_false_dragon_alfa_01"],["å½ç¥žã®çˆª",58,"normal",null,null,null,null,null,"skill_false_dragon_alfa_02"],["ã‚³ãƒ¼ãƒ‰ãƒ»ã‚¢ãƒ«ãƒ•ã‚¡",88,"light",null,null,null,null,null,"skill_false_dragon_alfa_03"]]},
-  {id:'false_dragon_beta',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_beta',no:30,name:'å½ç«œ code:beta',rarity:'â˜…â˜…â˜…â˜…â˜…',types:['normal','light'],
-   hp:390,spd:88,catchRate:.04,bossClass:'è¶…ãƒœã‚¹ç´š',
-   desc:'ä¸–ç•Œã®ç‹­é–“ã«ç¾ã‚Œã‚‹äºŒä½“ç›®ã®å½ç«œã€‚ç™½éŠ€ã®è£…ç”²ç¿¼ã‚’åºƒã’ã€ç©ºé–“ã‚’è£‚ãå…‰ã‚’æ”¾ã¤è¶…ãƒœã‚¹ç´šãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["æ–­ç•Œå…‰",76,"light",null,null,null,null,null,"skill_false_dragon_beta_01"],["å½ç«œã®ç¿¼æ’ƒ",62,"normal",null,null,null,null,null,"skill_false_dragon_beta_02"],["ã‚³ãƒ¼ãƒ‰ãƒ»ãƒ™ãƒ¼ã‚¿",94,"light",null,null,null,null,null,"skill_false_dragon_beta_03"]]},
-  {id:'false_dragon_gamma',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_gamma',no:31,name:'å½ç«œ code:gamma',rarity:'â˜…â˜…â˜…â˜…â˜…',types:['normal','light'],
-   hp:420,spd:94,catchRate:.035,bossClass:'è¶…ãƒœã‚¹ç´š',
-   desc:'ä¸–ç•Œã®ç‹­é–“ã«ç¾ã‚Œã‚‹ä¸‰ä½“ç›®ã®å½ç«œã€‚å®Œæˆåº¦ã‚’å¢—ã—ãŸéŠ€ç¿¼ã®æ©Ÿæ¢°ç«œã§ã€å…‰ã¨è™šç„¡ã‚’åŒæ™‚ã«æ“ã‚‹è¶…ãƒœã‚¹ç´šãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["è™šç„¡å…‰ç¿¼",82,"light",null,null,null,null,null,"skill_false_dragon_gamma_01"],["å½ç«œã®å’†å“®",66,"normal",null,null,null,null,null,"skill_false_dragon_gamma_02"],["ã‚³ãƒ¼ãƒ‰ãƒ»ã‚¬ãƒ³ãƒž",100,"light",null,null,null,null,null,"skill_false_dragon_gamma_03"]]},
-  {id:'volmoog',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'volmoog',no:34,name:'ãƒœãƒ«ãƒ¢ãƒ¼ã‚°',rarity:'â˜…â˜…',types:['thunder'],huntLevels:{normal:23,hard:51},
-   hp:155,spd:72,catchRate:.20,evolution:'gran_volmoog',evolutionLevel:2,
-   desc:'é›·ã‚’ã¾ã¨ã£ãŸç£åž‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚å·¨å¤§ãªçˆªã§å¤§åœ°ã‚’ç •ãã€å¸¯é›»ã—ãŸå²©ç‰‡ã‚’å·»ãä¸Šã’ã¦è¥²ã„ã‹ã‹ã‚‹ã€‚',
-   moves:[["é›·çˆª",34,"thunder",null,null,null,null,null,"skill_volmoog_01"],["å¸¯é›»å’†å“®",0,"thunder","guard",null,null,null,null,"skill_volmoog_02"],["ãƒœãƒ«ãƒ†ãƒƒã‚¯ã‚¯ãƒ­ãƒ¼",56,"thunder",null,null,null,null,null,"skill_volmoog_03"]]},
-  {id:'gran_volmoog',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'gran_volmoog',no:35,name:'ã‚°ãƒ©ãƒ³ãƒœãƒ«ãƒ¢ãƒ¼ã‚°',rarity:'â˜…â˜…â˜…',types:['thunder'],huntLevels:{normal:45,hard:75},
-   hp:245,spd:66,catchRate:.12,
-   desc:'ãƒœãƒ«ãƒ¢ãƒ¼ã‚°ãŒé€²åŒ–ã—ãŸé›·ç£ã®å·¨ä½“ã€‚çµæ™¶åŒ–ã—ãŸè£…ç”²ã¨å·¨å¤§ãªçˆªã«é›·ã‚’ã¾ã¨ã„ã€å¤§åœ°ã‚’å‰²ã‚‹ã»ã©ã®ä¸€æ’ƒã‚’æ”¾ã¤ã€‚',
-   moves:[["é›·å²©ç •ã",48,"thunder",null,null,null,null,null,"skill_gran_volmoog_01"],["å¸¯é›»çµæ™¶éŽ§",0,"thunder","guard",null,null,null,null,"skill_gran_volmoog_02"],["ã‚°ãƒ©ãƒ³ãƒœãƒ«ãƒˆã‚¯ãƒ­ãƒ¼",78,"thunder",null,null,null,null,null,"skill_gran_volmoog_03"]]},
-  {id:'stella_apprentice',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_apprentice',no:36,name:'è¦‹ç¿’ã„é­”æ³•ä½¿ã„ã‚¹ãƒ†ãƒ©',rarity:'â˜…â˜…',types:['star','light'],huntLevels:{normal:22,hard:50},unitType:'character',characterNo:6,contractable:false,
-   hp:115,spd:90,catchRate:.20,evolution:'stella_wizard',evolutionLevel:2,
-   desc:'é­”å°Žå­¦åœ’ã§æ˜Ÿé­”æ³•ã‚’å­¦ã¶è¦‹ç¿’ã„é­”æ³•ä½¿ã„ã€‚æ˜Žã‚‹ã„ç¬‘é¡”ã¨æœªå®ŒæˆãªãŒã‚‰é‹­ã„é­”åŠ›ã§æˆ¦ã†ã€‚',
-   moves:[["æ˜Ÿå±‘å¼¾",30,"star",null,null,null,null,null,"skill_stella_apprentice_01"],["ãƒžã‚¸ãƒƒã‚¯ã‚·ãƒ§ãƒƒãƒˆ",24,"normal",null,null,null,null,null,"skill_stella_apprentice_02"],["ã‚¹ã‚¿ãƒ¼ãƒ–ãƒ¼ã‚¹ãƒˆ",0,"star","buff",null,null,null,null,"skill_stella_apprentice_03"]]},
-  {id:'stella_wizard',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_wizard',no:37,name:'é­”æ³•ä½¿ã„ã‚¹ãƒ†ãƒ©',rarity:'â˜…â˜…â˜…',types:['star','light'],huntLevels:{normal:46,hard:76},unitType:'character',characterNo:7,contractable:false,
-   evolutionOnly:true,evolution:'stella_sorcerer',evolutionLevel:3,hp:155,spd:102,catchRate:.10,
-   desc:'è¦‹ç¿’ã„é­”æ³•ä½¿ã„ã‚¹ãƒ†ãƒ©ãŒæˆé•·ã—ãŸå§¿ã€‚æ˜Ÿã®é­”åŠ›ã‚’è‡ªåœ¨ã«æ“ã‚Šã€è»½ã‚„ã‹ãªè© å”±ã§æˆ¦å ´ã‚’ç…§ã‚‰ã™é­”æ³•ä½¿ã„ã€‚',
-   moves:[["ã‚¹ã‚¿ãƒ¼ãƒ©ã‚¤ãƒˆãƒ¬ã‚¤",42,"star",null,null,null,null,null,"skill_stella_wizard_01"],["ãƒžã‚¸ãƒƒã‚¯ãƒãƒ¼ã‚¹ãƒˆ",36,"normal",null,null,null,null,null,"skill_stella_wizard_02"],["ã‚¢ã‚¹ãƒˆãƒ©ãƒ«ãƒ•ãƒ¬ã‚¢",64,"star",null,null,null,null,null,"skill_stella_wizard_03"]]},
-  {id:'stella_sorcerer',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'stella_sorcerer',no:38,name:'é­”å°Žå¸«ã‚¹ãƒ†ãƒ©',rarity:'â˜…â˜…â˜…â˜…',types:['star','light'],huntLevels:{hard:88},unitType:'character',characterNo:8,contractable:false,
-   evolutionOnly:true,hp:205,spd:112,catchRate:.06,
-   desc:'é­”æ³•ä½¿ã„ã‚¹ãƒ†ãƒ©ãŒã•ã‚‰ã«æˆé•·ã—ãŸå§¿ã€‚æ˜Ÿè¾°ã®çŸ¥è­˜ã¨é«˜ä½é­”è¡“ã‚’æ“ã‚‹é­”å°Žå¸«ã€‚å¹¾ã¤ã‚‚ã®é­”å°Žæ›¸ã‚’å¾“ãˆã€æˆ¦å ´ã‚’æ˜Ÿã®å…‰ã§æ”¯é…ã™ã‚‹ã€‚',
-   moves:[["æ˜Ÿå¤©ã®è£ã",56,"star",null,null,null,null,null,"skill_stella_sorcerer_01"],["ã‚°ãƒ©ãƒ³ãƒ‰ãƒžã‚¸ãƒƒã‚¯",44,"normal",null,null,null,null,null,"skill_stella_sorcerer_02"],["ã‚³ã‚¹ãƒ¢ã‚¹ã‚¢ãƒ¼ã‚¯",86,"star",null,null,null,null,null,"skill_stella_sorcerer_03"]]},
-  {id:'lumina_apprentice',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_apprentice',no:39,name:'è¦‹ç¿’ã„é­”æ³•ä½¿ã„ãƒ«ãƒŸãƒŠ',rarity:'â˜…â˜…',types:['star','dark'],huntLevels:{normal:22,hard:50},unitType:'character',characterNo:9,contractable:false,
-   hp:110,spd:88,catchRate:.20,evolution:'lumina_wizard',evolutionLevel:2,
-   desc:'é­”å°Žå­¦åœ’ã§æ˜Ÿé­”æ³•ã‚’å­¦ã¶å†…æ°—ãªè¦‹ç¿’ã„é­”æ³•ä½¿ã„ã€‚é­”å°Žæ›¸ã‚’å¤§åˆ‡ã«æŠ±ãˆã€é™ã‹ãªè© å”±ã§æ˜Ÿã®åŠ›ã‚’å‘¼ã³å‡ºã™ã€‚',
-   moves:[["æ˜Ÿå…‰å¼¾",28,"star",null,null,null,null,null,"skill_lumina_apprentice_01"],["ãƒžã‚¸ãƒƒã‚¯ãƒŽãƒ¼ãƒˆ",24,"normal",null,null,null,null,null,"skill_lumina_apprentice_02"],["ãƒ«ãƒŸãƒŠã‚¹ãƒãƒ£ãƒ¼ã‚¸",0,"star","buff",null,null,null,null,"skill_lumina_apprentice_03"]]},
-  {id:'lumina_wizard',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_wizard',no:40,name:'é­”æ³•ä½¿ã„ãƒ«ãƒŸãƒŠ',rarity:'â˜…â˜…â˜…',types:['star','dark'],huntLevels:{normal:46,hard:76},unitType:'character',characterNo:10,contractable:false,
-   evolutionOnly:true,evolution:'lumina_sorcerer',evolutionLevel:3,hp:155,spd:98,catchRate:.10,
-   desc:'è¦‹ç¿’ã„é­”æ³•ä½¿ã„ãƒ«ãƒŸãƒŠãŒæˆé•·ã—ãŸå§¿ã€‚æ˜Ÿã®è¡“å¼ã‚’ä¸å¯§ã«ç·¨ã¿ä¸Šã’ã‚‹é­”æ³•ä½¿ã„ã§ã€é™ã‹ãªé­”åŠ›ã‹ã‚‰é‹­ã„æ˜Ÿå…‰é­”æ³•ã‚’æ”¾ã¤ã€‚',
-   moves:[["æ˜Ÿæœˆã®å…‰å¼¾",40,"star",null,null,null,null,null,"skill_lumina_wizard_01"],["ãƒžã‚¸ãƒƒã‚¯ãƒ–ãƒ«ãƒ¼ãƒ ",34,"normal",null,null,null,null,null,"skill_lumina_wizard_02"],["ãƒ«ãƒŸãƒŠã‚¹ãƒ¬ã‚¤",62,"star",null,null,null,null,null,"skill_lumina_wizard_03"]]},
-  {id:'lumina_sorcerer',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'lumina_sorcerer',no:41,name:'é­”å°Žå¸«ãƒ«ãƒŸãƒŠ',rarity:'â˜…â˜…â˜…â˜…',types:['star','dark'],huntLevels:{hard:90},unitType:'character',characterNo:11,contractable:false,
-   evolutionOnly:true,hp:205,spd:108,catchRate:.06,
-   desc:'é­”æ³•ä½¿ã„ãƒ«ãƒŸãƒŠãŒã•ã‚‰ã«æˆé•·ã—ãŸå§¿ã€‚é™è¬ãªæ˜Ÿè¡“ã¨é«˜ä½é­”æ³•ã‚’æ“ã‚‹é­”å°Žå¸«ã€‚é’ç™½ã„æ˜Ÿã®çµæ™¶ã¨è¡“å¼ã§æˆ¦å ´ã‚’åŒ…ã¿è¾¼ã‚€ã€‚',
-   moves:[["æ˜Ÿæ™¶ã®è£ã",54,"star",null,null,null,null,null,"skill_lumina_sorcerer_01"],["ãƒ«ãƒŸãƒŠã‚¹ãƒžã‚¸ãƒƒã‚¯",46,"normal",null,null,null,null,null,"skill_lumina_sorcerer_02"],["ã‚»ãƒ¬ã‚¹ãƒ†ã‚£ã‚¢ãƒ«ãƒ¬ã‚¤",84,"star",null,null,null,null,null,"skill_lumina_sorcerer_03"]]},
-  {id:'orcana',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'orcana',no:42,name:'ã‚ªãƒ«ã‚«ãƒ¼ãƒŠ',rarity:'â˜…â˜…',types:['water'],huntLevels:{normal:22,hard:50},
-   hp:160,spd:76,catchRate:.16,evolution:'orca_stream',evolutionLevel:2,
-   desc:'è’¼æµ·ã®å…¥ã‚Šæ±Ÿã«ç¾ã‚Œã‚‹æ°´å±žæ€§ã®ã‚·ãƒ£ãƒåž‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚è’¼ã„çµæ™¶ã®èƒŒã³ã‚Œã¨æ°´æµã‚’ã¾ã¨ã„ã€æµ·ä¸­ã‚’ä¿Šæ•ã«æ³³ãã€‚',
-   moves:[["ã‚¢ã‚¯ã‚¢ãƒ†ã‚¤ãƒ«",34,"water",null,null,null,null,null,"skill_orcana_01"],["è’¼æµ·ã®çªé€²",38,"water",null,null,null,null,null,"skill_orcana_02"],["ã‚¯ãƒªã‚¹ã‚¿ãƒ«ã‚¦ã‚§ãƒ¼ãƒ–",56,"water",null,null,null,null,null,"skill_orcana_03"]]},
-  {id:'orca_stream',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'orca_stream',no:43,name:'ã‚ªãƒ«ã‚«ã‚¹ãƒˆãƒªãƒ¼ãƒ ',rarity:'â˜…â˜…â˜…',types:['water'],huntLevels:{normal:47,hard:77},
-   evolutionOnly:true,evolution:'orca_abyss',evolutionLevel:3,hp:220,spd:88,catchRate:.10,
-   desc:'ã‚ªãƒ«ã‚«ãƒ¼ãƒŠãŒé€²åŒ–ã—ãŸå§¿ã€‚è’¼æµ·ã®æ°´æµã¨çµæ™¶ã‚’ã¾ã¨ã„ã€æµ·ä¸­ã‚’ç–¾èµ°ã™ã‚‹æ°´å±žæ€§ã®ã‚·ãƒ£ãƒåž‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["ã‚¹ãƒˆãƒªãƒ¼ãƒ ãƒ†ã‚¤ãƒ«",44,"water",null,null,null,null,null,"skill_orca_stream_01"],["è’¼æµã®çªæ’ƒ",52,"water",null,null,null,null,null,"skill_orca_stream_02"],["ã‚ªãƒ«ã‚«ã‚¦ã‚§ãƒ¼ãƒ–",72,"water",null,null,null,null,null,"skill_orca_stream_03"]]},
-  {id:'orca_abyss',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'orca_abyss',no:44,name:'ã‚ªãƒ«ã‚«ã‚¢ãƒ“ã‚¹',rarity:'â˜…â˜…â˜…â˜…',types:['water'],huntLevels:{hard:90},
-   evolutionOnly:true,hp:285,spd:98,catchRate:.06,
-   desc:'ã‚ªãƒ«ã‚«ã‚¹ãƒˆãƒªãƒ¼ãƒ ãŒæ·±æµ·ã®é­”åŠ›ã‚’å¾—ã¦é€²åŒ–ã—ãŸå§¿ã€‚è’¼ã„çµæ™¶ã¨æ¸¦å·»ãæ°´æµã‚’ã¾ã¨ã„ã€æ·±ãæµ·ã®æžœã¦ã‚’æ”¯é…ã™ã‚‹æ°´å±žæ€§ã®ã‚·ãƒ£ãƒåž‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚',
-   moves:[["ã‚¢ãƒ“ã‚¹ãƒ†ã‚¤ãƒ«",56,"water",null,null,null,null,null,"skill_orca_abyss_01"],["æ·±æµ·ã®å¥”æµ",68,"water",null,null,null,null,null,"skill_orca_abyss_02"],["ã‚ªãƒ«ã‚«ã‚¢ãƒ“ã‚¹",92,"water",null,null,null,null,null,"skill_orca_abyss_03"]]},
-  {id:'tsubaki',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'tsubaki',no:45,name:'ç‚Žã®ç²¾éœŠãƒ„ãƒã‚­',rarity:'â˜…â˜…',types:['fire'],huntLevels:{normal:28,hard:58},
-   hp:185,spd:88,catchRate:.12,dropItem:'fire_orb',dropItemName:'ç‚ŽçŽ‰',dropRate:.30,
-   desc:'è¯ç‚Žã®é‡Œã‚„ç«å±±ã«ç¾ã‚Œã‚‹ç‚Žã®ç²¾éœŠã€‚èŠ±å¼ã®ã‚ˆã†ãªçµæ™¶ç¿¼ã‹ã‚‰ç¼ç†±ã®ç‚Žã‚’æ”¾ã¤ã€‚å€’ã™ã¨30%ã®ç¢ºçŽ‡ã§ã€Œç‚ŽçŽ‰ã€ã‚’è½ã¨ã™ã€‚',
-   moves:[["ç«èŠ±ã®èˆž",36,"fire",null,null,null,null,null,"skill_tsubaki_01"],["ç¼ç†±èŠ±å¼",48,"fire",null,null,null,null,null,"skill_tsubaki_02"],["ç‚Žè¯çµç•Œ",0,"fire","guard",null,null,null,null,"skill_tsubaki_03"]]},
-  {id:'elna_kaen',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":false,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elnaKaen',no:46,name:'è¯ç‚Žã®å‰£å£«ã‚¨ãƒ«ãƒŠ',rarity:'â˜…â˜…â˜…â˜…',types:['fire','normal'],huntLevels:{hard:92},unitType:'character',characterNo:5,contractable:false,
-   hp:235,spd:102,catchRate:.05,bossClass:'ãƒœã‚¹ç´š',
-   desc:'ç‚ŽçŽ‰ã®åŠ›ã‚’å—ã‘ã€è¯ç‚Žã‚’å‰£ã«å®¿ã—ãŸã‚¨ãƒ«ãƒŠã®æ–°ãŸãªå§¿ã€‚èˆžã†èŠ±å¼ã®ã‚ˆã†ãªç‚Žã§æ•µã‚’æ–¬ã‚Šè£‚ãã€‚',
-   moves:[["è¯ç‚Žæ–¬ã‚Š",58,"fire",null,null,null,null,null,"skill_elna_kaen_01"],["ç‚ŽèŠ±ã®æ§‹ãˆ",0,"fire","guard",null,null,null,null,"skill_elna_kaen_02"],["ç´…è“®é€£é–ƒ",80,"fire",null,null,null,null,null,"skill_elna_kaen_03"]]},
-  {id:'alchemion',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'alchemion',no:47,name:'éŒ¬æ ¸ç£ã‚¢ãƒ«ã‚±ãƒŸã‚ªãƒ³',rarity:'â˜…â˜…â˜…',types:['normal'],
-   hp:180,spd:75,catchRate:0,contractable:false,alchemyExclusive:true,
-   desc:'éŒ¬æˆæ ¸ã‹ã‚‰ç”Ÿã¾ã‚Œã‚‹ç„¡å±žæ€§ã®éŒ¬æˆé™å®šãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã€‚å€‹ä½“ã”ã¨ã«ç•°ãªã‚‹èƒ½åŠ›å‚¾å‘ã‚’æŒã¤ã€‚',
-   moves:[["éŒ¬æ ¸å´©ç •",140,"normal","alchemy_recoil",null,5,"æ”»æ’ƒå¾Œã€å®Ÿéš›ã«ä¸ŽãˆãŸãƒ€ãƒ¡ãƒ¼ã‚¸ã®25ï¼…ã‚’åå‹•ã¨ã—ã¦å—ã‘ã‚‹ã€‚","alchemion","skill_alchemion_01"]]},
-  {id:'kimeragna',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'kimeragna',no:48,name:'æ··æˆç¿¼ç«œã‚­ãƒ¡ãƒ©ã‚°ãƒŠ',rarity:'â˜…â˜…â˜…',types:['wind','dragon'],
-   hp:150,spd:100,catchRate:0,contractable:false,alchemyExclusive:true,evolution:'kimeragna_apex',evolutionLevel:5,
-   desc:'é¢¨ã¨ç«œã®æ€§è³ªã‚’ä½µã›æŒã¤éŒ¬æˆé™å®šã®ç¿¼ç«œã€‚çŒ›æ¯’ã‚’å¸¯ã³ãŸç¿¼ã§ç²ç‰©ã‚’è¿½ã„è©°ã‚ã‚‹ã€‚',
-   moves:[["çŒ›æ¯’ç¿”ç ´",110,"wind","poison",0.4,4,"40ï¼…ã®ç¢ºçŽ‡ã§ç›¸æ‰‹ã‚’3ã‚¿ãƒ¼ãƒ³ã®æ¯’çŠ¶æ…‹ã«ã™ã‚‹ã€‚","kimeragna","skill_kimeragna_01"]]},
-
-  // no ã¯æ—§ã‚»ãƒ¼ãƒ–äº’æ›ç”¨ã®ä¸å¤‰ãƒ¬ã‚³ãƒ¼ãƒ‰ç•ªå·ã€‚dexNo ãŒãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼å›³é‘‘ã®è¡¨ç¤ºç•ªå·ã€‚
-  {id:'sylphin',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'sylphin',no:51,dexNo:21,name:'ã‚·ãƒ«ãƒ•ã‚£ãƒ³',rarity:'â˜…',types:['wind'],huntLevels:{normal:8},
-   hp:100,spd:90,catchRate:.40,evolution:'zephyray',evolutionLevel:2,
-   desc:'é¢¨ã‚’å—ã‘ã¦è‰åŽŸã‚’æ³³ãã€å°ã•ãªç©ºç¿”ã‘ãƒžãƒ³ã‚¿ã€‚èƒ¸ã³ã‚Œã§ç©ã‚„ã‹ãªæ°—æµã‚’ç”Ÿã¿å‡ºã™ã€‚',
-   moves:[["ãã‚ˆé¢¨ã®ã²ã‚Œ",26,"wind",null,null,null,null,null,"skill_sylphin_01"],["ã‚¨ã‚¢ã‚¹ãƒ©ã‚¤ãƒ‰",22,"wind",null,null,null,null,null,"skill_sylphin_02"],["é¢¨ã¾ã¨ã†",0,"wind","buff",null,null,null,null,"skill_sylphin_03"]]},
-  {id:'zephyray',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'zephyray',no:52,dexNo:22,name:'ã‚¼ãƒ•ã‚¡ãƒ¼ãƒ¬ã‚¤',rarity:'â˜…â˜…',types:['wind'],huntLevels:{normal:19,hard:47},
-   evolutionOnly:true,evolution:'tempestray',evolutionLevel:3,hp:155,spd:108,catchRate:.18,
-   desc:'ã‚·ãƒ«ãƒ•ã‚£ãƒ³ãŒæˆé•·ã—ãŸé¢¨ç¿¼ãƒžãƒ³ã‚¿ã€‚é‹­ã„ç¿¼ã§å¤§æ°—ã‚’åˆ‡ã‚Šã€æ¸“è°·ã‚’æ»‘ã‚‹ã‚ˆã†ã«é£›ã¶ã€‚',
-   moves:[["ã‚¼ãƒ•ã‚¡ãƒ¼ã‚«ãƒƒã‚¿ãƒ¼",38,"wind",null,null,null,null,null,"skill_zephyray_01"],["æ—‹é¢¨å›žé¿",0,"wind","guard",null,null,null,null,"skill_zephyray_02"],["ã‚¹ã‚«ã‚¤ãƒ©ãƒ³ãƒšãƒ¼ã‚¸",56,"wind",null,null,null,null,null,"skill_zephyray_03"]]},
-  {id:'tempestray',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'tempestray',no:53,dexNo:23,name:'ãƒ†ãƒ³ãƒšã‚¹ãƒˆãƒ¬ã‚¤',rarity:'â˜…â˜…â˜…',types:['wind'],huntLevels:{normal:45,hard:75},
-   evolutionOnly:true,hp:220,spd:125,catchRate:.08,
-   desc:'ã‚¼ãƒ•ã‚¡ãƒ¼ãƒ¬ã‚¤ãŒåµã®åŠ›ã‚’å¾—ãŸå§¿ã€‚å·¨å¤§ãªé¢¨ç¿¼ã§é›·é›²ã‚’ã‹ãå›žã—ã€æš´é¢¨ã‚’æ”¯é…ã™ã‚‹ã€‚',
-   moves:[["ãƒ†ãƒ³ãƒšã‚¹ãƒˆãƒ•ã‚£ãƒ³",50,"wind",null,null,null,null,null,"skill_tempestray_01"],["åµç¿¼ã®å®ˆã‚Š",0,"wind","guard",null,null,null,null,"skill_tempestray_02"],["å¤©åµå¤§æ—‹å›ž",76,"wind",null,null,null,null,null,"skill_tempestray_03"]]},
-  {id:'ignaros',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'ignaros',no:54,dexNo:25,name:'ã‚¤ã‚°ãƒŠãƒ­ã‚¹',rarity:'â˜…â˜…',types:['fire'],huntLevels:{normal:25,hard:54},
-   hp:180,spd:52,catchRate:.16,
-   desc:'ç«å£ã®ç†±ã‚’éŽ§ã«å¤‰ãˆã‚‹ç¼ç†±ç£ã€‚é‡ã„ç”²æ®»ã®å†…å´ã§çµ¶ãˆãšæº¶å²©ãŒè„ˆæ‰“ã¤ã€‚',
-   moves:[["æº¶å²©è§’",40,"fire",null,null,null,null,null,"skill_ignaros_01"],["ç¼ç†±è£…ç”²",0,"fire","guard",null,null,null,null,"skill_ignaros_02"],["ç«å£å´©ã—",62,"fire","recoil",null,null,null,null,"skill_ignaros_03"]]},
-  {id:'nocle',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nocle',no:55,dexNo:36,name:'ãƒŽã‚¯ãƒ«',rarity:'â˜…',types:['dark','dragon'],huntLevels:{normal:12},
-   hp:112,spd:74,catchRate:.38,evolution:'noclaid',evolutionLevel:2,
-   desc:'æœˆå½±ã®æ´žçªŸã«æ½œã‚€å°ã•ãªå¤œç«œã€‚å…‰ã‚’é¿ã‘ã€é—‡ã®ä¸­ã‚’éŸ³ã‚‚ãªãé€²ã‚€ã€‚',
-   moves:[["å½±ç‰™",28,"dark",null,null,null,null,null,"skill_nocle_01"],["å¤œæ»‘ã‚Š",24,"dragon",null,null,null,null,null,"skill_nocle_02"],["æœˆè•ã®æ°—é…",0,"dark","buff",null,null,null,null,"skill_nocle_03"]]},
-  {id:'noclaid',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'noclaid',no:56,dexNo:37,name:'ãƒŽã‚¯ãƒ¬ã‚¤ãƒ‰',rarity:'â˜…â˜…',types:['dark','dragon'],huntLevels:{normal:24,hard:52},
-   evolutionOnly:true,evolution:'noxvelg',evolutionLevel:3,hp:160,spd:88,catchRate:.17,
-   desc:'ãƒŽã‚¯ãƒ«ãŒæœˆå½±ã‚’ã¾ã¨ã£ã¦æˆé•·ã—ãŸå¹¼ç«œã€‚æ»‘ç©ºã—ãªãŒã‚‰é—‡ã®åˆƒã‚’æ”¾ã¤ã€‚',
-   moves:[["ãƒ ãƒ¼ãƒ³ã‚·ãƒ£ãƒ‰ã‚¦",38,"dark",null,null,null,null,null,"skill_noclaid_01"],["å¤œç«œçˆª",36,"dragon",null,null,null,null,null,"skill_noclaid_02"],["æš—æœˆéšœå£",0,"dark","guard",null,null,null,null,"skill_noclaid_03"]]},
-  {id:'noxvelg',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'noxvelg',no:57,dexNo:38,name:'ãƒŽã‚¯ã‚¹ãƒ´ã‚§ãƒ«ã‚°',rarity:'â˜…â˜…â˜…',types:['dark','dragon'],huntLevels:{normal:50,hard:80},
-   evolutionOnly:true,hp:230,spd:104,catchRate:.07,
-   desc:'ãƒŽã‚¯ãƒ¬ã‚¤ãƒ‰ãŒæœˆå…‰ã•ãˆå‘‘ã¿è¾¼ã‚€å¤œç«œã¸é€²åŒ–ã—ãŸå§¿ã€‚æ·±ã„é—‡ã§ç²ç‰©ã®æ„Ÿè¦šã‚’å¥ªã†ã€‚',
-   moves:[["å¤œå¤©ç«œç‰™",50,"dark",null,null,null,null,null,"skill_noxvelg_01"],["è•æœˆå’†å“®",46,"dragon","debuff",null,null,null,null,"skill_noxvelg_02"],["ãƒŽã‚¯ã‚¹ã‚¨ã‚¯ãƒªãƒ—ã‚¹",78,["dark","dragon"],null,null,6,"é—‡ã¨ç«œæ°—ã‚’é‡ã­ã€æœˆå…‰ã‚’å‘‘ã‚€ä¸€æ’ƒã‚’æ”¾ã¤ã€‚",null,"skill_noxvelg_03"]]},
-  {id:'luxseed',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'luxseed',no:58,dexNo:39,name:'ãƒ«ã‚¯ã‚·ãƒ¼ãƒ‰',rarity:'â˜…',types:['light','dragon'],huntLevels:{normal:12},
-   hp:118,spd:68,catchRate:.38,evolution:'luxiard',evolutionLevel:2,
-   desc:'é™½ã ã¾ã‚Šã®æ£®ã«ç”Ÿã¾ã‚Œã‚‹å°ã•ãªå…‰ç«œã€‚ä½“å†…ã«é›†ã‚ãŸæœã®å…‰ã‚’åˆ†ã‘ä¸Žãˆã‚‹ã€‚',
-   moves:[["å…‰èŠ½å¼¾",28,"light",null,null,null,null,null,"skill_luxseed_01"],["å¹¼ç«œã®å°¾",24,"dragon",null,null,null,null,null,"skill_luxseed_02"],["æœå…‰ã®æ¯å¹",0,"light","heal",null,null,null,null,"skill_luxseed_03"]]},
-  {id:'luxiard',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'luxiard',no:59,dexNo:40,name:'ãƒ«ã‚¯ã‚·ã‚¢ãƒ¼ãƒ‰',rarity:'â˜…â˜…',types:['light','dragon'],huntLevels:{normal:24,hard:52},
-   evolutionOnly:true,evolution:'lux_galdion',evolutionLevel:3,hp:168,spd:80,catchRate:.17,
-   desc:'ãƒ«ã‚¯ã‚·ãƒ¼ãƒ‰ãŒæœå…‰ã‚’è“„ãˆã¦æˆé•·ã—ãŸå¹¼ç«œã€‚è¼ãè§’ã§ä»²é–“ã‚’å°Žãã€‚',
-   moves:[["ãƒ«ã‚¯ã‚¹ãƒ›ãƒ¼ãƒ³",38,"light",null,null,null,null,null,"skill_luxiard_01"],["å…‰ç«œçˆª",36,"dragon",null,null,null,null,null,"skill_luxiard_02"],["é»Žæ˜Žéšœå£",0,"light","guard",null,null,null,null,"skill_luxiard_03"]]},
-  {id:'lux_galdion',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'lux_galdion',no:60,dexNo:41,name:'ãƒ«ã‚¯ã‚¹ã‚¬ãƒ«ãƒ‡ã‚£ã‚ªãƒ³',rarity:'â˜…â˜…â˜…',types:['light','dragon'],
-   evolutionOnly:true,hp:245,spd:92,catchRate:.07,
-   desc:'ãƒ«ã‚¯ã‚·ã‚¢ãƒ¼ãƒ‰ãŒå®ˆè­·ã®å…‰ã‚’æ¥µã‚ãŸå§¿ã€‚é»„é‡‘ã®å…‰ç¿¼ã§å¤§åœ°ã‚’è¦†ã„ã€é‚ªæ°—ã‚’é€€ã‘ã‚‹ã€‚',
-   moves:[["å®ˆå…‰ç«œç‰™",50,"light",null,null,null,null,null,"skill_lux_galdion_01"],["è–ç«œã®åº‡è­·",0,"light","guard",null,null,null,null,"skill_lux_galdion_02"],["ã‚¬ãƒ«ãƒ‡ã‚£ã‚ªãƒ³ãƒ¬ã‚¤",78,["light","dragon"],null,null,6,"å…‰ã¨ç«œæ°—ã‚’æŸã­ãŸå®ˆè­·ç«œã®å¥”æµã‚’æ”¾ã¤ã€‚",null,"skill_lux_galdion_03"]]},
-  {id:'astralepis',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'astralepis',no:61,dexNo:16,name:'ã‚¢ã‚¹ãƒˆãƒ©ãƒ¬ãƒ”ã‚¹',rarity:'â˜…â˜…',types:['star'],huntLevels:{normal:22,hard:50},
-   hp:150,spd:110,catchRate:.16,
-   desc:'æ˜Ÿç©ºã‚’è»½ã‚„ã‹ã«è·³ã¶è’¼ã„å…Žç£ã€‚é•·ã„è€³ã§æ˜Ÿã®é­”åŠ›ã‚’é›†ã‚ã€å°¾ã«è¼ãã‚’è“„ãˆã‚‹ã€‚',
-   moves:[["æ˜Ÿå…Žè·³",38,"star",null,null,null,null,null,"skill_astralepis_01"],["ã‚¢ã‚¹ãƒˆãƒ©ãƒ«ã‚¹ãƒ†ãƒƒãƒ—",0,"star","buff",null,null,null,null,"skill_astralepis_02"],["æµæ˜Ÿè¹´ã‚Š",60,"star",null,null,null,null,null,"skill_astralepis_03"]]},
-  {id:'galdra',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'galdra',no:64,dexNo:46,name:'ã‚¬ãƒ«ãƒ‰ãƒ©',rarity:'â˜…â˜…',types:['normal','dragon'],
-   hp:148,spd:86,catchRate:0,contractable:false,alchemyExclusive:true,
-   desc:'éŒ¬æˆé™£ã‹ã‚‰ç”Ÿã¾ã‚ŒãŸé»’ã„å¹¼ç«œã€‚èƒ¸ã®è’¼ã„éŒ¬æˆæ ¸ã«åŠ›ã‚’ç§˜ã‚ã€æ¥ãšã‹ã—ãŒã‚ŠãªãŒã‚‰ã‚‚ä¿¡é ¼ã—ãŸç›¸æ‰‹ã®ãã°ã‚’æ‡¸å‘½ã«é£›ã¶ã€‚',
-   moves:[["é»’éŒ¬ç‰™",36,"normal",null,null,null,null,null,"skill_galdra_01"],["å¹¼ç«œç¿¼æ’ƒ",32,"dragon",null,null,null,null,null,"skill_galdra_02"],["è’¼æ ¸ãƒ–ãƒ¬ã‚¹",52,["normal","dragon"],null,null,4,"è’¼ã„éŒ¬æˆæ ¸ã®åŠ›ã‚’æ¯å¹ã¸å¤‰ãˆã¦æ”¾ã¤ã€‚",null,"skill_galdra_03"]]},
-  {id:'kimeragna_apex',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'kimeragna_apex',no:49,dexNo:49,name:'ã‚­ãƒ¡ãƒ©ã‚°ãƒŠãƒ»ã‚¢ãƒšã‚¯ã‚¹',rarity:'â˜…â˜…â˜…â˜…',types:['wind','dragon'],
-   evolutionOnly:true,hp:315,spd:132,catchRate:0,contractable:false,alchemyExclusive:true,
-   desc:'ã‚­ãƒ¡ãƒ©ã‚°ãƒŠãŒæ··æˆé­”åŠ›ã®æ¥µç‚¹ã¸åˆ°é”ã—ãŸå§¿ã€‚é›·å…‰ã¨çŒ›æ¯’ã‚’ã¾ã¨ã„ã€å·¨ç¿¼ã§æˆ¦å ´ã‚’åˆ¶åœ§ã™ã‚‹ã€‚',
-   moves:[["çŒ›æ¯’å¤©ç¿”ç ´",82,"wind","poison",0.6,4,"60ï¼…ã®ç¢ºçŽ‡ã§ç›¸æ‰‹ã‚’3ã‚¿ãƒ¼ãƒ³ã®æ¯’çŠ¶æ…‹ã«ã™ã‚‹ã€‚",null,"skill_kimeragna_apex_01"],["æ··æˆç«œé›·",72,["thunder","dragon"],null,null,6,"é›·ã¨ç«œæ°—ã‚’é‡ã­ãŸæ··æˆé­”åŠ›ã‚’æ”¾ã¤ã€‚",null,"skill_kimeragna_apex_02"],["ã‚¢ãƒšã‚¯ã‚¹ã‚¹ãƒˆãƒ¼ãƒ ",108,["wind","dragon"],"recoil",null,7,"æ¥µé™ã®åµã‚’è§£æ”¾ã™ã‚‹ä»£ã‚ã‚Šã«åå‹•ã‚’å—ã‘ã‚‹ã€‚",null,"skill_kimeragna_apex_03"]]},
-  {id:'elixion',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'elixion',no:50,dexNo:50,name:'è³¢é‡‘ç¥žç«œã‚¨ãƒªã‚¯ã‚·ã‚ªãƒ³',rarity:'â˜…â˜…â˜…â˜…â˜…',types:['normal','dragon'],
-   hp:330,spd:112,catchRate:0,contractable:false,alchemyExclusive:true,
-   desc:'æ˜Ÿå®®ã®è³¢é‡‘ã‹ã‚‰éŒ¬æˆã•ã‚Œã‚‹ç¥žç«œã€‚ç™½éŠ€ã®ä¸€å°¾ã«ç„¡åž¢ãªéŒ¬æˆåŠ›ã¨çŸ¥è­˜ã‚’å®¿ã™ã€æœ€é«˜ä½ã®éŒ¬æˆé™å®šç¨®ã€‚',
-   moves:[["è³¢é‡‘éŒ¬è¼ª",76,"normal",null,null,null,null,null,"skill_elixion_01"],["ç¥žç«œéŒ¬å£",0,"dragon","guard",null,null,null,null,"skill_elixion_02"],["ã‚¨ãƒªã‚¯ã‚·ã‚ªãƒ³ãƒ»ãƒŽãƒ´ã‚¡",112,["normal","dragon"],null,null,8,"ç„¡åž¢ãªéŒ¬æˆåŠ›ã¨ç¥žç«œã®åŠ›ã‚’æŸã­ãŸå¤§çˆ†ç™ºã‚’èµ·ã“ã™ã€‚",null,"skill_elixion_03"]]}
-
-];
-
-/* ===== ãƒ¦ãƒ‹ãƒƒãƒˆèƒ½åŠ›ã‚¿ã‚° =====
- * æŠ€ã®è£…å‚™æ¡ä»¶ã¯å±žæ€§ã ã‘ã§ãªãã€ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼è·ãƒ»æ­¦å™¨ãƒ»ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã®èº«ä½“æ§‹é€ ã‚‚å‚ç…§ã™ã‚‹ã€‚
- * æ—¢å­˜ã®ãƒ¦ãƒ‹ãƒƒãƒˆIDã‚„æŠ€IDã¯å¤‰æ›´ã›ãšã€ã‚¿ã‚°ã¯æ—¢å­˜ãƒ‡ãƒ¼ã‚¿ã¸åŠ ç®—ã™ã‚‹ã€‚
- */
-const UNIT_TAG_GROUPS = Object.freeze([
-  Object.freeze({ids:['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'], tags:['class:swordsman','weapon:sword']}),
-  Object.freeze({ids:['stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer'], tags:['class:mage','weapon:staff','capability:magic']}),
-  Object.freeze({ids:['freigal','freiwolf'], tags:['species:beast','anatomy:fang','anatomy:claw','capability:roar','capability:charge']}),
-  Object.freeze({ids:['aquaron','highaquaron','shenhairon','tienhairon'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:tail','capability:breath','capability:roar','capability:magic']}),
-  Object.freeze({ids:['grassbeat','thornbeat','granbeat'], tags:['species:insect','anatomy:horn','armor:shell','capability:spore','capability:charge']}),
-  Object.freeze({ids:['rikasheef','seralphia'], tags:['species:beast','anatomy:horn','capability:magic','capability:charge']}),
-  Object.freeze({ids:['seralphia'], tags:['anatomy:wing']}),
-  Object.freeze({ids:['nightmare'], tags:['species:spirit','capability:magic']}),
-  Object.freeze({ids:['volteck','spaquinn','voltax'], tags:['species:avian','anatomy:beak','anatomy:wing','capability:magic','capability:charge']}),
-  Object.freeze({ids:['icegolem','proto_icegolem'], tags:['species:construct','anatomy:fist','armor:heavy','capability:charge']}),
-  Object.freeze({ids:['elysia','elysia_prayer'], tags:['species:humanoid','capability:magic']}),
-  Object.freeze({ids:['hikari'], tags:['origin:divine','species:humanoid','capability:magic']}),
-  Object.freeze({ids:['nemes','nemesia','nemesion','doom_nemesion'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:wing','capability:breath','capability:magic']}),
-  Object.freeze({ids:['suiren','tsubaki'], tags:['origin:spirit','species:spirit','capability:magic']}),
-  Object.freeze({ids:['tsubaki'], tags:['anatomy:wing']}),
-  Object.freeze({ids:['slime','slime_gold'], tags:['species:slime','anatomy:body','capability:charge']}),
-  Object.freeze({ids:['goblin'], tags:['species:humanoid','weapon:club','weapon:dagger','capability:roar']}),
-  Object.freeze({ids:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], tags:['species:dragon','origin:construct','anatomy:claw','anatomy:wing','capability:beam','capability:roar','capability:magic']}),
-  Object.freeze({ids:['volmoog','gran_volmoog'], tags:['species:beast','anatomy:claw','armor:heavy','capability:roar','capability:charge']}),
-  Object.freeze({ids:['orcana','orca_stream','orca_abyss'], tags:['species:aquatic','anatomy:fin','anatomy:tail','capability:magic','capability:charge']}),
-  Object.freeze({ids:['alchemion'], tags:['origin:alchemy','species:construct','anatomy:body']}),
-  Object.freeze({ids:['galdra'], tags:['origin:alchemy','species:dragon','anatomy:fang','anatomy:tail','anatomy:wing','capability:breath','capability:magic']}),
-  Object.freeze({ids:['kimeragna','kimeragna_apex'], tags:['origin:alchemy','species:dragon','anatomy:claw','anatomy:wing','capability:breath','capability:charge']}),
-  Object.freeze({ids:['sylphin','zephyray','tempestray'], tags:['species:aquatic','anatomy:fin','anatomy:wing','capability:charge','capability:magic']}),
-  Object.freeze({ids:['ignaros'], tags:['species:beast','anatomy:horn','armor:heavy','capability:charge']}),
-  Object.freeze({ids:['nocle','noclaid','noxvelg'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:wing','capability:breath','capability:roar','capability:magic']}),
-  Object.freeze({ids:['luxseed','luxiard','lux_galdion','elixion'], tags:['species:dragon','anatomy:fang','anatomy:claw','anatomy:tail','anatomy:wing','capability:breath','capability:magic']}),
-  Object.freeze({ids:['elixion'], tags:['origin:alchemy','origin:divine']}),
-  Object.freeze({ids:['astralepis'], tags:['species:beast','anatomy:leg','anatomy:tail','capability:magic','capability:charge']})
-]);
-const UNIT_TAGS_BY_ID = Object.create(null);
-UNIT_TAG_GROUPS.forEach(group => group.ids.forEach(id => {
-  if (!UNIT_TAGS_BY_ID[id]) UNIT_TAGS_BY_ID[id] = [];
-  UNIT_TAGS_BY_ID[id].push(...group.tags);
-}));
-M.forEach(unit => {
-  const baseTags = [
-    `entity:${unit.entityKind}`,
-    ...(unit.types || []).map(type => `element:${type}`)
-  ];
-  unit.tags = Object.freeze([...new Set([...baseTags, ...(UNIT_TAGS_BY_ID[unit.id] || [])])]);
-});
-Object.freeze(UNIT_TAGS_BY_ID);
-
-/* ===== åˆæˆãƒ¬ã‚·ãƒ” ===== */
-const FUSIONS = [
-  {from:'elna_advanced', item:'water_mirror', itemName:'æ°´é¡', count:1, to:'elna_water'},
-  {from:'nemesion', item:'doom_fragment', itemName:'æ»…äº¡ã®ã‚«ã‚±ãƒ©', count:1, to:'doom_nemesion'},
-  {from:'elna_advanced', item:'fire_orb', itemName:'ç‚ŽçŽ‰', count:1, to:'elna_kaen', repeatable:true}
-];
-
-/* ===== ã‚¢ã‚¤ãƒ†ãƒ å®šç¾© ===== */
-const SHOP_ITEMS = [
-  {id:'potion', name:'å›žå¾©è–¬', icon:'ðŸ’Š', price:20, desc:'ãƒãƒˆãƒ«ä¸­ã«HPã‚’50å›žå¾©ã™ã‚‹ã€‚', battleDesc:'å‘³æ–¹ã®HPã‚’50å›žå¾©ã™ã‚‹ã€‚', usableInBattle:true},
-  {id:'upper_potion', name:'ä¸Šå›žå¾©è–¬', icon:'ðŸ’‰', price:40, desc:'ãƒãƒˆãƒ«ä¸­ã«HPã‚’120å›žå¾©ã™ã‚‹ã€‚', battleDesc:'å‘³æ–¹ã®HPã‚’120å›žå¾©ã™ã‚‹ã€‚', usableInBattle:true},
-  {id:'attack_potion', name:'åŠ›ã®è–¬', icon:'âš¡', price:20, desc:'å‘³æ–¹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã®æ”»æ’ƒåŠ›ã‚’å€ã«ã™ã‚‹ã€‚', battleDesc:'ç¾åœ¨æˆ¦ã£ã¦ã„ã‚‹å‘³æ–¹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã®æ”»æ’ƒåŠ›ã‚’2å€ã«ã™ã‚‹ã€‚', usableInBattle:true},
-  {id:'contract_scroll', name:'å¥‘ç´„æ›¸', icon:'ðŸ“œ', price:20, desc:'è¨Žä¼å¾Œã€ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã¨ã®å¥‘ç´„ã‚’è©¦ã¿ã‚‹ãŸã‚ã®æ›¸é¡žã€‚', battleDesc:'è¨Žä¼å¾Œã«ç›¸æ‰‹ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã¨ã®å¥‘ç´„ã‚’è©¦ã¿ã‚‹ã€‚æˆåŠŸã™ã‚‹ã¨æ‰‹æŒã¡ã«åŠ ã‚ã‚‹ã€‚', usableInBattle:false, contract:true, catchMultiplier:1},
-  {id:'silver_contract_scroll', name:'éŠ€ã®å¥‘ç´„æ›¸', icon:'ðŸ“ƒ', price:40, desc:'é€šå¸¸ã®å¥‘ç´„æ›¸ã‚ˆã‚Šå¥‘ç´„æˆåŠŸçŽ‡ãŒé«˜ã„éŠ€è‰²ã®æ›¸é¡žã€‚è¨Žä¼å¾Œã«ä½¿ç”¨ã§ãã‚‹ã€‚', battleDesc:'è¨Žä¼å¾Œã€é€šå¸¸ã®å¥‘ç´„æ›¸ã‚ˆã‚Šé«˜ã„ç¢ºçŽ‡ã§å¥‘ç´„ã‚’è©¦ã¿ã‚‹ã€‚', usableInBattle:false, contract:true, catchMultiplier:2},
-  {id:'gold_contract_scroll', name:'é‡‘ã®å¥‘ç´„æ›¸', icon:'ðŸ“’', price:80, desc:'éŠ€ã®å¥‘ç´„æ›¸ã‚ˆã‚Šå¥‘ç´„æˆåŠŸçŽ‡ãŒã•ã‚‰ã«é«˜ã„é‡‘è‰²ã®æ›¸é¡žã€‚è¨Žä¼å¾Œã«ä½¿ç”¨ã§ãã‚‹ã€‚', battleDesc:'è¨Žä¼å¾Œã€éŠ€ã®å¥‘ç´„æ›¸ã‚ˆã‚Šã•ã‚‰ã«é«˜ã„ç¢ºçŽ‡ã§å¥‘ç´„ã‚’è©¦ã¿ã‚‹ã€‚', usableInBattle:false, contract:true, catchMultiplier:3},
-  {id:'rainbow_contract_scroll', name:'è™¹ã®å¥‘ç´„æ›¸', icon:'ðŸŒˆ', price:160, desc:'é‡‘ã®å¥‘ç´„æ›¸ã‚ˆã‚Šå¥‘ç´„æˆåŠŸçŽ‡ãŒã•ã‚‰ã«é«˜ã„è™¹è‰²ã®æ›¸é¡žã€‚è¨Žä¼å¾Œã«ä½¿ç”¨ã§ãã‚‹ã€‚', battleDesc:'è¨Žä¼å¾Œã€é‡‘ã®å¥‘ç´„æ›¸ã‚ˆã‚Šã•ã‚‰ã«é«˜ã„ç¢ºçŽ‡ã§å¥‘ç´„ã‚’è©¦ã¿ã‚‹ã€‚', usableInBattle:false, contract:true, catchMultiplier:5},
-  {id:'kilo_data', name:'ã‚­ãƒ­ãƒ‡ãƒ¼ã‚¿', icon:'ðŸ’¾', price:0, desc:'ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã«ä¸Žãˆã‚‹ã¨EXPãŒ20å¢—ãˆã‚‹çµŒé¨“å€¤ã‚¢ã‚¤ãƒ†ãƒ ã€‚ã‚¢ã‚¤ãƒ†ãƒ ã‚¬ãƒãƒ£ã§å…¥æ‰‹ã§ãã‚‹ã€‚', expItem:true, expAmount:20, shop:false},
-  {id:'mega_data', name:'ãƒ¡ã‚¬ãƒ‡ãƒ¼ã‚¿', icon:'ðŸ’¿', price:0, desc:'ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã«ä¸Žãˆã‚‹ã¨EXPãŒ100å¢—ãˆã‚‹çµŒé¨“å€¤ã‚¢ã‚¤ãƒ†ãƒ ã€‚ã‚¢ã‚¤ãƒ†ãƒ ã‚¬ãƒãƒ£ã§å…¥æ‰‹ã§ãã‚‹ã€‚', expItem:true, expAmount:100, shop:false},
-  {id:'giga_data', name:'ã‚®ã‚¬ãƒ‡ãƒ¼ã‚¿', icon:'ðŸ§ ', price:0, desc:'ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã«ä¸Žãˆã‚‹ã¨EXPãŒ500å¢—ãˆã‚‹çµŒé¨“å€¤ã‚¢ã‚¤ãƒ†ãƒ ã€‚ã‚¢ã‚¤ãƒ†ãƒ ã‚¬ãƒãƒ£ã§å…¥æ‰‹ã§ãã‚‹ã€‚', expItem:true, expAmount:500, shop:false},
-  {id:'fire_orb', name:'ç‚ŽçŽ‰', icon:'ðŸ”¥', price:0, desc:'ãƒ„ãƒã‚­ãŒè½ã¨ã™ç‚Žã®åŠ›ã‚’å®¿ã—ãŸçµæ™¶ã€‚å°†æ¥ã®åˆæˆãƒ»ç‰¹æ®Šé€²åŒ–ç´ æã¨ã—ã¦ä½¿ç”¨ã§ãã‚‹ã€‚', shop:false},
-  {id:'monster_bone', name:'é­”ç‰©ã®éª¨', icon:'ðŸ¦´', price:25, desc:'é­”ç‰©ã‹ã‚‰å¾—ã‚‰ã‚Œã‚‹ä¸ˆå¤«ãªéª¨ã€‚éŒ¬æˆç´ æã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_monster_bone', name:'ä¸Šè³ªãªé­”ç‰©ã®éª¨', icon:'âœ¨ðŸ¦´', price:60, desc:'å‚·ãŒå°‘ãªãé­”åŠ›ã®é€šã‚ŠãŒè‰¯ã„ä¸Šè³ªãªé­”ç‰©ã®éª¨ã€‚éŒ¬æˆç´ æã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'fine'},
-  {id:'magic_crystal', name:'é­”æ™¶çŸ³', icon:'ðŸ’Ž', price:40, desc:'é­”åŠ›ãŒçµæ™¶åŒ–ã—ãŸçŸ³ã€‚éŒ¬æˆç´ æã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_magic_crystal', name:'ä¸Šè³ªãªé­”æ™¶çŸ³', icon:'âœ¨ðŸ’Ž', price:90, desc:'é«˜å¯†åº¦ã®é­”åŠ›ã‚’è“„ãˆãŸä¸Šè³ªãªé­”æ™¶çŸ³ã€‚éŒ¬æˆç´ æã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'fine'},
-  {id:'metal_ore', name:'é‡‘å±žé‰±çŸ³', icon:'â›ï¸', price:35, desc:'éŒ¬æˆåŠ å·¥ã«é©ã—ãŸé‡‘å±žã‚’å«ã‚€é‰±çŸ³ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_metal_ore', name:'ä¸Šè³ªãªé‡‘å±žé‰±çŸ³', icon:'âœ¨â›ï¸', price:80, desc:'ä¸ç´”ç‰©ãŒå°‘ãªãåŠ å·¥ã—ã‚„ã™ã„ä¸Šè³ªãªé‡‘å±žé‰±çŸ³ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'fine'},
-  {id:'unstable_alchemy_matter', name:'ä¸å®‰å®šéŒ¬æˆç‰©è³ª', icon:'ðŸ§ª', price:50, desc:'æ€§è³ªãŒå®šã¾ã‚‰ãªã„åå¿œæ€§ã®é«˜ã„éŒ¬æˆç´ æã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_unstable_alchemy_matter', name:'ä¸Šè³ªãªä¸å®‰å®šéŒ¬æˆç‰©è³ª', icon:'âœ¨ðŸ§ª', price:110, desc:'ä¸å®‰å®šã•ã®ä¸­ã«é«˜å¯†åº¦ã®éŒ¬æˆåŠ›ã‚’ä¿ã¤ä¸Šè³ªãªç‰©è³ªã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'fine'},
-  {id:'raptor_feather', name:'çŒ›ç¦½ã®ç¾½', icon:'ðŸª¶', price:45, desc:'ç©ºã‚’é§†ã‘ã‚‹çŒ›ç¦½ã‹ã‚‰å¾—ã‚‰ã‚Œã‚‹ã€é¢¨ã®åŠ›ã‚’å¸¯ã³ãŸç¾½ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_raptor_feather', name:'ä¸Šè³ªãªçŒ›ç¦½ã®ç¾½', icon:'âœ¨ðŸª¶', price:100, desc:'å¼·ã„é¢¨ã®é­”åŠ›ã‚’ä¿ã£ãŸå‚·ã®ãªã„çŒ›ç¦½ã®ç¾½ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'fine'},
-  {id:'venom_carapace', name:'æ¯’è™«ã®ç”²æ®»', icon:'ðŸª²', price:50, desc:'æ¯’æ€§ã‚’æ®‹ã—ãŸç¡¬ã„è™«ã®ç”²æ®»ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'normal'},
-  {id:'fine_venom_carapace', name:'ä¸Šè³ªãªæ¯’è™«ã®ç”²æ®»', icon:'âœ¨ðŸª²', price:110, desc:'æ¯’æ€§ã¨å¼·åº¦ã‚’é«˜ã„æ°´æº–ã§ä¿ã¤ä¸Šè³ªãªè™«ã®ç”²æ®»ã€‚', category:'éŒ¬æˆç´ æ', obtain:'ã‚·ãƒ§ãƒƒãƒ—ï¼ãƒãƒˆãƒ«å‹åˆ©å ±é…¬', alchemyMaterial:true, quality:'fine'},
-  {id:'golden_land_map', name:'é»„é‡‘éƒ·ã¸ã®åœ°å›³', icon:'ðŸ—ºï¸', price:0, desc:'ä½¿ç”¨ã™ã‚‹ã¨ã€æ¬¡ã®è¨Žä¼ä¾é ¼å€™è£œã«é»„é‡‘éƒ·ãŒç¢ºå®šã§å‡ºç¾ã™ã‚‹ã€‚é»„é‡‘éƒ·ã¸å‡ºç™ºã—ãŸæ™‚ã«1æžšæ¶ˆè²»ã™ã‚‹ã€‚', category:'ç‰¹æ®Šã‚¢ã‚¤ãƒ†ãƒ ', obtain:'é å¾ã®å¸Œå°‘å ±é…¬ï¼Hardãƒ»Extremeè¨Žä¼ä¾é ¼ã®å‹åˆ©å ±é…¬', shop:false, usableFromDex:true}
-
-];
-const ALCHEMY_MATERIAL_DROPS = Object.freeze([
-  Object.freeze({id:'monster_bone', rate:.06}),
-  Object.freeze({id:'magic_crystal', rate:.055}),
-  Object.freeze({id:'metal_ore', rate:.055}),
-  Object.freeze({id:'unstable_alchemy_matter', rate:.06}),
-  Object.freeze({id:'raptor_feather', rate:.055}),
-  Object.freeze({id:'venom_carapace', rate:.055}),
-  Object.freeze({id:'fine_monster_bone', rate:.018}),
-  Object.freeze({id:'fine_magic_crystal', rate:.017}),
-  Object.freeze({id:'fine_metal_ore', rate:.017}),
-  Object.freeze({id:'fine_unstable_alchemy_matter', rate:.018}),
-  Object.freeze({id:'fine_raptor_feather', rate:.015}),
-  Object.freeze({id:'fine_venom_carapace', rate:.015})
-]);
-const ALCHEMY_ARCHETYPES = Object.freeze([
-  Object.freeze({id:'attack', label:'æ”»æ’ƒåž‹', modifiers:Object.freeze({hp:.90, attack:1.15, speed:1})}),
-  Object.freeze({id:'durability', label:'è€ä¹…åž‹', modifiers:Object.freeze({hp:1.15, attack:1, speed:.90})}),
-  Object.freeze({id:'speed', label:'é€Ÿåº¦åž‹', modifiers:Object.freeze({hp:1, attack:.90, speed:1.15})})
-]);
-const ALCHEMY_MONSTER_CONFIGS = Object.freeze({
-  galdra:Object.freeze({
-    monsterId:'galdra',
-    archetypes:ALCHEMY_ARCHETYPES,
-    exclusiveMoveIndexes:Object.freeze([2])
-  }),
-  alchemion:Object.freeze({
-    monsterId:'alchemion',
-    archetypes:ALCHEMY_ARCHETYPES,
-    exclusiveMoveIndexes:Object.freeze([0])
-  }),
-  kimeragna:Object.freeze({
-    monsterId:'kimeragna',
-    archetypes:ALCHEMY_ARCHETYPES,
-    exclusiveMoveIndexes:Object.freeze([0])
-  }),
-  elixion:Object.freeze({
-    monsterId:'elixion',
-    archetypes:ALCHEMY_ARCHETYPES,
-    exclusiveMoveIndexes:Object.freeze([0, 2])
-  })
-});
-const GALDRA_SUCCESS_CANDIDATES = Object.freeze([
-  Object.freeze({
-    monsterId:'galdra', weight:1, alchemyInstance:true,
-    conditions:Object.freeze({}),
-    unlockConditions:Object.freeze([]),
-    requiredCoinOptionIds:Object.freeze([]),
-    guaranteeConditions:Object.freeze([])
-  })
-]);
-const ALCHEMION_SUCCESS_CANDIDATES = Object.freeze([
-  Object.freeze({
-    monsterId:'alchemion', weight:1, alchemyInstance:true,
-    conditions:Object.freeze({}),
-    unlockConditions:Object.freeze([]),
-    requiredCoinOptionIds:Object.freeze([]),
-    guaranteeConditions:Object.freeze([])
-  })
-]);
-const KIMERAGNA_SUCCESS_CANDIDATES = Object.freeze([
-  Object.freeze({
-    monsterId:'kimeragna', weight:1, alchemyInstance:true,
-    conditions:Object.freeze({}),
-    unlockConditions:Object.freeze([]),
-    requiredCoinOptionIds:Object.freeze([]),
-    guaranteeConditions:Object.freeze([])
-  })
-]);
-const ELIXION_SUCCESS_CANDIDATES = Object.freeze([
-  Object.freeze({
-    monsterId:'elixion', weight:1, alchemyInstance:true,
-    conditions:Object.freeze({}),
-    unlockConditions:Object.freeze([]),
-    requiredCoinOptionIds:Object.freeze([]),
-    guaranteeConditions:Object.freeze([])
-  })
-]);
-const ALCHEMY_FAILURE_CANDIDATES = Object.freeze([
-  'freigal','aquaron','grassbeat','rikasheef','nightmare','volteck','icegolem',
-  'proto_icegolem','nemes','suiren','slime','slime_gold','goblin','volmoog','orcana',
-  'sylphin','ignaros','nocle','luxseed','astralepis'
-].map(monsterId => Object.freeze({
-  monsterId, weight:1, alchemyInstance:false,
-  conditions:Object.freeze({
-    requiresNormalWildMap:true,
-    excludeBossClass:true,
-    excludeEvolutionOnly:true,
-    excludeAlchemyExclusive:true
-  }),
-  unlockConditions:Object.freeze([]),
-  requiredCoinOptionIds:Object.freeze([]),
-  guaranteeConditions:Object.freeze([])
-})));
-const ALCHEMY_HIGH_EVOLUTION_FAILURE_CANDIDATES = Object.freeze([
-  'shenhairon','tienhairon','granbeat','seralphia','voltax','nemesia',
-  'gran_volmoog','orca_stream','tempestray','noxvelg','lux_galdion'
-].map(monsterId => Object.freeze({
-  monsterId, weight:1, alchemyInstance:false,
-  conditions:Object.freeze({
-    requiresEvolutionDefinition:true,
-    exactRarity:3,
-    excludeBossClass:true,
-    excludeAlchemyExclusive:true
-  }),
-  unlockConditions:Object.freeze([]),
-  requiredCoinOptionIds:Object.freeze(['high']),
-  guaranteeConditions:Object.freeze([])
-})));
-const ALCHEMY_ALL_FAILURE_CANDIDATES = Object.freeze([
-  ...ALCHEMY_FAILURE_CANDIDATES,
-  ...ALCHEMY_HIGH_EVOLUTION_FAILURE_CANDIDATES
-]);
-const ALCHEMY_COIN_OPTIONS = Object.freeze([
-  Object.freeze({id:'low', amount:50, bonus:-10, label:'å°‘é¡', minimumFailureRarity:null}),
-  Object.freeze({id:'standard', amount:100, bonus:0, label:'æ¨™æº–', minimumFailureRarity:2}),
-  Object.freeze({id:'high', amount:250, bonus:15, label:'é«˜é¡', minimumFailureRarity:3})
-]);
-const ALCHEMY_RECIPES = Object.freeze([
-  Object.freeze({
-    recipeId:'alchemion_standard',
-    displayName:'éŒ¬æ ¸ç£ã‚¢ãƒ«ã‚±ãƒŸã‚ªãƒ³',
-    materialChoices:Object.freeze([
-      Object.freeze({label:'é­”ç‰©ã®éª¨', normal:'monster_bone', fine:'fine_monster_bone'}),
-      Object.freeze({label:'é­”æ™¶çŸ³', normal:'magic_crystal', fine:'fine_magic_crystal'}),
-      Object.freeze({label:'é‡‘å±žé‰±çŸ³', normal:'metal_ore', fine:'fine_metal_ore'}),
-      Object.freeze({label:'ä¸å®‰å®šéŒ¬æˆç‰©è³ª', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'})
-    ]),
-    coinOptions:ALCHEMY_COIN_OPTIONS,
-    defaultCoinOptionId:'standard',
-    baseSuccessRate:30,
-    fineMaterialBonus:5,
-    minSuccessRate:10,
-    maxSuccessRate:70,
-    successCandidates:ALCHEMION_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
-  }),
-  Object.freeze({
-    recipeId:'galdra_standard',
-    displayName:'ã‚¬ãƒ«ãƒ‰ãƒ©',
-    materialChoices:Object.freeze([
-      Object.freeze({label:'é­”ç‰©ã®éª¨', normal:'monster_bone', fine:'fine_monster_bone'}),
-      Object.freeze({label:'é­”æ™¶çŸ³', normal:'magic_crystal', fine:'fine_magic_crystal'}),
-      Object.freeze({label:'ä¸å®‰å®šéŒ¬æˆç‰©è³ª', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'}),
-      Object.freeze({label:'çŒ›ç¦½ã®ç¾½', normal:'raptor_feather', fine:'fine_raptor_feather'})
-    ]),
-    coinOptions:ALCHEMY_COIN_OPTIONS,
-    defaultCoinOptionId:'standard',
-    baseSuccessRate:30,
-    fineMaterialBonus:5,
-    minSuccessRate:10,
-    maxSuccessRate:70,
-    successCandidates:GALDRA_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
-  }),
-  Object.freeze({
-    recipeId:'kimeragna_standard',
-    displayName:'æ··æˆç¿¼ç«œã‚­ãƒ¡ãƒ©ã‚°ãƒŠ',
-    materialChoices:Object.freeze([
-      Object.freeze({label:'é­”ç‰©ã®éª¨', normal:'monster_bone', fine:'fine_monster_bone'}),
-      Object.freeze({label:'ä¸å®‰å®šéŒ¬æˆç‰©è³ª', normal:'unstable_alchemy_matter', fine:'fine_unstable_alchemy_matter'}),
-      Object.freeze({label:'çŒ›ç¦½ã®ç¾½', normal:'raptor_feather', fine:'fine_raptor_feather'}),
-      Object.freeze({label:'æ¯’è™«ã®ç”²æ®»', normal:'venom_carapace', fine:'fine_venom_carapace'})
-    ]),
-    coinOptions:ALCHEMY_COIN_OPTIONS,
-    defaultCoinOptionId:'standard',
-    baseSuccessRate:30,
-    fineMaterialBonus:5,
-    minSuccessRate:10,
-    maxSuccessRate:70,
-    successCandidates:KIMERAGNA_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
-  }),
-  Object.freeze({
-    recipeId:'elixion_standard',
-    displayName:'è³¢é‡‘ç¥žç«œã‚¨ãƒªã‚¯ã‚·ã‚ªãƒ³',
-    materialChoices:Object.freeze([
-      Object.freeze({label:'é­”æ™¶çŸ³', normal:'magic_crystal', fine:'fine_magic_crystal'}),
-      Object.freeze({label:'é‡‘å±žé‰±çŸ³', normal:'metal_ore', fine:'fine_metal_ore'}),
-      Object.freeze({label:'çŒ›ç¦½ã®ç¾½', normal:'raptor_feather', fine:'fine_raptor_feather'}),
-      Object.freeze({label:'æ¯’è™«ã®ç”²æ®»', normal:'venom_carapace', fine:'fine_venom_carapace'})
-    ]),
-    coinOptions:ALCHEMY_COIN_OPTIONS,
-    defaultCoinOptionId:'high',
-    baseSuccessRate:20,
-    fineMaterialBonus:5,
-    minSuccessRate:10,
-    maxSuccessRate:70,
-    successCandidates:ELIXION_SUCCESS_CANDIDATES,
-    failureCandidates:ALCHEMY_ALL_FAILURE_CANDIDATES
-  })
-]);
-const ALCHEMY_RECIPE_BY_ID = Object.freeze(Object.fromEntries(ALCHEMY_RECIPES.map(recipe => [recipe.recipeId, recipe])));
-const DEFAULT_ALCHEMY_RECIPE_ID = 'alchemion_standard';
-const ITEM_DEX_EXTRA = [
-  {id:'water_mirror', name:'æ°´é¡', icon:'ðŸªž', price:0, desc:'æ°´ã®åŠ›ã‚’æ˜ ã—å‡ºã™ç¥žç§˜çš„ãªé¡ã€‚ç‰¹æ®Šé€²åŒ–ã«ä½¿ç”¨ã™ã‚‹ç´ æã€‚', shop:false, category:'é€²åŒ–ç´ æ', obtain:'ç‰¹æ®Šå ±é…¬ãƒ»ã‚¤ãƒ™ãƒ³ãƒˆã§å…¥æ‰‹'},
-  {id:'doom_fragment', name:'æ»…äº¡ã®ã‚«ã‚±ãƒ©', icon:'ðŸ”»', price:0, desc:'æ»…äº¡ã®åŠ›ãŒå‡ç¸®ã•ã‚ŒãŸå±é™ºãªã‚«ã‚±ãƒ©ã€‚ç‰¹æ®Šé€²åŒ–ã«ä½¿ç”¨ã™ã‚‹ç´ æã€‚', shop:false, category:'é€²åŒ–ç´ æ', obtain:'ç‰¹æ®Šå ±é…¬ãƒ»ã‚¤ãƒ™ãƒ³ãƒˆã§å…¥æ‰‹'}
-];
-const ITEM_IMG = {
-  water_mirror: 'images/items/water_mirror.webp',
-  fire_orb: 'images/items/fire_orb.webp',
-  doom_fragment: 'images/items/doom_fragment.webp'
-};
-/* ===== ã‚¢ã‚¤ãƒ†ãƒ ã‚¬ãƒãƒ£ãƒ»çµŒé¨“å€¤ãƒ‡ãƒ¼ã‚¿ ===== */
-const ITEM_GACHA_COST = 100;
-const ITEM_GACHA_POOL = [
-  {id:'potion', weight:25},
-  {id:'upper_potion', weight:20},
-  {id:'attack_potion', weight:10},
-  {id:'kilo_data', weight:20},
-  {id:'mega_data', weight:15},
-  {id:'giga_data', weight:5},
-  {id:'contract_scroll', weight:3},
-  {id:'silver_contract_scroll', weight:1.5},
-  {id:'gold_contract_scroll', weight:0.4},
-  {id:'rainbow_contract_scroll', weight:0.1}
-];
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíßuÕ:-jZ.¶›­–)Þ³RòòÒÒÒyK¾X8þ88~8;Î8+þ8þ8>8>8¾hËþXZ^8^8(Î8(²ÒÒÐ¦6öç7B”Ôs×°¢÷&6ö'—73¢v–ÖvW2öÖöç7FW'2ö÷&6ö'—72çvV'rÀ¢÷&6÷7G&VÓ¢v–ÖvW2öÖöç7FW'2ö÷&6÷7G&VÒçvV'rÀ¢÷&6æ¢v–ÖvW2öÖöç7FW'2ö÷&6æçvV'rÀ¢ÇVÖ–æ÷6÷&6W&W#¢v–ÖvW2öÖöç7FW'2öÇVÖ–æ÷6÷&6W&W"çvV'rÀ¢ÇVÖ–æ÷v—¦&C¢v–ÖvW2öÖöç7FW'2öÇVÖ–æ÷v—¦&BçvV'rÀ¢ÇVÖ–æö&VçF–6S¢v–ÖvW2öÖöç7FW'2öÇVÖ–æö&VçF–6RçvV'rÀ¢7FVÆÆ÷6÷&6W&W#¢v–ÖvW2öÖöç7FW'2÷7FVÆÆ÷6÷&6W&W"çvV'rÀ¢7FVÆÆ÷v—¦&C¢v–ÖvW2öÖöç7FW'2÷7FVÆÆ÷v—¦&BçvV'rÀ¢7FVÆÆö&VçF–6S¢v–ÖvW2öÖöç7FW'2÷7FVÆÆö&VçF–6RçvV'rÀ¢w&å÷föÆÖöös¢v–ÖvW2öÖöç7FW'2öw&å÷föÆÖöörçvV'rÀ¢föÆÖöös¢v–ÖvW2öÖöç7FW'2÷föÆÖöörçvV'rÀ¢&÷Fõö–6VvöÆVÓ¢v–ÖvW2öÖöç7FW'2÷&÷Fõö–6VvöÆVÒçvV'rÀ¢6W&Ç†–¢v–ÖvW2öÖöç7FW'2÷6W&Ç†–çvV'rÀ¢&–¶6†VVc¢v–ÖvW2öÖöç7FW'2÷&–¶6†VVbçvV'rÀ¢fÇ6UöG&vöåövÖÖ¢&–ÖvW2öÖöç7FW'2öfÇ6UöG&vöåövÖÖçvV'"À¢fÇ6UöG&vöåö&WF¢&–ÖvW2öÖöç7FW'2öfÇ6UöG&vöåö&WFçvV'"À¢fÇ6UöG&vöåöÆf¢&–ÖvW2öÖöç7FW'2öfÇ6UöG&vöåöÆfçvV'"À¢föÇFƒ¢&–ÖvW2öÖöç7FW'2÷föÇF‚çvV'"À¢7V–æã¢&–ÖvW2öÖöç7FW'2÷7V–æâçvV'"À¢vö&Æ–ã¢&–ÖvW2öÖöç7FW'2övö&Æ–âçvV'"À¢6Æ–ÖUövöÆC¢&–ÖvW2öÖöç7FW'2÷6Æ–ÖUövöÆBçvV'"À¢6Æ–ÖS¢&–ÖvW2öÖöç7FW'2÷6Æ–ÖRçvV'"À¢w&æ&VC¢&–ÖvW2öÖöç7FW'2öw&æ&VBçvV'"À¢F†÷&æ&VC¢&–ÖvW2öÖöç7FW'2÷F†÷&æ&VBçvV'"À¢VÆævFW#¢&–ÖvW2öÖöç7FW'2öVÆæ÷vFW"çvV'"À¢7V—&Vã¢&–ÖvW2öÖöç7FW'2÷7V—&VâçvV'"À¢VÆæGfæ6VC¢&–ÖvW2öÖöç7FW'2öVÆæöGfæ6VBçvV'"À¢VÆæÖ–FFÆS¢&–ÖvW2öÖöç7FW'2öVÆæöÖ–FFÆRçvV'"À¢VÆæ¢&–ÖvW2öÖöç7FW'2öVÆæö&Vv–ææW"çvV'"À¢FööÔæVÖW6–öã¢&–ÖvW2öÖöç7FW'2öFööÕöæVÖW6–öâçvV'"À¢æVÖW6–öã¢&–ÖvW2öÖöç7FW'2öæVÖW6–öâçvV'"À¢æVÖW6–¢&–ÖvW2öÖöç7FW'2öæVÖW6–çvV'"À¢æVÖW3¢&–ÖvW2öÖöç7FW'2öæVÖW2çvV'"À¢&6–46†'C¢&–ÖvW2öÖöç7FW'2ö&6–46†'BçvV'"À¢7V6–Ä6†'C¢&–ÖvW2öÖöç7FW'2÷7V6–Ä6†'BçvV'"À¢–6VvöÆVÓ¢&–ÖvW2öÖöç7FW'2ö–6VvöÆVÒçvV'"À¢föÇFV6³¢&–ÖvW2öÖöç7FW'2÷föÇFV6²çvV'"À¢æ–v‡FÖ&S¢&–ÖvW2öÖöç7FW'2öæ–v‡FÖ&RçvV'"À¢6†Væ†—&öã¢&–ÖvW2öÖöç7FW'2÷6†Væ†—&öâçvV'"À¢F–Væ†—&öã¢&–ÖvW2öÖöç7FW'2÷F–Væ†—&öâçvV'"À¢†–v†V&öã¢&–ÖvW2öÖöç7FW'2ö†–v†V&öâçvV'"À¢w&76&VC¢&–ÖvW2öÖöç7FW'2öw&76&VBçvV'"À¢V&öã¢&–ÖvW2öÖöç7FW'2öV&öâçvV'"À¢g&V—vöÆc¢&–ÖvW2öÖöç7FW'2ög&V—vöÆbçvV'"À¢g&V–vÃ¢&–ÖvW2öÖöç7FW'2ög&V–vÂçvV'"À¢vöFFW73¢&–ÖvW2öÖöç7FW'2ö†–¶&’çvV'"À¢VÇ—6–÷&öÆöwVS¢&–ÖvW2öÖöç7FW'2öVÇ—6–÷&öÆöwVU÷cçvV'"À¢VÇ—6–÷&–W#¢&–ÖvW2öÖöç7FW'2öVÇ—6–÷&–W%÷cçvV'"À¢VÇ—6–övöFFW73¢&–ÖvW2öÖöç7FW'2öVÇ—6–övöFFW75÷cçvV'"À¢vÆG&¢&–ÖvW2öÖöç7FW'2övÆG&÷cçvV'"À¢G7V&¶“¢v–ÖvW2öÖöç7FW'2÷G7V&¶’çvV'rÀ¢VÆæ¶Vã¢v–ÖvW2öÖöç7FW'2öVÆæö¶VâçvV'rÀ¢Æ6†VÖ–öã¢v–ÖvW2öÖöç7FW'2öÆ6†VÖ–öâçvV'rÀ¢¶–ÖW&væ¢v–ÖvW2öÖöç7FW'2ö¶–ÖW&væçvV'rÀ¢7–Ç†–ã¢v–ÖvW2öÖöç7FW'2÷7–Ç†–âçvV'rÀ¢¦W‡—&“¢v–ÖvW2öÖöç7FW'2÷¦W‡—&’çvV'rÀ¢FV×W7G&“¢v–ÖvW2öÖöç7FW'2÷FV×W7G&’çvV'rÀ¢–væ&÷3¢v–ÖvW2öÖöç7FW'2ö–væ&÷2çvV'rÀ¢æö6ÆS¢v–ÖvW2öÖöç7FW'2öæö6ÆRçvV'rÀ¢æö6Æ–C¢v–ÖvW2öÖöç7FW'2öæö6Æ–BçvV'rÀ¢æ÷‡fVÆs¢v–ÖvW2öÖöç7FW'2öæ÷‡fVÆrçvV'rÀ¢ÇW‡6VVC¢v–ÖvW2öÖöç7FW'2öÇW‡6VVBçvV'rÀ¢ÇW†–&C¢v–ÖvW2öÖöç7FW'2öÇW†–&BçvV'rÀ¢ÇW…övÆF–öã¢v–ÖvW2öÖöç7FW'2öÇW…övÆF–öâçvV'rÀ¢7G&ÆW—3¢v–ÖvW2öÖöç7FW'2ö7G&ÆW—2çvV'rÀ¢¶–ÖW&væöWƒ¢v–ÖvW2öÖöç7FW'2ö¶–ÖW&væöW‚çvV'rÀ¢VÆ—†–öã¢v–ÖvW2öÖöç7FW'2öVÆ—†–öâçvV'p§Ó°¦6öç7BÔ”Ôs×°¢Öv–5ö6FV×“¢v–ÖvW2öÖ2öÖv–5ö6FV×’çvV'rÀ¢w&76ÆæC¢v–ÖvW2öÖ2öw&76ÆæBçvV'rÀ¢föÆ6æó¢v–ÖvW2öÖ2÷föÆ6æòçvV'rÀ¢Æ¶S¢v–ÖvW2öÖ2öÆ¶RçvV'rÀ¢6æ÷uöÖ÷VçF–ã¢v–ÖvW2öÖ2÷6æ÷uöÖ÷VçF–âçvV'rÀ¢7F'6V¢v–ÖvW2öÖ2÷7F'6VçvV'rÀ¢vFW%÷6V7&WC¢v–ÖvW2öÖ2÷vFW%÷6V7&WBçvV'rÀ¢v÷&ÆEö&WGvVVã¢v–ÖvW2öÖ2÷v÷&ÆEö&WGvVVâçvV'rÀ¢f÷&W7C¢&–ÖvW2öÖ2öf÷&W7BçvV'"À¢'V–æVE÷f–ÆÆvS¢&–ÖvW2öÖ2÷'V–æVE÷f–ÆÆvRçvV'"À¢Æ–v‡E÷Æ–ã¢&–ÖvW2öÖ2öÆ–v‡E÷Æ–âçvV'"À¢7F''•÷Æ–ã¢v–ÖvW2öÖ2÷7F''•÷Æ–âçvV'p¢À¢†–v†ÆæE÷'V–ç3¢v–ÖvW2öÖ2ö†–v†ÆæE÷'V–ç2çvV'rÀ¢&Væ¢v–ÖvW2öÖ2ö&VæçvV'rÀ¢6V–¶•ö—&–S¢v–ÖvW2öÖ2÷6V–¶•ö—&–RçvV'rÀ¢¶——Uö¶––¶“¢v–ÖvW2öÖ2ö¶——Uö¶––¶’çvV'rÀ¢FVW÷6VöVæC¢v–ÖvW2öÖ2öFVW÷6VöVæBçvV'rÀ¢¶Vå÷f–ÆÆvS¢v–ÖvW2öÖ2ö¶Vå÷f–ÆÆvRçvV'rÀ¢vöÆFVåöÆæC¢v–ÖvW2öÖ2övöÆFVåöÆæBçvV'p§Ó° ¢ò¢ÓÓÓÓÒ89î88>89~88~8;Î8+òÓÓÓÓÒ¢ð¦6öç7BÔ2Ò°¢¶–C¢vw&76ÆæBrÂæÖS¢~ˆØžXéòrÂ–ÖvS¤Ô”Ôræw&76ÆæBÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~KŠÞZJî[›>XéòrÂFW63¢~ix^8îZx¾8î8(®8¾[¨>8Î8(¾z˜þ8(N8¾8®ˆØžXéþ8.j:î8;¾™»~8;¾xJ[îh
+~8îyIþ8Þxšž8ÎŠÎ8ÞKªN8n8"rÂV6÷7—7FVÓ¢~KŠÞZJî[›>Xéþ8~8þ8ˆØžiÊŽ8ŽZJ~YË8¾k¨88(¾šÙNX©¾8).‹[~x+ž8¾8[þYè¾zŠî8ˆØžš9þzŠî8z›®8îhÙ^š9þˆ^8Ž8ŽYÞ8Î8N8®8Î8>8n8N8(¾8.8+ž8:ž8*N8:8þiêþˆØž8(Njè¾yYžšÙNX©¾8).Xùn8(®‹ëÎ8)>8~šH®Xˆn8).YÉþ8Žh‹¾8~8š*Ž8).k;>88+~8:¾89^8*>8;>{;¾8þˆ«{(ž8(NzŠîZÙ8).˜¾8n8.™»~™».8Î‹ù8^8þ8Ž89Î8:¾88n88>8*þ{;¾8(.™¸n8î8(®8™h¾88þz›®8ŽYËKˆ®8).Xˆn8YŽ8nZI®[îh
+~8îyIþhX¾{;¾8Î[Ú.8^8þ8(ž8(Î8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~ˆØžXéþ8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þ8š9þ8ž8(ž8(Î8(¾XN8¾8(žš9þ8ž8(¾XN8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾š.x+žhÙ^š9þˆRrÆ–G3¥²wföÇF‚uÒÆFWF–Ã¢~™»~™».Kˆ¾8îKˆ®z›®8).{ˆN[Ë^8(®8Ž8~8[þYè¾zŠî8(Nˆº^8NX¾KÙ>8).x¹ž8n8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾z›®8îhÙ^š9þˆRrÆ–G3¥²wföÇFV6²rÂw7V–æâuÒÆFWF–Ã¢~ˆØž‰š¾8(N[þYè¾zŠî8).hÙ^8(ž8Ž8ˆØžXéþ8~Z)~8Ž8ž8î8(¾yIþxšž8).h©8Ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾hêš9þˆRrÆ–G3¥²vw&76&VBrÂw&–¶6†VVbrÂw6W&Ç†–rÂw7–Ç†–ârÂw¦W‡—&’uÒÆFWF–Ã¢~ˆØž8(Nˆº^‰ž8).š9þ8ž8ˆ«{(ž8(NzŠîZÙ8).˜¾8)>8~ˆØžXéþ8îjHÞyIþ8).[¨>8.8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾yIþyJ>Yû®yºBrÆÆ&VÇ3¥²~ˆØž8;¾˜xîˆ«8;¾KØîiÊ‚rÂ~™›ÞXXž8Ž™º‚rÂ~ZJ~YË8îšÙNX©²uÒÆFWF–Ã¢~jHÞxšž8ÎXXž8kN8YÉþZ8Î8îšÙNX©¾8).Xùn8(®‹ëÎ8þ8yIþhX¾{;¾8îXZ^Xú>8).8N8þ8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRrÂw6Æ–ÖUövöÆBuÒÆFWF–Ã¢~iêþˆØž8(Njè¾yYžšÙNX©¾8).Xùn8(®‹ëÎ8þ8šH®Xˆn8).YÉþ8Žh‹¾8ž8"wÒÀ¢·&öÆS¢~ZIn˜:Ž8¾8(ž8îiÚ^ŠŠ®ˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~{êN8(Î8~ˆØžXéþ8).jŠ®ijÞ8~8iÊŽ8îZéþ8(N{JiÙ8).™¸n8(8(¾˜®X¹^h
+~8î™¹š9þˆ^8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²w6Æ–ÖRrÂvw&76&VBrÂwföÇFV6²rÂw6Æ–ÖUövöÆBrÂvvö&Æ–ârÂw7V–æârÂwföÇF‚rÂw&–¶6†VVbrÂw6W&Ç†–rÂw7–Ç†–ârÂw7–Ç†–ârÂw¦W‡—&’u×ÒÀ¢¶–C¢wföÆ6æòrÂæÖS¢~x¾[rÂ–ÖvS¤Ô”ÔrçföÆ6æòÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~XÙ~˜:Žx¾[[ŠòrÂFW63¢~xÎxk8îk«n[*ž8Žx¾[x8¾Šhn8(þ8(Î8þXÛ™›®YË[Šþ8.x¾8¾˜ž[ùÎ8~8þ8:.8;>8+ž8+þ8;Î8ÎZI®8N8"rÂV6÷7—7FVÓ¢~š¹Žxk8¾ˆ	8Ž8(¾x¾[îh
+~zŠî8ÎKŠÞ[ø>8.x¾[x8î[*žZN8¾8þ8+N89n8:®8;>8(.XZ^8(®‹ëÎ8þ8x(î8î{+î™È®8(NxÚ>8ŽyIþhþYùþ8).Xˆn8YŽ8>8n8N8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~x¾[8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þx¾[8îxk8ŽYËxkšÙNX©¾8ÎyIþxšž8ŽkŠ8(¾kX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾x¾Xú>8îZJ~Yè¾xÚ2rÆ–G3¥²v–væ&÷2uÒÆFWF–Ã¢~x¾Xú>K¹Ž‹ù8).{ˆN[Ë^8(®8Ž8~8xk8).˜ê~8ŽZHž8Ž8n˜î˜[~8®y+Z(>8).XÚiÈž8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾[*žZN8îhÙ^š9þˆRrÆ–G3¥²vg&V—vöÆbuÒÆFWF–Ã¢~x¾[iiÎ™Ú.8).[zY¹î8~8[þYè¾zŠî8îZ)~8Ž8ž8î8).h©8Ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾ˆ	xkyIþxš’rÆ–G3¥²vg&V–vÂrÂwG7V&¶’uÒÆFWF–Ã¢~YËxk8(Nx¾8îšÙNX©¾8).Xùn8(®‹ëÎ8þ8k«n[*ž8¾8(ž™º.8(Î8þ[*žZN8¾8(.kK¾X¹^Yùþ8).[¨>8.8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾yIþyJ>Yû®yºBrÆÆ&VÇ3¥²~ˆ	xkˆ¹N8;¾YËŠ>šârÂ~x¾[x8î˜›xš’rÂ~YËxk8Žx¾8îšÙNX©²uÒÆFWF–Ã¢~8(þ8®8¾8®jHÞyIþ8Ž˜›xšž8YËxkšÙNX©¾8Îx¾[8îyIþYÞ8).iJþ8Ž8(¾XZ^Xú>8Ž8®8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥··&öÆS¢~ZIn˜:Ž8¾8(ž8îhê™¸nˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~x¾[x8î[*žZN8ŽXZ^8(®8ˆ	xkjHÞxšž8(N˜›yû>8).hÈ8[‹8(¾8"wÕÐ¢ÒÀ¢VæV×”–G3¥²vg&V–vÂrÂvg&V–vÂrÂvg&V—vöÆbrÂwG7V&¶’rÂwG7V&¶’rÂvvö&Æ–ârÂv–væ&÷2u×ÒÀ¢¶–C¢vÆ¶RrÂæÖS¢~k™brÂ–ÖvS¤Ô”ÔræÆ¶RÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~KŠÞZJîkNYùòrÂFW63¢~kèN8)>8kN8).8þ8þ8Ž8(¾™Ùž8¾8®k™n8.kN‹ë®8).Z[Þ8(8:.8;>8+ž8+þ8;Î8Î™¸n8î8(¾8"rÂV6÷7—7FVÓ¢~8*.8*þ8*.8:Þ8;>{;¾8®8žkN‹ë®8).Z[Þ8(zŠî8ÎK‹¾[Ûž8.Xk~k	~8).[Šþ8>8þX¾KÙ>8(N™›Ž8¾8(žŠŠ®8(Î8(¾zŠî8(.Šh¾8(ž8(Î8kN™©¾8¾yIþxšž8Î™¸n8î8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~k™n8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þkNˆØž8®8ž8¾8(žkN‹ë®8îyIþxšž8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃ>[N8;¾k™n8îZJ~Yè¾z¹ÂrÆ–G3¥²v†–v†V&öâuÒÆFWF–Ã¢~k{8þ8Ž[+Ž‹ë®8).ŠÎ8ÞiÚ^8~8[þYè¾8îkNj;.yIþxšž8ÎZ)~8Ž8ž8î8(¾8î8).h©8Ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾kX^x
+Î8îhêš9þˆRrÆ–G3¥²vV&öâuÒÆFWF–Ã¢~kNˆØž8(N[þ8^8®kNyIþyIþxšž8).k.8(8nkX^x
+Î8¾™¸n8î8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾yIþyJ>Yû®yºBrÆÆ&VÇ3¥²~kNˆØž8;¾‰{¾šârÂ~[þ8^8®kNyIþyIþxš’rÂ~™›ÞXXž8Žkˆ^kBuÒÆFWF–Ã¢~kX^x
+Î8Ž[®8þXXž8ÎkNˆØž8(N‰{¾šî8).ˆ+.8n8k™n8îš9þxšž{k.8).iJþ8Ž8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~kN8î[ê®y+ˆRrÆ–G3¥²w7V—&VâuÒÆFWF–Ã¢~kˆ^kX8îšÙNX©¾8).[z8(ž8¾8kN8îkø8(®8(Nkx8þ8).h©8Ž8(¾8"wÒÀ¢·&öÆS¢~k™nyYN8Ž8îiÚ^ŠŠ®ˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~[+Ž‹ë®8~iÊŽ8îZéþ8(NkNyIþ{JiÙ8).™¸n8(8(¾™¹š9þˆ^8"wÒÀ¢·&öÆS¢~XúNKº>8îK«®[z^X¾KÙ2rÆ–G3¥²w&÷Fõö–6VvöÆVÒuÒÆFWF–Ã¢~k~jŽ8~X¹^8þZÙŽYÊŽ8~8ˆz®xKn8îš9þxšž˜
+>˜én8Ž8þXŠ^8¾k™nyYN8).[zY¹î8ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²vV&öârÂv†–v†V&öârÂw7V—&VârÂvvö&Æ–ârÂw&÷Fõö–6VvöÆVÒu×ÒÀ¢¶–C¢w6V–¶•ö—&–RrÂæÖS¢~‰+Îk[~8îXZ^8(®kòrÂ–ÖvS¤Ô”Ôrç6V–¶•ö—&–RÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~‰+Îk[~YËik’rÂFW63¢~™Ù.8Nk[~8Ž[*žzH8ÎXZ^8(®{XN8(XZ^8(®kþ8.kX^x
+Î8¾8(žZInkH¾h
+~8îkNj;.zŠî8î8~Z{þ8).Šh¾8¾8(¾8"rÂV6÷7—7FVÓ¢~kX^x
+Î8¾8þ8*.8*þ8*.8:Þ8;>{;¾8ÎZI®8þ8[*žzH8îZInXN8¾8þ8*®8:¾8*¾8;Î88®{;¾8(Nk[~z¹Î8Îxûî8(Î8(¾8.[+Ž8¾8(žk)n8Ž˜.8(8¾8žZJ~Yè¾8îkNj;.zŠî8ÎZ)~8Ž8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~‰+Îk[~8îXZ^8(®kþ8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þkX^x
+Î8îyIþyJ>Yû®yºN8¾8(žk)n8îZJ~Yè¾zŠî8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾k)n8îk[~z¹ÂrÆ–G3¥²w6†Væ†—&öârÂwF–Væ†—&öâuÒÆFWF–Ã¢~XZ^8(®kþ8îZIn{ˆ8).Y¹î˜®8~8[¨>8Nk[~Yùþ8îYØ~Š8).KùÞ8NZJ~Yè¾zŠî8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾š¹Ž˜	þ˜®k;>ˆRrÆ–G3¥²v÷&6÷7G&VÒuÒÆFWF–Ã¢~[*žzH8îZInXN8).ykî‹[8~8{êN8(Î8îX¹^8Þ8).i[N8Ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾k+þ[+Ž8î˜®k;>ˆRrÆ–G3¥²v†–v†V&öârÂv÷&6æuÒÆFWF–Ã¢~[þšÙ®8(NkÈ.8nšÙNX©¾8).k.8(8kX^x
+Î8Žk)n8îZ(>yXÎ8).ŠÎ8ÞiÚ^8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾kX^x
+Î8îhêš9þˆRrÆ–G3¥²vV&öâuÒÆÆ&VÇ3¥²~k[~ˆØž8;¾‰{¾šârÂ~89~8:ž8;>8*þ88Ž8;2uÒÆFWF–Ã¢~XXž8î[®8þkX^x
+Î8~ˆ+.8Nk[~ˆØž8(N[þ8^8®yIþxšž8).XŠžyJŽ8ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²vV&öârÂvV&öârÂvV&öârÂvV&öârÂvV&öârÂvV&öârÂvV&öârÂvV&öârÂvV&öârÂvV&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂw6†Væ†—&öârÂwF–Væ†—&öârÂv÷&6÷7G&VÒu×ÒÀ¢¶–C¢v¶——Uö¶––¶’rÂæÖS¢~Y¹î˜®k[~YùòrÂ–ÖvS¤Ô”Ôræ¶——Uö¶––¶’Â6†FW#¢~[¨þzºrÂ&Vv–öã¢~‰+Îk[~YËik’rÂFW63¢~[zŽZJ~8®k[~kX8Î[z8(¾ZInkH¾8.{êN8(Î8Ž8Ž8(.8¾[Ë~X©¾8®kNj;.8:.8;>8+ž8+þ8;Î8ÎY¹î˜®8ž8(¾8"rÂV6÷7—7FVÓ¢~k[~kX8¾k+þ8>8n88þ8*N8*.8*þ8*.8:Þ8;>8Ž8*®8:¾8*¾8;Î88®{;¾8î{êN8(Î8ÎY¹î˜®8ž8(¾8.k[~z¹Î8(NZJ~Yè¾zŠî8(.k{~8n8(¾8kN[îh
+~8¾ZJ~8Þ8þXþ8>8þZInkH¾yIþhX¾{;¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~Y¹î˜®k[~Yùþ8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þk[~kX8Î˜¾8njNšH®8¾8(žZJ~Yè¾8îY¹î˜®zŠî8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾k{k[~8îiJþ˜XÞzŠârÆ–G3¥²v÷&6ö'—72uÒÆFWF–Ã¢~k{8þ8¾8(žY¹î˜®‹zþ8Žxûî8(Î8ZJ~Yè¾zŠî8Î™¸nKŠÞ8ž8(¾ZNh˜8).iJþ˜XÞ8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾ZJ~Yè¾Y¹î˜®zŠârÆ–G3¥²w6†Væ†—&öârÂwF–Væ†—&öârÂv÷&6÷7G&VÒuÒÆFWF–Ã¢~[¨>8Nk[~Yùþ8).z{¾X¹^8~8k[~kX8¾k+þ8n{êN8(Î8îKˆ®KØÞ8).XÚ8(8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾{êN8(Î8î˜®k;>ˆRrÆ–G3¥²v†–v†V&öârÂv÷&6æuÒÆFWF–Ã¢~k[~kX8Î˜¾8n[þšÙ®8(NšÙNX©¾8).‹ûÞ8>8nZJ~8Þ8®{êN8(Î8).8N8þ8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾ZInkH¾8îyIþyJ>Yû®yºBrÆÆ&VÇ3¥²~jHÞxšž89~8:ž8;>8*þ88Ž8;2rÂ~[þšÙ®8;¾[êî[þyIþxš’rÂ~k[~kX8îjNšH®Z’uÒÆFWF–Ã¢~iz^XXž8Žkš~iˆ~kX8Î[êî[þ8®yIþxšž8).ˆ+.8n8™[~8NY¹î˜®‹zþ8).iJþ8Ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²v†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv†–v†V&öârÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂv÷&6ærÂw6†Væ†—&öârÂw6†Væ†—&öârÂw6†Væ†—&öârÂw6†Væ†—&öârÂwF–Væ†—&öârÂwF–Væ†—&öârÂwF–Væ†—&öârÂwF–Væ†—&öârÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6ö'—72u×ÒÀ¢¶–C¢vFVW÷6VöVæBrÂæÖS¢~k{8Þk[~8îiéÎ8brÂ–ÖvS¤Ô”ÔræFVW÷6VöVæBÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~‰+Îk[~YËik’rÂFW63¢~XXž8î[®8¾8®8Nk{k[~8îiÈZZ^8.k{k{^8¾˜ž[ùÎ8~8þ[Ë~ZJ~8®ZÙŽYÊŽ8ÎkÙÎ8(8"rÂV6÷7—7FVÓ¢~i©~8Nk{k[~8¾8þ8*®8:¾8*¾8+ž88Ž8:®8;Î8:8Žk[~z¹Î8ÎZé®yØ8~8iÈZZ^8~8þ8*®8:¾8*¾8*.89>8+ž8ÎZ{þ8).Šh¾8¾8(¾8.[	i[8î[Ë~X©¾8®kNj;.zŠî8Ž™¸nKŠÞ8~8þyIþhX¾{;¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~k{8Þk[~8îiéÎ8n8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þk(Ž™˜Þxšž8(Nk{k[~šÙNX©¾8¾8(žZJ~Yè¾zŠî8ŽkŠ8(¾hêŽZé®Kˆ®8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾k{k{^8îiJþ˜XÞzŠârÆ–G3¥²v÷&6ö'—72uÒÆFWF–Ã¢~iÈZZ^8îš¹ŽZøn[ªn8®šÙNX©¾Yùþ8).XÚiÈž8~88¾8¾8îZJ~Yè¾zŠî8).˜8n88(¾8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾Zé®yØ8ž8(¾k[~z¹ÂrÆ–G3¥²w6†Væ†—&öârÂwF–Væ†—&öâuÒÆFWF–Ã¢~k[~[©^YË[Ú.8¾k+þ8>8nz{¾X¹^8~8k{k[~8î™™8(ž8(Î8þ‹8~k©8).XŠžyJŽ8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾k{k[~8î˜®k;>ˆRrÆ–G3¥²v÷&6÷7G&VÒuÒÆFWF–Ã¢~Kˆ®[N8¾8(žk(Ž8(šHÎ8(NšÙNX©¾8).‹ûÞ8N8i©~8NkN[N8).[¨>8þ[z8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾k{k[~8îKé¾{Znk©rÆÆ&VÇ3¥²~89î8:®8;>8+ž88î8;ÂrÂ~k[~[©^8î[êî[þyIþxš’rÂ~k{k[~8îšÙNX©²uÒÆFWF–Ã¢~Kˆ®[N8¾8(žk(Ž8(iÈžj™þxšž8Žk[~[©^8îšÙNX©¾8Î8XXž8î8®8Ny+Z(>8).iJþ8Ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²v÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂv÷&6÷7G&VÒrÂw6†Væ†—&öârÂw6†Væ†—&öârÂw6†Væ†—&öârÂw6†Væ†—&öârÂwF–Væ†—&öârÂwF–Væ†—&öârÂwF–Væ†—&öârÂwF–Væ†—&öârÂv÷&6ö'—72rÂv÷&6ö'—72rÂv÷&6ö'—72u×ÒÀ¢¶–C¢w6æ÷uöÖ÷VçF–ârÂæÖS¢~™º®[rÂ–ÖvS¤Ô”Ôrç6æ÷uöÖ÷VçF–âÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~XÉ~˜:Ž[[+2rÂFW63¢~Kˆ[›N8).˜	®8Ž8n™º®8Žk~8¾™hž8n8^8(Î8þ[[+>8.Zù.Xk~YË8¾[Ë~8NzŠî8ÎyIþhþ8ž8(¾8"rÂV6÷7—7FVÓ¢~k~8¾˜ž[ùÎ8~8þ8+N8;Î8:Î8:šî8).KŠÞ[ø>8¾8kN‹ë®8îzŠî8(NKˆˆŠÎzŠî8(.Zù.Xk~YË8ŽXZ^8(®‹ëÎ8(8.zŠîi[8þ™™8(ž8(Î8(¾8Î8ˆ	Zù.h
+~8îš¹Ž8NyIþxšž8Îjè¾8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~™º®[8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þK˜þ8~8NjHÞyIþ8Ž™º®Šz>8kN8¾8(žˆ	Zù.zŠî8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃ>[N8;¾k~™º®8îZJ~Yè¾X¾KÙ2rÆ–G3¥²v–6VvöÆVÒuÒÆFWF–Ã¢~k~k+>8îšÙNX©¾8¾8(žyIþ8î8(Î8™º®Xéþ8î[¨>8NzøNY».8).8(n8>8þ8(®[z8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾™º®Šz>8kN8îKØþK«¢rÆ–G3¥²vV&öâuÒÆFWF–Ã¢~XxÞ8(ž8®8NkNZN8Ž™¸n8î8(®8[þ8^8®kNyIþyIþxšž8).XŠžyJŽ8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾Zù.Xk~YË8îYû®yºBrÆÆ&VÇ3¥²~YËŠ>šî8;¾Zù.YËˆ¹BrÂ~™º®Šz>8kBrÂ~k~k+>8îšÙNX©²uÒÆFWF–Ã¢~yúÞ8Niz^xZ~8Ž™º®Šz>8kN8Î8™™8(ž8(Î8þyIþYÞkK¾X¹^8îXZ^Xú>8Ž8®8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRuÒÆFWF–Ã¢~™º®8îKˆ¾8îiêþ‰ž8(Njè¾yYžšÙNX©¾8).Xùn8(®‹ëÎ8þ88(þ8®8¾8®YÉþ8ŽšH®Xˆn8).h‹¾8ž8"wÒÀ¢·&öÆS¢~XúNKº>8îK«®[z^X¾KÙ2rÆ–G3¥²w&÷Fõö–6VvöÆVÒuÒÆFWF–Ã¢~k~jŽ8~X¹^8þŠšnKÙÎKÙ>8~8ˆz®xKn8îš9þxšž˜
+>˜én8Ž8þXŠ^8¾™º®Xéþ8).jÚž8þ8"wÒÀ¢·&öÆS¢~[‹h®8Ž8îiÚ^ŠŠ®ˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~š*Ž8î[Ë8N[*ž™›8).8þ8ž8(®8š9þiiž8(N˜›yû>8).hê.8ž8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²v–6VvöÆVÒrÂw&÷Fõö–6VvöÆVÒrÂw6Æ–ÖRrÂvV&öârÂvvö&Æ–âu×ÒÀ¢¶–C¢vf÷&W7BrÂæÖS¢~j:îiérrÂ–ÖvS¤Ô”Ôræf÷&W7BÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~{yj‹žYËik’rÂFW63¢~k{8N{y8ŽXúNiÊŽ8Î[¨>8Î8(¾j:îié~8.j:î8îX©¾8).Zëþ8žZI®jyŽ8®yIþYÞ8Îiªî8(ž8ž8"rÂV6÷7—7FVÓ¢~8+8:ž8+ž89>8;Î88Ž{;¾8ÎX¾KÙ>i[8îKŠÞ[ø>8).XÚ8(8ˆØžiÊŽ8¾{I¾8(Î8(¾xÚ>8(N[þYè¾zŠî8ÎX[ZÙŽ8ž8(¾8.YÎ8Ž{;¾{[8îh‰™[~jë^™¨î8).Kˆ8N8îj:î8~z+®Š¨Þ8~8Þ8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~j:îié~8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þiÊŽ8^8Î‰8N8Ž8þX©¾8¾8(žhêš9þˆ^8(NZIÎ8îhÙ^š9þˆ^8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾ZIÎ8îhÙ^š9þˆRrÆ–G3¥²væ–v‡FÖ&RuÒÆFWF–Ã¢~i©~8Nié~[¨®8~[þYè¾zŠî8).x¹ž8N8ZIÎ™i>8îyIþxšžy»Ž8Ž[Û™ûþ8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾j:î8îZJ~Yè¾ZèŽŠÛ~ˆRrÆ–G3¥²vw&æ&VBrÂw6W&Ç†–uÒÆFWF–Ã¢~h‰™[~8~8þj:î[îh
+~zŠî8Ž8~8n[¨>8N{ˆN[Ë^8(®8).KÛþ8N8jHÞyIþ8îYØ~Š8).ZèŽ8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾ˆº^‰ž8îhêš9þˆRrÆ–G3¥²vw&76&VBrÂwF†÷&æ&VBrÂw&–¶6†VVbuÒÆFWF–Ã¢~‰ž8(Nj‹žkk.8).XŠžyJŽ8~8®8Î8(ž8ˆ«{(ž8(NzŠîZÙ8îz{¾X¹^8¾8(.™j.8(þ8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾yIþyJ>Yû®yºBrÆÆ&VÇ3¥²~XúNiÊŽ8;¾ˆº^iÊ‚rÂ~Kˆ¾ˆØž8;¾ˆ«rÂ~™›ÞXXž8ŽZJ~YË8îšÙNX©²uÒÆFWF–Ã¢~[›î[N8(.8îjHÞyIþ8ÎXXž8).Xù~8jÚ.8(8ZI®8þ8îyIþxšž8Žš9þxšž8Ž™ª8(ÎZNh˜8).Kˆî8Ž8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRuÒÆFWF–Ã¢~‰Þ8‰ž8Žjè¾yYžšÙNX©¾8).Xùn8(®‹ëÎ8þ8j:î8îYÉþ8ŽšH®Xˆn8).h‹¾8ž8"wÒÀ¢·&öÆS¢~ZIn˜:Ž8¾8(ž8îhê™¸nˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~iÊŽ8îZéþ8(NiéÞ8).k.8(8nié~{ˆ8¾8(žXZ^8(®‹ëÎ8(™¹š9þˆ^8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²vw&76&VBrÂvw&76&VBrÂvw&76&VBrÂvw&76&VBrÂvw&76&VBrÂvw&76&VBrÂvw&76&VBrÂw&–¶6†VVbrÂw&–¶6†VVbrÂw&–¶6†VVbrÂw&–¶6†VVbrÂwF†÷&æ&VBrÂwF†÷&æ&VBrÂwF†÷&æ&VBrÂwF†÷&æ&VBrÂwF†÷&æ&VBrÂvw&æ&VBrÂvw&æ&VBrÂw6W&Ç†–rÂw6W&Ç†–rÂw6Æ–ÖRrÂw6Æ–ÖRrÂw6Æ–ÖRrÂvvö&Æ–ârÂvvö&Æ–ârÂvæ–v‡FÖ&Ru×ÒÀ¢¶–C¢vÆ–v‡E÷Æ–ârÂæÖS¢~XXž8î[›>XéòrÂ–ÖvS¤Ô”ÔræÆ–v‡E÷Æ–âÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~XXžiˆîYËik’rÂFW63¢~iùN8(ž8¾8®XXž8Î{[n8Ž8®™˜Þ8(®k:Ž8[›>Xéþ8.XXž[îh
+~8î8:.8;>8+ž8+þ8;Î8ÎX©¾8).[é~8(¾8"rÂV6÷7—7FVÓ¢~89.8*¾8:®8î{êN8(Î8ŽXXžz¹Î{;¾8Î8XXž8î[Ë~8Ny+Z(>8).XŠžyJŽ8ž8(¾8.kN‹ë®yKiÚ^8îzŠî8(NKˆˆŠÎzŠî8(.iªî8(ž8ž8Î8XXž[îh
+~zŠî8ÎyIþhX¾{;¾8îjŽ8Ž8®8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~XXž8î[›>Xéþ8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þ‹®8¾8®XXž8ŽkN‹ë®8¾8(žyIþxšž8ŽkŠ8(¾X©¾8îkX8(Î8).zK®8ž8.zYîjÎ8(N{+î™È®8).Y
+¾8(8þ8(8hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾XXž8îZèŽŠÛ~ˆRrÆ–G3¥²v†–¶&’uÒÆFWF–Ã¢~[›>Xéþ8ŽXXž8).[z8(ž8¾8XXž[îh
+~zŠî8ÎkK¾X¹^8~8Þ8(¾y+Z(>8).KùÞ8N8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾h‰™[~8~8þXXžz¹ÂrÆ–G3¥²vÇW†–&BuÒÆFWF–Ã¢~[¨>8N™›Þ88î8(®8).[z8(®8K».™i>8).[î8Þ8®8Î8(žXXž8îXþ8(®8).8®8(ž8ž8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾[þYè¾8îkN‹ë®zŠârÆ–G3¥²vV&öârÂvÇW‡6VVBuÒÆFWF–Ã¢~kNˆØž8(Nˆº^‰ž8[þ8^8®kNyIþyIþxšž8).XŠžyJŽ8~8nh‰™[~8ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾yIþyJ>Yû®yºBrÆÆ&VÇ3¥²~XXž8).‰8N8Ž8(¾ˆØžˆ«rÂ~kˆ^8(ž8¾8®[þ[yÒrÂ~{[n8Ž8®™˜Þ8(¾XX’uÒÆFWF–Ã¢~[Ë~8NXXž8Žkˆ^kN8ÎjHÞxšž8).ˆ+.8n8[›>XéþXZŽKÙ>8ŽyIþYÞX©¾8).Ké¾{Zn8ž8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~XXž8ŽkN8î[ê®y+ˆRrÆ–G3¥²w7V—&VâuÒÆFWF–Ã¢~[þ[yÞ8îkN8ŽXXž8îšÙNX©¾8).[z8(ž8¾8yIþyJ>Yû®yºN8).i[N8Ž8(¾8"wÒÀ¢·&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRuÒÆFWF–Ã¢~iêþˆØž8(Njè¾yYžšÙNX©¾8).Xùn8(®‹ëÎ8þ8YÉþ8ŽšH®Xˆn8).h‹¾8ž8"wÒÀ¢·&öÆS¢~ZIn˜:Ž8¾8(ž8îiÚ^ŠŠ®ˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~ié~{ˆ8¾8(žXZ^8(®8iÊŽ8îZéþ8(NXXž8(¾{JiÙ8).™¸n8(8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²v†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂv†–¶&’rÂw6Æ–ÖRrÂw6Æ–ÖRrÂw6Æ–ÖRrÂvvö&Æ–ârÂvvö&Æ–ârÂw7V—&VârÂvV&öârÂvÇW‡6VVBrÂvÇW‡6VVBrÂvÇW‡6VVBrÂvÇW†–&Bu×ÒÀ¢¶–C¢w7F''•÷Æ–ârÂæÖS¢~i‰þz›®8î[›>XéòrÂ–ÖvS¤Ô”Ôrç7F''•÷Æ–âÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~i‰þŠh¾YËik’rÂFW63¢~i‹ÎZIÎ8).YXþ8(þ8®i‰þ8ÎyêÎ8þKˆÞh	ÞŠÛ8®[›>Xéþ8.i‰þ8îX©¾8).Zëþ8žzŠî8Îxûî8(Î8(¾8"rÂV6÷7—7FVÓ¢~88Þ8:8+ž{;¾8Îi‰þ8îX©¾8¾[ùÎ8Ž8n[¨>8þXˆn[ˆ>8ž8(¾8.™»~8(N™x~8®8žZIÎz›®8Žy»Žh
+~8î8(Ž8NzŠî8(.k{~8n8(®8i‰þ[îh
+~8).KŠÞ[ø>8¾ZI®jyŽh
+~8ÎKùÞ8þ8(Î8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~i‰þz›®8î[›>Xéþ8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þi‰þiˆî8¾8(®8).‰8N8Ž8(¾ˆØžXéþ8¾8(žZJ~Yè¾zŠî8ŽkŠ8(¾K‹¾8®8*Ž88Þ8:¾8*î8;Î8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾i‰þz›®8îZJ~Yè¾z¹ÂrÆ–G3¥²væVÖW6–öâuÒÆFWF–Ã¢~i‰þ8îšÙNX©¾8Îkø>8NKˆ®z›®8).[z8(®8[¨>8Nš	ŽYùþ8îš.x+ž8).XÚ8(8(¾8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾ZIÎz›®8îhÙ^š9þˆRrÆ–G3¥²væVÖW6–rÂw7V–æârÂvæ–v‡FÖ&RuÒÆFWF–Ã¢~z›®8Ži©~8Î8(®8).KÛþ8NXˆn88[þYè¾zŠî8Î™¸nKŠÞ8ž8(¾ZNh˜8).[z8(¾8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾i‰þˆØžXéþ8î[þYè¾zŠârÆ–G3¥²væVÖW2rÂwföÇFV6²rÂv7G&ÆW—2uÒÆFWF–Ã¢~i‰þ™Ë.8).Y
+¾8(ˆØž8(N[þ8^8®yIþxšž8).XŠžyJŽ8~8i‰þ8îšÙNX©¾8).KÙ>Xh^8Ž‰8N8Ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾yIþyJ>Yû®yºBrÆÆ&VÇ3¥²~i‰þ™Ë.ˆØž8;¾ZIÎˆ«rÂ~[þ8^8®‰š²rÂ~i‰þiˆî8¾8(®8ŽZJ~YËuÒÆFWF–Ã¢~i‰þ8îXXž8).‰8N8Ž8(¾jHÞxšž8Î8ZIÎ8(.kK¾X¹^8ž8(¾yIþxšž8).iJþ8Ž8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRuÒÆFWF–Ã¢~iêþ8(Î8þZIÎˆ«8(Njè¾yYžšÙNX©¾8).YÉþ8Žh‹¾8ž8"wÒÀ¢·&öÆS¢~ZIn˜:Ž8¾8(ž8îiÚ^ŠŠ®ˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~XXž8(¾Zéþ8(Ni‰þyû>8).k.8(8n[›>Xéþ8ŽXZ^8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²væVÖW2rÂvæVÖW2rÂvæVÖW2rÂvæVÖW2rÂvæVÖW2rÂvæVÖW2rÂvæVÖW2rÂvæVÖW2rÂvæVÖW6–rÂvæVÖW6–rÂvæVÖW6–rÂvæVÖW6–rÂvæVÖW6–öârÂw6Æ–ÖRrÂw6Æ–ÖRrÂvvö&Æ–ârÂvvö&Æ–ârÂwföÇFV6²rÂw7V–æârÂvæ–v‡FÖ&RrÂv7G&ÆW—2u×ÒÀ¢¶–C¢v†–v†ÆæE÷'V–ç2rÂæÖS¢~š¹ŽXéþ˜®‹zrÂ–ÖvS¤Ô”Ôræ†–v†ÆæE÷'V–ç2Â6†FW#¢~[¨þzºrÂ&Vv–öã¢~™»~›;Nš¹ŽXéòrÂFW63¢~š*Ž™ºŽ8¾8^8(ž8^8(Î8þXúNKº>˜®‹z8.š¹Žh˜8¾™¸n8î8(¾™»~8Žš*Ž8îX©¾8Îjè¾™ûþ8ž8(¾8"rÂV6÷7—7FVÓ¢~8;N8*ž8:¾88n88>8*þ{;¾8(N8+ž898*þ8*N8;>8Îš¹Žh˜8î™»~8).XŠžyJŽ8~8{ûÎ8).hÈ8Nš*Ž[îh
+~zŠî8(.˜®‹zYŽ‹ë®8).Y¹î˜®8ž8(¾8.™»~8Žš*Ž8ÎyIþxšžy»Ž8).K¨ÎXˆn8ž8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~š¹ŽXéþ˜®‹z8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þš¹ŽXéþ8îjHÞyIþ8Ž[Šþ™»¾8~8þZJ~k	~8¾8(žš9¾{ùNzŠî8ŽkŠ8(¾K‹¾8®X©¾8îkX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾[Y8îiJþ˜XÞzŠârÆ–G3¥²wföÇF‚rÂwFV×W7G&’uÒÆFWF–Ã¢~™»~™».8Ži«Nš*Ž8îKŠÞ[ø>8).{ˆN[Ë^8(®8Ž8~8Kˆ®z›®8îkK¾X¹^Yùþ8).Xˆn8YŽ8n8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾š¹Žh˜8îZJ~Yè¾zŠârÆ–G3¥²w7V–æârÂwföÆÖöörrÂw¦W‡—&’uÒÆFWF–Ã¢~˜®‹zKˆ®z›®8Ž[*žZN8).KÛþ8N8š*Ž8¾˜¾88(Î8(¾[þYè¾yIþxšž8).‹ûÞ8n8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾[þYè¾š9¾{ùNzŠârÆ–G3¥²wföÇFV6²rÂw7–Ç†–âuÒÆFWF–Ã¢~Kˆ®iˆ~k	~kX8).XŠžyJŽ8~8ˆØž8îzŠîZÙ8(N[þ8^8®‰š¾8).Xùn8(®‹ëÎ8(8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾š¹ŽXéþ8îYû®yºBrÆÆ&VÇ3¥²~š¹Ž[ˆØž8;¾YËŠ>šârÂ~š*Ž8¾ˆ‰î8nzŠîZÙrÂ~™»~8ŽKˆ®iˆ~k	~kXuÒÆFWF–Ã¢~KØî8NjHÞyIþ8ŽZJ~k	~8îšÙNX©¾8Î8š9¾{ùNzŠî8îkK¾X¹^8).iJþ8Ž8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥°¢·&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRuÒÆFWF–Ã¢~˜®‹z8îzª®8þ8¾8þ8î8(¾iêþˆØž8(Njè¾yYžšÙNX©¾8).XˆnŠz>8ž8(¾8"wÒÀ¢·&öÆS¢~˜®‹z8Ž8îiÚ^ŠŠ®ˆRrÆ–G3¥²vvö&Æ–âuÒÆFWF–Ã¢~š*Ž8).˜þ88(ž8(Î8(¾yû>Z88).8þ8ž8(®8˜®xšž8(N{JiÙ8).hê.8ž8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²wföÇFV6²rÂwföÇFV6²rÂwföÇFV6²rÂwföÇFV6²rÂwföÇFV6²rÂwföÇFV6²rÂwföÇFV6²rÂwföÇFV6²rÂw7V–æârÂw7V–æârÂw7V–æârÂw7V–æârÂw7V–æârÂw7V–æârÂwföÆÖöörrÂwföÆÖöörrÂwföÆÖöörrÂwföÇF‚rÂwföÇF‚rÂw6Æ–ÖRrÂvvö&Æ–ârÂw7–Ç†–ârÂw7–Ç†–ârÂw¦W‡—&’rÂwFV×W7G&’u×ÒÀ¢¶–C¢v&VærÂæÖS¢~™yŽh¨ZBrÂ–ÖvS¤Ô”Ôræ&VæÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~xè¾˜;ÞYËik’rÂFW63¢~hŠnZ:¾8þ88ÎˆY^8).z»n8nyû>˜
+8(®8î™yŽh¨ZN8.˜Ù¾8ŽKˆ®8.8(ž8(Î8þXš>Z:¾8ŽZûî[9ž8ž8(¾8"rÂV6÷7—7FVÓ¢~˜xîyIþ8îyIþhX¾{;¾8~8þ8®8þ8Kúî{{Një^™¨î8îy[8®8(¾8*Ž8:¾88®8ÎZûîhŠnˆ^8Ž8~8nxûî8(Î8(¾K«®[z^y¨N8®hŠn™yŽy+Z(>8.X{®xûîX+îY	8þXš>Z:¾8îh‰™[~jë^™¨î8).XøÞiŠ8ž8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~™yŽh¨ZN8îhŠn™yŽy+Z(>jx¾˜
+Y»2rÀ¢æ÷FS¢~ˆz®xKn8îš9þxšž˜
+>˜én8~8þ8®8þ8ZûîhŠnˆ^8îKúî{{Një^™¨î8Ž™yŽh¨ZN8).iJþ8Ž8(¾K¹^{XN8þ8).Kˆ¾8¾8(žšn8¾zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃ>jë^™¨î8;¾Kˆ®{I®ZûîhŠnˆRrÆ–G3¥²vVÆæöGfæ6VBuÒÆFWF–Ã¢~z:Ž8Þh©Î8¾8(Î8þXš>h¨8).hÈ88™yŽh¨ZN8îiÈKˆ®KØÞ8~hÉhŠn8).[è^8N8"wÒÀ¢·&öÆS¢~zÊÃ.jë^™¨î8;¾KŠÞ{I®ZûîhŠnˆRrÆ–G3¥²vVÆæöÖ–FFÆRuÒÆFWF–Ã¢~Yû®zHî8).‹ª¾8¾8N88þXš>Z:¾8Î8ZéþhŠn[Ú.[Èþ8~[ùÎyJŽX©¾8).˜Ù¾8Ž8(¾8"wÒÀ¢·&öÆS¢~zÊÃjë^™¨î8;¾X‰Þ{I®ZûîhŠnˆRrÆ–G3¥²vVÆæö&Vv–ææW"uÒÆFWF–Ã¢~Yû®iÊÎ8îjx¾8Ž8Ž™i>YŽ8N8).ZÚn8>8{›8(®‹ùN8~jŠi:ÎhŠn8ŽXø.Xª8ž8(¾8"wÒÀ¢·&öÆS¢~˜¾YknYû®yºBrÆÆ&VÇ3¥²~Š‰>{{NZN8;¾Šk>Zê.[ŠÒrÂ~ZúžXŠN8Ži[NX)žY:rÂ~jŠi:ÎhŠn8îŠhþX˜ruÒÆFWF–Ã¢~ZèžXZŽ8®ZûîhŠn8Žjë^™¨îy¨N8®Kúî{{N8).{jÞhÈ8ž8(¾K«®[z^y¨N8®y+Z(>8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²vVÆæö&Vv–ææW"rÂvVÆæö&Vv–ææW"rÂvVÆæö&Vv–ææW"rÂvVÆæö&Vv–ææW"rÂvVÆæö&Vv–ææW"rÂvVÆæöÖ–FFÆRrÂvVÆæöÖ–FFÆRrÂvVÆæöÖ–FFÆRrÂvVÆæöGfæ6VBu×ÒÀ¢¶–C¢vÖv–5ö6FV×’rÂæÖS¢~šÙN[îZÚnYÉ"rÂ–ÖvS¤Ô”ÔræÖv–5ö6FV×’Â6†FW#¢~[¨þzºrÂ&Vv–öã¢~xè¾˜;ÞYËik’rÂFW63¢~šÙNk9^8).ZÚn8nˆ^8þ88Î™¸n8nZÚnYÉ.8.i‰þ8ŽxJ[îh
+~8îŠ>[Èþ8Îz	Nz›n8^8(Î8n8N8(¾8"rÂV6÷7—7FVÓ¢~8+ž88n8:ž8Ž8:¾89þ88®8îYNh‰™[~jë^™¨î8Î8Š>[Èþ8îz	Nz›n8(NKúî{{N8¾[ùÎ8Ž8nxûî8(Î8(¾8.i‰þ[îh
+~8).X[˜	®Yû®yºN8¾8y[8®8(¾Š>ˆ^8î{;¾{[8ÎKŠnZÙŽ8ž8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~šÙN[îZÚnYÉ.8îKúî{{Ny+Z(>jx¾˜
+Y»2rÀ¢æ÷FS¢~ˆz®xKn8îš9þxšž˜
+>˜én8~8þ8®8þ8K¨Î8N8îŠ>ˆ^{;¾{[8ÎYÎ8ŽZÚn{ù.Yû®yºN8¾8(žh‰™[~8ž8(¾kX8(Î8).zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃ>jë^™¨î8;¾š¹ŽKØÞšÙN[î[Š²rÆ–G3¥²w7FVÆÆ÷6÷&6W&W"rÂvÇVÖ–æ÷6÷&6W&W"uÒÆFWF–Ã¢~i‰þ‹ë8îyú^ŠÙŽ8Žš¹ŽKØÞŠ>[Èþ8).Kúî8(88Þ8(Î8î8(Î8îšÙNk9^KÙ>{;¾8).ZèÎh‰8Ž[î8þ8"wÒÀ¢·&öÆS¢~zÊÃ.jë^™¨î8;¾šÙNk9^KÛþ8BrÆ–G3¥²w7FVÆÆ÷v—¦&BrÂvÇVÖ–æ÷v—¦&BuÒÆFWF–Ã¢~Yû®zHîŠ>[Èþ8).{XN8þYŽ8(þ8¾8ZéþhŠn8~ZèžZé®8~8ni‰þšÙNk9^8).h›8n8"wÒÀ¢·&öÆS¢~zÊÃjë^™¨î8;¾Šh¾{ù.8BrÆ–G3¥²w7FVÆÆö&VçF–6RrÂvÇVÖ–æö&VçF–6RuÒÆFWF–Ã¢~X[˜	®8îYû®zHî8).ZÚn8>8®8Î8(ž8XXž8Ž™x~8îy[8®8(¾‹8~‹:®8).KËŽ88ž8"wÒÀ¢·&öÆS¢~ZÚn{ù.Yû®yºBrÆÆ&VÇ3¥²~šÙN[îi»Ž8;¾ŠÉ¾{ê’rÂ~i‰þ‹ëŠk>kŠÂrÂ~kÉN{ù.yJŽ8îŠ>[ÈòuÒÆFWF–Ã¢~yú^ŠÙŽ8Šk>kŠÎ8XøÞ[êž{{N{ù.8ÎK¨Î{;¾{[8îh‰™[~8).iJþ8Ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²w7FVÆÆö&VçF–6RrÂw7FVÆÆö&VçF–6RrÂw7FVÆÆö&VçF–6RrÂw7FVÆÆö&VçF–6RrÂw7FVÆÆ÷v—¦&BrÂw7FVÆÆ÷v—¦&BrÂw7FVÆÆ÷6÷&6W&W"rÂvÇVÖ–æö&VçF–6RrÂvÇVÖ–æö&VçF–6RrÂvÇVÖ–æö&VçF–6RrÂvÇVÖ–æ÷v—¦&BrÂvÇVÖ–æ÷v—¦&BrÂvÇVÖ–æ÷6÷&6W&W"u×ÒÀ¢¶–C¢w'V–æVE÷f–ÆÆvRrÂæÖS¢~[¸>iÙ‹zrÂ–ÖvS¤Ô”Ôrç'V–æVE÷f–ÆÆvRÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~[Ûj:îYËik’rÂFW63¢~K«®8îk	~˜XÞ8Î{[n8Ž8þiÙ8î‹z8.ZIÎ8¾8®8(¾8Ž™x~8î8:.8;>8+ž8+þ8;Î8Î[éŽ[è®8ž8(¾8"rÂV6÷7—7FVÓ¢~88®8*N88Ž8:8*.8Ž™x~z¹Î{;¾8ÎiKîj8N8^8(Î8þ[»®xšž8).kK¾X¹^Yùþ8Ž8~8KˆˆŠÎzŠî8(.[¸>Z)þ8ŽXZ^8(®‹ëÎ8(8.i©~h˜8¾˜ž[ùÎ8~8þ™x~[îh
+~zŠî8ÎXJ®KØÞ8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~[¸>iÙ‹z8îyIþhX¾{;¾89N8:ž89þ88>88’rÀ¢æ÷FS¢~yú.XÛ8þ[¸>Z)þ8¾jè¾8(¾iÈžj™þxšž8(NšÙNX©¾8¾8(žZIÎŠÎh
+~zŠî8ŽkŠ8(¾K‹¾8®kX8(Î8).zK®8ž8.hŠn™yŽ8~8î[Ë~8^šn8~8þ8®8N8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃN[N8;¾ZIÎz¹Î8îiJþ˜XÞzŠârÆ–G3¥²væ÷‡fVÆruÒÆFWF–Ã¢~k{8N™x~8¾Šhn8(þ8(Î8þ[¸>[¾8).KŠÞ[ø>8¾8[¨>8NkK¾X¹^Yùþ8).hÈ8N8"wÒÀ¢·&öÆS¢~zÊÃ>[N8;¾ZIÎ8îhÙ^š9þˆRrÆ–G3¥²væö6Æ–BrÂvæ–v‡FÖ&RuÒÆFWF–Ã¢~[¾jž8(N[Û8).KÛþ8>8nz{¾X¹^8~8[þYè¾zŠî8Î™¸n8î8(¾ZNh˜8).x¹ž8n8"wÒÀ¢·&öÆS¢~zÊÃ.[N8;¾[¸>Z)þ8î[þYè¾zŠârÆ–G3¥²væö6ÆRrÂvvö&Æ–âuÒÆFWF–Ã¢~‰š¾8(Njè¾8^8(Î8þš9þiiž8[¸>iÙ8).XŠžyJŽ8~8n[»®xšž8î™©ž™i>8¾kÙÎ8(8"wÒÀ¢·&öÆS¢~zÊÃ[N8;¾[¸>Z)þ8îYû®yºBrÆÆ&VÇ3¥²~ˆ¹N8;¾ˆøÎšârÂ~[þ8^8®‰š²rÂ~jè¾yYžšÙNX©¾8Ž[¸>iÙuÒÆFWF–Ã¢~iËÞ88þiÊŽiÙ8(Nk›þk	~8™x~8îšÙNX©¾8ÎZIÎŠÎh
+~8îyIþxšž8).iJþ8Ž8(¾8"wÐ¢ÒÀ¢7–6ÆW3¥··&öÆS¢~XˆnŠz>8;¾[ê®y+ˆRrÆ–G3¥²w6Æ–ÖRuÒÆFWF–Ã¢~iËÞ88þiÈžj™þxšž8(Njè¾yYžšÙNX©¾8).Xùn8(®‹ëÎ8þ8[¸>Z)þ8îYÉþ8Žh‹¾8ž8"wÕÐ¢ÒÀ¢VæV×”–G3¥²væ–v‡FÖ&RrÂvæ–v‡FÖ&RrÂvæ–v‡FÖ&RrÂvæ–v‡FÖ&RrÂvvö&Æ–ârÂw6Æ–ÖRrÂvæö6ÆRrÂvæö6ÆRrÂvæö6ÆRrÂvæö6Æ–BrÂvæ÷‡fVÆru×ÒÀ¢¶–C¢w7F'6VrÂæÖS¢~˜^8¾8®8(¾i‰þ8îk[rrÂ–ÖvS¤Ô”Ôrç7F'6VÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~i‰þyXÂrÂFW63¢~YËKˆ®8¾8(ž™©N{[n8^8(Î8þi‰þ8îk[~8.k¸^Kª8îX©¾8).[Šþ8>8þZÙŽYÊŽ8Žˆ{>8(¾x›žy[š	ŽYùþ8"rÂV6÷7—7FVÓ¢~88Þ8:8+~8*®8;>8Ž88ž8*^8;Î8:88Þ8:8+~8*®8;>888Îz+®Š¨Þ8^8(Î8(¾™hž8Ž8þš	ŽYùþ8.zŠîi[8þj[^zºþ8¾[	8®8þ8i‰þ8îX©¾8).[Šþ8>8þ[Ë~ZJ~8®X¾KÙ>8Ž™¸nKŠÞ8ž8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~˜^8¾8®8(¾i‰þ8îk[~8îZÙŽYÊŽjx¾˜
+Y»2rÀ¢æ÷FS¢~˜	®[‹Ž8îš9þxšž˜
+>˜én8Îz+®Š¨Þ8~8Þ8®8N™hž˜énš	ŽYùþ8î8þ8(8i‰þ8îX©¾8ÎK¨Î8N8îZÙŽYÊŽ8Ž™¸nKŠÞ8ž8(¾™j.Kø.8).zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~™¸nKŠÞx+ž8;¾k¸^Kª8îi‰òrÆ–G3¥²vFööÕöæVÖW6–öâuÒÆFWF–Ã¢~YŽY».8îi‰þX©¾8).Xùn8(®‹ëÎ8þ8{X.xHž8îXXž8ŽZHž8Ž8(¾j[^zºþ8®ZÙŽYÊŽ8"wÒÀ¢·&öÆS¢~i‰þyXÎ8îZJ~Yè¾z¹ÂrÆ–G3¥²væVÖW6–öâuÒÆFWF–Ã¢~i‰þ8îk[~8).[z8(®8š	ŽYùþ8¾k¨88(¾i‰þX©¾8).y»Nhê^XŠžyJŽ8ž8(¾8"wÒÀ¢·&öÆS¢~š	ŽYùþYû®yºBrÆÆ&VÇ3¥²~i‰þ[8;¾i‰þ™»"rÂ~kÈ.8ni‰þ8îšÙNX©²uÒÆFWF–Ã¢~YËKˆ®8îjHÞxšž8¾Kº>8(þ8(®8z›®™i>8Þ8î8(.8î8¾k¨88(¾i‰þX©¾8ÎkK¾X¹^k©8Ž8®8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²væVÖW6–öârÂvFööÕöæVÖW6–öâuÒÂ&÷74öæÇ“§G'VRÂV%&FS£ãÒÀ¢¶–C¢wvFW%÷6V7&WBrÂæÖS¢~kXkN8îzyŽZ(2rÂ–ÖvS¤Ô”ÔrçvFW%÷6V7&WBÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~‰+Îk[~YËik’rÂFW63¢~kˆ^kX8ŽkN˜ú8¾ZèŽ8(ž8(Î8þzyŽZ(>8.˜Ž88(Î8þkN8îKÛþ8Nh˜¾888ÎZ{þ8).Šh¾8¾8(¾8"rÂV6÷7—7FVÓ¢~kN8îKÛþ8Nh˜¾8*Ž8:¾88®8Ž8+ž8*N8:Î8;>8Îxûî8(Î8(¾™™Zé®y¨N8®y+Z(>8.KˆˆŠÎy¨N8®kNj;.zŠî8î{êN8(Î8~8þ8®8þ8kN8îX©¾8¾˜Ž88(Î8þZÙŽYÊŽ888Îz+®Š¨Þ8^8(Î8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~kXkN8îzyŽZ(>8îX[yIþjx¾˜
+Y»2rÀ¢æ÷FS¢~ˆz®xKn8îš9þxšž˜
+>˜én8~8þ8®8þ8kˆ^kX8{+î™È®8˜Ž88(Î8þZèŽ8(®h˜¾8ÎKùÞ8N™™Zé®y¨N8®X[yIþ™j.Kø.8).zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zyŽZ(>8îZèŽ8(®h˜²rÆ–G3¥²vVÆæ÷vFW"uÒÆFWF–Ã¢~kN˜ú8îX©¾8).Xù~88kX8(Î8).K›8žˆH^Zˆ8¾8(žzyŽZ(>8).ZèŽ8(¾8"wÒÀ¢·&öÆS¢~kN8î[ê®y+ˆRrÆ–G3¥²w7V—&VâuÒÆFWF–Ã¢~kˆ^kX8îšÙNX©¾8).[z8(ž8¾8kN˜ú8ÎX©¾8).KùÞ8n8(¾y+Z(>8).i[N8Ž8(¾8"wÒÀ¢·&öÆS¢~y+Z(>Yû®yºBrÆÆ&VÇ3¥²~kˆ^kX8;¾kš~kBrÂ~kN˜ú8îšÙNX©²rÂ~kN‹ë®8îˆØžˆ«uÒÆFWF–Ã¢~kèN8)>8kN8ŽkN˜ú8îX©¾8Î8zyŽZ(>8î™hž8Ž8þy+Z(>8).iJþ8Ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²vVÆæ÷vFW"rÂw7V—&VâuÒÂ&&TöæÇ“§G'VRÂV%&FS£ã'ÒÀ¢¶–C¢wv÷&ÆEö&WGvVVârÂæÖS¢~K‰nyXÎ8îxºÞ™i2rÂ–ÖvS¤Ô”Ôrçv÷&ÆEö&WGvVVâÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~Z(>yXÎš	ŽYùòrÂFW63¢~K‰nyXÎ8ŽK‰nyXÎ8îZ(>yºî8¾yIþ8Ž8þŠ8.8yºî8.k9^X˜~8¾8(žZIn8(Î8þXÞz¹Î8ÎX{®xûî8ž8(¾8"rÂV6÷7—7FVÓ¢~KˆžKÙ>8îXÞz¹Î888ÎX{®xûî8~8˜	®[‹Ž8îYËYùþyIþhX¾{;¾8¾8(ž™©N{[n8^8(Î8n8N8(¾8.xJ8ŽXXž8îh
+~‹:®8).X)ž8Ž8þj™þj+z¹Î8~jx¾h‰8^8(Î8(¾x›žy[8®yIþxšžy»Ž8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~K‰nyXÎ8îxºÞ™i>8îZÙŽYÊŽjx¾˜
+Y»2rÀ¢æ÷FS¢~ˆz®xKn8îš9þxšž˜
+>˜én8~8þ8®8þ8Z(>yXÎ8*Ž88Þ8:¾8*î8;Î8).XŠžyJŽ8ž8(¾KˆžKÙ>8îXÞz¹Î8îZèÎh‰jë^™¨î8).zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~zÊÃ>jë^™¨î8;¾ZèÎh‰X¾KÙ2rÆ–G3¥²vfÇ6UöG&vöåövÖÖuÒÆFWF–Ã¢~XXž8Ž‰™®xJ8).YÎi˜.8¾i8Þ8(®8xºÞ™i>8ŽiÈ8(.[Ë~8þ˜ž[ùÎ8~8þXÞz¹Î8"wÒÀ¢·&öÆS¢~zÊÃ.jë^™¨î8;¾hº[Ë^X¾KÙ2rÆ–G3¥²vfÇ6UöG&vöåö&WFuÒÆFWF–Ã¢~Š8^yK.{ûÎ8).[¨>8.8Z(>yXÎz›®™i>8).z{¾X¹^8ž8(¾ˆ;ÞX©¾8).š¹Ž8(8þX¾KÙ>8"wÒÀ¢·&öÆS¢~zÊÃjë^™¨î8;¾Yû®zHîX¾KÙ2rÆ–G3¥²vfÇ6UöG&vöåöÆfuÒÆFWF–Ã¢~zYî8¾KËÎ8¾8þjx¾˜
+8).hÈ88Z(>yXÎ8îX©¾8).Xùn8(®‹ëÎ8(XÞz¹Î8îYû®zHî[Ú.8"wÒÀ¢·&öÆS¢~š	ŽYùþYû®yºBrÆÆ&VÇ3¥²~z›®™i>8îŠ8.8yºârÂ~XXž8Ž‰™®xJ8îjè¾™ûòuÒÆFWF–Ã¢~K‰nyXÎYÎZ:¾8îZ(>yXÎ8¾8(žkÈþ8(Î8(¾KˆÞZèžZé®8®X©¾8Î8KˆžKÙ>8îkK¾X¹^k©8Ž8®8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²vfÇ6UöG&vöåöÆfrÂvfÇ6UöG&vöåö&WFrÂvfÇ6UöG&vöåövÖÖuÒÂ&÷74öæÇ“§G'VRÂV%&FS£ã‡ÒÀ¢¶–C¢v¶Vå÷f–ÆÆvRrÂæÖS¢~ˆúþx(î8î˜xÂrÂ–ÖvS¤Ô”Ôræ¶Vå÷f–ÆÆvRÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~XÙ~˜:Žx¾[[ŠòrÂFW63¢~x¾8îh^8þ8Ž8Ž8(.8¾iªî8(ž8ž˜xÎ8.x(î8).i8Þ8(¾hŠnZ:¾8Ž8:.8;>8+ž8+þ8;Î8Î™¸n8n8"rÂV6÷7—7FVÓ¢~x(î8î{+î™È®88N898*Þ8Î˜xÎ8îYŽ‹ë®8¾ZI®8þ8ˆúþx(î8î8*Ž8:¾88®8(.xûî8(Î8(¾8.x¾8îX©¾8ŽX[ZÙŽ8ž8(¾ˆ^888~8î8Ž8î8>8þ8x¾[îh
+~KŠÞ[ø>8îy+Z(>8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~ˆúþx(î8î˜xÎ8îX[yIþjx¾˜
+Y»2rÀ¢æ÷FS¢~ˆz®xKn8îš9þxšž˜
+>˜én8~8þ8®8þ8YËxk8x(î8î{+î™È®8˜xÎ8îZèŽ8(®h˜¾8ÎiJþ8ŽYŽ8n™j.Kø.8).zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~˜xÎ8îZèŽ8(®h˜²rÆ–G3¥²vVÆæö¶VâuÒÆFWF–Ã¢~x(îxèž8îX©¾8).Xš>8ŽZëþ8~8˜xÎ8Ž{+î™È®8îkK¾X¹^Yùþ8).ZèŽ8(¾8"wÒÀ¢·&öÆS¢~x(î8î[ê®y+ˆRrÆ–G3¥²wG7V&¶’uÒÆFWF–Ã¢~YËxk8îšÙNX©¾8).x(î8Ž8~8n[z8(ž8¾8˜xÎ8îYŽ‹ë®8¾ZI®8þ™¸n8î8(¾8"wÒÀ¢·&öÆS¢~y+Z(>Yû®yºBrÆÆ&VÇ3¥²~x¾[8îYËxkrÂ~x(îxèž8îšÙNX©²rÂ~ˆ	xk8îˆØžˆ«uÒÆFWF–Ã¢~YËxk8).iªî8(ž8~8ŽXùn8(®‹ëÎ8þ8®8Î8(ž8{+î™È®8ÎZé®yØ8~8Þ8(¾y+Z(>8).{jÞhÈ8ž8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²wG7V&¶’rÂwG7V&¶’rÂwG7V&¶’rÂvVÆæö¶Vâu×ÒÀ¢¶–C¢vvöÆFVåöÆæBrÂæÖS¢~›¸N˜y˜;rrÂ–ÖvS¤Ô”ÔrævöÆFVåöÆæBÂ6†FW#¢~[¨þzºrÂ&Vv–öã¢~[›¾8îš	ŽYùòrÂFW63¢~›¸N˜y8î‹ÉÞ8Þ8¾k¨88þ[ˆÎ[	š	ŽYùþ8.ˆê¾ZJ~8®8+>8*N8;>8).8(.8þ8(ž8žZÙŽYÊŽ8Îj;.8(8"rÂV6÷7—7FVÓ¢~z+®Š¨Þ8^8(Î8(¾8î8þ8+ž8:ž8*N8:8+N8;Î8:¾88ž8î8þ8.ZI®jyŽh
+~8(Ž8(®8(.[ˆÎ[	X¾KÙ>8î™¸nKŠÞ8Îx›ž[ëN8~8›¸N˜y˜;~8Þ8î8(.8î8Î™™Zé®y¨N8®yIþhþiÚK»n8Ž8®8(¾8"rÀ¢V6÷7—7FVÔF–w&Ó§°¢†VF–æs¢~›¸N˜y˜;~8îyIþhþiÚK»nY»2rÀ¢æ÷FS¢~KˆzŠî8~8¾z+®Š¨Þ8^8(Î8n8®8(ž8®8ZèÎXZŽ8®š9þxšž˜
+>˜én8~8þ8®8N8.[ˆÎ[	X¾KÙ>8).iJþ8Ž8(¾Šk>kŠÎkˆŽ8þ8îiÚK»n8).zK®8ž8"rÀ¢Æ–W'3¥°¢·&öÆS¢~z+®Š¨Þ8^8(Î8(¾YJþKˆ8îzŠârÆ–G3¥²w6Æ–ÖUövöÆBuÒÆFWF–Ã¢~›¸N˜y8îšÙNX©¾8Îkø>8NZNh˜8Ž™¸n8î8(®8‹ÉÞ8þjè¾yYžxšž8).KÙ>Xh^8ŽXùn8(®‹ëÎ8(8"wÒÀ¢·&öÆS¢~™™Zé®y¨N8®yIþhþYû®yºBrÆÆ&VÇ3¥²~›¸N˜y8îjè¾yYžšÙNX©²rÂ~˜›xšž8).Y
+¾8(YË™Ú"rÂ~™hž8Ž8þ[›¾8îš	ŽYùòuÒÆFWF–Ã¢~x›žjè®8®šÙNX©¾8Ž˜›xšžiÚK»n8Î˜xÞ8®8(¾8þ8(88¾8¾8îYËYùþ8~8þŠh¾8(ž8(Î8®8N™¸nKŠÞ8Î‹[~8Þ8(¾8"wÐ¢Ð¢ÒÀ¢VæV×”–G3¥²w6Æ–ÖUövöÆBuÒÂ&&TöæÇ“§G'VRÂvöÆFVäÆæC§G'VRÂW‡VF—F–öäW†6ÇVFVC§G'VWÐ ¥Ó° ¢ò¢ÓÓÓÓÒ[îh
+~YÒÓÓÓÓÒ¢ð¦6öç7BDâÒ°¢f—&S¢~x²rÂvFW#¢~kBrÂF‡VæFW#¢~™»rrÂv–æC¢~š*‚rÂw&73¢~j:ârÀ¢Æ–v‡C¢~XX’rÂF&³¢~™xrrÂ7F#¢~i‰òrÂG&vöã¢~z¹ÂrÂæ÷&ÖÃ¢~xJp§Ó° ¦6öç7BE•Uô”4ôå3×¶f—&S¢	ùJRrÇvFW#¢	ù*rrÇF‡VæFW#¢~)ªrÇv–æC¢	øÊ®ûˆòrÆw&73¢	øË2rÆÆ–v‡C¢~)Ê‚rÆF&³¢	øÉrÇ7F#¢~*ÙrÆG&vöã¢	ù’rÆæ÷&ÖÃ¢~)ª¢wÓ°¦6öç7B”ä•D”Åõ%E•ô”E3Ôö&¦V7Bæg&VW¦R…²vVÆæö&Vv–ææW"rÂvg&V–vÂrÂvV&öâuÒ“°¦6öç7BEbÒ°¢f—&S¢¶w&73£ãRÂvFW#¢ãwÒÀ¢vFW#¢¶f—&S£ãRÂF‡VæFW#¢ãwÒÀ¢F‡VæFW#¢·vFW#£ãRÂv–æC¢ãwÒÀ¢v–æC¢·F‡VæFW#£ãRÂw&73¢ãwÒÀ¢w&73¢·v–æC£ãRÂf—&S¢ãwÒÀ¢Æ–v‡C¢¶F&³£ãRÂ7F#¢ãwÒÀ¢F&³¢·7F#£ãRÂÆ–v‡C¢ãwÒÀ¢7F#¢¶Æ–v‡C£ãRÂF&³¢ãwÒÀ¢G&vöã¢¶G&vöã£ã'Ð§Ó°¦6öç7B$EDÄUõ5DEU5ôTddT5E2Òö&¦V7Bæg&VW¦R‡°¢ö—6öã¤ö&¦V7Bæg&VW¦R‡¶GW&F–öã£2ÂÖ„‡FÖvU&FS¢ãÒ§Ò“° ¢ò¢ÓÓÓÓÒ8:.8;>8+ž8+þ8;Î88~8;Î8+òÓÓÓÓÒ¢ð¦6öç7BÒÒ°¢¶–C¢vg&V–vÂrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢vg&V–vÂrÆæó£ÆæÖS¢~89^8:Î8*N8*Î8:²rÇ&&—G“¢~)ˆRrÇG—W3¥²vf—&RuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£‡ÒÀ¢‡£#Ç7C£sÆ6F6…&FS¢ã3RÆWföÇWF–öã¢vg&V—vöÆbrÆWföÇWF–öäÆWfVÃ£"À¢FW63¢~x(î8).8î8Ž8nZÙx»Î8"rÀ¢Ö÷fW3¥µ².x¾x(îx™’"Ã#‚Â&f—&R"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅög&V–vÅó%ÒÅ².89^8:Î8*N8:8*þ8:Þ8;Â"Ã#BÂ&f—&R"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅög&V–vÅó"%ÒÅ².xˆnx(î888:>8;Î8+‚"ÃC"Â&f—&R"Â'&V6ö–Â"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅög&V–vÅó2%ÒÅ².89^8:Î8*.888:>8;Î8+‚"Ã3RÂ&f—&R"Â&fÆ&Uö6†&vR"ÆçVÆÂÃ"Â.x(î8).8î8Ž8>8nz¨i(>8~8jÊ8îiK¾i(>8îZˆX©¾8).š¹Ž8(8(¾8""ÆçVÆÂÂ'6¶–ÆÅög&V–vÅóB%Õ×ÒÀ¢¶–C¢vg&V—vöÆbrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#¦fÇ6WÒÆ–Öt¶W“¢vg&V—vöÆbrÆæó£"ÆæÖS¢~89^8:Î8*N8*n8:¾89RrÇ&&—G“¢~)ˆ^)ˆRrÇG—W3¥²vf—&RuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£#Æ†&C£CgÒÀ¢WföÇWF–öäöæÇ“§G'VRÆ‡£SRÇ7C£ƒ"Æ6F6…&FS¢ã‚À¢FW63¢~89^8:Î8*N8*Î8:¾8Î˜.XÉn8~8þZ{þ8"rÀ¢Ö÷fW3¥µ².x(îx»Îx™’"Ã3bÂ&f—&R"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅög&V—vöÆeó%ÒÅ².89^8:Î8*.8:ž88>8+~8:R"ÃCRÂ&f—&R"Â'&V6ö–Â"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅög&V—vöÆeó"%ÒÅ².xÉ¾x¾8îY(nY:â"ÃÂ&f—&R"Â&'Vfb"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅög&V—vöÆeó2%Õ×ÒÀ¢¶–C¢vV&öârÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢vV&öârÆæó£2ÆæÖS¢~8*.8*þ8*.8:Þ8;2rÇ&&—G“¢~)ˆRrÇG—W3¥²wvFW"rÂvG&vöâuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£wÒÀ¢‡£3Ç7C£SRÆ6F6…&FS¢ã3RÆWföÇWF–öã¢v†–v†V&öârÆWföÇWF–öäÆWfVÃ£"À¢FW63¢~kN‹ë®8¾8ž8([þ8^8®›èÞ8"rÀ¢Ö÷fW3¥µ².kNkX[Ëâ"Ã#bÂ'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöV&öåó%ÒÅ².8~8>8Þh™>8"Ã#Â&æ÷&ÖÂ"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöV&öåó"%ÒÅ².ZJ~k:.XúÎYi¢"Ã3‚Â'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöV&öåó2%ÒÅ².8*.8*þ8*.8+~8;Î8:¾88’"ÃÂ'vFW""Â&V÷6†–VÆB"ÆçVÆÂÃ"Â.kN8îy»î8).[^™h¾8~8jÊ8¾Xù~88(¾iK¾i(>888:8;Î8+Ž8).XØ®k‰¾8ž8(¾8""ÆçVÆÂÂ'6¶–ÆÅöV&öåóB%Õ×ÒÀ¢¶–C¢v†–v†V&öârÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#¦fÇ6WÒÆ–Öt¶W“¢v†–v†V&öârÆæó£BÆæÖS¢~88þ8*N8*.8*þ8*.8:Þ8;2rÇ&&—G“¢~)ˆ^)ˆRrÇG—W3¥²wvFW"rÂvG&vöâuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£#Æ†&C£C‡ÒÀ¢WföÇWF–öäöæÇ“§G'VRÆ‡£cRÇ7C£c‚Æ6F6…&FS¢ãbÀ¢WföÇWF–öç3¥·¶ÆWfVÃ£2ÇFó¢w6†Væ†—&öâwÒÇ¶ÆWfVÃ£2ÇFó¢wF–Væ†—&öâwÕÒÀ¢FW63¢~8*.8*þ8*.8:Þ8;>8Î˜.XÉn8~8þZ{þ8.kNkX8Žz¹Î8îX©¾8).8(Ž8(®[Ë~8þi8Þ8(¾8"rÀ¢Ö÷fW3¥µ².kNz¹Î[Ëâ"Ã3bÂ'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅö†–v†V&öåó%ÒÅ².z¹Î8î[îi(2"Ã3"Â&G&vöâ"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅö†–v†V&öåó"%ÒÅ².88þ8*N88ž8:Þ8+ž898*N8:ž8:²"ÃS"Â'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅö†–v†V&öåó2%Õ×ÒÀ¢¶–C¢w6†Væ†—&öârÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢w6†Væ†—&öârÆæó£RÆæÖS¢~8+~8*~8;>88þ8*N8:Þ8;2rÇ&&—G“¢~)ˆ^)ˆ^)ˆRrÇG—W3¥²wvFW"rÂvG&vöâuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£CBÆ†&C£sGÒÀ¢WföÇWF–öäöæÇ“§G'VRÆ‡£#Ç7C£S‚Æ6F6…&FS¢ã‚À¢FW63¢~88þ8*N8*.8*þ8*.8:Þ8;>8ÎzYîk[~8îX©¾8).[é~8n˜.XÉn8~8þZ{þ8.kN8îxè¾8î8(Ž8n8®ZˆXë>8).hÈ8N8"rÀ¢Ö÷fW3¥µ².zYîk[~8îxŠ¢"ÃCbÂ'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷6†Væ†—&öåó%ÒÅ².‰+Îz¹Î8îY(nY:â"ÃC"Â&G&vöâ"Â&'Vfb"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷6†Væ†—&öåó"%ÒÅ².k[~xè¾x	kX"Ãc‚Â'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷6†Væ†—&öåó2%Õ×ÒÀ¢¶–C¢wF–Væ†—&öârÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢wF–Væ†—&öârÆæó£bÆæÖS¢~88n8*>8*Ž8;>88þ8*N8:Þ8;2rÇ&&—G“¢~)ˆ^)ˆ^)ˆRrÇG—W3¥²wvFW"rÂvG&vöâuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£CBÆ†&C£sGÒÀ¢WföÇWF–öäöæÇ“§G'VRÆ‡£#Ç7C£sbÆ6F6…&FS¢ã‚À¢FW63¢~88þ8*N8*.8*þ8*.8:Þ8;>8ÎZJžk[~8îX©¾8).[é~8n˜.XÉn8~8þZ{þ8.XJ®™¸^8^8Ž[Ë~ZJ~8®kNkX8).hÈ8N8"rÀ¢Ö÷fW3¥µ².ZJžk[~8îˆ‰â"ÃÂ'vFW""Â&†VÂ"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷F–Væ†—&öåó%ÒÅ².iÈŽˆúþkNXˆ2"ÃC‚Â'vFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷F–Væ†—&öåó"%ÒÅ².‰+ÎZJž›èÞk:""ÃcbÂ&G&vöâ"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷F–Væ†—&öåó2%Õ×ÒÀ¢¶–C¢vw&76&VBrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢vw&76&VBrÆæó£rÆæÖS¢~8+8:ž8+ž89>8;Î88‚rÇ&&—G“¢~)ˆRrÇG—W3¥²vw&72uÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£gÒÀ¢‡£Ç7C£c"Æ6F6…&FS¢ãCRÆWföÇWF–öã¢wF†÷&æ&VBrÆWföÇWF–öäÆWfVÃ£"À¢FW63¢~ˆØž8(8(ž8î[þYè¾8:.8;>8+ž8+þ8;Î8"rÀ¢Ö÷fW3¥µ².8:®8;Î89^8*¾88>8+þ8;Â"Ã#rÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöw&76&VEó%ÒÅ².YŽXøâ"Ã‚Â&w&72"Â&G&–â"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöw&76&VEó"%ÒÅ².j:î8îKˆi(2"ÃCÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöw&76&VEó2%ÒÅ².89Þ8*N8+®8;>88¾8;Î88ž8:²"Ã‚Â&w&72"Â'ö—6öâ"ÃãbÃÂ.jù.8).[Šþ8>8þ˜yÞ8).iKî88y»Žh˜¾8).jù.x«nhX¾8¾8ž8(¾8""ÆçVÆÂÂ'6¶–ÆÅöw&76&VEóB%ÒÅ².8+ž8:®8;Î89~898*n888;Â"ÃÂ&w&72"Â'6ÆVW"ÃãrÃ"Â.yÊ8(®8).Š©Ž8n{(ž8).8î8Þ8y»Žh˜¾8).k{8NyÊ8(®8¾‰Þ8Ž8ž8""ÆçVÆÂÂ'6¶–ÆÅöw&76&VEóR%ÒÅ².88Ž8*Þ8+~88>8*þ8*Î8;Î88~8;2"ÃCÂ&w&72"Â'ö—6öâ"ÃãrÃBÂ.xÉ¾jù.8îjHÞxšžYÉ.8).yIþ8þX{®8~8y»Žh˜¾8).[Ë~8Njù.8~XÈ^8þ‹ëÎ8(8""ÆçVÆÂÂ'6¶–ÆÅöw&76&VEób%Õ×ÒÀ¢¶–C¢wF†÷&æ&VBrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#¦fÇ6WÒÆ–Öt¶W“¢wF†÷&æ&VBrÆæó£‚ÆæÖS¢~8+Þ8;Î8;>89>8;Î88‚rÇ&&—G“¢~)ˆ^)ˆRrÇG—W3¥²vw&72uÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£’Æ†&C£CwÒÀ¢WföÇWF–öäöæÇ“§G'VRÆWföÇWF–öã¢vw&æ&VBrÆWföÇWF–öäÆWfVÃ£2Æ‡£SRÇ7C£C‚Æ6F6…&FS¢ã‚À¢FW63¢~8+8:ž8+ž89>8;Î88Ž8Î˜.XÉn8~8þZ{þ8.˜ºÞ8Nj9Ž8ŽzÎ8NyK.jë¾8~j:î8).ZèŽ8(¾ZèŽŠÛ~‰š¾8"rÀ¢Ö÷fW3¥µ².8+Þ8;Î8;>89¾8;Î8;2"Ã3bÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷F†÷&æ&VEó%ÒÅ².j:î8îyK.jë²"ÃÂ&w&72"Â&wV&B"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷F†÷&æ&VEó"%ÒÅ².8+ž898*N8*þ8:ž88>8+~8:R"ÃSBÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷F†÷&æ&VEó2%Õ×ÒÀ¢¶–C¢vw&æ&VBrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢vw&æ&VBrÆæó£’ÆæÖS¢~8+8:ž8;>89>8;Î88‚rÇ&&—G“¢~)ˆ^)ˆ^)ˆRrÇG—W3¥²vw&72uÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£C"Æ†&C£s'ÒÀ¢WföÇWF–öäöæÇ“§G'VRÆ‡£#RÇ7C£3RÆ6F6…&FS¢ã‚À¢FW63¢~8+Þ8;Î8;>89>8;Î88Ž8Î˜.XÉn8~8þj:î8î˜xÞŠ8^ZèŽŠÛ~ˆ^8"rÀ¢Ö÷fW3¥µ².8+8:ž8;>89¾8;Î8;2"ÃSÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöw&æ&VEó%ÒÅ².j:îxè¾8îŠ8^yK""ÃÂ&w&72"Â&wV&B"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöw&æ&VEó"%ÒÅ².8*Î8*N8*.8+ž8:ž88>8+~8:R"Ãs"Â&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöw&æ&VEó2%Õ×ÒÀ¢¶–C¢w&–¶6†VVbrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢w&–¶6†VVbrÆæó£3"ÆæÖS¢~8:®8*¾8+~8;Î89RrÇ&&—G“¢~)ˆRrÇG—W3¥²vw&72uÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£ÒÀ¢‡£“RÇ7C£s‚Æ6F6…&FS¢ã3‚ÆWföÇWF–öã¢w6W&Ç†–rÆWföÇWF–öäÆWfVÃ£2À¢FW63¢~j:î8îXXž8).Zëþ8~8þ[þ››þ8î8(Ž8n8®8:.8;>8+ž8+þ8;Î8.ˆº^‰ž8îŠy.8¾8(žyIþYÞX©¾8).iKî8N8"rÀ¢Ö÷fW3¥µ².ˆº^‰ž8îz¨˜""Ã#BÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷&–¶6†VVeó%ÒÅ².y™.8~8îˆ«ÞYž8Ò"ÃÂ&w&72"Â&†VÂ"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷&–¶6†VVeó"%ÒÅ².8:®8;Î89^8+ž898;Î8*ò"Ã3bÂ&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷&–¶6†VVeó2%Õ×ÒÀ¢¶–C¢w6W&Ç†–rÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢w6W&Ç†–rÆæó£32ÆæÖS¢~8+¾8:ž8:¾89^8*>8*"rÇ&&—G“¢~)ˆ^)ˆ^)ˆRrÇG—W3¥²vw&72uÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£CbÆ†&C£sgÒÀ¢‡£##RÇ7C£“"Æ6F6…&FS¢ãÀ¢FW63¢~8:®8*¾8+~8;Î89^8Î˜.XÉn8~8þzYîzyŽ8îj:î››þ8.ˆ«Y+.8þŠy.8Ž{ú8î{ûÎ8~j:î8¾kˆ^kXN8®š*Ž8).[z8(ž8¾8(¾8"rÀ¢Ö÷fW3¥µ².{ú{ûÎ8îz¨š*‚"ÃC"Â&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷6W&Ç†–ó%ÒÅ².j:î{+î8îzYÞzhò"ÃÂ&w&72"Â&†VÂ"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷6W&Ç†–ó"%ÒÅ².8+¾8:ž89^8*>88>8*þ8:®8;Î89R"Ãc‚Â&w&72"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷6W&Ç†–ó2%Õ×ÒÀ¢¶–C¢væ–v‡FÖ&RrÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢væ–v‡FÖ&RrÆæó£ÆæÖS¢~88®8*N88Ž8:8*"rÇ&&—G“¢~)ˆ^)ˆRrÇG—W3¥²vF&²uÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£#‚Æ†&C£S‡ÒÀ¢‡£RÇ7C£ƒ‚Æ6F6…&FS¢ã#BÀ¢FW63¢~i©~™x~8¾8(žxûî8(Î8(¾[Û8îšÙNxšž8"rÀ¢Ö÷fW3¥µ².[Ûh™>8"Ã#RÂ&F&²"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöæ–v‡FÖ&Uó%ÒÅ².Y®8N8îŠin{y¢"Ã‚Â&F&²"Â&FV'Vfb"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöæ–v‡FÖ&Uó"%ÒÅ².™x~8îk:.X¹R"ÃCBÂ&F&²"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅöæ–v‡FÖ&Uó2%Õ×ÒÀ¢¶–C¢wföÇFV6²rÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#§G'VWÒÆ–Öt¶W“¢wföÇFV6²rÆæó£ÆæÖS¢~89Î8:¾88n88>8*òrÇ&&—G“¢~)ˆRrÇG—W3¥²wF‡VæFW"rÂwv–æBuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£—ÒÀ¢‡£Ç7C£“RÆ6F6…&FS¢ã3RÆWföÇWF–öã¢w7V–æârÆWföÇWF–öäÆWfVÃ£"À¢FW63¢~™»~™».8).š9¾8n›:^Yè¾8:.8;>8+ž8+þ8;Î8"rÀ¢Ö÷fW3¥µ².™»~8N8N8Ò"Ã3Â'F‡VæFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µó%ÒÅ².h
+^™˜ÞKˆ²"Ã#BÂ'v–æB"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µó"%ÒÅ².™»~›;N[Ëâ"ÃCbÂ'F‡VæFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µó2%ÒÅ².8+^8;>888;Î89Î8:¾88‚"Ã3Â'F‡VæFW""Â'&Ç—6—2"Ãã2Ã"Â.[Ë~X©¾8®™»¾i(>8).iKî88i[^8î‹ª¾KÙ>8).8~8>8(Î8^8¾8(¾8""ÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µóB%ÒÅ².898:ž8:ž8*N8+®8+~8:~88>8*ò"ÃRÂ'F‡VæFW""Â'&Ç—6—2"Ãã‚Ã"Â.[Ë~x8Ž8®8~8>8(Î8).[É^8Þ‹[~8>8ž™»¾i(>8).iKî8N8""ÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µóR%ÒÅ².8+^8;>888;Î8+ž88Ž8;Î8:"ÃCRÂ'F‡VæFW""Â'&Ç—6—2"ÃãRÃBÂ.kø8~8N™»~[Y8).[{¾8Þ‹[~8>8~8y»Žh˜¾8).›«¾y{®8^8¾8(¾8""ÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µób%ÒÅ².8:ž8*N88Ž88¾8;>8+888*~8*N8;2"Ã#‚Â'F‡VæFW""Â'&WVEöGF6²"Ãã2Ã2Â.˜
+>˜én8ž8(¾™»¾i(>8).iKî88KˆZé®z+®xè~8~8(.8nKˆ[ªniK¾i(>8ž8(¾8""ÆçVÆÂÂ'6¶–ÆÅ÷föÇFV6µór%Õ×ÒÀ¢¶–C¢w7V–æârÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Æ—G“§²&6öçG&7B#§G'VRÂ&Æ6†V×”6FÇ—7B#§G'VRÂ&Æ6†V×•7V66W72#¦fÇ6RÂ&Æ6†V×”f–ÇW&R#¦fÇ6WÒÆ–Öt¶W“¢w7V–æârÆæó£"ÆæÖS¢~8+ž898*þ8*N8;2rÇ&&—G“¢~)ˆ^)ˆRrÇG—W3¥²wF‡VæFW"rÂwv–æBuÒÆ‡VçDÆWfVÇ3§¶æ÷&ÖÃ£#Æ†&C£SÒÀ¢WföÇWF–öäöæÇ“§G'VRÆWföÇWF–öã¢wföÇF‚rÆWföÇWF–öäÆWfVÃ£2Æ‡£sÇ7C£RÆ6F6…&FS¢ã3RÀ¢FW63¢~89Î8:¾88n88>8*þ8Î˜.XÉn8~8þ™»~š*Ž8îxÉ¾zkÞ8:.8;>8+ž8+þ8;Î8.™»~8).8î8Ž8N8z›®KŠÞ8¾8(ž˜ºÞ8þŠ[.8N8¾8¾8(¾8"rÀ¢Ö÷fW3¥µ².™»~i(2"Ã3BÂ'F‡VæFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷7V–æåó%ÒÅ².z¨š*‚"Ã#‚Â'v–æB"ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷7V–æåó"%ÒÅ².8+ž898;Î8*þ888*N89b"ÃC"Â'F‡VæFW""ÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÆçVÆÂÂ'6¶–ÆÅ÷7V–æåó2%Õ×ÒÀ¢¶–C¢wföÇF‚rÆVçF—G”¶–æC¢vÖöç7FW"rÆVÆ–v–&–Î5×[h‘éì¶»§q«^u-•äè½‰±¥¸œ±¹¼èÈà±¹…µ”èŸŽ
+ÓŽ[Ž«ŽÌœ±É…É¥ÑäèŸŠbœ±ÑåÁ•Ìél¹½Éµ…°t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÝô°(€€¡ÀèàÀ±ÍÁèÔÀ±…Ñ¡I…Ñ”è¸ÜÀ±½¥¹	½¹ÕÌèÔ±•áÁ	½¹ÕÌèÄÀ°(€€‘•ÍŒèŸŽ§Ž»Ž{ŽŽ_Ž¯Ž
+ž>ûŽ
+3Ž
+/¦nG¦¶kŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ–:–ž/žjŽ«š¶›–f£Ž
+Kš2Ž‡Žžú“Ž
+3ŽŸ¢†3–.WŽgŽ
+/ŽOŽ£Ž3–’kŽŽœ°(€€µ½Ù•Ìéml‹šŽ7šŽKšRïšJˆ°Äà°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½‰±¥¹|ÀÄ‰t±l‹–¢–jˆ°À°‰¹½Éµ…°ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½‰±¥¹|ÀÈ‰t±l‹š¾KŽ»ž~·–&Œˆ°ÈÈ°‰¹½Éµ…°ˆ°‰Á½¥Í½¸ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½‰±¥¹|ÀÌ‰uuô°(€í¥è™…±Í•}‘É…½¹}…±™„œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè™…±Í•}‘É…½¹}…±™„œ±¹¼èÈä±¹…µ”èŸ–÷ž®p½‘”é…±™„œ±É…É¥ÑäèŸŠbŠbŠbŠbŠbœ±ÑåÁ•Ìél¹½Éµ…°œ°±¥¡Ðt°(€€¡ÀèÌØÀ±ÍÁèàÈ±…Ñ¡I…Ñ”è¸ÀÔ±‰½ÍÍ±…ÍÌèŸ¢ÚŽsŽ
+çžÒhœ°(€€‘•ÍŒèŸž–{Ž¯’òóŽoŽ›¦ƒŽ
+'Ž
+3Ž¦*¢&ËŽ»–÷ž®sŽž‡š¦¢Î«Ž«¢ŽžRËŽ£–'Ž»–*oŽ
+Kš2Ž“Ž¢ÚŽsŽ
+çžÒkŽ‹ŽÏŽ
+çŽ
+ÿŽóŽœ°(€€µ½Ù•Ìéml‹¢fk–'ž‚Èˆ°ÜÀ°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}…±™…|ÀÄ‰t±l‹–÷ž–{Ž»ž"¨ˆ°Ôà°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}…±™…|ÀÈ‰t±l‹Ž
+ÏŽóŽ'ŽïŽ
+‹Ž¯ŽWŽ
+„ˆ°àà°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}…±™…|ÀÌ‰uuô°(€í¥è™…±Í•}‘É…½¹}‰•Ñ„œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè™…±Í•}‘É…½¹}‰•Ñ„œ±¹¼èÌÀ±¹…µ”èŸ–÷ž®p½‘”é‰•Ñ„œ±É…É¥ÑäèŸŠbŠbŠbŠbŠbœ±ÑåÁ•Ìél¹½Éµ…°œ°±¥¡Ðt°(€€¡ÀèÌäÀ±ÍÁèàà±…Ñ¡I…Ñ”è¸ÀÐ±‰½ÍÍ±…ÍÌèŸ¢ÚŽsŽ
+çžÒhœ°(€€‘•ÍŒèŸ’â[žV3Ž»ž.·¦ZOŽ¯ž>ûŽ
+3Ž
+/’ê3’öOžn»Ž»–÷ž®sŽžf÷¦*Ž»¢ŽžRËžþóŽ
+K–êŽKŽž¦ë¦ZOŽ
+K¢ŽŽ?–'Ž
+KšRûŽ“¢ÚŽsŽ
+çžÒkŽ‹ŽÏŽ
+çŽ
+ÿŽóŽœ°(€€µ½Ù•Ìéml‹šZ·žV3–$ˆ°ÜØ°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}‰•Ñ…|ÀÄ‰t±l‹–÷ž®sŽ»žþóšJˆ°ØÈ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}‰•Ñ…|ÀÈ‰t±l‹Ž
+ÏŽóŽ'ŽïŽgŽóŽ
+üˆ°äÐ°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}‰•Ñ…|ÀÌ‰uuô°(€í¥è™…±Í•}‘É…½¹}…µµ„œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè™…±Í•}‘É…½¹}…µµ„œ±¹¼èÌÄ±¹…µ”èŸ–÷ž®p½‘”é…µµ„œ±É…É¥ÑäèŸŠbŠbŠbŠbŠbœ±ÑåÁ•Ìél¹½Éµ…°œ°±¥¡Ðt°(€€¡ÀèÐÈÀ±ÍÁèäÐ±…Ñ¡I…Ñ”è¸ÀÌÔ±‰½ÍÍ±…ÍÌèŸ¢ÚŽsŽ
+çžÒhœ°(€€‘•ÍŒèŸ’â[žV3Ž»ž.·¦ZOŽ¯ž>ûŽ
+3Ž
+/’â'’öOžn»Ž»–÷ž®sŽ–º3š"C–ê›Ž
+K–Š_Ž_Ž¦*žþóŽ»š¦šŠÃž®sŽŸŽ–'Ž£¢fkž‡Ž
+K–B3šfŽ¯šN7Ž
+/¢ÚŽsŽ
+çžÒkŽ‹ŽÏŽ
+çŽ
+ÿŽóŽœ°(€€µ½Ù•Ìéml‹¢fkž‡–'žþðˆ°àÈ°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}…µµ…|ÀÄ‰t±l‹–÷ž®sŽ»–J–N¸ˆ°ØØ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}…µµ…|ÀÈ‰t±l‹Ž
+ÏŽóŽ'ŽïŽ
+³ŽÏŽxˆ°ÄÀÀ°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}™…±Í•}‘É…½¹}…µµ…|ÀÌ‰uuô°(€í¥èÙ½±µ½½œœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äèÙ½±µ½½œœ±¹¼èÌÐ±¹…µ”èŸŽsŽ¯Ž‹ŽóŽ
+Àœ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•ÌélÑ¡Õ¹‘•Èt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÌ±¡…ÉèÔÅô°(€€¡ÀèÄÔÔ±ÍÁèÜÈ±…Ñ¡I…Ñ”è¸ÈÀ±•Ù½±ÕÑ¥½¸èÉ…¹}Ù½±µ½½œœ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸ¦nßŽ
+KŽûŽ£ŽŽž6–z/Ž‹ŽÏŽ
+çŽ
+ÿŽóŽ–Þ£–’ŸŽ«ž"«ŽŸ–’Ÿ–rÃŽ
+Kž‚WŽ7Ž–â¿¦nïŽ_Ž–Ê§ž&Ž
+K–ÞïŽ7’â+ŽKŽ›¢–ËŽŽ/Ž/Ž
+/Žœ°(€€µ½Ù•Ìéml‹¦nßž"¨ˆ°ÌÐ°‰Ñ¡Õ¹‘•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Ù½±µ½½|ÀÄ‰t±l‹–â¿¦nï–J–N¸ˆ°À°‰Ñ¡Õ¹‘•Èˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Ù½±µ½½|ÀÈ‰t±l‹ŽsŽ¯ŽŽŽ
+¿Ž
+¿Ž·Žðˆ°ÔØ°‰Ñ¡Õ¹‘•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Ù½±µ½½|ÀÌ‰uuô°(€í¥èÉ…¹}Ù½±µ½½œœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äèÉ…¹}Ù½±µ½½œœ±¹¼èÌÔ±¹…µ”èŸŽ
+ÃŽ§ŽÏŽsŽ¯Ž‹ŽóŽ
+Àœ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•ÌélÑ¡Õ¹‘•Èt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÐÔ±¡…ÉèÜÕô°(€€¡ÀèÈÐÔ±ÍÁèØØ±…Ñ¡I…Ñ”è¸ÄÈ°(€€‘•ÍŒèŸŽsŽ¯Ž‹ŽóŽ
+ÃŽ3¦Ë–2[Ž_Ž¦nßž6Ž»–Þ£’öOŽžÖCšfÛ–2[Ž_Ž¢ŽžRËŽ£–Þ£–’ŸŽ«ž"«Ž¯¦nßŽ
+KŽûŽ£ŽŽ–’Ÿ–rÃŽ
+K–&ËŽ
+/ŽïŽ§Ž»’âšJŽ
+KšRûŽ“Žœ°(€€µ½Ù•Ìéml‹¦nß–Ê§ž‚WŽ4ˆ°Ðà°‰Ñ¡Õ¹‘•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}É…¹}Ù½±µ½½|ÀÄ‰t±l‹–â¿¦nïžÖCšfÛ¦:œˆ°À°‰Ñ¡Õ¹‘•Èˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}É…¹}Ù½±µ½½|ÀÈ‰t±l‹Ž
+ÃŽ§ŽÏŽsŽ¯Ž#Ž
+¿Ž·Žðˆ°Üà°‰Ñ¡Õ¹‘•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}É…¹}Ù½±µ½½|ÀÌ‰uuô°(€í¥èÍÑ•±±…}…ÁÁÉ•¹Ñ¥”œ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äèÍÑ•±±…}…ÁÁÉ•¹Ñ¥”œ±¹¼èÌØ±¹…µ”èŸ¢š/žþKŽ¦¶SšÎW’öÿŽŽ
+çŽŽ¤œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•ÌélÍÑ…Èœ°±¥¡Ðt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÈ±¡…ÉèÔÁô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èØ±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€¡ÀèÄÄÔ±ÍÁèäÀ±…Ñ¡I…Ñ”è¸ÈÀ±•Ù½±ÕÑ¥½¸èÍÑ•±±…}Ý¥é…Éœ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸ¦¶S–Â;–¶›–rKŽŸšb¦¶SšÎWŽ
+K–¶›ŽÛ¢š/žþKŽ¦¶SšÎW’öÿŽŽšb;Ž
+/Žž²G¦†SŽ£šr«–º3š"CŽ«Ž3Ž
+'¦.·Ž¦¶S–*oŽŸš"›ŽŽœ°(€€µ½Ù•Ìéml‹šb–ÆG–òøˆ°ÌÀ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}…ÁÁÉ•¹Ñ¥•|ÀÄ‰t±l‹Ž{Ž
+ãŽŽ
+¿Ž
+ßŽŸŽŽ ˆ°ÈÐ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}…ÁÁÉ•¹Ñ¥•|ÀÈ‰t±l‹Ž
+çŽ
+ÿŽóŽ[ŽóŽ
+çŽ ˆ°À°‰ÍÑ…Èˆ°‰‰Õ™˜ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}…ÁÁÉ•¹Ñ¥•|ÀÌ‰uuô°(€í¥èÍÑ•±±…}Ý¥é…Éœ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äèÍÑ•±±…}Ý¥é…Éœ±¹¼èÌÜ±¹…µ”èŸ¦¶SšÎW’öÿŽŽ
+çŽŽ¤œ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•ÌélÍÑ…Èœ°±¥¡Ðt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÐØ±¡…ÉèÜÙô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èÜ±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±•Ù½±ÕÑ¥½¸èÍÑ•±±…}Í½É•É•Èœ±•Ù½±ÕÑ¥½¹1•Ù•°èÌ±¡ÀèÄÔÔ±ÍÁèÄÀÈ±…Ñ¡I…Ñ”è¸ÄÀ°(€€‘•ÍŒèŸ¢š/žþKŽ¦¶SšÎW’öÿŽŽ
+çŽŽ§Ž3š"C¦VßŽ_Ž–žÿŽšbŽ»¦¶S–*oŽ
+K¢«–r£Ž¯šN7Ž
++Ž¢î÷Ž
+Ž/Ž«¢¦ƒ–RÇŽŸš"›–‚ÓŽ
+KžŸŽ
+'Žg¦¶SšÎW’öÿŽŽœ°(€€µ½Ù•Ìéml‹Ž
+çŽ
+ÿŽóŽ§Ž
+“Ž#Ž³Ž
+ˆ°ÐÈ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}Ý¥é…É‘|ÀÄ‰t±l‹Ž{Ž
+ãŽŽ
+¿ŽCŽóŽ
+çŽ ˆ°ÌØ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}Ý¥é…É‘|ÀÈ‰t±l‹Ž
+‹Ž
+çŽ#Ž§Ž¯ŽWŽ³Ž
+ˆˆ°ØÐ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}Ý¥é…É‘|ÀÌ‰uuô°(€í¥èÍÑ•±±…}Í½É•É•Èœ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äèÍÑ•±±…}Í½É•É•Èœ±¹¼èÌà±¹…µ”èŸ¦¶S–Â;–â¯Ž
+çŽŽ¤œ±É…É¥ÑäèŸŠbŠbŠbŠbœ±ÑåÁ•ÌélÍÑ…Èœ°±¥¡Ðt±¡Õ¹Ñ1•Ù•±Ìéí¡…Éèàáô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èà±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÈÀÔ±ÍÁèÄÄÈ±…Ñ¡I…Ñ”è¸ÀØ°(€€‘•ÍŒèŸ¦¶SšÎW’öÿŽŽ
+çŽŽ§Ž3ŽWŽ
+'Ž¯š"C¦VßŽ_Ž–žÿŽšb¢úÃŽ»ž~—¢¶cŽ£¦®c’ö7¦¶S¢†OŽ
+KšN7Ž
+/¦¶S–Â;–â¯Ž–æûŽ“Ž
+Ž»¦¶S–Â;šnãŽ
+K–úOŽ#Žš"›–‚ÓŽ
+KšbŽ»–'ŽŸšR¿¦7ŽgŽ
+/Žœ°(€€µ½Ù•Ìéml‹šb–’§Ž»¢ŽŽ4ˆ°ÔØ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}Í½É•É•É|ÀÄ‰t±l‹Ž
+ÃŽ§ŽÏŽ'Ž{Ž
+ãŽŽ
+¼ˆ°ÐÐ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}Í½É•É•É|ÀÈ‰t±l‹Ž
+ÏŽ
+çŽ‹Ž
+çŽ
+‹ŽóŽ
+¼ˆ°àØ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÍÑ•±±…}Í½É•É•É|ÀÌ‰uuô°(€í¥è±Õµ¥¹…}…ÁÁÉ•¹Ñ¥”œ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè±Õµ¥¹…}…ÁÁÉ•¹Ñ¥”œ±¹¼èÌä±¹…µ”èŸ¢š/žþKŽ¦¶SšÎW’öÿŽŽ¯ŽŽ(œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•ÌélÍÑ…Èœ°‘…É¬t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÈ±¡…ÉèÔÁô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èä±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€¡ÀèÄÄÀ±ÍÁèàà±…Ñ¡I…Ñ”è¸ÈÀ±•Ù½±ÕÑ¥½¸è±Õµ¥¹…}Ý¥é…Éœ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸ¦¶S–Â;–¶›–rKŽŸšb¦¶SšÎWŽ
+K–¶›ŽÛ–šÂ_Ž«¢š/žþKŽ¦¶SšÎW’öÿŽŽ¦¶S–Â;šnãŽ
+K–’Ÿ–"Ž¯š*ÇŽ#Ž¦vgŽ/Ž«¢¦ƒ–RÇŽŸšbŽ»–*oŽ
+K–FóŽÏ–ëŽgŽœ°(€€µ½Ù•Ìéml‹šb–'–òøˆ°Èà°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}…ÁÁÉ•¹Ñ¥•|ÀÄ‰t±l‹Ž{Ž
+ãŽŽ
+¿Ž;ŽóŽ ˆ°ÈÐ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}…ÁÁÉ•¹Ñ¥•|ÀÈ‰t±l‹Ž¯ŽŽ+Ž
+çŽŽŽóŽ
+àˆ°À°‰ÍÑ…Èˆ°‰‰Õ™˜ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}…ÁÁÉ•¹Ñ¥•|ÀÌ‰uuô°(€í¥è±Õµ¥¹…}Ý¥é…Éœ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè±Õµ¥¹…}Ý¥é…Éœ±¹¼èÐÀ±¹…µ”èŸ¦¶SšÎW’öÿŽŽ¯ŽŽ(œ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•ÌélÍÑ…Èœ°‘…É¬t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÐØ±¡…ÉèÜÙô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èÄÀ±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±•Ù½±ÕÑ¥½¸è±Õµ¥¹…}Í½É•É•Èœ±•Ù½±ÕÑ¥½¹1•Ù•°èÌ±¡ÀèÄÔÔ±ÍÁèäà±…Ñ¡I…Ñ”è¸ÄÀ°(€€‘•ÍŒèŸ¢š/žþKŽ¦¶SšÎW’öÿŽŽ¯ŽŽ+Ž3š"C¦VßŽ_Ž–žÿŽšbŽ»¢†O–ò?Ž
+K’â–¾ŸŽ¯žÞ£Žÿ’â+ŽKŽ
+/¦¶SšÎW’öÿŽŽŸŽ¦vgŽ/Ž«¦¶S–*oŽ/Ž
+'¦.·Žšb–'¦¶SšÎWŽ
+KšRûŽ“Žœ°(€€µ½Ù•Ìéml‹šbšr#Ž»–'–òøˆ°ÐÀ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}Ý¥é…É‘|ÀÄ‰t±l‹Ž{Ž
+ãŽŽ
+¿Ž[Ž¯ŽóŽ€ˆ°ÌÐ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}Ý¥é…É‘|ÀÈ‰t±l‹Ž¯ŽŽ+Ž
+çŽ³Ž
+ˆ°ØÈ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}Ý¥é…É‘|ÀÌ‰uuô°(€í¥è±Õµ¥¹…}Í½É•É•Èœ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè±Õµ¥¹…}Í½É•É•Èœ±¹¼èÐÄ±¹…µ”èŸ¦¶S–Â;–â¯Ž¯ŽŽ(œ±É…É¥ÑäèŸŠbŠbŠbŠbœ±ÑåÁ•ÌélÍÑ…Èœ°‘…É¬t±¡Õ¹Ñ1•Ù•±Ìéí¡…ÉèäÁô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èÄÄ±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÈÀÔ±ÍÁèÄÀà±…Ñ¡I…Ñ”è¸ÀØ°(€€‘•ÍŒèŸ¦¶SšÎW’öÿŽŽ¯ŽŽ+Ž3ŽWŽ
+'Ž¯š"C¦VßŽ_Ž–žÿŽ¦vg¢²CŽ«šb¢†OŽ£¦®c’ö7¦¶SšÎWŽ
+KšN7Ž
+/¦¶S–Â;–â¯Ž¦vKžf÷ŽšbŽ»žÖCšfÛŽ£¢†O–ò?ŽŸš"›–‚ÓŽ
+K–2Žÿ¢úóŽ
+Žœ°(€€µ½Ù•Ìéml‹šbšfÛŽ»¢ŽŽ4ˆ°ÔÐ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}Í½É•É•É|ÀÄ‰t±l‹Ž¯ŽŽ+Ž
+çŽ{Ž
+ãŽŽ
+¼ˆ°ÐØ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}Í½É•É•É|ÀÈ‰t±l‹Ž
+ïŽ³Ž
+çŽŽ
+Ž
+‹Ž¯Ž³Ž
+ˆ°àÐ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õµ¥¹…}Í½É•É•É|ÀÌ‰uuô°(€í¥è½É…¹„œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè½É…¹„œ±¹¼èÐÈ±¹…µ”èŸŽ
+«Ž¯Ž
+¯ŽóŽ(œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•ÌélÝ…Ñ•Èt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÈ±¡…ÉèÔÁô°(€€¡ÀèÄØÀ±ÍÁèÜØ±…Ñ¡I…Ñ”è¸ÄØ±•Ù½±ÕÑ¥½¸è½É…}ÍÑÉ•…´œ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸ¢JóšÖßŽ»–—Ž
++šÆŽ¯ž>ûŽ
+3Ž
+/šÂÓ–Æ{šŸŽ»Ž
+ßŽŽ–z/Ž‹ŽÏŽ
+çŽ
+ÿŽóŽ¢JóŽžÖCšfÛŽ»¢3ŽÏŽ
+3Ž£šÂÓšÖŽ
+KŽûŽ£ŽŽšÖß’â·Ž
+K’þ+šV?Ž¯šÎÏŽCŽœ°(€€µ½Ù•Ìéml‹Ž
+‹Ž
+¿Ž
+‹ŽŽ
+“Ž¬ˆ°ÌÐ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…¹…|ÀÄ‰t±l‹¢JóšÖßŽ»žª¦Èˆ°Ìà°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…¹…|ÀÈ‰t±l‹Ž
+¿Ž«Ž
+çŽ
+ÿŽ¯Ž
+›Ž
+ŸŽóŽXˆ°ÔØ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…¹…|ÀÌ‰uuô°(€í¥è½É…}ÍÑÉ•…´œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè½É…}ÍÑÉ•…´œ±¹¼èÐÌ±¹…µ”èŸŽ
+«Ž¯Ž
+¯Ž
+çŽ#Ž«ŽóŽ€œ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•ÌélÝ…Ñ•Èt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÐÜ±¡…ÉèÜÝô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±•Ù½±ÕÑ¥½¸è½É…}…‰åÍÌœ±•Ù½±ÕÑ¥½¹1•Ù•°èÌ±¡ÀèÈÈÀ±ÍÁèàà±…Ñ¡I…Ñ”è¸ÄÀ°(€€‘•ÍŒèŸŽ
+«Ž¯Ž
+¯ŽóŽ+Ž3¦Ë–2[Ž_Ž–žÿŽ¢JóšÖßŽ»šÂÓšÖŽ£žÖCšfÛŽ
+KŽûŽ£ŽŽšÖß’â·Ž
+KžZû¢ÖÃŽgŽ
+/šÂÓ–Æ{šŸŽ»Ž
+ßŽŽ–z/Ž‹ŽÏŽ
+çŽ
+ÿŽóŽœ°(€€µ½Ù•Ìéml‹Ž
+çŽ#Ž«ŽóŽƒŽŽ
+“Ž¬ˆ°ÐÐ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…}ÍÑÉ•…µ|ÀÄ‰t±l‹¢JóšÖŽ»žªšJˆ°ÔÈ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…}ÍÑÉ•…µ|ÀÈ‰t±l‹Ž
+«Ž¯Ž
+¯Ž
+›Ž
+ŸŽóŽXˆ°ÜÈ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…}ÍÑÉ•…µ|ÀÌ‰uuô°(€í¥è½É…}…‰åÍÌœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè½É…}…‰åÍÌœ±¹¼èÐÐ±¹…µ”èŸŽ
+«Ž¯Ž
+¯Ž
+‹ŽOŽ
+äœ±É…É¥ÑäèŸŠbŠbŠbŠbœ±ÑåÁ•ÌélÝ…Ñ•Èt±¡Õ¹Ñ1•Ù•±Ìéí¡…ÉèäÁô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÈàÔ±ÍÁèäà±…Ñ¡I…Ñ”è¸ÀØ°(€€‘•ÍŒèŸŽ
+«Ž¯Ž
+¯Ž
+çŽ#Ž«ŽóŽƒŽ3šÞÇšÖßŽ»¦¶S–*oŽ
+K–ú_Ž›¦Ë–2[Ž_Ž–žÿŽ¢JóŽžÖCšfÛŽ£šâ›–ÞïŽ?šÂÓšÖŽ
+KŽûŽ£ŽŽšÞÇŽ7šÖßŽ»šzsŽ›Ž
+KšR¿¦7ŽgŽ
+/šÂÓ–Æ{šŸŽ»Ž
+ßŽŽ–z/Ž‹ŽÏŽ
+çŽ
+ÿŽóŽœ°(€€µ½Ù•Ìéml‹Ž
+‹ŽOŽ
+çŽŽ
+“Ž¬ˆ°ÔØ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…}…‰åÍÍ|ÀÄ‰t±l‹šÞÇšÖßŽ»––SšÖˆ°Øà°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…}…‰åÍÍ|ÀÈ‰t±l‹Ž
+«Ž¯Ž
+¯Ž
+‹ŽOŽ
+äˆ°äÈ°‰Ý…Ñ•Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}½É…}…‰åÍÍ|ÀÌ‰uuô°(€í¥èÑÍÕ‰…­¤œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äèÑÍÕ‰…­¤œ±¹¼èÐÔ±¹…µ”èŸž
+;Ž»žÊû¦r+ŽŽCŽ
+´œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•Ìél™¥É”t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈà±¡…ÉèÔáô°(€€¡ÀèÄàÔ±ÍÁèàà±…Ñ¡I…Ñ”è¸ÄÈ±‘É½Á%Ñ•´è™¥É•}½Éˆœ±‘É½Á%Ñ•µ9…µ”èŸž
+;ž:$œ±‘É½ÁI…Ñ”è¸ÌÀ°(€€‘•ÍŒèŸ¢>¿ž
+;Ž»¦3Ž
+ž¯–ÆÇŽ¯ž>ûŽ
+3Ž
+/ž
+;Ž»žÊû¦r+Ž¢*Ç–òŽ»Ž
+#ŽŽ«žÖCšfÛžþóŽ/Ž
+'žóžÇŽ»ž
+;Ž
+KšRûŽ“Ž–KŽgŽ ÌÀ—Ž»žŠëž:ŽŸŽ3ž
+;ž:'Ž7Ž
+K¢B÷Ž£ŽgŽœ°(€€µ½Ù•Ìéml‹ž¯¢*ÇŽ»¢"xˆ°ÌØ°‰™¥É”ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÑÍÕ‰…­¥|ÀÄ‰t±l‹žóžÇ¢*Ç–òˆ°Ðà°‰™¥É”ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÑÍÕ‰…­¥|ÀÈ‰t±l‹ž
+;¢>¿žÖCžV0ˆ°À°‰™¥É”ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}ÑÍÕ‰…­¥|ÀÌ‰uuô°(€í¥è•±¹…}­…•¸œ±•¹Ñ¥Ñå-¥¹è¡…É…Ñ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆé™…±Í”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè•±¹…-…•¸œ±¹¼èÐØ±¹…µ”èŸ¢>¿ž
+;Ž»–&–Ž¯Ž
+£Ž¯Ž(œ±É…É¥ÑäèŸŠbŠbŠbŠbœ±ÑåÁ•Ìél™¥É”œ°¹½Éµ…°t±¡Õ¹Ñ1•Ù•±Ìéí¡…ÉèäÉô±Õ¹¥ÑQåÁ”è¡…É…Ñ•Èœ±¡…É…Ñ•É9¼èÔ±½¹ÑÉ…Ñ…‰±”é™…±Í”°(€€¡ÀèÈÌÔ±ÍÁèÄÀÈ±…Ñ¡I…Ñ”è¸ÀÔ±‰½ÍÍ±…ÍÌèŸŽsŽ
+çžÒhœ°(€€‘•ÍŒèŸž
+;ž:'Ž»–*oŽ
+K–>_ŽGŽ¢>¿ž
+;Ž
+K–&Ž¯–ºÿŽ_ŽŽ
+£Ž¯Ž+Ž»šZÃŽŽ«–žÿŽ¢"{Ž¢*Ç–òŽ»Ž
+#ŽŽ«ž
+;ŽŸšV×Ž
+KšZ³Ž
++¢ŽŽ?Žœ°(€€µ½Ù•Ìéml‹¢>¿ž
+;šZ³Ž
+(ˆ°Ôà°‰™¥É”ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}•±¹…}­…•¹|ÀÄ‰t±l‹ž
+;¢*ÇŽ»šž/Ž ˆ°À°‰™¥É”ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}•±¹…}­…•¹|ÀÈ‰t±l‹žÒ¢N»¦¦Zˆ°àÀ°‰™¥É”ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}•±¹…}­…•¹|ÀÌ‰uuô°(€í¥è…±¡•µ¥½¸œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆéÑÉÕ”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè…±¡•µ¥½¸œ±¹¼èÐÜ±¹…µ”èŸ¦2³š‚ãž6Ž
+‹Ž¯Ž
+ÇŽŽ
+«ŽÌœ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•Ìél¹½Éµ…°t°(€€¡ÀèÄàÀ±ÍÁèÜÔ±…Ñ¡I…Ñ”èÀ±½¹ÑÉ…Ñ…‰±”é™…±Í”±…±¡•µåá±ÕÍ¥Ù”éÑÉÕ”°(€€‘•ÍŒèŸ¦2³š"Cš‚ãŽ/Ž
+'žRŽûŽ
+3Ž
+/ž‡–Æ{šŸŽ»¦2³š"C¦fC–ºkŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ–/’öOŽSŽ£Ž¯žVÃŽ«Ž
+/¢÷–*o–
+û–BGŽ
+Kš2Ž“Žœ°(€€µ½Ù•Ìéml‹¦2³š‚ã–Ò§ž‚Tˆ°ÄÐÀ°‰¹½Éµ…°ˆ°‰…±¡•µå}É•½¥°ˆ±¹Õ±°°Ô°‹šRïšJ–ú3Ž–º¦joŽ¯’â;Ž#ŽŽŽ‡ŽóŽ
+ãŽ¸È×¾òŽ
+K–>7–.WŽ£Ž_Ž›–>_ŽGŽ
+/Žˆ°‰…±¡•µ¥½¸ˆ°‰Í­¥±±}…±¡•µ¥½¹|ÀÄ‰uuô°(€í¥è­¥µ•É…¹„œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆéÑÉÕ”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè­¥µ•É…¹„œ±¹¼èÐà±¹…µ”èŸšÞßš"Cžþóž®sŽ
+·Ž‡Ž§Ž
+ÃŽ(œ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•ÌélÝ¥¹œ°‘É…½¸t°(€€¡ÀèÄÔÀ±ÍÁèÄÀÀ±…Ñ¡I…Ñ”èÀ±½¹ÑÉ…Ñ…‰±”é™…±Í”±…±¡•µåá±ÕÍ¥Ù”éÑÉÕ”±•Ù½±ÕÑ¥½¸è­¥µ•É…¹…}…Á•àœ±•Ù½±ÕÑ¥½¹1•Ù•°èÔ°(€€‘•ÍŒèŸ¦Š£Ž£ž®sŽ»šŸ¢Î«Ž
+K’ö×Žoš2Ž“¦2³š"C¦fC–ºkŽ»žþóž®sŽž2oš¾KŽ
+K–â¿ŽÏŽžþóŽŸž6Ëž&§Ž
+K¢þ÷Ž¢¦ÃŽ
+Ž
+/Žœ°(€€µ½Ù•Ìéml‹ž2oš¾KžþSž‚Ðˆ°ÄÄÀ°‰Ý¥¹ˆ°‰Á½¥Í½¸ˆ°À¸Ð°Ð°ˆÐÃ¾òŽ»žŠëž:ŽŸžnãš&/Ž
+HÏŽ
+ÿŽóŽÏŽ»š¾Kž*Ûš/Ž¯ŽgŽ
+/Žˆ°‰­¥µ•É…¹„ˆ°‰Í­¥±±}­¥µ•É…¹…|ÀÄ‰uuô°((€€¼¼¹¼ƒŽ¿š^ŸŽ
+ïŽóŽ[’êKš>ožR£Ž»’â7–’'Ž³Ž
+ÏŽóŽ'žV«–>ßŽ	‘•á9¼ƒŽ3Ž‹ŽÏŽ
+çŽ
+ÿŽó–nÏ¦FGŽ»¢†£ž’ëžV«–>ßŽ(€í¥èÍå±Á¡¥¸œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äèÍå±Á¡¥¸œ±¹¼èÔÄ±‘•á9¼èÈÄ±¹…µ”èŸŽ
+ßŽ¯ŽWŽ
+ŽÌœ±É…É¥ÑäèŸŠbœ±ÑåÁ•ÌélÝ¥¹t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èáô°(€€¡ÀèÄÀÀ±ÍÁèäÀ±…Ñ¡I…Ñ”è¸ÐÀ±•Ù½±ÕÑ¥½¸èé•Á¡åÉ…äœ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸ¦Š£Ž
+K–>_ŽGŽ›¢6'–:Ž
+KšÎÏŽCŽ–Â?ŽWŽ«ž¦ëžþSŽGŽ{ŽÏŽ
+ÿŽ¢ãŽÏŽ
+3ŽŸž¦?Ž
+Ž/Ž«šÂ_šÖŽ
+KžRŽÿ–ëŽgŽœ°(€€µ½Ù•Ìéml‹ŽwŽ
+#¦Š£Ž»ŽËŽ
+0ˆ°ÈØ°‰Ý¥¹ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Íå±Á¡¥¹|ÀÄ‰t±l‹Ž
+£Ž
+‹Ž
+çŽ§Ž
+“Ž$ˆ°ÈÈ°‰Ý¥¹ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Íå±Á¡¥¹|ÀÈ‰t±l‹¦Š£ŽûŽ£Žˆ°À°‰Ý¥¹ˆ°‰‰Õ™˜ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Íå±Á¡¥¹|ÀÌ‰uuô°(€í¥èé•Á¡åÉ…äœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äèé•Á¡åÉ…äœ±¹¼èÔÈ±‘•á9¼èÈÈ±¹…µ”èŸŽ
+óŽWŽ
+‡ŽóŽ³Ž
+œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•ÌélÝ¥¹t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÄä±¡…ÉèÐÝô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±•Ù½±ÕÑ¥½¸èÑ•µÁ•ÍÑÉ…äœ±•Ù½±ÕÑ¥½¹1•Ù•°èÌ±¡ÀèÄÔÔ±ÍÁèÄÀà±…Ñ¡I…Ñ”è¸Äà°(€€‘•ÍŒèŸŽ
+ßŽ¯ŽWŽ
+ŽÏŽ3š"C¦VßŽ_Ž¦Š£žþóŽ{ŽÏŽ
+ÿŽ¦.·ŽžþóŽŸ–’ŸšÂ_Ž
+K–"Ž
++ŽšâO¢ÂßŽ
+KšîGŽ
+/Ž
+#ŽŽ¯¦ŽoŽÛŽœ°(€€µ½Ù•Ìéml‹Ž
+óŽWŽ
+‡ŽóŽ
+¯ŽŽ
+ÿŽðˆ°Ìà°‰Ý¥¹ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}é•Á¡åÉ…å|ÀÄ‰t±l‹š^/¦Š£–n{¦üˆ°À°‰Ý¥¹ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}é•Á¡åÉ…å|ÀÈ‰t±l‹Ž
+çŽ
+¯Ž
+“Ž§ŽÏŽkŽóŽ
+àˆ°ÔØ°‰Ý¥¹ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}é•Á¡åÉ…å|ÀÌ‰uuô°(€í¥èÑ•µÁ•ÍÑÉ…äœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äèÑ•µÁ•ÍÑÉ…äœ±¹¼èÔÌ±‘•á9¼èÈÌ±¹…µ”èŸŽŽÏŽkŽ
+çŽ#Ž³Ž
+œ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•ÌélÝ¥¹t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÐÔ±¡…ÉèÜÕô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÈÈÀ±ÍÁèÄÈÔ±…Ñ¡I…Ñ”è¸Àà°(€€‘•ÍŒèŸŽ
+óŽWŽ
+‡ŽóŽ³Ž
+“Ž3–ÖCŽ»–*oŽ
+K–ú_Ž–žÿŽ–Þ£–’ŸŽ«¦Š£žþóŽŸ¦nß¦nËŽ
+KŽ/Ž7–n{Ž_ŽšjÓ¦Š£Ž
+KšR¿¦7ŽgŽ
+/Žœ°(€€µ½Ù•Ìéml‹ŽŽÏŽkŽ
+çŽ#ŽWŽ
+ŽÌˆ°ÔÀ°‰Ý¥¹ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Ñ•µÁ•ÍÑÉ…å|ÀÄ‰t±l‹–ÖCžþóŽ»–º#Ž
+(ˆ°À°‰Ý¥¹ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Ñ•µÁ•ÍÑÉ…å|ÀÈ‰t±l‹–’§–ÖC–’Ÿš^/–nxˆ°ÜØ°‰Ý¥¹ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}Ñ•µÁ•ÍÑÉ…å|ÀÌ‰uuô°(€í¥è¥¹…É½Ìœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè¥¹…É½Ìœ±¹¼èÔÐ±‘•á9¼èÈÔ±¹…µ”èŸŽ
+“Ž
+ÃŽ+Ž·Ž
+äœ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•Ìél™¥É”t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÔ±¡…ÉèÔÑô°(€€¡ÀèÄàÀ±ÍÁèÔÈ±…Ñ¡I…Ñ”è¸ÄØ°(€€‘•ÍŒèŸž¯–>Ž»žÇŽ
+K¦:ŸŽ¯–’'Ž#Ž
+/žóžÇž6Ž¦7ŽžRËšºïŽ»––ÓŽŸžÖÛŽ#ŽkšêÛ–Ê§Ž3¢#š&OŽ“Žœ°(€€µ½Ù•Ìéml‹šêÛ–Ê§¢žHˆ°ÐÀ°‰™¥É”ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¥¹…É½Í|ÀÄ‰t±l‹žóžÇ¢ŽžRÈˆ°À°‰™¥É”ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¥¹…É½Í|ÀÈ‰t±l‹ž¯–>–Ò§Ž\ˆ°ØÈ°‰™¥É”ˆ°‰É•½¥°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¥¹…É½Í|ÀÌ‰uuô°(€í¥è¹½±”œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè¹½±”œ±¹¼èÔÔ±‘•á9¼èÌØ±¹…µ”èŸŽ;Ž
+¿Ž¬œ±É…É¥ÑäèŸŠbœ±ÑåÁ•Ìél‘…É¬œ°‘É…½¸t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÄÉô°(€€¡ÀèÄÄÈ±ÍÁèÜÐ±…Ñ¡I…Ñ”è¸Ìà±•Ù½±ÕÑ¥½¸è¹½±…¥œ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸšr#–öÇŽ»šÒ{žªŽ¯šösŽ
+–Â?ŽWŽ«–’sž®sŽ–'Ž
+K¦ÿŽGŽ¦^Ž»’â·Ž
+K¦~ÏŽ
+Ž«Ž?¦ËŽ
+Žœ°(€€µ½Ù•Ìéml‹–öÇž&dˆ°Èà°‰‘…É¬ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½±•|ÀÄ‰t±l‹–’sšîGŽ
+(ˆ°ÈÐ°‰‘É…½¸ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½±•|ÀÈ‰t±l‹šr#¢vWŽ»šÂ_¦4ˆ°À°‰‘…É¬ˆ°‰‰Õ™˜ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½±•|ÀÌ‰uuô°(€í¥è¹½±…¥œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè¹½±…¥œ±¹¼èÔØ±‘•á9¼èÌÜ±¹…µ”èŸŽ;Ž
+¿Ž³Ž
+“Ž$œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•Ìél‘…É¬œ°‘É…½¸t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÐ±¡…ÉèÔÉô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±•Ù½±ÕÑ¥½¸è¹½áÙ•±œœ±•Ù½±ÕÑ¥½¹1•Ù•°èÌ±¡ÀèÄØÀ±ÍÁèàà±…Ñ¡I…Ñ”è¸ÄÜ°(€€‘•ÍŒèŸŽ;Ž
+¿Ž¯Ž3šr#–öÇŽ
+KŽûŽ£ŽŽ›š"C¦VßŽ_Ž–æóž®sŽšîGž¦ëŽ_Ž«Ž3Ž
+'¦^Ž»–"Ž
+KšRûŽ“Žœ°(€€µ½Ù•Ìéml‹ŽƒŽóŽÏŽ
+ßŽŽ'Ž
+˜ˆ°Ìà°‰‘…É¬ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½±…¥‘|ÀÄ‰t±l‹–’sž®sž"¨ˆ°ÌØ°‰‘É…½¸ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½±…¥‘|ÀÈ‰t±l‹šj_šr#¦js–Žˆ°À°‰‘…É¬ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½±…¥‘|ÀÌ‰uuô°(€í¥è¹½áÙ•±œœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè¹½áÙ•±œœ±¹¼èÔÜ±‘•á9¼èÌà±¹…µ”èŸŽ;Ž
+¿Ž
+çŽÓŽ
+ŸŽ¯Ž
+Àœ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•Ìél‘…É¬œ°‘É…½¸t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÔÀ±¡…ÉèàÁô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÈÌÀ±ÍÁèÄÀÐ±…Ñ¡I…Ñ”è¸ÀÜ°(€€‘•ÍŒèŸŽ;Ž
+¿Ž³Ž
+“Ž'Ž3šr#–'ŽWŽ#–FGŽÿ¢úóŽ
+–’sž®sŽã¦Ë–2[Ž_Ž–žÿŽšÞÇŽ¦^ŽŸž6Ëž&§Ž»š¢škŽ
+K––«ŽŽœ°(€€µ½Ù•Ìéml‹–’s–’§ž®sž&dˆ°ÔÀ°‰‘…É¬ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½áÙ•±|ÀÄ‰t±l‹¢vWšr#–J–N¸ˆ°ÐØ°‰‘É…½¸ˆ°‰‘•‰Õ™˜ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}¹½áÙ•±|ÀÈ‰t±l‹Ž;Ž
+¿Ž
+çŽ
+£Ž
+¿Ž«Ž_Ž
+äˆ°Üà±l‰‘…É¬ˆ°‰‘É…½¸‰t±¹Õ±°±¹Õ±°°Ø°‹¦^Ž£ž®sšÂ_Ž
+K¦7Ž·Žšr#–'Ž
+K–FGŽ
+’âšJŽ
+KšRûŽ“Žˆ±¹Õ±°°‰Í­¥±±}¹½áÙ•±|ÀÌ‰uuô°(€í¥è±ÕáÍ••œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè±ÕáÍ••œ±¹¼èÔà±‘•á9¼èÌä±¹…µ”èŸŽ¯Ž
+¿Ž
+ßŽóŽ$œ±É…É¥ÑäèŸŠbœ±ÑåÁ•Ìél±¥¡Ðœ°‘É…½¸t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÄÉô°(€€¡ÀèÄÄà±ÍÁèØà±…Ñ¡I…Ñ”è¸Ìà±•Ù½±ÕÑ¥½¸è±Õá¥…Éœ±•Ù½±ÕÑ¥½¹1•Ù•°èÈ°(€€‘•ÍŒèŸ¦f÷ŽƒŽûŽ
++Ž»šŽ»Ž¯žRŽûŽ
+3Ž
+/–Â?ŽWŽ«–'ž®sŽ’öO–Ž¯¦nŽ
+ŽšrwŽ»–'Ž
+K–"ŽG’â;Ž#Ž
+/Žœ°(€€µ½Ù•Ìéml‹–'¢*÷–òøˆ°Èà°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±ÕáÍ••‘|ÀÄ‰t±l‹–æóž®sŽ»–Âøˆ°ÈÐ°‰‘É…½¸ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±ÕáÍ••‘|ÀÈ‰t±l‹šrw–'Ž»š¿–Bäˆ°À°‰±¥¡Ðˆ°‰¡•…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±ÕáÍ••‘|ÀÌ‰uuô°(€í¥è±Õá¥…Éœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè±Õá¥…Éœ±¹¼èÔä±‘•á9¼èÐÀ±¹…µ”èŸŽ¯Ž
+¿Ž
+ßŽ
+‹ŽóŽ$œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•Ìél±¥¡Ðœ°‘É…½¸t±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÐ±¡…ÉèÔÉô°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±•Ù½±ÕÑ¥½¸è±Õá}…±‘¥½¸œ±•Ù½±ÕÑ¥½¹1•Ù•°èÌ±¡ÀèÄØà±ÍÁèàÀ±…Ñ¡I…Ñ”è¸ÄÜ°(€€‘•ÍŒèŸŽ¯Ž
+¿Ž
+ßŽóŽ'Ž3šrw–'Ž
+K¢NŽ#Ž›š"C¦VßŽ_Ž–æóž®sŽ¢òwŽ?¢žKŽŸ’îË¦ZOŽ
+K–Â;Ž?Žœ°(€€µ½Ù•Ìéml‹Ž¯Ž
+¿Ž
+çŽoŽóŽÌˆ°Ìà°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õá¥…É‘|ÀÄ‰t±l‹–'ž®sž"¨ˆ°ÌØ°‰‘É…½¸ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õá¥…É‘|ÀÈ‰t±l‹¦î;šb;¦js–Žˆ°À°‰±¥¡Ðˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õá¥…É‘|ÀÌ‰uuô°(€í¥è±Õá}…±‘¥½¸œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè±Õá}…±‘¥½¸œ±¹¼èØÀ±‘•á9¼èÐÄ±¹…µ”èŸŽ¯Ž
+¿Ž
+çŽ
+³Ž¯ŽŽ
+Ž
+«ŽÌœ±É…É¥ÑäèŸŠbŠbŠbœ±ÑåÁ•Ìél±¥¡Ðœ°‘É…½¸t°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÈÐÔ±ÍÁèäÈ±…Ñ¡I…Ñ”è¸ÀÜ°(€€‘•ÍŒèŸŽ¯Ž
+¿Ž
+ßŽ
+‹ŽóŽ'Ž3–º#¢¶ßŽ»–'Ž
+Kš–×Ž
+Ž–žÿŽ¦î¦GŽ»–'žþóŽŸ–’Ÿ–rÃŽ
+K¢šŽŽ¦
+«šÂ_Ž
+K¦ŽGŽ
+/Žœ°(€€µ½Ù•Ìéml‹–º#–'ž®sž&dˆ°ÔÀ°‰±¥¡Ðˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õá}…±‘¥½¹|ÀÄ‰t±l‹¢[ž®sŽ»–ê¢¶Üˆ°À°‰±¥¡Ðˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}±Õá}…±‘¥½¹|ÀÈ‰t±l‹Ž
+³Ž¯ŽŽ
+Ž
+«ŽÏŽ³Ž
+ˆ°Üà±l‰±¥¡Ðˆ°‰‘É…½¸‰t±¹Õ±°±¹Õ±°°Ø°‹–'Ž£ž®sšÂ_Ž
+KšvŽ·Ž–º#¢¶ßž®sŽ»––SšÖŽ
+KšRûŽ“Žˆ±¹Õ±°°‰Í­¥±±}±Õá}…±‘¥½¹|ÀÌ‰uuô°(€í¥è…ÍÑÉ…±•Á¥Ìœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…ÐˆéÑÉÕ”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆéÑÉÕ•ô±¥µ-•äè…ÍÑÉ…±•Á¥Ìœ±¹¼èØÄ±‘•á9¼èÄØ±¹…µ”èŸŽ
+‹Ž
+çŽ#Ž§Ž³ŽSŽ
+äœ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•ÌélÍÑ…Èt±¡Õ¹Ñ1•Ù•±Ìéí¹½Éµ…°èÈÈ±¡…ÉèÔÁô°(€€¡ÀèÄÔÀ±ÍÁèÄÄÀ±…Ñ¡I…Ñ”è¸ÄØ°(€€‘•ÍŒèŸšbž¦ëŽ
+K¢î÷Ž
+Ž/Ž¯¢ÞÏŽÛ¢JóŽ–;ž6Ž¦VßŽ¢ÏŽŸšbŽ»¦¶S–*oŽ
+K¦nŽ
+Ž–ÂûŽ¯¢òwŽ7Ž
+K¢NŽ#Ž
+/Žœ°(€€µ½Ù•Ìéml‹šb–;¢ÞÌˆ°Ìà°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}…ÍÑÉ…±•Á¥Í|ÀÄ‰t±l‹Ž
+‹Ž
+çŽ#Ž§Ž¯Ž
+çŽŽŽ\ˆ°À°‰ÍÑ…Èˆ°‰‰Õ™˜ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}…ÍÑÉ…±•Á¥Í|ÀÈ‰t±l‹šÖšb¢æÓŽ
+(ˆ°ØÀ°‰ÍÑ…Èˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}…ÍÑÉ…±•Á¥Í|ÀÌ‰uuô°(€í¥è…±‘É„œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆéÑÉÕ”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè…±‘É„œ±¹¼èØÐ±‘•á9¼èÐØ±¹…µ”èŸŽ
+³Ž¯Ž'Ž¤œ±É…É¥ÑäèŸŠbŠbœ±ÑåÁ•Ìél¹½Éµ…°œ°‘É…½¸t°(€€¡ÀèÄÐà±ÍÁèàØ±…Ñ¡I…Ñ”èÀ±½¹ÑÉ…Ñ…‰±”é™…±Í”±…±¡•µåá±ÕÍ¥Ù”éÑÉÕ”°(€€‘•ÍŒèŸ¦2³š"C¦fŽ/Ž
+'žRŽûŽ
+3Ž¦îKŽ–æóž®sŽ¢ãŽ»¢JóŽ¦2³š"Cš‚ãŽ¯–*oŽ
+KžžcŽ
+Žš—ŽkŽ/Ž_Ž3Ž
++Ž«Ž3Ž
+'Ž
+’þ‡¦‚óŽ_Žžnãš&/Ž»ŽwŽÃŽ
+Kšã–F÷Ž¯¦ŽoŽÛŽœ°(€€µ½Ù•Ìéml‹¦îK¦2³ž&dˆ°ÌØ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}…±‘É…|ÀÄ‰t±l‹–æóž®sžþóšJˆ°ÌÈ°‰‘É…½¸ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}…±‘É…|ÀÈ‰t±l‹¢Jóš‚ãŽ[Ž³Ž
+äˆ°ÔÈ±l‰¹½Éµ…°ˆ°‰‘É…½¸‰t±¹Õ±°±¹Õ±°°Ð°‹¢JóŽ¦2³š"Cš‚ãŽ»–*oŽ
+Kš¿–BçŽã–’'Ž#Ž›šRûŽ“Žˆ±¹Õ±°°‰Í­¥±±}…±‘É…|ÀÌ‰uuô°(€í¥è­¥µ•É…¹…}…Á•àœ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆé™…±Í”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè­¥µ•É…¹…}…Á•àœ±¹¼èÐä±‘•á9¼èÐä±¹…µ”èŸŽ
+·Ž‡Ž§Ž
+ÃŽ+ŽïŽ
+‹ŽkŽ
+¿Ž
+äœ±É…É¥ÑäèŸŠbŠbŠbŠbœ±ÑåÁ•ÌélÝ¥¹œ°‘É…½¸t°(€€•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”±¡ÀèÌÄÔ±ÍÁèÄÌÈ±…Ñ¡I…Ñ”èÀ±½¹ÑÉ…Ñ…‰±”é™…±Í”±…±¡•µåá±ÕÍ¥Ù”éÑÉÕ”°(€€‘•ÍŒèŸŽ
+·Ž‡Ž§Ž
+ÃŽ+Ž3šÞßš"C¦¶S–*oŽ»š–×ž
+çŽã–"Ã¦SŽ_Ž–žÿŽ¦nß–'Ž£ž2oš¾KŽ
+KŽûŽ£ŽŽ–Þ£žþóŽŸš"›–‚ÓŽ
+K–"Û–rŸŽgŽ
+/Žœ°(€€µ½Ù•Ìéml‹ž2oš¾K–’§žþSž‚Ðˆ°àÈ°‰Ý¥¹ˆ°‰Á½¥Í½¸ˆ°À¸Ø°Ð°ˆØÃ¾òŽ»žŠëž:ŽŸžnãš&/Ž
+HÏŽ
+ÿŽóŽÏŽ»š¾Kž*Ûš/Ž¯ŽgŽ
+/Žˆ±¹Õ±°°‰Í­¥±±}­¥µ•É…¹…}…Á•á|ÀÄ‰t±l‹šÞßš"Cž®s¦nÜˆ°ÜÈ±l‰Ñ¡Õ¹‘•Èˆ°‰‘É…½¸‰t±¹Õ±°±¹Õ±°°Ø°‹¦nßŽ£ž®sšÂ_Ž
+K¦7Ž·ŽšÞßš"C¦¶S–*oŽ
+KšRûŽ“Žˆ±¹Õ±°°‰Í­¥±±}­¥µ•É…¹…}…Á•á|ÀÈ‰t±l‹Ž
+‹ŽkŽ
+¿Ž
+çŽ
+çŽ#ŽóŽ€ˆ°ÄÀà±l‰Ý¥¹ˆ°‰‘É…½¸‰t°‰É•½¥°ˆ±¹Õ±°°Ü°‹š–×¦fCŽ»–ÖCŽ
+K¢žšRûŽgŽ
+/’îŽ
+?Ž
++Ž¯–>7–.WŽ
+K–>_ŽGŽ
+/Žˆ±¹Õ±°°‰Í­¥±±}­¥µ•É…¹…}…Á•á|ÀÌ‰uuô°(€í¥è•±¥á¥½¸œ±•¹Ñ¥Ñå-¥¹èµ½¹ÍÑ•Èœ±•±¥¥‰¥±¥Ñäéì‰½¹ÑÉ…Ðˆé™…±Í”°‰…±¡•µå…Ñ…±åÍÐˆéÑÉÕ”°‰…±¡•µåMÕ•ÍÌˆéÑÉÕ”°‰…±¡•µå…¥±ÕÉ”ˆé™…±Í•ô±¥µ-•äè•±¥á¥½¸œ±¹¼èÔÀ±‘•á9¼èÔÀ±¹…µ”èŸ¢Î‹¦Gž–{ž®sŽ
+£Ž«Ž
+¿Ž
+ßŽ
+«ŽÌœ±É…É¥ÑäèŸŠbŠbŠbŠbŠbœ±ÑåÁ•Ìél¹½Éµ…°œ°‘É…½¸t°(€€¡ÀèÌÌÀ±ÍÁèÄÄÈ±…Ñ¡I…Ñ”èÀ±½¹ÑÉ…Ñ…‰±”é™…±Í”±…±¡•µåá±ÕÍ¥Ù”éÑÉÕ”°(€€‘•ÍŒèŸšb–º»Ž»¢Î‹¦GŽ/Ž
+'¦2³š"CŽWŽ
+3Ž
+/ž–{ž®sŽžf÷¦*Ž»’â–ÂûŽ¯ž‡–z‹Ž«¦2³š"C–*oŽ£ž~—¢¶cŽ
+K–ºÿŽgŽšr¦®c’ö7Ž»¦2³š"C¦fC–ºkž¢»Žœ°(€€µ½Ù•Ìéml‹¢Î‹¦G¦2³¢ò¨ˆ°ÜØ°‰¹½Éµ…°ˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}•±¥á¥½¹|ÀÄ‰t±l‹ž–{ž®s¦2³–Žˆ°À°‰‘É…½¸ˆ°‰Õ…Éˆ±¹Õ±°±¹Õ±°±¹Õ±°±¹Õ±°°‰Í­¥±±}•±¥á¥½¹|ÀÈ‰t±l‹Ž
+£Ž«Ž
+¿Ž
+ßŽ
+«ŽÏŽïŽ;ŽÓŽ
+„ˆ°ÄÄÈ±l‰¹½Éµ…°ˆ°‰‘É…½¸‰t±¹Õ±°±¹Õ±°°à°‹ž‡–z‹Ž«¦2³š"C–*oŽ£ž–{ž®sŽ»–*oŽ
+KšvŽ·Ž–’Ÿž"žfëŽ
+K¢ÖßŽOŽgŽˆ±¹Õ±°°‰Í­¥±±}•±¥á¥½¹|ÀÌ‰uuô()tì((¼¨€ôôôôôƒŽ›Ž/ŽŽ#¢÷–*oŽ
+ÿŽ
+À€ôôôôô(€¨ƒš*Ž»¢Ž–
+gšv‡’îÛŽ¿–Æ{šŸŽƒŽGŽŸŽ«Ž?ŽŽ
+·ŽŽ§Ž
+¿Ž
+ÿŽó¢ßŽïš¶›–f£ŽïŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ»¢ê¯’öOšž/¦ƒŽ
+–>žŸŽgŽ
+/Ž(€¨ƒš^‹–¶cŽ»Ž›Ž/ŽŽ!%Ž
+š*%Ž¿–’'šnÓŽoŽkŽŽ
+ÿŽ
+ÃŽ¿š^‹–¶cŽŽóŽ
+ÿŽã–*ƒžº_ŽgŽ
+/Ž(€¨¼)½¹ÍÐU9%Q}Q}I=UAL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡í¥‘Ìél•±¹…}‰•¥¹¹•Èœ°•±¹…}µ¥‘‘±”œ°•±¹…}…‘Ù…¹•œ°•±¹…}Ý…Ñ•Èœ°•±¹…}­…•¸t°Ñ…Ìél±…ÍÌéÍÝ½É‘Íµ…¸œ°Ý•…Á½¸éÍÝ½Éuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÍÑ•±±…}…ÁÁÉ•¹Ñ¥”œ°ÍÑ•±±…}Ý¥é…Éœ°ÍÑ•±±…}Í½É•É•Èœ°±Õµ¥¹…}…ÁÁÉ•¹Ñ¥”œ°±Õµ¥¹…}Ý¥é…Éœ°±Õµ¥¹…}Í½É•É•Èt°Ñ…Ìél±…ÍÌéµ…”œ°Ý•…Á½¸éÍÑ…™˜œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél™É•¥…°œ°™É•¥Ý½±˜t°Ñ…ÌélÍÁ•¥•Ìé‰•…ÍÐœ°…¹…Ñ½µäé™…¹œœ°…¹…Ñ½µäé±…Üœ°…Á…‰¥±¥ÑäéÉ½…Èœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél…ÅÕ…É½¸œ°¡¥¡…ÅÕ…É½¸œ°Í¡•¹¡…¥É½¸œ°Ñ¥•¹¡…¥É½¸t°Ñ…ÌélÍÁ•¥•Ìé‘É…½¸œ°…¹…Ñ½µäé™…¹œœ°…¹…Ñ½µäé±…Üœ°…¹…Ñ½µäéÑ…¥°œ°…Á…‰¥±¥Ñäé‰É•…Ñ œ°…Á…‰¥±¥ÑäéÉ½…Èœ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÉ…ÍÍ‰•…Ðœ°Ñ¡½É¹‰•…Ðœ°É…¹‰•…Ðt°Ñ…ÌélÍÁ•¥•Ìé¥¹Í•Ðœ°…¹…Ñ½µäé¡½É¸œ°…Éµ½ÈéÍ¡•±°œ°…Á…‰¥±¥ÑäéÍÁ½É”œ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÉ¥­…Í¡••˜œ°Í•É…±Á¡¥„t°Ñ…ÌélÍÁ•¥•Ìé‰•…ÍÐœ°…¹…Ñ½µäé¡½É¸œ°…Á…‰¥±¥Ñäéµ…¥Œœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÍ•É…±Á¡¥„t°Ñ…Ìél…¹…Ñ½µäéÝ¥¹œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél¹¥¡Ñµ…É”t°Ñ…ÌélÍÁ•¥•ÌéÍÁ¥É¥Ðœ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÙ½±Ñ•¬œ°ÍÁ…ÅÕ¥¹¸œ°Ù½±Ñ…àt°Ñ…ÌélÍÁ•¥•Ìé…Ù¥…¸œ°…¹…Ñ½µäé‰•…¬œ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäéµ…¥Œœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél¥•½±•´œ°ÁÉ½Ñ½}¥•½±•´t°Ñ…ÌélÍÁ•¥•Ìé½¹ÍÑÉÕÐœ°…¹…Ñ½µäé™¥ÍÐœ°…Éµ½Èé¡•…Ùäœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél•±åÍ¥„œ°•±åÍ¥…}ÁÉ…å•Èt°Ñ…ÌélÍÁ•¥•Ìé¡Õµ…¹½¥œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél¡¥­…É¤t°Ñ…Ìél½É¥¥¸é‘¥Ù¥¹”œ°ÍÁ•¥•Ìé¡Õµ…¹½¥œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél¹•µ•Ìœ°¹•µ•Í¥„œ°¹•µ•Í¥½¸œ°‘½½µ}¹•µ•Í¥½¸t°Ñ…ÌélÍÁ•¥•Ìé‘É…½¸œ°…¹…Ñ½µäé™…¹œœ°…¹…Ñ½µäé±…Üœ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé‰É•…Ñ œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÍÕ¥É•¸œ°ÑÍÕ‰…­¤t°Ñ…Ìél½É¥¥¸éÍÁ¥É¥Ðœ°ÍÁ•¥•ÌéÍÁ¥É¥Ðœ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÑÍÕ‰…­¤t°Ñ…Ìél…¹…Ñ½µäéÝ¥¹œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÍ±¥µ”œ°Í±¥µ•}½±t°Ñ…ÌélÍÁ•¥•ÌéÍ±¥µ”œ°…¹…Ñ½µäé‰½‘äœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél½‰±¥¸t°Ñ…ÌélÍÁ•¥•Ìé¡Õµ…¹½¥œ°Ý•…Á½¸é±Õˆœ°Ý•…Á½¸é‘…•Èœ°…Á…‰¥±¥ÑäéÉ½…Èuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél™…±Í•}‘É…½¹}…±™„œ°™…±Í•}‘É…½¹}‰•Ñ„œ°™…±Í•}‘É…½¹}…µµ„t°Ñ…ÌélÍÁ•¥•Ìé‘É…½¸œ°½É¥¥¸é½¹ÍÑÉÕÐœ°…¹…Ñ½µäé±…Üœ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé‰•…´œ°…Á…‰¥±¥ÑäéÉ½…Èœ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÙ½±µ½½œœ°É…¹}Ù½±µ½½œt°Ñ…ÌélÍÁ•¥•Ìé‰•…ÍÐœ°…¹…Ñ½µäé±…Üœ°…Éµ½Èé¡•…Ùäœ°…Á…‰¥±¥ÑäéÉ½…Èœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél½É…¹„œ°½É…}ÍÑÉ•…´œ°½É…}…‰åÍÌt°Ñ…ÌélÍÁ•¥•Ìé…ÅÕ…Ñ¥Œœ°…¹…Ñ½µäé™¥¸œ°…¹…Ñ½µäéÑ…¥°œ°…Á…‰¥±¥Ñäéµ…¥Œœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél…±¡•µ¥½¸t°Ñ…Ìél½É¥¥¸é…±¡•µäœ°ÍÁ•¥•Ìé½¹ÍÑÉÕÐœ°…¹…Ñ½µäé‰½‘äuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél…±‘É„t°Ñ…Ìél½É¥¥¸é…±¡•µäœ°ÍÁ•¥•Ìé‘É…½¸œ°…¹…Ñ½µäé™…¹œœ°…¹…Ñ½µäéÑ…¥°œ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé‰É•…Ñ œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél­¥µ•É…¹„œ°­¥µ•É…¹…}…Á•àt°Ñ…Ìél½É¥¥¸é…±¡•µäœ°ÍÁ•¥•Ìé‘É…½¸œ°…¹…Ñ½µäé±…Üœ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé‰É•…Ñ œ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘ÌélÍå±Á¡¥¸œ°é•Á¡åÉ…äœ°Ñ•µÁ•ÍÑÉ…ät°Ñ…ÌélÍÁ•¥•Ìé…ÅÕ…Ñ¥Œœ°…¹…Ñ½µäé™¥¸œ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé¡…É”œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél¥¹…É½Ìt°Ñ…ÌélÍÁ•¥•Ìé‰•…ÍÐœ°…¹…Ñ½µäé¡½É¸œ°…Éµ½Èé¡•…Ùäœ°…Á…‰¥±¥Ñäé¡…É”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél¹½±”œ°¹½±…¥œ°¹½áÙ•±œt°Ñ…ÌélÍÁ•¥•Ìé‘É…½¸œ°…¹…Ñ½µäé™…¹œœ°…¹…Ñ½µäé±…Üœ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé‰É•…Ñ œ°…Á…‰¥±¥ÑäéÉ½…Èœ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél±ÕáÍ••œ°±Õá¥…Éœ°±Õá}…±‘¥½¸œ°•±¥á¥½¸t°Ñ…ÌélÍÁ•¥•Ìé‘É…½¸œ°…¹…Ñ½µäé™…¹œœ°…¹…Ñ½µäé±…Üœ°…¹…Ñ½µäéÑ…¥°œ°…¹…Ñ½µäéÝ¥¹œœ°…Á…‰¥±¥Ñäé‰É•…Ñ œ°…Á…‰¥±¥Ñäéµ…¥Œuô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél•±¥á¥½¸t°Ñ…Ìél½É¥¥¸é…±¡•µäœ°½É¥¥¸é‘¥Ù¥¹”uô¤°(€=‰©•Ð¹™É••é”¡í¥‘Ìél…ÍÑÉ…±•Á¥Ìt°Ñ…ÌélÍÁ•¥•Ìé‰•…ÍÐœ°…¹…Ñ½µäé±•œœ°…¹…Ñ½µäéÑ…¥°œ°…Á…‰¥±¥Ñäéµ…¥Œœ°…Á…‰¥±¥Ñäé¡…É”uô¤)t¤ì)½¹ÍÐU9%Q}QM}	e}%€ô=‰©•Ð¹É•…Ñ”¡¹Õ±°¤ì)U9%Q}Q}I=UAL¹™½É… ¡É½ÕÀ€ôøÉ½ÕÀ¹¥‘Ì¹™½É… ¡¥€ôøì(€¥˜€ …U9%Q}QM}	e}%m¥‘t¤U9%Q}QM}	e}%m¥‘t€ômtì(€U9%Q}QM}	e}%m¥‘t¹ÁÕÍ  ¸¸¹É½ÕÀ¹Ñ…Ì¤ì)ô¤¤ì)4¹™½É… ¡Õ¹¥Ð€ôøì(€½¹ÍÐ‰…Í•Q…Ì€ôl(€€€•¹Ñ¥Ñäè‘íÕ¹¥Ð¹•¹Ñ¥Ñå-¥¹‘õ€°(€€€€¸¸¸¡Õ¹¥Ð¹ÑåÁ•Ìñðmt¤¹µ…À¡ÑåÁ”€ôø•±•µ•¹Ðè‘íÑåÁ•õ€¤(€tì(€Õ¹¥Ð¹Ñ…Ì€ô=‰©•Ð¹™É••é”¡l¸¸¹¹•ÜM•Ð¡l¸¸¹‰…Í•Q…Ì°€¸¸¸¡U9%Q}QM}	e}%mÕ¹¥Ð¹¥‘tñðmt¥t¥t¤ì)ô¤ì)=‰©•Ð¹™É••é”¡U9%Q}QM}	e}%¤ì((¼¨€ôôôôôƒ–B#š"CŽ³Ž
+ßŽP€ôôôôô€¨¼)½¹ÍÐUM%=9L€ôl(€í™É½´è•±¹…}…‘Ù…¹•œ°¥Ñ•´èÝ…Ñ•É}µ¥ÉÉ½Èœ°¥Ñ•µ9…µ”èŸšÂÓ¦>„œ°½Õ¹ÐèÄ°Ñ¼è•±¹…}Ý…Ñ•Èô°(€í™É½´è¹•µ•Í¥½¸œ°¥Ñ•´è‘½½µ}™É…µ•¹Ðœ°¥Ñ•µ9…µ”èŸšî’ê‡Ž»Ž
+¯Ž
+ÇŽ¤œ°½Õ¹ÐèÄ°Ñ¼è‘½½µ}¹•µ•Í¥½¸ô°(€í™É½´è•±¹…}…‘Ù…¹•œ°¥Ñ•´è™¥É•}½Éˆœ°¥Ñ•µ9…µ”èŸž
+;ž:$œ°½Õ¹ÐèÄ°Ñ¼è•±¹…}­…•¸œ°É•Á•…Ñ…‰±”éÑÉÕ•ô)tì((¼¨€ôôôôôƒŽ
+‹Ž
+“ŽŽƒ–ºkžú¤€ôôôôô€¨¼)½¹ÍÐM!=A}%Q5L€ôl(€í¥èÁ½Ñ¥½¸œ°¹…µ”èŸ–n{–ú§¢Z°œ°¥½¸èŸÂ~J(œ°ÁÉ¥”èÈÀ°‘•ÍŒèŸŽCŽ#Ž¯’â·Ž­!CŽ
+HÔÃ–n{–ú§ŽgŽ
+/Žœ°‰…ÑÑ±••ÍŒèŸ–FÏšZçŽ¹!CŽ
+HÔÃ–n{–ú§ŽgŽ
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”éÑÉÕ•ô°(€í¥èÕÁÁ•É}Á½Ñ¥½¸œ°¹…µ”èŸ’â+–n{–ú§¢Z°œ°¥½¸èŸÂ~J$œ°ÁÉ¥”èÐÀ°‘•ÍŒèŸŽCŽ#Ž¯’â·Ž­!CŽ
+HÄÈÃ–n{–ú§ŽgŽ
+/Žœ°‰…ÑÑ±••ÍŒèŸ–FÏšZçŽ¹!CŽ
+HÄÈÃ–n{–ú§ŽgŽ
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”éÑÉÕ•ô°(€í¥è…ÑÑ…­}Á½Ñ¥½¸œ°¹…µ”èŸ–*oŽ»¢Z°œ°¥½¸èŸŠj„œ°ÁÉ¥”èÈÀ°‘•ÍŒèŸ–FÏšZçŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ»šRïšJ–*oŽ
+K–7Ž¯ŽgŽ
+/Žœ°‰…ÑÑ±••ÍŒèŸž>û–r£š"›ŽŽ›ŽŽ
+/–FÏšZçŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ»šRïšJ–*oŽ
+HË–7Ž¯ŽgŽ
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”éÑÉÕ•ô°(€í¥è½¹ÑÉ…Ñ}ÍÉ½±°œ°¹…µ”èŸ––GžÒšnàœ°¥½¸èŸÂ~Npœ°ÁÉ¥”èÈÀ°‘•ÍŒèŸ¢¢;’òC–ú3ŽŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ£Ž»––GžÒŽ
+K¢¦›ŽÿŽ
+/ŽŽ
+Ž»šnã¦†{Žœ°‰…ÑÑ±••ÍŒèŸ¢¢;’òC–ú3Ž¯žnãš&/Ž‹ŽÏŽ
+çŽ
+ÿŽóŽ£Ž»––GžÒŽ
+K¢¦›ŽÿŽ
+/Žš"C–*ŽgŽ
+/Ž£š&/š2Ž‡Ž¯–*ƒŽ
+?Ž
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”é™…±Í”°½¹ÑÉ…ÐéÑÉÕ”°…Ñ¡5Õ±Ñ¥Á±¥•ÈèÅô°(€í¥èÍ¥±Ù•É}½¹ÑÉ…Ñ}ÍÉ½±°œ°¹…µ”èŸ¦*Ž»––GžÒšnàœ°¥½¸èŸÂ~Nœ°ÁÉ¥”èÐÀ°‘•ÍŒèŸ¦k–âãŽ»––GžÒšnãŽ
+#Ž
++––GžÒš"C–*ž:Ž3¦®cŽ¦*¢&ËŽ»šnã¦†{Ž¢¢;’òC–ú3Ž¯’öÿžR£ŽŸŽ7Ž
+/Žœ°‰…ÑÑ±••ÍŒèŸ¢¢;’òC–ú3Ž¦k–âãŽ»––GžÒšnãŽ
+#Ž
++¦®cŽžŠëž:ŽŸ––GžÒŽ
+K¢¦›ŽÿŽ
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”é™…±Í”°½¹ÑÉ…ÐéÑÉÕ”°…Ñ¡5Õ±Ñ¥Á±¥•ÈèÉô°(€í¥è½±‘}½¹ÑÉ…Ñ}ÍÉ½±°œ°¹…µ”èŸ¦GŽ»––GžÒšnàœ°¥½¸èŸÂ~NHœ°ÁÉ¥”èàÀ°‘•ÍŒèŸ¦*Ž»––GžÒšnãŽ
+#Ž
++––GžÒš"C–*ž:Ž3ŽWŽ
+'Ž¯¦®cŽ¦G¢&ËŽ»šnã¦†{Ž¢¢;’òC–ú3Ž¯’öÿžR£ŽŸŽ7Ž
+/Žœ°‰…ÑÑ±••ÍŒèŸ¢¢;’òC–ú3Ž¦*Ž»––GžÒšnãŽ
+#Ž
++ŽWŽ
+'Ž¯¦®cŽžŠëž:ŽŸ––GžÒŽ
+K¢¦›ŽÿŽ
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”é™…±Í”°½¹ÑÉ…ÐéÑÉÕ”°…Ñ¡5Õ±Ñ¥Á±¥•ÈèÍô°(€í¥èÉ…¥¹‰½Ý}½¹ÑÉ…Ñ}ÍÉ½±°œ°¹…µ”èŸ¢fçŽ»––GžÒšnàœ°¥½¸èŸÂ~2 œ°ÁÉ¥”èÄØÀ°‘•ÍŒèŸ¦GŽ»––GžÒšnãŽ
+#Ž
++––GžÒš"C–*ž:Ž3ŽWŽ
+'Ž¯¦®cŽ¢fç¢&ËŽ»šnã¦†{Ž¢¢;’òC–ú3Ž¯’öÿžR£ŽŸŽ7Ž
+/Žœ°‰…ÑÑ±••ÍŒèŸ¢¢;’òC–ú3Ž¦GŽ»––GžÒšnãŽ
+#Ž
++ŽWŽ
+'Ž¯¦®cŽžŠëž:ŽŸ––GžÒŽ
+K¢¦›ŽÿŽ
+/Žœ°ÕÍ…‰±•%¹	…ÑÑ±”é™…±Í”°½¹ÑÉ…ÐéÑÉÕ”°…Ñ¡5Õ±Ñ¥Á±¥•ÈèÕô°(€í¥è­¥±½}‘…Ñ„œ°¹…µ”èŸŽ
+·Ž·ŽŽóŽ
+üœ°¥½¸èŸÂ~Jøœ°ÁÉ¥”èÀ°‘•ÍŒèŸŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ¯’â;Ž#Ž
+/Ž¡aCŽ0ÈÃ–Š_Ž#Ž
+/žÖ3¦¢O–“Ž
+‹Ž
+“ŽŽƒŽŽ
+‹Ž
+“ŽŽƒŽ
+³ŽŽŽŸ–—š&/ŽŸŽ7Ž
+/Žœ°•áÁ%Ñ•´éÑÉÕ”°•áÁµ½Õ¹ÐèÈÀ°Í¡½Àé™…±Í•ô°(€í¥èµ•…}‘…Ñ„œ°¹…µ”èŸŽ‡Ž
+³ŽŽóŽ
+üœ°¥½¸èŸÂ~Jüœ°ÁÉ¥”èÀ°‘•ÍŒèŸŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ¯’â;Ž#Ž
+/Ž¡aCŽ0ÄÀÃ–Š_Ž#Ž
+/žÖ3¦¢O–“Ž
+‹Ž
+“ŽŽƒŽŽ
+‹Ž
+“ŽŽƒŽ
+³ŽŽŽŸ–—š&/ŽŸŽ7Ž
+/Žœ°•áÁ%Ñ•´éÑÉÕ”°•áÁµ½Õ¹ÐèÄÀÀ°Í¡½Àé™…±Í•ô°(€í¥è¥…}‘…Ñ„œ°¹…µ”èŸŽ
+»Ž
+³ŽŽóŽ
+üœ°¥½¸èŸÂ~ž€œ°ÁÉ¥”èÀ°‘•ÍŒèŸŽ‹ŽÏŽ
+çŽ
+ÿŽóŽ¯’â;Ž#Ž
+/Ž¡aCŽ0ÔÀÃ–Š_Ž#Ž
+/žÖ3¦¢O–“Ž
+‹Ž
+“ŽŽƒŽŽ
+‹Ž
+“ŽŽƒŽ
+³ŽŽŽŸ–—š&/ŽŸŽ7Ž
+/Žœ°•áÁ%Ñ•´éÑÉÕ”°•áÁµ½Õ¹ÐèÔÀÀ°Í¡½Àé™…±Í•ô°(€í¥è™¥É•}½Éˆœ°¹…µ”èŸž
+;ž:$œ°¥½¸èŸÂ~R”œ°ÁÉ¥”èÀ°‘•ÍŒèŸŽŽCŽ
+·Ž3¢B÷Ž£Žgž
+;Ž»–*oŽ
+K–ºÿŽ_ŽžÖCšfÛŽ–Âšv—Ž»–B#š"CŽïž&çšº+¦Ë–2[žÒƒšvCŽ£Ž_Ž›’öÿžR£ŽŸŽ7Ž
+/Žœ°Í¡½Àé™…±Í•ô°(€í¥èµ½¹ÍÑ•É}‰½¹”œ°¹…µ”èŸ¦¶Sž&§Ž»¦ª œ°¥½¸èŸÂ~šÐœ°ÁÉ¥”èÈÔ°‘•ÍŒèŸ¦¶Sž&§Ž/Ž
+'–ú_Ž
+'Ž
+3Ž
+/’â#–’¯Ž«¦ª£Ž¦2³š"CžÒƒšvCŽ£Ž_Ž›’öÿžR£ŽgŽ
+/Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè¹½Éµ…°ô°(€í¥è™¥¹•}µ½¹ÍÑ•É}‰½¹”œ°¹…µ”èŸ’â+¢Î«Ž«¦¶Sž&§Ž»¦ª œ°¥½¸èŸŠr£Â~šÐœ°ÁÉ¥”èØÀ°‘•ÍŒèŸ–
+ßŽ3–ÂGŽ«Ž?¦¶S–*oŽ»¦kŽ
++Ž3¢&¿Ž’â+¢Î«Ž«¦¶Sž&§Ž»¦ª£Ž¦2³š"CžÒƒšvCŽ£Ž_Ž›’öÿžR£ŽgŽ
+/Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè™¥¹”ô°(€í¥èµ…¥}ÉåÍÑ…°œ°¹…µ”èŸ¦¶SšfÛž~Ìœ°¥½¸èŸÂ~J8œ°ÁÉ¥”èÐÀ°‘•ÍŒèŸ¦¶S–*oŽ3žÖCšfÛ–2[Ž_Žž~ÏŽ¦2³š"CžÒƒšvCŽ£Ž_Ž›’öÿžR£ŽgŽ
+/Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè¹½Éµ…°ô°(€í¥è™¥¹•}µ…¥}ÉåÍÑ…°œ°¹…µ”èŸ’â+¢Î«Ž«¦¶SšfÛž~Ìœ°¥½¸èŸŠr£Â~J8œ°ÁÉ¥”èäÀ°‘•ÍŒèŸ¦®c–¾–ê›Ž»¦¶S–*oŽ
+K¢NŽ#Ž’â+¢Î«Ž«¦¶SšfÛž~ÏŽ¦2³š"CžÒƒšvCŽ£Ž_Ž›’öÿžR£ŽgŽ
+/Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè™¥¹”ô°(€í¥èµ•Ñ…±}½É”œ°¹…µ”èŸ¦G–Æ{¦&Çž~Ìœ°¥½¸èŸŠn?¾â<œ°ÁÉ¥”èÌÔ°‘•ÍŒèŸ¦2³š"C–*ƒ–Þ—Ž¯¦§Ž_Ž¦G–Æ{Ž
+K–B¯Ž
+¦&Çž~ÏŽœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè¹½Éµ…°ô°(€í¥è™¥¹•}µ•Ñ…±}½É”œ°¹…µ”èŸ’â+¢Î«Ž«¦G–Æ{¦&Çž~Ìœ°¥½¸èŸŠr£Šn?¾â<œ°ÁÉ¥”èàÀ°‘•ÍŒèŸ’â7žÒSž&§Ž3–ÂGŽ«Ž?–*ƒ–Þ—Ž_Ž
+ŽgŽ’â+¢Î«Ž«¦G–Æ{¦&Çž~ÏŽœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè™¥¹”ô°(€í¥èÕ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°¹…µ”èŸ’â7–º'–ºk¦2³š"Cž&§¢Î¨œ°¥½¸èŸÂ~ž¨œ°ÁÉ¥”èÔÀ°‘•ÍŒèŸšŸ¢Î«Ž3–ºkŽûŽ
+'Ž«Ž–>7–þsšŸŽ»¦®cŽ¦2³š"CžÒƒšvCŽœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè¹½Éµ…°ô°(€í¥è™¥¹•}Õ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°¹…µ”èŸ’â+¢Î«Ž«’â7–º'–ºk¦2³š"Cž&§¢Î¨œ°¥½¸èŸŠr£Â~ž¨œ°ÁÉ¥”èÄÄÀ°‘•ÍŒèŸ’â7–º'–ºkŽWŽ»’â·Ž¯¦®c–¾–ê›Ž»¦2³š"C–*oŽ
+K’þwŽ“’â+¢Î«Ž«ž&§¢Î«Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè™¥¹”ô°(€í¥èÉ…ÁÑ½É}™•…Ñ¡•Èœ°¹…µ”èŸž2ožš÷Ž»žúôœ°¥½¸èŸÂ~ªØœ°ÁÉ¥”èÐÔ°‘•ÍŒèŸž¦ëŽ
+K¦žŽGŽ
+/ž2ožš÷Ž/Ž
+'–ú_Ž
+'Ž
+3Ž
+/Ž¦Š£Ž»–*oŽ
+K–â¿ŽÏŽžú÷Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè¹½Éµ…°ô°(€í¥è™¥¹•}É…ÁÑ½É}™•…Ñ¡•Èœ°¹…µ”èŸ’â+¢Î«Ž«ž2ožš÷Ž»žúôœ°¥½¸èŸŠr£Â~ªØœ°ÁÉ¥”èÄÀÀ°‘•ÍŒèŸ–òßŽ¦Š£Ž»¦¶S–*oŽ
+K’þwŽŽ–
+ßŽ»Ž«Žž2ožš÷Ž»žú÷Žœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè™¥¹”ô°(€í¥èÙ•¹½µ}…É…Á…”œ°¹…µ”èŸš¾K¢f¯Ž»žRËšºìœ°¥½¸èŸÂ~ªÈœ°ÁÉ¥”èÔÀ°‘•ÍŒèŸš¾KšŸŽ
+Kšº/Ž_Žž†³Ž¢f¯Ž»žRËšºïŽœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè¹½Éµ…°ô°(€í¥è™¥¹•}Ù•¹½µ}…É…Á…”œ°¹…µ”èŸ’â+¢Î«Ž«š¾K¢f¯Ž»žRËšºìœ°¥½¸èŸŠr£Â~ªÈœ°ÁÉ¥”èÄÄÀ°‘•ÍŒèŸš¾KšŸŽ£–òß–ê›Ž
+K¦®cŽšÂÓšê[ŽŸ’þwŽ“’â+¢Î«Ž«¢f¯Ž»žRËšºïŽœ°…Ñ•½ÉäèŸ¦2³š"CžÒƒšv@œ°½‰Ñ…¥¸èŸŽ
+ßŽŸŽŽ_¾ò?ŽCŽ#Ž¯–.w–"§–‚Ç¦°œ°…±¡•µå5…Ñ•É¥…°éÑÉÕ”°ÅÕ…±¥Ñäè™¥¹”ô°(€í¥è½±‘•¹}±…¹‘}µ…Àœ°¹…µ”èŸ¦î¦G¦ßŽãŽ»–rÃ–nÌœ°¥½¸èŸÂ~^ë¾â<œ°ÁÉ¥”èÀ°‘•ÍŒèŸ’öÿžR£ŽgŽ
+/Ž£Žš²‡Ž»¢¢;’òC’úw¦‚ó–g¢ŽsŽ¯¦î¦G¦ßŽ3žŠë–ºkŽŸ–ëž>ûŽgŽ
+/Ž¦î¦G¦ßŽã–ëžfëŽ_ŽšfŽ¬ÇšzkšÚ#¢ÊïŽgŽ
+/Žœ°…Ñ•½ÉäèŸž&çšº+Ž
+‹Ž
+“ŽŽ€œ°½‰Ñ…¥¸èŸ¦ƒ–úŽ»–â3–ÂG–‚Ç¦³¾ò=!…É“ŽíáÑÉ•µ—¢¢;’òC’úw¦‚óŽ»–.w–"§–‚Ç¦°œ°Í¡½Àé™…±Í”°ÕÍ…‰±•É½µ•àéÑÉÕ•ô()tì)½¹ÍÐ1!5e}5QI%1}I=AL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡í¥èµ½¹ÍÑ•É}‰½¹”œ°É…Ñ”è¸ÀÙô¤°(€=‰©•Ð¹™É••é”¡í¥èµ…¥}ÉåÍÑ…°œ°É…Ñ”è¸ÀÔÕô¤°(€=‰©•Ð¹™É••é”¡í¥èµ•Ñ…±}½É”œ°É…Ñ”è¸ÀÔÕô¤°(€=‰©•Ð¹™É••é”¡í¥èÕ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°É…Ñ”è¸ÀÙô¤°(€=‰©•Ð¹™É••é”¡í¥èÉ…ÁÑ½É}™•…Ñ¡•Èœ°É…Ñ”è¸ÀÔÕô¤°(€=‰©•Ð¹™É••é”¡í¥èÙ•¹½µ}…É…Á…”œ°É…Ñ”è¸ÀÔÕô¤°(€=‰©•Ð¹™É••é”¡í¥è™¥¹•}µ½¹ÍÑ•É}‰½¹”œ°É…Ñ”è¸ÀÄáô¤°(€=‰©•Ð¹™É••é”¡í¥è™¥¹•}µ…¥}ÉåÍÑ…°œ°É…Ñ”è¸ÀÄÝô¤°(€=‰©•Ð¹™É••é”¡í¥è™¥¹•}µ•Ñ…±}½É”œ°É…Ñ”è¸ÀÄÝô¤°(€=‰©•Ð¹™É••é”¡í¥è™¥¹•}Õ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°É…Ñ”è¸ÀÄáô¤°(€=‰©•Ð¹™É••é”¡í¥è™¥¹•}É…ÁÑ½É}™•…Ñ¡•Èœ°É…Ñ”è¸ÀÄÕô¤°(€=‰©•Ð¹™É••é”¡í¥è™¥¹•}Ù•¹½µ}…É…Á…”œ°É…Ñ”è¸ÀÄÕô¤)t¤ì)½¹ÍÐ1!5e}I!QeAL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡í¥è…ÑÑ…¬œ°±…‰•°èŸšRïšJ–z,œ°µ½‘¥™¥•ÉÌé=‰©•Ð¹™É••é”¡í¡Àè¸äÀ°…ÑÑ…¬èÄ¸ÄÔ°ÍÁ••èÅô¥ô¤°(€=‰©•Ð¹™É••é”¡í¥è‘ÕÉ…‰¥±¥Ñäœ°±…‰•°èŸ¢C’æ–z,œ°µ½‘¥™¥•ÉÌé=‰©•Ð¹™É••é”¡í¡ÀèÄ¸ÄÔ°…ÑÑ…¬èÄ°ÍÁ••è¸äÁô¥ô¤°(€=‰©•Ð¹™É••é”¡í¥èÍÁ••œ°±…‰•°èŸ¦–ê›–z,œ°µ½‘¥™¥•ÉÌé=‰©•Ð¹™É••é”¡í¡ÀèÄ°…ÑÑ…¬è¸äÀ°ÍÁ••èÄ¸ÄÕô¥ô¤)t¤ì)½¹ÍÐ1!5e}5=9MQI}=9%L€ô=‰©•Ð¹™É••é”¡ì(€…±‘É„é=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è…±‘É„œ°(€€€…É¡•ÑåÁ•Ìé1!5e}I!QeAL°(€€€•á±ÕÍ¥Ù•5½Ù•%¹‘•á•Ìé=‰©•Ð¹™É••é”¡lÉt¤(€ô¤°(€…±¡•µ¥½¸é=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è…±¡•µ¥½¸œ°(€€€…É¡•ÑåÁ•Ìé1!5e}I!QeAL°(€€€•á±ÕÍ¥Ù•5½Ù•%¹‘•á•Ìé=‰©•Ð¹™É••é”¡lÁt¤(€ô¤°(€­¥µ•É…¹„é=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è­¥µ•É…¹„œ°(€€€…É¡•ÑåÁ•Ìé1!5e}I!QeAL°(€€€•á±ÕÍ¥Ù•5½Ù•%¹‘•á•Ìé=‰©•Ð¹™É••é”¡lÁt¤(€ô¤°(€•±¥á¥½¸é=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è•±¥á¥½¸œ°(€€€…É¡•ÑåÁ•Ìé1!5e}I!QeAL°(€€€•á±ÕÍ¥Ù•5½Ù•%¹‘•á•Ìé=‰©•Ð¹™É••é”¡lÀ°€Ét¤(€ô¤)ô¤ì)½¹ÍÐ1I}MUMM}9%QL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è…±‘É„œ°Ý•¥¡ÐèÄ°…±¡•µå%¹ÍÑ…¹”éÑÉÕ”°(€€€½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡íô¤°(€€€Õ¹±½­½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€É•ÅÕ¥É•‘½¥¹=ÁÑ¥½¹%‘Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€Õ…É…¹Ñ••½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤(€ô¤)t¤ì)½¹ÍÐ1!5%=9}MUMM}9%QL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è…±¡•µ¥½¸œ°Ý•¥¡ÐèÄ°…±¡•µå%¹ÍÑ…¹”éÑÉÕ”°(€€€½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡íô¤°(€€€Õ¹±½­½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€É•ÅÕ¥É•‘½¥¹=ÁÑ¥½¹%‘Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€Õ…É…¹Ñ••½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤(€ô¤)t¤ì)½¹ÍÐ-%5I9}MUMM}9%QL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è­¥µ•É…¹„œ°Ý•¥¡ÐèÄ°…±¡•µå%¹ÍÑ…¹”éÑÉÕ”°(€€€½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡íô¤°(€€€Õ¹±½­½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€É•ÅÕ¥É•‘½¥¹=ÁÑ¥½¹%‘Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€Õ…É…¹Ñ••½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤(€ô¤)t¤ì)½¹ÍÐ1%a%=9}MUMM}9%QL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡ì(€€€µ½¹ÍÑ•É%è•±¥á¥½¸œ°Ý•¥¡ÐèÄ°…±¡•µå%¹ÍÑ…¹”éÑÉÕ”°(€€€½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡íô¤°(€€€Õ¹±½­½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€É•ÅÕ¥É•‘½¥¹=ÁÑ¥½¹%‘Ìé=‰©•Ð¹™É••é”¡mt¤°(€€€Õ…É…¹Ñ••½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤(€ô¤)t¤ì)½¹ÍÐ1!5e}%1UI}9%QL€ô=‰©•Ð¹™É••é”¡l(€€™É•¥…°œ°…ÅÕ…É½¸œ°É…ÍÍ‰•…Ðœ°É¥­…Í¡••˜œ°¹¥¡Ñµ…É”œ°Ù½±Ñ•¬œ°¥•½±•´œ°(€€ÁÉ½Ñ½}¥•½±•´œ°¹•µ•Ìœ°ÍÕ¥É•¸œ°Í±¥µ”œ°Í±¥µ•}½±œ°½‰±¥¸œ°Ù½±µ½½œœ°½É…¹„œ°(€€Íå±Á¡¥¸œ°¥¹…É½Ìœ°¹½±”œ°±ÕáÍ••œ°…ÍÑÉ…±•Á¥Ìœ)t¹µ…À¡µ½¹ÍÑ•É%€ôø=‰©•Ð¹™É••é”¡ì(€µ½¹ÍÑ•É%°Ý•¥¡ÐèÄ°…±¡•µå%¹ÍÑ…¹”é™…±Í”°(€½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡ì(€€€É•ÅÕ¥É•Í9½Éµ…±]¥±‘5…ÀéÑÉÕ”°(€€€•á±Õ‘•	½ÍÍ±…ÍÌéÑÉÕ”°(€€€•á±Õ‘•Ù½±ÕÑ¥½¹=¹±äéÑÉÕ”°(€€€•á±Õ‘•±¡•µåá±ÕÍ¥Ù”éÑÉÕ”(€ô¤°(€Õ¹±½­½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤°(€É•ÅÕ¥É•‘½¥¹=ÁÑ¥½¹%‘Ìé=‰©•Ð¹™É••é”¡mt¤°(€Õ…É…¹Ñ••½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤)ô¤¤¤ì)½¹ÍÐ1!5e}!%!}Y=1UQ%=9}%1UI}9%QL€ô=‰©•Ð¹™É••é”¡l(€€Í¡•¹¡…¥É½¸œ°Ñ¥•¹¡…¥É½¸œ°É…¹‰•…Ðœ°Í•É…±Á¡¥„œ°Ù½±Ñ…àœ°¹•µ•Í¥„œ°(€€É…¹}Ù½±µ½½œœ°½É…}ÍÑÉ•…´œ°Ñ•µÁ•ÍÑÉ…äœ°¹½áÙ•±œœ°±Õá}…±‘¥½¸œ)t¹µ…À¡µ½¹ÍÑ•É%€ôø=‰©•Ð¹™É••é”¡ì(€µ½¹ÍÑ•É%°Ý•¥¡ÐèÄ°…±¡•µå%¹ÍÑ…¹”é™…±Í”°(€½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡ì(€€€É•ÅÕ¥É•ÍÙ½±ÕÑ¥½¹•™¥¹¥Ñ¥½¸éÑÉÕ”°(€€€•á…ÑI…É¥ÑäèÌ°(€€€•á±Õ‘•	½ÍÍ±…ÍÌéÑÉÕ”°(€€€•á±Õ‘•±¡•µåá±ÕÍ¥Ù”éÑÉÕ”(€ô¤°(€Õ¹±½­½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤°(€É•ÅÕ¥É•‘½¥¹=ÁÑ¥½¹%‘Ìé=‰©•Ð¹™É••é”¡l¡¥ t¤°(€Õ…É…¹Ñ••½¹‘¥Ñ¥½¹Ìé=‰©•Ð¹™É••é”¡mt¤)ô¤¤¤ì)½¹ÍÐ1!5e}11}%1UI}9%QL€ô=‰©•Ð¹™É••é”¡l(€€¸¸¹1!5e}%1UI}9%QL°(€€¸¸¹1!5e}!%!}Y=1UQ%=9}%1UI}9%QL)t¤ì)½¹ÍÐ1!5e}=%9}=AQ%=9L€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡í¥è±½Üœ°…µ½Õ¹ÐèÔÀ°‰½¹ÕÌè´ÄÀ°±…‰•°èŸ–ÂG¦†4œ°µ¥¹¥µÕµ…¥±ÕÉ•I…É¥Ñäé¹Õ±±ô¤°(€=‰©•Ð¹™É••é”¡í¥èÍÑ…¹‘…Éœ°…µ½Õ¹ÐèÄÀÀ°‰½¹ÕÌèÀ°±…‰•°èŸš¢gšêXœ°µ¥¹¥µÕµ…¥±ÕÉ•I…É¥ÑäèÉô¤°(€=‰©•Ð¹™É••é”¡í¥è¡¥ œ°…µ½Õ¹ÐèÈÔÀ°‰½¹ÕÌèÄÔ°±…‰•°èŸ¦®c¦†4œ°µ¥¹¥µÕµ…¥±ÕÉ•I…É¥ÑäèÍô¤)t¤ì)½¹ÍÐ1!5e}I%AL€ô=‰©•Ð¹™É••é”¡l(€=‰©•Ð¹™É••é”¡ì(€€€É•¥Á•%è…±¡•µ¥½¹}ÍÑ…¹‘…Éœ°(€€€‘¥ÍÁ±…å9…µ”èŸ¦2³š‚ãž6Ž
+‹Ž¯Ž
+ÇŽŽ
+«ŽÌœ°(€€€µ…Ñ•É¥…±¡½¥•Ìé=‰©•Ð¹™É••é”¡l(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦¶Sž&§Ž»¦ª œ°¹½Éµ…°èµ½¹ÍÑ•É}‰½¹”œ°™¥¹”è™¥¹•}µ½¹ÍÑ•É}‰½¹”ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦¶SšfÛž~Ìœ°¹½Éµ…°èµ…¥}ÉåÍÑ…°œ°™¥¹”è™¥¹•}µ…¥}ÉåÍÑ…°ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦G–Æ{¦&Çž~Ìœ°¹½Éµ…°èµ•Ñ…±}½É”œ°™¥¹”è™¥¹•}µ•Ñ…±}½É”ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ’â7–º'–ºk¦2³š"Cž&§¢Î¨œ°¹½Éµ…°èÕ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°™¥¹”è™¥¹•}Õ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èô¤(€€€t¤°(€€€½¥¹=ÁÑ¥½¹Ìé1!5e}=%9}=AQ%=9L°(€€€‘•™…Õ±Ñ½¥¹=ÁÑ¥½¹%èÍÑ…¹‘…Éœ°(€€€‰…Í•MÕ•ÍÍI…Ñ”èÌÀ°(€€€™¥¹•5…Ñ•É¥…±	½¹ÕÌèÔ°(€€€µ¥¹MÕ•ÍÍI…Ñ”èÄÀ°(€€€µ…áMÕ•ÍÍI…Ñ”èÜÀ°(€€€ÍÕ•ÍÍ…¹‘¥‘…Ñ•Ìé1!5%=9}MUMM}9%QL°(€€€™…¥±ÕÉ•…¹‘¥‘…Ñ•Ìé1!5e}11}%1UI}9%QL(€ô¤°(€=‰©•Ð¹™É••é”¡ì(€€€É•¥Á•%è…±‘É…}ÍÑ…¹‘…Éœ°(€€€‘¥ÍÁ±…å9…µ”èŸŽ
+³Ž¯Ž'Ž¤œ°(€€€µ…Ñ•É¥…±¡½¥•Ìé=‰©•Ð¹™É••é”¡l(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦¶Sž&§Ž»¦ª œ°¹½Éµ…°èµ½¹ÍÑ•É}‰½¹”œ°™¥¹”è™¥¹•}µ½¹ÍÑ•É}‰½¹”ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦¶SšfÛž~Ìœ°¹½Éµ…°èµ…¥}ÉåÍÑ…°œ°™¥¹”è™¥¹•}µ…¥}ÉåÍÑ…°ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ’â7–º'–ºk¦2³š"Cž&§¢Î¨œ°¹½Éµ…°èÕ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°™¥¹”è™¥¹•}Õ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸž2ožš÷Ž»žúôœ°¹½Éµ…°èÉ…ÁÑ½É}™•…Ñ¡•Èœ°™¥¹”è™¥¹•}É…ÁÑ½É}™•…Ñ¡•Èô¤(€€€t¤°(€€€½¥¹=ÁÑ¥½¹Ìé1!5e}=%9}=AQ%=9L°(€€€‘•™…Õ±Ñ½¥¹=ÁÑ¥½¹%èÍÑ…¹‘…Éœ°(€€€‰…Í•MÕ•ÍÍI…Ñ”èÌÀ°(€€€™¥¹•5…Ñ•É¥…±	½¹ÕÌèÔ°(€€€µ¥¹MÕ•ÍÍI…Ñ”èÄÀ°(€€€µ…áMÕ•ÍÍI…Ñ”èÜÀ°(€€€ÍÕ•ÍÍ…¹‘¥‘…Ñ•Ìé1I}MUMM}9%QL°(€€€™…¥±ÕÉ•…¹‘¥‘…Ñ•Ìé1!5e}11}%1UI}9%QL(€ô¤°(€=‰©•Ð¹™É••é”¡ì(€€€É•¥Á•%è­¥µ•É…¹…}ÍÑ…¹‘…Éœ°(€€€‘¥ÍÁ±…å9…µ”èŸšÞßš"Cžþóž®sŽ
+·Ž‡Ž§Ž
+ÃŽ(œ°(€€€µ…Ñ•É¥…±¡½¥•Ìé=‰©•Ð¹™É••é”¡l(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦¶Sž&§Ž»¦ª œ°¹½Éµ…°èµ½¹ÍÑ•É}‰½¹”œ°™¥¹”è™¥¹•}µ½¹ÍÑ•É}‰½¹”ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ’â7–º'–ºk¦2³š"Cž&§¢Î¨œ°¹½Éµ…°èÕ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èœ°™¥¹”è™¥¹•}Õ¹ÍÑ…‰±•}…±¡•µå}µ…ÑÑ•Èô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸž2ožš÷Ž»žúôœ°¹½Éµ…°èÉ…ÁÑ½É}™•…Ñ¡•Èœ°™¥¹”è™¥¹•}É…ÁÑ½É}™•…Ñ¡•Èô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸš¾K¢f¯Ž»žRËšºìœ°¹½Éµ…°èÙ•¹½µ}…É…Á…”œ°™¥¹”è™¥¹•}Ù•¹½µ}…É…Á…”ô¤(€€€t¤°(€€€½¥¹=ÁÑ¥½¹Ìé1!5e}=%9}=AQ%=9L°(€€€‘•™…Õ±Ñ½¥¹=ÁÑ¥½¹%èÍÑ…¹‘…Éœ°(€€€‰…Í•MÕ•ÍÍI…Ñ”èÌÀ°(€€€™¥¹•5…Ñ•É¥…±	½¹ÕÌèÔ°(€€€µ¥¹MÕ•ÍÍI…Ñ”èÄÀ°(€€€µ…áMÕ•ÍÍI…Ñ”èÜÀ°(€€€ÍÕ•ÍÍ…¹‘¥‘…Ñ•Ìé-%5I9}MUMM}9%QL°(€€€™…¥±ÕÉ•…¹‘¥‘…Ñ•Ìé1!5e}11}%1UI}9%QL(€ô¤°(€=‰©•Ð¹™É••é”¡ì(€€€É•¥Á•%è•±¥á¥½¹}ÍÑ…¹‘…Éœ°(€€€‘¥ÍÁ±…å9…µ”èŸ¢Î‹¦Gž–{ž®sŽ
+£Ž«Ž
+¿Ž
+ßŽ
+«ŽÌœ°(€€€µ…Ñ•É¥…±¡½¥•Ìé=‰©•Ð¹™É••é”¡l(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦¶SšfÛž~Ìœ°¹½Éµ…°èµ…¥}ÉåÍÑ…°œ°™¥¹”è™¥¹•}µ…¥}ÉåÍÑ…°ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸ¦G–Æ{¦&Çž~Ìœ°¹½Éµ…°èµ•Ñ…±}½É”œ°™¥¹”è™¥¹•}µ•Ñ…±}½É”ô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸž2ožš÷Ž»žúôœ°¹½Éµ…°èÉ…ÁÑ½É}™•…Ñ¡•Èœ°™¥¹”è™¥¹•}É…ÁÑ½É}™•…Ñ¡•Èô¤°(€€€€€=‰©•Ð¹™É••é”¡í±…‰•°èŸš¾K¢f¯Ž»žRËšºìœ°¹½Éµ…°èÙ•¹½µ}…É…Á…”œ°™¥¹”è™¥¹•}Ù•¹½µ}…É…Á…”ô¤(€€€t¤°(€€€½¥¹=ÁÑ¥½¹Ìé1!5e}=%9}=AQ%=9L°(€€€‘•™…Õ±Ñ½¥¹=ÁÑ¥½¹%è¡¥ œ°(€€€‰…Í•MÕ•ÍÍI…Ñ”èÈÀ°(€€€™¥¹•5…Ñ•É¥…±	½¹ÕÌèÔ°(€€€µ¥¹MÕ•ÍÍI…Ñ”èÄÀ°(€€€µ…áMÕ•ÍÍI…Ñ”èÜÀ°(€€€ÍÕ•ÍÍ…¹‘¥‘…Ñ•Ìé1%a%=9}MUMM}9%QL°(€€€™…¥±ÕÉ•…¹‘¥‘…Ñ•Ìé1!5e}11}%1UI}9%QL(€ô¤)t¤ì)½¹ÍÐ1!5e}I%A}	e}%€ô=‰©•Ð¹™É••é”¡=‰©•Ð¹™É½µ¹ÑÉ¥•Ì¡1!5e}I%AL¹µ…À¡É•¥Á”€ôømÉ•¥Á”¹É•¥Á•%°É•¥Á•t¤¤¤ì)½¹ÍÐU1Q}1!5e}I%A}%€ô€…±¡•µ¥½¹}ÍÑ…¹‘…Éœì)½¹ÍÐ%Q5}a}aQI€ôl(€í¥èÝ…Ñ•É}µ¥ÉÉ½Èœ°¹…µ”èŸšÂÓ¦>„œ°¥½¸èŸÂ~ªxœ°ÁÉ¥”èÀ°‘•ÍŒèŸšÂÓŽ»–*oŽ
+KšbƒŽ_–ëŽgž–{žžcžjŽ«¦>‡Žž&çšº+¦Ë–2[Ž¯’öÿžR£ŽgŽ
+/žÒƒšvCŽœ°Í¡½Àé™…±Í”°…Ñ•½ÉäèŸ¦Ë–2[žÒƒšv@œ°½‰Ñ…¥¸èŸž&çšº+–‚Ç¦³ŽïŽ
+“ŽgŽÏŽ#ŽŸ–—š&,ô°(€í¥è‘½½µ}™É…µ•¹Ðœ°¹…µ”èŸšî’ê‡Ž»Ž
+¯Ž
+ÇŽ¤œ°¥½¸èŸÂ~Rìœ°ÁÉ¥”èÀ°‘•ÍŒèŸšî’ê‡Ž»–*oŽ3–wžâ»ŽWŽ
+3Ž–6Ç¦fëŽ«Ž
+¯Ž
+ÇŽ§Žž&çšº+¦Ë–2[Ž¯’öÿžR£ŽgŽ
+/žÒƒšvCŽœ°Í¡½Àé™…±Í”°…Ñ•½ÉäèŸ¦Ë–2[žÒƒšv@œ°½‰Ñ…¥¸èŸž&çšº+–‚Ç¦³ŽïŽ
+“ŽgŽÏŽ#ŽŸ–—š&,ô)tì)½¹ÍÐ%Q5}%5€ôì(€Ý…Ñ•É}µ¥ÉÉ½Èè€¥µ…•Ì½¥Ñ•µÌ½Ý…Ñ•É}µ¥ÉÉ½È¹Ý•‰Àœ°(€™¥É•}½Éˆè€¥µ…•Ì½¥Ñ•µÌ½™¥É•}½Éˆ¹Ý•‰Àœ°(€‘½½µ}™É…µ•¹Ðè€¥µ…•Ì½¥Ñ•µÌ½‘½½µ}™É…µ•¹Ð¹Ý•‰Àœ)ôì(¼¨€ôôôôôƒŽ
+‹Ž
+“ŽŽƒŽ
+³ŽŽŽïžÖ3¦¢O–“ŽŽóŽ
+ü€ôôôôô€¨¼)½¹ÍÐ%Q5}!}=MP€ô€ÄÀÀì)½¹ÍÐ%Q5}!}A==0€ôl(€í¥èÁ½Ñ¥½¸œ°Ý•¥¡ÐèÈÕô°(€í¥èÕÁÁ•É}Á½Ñ¥½¸œ°Ý•¥¡ÐèÈÁô°(€í¥è…ÑÑ…­}Á½Ñ¥½¸œ°Ý•¥¡ÐèÄÁô°(€í¥è­¥±½}‘…Ñ„œ°Ý•¥¡ÐèÈÁô°(€í¥èµ•…}‘…Ñ„œ°Ý•¥¡ÐèÄÕô°(€í¥è¥…}‘…Ñ„œ°Ý•¥¡ÐèÕô°(€í¥è½¹ÑÉ…Ñ}ÍÉ½±°œ°Ý•¥¡ÐèÍô°(€í¥èÍ¥±Ù•É}½¹ÑÉ…Ñ}ÍÉ½±°œ°Ý•¥¡ÐèÄ¸Õô°(€í¥è½±‘}½¹ÑÉ…Ñ}ÍÉ½±°œ°Ý•¥¡ÐèÀ¸Ñô°(€í¥èÉ…¥¹‰½Ý}½¹ÑÉ…Ñ}ÍÉ½±°œ°Ý•¥¡ÐèÀ¸Åô)tì
