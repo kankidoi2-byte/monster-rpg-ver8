@@ -152,7 +152,7 @@ assert.ok(index.includes('id="tutorialDialogueSkipButton"')&&index.includes('>�
 assert.ok(index.includes('id="tutorialSkipButton"')&&index.includes('>全体スキップ</button>'));
 assert.ok(index.indexOf('tutorialStoryBackdrop')<index.indexOf('tutorialCharacterLayer')&&index.indexOf('tutorialCharacterLayer')<index.indexOf('tutorialBubble'),'background, transparent portrait, and dialogue must remain separate layers');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1'),'tutorial CSS cache key must be refreshed');
-assert.ok(index.includes('tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1"></script>'),'tutorial JS cache key must be refreshed');
+assert.ok(index.includes('tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1"></script>'),'tutorial JS cache key must be refreshed');
 assert.equal(packageJson.scripts['check:prologue-comprehensive'],'node scripts/test-prologue-comprehensive.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-comprehensive'));
 

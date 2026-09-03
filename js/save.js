@@ -22,7 +22,7 @@ function tutorialGuideDefaults(){
 }
 function tutorialSaveDefaults({legacy=false}={}){
   return {
-    id:'prologue',version:TUTORIAL_VERSION,status:legacy?'completed':'not_started',stepId:null,
+    id:'prologue',version:TUTORIAL_VERSION,status:legacy?'completed':'not_started',stepId:null,chapterGate:false,
     completed:legacy,skipped:false,replaying:false,playerName:null,playerNamed:false,
     starterContractsGranted:legacy,elnaGuestActive:false,elnaContractGranted:legacy,
     stellaSkillCardGranted:legacy,alchemySuppliesGranted:legacy,alchemyLessonPrepared:legacy,
@@ -43,7 +43,7 @@ function normalizeTutorialSave(value,{legacy=false}={}){
     ...defaults,id:typeof source.id==='string'&&source.id?source.id:defaults.id,
     version:Math.max(TUTORIAL_VERSION,sourceVersion),
     status:validStatuses.has(source.status)?source.status:defaults.status,
-    stepId:typeof source.stepId==='string'&&source.stepId?source.stepId:null,
+    stepId:typeof source.stepId==='string'&&source.stepId?source.stepId:null,chapterGate:source.chapterGate===true,
     completed:source.completed===true,skipped:source.skipped===true,replaying:false,
     playerName,playerNamed:source.playerNamed===true&&Boolean(playerName),
     starterContractsGranted:source.starterContractsGranted===true||protectPublishedFlow,
@@ -62,17 +62,17 @@ function normalizeTutorialSave(value,{legacy=false}={}){
   if(protectPublishedFlow){
     const keepSkipped=source.status==='skipped'||source.skipped===true;
     normalized.status=keepSkipped?'skipped':'completed';normalized.stepId=null;
-    normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;
+    normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;normalized.chapterGate=false;
     normalized.elnaGuestActive=false;normalized.prologueCompleted=true;
   }else if(source.replaying===true){
     const keepSkipped=source.status==='skipped'||source.skipped===true;
     normalized.status=keepSkipped?'skipped':'completed';normalized.stepId=null;
-    normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;
+    normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;normalized.chapterGate=false;
     normalized.elnaGuestActive=false;
     if(!keepSkipped)normalized.prologueCompleted=true;
   }else{
-    if(normalized.status==='completed'){normalized.completed=true;normalized.skipped=false;normalized.prologueCompleted=true;}
-    if(normalized.status==='skipped'){normalized.completed=false;normalized.skipped=true;}
+    if(normalized.status==='completed'){normalized.completed=true;normalized.skipped=false;normalized.prologueCompleted=true;normalized.chapterGate=false;}
+    if(normalized.status==='skipped'){normalized.completed=false;normalized.skipped=true;normalized.chapterGate=false;}
     if(normalized.status==='not_started'||normalized.status==='in_progress'){normalized.completed=false;normalized.skipped=false;}
     if((normalized.completed||normalized.skipped)&&!normalized.replaying)normalized.stepId=null;
   }
@@ -266,6 +266,7 @@ function completeTutorial(){
     return tutorial;
   }
   tutorial.status='completed';
+  tutorial.chapterGate=false;
   tutorial.stepId=null;
   tutorial.completed=true;
   tutorial.skipped=false;
@@ -279,6 +280,7 @@ function skipTutorial(){
     return tutorial;
   }
   tutorial.status='skipped';
+  tutorial.chapterGate=false;
   tutorial.stepId=null;
   tutorial.completed=false;
   tutorial.skipped=true;

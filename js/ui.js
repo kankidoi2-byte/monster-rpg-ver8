@@ -50,6 +50,7 @@ function show(id) {
   if (id === 'contractorRank') renderContractorRank();
   if (id === 'contractorRankRewards') renderContractorRankRewards();
   if (id === 'contractorTitles') renderContractorTitles();
+  if (id === 'storyMode' && typeof renderStoryMode === 'function') renderStoryMode();
   if (id === 'partySet') renderPartySetup();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
@@ -67,6 +68,13 @@ function openBattleHub(){
     return;
   }
   show('partySet');
+}
+function openHomeAdventure(){
+  if(typeof tutorialCurrentStepId==='function'&&tutorialCurrentStepId()==='home_requests'){
+    openBattleHub();
+    return;
+  }
+  if(typeof openStoryMode==='function')openStoryMode();
 }
 function updateAppResourceBar(){
   const coinView = document.getElementById('appCoinView');
@@ -304,6 +312,7 @@ function renderHome(){
   const growthPreview = document.getElementById('homeGrowthPreview');
   const expeditionPreview = document.getElementById('homeExpeditionPreview');
   if (typeof renderNoticePreview === 'function') renderNoticePreview();
+  if (typeof renderHomeStoryCard === 'function') renderHomeStoryCard();
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
   if(partyPreview){
     partyPreview.innerHTML = party.length ? party.map((ins,index)=>{
