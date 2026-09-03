@@ -14,8 +14,9 @@ const main=tutorial.slice(flowStart,flowEnd);
 
 assert.match(main,/id:'growth_skill_open'[^\n]+target:'\[data-monster-id="elna_beginner"\] \[data-tutorial-skill-edit\]'[^\n]+advanceOnTarget:true/,'the existing saved STEP must continue to target the real skill-edit button');
 assert.ok(party.includes('data-tutorial-skill-edit onclick="openSkillEdit('),'the highlighted element must execute the real skill editor action');
-assert.ok(tutorial.includes("document.body.classList.toggle('tutorial-growth-details-open',step?.id==='growth_elna_details')"),'only the growth-details STEP may promote the real details control above the mobile layout');
-assert.match(main,/id:'growth_elna_details'[^\n]+text:'画面下に出ている、エルナの「育成・個体情報」を押そう！/,'the growth-details copy must name the exact visible action');
+assert.ok(tutorial.includes("document.body.classList.toggle('tutorial-growth-details-open',tutorialUiState.replay&&step?.id==='growth_elna_details')"),'only the replay growth-details STEP may promote the real details control above the mobile layout');
+assert.ok(tutorial.includes('tutorialUiState.replay&&step?.replayText?step.replayText:step?.text'),'replay-only guidance must not replace the main tutorial copy');
+assert.match(main,/id:'growth_elna_details'[^\n]+text:'レベルと経験値はカードで確認できる。黄色い枠の「育成・個体情報」を押すと[^\n]+replayText:'画面下に出ている、エルナの「育成・個体情報」を押そう！/,'main and replay growth guidance must describe their respective layouts');
 assert.match(css,/body\.tutorial-growth-details-open \[data-monster-id="elna_beginner"\]\{overflow:visible\}/,'the roster card must not clip the promoted details control');
 assert.match(css,/body\.tutorial-growth-details-open \[data-monster-id="elna_beginner"\] \.monster-roster-details>summary\{[^}]*position:fixed;[^}]*z-index:81;[^}]*bottom:calc\(var\(--ui-nav-height\) \+ 14px\);[^}]*width:min\(300px,calc\(100vw - 32px\)\)/,'the real details control must remain visible and tappable above the fixed mobile nav');
 assert.ok(tutorial.includes("document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open')"),'only the skill-open STEP may promote the action above the mobile nav');
@@ -28,8 +29,8 @@ assert.match(css,/body\.tutorial-stella-skill-action \[data-tutorial-stella-uneq
 assert.match(main,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'[^\n]+nextLabel:'自由行動へ'/,'the final scene must render Gnosis as story dialogue instead of a target-only background');
 assert.ok(css.includes('.tutorial-overlay.is-ui-guide-step .tutorial-character-layer{display:none}'),'ordinary UI-guide steps must still protect their controls from portrait overlap');
 assert.ok(index.includes('tutorial.css?v=')&&index.includes('prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1-tutorial-growth-guidance-1'),'the mobile browser must fetch the new tutorial CSS');
-assert.ok(index.includes('prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1"></script>'),'the mobile browser must fetch the new tutorial logic');
-assert.ok(index.includes('diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1"></script>'),'the mobile browser must fetch the new player notice');
+assert.ok(index.includes('prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1"></script>'),'the mobile browser must fetch the corrected tutorial logic');
+assert.ok(index.includes('diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1"></script>'),'the mobile browser must fetch the corrected player notice');
 assert.equal(packageJson.scripts['check:prologue-mobile-clarity'],'node scripts/test-prologue-mobile-clarity.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-mobile-clarity'));
 
