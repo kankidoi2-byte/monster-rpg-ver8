@@ -44,7 +44,7 @@ function normalizeTutorialSave(value,{legacy=false}={}){
     version:Math.max(TUTORIAL_VERSION,sourceVersion),
     status:validStatuses.has(source.status)?source.status:defaults.status,
     stepId:typeof source.stepId==='string'&&source.stepId?source.stepId:null,
-    completed:source.completed===true,skipped:source.skipped===true,replaying:source.replaying===true,
+    completed:source.completed===true,skipped:source.skipped===true,replaying:false,
     playerName,playerNamed:source.playerNamed===true&&Boolean(playerName),
     starterContractsGranted:source.starterContractsGranted===true||protectPublishedFlow,
     elnaGuestActive:source.elnaGuestActive===true&&!protectPublishedFlow,
@@ -64,6 +64,12 @@ function normalizeTutorialSave(value,{legacy=false}={}){
     normalized.status=keepSkipped?'skipped':'completed';normalized.stepId=null;
     normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;
     normalized.elnaGuestActive=false;normalized.prologueCompleted=true;
+  }else if(source.replaying===true){
+    const keepSkipped=source.status==='skipped'||source.skipped===true;
+    normalized.status=keepSkipped?'skipped':'completed';normalized.stepId=null;
+    normalized.completed=!keepSkipped;normalized.skipped=keepSkipped;normalized.replaying=false;
+    normalized.elnaGuestActive=false;
+    if(!keepSkipped)normalized.prologueCompleted=true;
   }else{
     if(normalized.status==='completed'){normalized.completed=true;normalized.skipped=false;normalized.prologueCompleted=true;}
     if(normalized.status==='skipped'){normalized.completed=false;normalized.skipped=true;}
@@ -210,6 +216,10 @@ function repairSave(payload,report=[]){
   const rawTutorial=payload.progress.tutorial;
   const rawTutorialVersion=isSaveObject(rawTutorial)?Math.max(1,nonNegativeInteger(rawTutorial.version,1)):TUTORIAL_VERSION;
   payload.progress.tutorial=normalizeTutorialSave(rawTutorial);
+  if(isSaveObject(rawTutorial)&&rawTutorial.replaying===true){
+    if(!payload.saveMeta.migrations.includes('tutorial_replay_retired_v1'))payload.saveMeta.migrations.push('tutorial_replay_retired_v1');
+    report.push('廃止されたチュートリアル再閲覧を終了し、元の完了状態へ復帰');
+  }
   if(isSaveObject(rawTutorial)&&rawTutorialVersion<TUTORIAL_VERSION){
     if(!payload.saveMeta.migrations.includes('tutorial_v1_to_v2_legacy_protection'))payload.saveMeta.migrations.push('tutorial_v1_to_v2_legacy_protection');
     report.push('公開版チュートリアルの状態を保護して序章v2保存形式へ移行');
@@ -272,12 +282,6 @@ function skipTutorial(){
   tutorial.stepId=null;
   tutorial.completed=false;
   tutorial.skipped=true;
-  return tutorial;
-}
-function beginTutorialReplay(stepId='intro'){
-  const tutorial=currentTutorialState();
-  tutorial.replaying=true;
-  tutorial.stepId=typeof stepId==='string'&&stepId?stepId:'intro';
   return tutorial;
 }
 function markTutorialGuideSeen(guideId){

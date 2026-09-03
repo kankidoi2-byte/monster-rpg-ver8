@@ -250,8 +250,7 @@ function positionTutorialUi(){
 function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(positionTutorialUi));}
 function tutorialResolvedText(step){
   const playerName=typeof currentTutorialState==='function'?currentTutorialState().playerName:null;
-  const text=tutorialUiState.replay&&step?.replayText?step.replayText:step?.text;
-  return String(text||'').replaceAll('{{playerName}}',playerName||'契約者');
+  return String(step?.text||'').replaceAll('{{playerName}}',playerName||'契約者');
 }
 function renderTutorialStoryStep(step){
   const overlay=document.getElementById('tutorialOverlay');
@@ -259,7 +258,6 @@ function renderTutorialStoryStep(step){
   const layer=document.getElementById('tutorialCharacterLayer');
   const portrait=document.getElementById('tutorialCharacterPortrait');
   const story=Boolean(step?.scene||step?.portrait);
-  document.body.classList.toggle('tutorial-growth-details-open',tutorialUiState.replay&&step?.id==='growth_elna_details');
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
   document.body.classList.toggle('tutorial-stella-skill-action',['stella_skill_unequip','stella_skill_equip'].includes(step?.id));
   overlay?.classList.toggle('is-story-step',story);
@@ -457,7 +455,7 @@ function renderTutorialStep(){
   }
   skip.disabled=tutorialElnaContractBusy;
   document.querySelector('.tutorial-pause')?.toggleAttribute('disabled',tutorialElnaContractBusy);
-  skip.textContent=tutorialUiState.persist?(tutorialUiState.replay?'再閲覧を終了':'全体スキップ'):'閉じる';
+  skip.textContent=tutorialUiState.persist?'全体スキップ':'閉じる';
   next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
   next.hidden=requiresAction;
   next.disabled=requiresAction||tutorialElnaContractBusy;
@@ -478,20 +476,19 @@ function persistTutorialStep(){
   if(typeof saveGame==='function')saveGame();
   updateTutorialMenuSummary();
 }
-function startTutorialFlow(flowId,{stepId=null,persist=false,replay=false,returnScreen=null}={}){
+function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}={}){
   const steps=tutorialFlowSteps(flowId);
   if(!steps.length)return false;
-  const resolvedStepId=resolveTutorialExpeditionResumeStep(flowId,stepId,replay);
+  const resolvedStepId=resolveTutorialExpeditionResumeStep(flowId,stepId,false);
   clearTutorialUi();
   tutorialUiState.active=true;tutorialUiState.flowId=flowId;tutorialUiState.steps=steps;
   tutorialUiState.index=tutorialStepIndex(steps,resolvedStepId);tutorialUiState.persist=persist;
   if(tutorialUiState.index<0){clearTutorialUi();return false;}
-  tutorialUiState.replay=replay;tutorialUiState.returnScreen=returnScreen;
+  tutorialUiState.replay=false;tutorialUiState.returnScreen=returnScreen;
   tutorialUiState.previousFocus=document.activeElement;tutorialUiState.lastFocusedStep=null;
   if(persist){
     const persistedStepId=persistedTutorialStepId(steps[tutorialUiState.index]);
-    if(replay)beginTutorialReplay(persistedStepId);
-    else setTutorialStep(persistedStepId);
+    setTutorialStep(persistedStepId);
     if(typeof saveGame==='function')saveGame();
   }
   renderTutorialStep();
@@ -597,13 +594,12 @@ function finishTutorialFlow(){
   const persist=tutorialUiState.persist;
   const returnScreen=tutorialUiState.returnScreen;
   const flowId=tutorialUiState.flowId;
-  const replay=tutorialUiState.replay;
   if(persist){
     if(flowId===TUTORIAL_MAIN_FLOW_ID){if(!commitTutorialPrologueCompletion())return;}
     else{completeTutorial();if(typeof saveGame==='function'&&!saveGame())return;}
   }
   clearTutorialUi();
-  if(flowId===TUTORIAL_MAIN_FLOW_ID&&!replay&&typeof show==='function')show('home');
+  if(flowId===TUTORIAL_MAIN_FLOW_ID&&typeof show==='function')show('home');
   else restoreTutorialReturnScreen(returnScreen);
   updateTutorialMenuSummary();
 }
@@ -620,12 +616,7 @@ function commitTutorialFullSkip(){
   if(typeof currentTutorialState!=='function'||typeof save==='undefined')return false;
   const snapshot=JSON.stringify(save);
   try{
-    const initial=currentTutorialState();
-    if(initial.replaying){
-      skipTutorial();
-      if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_replay_exit_save');
-      return true;
-    }
+    currentTutorialState();
     const starters=TUTORIAL_STARTER_CONTRACT_IDS.map(id=>tutorialSkipRewardInstance(id,{tutorialContract:true}));
     const elna=tutorialSkipRewardInstance('elna_beginner',{tutorialContract:true,tutorialRole:'contract_body'});
     const alchemyPartner=tutorialSkipRewardInstance(TUTORIAL_LUMINA_ALCHEMY.resultId,{tutorialAlchemyLesson:true});
@@ -667,12 +658,10 @@ function commitTutorialFullSkip(){
 function requestTutorialSkip(){
   if(tutorialElnaContractBusy||!tutorialUiState.active)return;
   if(!tutorialUiState.persist){pauseTutorial();return;}
-  const replay=tutorialUiState.replay;
-  if(!confirm(replay?'チュートリアルの再閲覧を終了しますか？':'必須チュートリアルを全体スキップしますか？ 必須報酬を受け取り、自由行動へ移ります。'))return;
-  const returnScreen=tutorialUiState.returnScreen;
+  if(!confirm('必須チュートリアルを全体スキップしますか？ 必須報酬を受け取り、自由行動へ移ります。'))return;
   if(!commitTutorialFullSkip())return;
   clearTutorialUi();
-  if(!replay&&typeof show==='function')show('home');else restoreTutorialReturnScreen(returnScreen);
+  if(typeof show==='function')show('home');
   updateTutorialMenuSummary();
 }
 function clearTutorialUi(){
@@ -688,41 +677,38 @@ function clearTutorialUi(){
 }
 
 function updateTutorialMenuSummary(){
+  const button=document.getElementById('tutorialMenuButton');
   const summary=document.getElementById('tutorialMenuSummary');
-  if(!summary||typeof currentTutorialState!=='function')return;
+  if(!button||!summary||typeof currentTutorialState!=='function')return;
   const tutorial=currentTutorialState();
-  if(tutorial.replaying)summary.textContent='再閲覧を途中から続ける';
-  else if(tutorial.status==='in_progress')summary.textContent='途中からチュートリアルを続ける';
-  else if(tutorial.status==='completed')summary.textContent='完了済み・最初から見直す';
-  else if(tutorial.status==='skipped')summary.textContent='スキップ済み・最初から見直す';
-  else summary.textContent='基本操作を実画面で確認';
+  button.hidden=tutorial.status!=='in_progress';
+  summary.textContent='中断したところから再開';
 }
 function openTutorialFromMenu(){
   const returnScreen=activeScreenId()||'moreMenu';
   const mainSteps=tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID);
   if(mainSteps.length&&typeof currentTutorialState==='function'){
     const tutorial=currentTutorialState();
-    const continuing=tutorial.status==='in_progress'||tutorial.replaying;
+    if(tutorial.status!=='in_progress')return false;
     return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{
-      stepId:continuing?tutorial.stepId:mainSteps[0].id,
-      persist:true,replay:continuing?tutorial.replaying:['completed','skipped'].includes(tutorial.status),returnScreen
+      stepId:tutorial.stepId||mainSteps[0].id,persist:true,returnScreen
     });
   }
-  return startTutorialFlow(TUTORIAL_HELP_FLOW_ID,{persist:false,returnScreen});
+  return false;
 }
 function resumeTutorialIfNeeded(){
   if(document.body.classList.contains('title-mode')||typeof currentTutorialState!=='function')return false;
   const tutorial=currentTutorialState();
   if(tutorialShouldAutoStart())return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{persist:true});
-  if(tutorial.status!=='in_progress'&&!tutorial.replaying)return false;
-  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true,replay:tutorial.replaying});
+  if(tutorial.status!=='in_progress')return false;
+  return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true});
 }
-function resumeTutorialMainFlowAfterEvent(stepId,replay=false){
+function resumeTutorialMainFlowAfterEvent(stepId){
   if(!stepId)return false;
   const resume=()=>{
     const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
-    if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying))return false;
-    return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId,persist:true,replay:replay||tutorial.replaying===true});
+    if(!tutorial||tutorial.status!=='in_progress')return false;
+    return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId,persist:true});
   };
   // External renderers (battle result, contract animation and alchemy result)
   // finish their own DOM update in the current call stack. Reopen the guide on
@@ -1561,7 +1547,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'dex_freigal',screenId:'dex',target:'[data-tutorial-monster="freigal"]',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'契約体の記録',text:'フレイガルとアクアロンはモンスター図鑑へ記録される。属性、進化先、主な入手方法を確認できるぞ！',progressLabel:'MONSTER DEX'},
   {id:'home_growth_open',screenId:'dex',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
   {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
-  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。黄色い枠の「育成・個体情報」を押すと、装備中の技や個体情報も見られるぞ！',replayText:'画面下に出ている、エルナの「育成・個体情報」を押そう！ 装備中の技や詳しい個体情報を確認できるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。黄色い枠の「育成・個体情報」を押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
   {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
   {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'詳しい技編集は、このあと実際にカードを装備しながら覚えるぞ。育成を押して進化を確認しよう！',progressLabel:'GROWTH'},
   {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
@@ -1610,7 +1596,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},
-  {id:'help_controls',title:'止めても、あとから続けられます',text:'「戻る」で説明を見直せます。本編チュートリアルは×で閉じると現在位置を保存し、確認してからスキップでき、メニューから再閲覧できます。',progressLabel:'GUIDE UI',nextLabel:'メニューへ戻る'}
+  {id:'help_controls',title:'止めても、あとから続けられます',text:'「戻る」で直前の説明を確認できます。本編チュートリアルは×で閉じても現在位置を保存し、メニューの「チュートリアルを続ける」から再開できます。',progressLabel:'GUIDE UI',nextLabel:'メニューへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_THREE_WAY_FLOW_ID,[
   {id:'three_way_intro',screenId:'battle',target:'#multiEnemyGrid',title:'三つ巴バトル',text:'敵が2体いる特殊戦です。敵Aと敵Bは、契約者だけでなく敵同士も攻撃します。',progressLabel:'THREE-WAY'},

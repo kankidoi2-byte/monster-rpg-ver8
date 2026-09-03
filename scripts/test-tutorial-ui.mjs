@@ -16,7 +16,8 @@ const init=read('js/init.js');
 assert.ok(!index.includes('id="tutorialProgressText"'),'the tutorial must not show a discouraging current/total step counter');
 assert.ok(!tutorial.includes("getElementById('tutorialProgressText')"),'the removed numeric counter must not remain in rendering or screen-reader output');
 assert.ok(tutorial.includes("getElementById('tutorialProgressBar').style.width"),'the unobtrusive progress bar must remain');
-assert.ok(index.includes('id="tutorialMenuButton"')&&index.includes('onclick="openTutorialFromMenu()"'),'the menu must expose tutorial replay');
+assert.match(index,/id="tutorialMenuButton"[^>]+onclick="openTutorialFromMenu\(\)"[^>]+hidden/,'the menu resume entry must be hidden unless the main tutorial is in progress');
+assert.ok(css.includes('#tutorialMenuButton[hidden]{display:none}'),'the shared menu grid style must not override the retired entry visibility');
 assert.ok(index.includes('css/tutorial.css?v=prologue-stella-intro-1'),'the tutorial stylesheet must be cache-versioned');
 assert.ok(index.indexOf('js/ui.js')<index.indexOf('js/tutorial.js')&&index.indexOf('js/tutorial.js')<index.indexOf('js/init.js'),'the tutorial engine must load after shared UI and before initialization');
 
@@ -43,7 +44,9 @@ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/,'reduced-motion suppo
 assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'UI-target steps must activate the portrait-safe layout policy');
 assert.ok(tutorial.includes('必須チュートリアルを全体スキップしますか？'),'required tutorial skip must ask for confirmation');
 assert.ok(tutorial.includes('function skipTutorialDialogue()')&&tutorial.includes('function tutorialDialogueSkipTargetIndex()'),'dialogue-only skipping must stop at the next operation boundary');
-assert.ok(tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must use the shared persisted state');
+assert.ok(!tutorial.includes('beginTutorialReplay(')&&tutorial.includes('setTutorialStep(')&&tutorial.includes("typeof saveGame==='function'"),'tutorial progress must persist without a replay entry point');
+assert.ok(tutorial.includes("button.hidden=tutorial.status!=='in_progress'")&&tutorial.includes("if(tutorial.status!=='in_progress')return false"),'only an interrupted main tutorial may appear in the menu');
+assert.ok(!tutorial.includes('再閲覧を終了')&&!tutorial.includes('最初から見直す'),'retired replay labels must not remain in the player-facing tutorial UI');
 assert.ok(tutorial.includes("event.key==='Escape'")&&tutorial.includes("event.key==='ArrowLeft'")&&tutorial.includes("event.key==='ArrowRight'"),'keyboard tutorial controls are missing');
 assert.ok(tutorial.includes('function handleTutorialViewportScroll')&&tutorial.includes('bubble.contains(event.target)')&&tutorial.includes("window.addEventListener('scroll',handleTutorialViewportScroll,true)"),'scrolling the guidance bubble must not trigger viewport repositioning');
 assert.ok(tutorial.includes('bubble.scrollTop=0'),'each new tutorial step must begin at the top of its own guidance');
@@ -88,4 +91,4 @@ const readable=place(oversizedTarget,{width:340,height:300},viewport);
 assert.ok(readable.maxHeight>=300,'a large spotlight target must not collapse the guidance into an undiscoverable inner scroll area');
 assert.ok(readable.top>=0&&readable.top+300<=viewport.height,'readable guidance must remain inside the portrait viewport');
 
-console.log('Tutorial UI validation passed (story layers, transparent portrait, spotlight, bubble, navigation, resume/replay hooks, accessibility, and portrait placement).');
+console.log('Tutorial UI validation passed (story layers, transparent portrait, spotlight, bubble, navigation, resume-only entry, accessibility, and portrait placement).');

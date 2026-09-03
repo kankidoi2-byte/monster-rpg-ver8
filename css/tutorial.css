@@ -12,6 +12,7 @@
 .tutorial-arrow.is-up{border-right:11px solid transparent;border-bottom:15px solid #fff;border-left:11px solid transparent}
 .tutorial-arrow.is-down{border-top:15px solid #fff;border-right:11px solid transparent;border-left:11px solid transparent}
 .tutorial-character-layer{position:fixed;z-index:2;left:1.5vw;bottom:0;width:min(62vw,720px);height:94svh;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;overflow:hidden}
+#tutorialMenuButton[hidden]{display:none}
 .tutorial-character-layer[hidden],.tutorial-story-backdrop[hidden]{display:none}
 .tutorial-character-layer img{display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 14px 20px rgba(0,0,0,.38))}
 .tutorial-character-layer[data-portrait="elna_beginner"] img{width:auto;height:100%;aspect-ratio:2/3}
@@ -28,9 +29,6 @@
 .tutorial-actions{display:grid;grid-template-columns:auto auto auto minmax(92px,1fr);gap:7px}.tutorial-actions button{min-height:42px;margin:0;padding:9px 12px}.tutorial-back{border:1px solid #c9dfe8;background:#fff;color:#37647a}.tutorial-back:disabled{opacity:.45;cursor:default}.tutorial-back:disabled:hover{transform:none}.tutorial-dialogue-skip{border:1px solid #bfdbe6;background:#edf9fd;color:#28728f}.tutorial-dialogue-skip[hidden]{display:none}.tutorial-skip{background:transparent;color:#8b5f51}.tutorial-next{background:linear-gradient(135deg,#2eb7d8,#1677ad)}
 .tutorial-actions.is-target-action{grid-template-columns:1fr 1fr}.tutorial-next[hidden]{display:none}
 .tutorial-target-active{outline:4px solid #ffe175!important;outline-offset:5px!important}
-body.tutorial-growth-details-open [data-monster-id="elna_beginner"]{overflow:visible}
-body.tutorial-growth-details-open [data-monster-id="elna_beginner"] .monster-roster-details>summary{position:fixed;z-index:81;right:50%;bottom:calc(var(--ui-nav-height) + 14px);width:min(300px,calc(100vw - 32px));min-height:52px;margin:0;padding:14px 18px;transform:translateX(50%);box-sizing:border-box;border:3px solid #fff;border-radius:16px;background:linear-gradient(135deg,#35b8dc,#176fae);color:#fff;font-size:16px;font-weight:900;text-align:center;box-shadow:0 9px 24px #173f5966;list-style:none}
-body.tutorial-growth-details-open [data-monster-id="elna_beginner"] .monster-roster-details>summary::-webkit-details-marker{display:none}
 body.tutorial-growth-skill-open [data-monster-id="elna_beginner"]{overflow:visible}
 body.tutorial-growth-skill-open [data-monster-id="elna_beginner"] [data-tutorial-skill-edit]{position:fixed;z-index:81;right:50%;bottom:calc(var(--ui-nav-height) + 14px);width:min(300px,calc(100vw - 32px));min-height:52px;margin:0;transform:translateX(50%);border:3px solid #fff;border-radius:16px;background:linear-gradient(135deg,#35b8dc,#176fae);color:#fff;font-size:16px;font-weight:900;box-shadow:0 9px 24px #173f5966}
 body.tutorial-stella-skill-action [data-tutorial-stella-unequip],body.tutorial-stella-skill-action [data-tutorial-stella-skill-equip]{position:fixed;z-index:81;right:50%;bottom:calc(var(--ui-nav-height) + 14px);width:min(300px,calc(100vw - 32px));min-height:52px;margin:0;transform:translateX(50%);border:3px solid #fff;border-radius:16px;color:#fff;font-size:16px;font-weight:900;box-shadow:0 9px 24px #173f5966}
