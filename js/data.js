@@ -93,7 +93,21 @@ const MAPIMG={
 
 /* ===== マップデータ ===== */
 const MAPS = [
-  {id:'grassland', name:'草原', image:MAPIMG.grassland, chapter:'序章', region:'中央平原', desc:'旅の始まりに広がる穏やかな草原。森・雷・無属性の生き物が行き交う。', ecosystem:'スライムや草木に適応した小型種を土台に、雷や風の生物も行き交う。開けた環境のため、多属性の種が混在している。',
+  {id:'grassland', name:'草原', image:MAPIMG.grassland, chapter:'序章', region:'中央平原', desc:'旅の始まりに広がる穏やかな草原。森・雷・無属性の生き物が行き交う。', ecosystem:'中央平原では、草木と大地に満ちる魔力を起点に、小型種、草食種、空の捕食者へと命がつながっている。スライムは枯草や残留魔力を取り込んで養分を土へ戻し、風を泳ぐシルフィン系は花粉や種子を運ぶ。雷雲が近づくとボルテック系も集まり、開けた空と地上を分け合う多属性の生態系が形づくられる。',
+   ecosystemDiagram:{
+    heading:'草原の生態系ピラミッド',
+    note:'矢印は、食べられる側から食べる側へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
+    layers:[
+      {role:'第4層・頂点捕食者',ids:['voltax'],detail:'雷雲下の上空を縄張りとし、小型種や若い個体を狙う。'},
+      {role:'第3層・空の捕食者',ids:['volteck','spaquinn'],detail:'草虫や小型種を捕らえ、草原で増えすぎる生物を抑える。'},
+      {role:'第2層・採食者',ids:['grassbeat','rikasheef','seralphia','sylphin','zephyray'],detail:'草や若葉を食べ、花粉や種子を運んで草原の植生を広げる。'},
+      {role:'第1層・生産基盤',labels:['草・野花・低木','陽光と雨','大地の魔力'],detail:'植物が光、水、土壌の魔力を取り込み、生態系の入口をつくる。'}
+    ],
+    cycles:[
+      {role:'分解・循環者',ids:['slime','slime_gold'],detail:'枯草や残留魔力を取り込み、養分を土へ戻す。'},
+      {role:'外部からの来訪者',ids:['goblin'],detail:'群れで草原を横断し、木の実や素材を集める遊動性の雑食者。'}
+    ]
+   },
    enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray']},
   {id:'volcano', name:'火山', image:MAPIMG.volcano, chapter:'序章', region:'南部火山帯', desc:'灼熱の溶岩と火山灰に覆われた危険地帯。火に適応したモンスターが多い。', ecosystem:'高熱に耐える火属性種が中心。火山灰の岩場にはゴブリンも入り込み、炎の精霊や獣と生息域を分け合っている。',
    enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin','ignaros']},

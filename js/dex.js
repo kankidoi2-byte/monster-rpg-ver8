@@ -163,6 +163,19 @@ function mapDexEcosystemFallback(map,profile){
   if(common)return `${common}を中心とした生物相が確認されている。`;
   return 'この土地の生態記録はまだ整理されていない。';
 }
+function mapDexEcosystemMembers(entry){
+  const units=(entry.ids||[]).map(by).filter(Boolean);
+  const unitButtons=units.map(unit=>`<button type="button" onclick="openUnitFromMapDex('${unit.id}')" aria-label="${unit.name}の図鑑を開く">${vis(unit,'loading="lazy" decoding="async"')}<span>${unit.name}</span></button>`).join('');
+  const labels=(entry.labels||[]).map(label=>`<span class="map-dex-pyramid-resource">${label}</span>`).join('');
+  return `${unitButtons}${labels}`;
+}
+function mapDexEcosystemDiagram(map){
+  const diagram=map.ecosystemDiagram;
+  if(!diagram||!Array.isArray(diagram.layers)||!diagram.layers.length)return '';
+  const layers=diagram.layers.map((layer,index)=>`<div class="map-dex-pyramid-layer" style="--ecosystem-tier:${index}" aria-label="${layer.role}"><strong>${layer.role}</strong><div>${mapDexEcosystemMembers(layer)}</div><small>${layer.detail||''}</small></div>`).join('<div class="map-dex-pyramid-arrow" aria-hidden="true">↑</div>');
+  const cycles=(diagram.cycles||[]).map(entry=>`<div class="map-dex-ecosystem-cycle"><strong>${entry.role}</strong><div>${mapDexEcosystemMembers(entry)}</div><small>${entry.detail||''}</small></div>`).join('');
+  return `<section class="map-dex-pyramid" aria-labelledby="mapDexPyramidHeading"><div class="map-dex-pyramid-heading"><h4 id="mapDexPyramidHeading">${diagram.heading||'生態系ピラミッド'}</h4><span>図説</span></div><p>${diagram.note||''}</p><div class="map-dex-pyramid-layers">${layers}</div>${cycles?`<div class="map-dex-ecosystem-cycles">${cycles}</div>`:''}</section>`;
+}
 function showMapDexDetail(mapId){
   const map=MAPS.find(entry=>entry.id===mapId),detail=document.getElementById('mapDexDetail');
   if(!map||!detail)return;
@@ -174,6 +187,7 @@ function showMapDexDetail(mapId){
   detail.innerHTML=`<article class="dex-detail ui-dex-detail map-dex-detail">
     <img class="map-dex-hero" src="${map.image}" alt="${map.name}"><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
     <section class="map-dex-ecosystem" aria-labelledby="mapDexEcosystemHeading"><h3 id="mapDexEcosystemHeading">生態系</h3><p>${map.ecosystem||mapDexEcosystemFallback(map,ecosystem)}</p>
+    ${mapDexEcosystemDiagram(map)}
     <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${skillTypeIcon(entry.type)} ${TN[entry.type]||entry.type}<small>${entry.rate}%</small></span>`).join('')}</div>
     <h4>主な生息種</h4><div class="map-dex-ecosystem-species">${ecosystem.species.slice(0,5).map(entry=>`<span>${entry.unit.name}<small>${mapEnemyFrequencyLabel(map,entry.unit.id)}</small></span>`).join('')}</div></section>
     <h3>挑戦できる難易度</h3><div class="map-dex-tags">${mapDexDifficulties(map).map(label=>`<span>${label}</span>`).join('')}</div>
