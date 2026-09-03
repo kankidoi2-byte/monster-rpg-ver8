@@ -38,4 +38,28 @@ assert.equal(single.ok,true);
 assert.equal(single.cards[0].sourceEntityKind,'character');
 assert.equal(context.save.coins,0,'a single draw must cost 100 coins');
 
-console.log('Skill gacha validation passed (separate pools, COST 1-6 rarity weights, ten-draw guarantee, finite inventory, and coin safety).');
+const presentation=vm.runInContext(`({
+  basic:skillGachaRarityTier(2),rare:skillGachaRarityTier(3),legendary:skillGachaRarityTier(5),mythic:skillGachaRarityTier(6),
+  prophecy:skillGachaProphecy(6),
+  snapshots:skillGachaInventorySnapshots([{id:'skill-a',cost:3},{id:'skill-a',cost:3},{id:'skill-b',cost:6}],{'skill-a':0})
+})`,context);
+assert.equal(presentation.basic,'basic');
+assert.equal(presentation.rare,'rare');
+assert.equal(presentation.legendary,'legendary');
+assert.equal(presentation.mythic,'mythic');
+assert.equal(presentation.prophecy.tier,'mythic');
+assert.deepEqual(JSON.parse(JSON.stringify(presentation.snapshots.map(entry=>({before:entry.before,after:entry.after,isNew:entry.isNew})))),[
+  {before:0,after:1,isNew:true},
+  {before:1,after:2,isNew:false},
+  {before:0,after:1,isNew:true}
+]);
+
+const skillGachaSource=read('js/skill-gacha.js');
+const htmlSource=read('index.html');
+const cssSource=read('css/ui-redesign.css');
+assert(skillGachaSource.includes("matchMedia('(prefers-reduced-motion: reduce)')"),'presentation must respect reduced-motion preference');
+assert(skillGachaSource.includes('skipSkillGachaPresentation')&&skillGachaSource.includes('repeatSkillGachaPresentation')&&skillGachaSource.includes('openSkillInventoryFromGacha'),'presentation actions are incomplete');
+assert(htmlSource.includes('id="skillGachaPresentation"')&&htmlSource.includes('data-skill-gacha-speed="quick"'),'presentation overlay or speed control is missing');
+assert(cssSource.includes('.skill-gacha-presentation')&&cssSource.includes('.skill-gacha-card-inner'),'presentation styles are missing');
+
+console.log('Skill gacha validation passed (existing draw rules, inventory safety, rarity presentation, NEW/owned tracking, reduced motion, and result actions).');

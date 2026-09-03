@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-skill-gacha-presentation',
+    date: '2026-09-03',
+    category: 'update',
+    title: '技ガチャに「技紋の召喚」演出を追加しました',
+    body: '召喚陣から技カードが1枚ずつ現れ、希少な技ほど強い光で獲得を知らせるようになりました。初獲得・所持枚数を確認でき、結果から続けて引くか仲間の技変更へ進めます。高速表示とスキップにも対応しています。'
+  }),
+  Object.freeze({
     id: '20260903-all-map-ecosystem-diagrams',
     date: '2026-09-03',
     category: 'update',
