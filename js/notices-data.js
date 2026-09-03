@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260903-kokoro-link-animation',
+    date: '2026-09-03',
+    category: 'update',
+    title: 'ココロリンクの発動演出を追加しました',
+    body: 'リンクする控えモンスターの高速カットインから光が走り、衝撃とオーラでココロが繋がる瞬間を約0.6秒で表示します。演出中もバトル操作を続けられます。'
+  }),
+  Object.freeze({
     id: '20260903-prologue-story-mode',
     date: '2026-09-03',
     category: 'update',
