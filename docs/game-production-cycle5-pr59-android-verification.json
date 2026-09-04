@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "cycle": 5,
+  "goal_id": "pr59-android-save-migration-verification-20260904",
+  "goal": "Complete the final Android real-device verification of PR #59 old-save migration and record evidence without changing gameplay or save logic.",
+  "status": "completed",
+  "started_from_main": "a6cfb97dc19b279b43614d48e1db3ffda00e172a",
+  "risk_class": "low",
+  "approval_required": false,
+  "acceptance_criteria": [
+    "Back up the user's existing browser save before importing any fixture.",
+    "Resume the existing stopped save and complete the post-alchemy explanation and prologue.",
+    "Use an official stopped-save fixture with an existing expedition and avoid duplicate guidance or a second dispatch.",
+    "Preserve monsters, items, coins, rewards, and expedition records except for documented additive migration and intended progress.",
+    "Keep completion state after reload and restore the user's exported save at the end.",
+    "Record a clear PR #59 Android verification completion decision."
+  ],
+  "phases": [
+    {"phase":1,"name":"goal_and_boundary","status":"completed","deliverable":"Audited current main, AGENTS.md, PR #59 behavior, tutorial progress, save migration, tests, CI, and Pages; fixed the no-delete and backup-first boundary."},
+    {"phase":2,"name":"implementation","status":"completed","deliverable":"No gameplay implementation was required. Exported the original save, ran the existing-save route and official legacy fixture route on the same Android browser, and captured screenshots and exported JSON evidence."},
+    {"phase":3,"name":"integration_qa_and_safe_merge","status":"completed","deliverable":"Compared before/after saves and confirmed no unintended monster, item, coin, reward, or expedition loss or duplication; the repository full check passed."},
+    {"phase":4,"name":"pages_and_published_verification","status":"completed","deliverable":"Ran both verification routes on the current GitHub Pages build and confirmed completion persisted after reload."},
+    {"phase":5,"name":"completion_record_and_stop","status":"completed","deliverable":"Recorded the Android result, restored the user's real save, and stopped without selecting another backlog item."}
+  ],
+  "branch": "docs/cycle5-pr59-android-verification",
+  "completion_pull_request": null,
+  "verification": {
+    "date": "2026-09-04",
+    "timezone": "JST",
+    "device": "Android smartphone",
+    "os": "Android 16",
+    "browser": "Chrome",
+    "published_url": "https://kankidoi2-byte.github.io/monster-rpg-ver8/",
+    "result": "passed",
+    "original_save_restored": true,
+    "destructive_actions_performed": false
+  },
+  "completed_at": "2026-09-04T09:39:00.000Z",
+  "stop_condition": "After Cycle 5 Phase 5 is recorded and published, do not select or start another backlog item."
+}
