@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260905-character-gacha',
+    date: '2026-09-05',
+    category: 'update',
+    title: 'キャラクターガチャが登場！',
+    body: 'その他メニューにキャラクターガチャを追加しました。進化前の初級剣士エルナ・見習い魔法使いステラ・見習い魔法使いルミナの3体が対象です。エリシアと進化後の形態は排出されません。1回100コイン、10連900コインで各形態均等に抽選。Lv.1で仲間になり、同じ形態も別個体として獲得できます。'
+  }),
+  Object.freeze({
     id: '20260905-lumina-alchemy-wait',
     date: '2026-09-05',
     category: 'update',

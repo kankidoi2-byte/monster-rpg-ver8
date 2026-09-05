@@ -1,0 +1,57 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const storage=new Map();
+const context=vm.createContext({console,Math,Date,JSON,localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},alert:()=>{},confirm:()=>false});
+for(const file of ['js/data.js','js/core.js','js/save.js','js/character-gacha.js']) vm.runInContext(read(file),context,{filename:file});
+const run=s=>vm.runInContext(s,context);
+run('save=initSave();save.coins=10000');
+assert.equal(run('characterGachaPool().length'),3);
+assert(run('characterGachaPool().every(isCharacterUnit)'));
+assert.deepEqual(Array.from(run('characterGachaPool().map(unit=>unit.id)')),['elna_beginner','stella_apprentice','lumina_apprentice']);
+const initial=run('save.instances.length');
+for(let i=0;i<3;i++){
+ context.rollValue=(i+.5)/3;
+ const result=run('performCharacterGacha(1,()=>rollValue)');
+ assert(result.ok);
+ assert.equal(result.entries[0].unit.id,run(`characterGachaPool()[${i}].id`));
+ assert.equal(result.entries[0].instance.level,1);
+}
+assert.equal(run('save.instances.length'),initial+3);
+assert.equal(run('save.coins'),9700);
+const ten=run('performCharacterGacha(10,()=>0)');
+assert(ten.ok);assert.equal(ten.entries.length,10);
+assert.equal(new Set(ten.entries.map(e=>e.instance.uid)).size,10);
+assert(ten.entries.every(e=>!e.isNew));
+assert.equal(run('save.coins'),8800);
+run('save.coins=99');
+const before=run('JSON.stringify(save)');
+assert.equal(run('performCharacterGacha(1).ok'),false);
+assert.equal(run('performCharacterGacha(10).ok'),false);
+assert.equal(run('performCharacterGacha(2).ok'),false);
+assert.equal(run('JSON.stringify(save)'),before);
+assert.equal(run('saveGame()'),true);
+assert.equal(run('parseAndPrepareSave(localStorage.getItem(SAVE_KEY),[]).instances.length'),initial+13);
+assert.equal(run('parseAndPrepareSave(localStorage.getItem(SAVE_KEY),[]).coins'),99);
+console.log('Character gacha passed: all 3 base forms reachable, costs, duplicates/UIDs, rejection without mutation, real save/reload.');
+
+const elements=new Map();
+const element=id=>{if(!elements.has(id)) elements.set(id,{innerHTML:'',textContent:'',scrollIntoView(){}});return elements.get(id);};
+const buttons=[1,10].map(count=>({dataset:{characterGachaCount:String(count)},disabled:false}));
+context.document={getElementById:element,querySelectorAll:()=>buttons};
+context.vis=unit=>`<img alt="${unit.name}">`;
+run('renderCharacterGacha()');
+assert(buttons.every(button=>button.disabled));
+assert.match(element('characterGachaPoolSummary').textContent,/全3形態/);
+assert.equal((element('characterGachaRateList').innerHTML.match(/<article/g)||[]).length,3);
+run('save.coins=1000;rollCharacterGacha(10)');
+assert.equal(run('save.coins'),100);
+assert.equal((element('characterGachaResult').innerHTML.match(/<article/g)||[]).length,10);
+assert.equal(buttons[0].disabled,false);assert.equal(buttons[1].disabled,true);
+assert.equal(run('parseAndPrepareSave(localStorage.getItem(SAVE_KEY),[]).coins'),100);
+console.log('Character gacha UI handlers passed: pool disclosure, affordability, ten-result rendering, immediate persistence.');
+
+vm.runInContext(read('js/dex.js'),context);
+assert(run("M.filter(isCharacterUnit).every(unit=>monsterObtainEntries(unit).some(entry=>entry.kind==='gacha')===['elna_beginner','stella_apprentice','lumina_apprentice'].includes(unit.id))"));
+console.log('Character dex obtain hints match the three-character pool; Elysia and evolved forms excluded.');
