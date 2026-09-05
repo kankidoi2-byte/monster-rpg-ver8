@@ -7,6 +7,13 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id: '20260905-lumina-alchemy-wait',
+    date: '2026-09-05',
+    category: 'update',
+    title: '錬成中にルミナが登場します',
+    body: '錬成の待ち時間に、ルミナが大きな釜を一生懸命かき混ぜるアニメーションを追加しました。端末で動きを減らす設定をしている場合は静止画で表示します。'
+  }),
+  Object.freeze({
     id: '20260903-prologue-episode-break-fix',
     date: '2026-09-03',
     category: 'fix',

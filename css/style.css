@@ -101,6 +101,11 @@ h2{color:#c7d2fe;font-size:clamp(15px,3vw,20px)}
 .alchemy-errors p{margin:5px 0}
 .secondary-button{background:linear-gradient(135deg,#374151,#4b5563)}
 .alchemy-animation{text-align:center;padding:32px 10px}
+.alchemy-lumina-wait{padding:12px 0 20px}
+.alchemy-wait-art{display:block;width:min(100%,360px,52vh);height:auto;margin:0 auto;object-fit:contain}
+.alchemy-wait-art[hidden]{display:none}
+.alchemy-lumina-wait h2{margin:12px 0 6px;font-size:clamp(18px,5vw,24px)}
+.alchemy-lumina-wait p{margin:0;font-size:14px}
 .alchemy-core{font-size:76px;animation:alchemyPulse .75s ease-in-out infinite alternate;filter:drop-shadow(0 0 20px #a78bfa)}
 .alchemy-result-card{text-align:center}.alchemy-result-label{font-size:18px;font-weight:900;color:#fde047}
 .alchemy-result-card.success{border-color:#a78bfa;box-shadow:0 0 24px #7c3aed55}.alchemy-result-card.fallback{border-color:#60a5fa}
