@@ -447,6 +447,11 @@ function renderTutorialAlchemyLesson(root){
   </div>`;
 }
 function renderAlchemy(){
+  // Warm the waiting artwork while the player chooses materials.
+  if(typeof Image !== 'undefined'){
+    const artwork = new Image();
+    artwork.src = 'images/ui/lumina_alchemy_wait_v1.webp';
+  }
   ensureContractScrollItem();
   const root = document.getElementById('alchemyForm');
   if(!root) return;
@@ -545,7 +550,7 @@ function executeAlchemyConfirmed(){
   if(button) button.disabled = true;
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyExecutionStarted==='function')handleTutorialAlchemyExecutionStarted();
   show('alchemyResult');
-  document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-animation"><div class="alchemy-core">⚗</div><h2>錬成核を構築中……</h2><p>素材と魔力を結合しています</p></div>`;
+  document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-animation alchemy-lumina-wait" role="status"><picture><source media="(prefers-reduced-motion: reduce)" srcset="images/ui/lumina_alchemy_still_v1.webp"><img class="alchemy-wait-art" src="images/ui/lumina_alchemy_wait_v1.webp" width="440" height="440" alt="ルミナが大きな釜を一生懸命かき混ぜています" onerror="this.hidden=true"></picture><h2>錬成核を構築中……</h2><p>素材と魔力を結合しています</p></div>`;
   setTimeout(() => finalizeAlchemy(plan), 900);
 }
 function finalizeAlchemy(originalPlan){
