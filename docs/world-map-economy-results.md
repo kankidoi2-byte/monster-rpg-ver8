@@ -10,8 +10,8 @@
 
 - 比較元: 世界地図実装直前の `d31cfccd37219549d25df9f85c62db559aa649f3`
 - 実行日: 2026-09-06
-- 比較先HEAD: `c3cde8f856062aaf72fdb0aeb778f8a4760b453c`
-- 比較先HEAD tree: `2bf8afdcd524f5b7ba9ae216a467360b3e09404c`
+- 比較先HEAD: `fd2ba9612c60e3247d90b1bdac7198946121d4e3`
+- 比較先HEAD tree: `70458e851d4837984db2297152c417d8adaac305`
 - 比較先: 上記HEADと同じゲームルールを持つ開発ブランチ作業ツリー
 - 戦闘標本: 各モード20勝（Normal 10勝 + Hard 10勝）、合計40勝
 - 戦闘seed: `0x5b202609`

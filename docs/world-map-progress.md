@@ -3,14 +3,14 @@
 - 担当: world-map-20260906T030243JST-root
 - 状態: active
 - 開始: 2026-09-06T03:02:43+09:00
-- 更新: 2026-09-06T03:05:00+09:00
+- 更新: 2026-09-06T03:17:22+09:00
 - 基準main: d31cfccd37219549d25df9f85c62db559aa649f3
 - ブランチ: codex/world-map-system
-- 実装コミット: 7ce9a051fafc00025c5eb37ec23459ab0e9ff4c3
-- 実装tree: ec8dd3ad0a60ae74d2723ae38b6219b9fefe910a（ローカル検証済みtreeと一致）
+- 実装・自動検証コミット: fd2ba9612c60e3247d90b1bdac7198946121d4e3
+- 実装・自動検証tree: 70458e851d4837984db2297152c417d8adaac305
 - Draft PR: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/164
 - 公開: 未公開。main変更・マージなし。公開承認依頼前。
-- 全体: 5Bの再現可能な収益比較と5D確認成果を単一担当で継続中。
+- 全体: 5Bの決定論的比較、5Cのrollback互換修正、5D実機手順、5E公開前復旧パッケージまで作成。実ブラウザ・実機・バランス判断・本人公開承認は未完了。
 
 ## 26作業の状態
 
@@ -35,39 +35,40 @@
 | 4B | 実装済・検証待ち | 報酬後は地図→魔導学園→ステラ、模擬戦後は地図→学園併設工房→ルミナ。既存の錬成・遠征・完了経路を全check。実操作待ち |
 | 4C | 検証済（自動範囲） | TUTORIAL_VERSION=2と旧checkpointを維持。新規/地図途中/救援/学園以降/完了/skip/v1を専用fixtureで2回移行し、再開対象と二重付与なしを確認。実再読込待ち |
 | 4D | 実装済・検証待ち | 初回異変説明、案内中の地図階層復元、解決済みeventKey除去。実画面中断/復帰待ち |
-| 5A | 検証済（自動範囲） | 現treeで npm run check exit 0。GitHub Actions run 33982013347 completed/success |
-| 5B | 一部着手 | docs/world-map-economy.mdに同値確認と比較手順。旧/新20勝・通し・収益実測は未実施 |
-| 5C | 未着手 | 実ブラウザ/実測で見つかる問題の修正待ち |
-| 5D | 未着手 | Android/Chromebook確認用の結果記録とスクリーンショット待ち |
-| 5E | 一部着手（Draft更新済） | PR #164の実装/検証/未確認/承認境界を現headへ更新しCI成功。通し/実機/収益比較後の最終レビュー・本人承認依頼が残る |
+| 5A | 検証済（自動範囲） | commit fd2ba96で npm run check:world-map / check:world-map-economy / check exit 0。新headのGitHub CI待ち |
+| 5B | 検証済（自動範囲）・実ブラウザ待ち | 同一入力20勝の報酬ルールを許容差0で比較。固定seed10万回の入口差、中立期待値、草原コインリスクを記録。実ブラウザ20勝は未実施 |
+| 5C | 一部検証済 | 新地図案内9stepを旧mainの安全IDへ永続化し、downgrade再開を検証。実ブラウザ/実機で見つかる問題の修正は待ち |
+| 5D | 外部待ち（手順完成） | Android/Chromebook、320〜430px、19地点、イベント、序章、save、a11yの証拠付きチェックリストを作成。実施結果は未確認 |
+| 5E | 一部実装・検証待ち | 公開対象、必須確認、バランス判断、セーブ保護、rollback、承認欄を一式化。新headのPR/CI更新と実機結果、本人承認が残る |
 | 5F | 未着手 | 本人の公開承認前。merge/publicなし |
 | 5G | 未着手 | 未公開のため公開後点検不可 |
 
 ## 今回の主な成果
 
-- 救援報酬後の次話を世界地図→王都の魔導学園→ステラへ接続。
-- ステラの模擬戦後を世界地図→魔導学園併設の錬成工房→ルミナへ接続。
-- 施設案内中は通常探索ボタンを置き換え、別地点・通常探索への誤操作を消費してチュートリアル停止を防止。
-- 地図一覧/施設詳細で中断しても同じ階層を復元。公開済みv2の stella_intro/lumina_intro など既存step IDと章区切りを維持。
-- 新規、世界地図案内途中、救援戦、学園以降、完了、skip、v1の専用fixtureを追加し、所持品・契約体・報酬の二重付与がないことを検査。
-- プレイヤー向け告知、キャッシュキー、Draft PRの実装/未確認情報を更新。
+- 本物のsave/tutorialロジックを使い、新規`mb_v95c`から序章91step、救援2波、両施設、報酬、錬成、遠征、完了後の自由探索まで通す自動journeyを追加。
+- 開発版から旧mainへ戻す場合、新しい地図案内9stepを既存3checkpointへ保存して不明step化を防止。短い再案内は許容し、報酬/遷移を直接再実行しないことを専用テストで確認。
+- 基準mainと現行の報酬式を同一入力20勝で比較し、EXP 2,155、コイン1,988、素材、仮想契約、複数戦、遠征が完全一致することを記録。
+- 地点選択自由化により、草原の期待コインが旧中立値のNormal 2.14倍、Hard 3.37倍となるリスクを検出。自動合格せず本人判断待ちとした。
+- Android/Chromebook実機チェックリストと、公開前セーブ保護/rollback/承認パッケージを作成。
+- GitHub Actionsでbaseline commitを取得して専用経済比較を実行できるようにした。
 
 ## 検証証拠
 
-- npm run check（postcheck含む）exit 0。最終差分の全自動検証成功。
-- npm run check:world-map: 9本成功。施設導線・誤操作遮断・全移行fixture・saveGame→localStorage→新規VM起動のnavigation復帰を含む。
+- commit fd2ba96と同一tree 70458e8で npm run check（postcheck含む）exit 0。
+- npm run check:world-map: 既存9本に序章journeyとdowngrade safetyを追加し、全11本成功。
+- npm run check:world-map-economy: baseline d31cfccdとの決定論的20勝比較と固定seed10万回の入口比較に成功。
 - git diff --check、変更JSの node --check、画像サイズcheck成功。
-- GitHub Actions「Validate game data and assets」run 33982013347、commit 7ce9a051、completed/success。
+- 直前head c3cde8fのGitHub Actions run 33982866757はcompleted/success。commit fd2ba96のCIはpush後に確認する。
 - 正式地形WebP SHA-256: c7d2463386c3004e0924774688686522087028d74219eaa97363525f3706e92e。
 - クラウドChromeでSHA固定URLを1回試したが、ロード中にCDP refresh tabsが20秒でタイムアウト。現headのタイトル、世界地図、施設、画面幅、スクリーンショットは未確認。前headのタイトル→ホーム確認だけを流用せず、未確認を合格扱いにしない。
 
 ## 次の開始点
 
 1. 最新main、PR #164 head、CI、この文書が変化していないか確認し、releasedを通常FFで取得する。
-2. 5B: mainと現headで通常10勝＋Hard10勝の比較手順を再現可能な形へ整え、EXP/コイン/素材/契約提示/三つ巴/乱入/遠征/特定種到達を記録する。自動試算と実プレイを区別する。
-3. 実ブラウザが復旧した時だけ現headを開き、320/360/390/430px、画像失敗fallback、下部nav、地図scroll、救援→契約→報酬→学園/工房、中断復帰を確認する。同じCDP timeoutを盲目的に反復しない。
-4. 5D: Android/Chromebook実機確認用チェックリストと記録先を完成させ、ユーザー確認が必要な項目を明確にする。
-5. 残る問題を5Cで修正し、5Eの最終レビュー・差分・ロールバック・本人承認依頼パッケージを完成させる。5F/5Gは明示承認後のみ。
+2. 実ブラウザが復旧した時だけ現headを開き、320/360/390/430px、画像失敗fallback、下部nav、地図scroll、新規序章→自由探索、中断復帰、旧/新各20勝を確認する。同じCDP timeoutを盲目的に反復しない。
+3. `docs/world-map-device-checklist.md`をAndroid/Chromebookで実施し、対象SHAと証拠を記録する。未確認を合格にしない。
+4. 草原の時間あたりコイン収益を現状維持するか、`slime_gold`の通常候補/報酬を調整するか、実測後に本人判断を得る。判断なしに自動変更しない。
+5. 失敗を5Cで修正して全検証を再実行し、`docs/world-map-release-readiness.md`の空欄を埋める。5F/5Gは明示承認後のみ。
 
 ## 再開/単一担当手順
 
