@@ -1,12 +1,12 @@
 # 世界地図開発 進捗正本
 
-- 担当: world-map-20260906T010250JST-root
-- 状態: released
-- 開始: 2026-09-06T01:02:50+09:00
-- 更新: 2026-09-06T01:24:00+09:00
+- 担当: world-map-20260906T015837JST-root
+- 状態: active
+- 開始: 2026-09-06T01:58:37+09:00
+- 更新: 2026-09-06T02:02:00+09:00
 - 基準main: d31cfccd37219549d25df9f85c62db559aa649f3
 - ブランチ: codex/world-map-system
-- 実装コミット: 40597cb93865cd787f65a0e0a53dc698eb5c9681
+- 実装コミット: d5e604eeeb540557a91ff304a0f614907cd6d97e
 - 実装tree: 38b80ad7fa546b53fd72180969fa00373c3e35bf（ローカル検証済みtreeと完全一致）
 - Draft PR: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/164
 - 全体: 開発継続。公開承認を求める段階には未到達。
@@ -47,7 +47,7 @@
 
 ## 次の開始点
 
-1. 最新main/PR164/この文書/CIを確認。releasedを新担当へ安全取得。
+1. 取得済み。担当を取得し、チュートリアル導線・初回イベント案内・画面復帰を実装中。
 2. ソースはGitHubの最新codex/world-map-systemを正本にする。この回のローカルcloneはpush失敗後にGitHub経由で同内容を別SHAへ保存したため、履歴がremoteと異なる。新しいscratch先へcloneするか新worktreeでremoteから開始する。既存ローカルをforce/resetしない。
 3. CI未確認なら確認。特に黄金郷の旧案内data-tutorial-golden-landと新UIの接続を補完し、初回イベント説明を完成させる。
 4. 通し操作の確認手段を確保。不能なら独立して進められる「新地図チュートリアル4A〜4D」「正式素材3A」「世界影響演出3C」へ。仮素材で4へ先行可だが操作仕様と旧途中セーブのstep対応を先に固める。
