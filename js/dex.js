@@ -69,12 +69,15 @@ function renderDexHub(){
   ];
   grid.innerHTML=cards.map(card=>`<button${card.id?` id="${card.id}"`:''} onclick="show('${card.screen}')"><span>${card.icon}</span><strong>${card.title}</strong><small>${card.desc}</small><b class="dex-hub-count">${card.count} / ${card.total}</b></button>`).join('');
 }
-function monsterMapEncounterNote(map) {
-  if (map.goldenLand) return '希少マップ・地図を使うと出現確定';
-  const rate = Number.isFinite(map.appearRate) ? `（マップ出現率 ${Math.round(map.appearRate * 100)}％）` : '';
-  if (map.bossOnly) return `ボス限定マップ${rate}`;
-  if (map.rareOnly) return `希少マップ${rate}`;
-  return '通常の討伐依頼で出現';
+function monsterMapEncounterNote(map, monster=null) {
+  if (map.id==='light_plain' && monster?.id==='hikari') return '光の平原のNormal・Hard探索勝利後、まれに降臨（Hard限定・戦闘後の契約不可）';
+  if (map.id==='starsea' && monster?.id==='doom_nemesion') return '通常探索のNormal・Hard勝利後、まれに世界の危機として出現（Extreme限定）';
+  if (map.id==='world_between') return '世界の危機を討伐、または対処を任せると残る偽竜の痕跡から遭遇（Extreme限定）';
+  if (map.goldenLand) return '通常探索勝利で入口を発見、または地図を使用して入場（出発時に1枚消費）';
+  if (map.id==='starsea') return '通常探索のNormal・Hard勝利後、星の海への入口を発見すると遭遇（Hard限定）';
+  if (map.id==='water_secret') return '通常探索のNormal・Hard勝利後、秘境への入口を発見すると遭遇（Hard限定）';
+  if (map.bossOnly || map.rareOnly) return '特殊な入口から探索すると出現';
+  return '世界地図からこの場所を選んで探索すると出現';
 }
 function monsterObtainEntries(m) {
   const entries = [];
@@ -84,7 +87,7 @@ function monsterObtainEntries(m) {
   });
   MAPS.filter(map=>(map.enemyIds||[]).includes(m.id)).forEach(map=>{
     const unlocked=mapDexUnlocked(map.id);
-    entries.push({kind:'map',mapId:map.id,image:unlocked?map.image:null,icon:'🔒',title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map):'討伐依頼で発見すると詳細が登録されます'});
+    entries.push({kind:'map',mapId:map.id,image:unlocked?map.image:null,icon:'🔒',title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map,m):'探索先や特殊な入口を発見すると詳細が登録されます'});
   });
   M.forEach(from=>{
     if (from.evolution === m.id) entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:`Lv.${from.evolutionLevel}で進化`});
@@ -129,17 +132,27 @@ function showCharacterDexDetail(id) {
   renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m));
 }
 function mapDexUnlocked(mapId){return typeof save!=='undefined'&&Array.isArray(save.mapDex)&&save.mapDex.includes(mapId);}
-function mapDexDifficulties(map){return (map.bossOnly||map.rareOnly)?['Hard','Extreme']:['Easy','Normal','Hard','Extreme'];}
+// The encyclopedia describes every possible encounter, including inactive events.
+// Do not use worldMapAvailableDifficulties here: it depends on the current save.
+function mapDexDifficulties(map){return availableHuntDifficulties(map).map(difficulty=>difficulty.label);}
 function mapDexEvents(map){
-  if(map.goldenLand)return ['地図で出現確定','難易度別コインボーナス'];
+  if(map.goldenLand)return ['探索勝利で入口発見・地図でも入場可能','地図は出発時に1枚消費','Hardコインボーナス'];
+  if(map.id==='starsea')return ['探索勝利で星の海への入口発見（Hard）','滅亡の星 ネメシオンの危機（Extreme）','入口・危機は画面を閉じても保持'];
+  if(map.id==='world_between')return ['危機を討伐しても対処を任せても偽竜の痕跡が残る','偽竜との遭遇（Extreme）','痕跡は画面を閉じても保持'];
+  if(map.id==='water_secret')return ['探索勝利で秘境への入口発見（Hard）','入口は画面を閉じても保持'];
   const events=['三つ巴バトル','戦闘中の乱入'];
-  if(map.bossOnly)events.unshift(`ボスマップ（出現率 ${Math.round((map.appearRate||0)*100)}％）`);
-  else if(map.rareOnly)events.unshift(`希少マップ（出現率 ${Math.round((map.appearRate||0)*100)}％）`);
+  if(map.id==='light_plain')events.unshift('Normal・Hard探索勝利後、光の女神エリシアがまれに降臨（Hard・契約不可）');
+  else if(map.bossOnly||map.rareOnly)events.unshift('特殊な入口から探索');
   return events;
 }
 function mapEnemyFrequencyLabel(map,id){
-  const total=(map.enemyIds||[]).length;
-  const count=(map.enemyIds||[]).filter(enemyId=>enemyId===id).length;
+  if(map.id==='light_plain'&&id==='hikari')return 'まれに降臨・Hard限定';
+  if(map.id==='starsea'&&id==='doom_nemesion')return '世界の危機・Extreme限定';
+  if(map.id==='world_between')return '危機後の痕跡・Extreme限定';
+  if(map.bossOnly||map.rareOnly||map.goldenLand)return '特殊な入口から遭遇';
+  const ordinaryIds=(map.enemyIds||[]).filter(enemyId=>!(map.id==='light_plain'&&enemyId==='hikari'));
+  const total=ordinaryIds.length;
+  const count=ordinaryIds.filter(enemyId=>enemyId===id).length;
   const rate=total?count/total:0;
   return rate>=.35?'よく出現':rate>=.15?'出現':'まれに出現';
 }

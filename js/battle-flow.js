@@ -37,7 +37,10 @@ function showBattleChoices() {
   resetBattleTurnCounter();
   show('battleChoices');
   const list = document.getElementById('battleChoiceList');
+  list?.classList?.remove('world-map-root');
+  if(list)list.onclick=null;
   if(typeof renderTutorialHuntChoice==='function'&&renderTutorialHuntChoice(list))return;
+  if(typeof renderWorldMap==='function'&&renderWorldMap(list))return;
   const normal = MAPS.filter(m => !m.bossOnly && !m.rareOnly && !m.goldenLand);
   const special = MAPS.filter(m => (m.bossOnly || m.rareOnly) && !m.goldenLand);
   const goldenLand = MAPS.find(m => m.goldenLand);
@@ -156,12 +159,18 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   if (!enemy) return;
   activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
   if (activeHuntRequest.goldenLandMapEntry) {
+    const previousMapCount=save.items.golden_land_map;
     if (!consumeReservedGoldenLandMap()) {
       alert('黄金郷への地図が見つかりません。討伐依頼を選び直してください。');
       showBattleChoices();
       return;
     }
-    saveGame();
+    if(!saveGame()){
+      save.items.golden_land_map=previousMapCount;
+      save.goldenLandMapReady=true;
+      showBattleChoices();
+      return;
+    }
     updateItems();
   }
   battleRewardGranted = false;
@@ -374,6 +383,7 @@ function win() {
   if (save.history.logs.length > 30) save.history.logs = save.history.logs.slice(-30);
   const contractorReward=typeof grantContractorBattleWin==='function'?grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]}):{amount:0};
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
+  if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
   saveGame();
   document.getElementById('log').innerHTML = msg;
   // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）

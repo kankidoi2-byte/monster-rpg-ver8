@@ -6,15 +6,8 @@ function typeEff(atkTypeOrTypes, defTypes) {
   );
   return multipliers.length ? Math.max(...multipliers) : 1;
 }
-// Load the optional battle module without document.write, which can remove the
-// following parser script on preview CDNs and leave battle-flow.js unloaded.
-(function loadMultiBattleModule() {
-  if (document.querySelector('script[data-multi-battle]')) return;
-  const script = document.createElement('script');
-  script.src = 'js/multi-battle.js?v=kokoro-link-phase5-1';
-  script.dataset.multiBattle = 'true';
-  document.head.appendChild(script);
-})();
+// index.html loads multi-battle.js once, in parser order. A second asynchronous
+// legacy URL could overwrite the current victory/save hooks after startup.
 function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
 }

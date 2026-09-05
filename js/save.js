@@ -103,6 +103,7 @@ function initSave() {
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
     contractor:contractorSaveDefaults(),
+    worldMap:typeof normalizeWorldMapState==='function'?normalizeWorldMapState(null):{},
     progress:{chapterId:'prologue', storyFlags:{}, tutorial:tutorialSaveDefaults(), missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
   };
@@ -199,6 +200,7 @@ function repairSave(payload,report=[]){
   payload.party=[...new Set(Array.isArray(payload.party)?payload.party:[])].filter(value=>seenUids.has(value)).slice(0,3);
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
+  if(typeof normalizeWorldMapState==='function')payload.worldMap=normalizeWorldMapState(payload.worldMap);
   payload.history=isSaveObject(payload.history)?payload.history:defaults.history;payload.history.wins=nonNegativeInteger(payload.history.wins);payload.history.logs=Array.isArray(payload.history.logs)?payload.history.logs.filter(x=>typeof x==='string').slice(-30):[];
   payload.skillCards=isSaveObject(payload.skillCards)?payload.skillCards:{};payload.equippedSkills=isSaveObject(payload.equippedSkills)?payload.equippedSkills:{};
   let migratedSkillIds=false;const normalizedSkillCards={};Object.entries(payload.skillCards).forEach(([id,count])=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;normalizedSkillCards[normalizedId]=Math.max(nonNegativeInteger(normalizedSkillCards[normalizedId]),nonNegativeInteger(count));});payload.skillCards=normalizedSkillCards;

@@ -206,12 +206,12 @@ const MAPS = [
     ]
    },
    enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare']},
-  {id:'light_plain', name:'光の平原', image:MAPIMG.light_plain, chapter:'序章', region:'光明地方', desc:'柔らかな光が絶えず降り注ぐ平原。光属性のモンスターが力を得る。', ecosystem:'ヒカリの群れと光竜系が、光の強い環境を利用する。水辺由来の種や一般種も暮らすが、光属性種が生態系の核となる。',
+  {id:'light_plain', name:'光の平原', image:MAPIMG.light_plain, chapter:'序章', region:'光明地方', desc:'柔らかな光が絶えず降り注ぐ平原。光属性のモンスターが力を得る。', ecosystem:'光竜系が光の強い環境を利用し、水辺由来の種や一般種と共に暮らしている。光の女神エリシアは群れで生息する存在ではなく、まれにこの平原へ降臨する。',
    ecosystemDiagram:{
     heading:'光の平原の生態系ピラミッド',
     note:'矢印は豊かな光と水辺から生物へ渡る力の流れを示す。神格や精霊を含むため、戦闘での強さ順ではない。',
     layers:[
-      {role:'第4層・光の守護者',ids:['hikari'],detail:'平原へ光を巡らせ、光属性種が活動できる環境を保つ。'},
+      {role:'特別な来訪・女神の降臨',ids:['hikari'],detail:'光の女神エリシアは常住する生物ではなく、まれに平原へ降臨して光の気配を広げる。'},
       {role:'第3層・成長した光竜',ids:['luxiard'],detail:'広い陽だまりを巡り、仲間を導きながら光の偏りをならす。'},
       {role:'第2層・小型の水辺種',ids:['aquaron','luxseed'],detail:'水草や若葉、小さな水生生物を利用して成長する。'},
       {role:'第1層・生産基盤',labels:['光を蓄える草花','清らかな小川','絶えず降る光'],detail:'強い光と清水が植物を育て、平原全体へ生命力を供給する。'}
@@ -292,7 +292,7 @@ const MAPS = [
     cycles:[{role:'分解・循環者',ids:['slime'],detail:'朽ちた有機物や残留魔力を取り込み、廃墟の土へ戻す。'}]
    },
    enemyIds:['nightmare','nightmare','nightmare','nightmare','goblin','slime','nocle','nocle','nocle','noclaid','noxvelg']},
-  {id:'starsea', name:'遥かなる星の海', image:MAPIMG.starsea, chapter:'序章', region:'星界', desc:'地上から隔絶された星の海。滅亡の力を帯びた存在へ至る特異領域。', ecosystem:'ネメシオンとドゥームネメシオンだけが確認される閉じた領域。種数は極端に少なく、星の力を帯びた強大な個体へ集中する。',
+  {id:'starsea', name:'遥かなる星の海', image:MAPIMG.starsea, chapter:'序章', region:'星界', desc:'地上から隔絶された星の海。滅亡の力を帯びた存在へ至る特異領域。', ecosystem:'星界の竜ネメシオンが確認される閉じた領域。滅亡の星 ネメシオンが現れると、世界を脅かす危機となる。通常の入口と危機の気配は別々に観測される。',
    ecosystemDiagram:{
     heading:'遥かなる星の海の存在構造図',
     note:'通常の食物連鎖が確認できない閉鎖領域のため、星の力が二つの存在へ集中する関係を示す。',
@@ -314,7 +314,7 @@ const MAPS = [
     ]
    },
    enemyIds:['elna_water','suiren'], rareOnly:true, appearRate:0.12},
-  {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。法則から外れた偽竜が出現する。', ecosystem:'三体の偽竜だけが出現し、通常の地域生態系から隔絶されている。無と光の性質を備えた機械竜で構成される特異な生物相。',
+  {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。世界の危機の後に残る痕跡から、偽竜へと至る。', ecosystem:'世界の危機に介入する三体の偽竜が確認される、通常の地域生態系から隔絶された領域。無と光の性質を備えた機械竜は、地上の生物とは異なる法則の中に存在する。',
    ecosystemDiagram:{
     heading:'世界の狭間の存在構造図',
     note:'自然の食物連鎖ではなく、境界エネルギーを利用する三体の偽竜の完成段階を示す。',
@@ -718,7 +718,7 @@ const SHOP_ITEMS = [
   {id:'fine_raptor_feather', name:'上質な猛禽の羽', icon:'✨🪶', price:100, desc:'強い風の魔力を保った傷のない猛禽の羽。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
   {id:'venom_carapace', name:'毒虫の甲殻', icon:'🪲', price:50, desc:'毒性を残した硬い虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'normal'},
   {id:'fine_venom_carapace', name:'上質な毒虫の甲殻', icon:'✨🪲', price:110, desc:'毒性と強度を高い水準で保つ上質な虫の甲殻。', category:'錬成素材', obtain:'ショップ／バトル勝利報酬', alchemyMaterial:true, quality:'fine'},
-  {id:'golden_land_map', name:'黄金郷への地図', icon:'🗺️', price:0, desc:'使用すると、次の討伐依頼候補に黄金郷が確定で出現する。黄金郷へ出発した時に1枚消費する。', category:'特殊アイテム', obtain:'遠征の希少報酬／Hard・Extreme討伐依頼の勝利報酬', shop:false, usableFromDex:true}
+  {id:'golden_land_map', name:'黄金郷への地図', icon:'🗺️', price:0, desc:'使用すると、世界地図から黄金郷へ入れる。地図を使って黄金郷へ出発した時に1枚消費する。', category:'特殊アイテム', obtain:'遠征の希少報酬／Hard・Extreme討伐依頼の勝利報酬', shop:false, usableFromDex:true}
 
 ];
 const ALCHEMY_MATERIAL_DROPS = Object.freeze([
