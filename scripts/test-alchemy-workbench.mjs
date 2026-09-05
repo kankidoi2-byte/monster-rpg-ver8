@@ -12,7 +12,7 @@ assert(alchemy.includes('selectedAlchemyMaterialCounts = []'), 'material quantit
 assert(alchemy.includes('if(!ins) return {levelBonus:0, evolutionBonus:0, total:0}'), 'missing catalyst bonus fallback is absent');
 assert(alchemy.includes('changeAlchemyMaterialCount(index, delta)'), 'material quantity controls are missing');
 assert(!alchemy.includes("<option value=\"\">使用しない</option>"), 'optional catalyst choice remains');
-assert(alchemy.includes("if(!ins) errors.push('触媒モンスターを1体選択してください。')"), 'catalyst is not mandatory');
+assert(alchemy.includes("if(!ins) errors.push('触媒契約体を1体選択してください。')"), 'catalyst is not mandatory');
 assert(alchemy.includes('必須・1体消費'), 'mandatory catalyst guidance is missing');
 assert(alchemy.includes('inferAlchemyRecipe(selectedAlchemyMaterialIds)'), 'normal alchemy still requires a preselected target');
 assert(alchemy.includes('完成するモンスターは錬成後に判明'), 'unknown-result guidance is missing');

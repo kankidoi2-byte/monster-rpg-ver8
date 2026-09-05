@@ -35,7 +35,7 @@ function rollCharacterGacha(count){
   renderCharacterGacha();
   if(typeof updateAppResourceBar==='function') updateAppResourceBar();
   const target=document.getElementById('characterGachaResult');
-  target.innerHTML=`<h2>${result.count}体が仲間になりました</h2>${saved?'':'<p>保存に失敗しました。セーブ管理からデータを書き出してください。</p>'}<div class="character-gacha-grid">${result.entries.map(({unit,isNew})=>`<article class="character-gacha-card">${vis(unit)}<strong>${unit.name}</strong><small>${unit.rarity} / Lv.1</small><span>${isNew?'NEW・図鑑登録':'同じ形態の別個体を獲得'}</span></article>`).join('')}</div><button onclick="show('party')">編成する</button>`;
+  target.innerHTML=`<h2>${result.count}体が仲間になりました</h2>${saved?'':'<p>保存に失敗しました。セーブ管理からデータを書き出してください。</p>'}<div class="character-gacha-grid">${result.entries.map(({unit,isNew,instance})=>`<article class="character-gacha-card">${vis(unit)}<strong>${unit.name}</strong><small>${unit.rarity} / Lv.1</small><span>${isNew?'NEW・図鑑登録':'同じ形態の別個体を獲得'}${instance.locked?'・🔒 自動ロック':''}</span></article>`).join('')}</div><button onclick="show('party')">編成する</button>`;
   if(typeof replayUiMotion==='function') replayUiMotion(target,'ui-reward-pop',850);
   target.scrollIntoView({block:'start'});
 }

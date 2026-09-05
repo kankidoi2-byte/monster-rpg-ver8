@@ -19,7 +19,7 @@ const characterIds = Array.from(characters, record => record.id);
 assert.deepEqual(characterIds, ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari']);
 assert.deepEqual(Array.from(characters, record => record.characterNo), [1,2,3,4,5,6,7,8,9,10,11,12,13,14]);
 assert(records.filter(record => record.entityKind === 'character').every(record => record.contractable === false));
-assert(records.filter(record => record.entityKind === 'character').every(record => Object.values(record.eligibility).every(value => value === false)));
+assert(records.filter(record => record.entityKind === 'character').every(record => Object.entries(record.eligibility).every(([key,value]) => value === (key === 'alchemyCatalyst'))));
 assert.equal(records.find(record => record.id === 'elna_beginner').no, 21);
 assert.equal(records.find(record => record.id === 'elna_water').no, 25);
 assert.equal(records.find(record => record.id === 'elna_kaen').no, 46);

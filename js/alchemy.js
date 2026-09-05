@@ -345,7 +345,7 @@ function validateAlchemyPlan(plan){
   if(!plan.recipeSelectionValid) errors.push('錬成レシピが正しく選択されていません。再選択してください。');
   if(!plan.modeSelectionValid) errors.push('錬成方法が正しく選択されていません。再選択してください。');
   if(!plan.tutorialLesson){
-    if(!ins) errors.push('触媒モンスターを1体選択してください。');
+    if(!ins) errors.push('触媒契約体を1体選択してください。');
     if(ins && (save.instances || []).length <= 1) errors.push('最後の所持モンスターは投入できません。');
     if(ins && !isAlchemyCatalystUnit(by(ins.id))) errors.push(`${by(ins.id)?.name || ins.id}は触媒に使用できません。`);
     if(ins && (save.party || []).includes(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}はパーティー編成中です。`);
@@ -419,7 +419,7 @@ function alchemyLuminaAdvice(plan, errors=[]){
     detail = '魔晶石と金属鉱石が錬成核を安定させています。硬い身体や無属性に近い性質が現れそうです。';
   }
   if(plan.fineCount >= 2) detail += ' 上質素材が多いので、通常より澄んだ反応も出ています。';
-  if(plan.instance) detail += ` ${by(plan.instance.id)?.name || '触媒モンスター'}の生命力も結果に影響しています。`;
+  if(plan.instance) detail += ` ${by(plan.instance.id)?.name || '触媒契約体'}の生命力も結果に影響しています。`;
   if(errors.some(error => error.includes('不足'))) short += ' ただ、今は素材かコインが足りないみたい。';
   return {short, detail};
 }
@@ -484,7 +484,7 @@ function renderAlchemy(){
         }).join('')}</div>
       </section>
       <div class="alchemy-input-strip">
-        <label class="alchemy-catalyst"><span>触媒モンスター <small>必須・1体消費</small></span><select id="alchemyMonsterSelect" onchange="selectAlchemyCatalyst(this.value)"><option value="">選択してください</option>${eligible.map(ins => `<option value="${ins.uid}" ${ins.uid===selectedAlchemyCatalystUid?'selected':''}>${by(ins.id)?.name || ins.id} Lv.${ins.level || 1}</option>`).join('')}</select></label>
+        <label class="alchemy-catalyst"><span>触媒契約体 <small>必須・1体消費</small></span><select id="alchemyMonsterSelect" onchange="selectAlchemyCatalyst(this.value)"><option value="">選択してください</option>${eligible.map(ins => `<option value="${ins.uid}" ${ins.uid===selectedAlchemyCatalystUid?'selected':''}>${by(ins.id)?.name || ins.id} Lv.${ins.level || 1}</option>`).join('')}</select></label>
         <fieldset class="alchemy-coin-compact"><legend>投入コイン</legend>${recipe.coinOptions.map(option => {
           const failureCount = eligibleAlchemyCandidates(recipe, false, option).length;
           return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="selectAlchemyCoin(this.value)" ${option.id===selectedAlchemyCoinOptionId?'checked':''} ${failureCount?'':'disabled'}><span>🪙 ${option.amount}</span></label>`;
@@ -525,7 +525,7 @@ function openAlchemyConfirmation(){
     <p><b>${plan.tutorialLesson?'錬成核':'触媒'}：</b>${plan.tutorialLesson?'ルミナの練習用錬成核（仲間の消費なし）':alchemyInstanceLabel(plan.instance)}</p>
     <p>${plan.selection.materialIds.map((id,index)=>`${ITEM_BY_ID[id].name} ×${plan.selection.materialCounts[index]}`).join(' / ')}</p>
     <p><b>投入コイン：</b>${plan.coinCost}枚</p><p><b>成功率：</b>${plan.rate}%</p><p><b>錬成傾向：</b>${alchemyTendency(plan)}</p><p class="alchemy-guarantee"><b>${plan.tutorialLesson?'入門錬成は初回100％成功します。':'結果は錬成完了まで不明です。'}</b></p>
-    <p class="alchemy-warning">この操作を確定すると、素材・コイン${plan.tutorialLesson?'':'・触媒モンスター1体'}を消費します。元には戻せません。</p>
+    <p class="alchemy-warning">この操作を確定すると、素材・コイン${plan.tutorialLesson?'':'・触媒契約体1体'}を消費します。元には戻せません。</p>
     <button id="alchemyExecuteButton" onclick="executeAlchemyConfirmed()">消費して錬成を実行</button>
     <button onclick="showAlchemy()" class="secondary-button">内容を修正する</button>
   </div>`;
@@ -540,6 +540,7 @@ function executeAlchemyConfirmed(){
     document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
+  if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1 && !confirm('この形態のキャラクターは最後の1体です。錬成で消費してもよろしいですか？'))return;
   try{alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);}
   catch(_error){alchemyDiagnosticsSelection=null;}
   alchemyBusy = true;
