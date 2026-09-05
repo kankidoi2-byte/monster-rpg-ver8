@@ -294,10 +294,11 @@ function refreshContractorRankUi(){
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden'))closeContractorRankUp();});
 function appNavigationSection(screenId){
+  if(['gachaHub','itemGacha','skillGacha','characterGacha'].includes(screenId)) return 'gacha';
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
-  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'growth';
-  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','itemGacha','skillGacha','characterGacha','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
+  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'monsters';
+  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){

@@ -295,3 +295,11 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 @keyframes kokoroLinkReceive{0%,69%,100%{transform:translate(0);filter:none}75%{transform:translate(-2px,0);filter:brightness(1.75)}80%{transform:translate(2px,-1px);filter:brightness(1.2)}85%{transform:translate(0);filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.kokoro-link-flash,#singlePlayerBox.is-kokoro-link-receive{display:none;animation:none}.kokoro-link-activation{background:transparent;animation:kokoroLinkReduced 1s ease both}.kokoro-link-center-visual,.kokoro-link-activation-title,.kokoro-link-activation-target{animation:kokoroLinkReduced 1s ease both;filter:none}.kokoro-link-center-visual{transform:translateX(-50%)}}
 @keyframes kokoroLinkReduced{0%,100%{opacity:0}18%,85%{opacity:1}}
+
+/* Shared monster management and dedicated draw navigation. */
+.monster-section-tabs{display:flex;gap:8px;margin:0 0 18px;padding:5px;border-radius:16px;background:#e7f2f6}
+.monster-section-tabs button{flex:1;min-height:48px;border:0;border-radius:12px;background:transparent;color:var(--ui-sky-700);box-shadow:none}
+.monster-section-tabs button[aria-pressed="true"]{background:#fff;font-weight:900;box-shadow:0 3px 10px #275b751c}
+.monster-party-button{width:100%;min-height:48px;margin-bottom:16px}
+.gacha-hub-list>button{min-height:112px}
+.gacha-hub-list>button>span{font-size:32px}

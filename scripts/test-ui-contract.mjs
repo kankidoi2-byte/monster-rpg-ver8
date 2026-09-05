@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import vm from 'node:vm';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,6 +16,19 @@ const errors = [];
 const expect = (condition, message) => {
   if (!condition) errors.push(message);
 };
+
+
+const navigationContext=vm.createContext({});
+const uiSource=read('js/ui.js');
+vm.runInContext(uiSource.slice(uiSource.indexOf('function appNavigationSection('),uiSource.indexOf('function updateAppNavigation(')),navigationContext);
+for(const screen of ['gachaHub','itemGacha','characterGacha','skillGacha'])
+  expect(navigationContext.appNavigationSection(screen)==='gacha', screen+' must select the gacha navigation');
+for(const screen of ['party','partySet','growthHub','fusion','alchemy','evolution'])
+  expect(navigationContext.appNavigationSection(screen)==='monsters', screen+' must select monster navigation');
+const bottomNav=index.match(/<nav class="app-bottom-nav"[\s\S]*?<\/nav>/)?.[0]||'';
+expect([...bottomNav.matchAll(/data-nav="([^"]+)"/g)].map(match=>match[1]).join(',')==='home,monsters,battle,gacha,more','bottom navigation must keep five ordered destinations');
+expect((index.match(/data-nav="growth"/g)||[]).length===1,'the tutorial growth target must uniquely identify the roster tab');
+expect((index.match(/‹ ガチャ一覧/g)||[]).length===3,'each draw screen must return to the draw hub');
 
 const saveKey = 'mb_v95c';
 expect(index.includes('<title>モンスターバトル Ver8.0</title>'), 'browser title must use the public game name');
@@ -33,7 +47,7 @@ expect(data.includes("const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','fr
 expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 'save initialization must use the shared initial-party definition');
 
 const screenIds = [
-  'home', 'growthHub', 'moreMenu', 'contractorRank', 'contractorRankRewards', 'contractorTitles', 'notices', 'diagnosticsScreen', 'expedition', 'evolution', 'partySet', 'battleChoices',
+  'home', 'gachaHub', 'growthHub', 'moreMenu', 'contractorRank', 'contractorRankRewards', 'contractorTitles', 'notices', 'diagnosticsScreen', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
   'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
   'skillEdit', 'typeChart', 'dexHub', 'dex', 'characterDex', 'mapDex', 'itemDex'
