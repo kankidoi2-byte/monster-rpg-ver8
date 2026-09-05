@@ -139,6 +139,8 @@ function worldMapOverviewHTML() {
 function worldMapDetailHTML(map,eventKey=null) {
   const events = worldMapEventsForUI();
   const event = eventKey ? events.find(entry => entry.key === eventKey && entry.mapId === map.id) : null;
+  const facilityVisit = typeof tutorialWorldMapFacilityVisitFor==='function'
+    ? tutorialWorldMapFacilityVisitFor(map.id) : null;
   const available = worldMapCanEnter(map,eventKey);
   const difficulties = available ? worldMapDifficultiesForUI(map,eventKey) : [];
   const difficulty = difficulties.find(value=>value.id===worldMapSelectedDifficulty) || difficulties[0];
@@ -149,8 +151,9 @@ function worldMapDetailHTML(map,eventKey=null) {
   const sealedText = map.id==='world_between'?'世界の危機が解決したあと、偽竜の痕跡から道が開きます。危機は討伐でも見送りでも構いません。':map.id==='golden_land'?'探索で入口を見つけるか、道具から「黄金郷への地図」を使用してください。':map.id==='starsea'?'探索を続けると星海への入口や、星の危機が見つかります。':'探索を続けると、特別な入口が見つかることがあります。';
   return `<button type="button" class="wm-back" data-wm-back>‹ 世界地図へ戻る</button><article class="wm-detail"><div class="wm-detail-art"><img src="${worldMapEscape(map.image)}" alt="${worldMapEscape(map.name)}"><div><small>${worldMapEscape(map.chapter)} / ${worldMapEscape(map.region)}</small><h2>${worldMapEscape(map.name)}</h2></div></div><div class="wm-detail-body"><p>${worldMapEscape(map.desc)}</p><p class="wm-route">${worldMapEscape(route)}</p>
     ${event?`<aside class="wm-event-notice${event.guideUnread?' is-first-guide':''}" role="status">${event.guideUnread?`<small>NEW GUIDE</small><strong>${worldMapEscape(event.guideTitle || 'はじめての世界異変')}</strong><p>${worldMapEscape(event.guideDescription || event.description)}</p><hr>`:''}<strong>${worldMapEscape(event.title || '特別な遭遇')}</strong><p>${worldMapEscape(event.description || '準備ができたら挑戦できます。地図を閉じても入口は保持されます。')}</p>${event.kind==='crisis'||event.key==='crisis'?'<button type="button" class="wm-skip" data-wm-skip>今回は対処を任せる</button>':''}</aside>`:''}
+    ${facilityVisit?`<aside class="wm-event-notice wm-facility-visit"><strong>${worldMapEscape(facilityVisit.label)}</strong><p>${worldMapEscape(facilityVisit.description)}</p><button type="button" class="wm-depart" data-wm-facility-visit="${worldMapEscape(map.id)}">${worldMapEscape(facilityVisit.label)} ›</button></aside>`:''}
     ${related.length?`<div class="wm-related"><h3>この場所の特別な気配</h3>${related.map(entry=>worldMapPlaceButton(map,{eventKey:entry.key,subtitle:entry.title})).join('')}</div>`:''}
-    ${!available?`<p class="wm-sealed-message" role="status">${related.length?'通常の入口はありません。上の「特別な気配」から、開いている入口を選んでください。':`入口はまだ開いていません。${worldMapEscape(sealedText)}`}</p>`:`<fieldset class="wm-difficulty"><legend>探索の難易度</legend>${difficulties.map(value=>`<button type="button" class="${value.id===difficulty?.id?'is-selected':''}" data-wm-difficulty="${value.id}" aria-pressed="${value.id===difficulty?.id}">${worldMapEscape(value.label)}</button>`).join('')}</fieldset>
+    ${facilityVisit?'':!available?`<p class="wm-sealed-message" role="status">${related.length?'通常の入口はありません。上の「特別な気配」から、開いている入口を選んでください。':`入口はまだ開いていません。${worldMapEscape(sealedText)}`}</p>`:`<fieldset class="wm-difficulty"><legend>探索の難易度</legend>${difficulties.map(value=>`<button type="button" class="${value.id===difficulty?.id?'is-selected':''}" data-wm-difficulty="${value.id}" aria-pressed="${value.id===difficulty?.id}">${worldMapEscape(value.label)}</button>`).join('')}</fieldset>
       ${difficulty?`<p class="wm-danger">${worldMapEscape(difficulty.danger)}<br>報酬倍率 ×${worldMapEscape(difficulty.rewardText)} · 戦闘条件は出発時に決定</p>`:''}
       <h3>出現するモンスター</h3><ul class="wm-enemies">${candidates.map(mon=>`<li><span>${worldMapEscape(mon.name)}</span><small>${worldMapEscape(mon.rarity)} · Lv.${huntLevelFor(mon,difficulty.id)}</small></li>`).join('')}</ul>
       ${map.goldenLand&&!eventKey&&goldenLandMapIsReady()?'<p class="wm-entry-note">地図による入場：出発時に「黄金郷への地図」を1枚消費します。自然に見つけた入口は別に保持されます。</p>':''}
@@ -179,6 +182,9 @@ function renderWorldMap(list,{saveNavigation=true}={}) {
     } else if (button.hasAttribute('data-wm-difficulty')) {
       worldMapSelectedDifficulty=button.dataset.wmDifficulty;renderWorldMap(list);
       list.querySelector(`[data-wm-difficulty="${worldMapSelectedDifficulty}"]`)?.focus();
+    } else if (button.hasAttribute('data-wm-facility-visit')) {
+      if(typeof handleTutorialWorldMapFacilityVisit==='function')
+        handleTutorialWorldMapFacilityVisit(button.dataset.wmFacilityVisit);
     } else if (button.hasAttribute('data-wm-depart')) {
       persistWorldMapNavigation();
       startWorldMapExploration(worldMapSelectedId,worldMapSelectedDifficulty,worldMapSelectedEvent);

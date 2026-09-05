@@ -1282,11 +1282,20 @@ function prepareTutorialRescueWorldMapStep(stepId){
   return false;
 }
 function handleTutorialWorldMapLocationSelection(mapId,eventKey=null){
-  if(tutorialCurrentStepId()!=='rescue_world_map_grassland')return false;
-  if(mapId===TUTORIAL_FIRST_HUNT.mapId&&eventKey==null)return false;
-  if(typeof showUiNotice==='function')showUiNotice('今は地図中央の「草原」を選んで、エルナのもとへ向かおう。','warning');
-  if(typeof showWorldMapOverview==='function')showWorldMapOverview();
-  return true;
+  const stepId=tutorialCurrentStepId();
+  if(stepId==='rescue_world_map_grassland'){
+    if(mapId===TUTORIAL_FIRST_HUNT.mapId&&eventKey==null)return false;
+    if(typeof showUiNotice==='function')showUiNotice('今は地図中央の「草原」を選んで、エルナのもとへ向かおう。','warning');
+    if(typeof showWorldMapOverview==='function')showWorldMapOverview();
+    return true;
+  }
+  if(TUTORIAL_WORLD_MAP_FACILITY_SELECTION_STEPS.has(stepId)){
+    if(mapId==='magic_academy'&&eventKey==null)return false;
+    if(typeof showUiNotice==='function')showUiNotice('今は王都の施設にある「魔導学園」を選ぼう。','warning');
+    if(typeof showWorldMapOverview==='function')showWorldMapOverview();
+    return true;
+  }
+  return false;
 }
 function handleTutorialWorldMapDeparture(mapId,difficultyId,eventKey=null){
   const stepId=tutorialCurrentStepId();
@@ -1295,16 +1304,59 @@ function handleTutorialWorldMapDeparture(mapId,difficultyId,eventKey=null){
     if(typeof showWorldMapOverview==='function')showWorldMapOverview();
     return true;
   }
-  if(stepId!=='rescue_world_map_depart')return false;
-  const expected=mapId===TUTORIAL_FIRST_HUNT.mapId
-    &&difficultyId===TUTORIAL_FIRST_HUNT.difficultyId
-    &&eventKey==null;
-  if(!expected){
-    if(typeof showUiNotice==='function')showUiNotice('最初は草原のEasyを選んで、エルナを助けに行こう。','warning');
+  if(stepId==='rescue_world_map_depart'){
+    const expected=mapId===TUTORIAL_FIRST_HUNT.mapId
+      &&difficultyId===TUTORIAL_FIRST_HUNT.difficultyId
+      &&eventKey==null;
+    if(!expected){
+      if(typeof showUiNotice==='function')showUiNotice('最初は草原のEasyを選んで、エルナを助けに行こう。','warning');
+      return true;
+    }
+    tutorialNext(true);
+    return true;
+  }
+  if(TUTORIAL_WORLD_MAP_FACILITY_SELECTION_STEPS.has(stepId)||TUTORIAL_WORLD_MAP_FACILITY_VISITS[stepId]){
+    if(typeof showUiNotice==='function')showUiNotice('今はモンスター探索ではなく、案内されている施設へ入ろう。','warning');
+    return true;
+  }
+  return false;
+}
+
+const TUTORIAL_WORLD_MAP_FACILITY_VISITS=Object.freeze({
+  stella_world_map_visit:Object.freeze({
+    mapId:'magic_academy',label:'魔導学園へ入る',description:'ステラが待つ魔導学園へ入ります。'
+  }),
+  lumina_world_map_visit:Object.freeze({
+    mapId:'magic_academy',label:'錬成工房へ入る',description:'魔導学園に併設された錬成工房へ向かいます。'
+  })
+});
+const TUTORIAL_WORLD_MAP_FACILITY_SELECTION_STEPS=Object.freeze(new Set([
+  'stella_world_map_academy','lumina_world_map_academy'
+]));
+function tutorialWorldMapFacilityVisitFor(mapId){
+  const visit=TUTORIAL_WORLD_MAP_FACILITY_VISITS[tutorialCurrentStepId()]||null;
+  return visit?.mapId===mapId?visit:null;
+}
+function handleTutorialWorldMapFacilityVisit(mapId){
+  const visit=TUTORIAL_WORLD_MAP_FACILITY_VISITS[tutorialCurrentStepId()]||null;
+  if(!visit)return false;
+  if(visit.mapId!==mapId){
+    if(typeof showUiNotice==='function')showUiNotice('案内されている王都の施設を選ぼう。','warning');
     return true;
   }
   tutorialNext(true);
   return true;
+}
+function prepareTutorialWorldMapFacilityStep(stepId){
+  if(activeScreenId()!=='battleChoices')return false;
+  if(TUTORIAL_WORLD_MAP_FACILITY_SELECTION_STEPS.has(stepId)){
+    if(typeof showWorldMapOverview!=='function')return false;
+    return showWorldMapOverview()!==false;
+  }
+  const visit=TUTORIAL_WORLD_MAP_FACILITY_VISITS[stepId]||null;
+  if(!visit||typeof showWorldMapLocation!=='function')return false;
+  if(typeof showWorldMapOverview==='function')showWorldMapOverview();
+  return showWorldMapLocation(visit.mapId)!==false;
 }
 
 function tutorialFirstHuntIsPending(){
@@ -1540,6 +1592,7 @@ function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||n
 function prepareTutorialStep(step){
   if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
   if(['rescue_world_map_grassland','rescue_world_map_depart'].includes(step?.id))prepareTutorialRescueWorldMapStep(step.id);
+  if(TUTORIAL_WORLD_MAP_FACILITY_SELECTION_STEPS.has(step?.id)||TUTORIAL_WORLD_MAP_FACILITY_VISITS[step?.id])prepareTutorialWorldMapFacilityStep(step.id);
   if(step?.id==='request_accept')renderTutorialSupplyRequest(document.getElementById('battleChoiceList'));
   if(['request_reward_claim','request_reward_received'].includes(step?.id))renderTutorialSupplyReward();
   if(step?.id==='stella_skill_open')renderTutorialStellaSkillCard();
@@ -1617,7 +1670,10 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,persistAs:'request_accept',title:'エルナ救援を報告',text:'救援が依頼として認められたぞ！ このボタンを押して、報告と報酬の確認へ進もう！',progressLabel:'REQUEST'},
   {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚と錬成素材4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
   {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
-  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE'},
+  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',nextStepId:'stella_world_map_open',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
+  {id:'stella_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押して世界地図を開こう。ステラは王都の魔導学園にいるぞ！',progressLabel:'WORLD MAP'},
+  {id:'stella_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,disableBack:true,title:'魔導学園を選ぼう',text:'「王都の施設」にある魔導学園を押そう。施設へ行く時も、この世界地図から選べるぞ！',progressLabel:'WORLD MAP'},
+  {id:'stella_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,disableBack:true,title:'魔導学園へ入ろう',text:'今回は探索ではなく、ステラに会うのが目的だ。「魔導学園へ入る」を押そう！',progressLabel:'WORLD MAP'},
   {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
   {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるね。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
   {id:'stella_skill_open',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillEditButton',externalAdvance:true,persistAs:'stella_skill_open',disableBack:true,title:'カードを確認して技編集へ',text:'連続斬りの内容を確認したら、ここを押してエルナの技編集を開こう！',progressLabel:'SKILL CARD'},
@@ -1634,7 +1690,10 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'効果抜群！',text:'今のが有利属性だよ！ あとは自由に戦って、グラスビートを倒してみよう！',progressLabel:'MOCK BATTLE'},
   {id:'stella_mock_victory',screenId:'battle',persistAs:'lumina_intro',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'属性模擬戦クリア！',text:'ばっちり！ 相手の属性を見て、有利な技を選べば戦いを有利に進められるよ！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
   {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'模擬戦を再開しよう',text:'進行は失われていないぞ！ 「依頼を選び直す」を押して、炎属性の技をもう一度試そう！',progressLabel:'RETRY'},
-  {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'工房へ'},
+  {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',nextStepId:'lumina_world_map_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
+  {id:'lumina_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,disableBack:true,title:'もう一度、世界地図へ',text:'ルミナの錬成工房も王都にある。下の「バトル」を押して、世界地図から向かおう！',progressLabel:'WORLD MAP'},
+  {id:'lumina_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,disableBack:true,title:'魔導学園の工房へ',text:'王都の魔導学園を押そう。学園に併設された錬成工房で、ルミナが待っているぞ！',progressLabel:'WORLD MAP'},
+  {id:'lumina_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,disableBack:true,title:'錬成工房へ入ろう',text:'「錬成工房へ入る」を押して、ルミナに錬成を教えてもらおう！',progressLabel:'WORLD MAP'},
   {id:'lumina_encounter',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'見習い錬金術師ルミナ',text:'ようこそ！ 練習用の錬成核は用意したよ。仲間を消費せず、素材4つと250コインで入門錬成を試そう。',progressLabel:'LUMINA'},
   {id:'lumina_alchemy',screenId:'home',persistAs:'lumina_alchemy',transition:'prepare_lumina_alchemy',nextStepId:'lumina_materials',replayNextStepId:'lumina_alchemy_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'錬成台を開こう！',text:'ここを押すと、素材を組み合わせて新しい契約体を生み出せるぞ！',progressLabel:'ALCHEMY',nextLabel:'錬成台へ'},
   {id:'lumina_materials',screenId:'alchemy',target:'#tutorialAlchemyMaterials',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'投入内容を確認',text:'素材4種類を各1個、250コイン、初回成功率100％だよ。今回は練習用錬成核だから、仲間は消費しないの。',progressLabel:'ALCHEMY'},
