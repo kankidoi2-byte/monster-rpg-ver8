@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260905-potion-artwork',date:'2026-09-05',category:'update',
+    title:'回復薬・上回復薬・力の薬に専用イラストを追加',
+    body:'回復薬は緑、上回復薬は青、力の薬は赤のボトルになりました。ショップ、アイテム図鑑、アイテムガチャ、戦闘中の道具選択で専用イラストを確認できます。'
+  }),
+  Object.freeze({
     id:'20260905-contract-scroll-artwork',date:'2026-09-05',category:'update',
     title:'4種類の契約書に専用イラストを追加',
     body:'契約書・銀の契約書・金の契約書・虹の契約書のアイコンを専用イラストに変更しました。ショップ、アイテム図鑑、アイテムガチャ、契約時の選択画面で確認できます。'
