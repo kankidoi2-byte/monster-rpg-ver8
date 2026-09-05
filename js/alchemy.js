@@ -435,7 +435,7 @@ function renderTutorialAlchemyLesson(root){
     </section>
     <section id="tutorialAlchemyMaterials" class="alchemy-material-board"><div class="alchemy-section-title"><h2>投入素材</h2><small>各1個</small></div><div class="alchemy-workbench-materials">${tutorialAlchemyLessonConfig.materials.map(itemId=>{
       const item=ITEM_BY_ID[itemId];const owned=Number(save.items?.[itemId]||0);
-      return `<div class="alchemy-material-row ${owned<1?'is-short':''}"><span class="alchemy-material-icon" aria-hidden="true">${item?.icon||'📦'}</span><div><b>${item?.name||itemId}</b><small>所持 ${owned} / 必要 1</small></div></div>`;
+      return `<div class="alchemy-material-row ${owned<1?'is-short':''}"><span class="alchemy-material-icon" aria-hidden="true">${itemInlineVisual(item, 'alchemy-material-image')}</span><div><b>${item?.name||itemId}</b><small>所持 ${owned} / 必要 1</small></div></div>`;
     }).join('')}</div></section>
     <div class="tutorial-alchemy-summary">
       <div id="tutorialAlchemyCoin"><small>投入コイン</small><strong>🪙 ${plan.coinCost}枚</strong></div>
@@ -477,7 +477,7 @@ function renderAlchemy(){
           const owned = Number(save.items?.[itemId] || 0);
           const count = selectedAlchemyMaterialCounts[index];
           return `<div class="alchemy-material-row ${owned<count?'is-short':''}">
-            <span class="alchemy-material-icon" aria-hidden="true">${item?.icon || '📦'}</span>
+            <span class="alchemy-material-icon" aria-hidden="true">${itemInlineVisual(item, 'alchemy-material-image')}</span>
             <label><select onchange="selectAlchemyWorkbenchMaterial(${index},this.value)" aria-label="素材${index+1}">${alchemyWorkbenchMaterialOptions(itemId)}</select><small>所持 ${owned}${owned<count?'・不足':''}</small></label>
             <div class="alchemy-quantity"><button type="button" onclick="changeAlchemyMaterialCount(${index},-1)" aria-label="${item?.name || '素材'}を減らす">−</button><strong>${count}</strong><button type="button" onclick="changeAlchemyMaterialCount(${index},1)" aria-label="${item?.name || '素材'}を増やす">＋</button></div>
           </div>`;

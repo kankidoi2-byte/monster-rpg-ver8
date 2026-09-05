@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260905-alchemy-material-artwork',date:'2026-09-05',category:'update',
+    title:'魔物の骨と魔晶石に専用イラストを追加',
+    body:'魔物の骨・上質な魔物の骨・魔晶石・上質な魔晶石のアイコンを専用イラストに変更しました。上質な素材は金色の見た目になり、ショップ・アイテム図鑑・錬成画面で見分けやすくなりました。'
+  }),
+  Object.freeze({
     id:'20260905-potion-artwork',date:'2026-09-05',category:'update',
     title:'回復薬・上回復薬・力の薬に専用イラストを追加',
     body:'回復薬は緑、上回復薬は青、力の薬は赤のボトルになりました。ショップ、アイテム図鑑、アイテムガチャ、戦闘中の道具選択で専用イラストを確認できます。'
