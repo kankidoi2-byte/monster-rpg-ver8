@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260905-contract-scroll-artwork',date:'2026-09-05',category:'update',
+    title:'4種類の契約書に専用イラストを追加',
+    body:'契約書・銀の契約書・金の契約書・虹の契約書のアイコンを専用イラストに変更しました。ショップ、アイテム図鑑、アイテムガチャ、契約時の選択画面で確認できます。'
+  }),
+  Object.freeze({
     id:'20260905-unified-gacha-navigation',date:'2026-09-05',category:'update',
     title:'ガチャが下部メニューに登場！',
     body:'下部の「ガチャ」から、アイテム・キャラクター・技の3種類を選べます。「育成」は「モンスター」に統合し、画面上部の「一覧・編成」「育成」で切り替えられます。'
