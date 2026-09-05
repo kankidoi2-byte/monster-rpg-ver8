@@ -1,16 +1,17 @@
 # 世界地図開発 進捗正本
 
 - 担当: world-map-20260906T030243JST-root
-- 状態: active
+- 状態: released
 - 開始: 2026-09-06T03:02:43+09:00
-- 更新: 2026-09-06T03:17:22+09:00
+- 更新: 2026-09-06T03:27:00+09:00
 - 基準main: d31cfccd37219549d25df9f85c62db559aa649f3
 - ブランチ: codex/world-map-system
 - 実装・自動検証コミット: fd2ba9612c60e3247d90b1bdac7198946121d4e3
 - 実装・自動検証tree: 70458e851d4837984db2297152c417d8adaac305
 - Draft PR: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/164
 - 公開: 未公開。main変更・マージなし。公開承認依頼前。
-- 全体: 5Bの決定論的比較、5Cのrollback互換修正、5D実機手順、5E公開前復旧パッケージまで作成。実ブラウザ・実機・バランス判断・本人公開承認は未完了。
+- 全体: 5Bの決定論的比較、5Cのrollback互換修正、5D実機手順、5E公開前復旧パッケージまで保存し、単一担当を正常解放。実ブラウザ・実機・バランス判断・本人公開承認は外部待ち。
+- 停止理由: 自動化できる確認成果は作成済み。Android/Chromebook実機、実ブラウザ20勝、草原コイン方針、本人公開承認が必要。
 
 ## 26作業の状態
 
@@ -35,11 +36,11 @@
 | 4B | 実装済・検証待ち | 報酬後は地図→魔導学園→ステラ、模擬戦後は地図→学園併設工房→ルミナ。既存の錬成・遠征・完了経路を全check。実操作待ち |
 | 4C | 検証済（自動範囲） | TUTORIAL_VERSION=2と旧checkpointを維持。新規/地図途中/救援/学園以降/完了/skip/v1を専用fixtureで2回移行し、再開対象と二重付与なしを確認。実再読込待ち |
 | 4D | 実装済・検証待ち | 初回異変説明、案内中の地図階層復元、解決済みeventKey除去。実画面中断/復帰待ち |
-| 5A | 検証済（自動範囲） | commit fd2ba96で npm run check:world-map / check:world-map-economy / check exit 0。新headのGitHub CI待ち |
+| 5A | 検証済（自動範囲） | commit fd2ba96で npm run check:world-map / check:world-map-economy / check exit 0。GitHub Actions run 33984024744 completed/success |
 | 5B | 検証済（自動範囲）・実ブラウザ待ち | 同一入力20勝の報酬ルールを許容差0で比較。固定seed10万回の入口差、中立期待値、草原コインリスクを記録。実ブラウザ20勝は未実施 |
 | 5C | 一部検証済 | 新地図案内9stepを旧mainの安全IDへ永続化し、downgrade再開を検証。実ブラウザ/実機で見つかる問題の修正は待ち |
 | 5D | 外部待ち（手順完成） | Android/Chromebook、320〜430px、19地点、イベント、序章、save、a11yの証拠付きチェックリストを作成。実施結果は未確認 |
-| 5E | 一部実装・検証待ち | 公開対象、必須確認、バランス判断、セーブ保護、rollback、承認欄を一式化。新headのPR/CI更新と実機結果、本人承認が残る |
+| 5E | 外部待ち（自動準備済み） | 公開対象、必須確認、バランス判断、セーブ保護、rollback、承認欄を一式化しDraft PRを更新。実機結果と本人承認が残る |
 | 5F | 未着手 | 本人の公開承認前。merge/publicなし |
 | 5G | 未着手 | 未公開のため公開後点検不可 |
 
@@ -58,7 +59,7 @@
 - npm run check:world-map: 既存9本に序章journeyとdowngrade safetyを追加し、全11本成功。
 - npm run check:world-map-economy: baseline d31cfccdとの決定論的20勝比較と固定seed10万回の入口比較に成功。
 - git diff --check、変更JSの node --check、画像サイズcheck成功。
-- 直前head c3cde8fのGitHub Actions run 33982866757はcompleted/success。commit fd2ba96のCIはpush後に確認する。
+- GitHub Actions「Validate game data and assets」run 33984024744はhead e21234aでcompleted/success。専用経済比較stepも含む。
 - 正式地形WebP SHA-256: c7d2463386c3004e0924774688686522087028d74219eaa97363525f3706e92e。
 - クラウドChromeでSHA固定URLを1回試したが、ロード中にCDP refresh tabsが20秒でタイムアウト。現headのタイトル、世界地図、施設、画面幅、スクリーンショットは未確認。前headのタイトル→ホーム確認だけを流用せず、未確認を合格扱いにしない。
 
