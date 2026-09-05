@@ -1,16 +1,16 @@
 # 世界地図開発 進捗正本
 
-- 担当: world-map-20260906T023057JST-root
-- 状態: released
-- 開始: 2026-09-06T02:30:57+09:00
-- 更新: 2026-09-06T02:50:00+09:00
+- 担当: world-map-20260906T030243JST-root
+- 状態: active
+- 開始: 2026-09-06T03:02:43+09:00
+- 更新: 2026-09-06T03:05:00+09:00
 - 基準main: d31cfccd37219549d25df9f85c62db559aa649f3
 - ブランチ: codex/world-map-system
 - 実装コミット: 7ce9a051fafc00025c5eb37ec23459ab0e9ff4c3
 - 実装tree: ec8dd3ad0a60ae74d2723ae38b6219b9fefe910a（ローカル検証済みtreeと一致）
 - Draft PR: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/164
 - 公開: 未公開。main変更・マージなし。公開承認依頼前。
-- 全体: 開発継続。4A後半・4Bの実装と4Cの自動fixtureを完了し、次担当が上記headから安全に再開可能。
+- 全体: 5Bの再現可能な収益比較と5D確認成果を単一担当で継続中。
 
 ## 26作業の状態
 
