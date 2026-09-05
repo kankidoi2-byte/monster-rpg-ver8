@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -25,3 +27,6 @@ jobs:
 
       - name: Validate data and image budgets
         run: npm run check
+
+      - name: Compare world-map reward rules with the pre-map baseline
+        run: npm run check:world-map-economy

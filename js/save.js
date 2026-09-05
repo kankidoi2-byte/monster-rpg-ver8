@@ -79,6 +79,22 @@ function normalizeTutorialSave(value,{legacy=false}={}){
   return normalized;
 }
 
+const WORLD_MAP_NAVIGATION_DIFFICULTY_IDS = Object.freeze(['easy','normal','hard','extreme']);
+function normalizeWorldMapNavigationState(value){
+  const source=isSaveObject(value)?value:{};
+  const knownMapIds=new Set((typeof MAPS!=='undefined'&&Array.isArray(MAPS)?MAPS:[]).map(map=>map.id));
+  const mapId=typeof source.mapId==='string'&&knownMapIds.has(source.mapId)?source.mapId:null;
+  const eventKey=mapId&&typeof source.eventKey==='string'&&/^[a-z0-9_:-]{1,80}$/.test(source.eventKey)?source.eventKey:null;
+  const difficultyId=mapId&&WORLD_MAP_NAVIGATION_DIFFICULTY_IDS.includes(source.difficultyId)?source.difficultyId:null;
+  return {...source,mapId,eventKey,difficultyId,
+    overviewScrollLeft:Math.min(100000,nonNegativeInteger(source.overviewScrollLeft))};
+}
+function normalizeWorldMapSaveState(value){
+  const base=typeof normalizeWorldMapState==='function'
+    ?normalizeWorldMapState(value):(isSaveObject(value)?{...value}:{});
+  return {...base,navigation:normalizeWorldMapNavigationState(base.navigation)};
+}
+
 function contractorSaveDefaults(){
   return {
     systemVersion:1,
@@ -103,6 +119,7 @@ function initSave() {
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
     contractor:contractorSaveDefaults(),
+    worldMap:normalizeWorldMapSaveState(null),
     progress:{chapterId:'prologue', storyFlags:{}, tutorial:tutorialSaveDefaults(), missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
   };
@@ -199,6 +216,7 @@ function repairSave(payload,report=[]){
   payload.party=[...new Set(Array.isArray(payload.party)?payload.party:[])].filter(value=>seenUids.has(value)).slice(0,3);
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
+  payload.worldMap=normalizeWorldMapSaveState(payload.worldMap);
   payload.history=isSaveObject(payload.history)?payload.history:defaults.history;payload.history.wins=nonNegativeInteger(payload.history.wins);payload.history.logs=Array.isArray(payload.history.logs)?payload.history.logs.filter(x=>typeof x==='string').slice(-30):[];
   payload.skillCards=isSaveObject(payload.skillCards)?payload.skillCards:{};payload.equippedSkills=isSaveObject(payload.equippedSkills)?payload.equippedSkills:{};
   let migratedSkillIds=false;const normalizedSkillCards={};Object.entries(payload.skillCards).forEach(([id,count])=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;normalizedSkillCards[normalizedId]=Math.max(nonNegativeInteger(normalizedSkillCards[normalizedId]),nonNegativeInteger(count));});payload.skillCards=normalizedSkillCards;
