@@ -52,7 +52,7 @@ assert.ok(alchemy.includes("mode:'tutorial_lesson'"),'lesson selection must be i
 assert.ok(alchemy.includes('rate:tutorialLesson?100:'),'the first lesson must force 100% success');
 assert.ok(alchemy.includes('if(!plan.tutorialLesson){\n      save.instances = save.instances.filter'),'the lesson must not consume a companion');
 assert.ok(alchemy.includes("images/tutorial/characters/lumina_apprentice.png"),'the lesson UI must use the transparent Lumina portrait');
-assert.ok(alchemy.includes("if(!ins) errors.push('触媒モンスターを1体選択してください。')"),'normal alchemy must still require a catalyst');
+assert.ok(alchemy.includes("if(!ins) errors.push('触媒契約体を1体選択してください。')"),'normal alchemy must still require a catalyst');
 assert.match(tutorialCss,/tutorial-story-backdrop\[data-scene="workshop"\]/);
 assert.match(uiCss,/\.tutorial-alchemy-lesson\{/);
 assert.ok(index.includes('js/alchemy.js?v=phase3-prologue-1-elixion-neutral-1-prologue-lumina-alchemy-1'));

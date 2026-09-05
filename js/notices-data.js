@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260905-character-recycle',date:'2026-09-05',category:'update',
+    title:'重複キャラクターを錬成・育成に活用',
+    body:'キャラクターを錬成の触媒に使えるようになりました。所持一覧の「育成・個体情報」から、経験値アイテムとコインにも変換できます。報酬は★ごとに固定。各形態の初入手個体を自動ロックし、既存データでも各形態の先頭個体を保護します。ロック・編成・遠征中の個体は消費できません。ロックは手動解除でき、最後の同一形態を消費する際は追加確認が表示されます。'
+  }),
+  Object.freeze({
     id: '20260905-character-gacha',
     date: '2026-09-05',
     category: 'update',

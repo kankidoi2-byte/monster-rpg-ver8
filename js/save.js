@@ -97,7 +97,7 @@ function contractorSaveDefaults(){
 function initSave() {
   return {
     schemaVersion:SAVE_SCHEMA_VERSION,
-    saveMeta:{migrations:[], lastSavedAt:null, integrityHash:null},
+    saveMeta:{migrations:['character_first_lock_v1'], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{},
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
@@ -161,9 +161,13 @@ function migrateSave(payload,report=[]){
 }
 function nonNegativeInteger(value,fallback=0){const n=Number(value);return Number.isFinite(n)&&n>=0?Math.floor(n):fallback;}
 function repairSkillId(value){return typeof value==='string'&&typeof normalizeSkillId==='function'?normalizeSkillId(value):value;}
+function isCharacterSaveId(id){
+  const unit=typeof M!=='undefined'?M.find(entry=>entry.id===id):null;
+  return unit?.entityKind==='character'||(!unit?.entityKind&&unit?.unitType==='character');
+}
 function repairSave(payload,report=[]){
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
-  if(!isSaveObject(payload.saveMeta))payload.saveMeta=defaults.saveMeta;
+  if(!isSaveObject(payload.saveMeta))payload.saveMeta={...defaults.saveMeta,migrations:[]};
   if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];
   if(!isSaveObject(payload.quarantine))payload.quarantine=defaults.quarantine;
   ['unknownInstances','unknownCaughtIds','invalidExpeditions'].forEach(key=>{if(!Array.isArray(payload.quarantine[key]))payload.quarantine[key]=[];});
@@ -178,6 +182,15 @@ function repairSave(payload,report=[]){
     if(Array.isArray(entry.alchemy?.exclusiveSkillIds))entry.alchemy.exclusiveSkillIds=entry.alchemy.exclusiveSkillIds.map(repairSkillId).filter(x=>typeof x==='string');
     payload.instances.push(entry);
   });
+  if(!payload.saveMeta.migrations.includes('character_first_lock_v1')){
+    const seenCharacters=new Set();
+    payload.instances.forEach(ins=>{
+      if(!isCharacterSaveId(ins.id) || seenCharacters.has(ins.id))return;
+      seenCharacters.add(ins.id);ins.locked=true;
+    });
+    payload.saveMeta.migrations.push('character_first_lock_v1');
+    report.push('既存キャラクターの各形態の先頭個体を保護');
+  }
   const rawCaught=Array.isArray(payload.caught)?payload.caught:[];
   payload.caught=[...new Set(rawCaught.filter(id=>{const valid=typeof id==='string'&&(!canValidateMonsters||knownMonsterIds.has(id));if(!valid&&typeof id==='string')payload.quarantine.unknownCaughtIds.push(id);return valid;}).concat(payload.instances.map(entry=>entry.id)))];
   payload.levels=isSaveObject(payload.levels)?payload.levels:{};payload.exp=isSaveObject(payload.exp)?payload.exp:{};
@@ -423,6 +436,7 @@ function addInstance(id, level=1, exp=0, extraFields=null) {
   const normalizedLevel=clampLevel(level);
   const ins = {uid:uid(), id, level:normalizedLevel, exp:isMaxLevel(normalizedLevel)?0:Math.max(0,Math.floor(Number(exp)||0)), locked:false};
   if(extraFields && typeof extraFields === 'object') Object.assign(ins, extraFields);
+  if(firstRegistration && isCharacterSaveId(id))ins.locked=true;
   normalizeInstanceSaveFields(ins);
   save.instances.push(ins);
   if (firstRegistration) {

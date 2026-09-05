@@ -69,7 +69,7 @@ const elixion = contract.monsters.find(monster => monster.id === 'elixion');
 const galdra = contract.monsters.find(monster => monster.id === 'galdra');
 assert.equal(contract.isCharacterUnit(elna),true);
 assert.equal(contract.isContractableUnit(elna),false);
-assert.equal(contract.isAlchemyCatalystUnit(elna),false);
+assert.equal(contract.isAlchemyCatalystUnit(elna),true);
 assert.equal(contract.isAlchemyCatalystUnit(freigal),true);
 assert.equal(kimeragnaApex.evolutionOnly,true);
 assert.equal(kimeragnaApex.rarity,'★★★★','Kimeragna Apex must be a four-star monster');

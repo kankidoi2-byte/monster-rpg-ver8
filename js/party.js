@@ -21,6 +21,7 @@ function renderParty() {
         ${dataItems.map(it => `<button onclick="useExpItemOnInstance('${it.id}','${ins.uid}')" ${((save.items[it.id]||0)<=0)?'disabled':''}>${itemInlineVisual(it)}${it.name}</button>`).join('')}
       </div>
       <button onclick="toggleInstanceLock('${ins.uid}')" style="background:linear-gradient(135deg,#374151,#4b5563)">${ins.locked?'🔓 ロック解除':'🔒 ロックする'}</button>
+      ${isCharacterUnit(m)?`<p class="small">${characterRecycleRewardText(ins)}</p><button onclick="recycleCharacter('${ins.uid}')" ${characterRecycleError(ins)?'disabled':''}>経験値アイテム＋コインに変換</button><p class="small">${characterRecycleError(ins)||'この個体を消費します。確定前に内容を確認できます。'}</p>`:''}
       <p>${m.desc}</p></details></article>`;
   });
 }
@@ -86,4 +87,51 @@ function savePartySetup(){
   if(typeof handleTutorialPartySaved==='function'&&handleTutorialPartySaved())return true;
   show('home');
   return true;
+}
+
+function isLastCharacterInstance(ins){
+  return isCharacterUnit(by(ins?.id)) && save.instances.filter(entry=>entry.id===ins.id).length===1;
+}
+function characterRecycleReward(ins){
+  return CHARACTER_RECYCLE_REWARDS[(by(ins?.id)?.rarity.match(/★/g)||[]).length];
+}
+function characterRecycleRewardText(ins){
+  const reward=characterRecycleReward(ins);
+  return reward?`${ITEM_BY_ID[reward.itemId].name} × ${reward.count} ＋ ${reward.coins}コイン`:'';
+}
+function characterRecycleError(ins){
+  if(!ins || !isCharacterUnit(by(ins.id)))return 'キャラクターを選択してください。';
+  if(ins.locked)return 'ロック中です。';
+  if((save.party||[]).includes(ins.uid))return 'パーティー編成中です。';
+  if(save.expeditions?.active?.some(entry=>entry.memberUids?.includes(ins.uid)))return '遠征中です。';
+  if(save.instances.length<=1)return '最後の所持契約体は変換できません。';
+  if(!characterRecycleReward(ins))return '変換報酬が未設定です。';
+  return '';
+}
+function performCharacterRecycle(uidValue, lastConfirmed=false){
+  const ins=getInstance(uidValue),error=characterRecycleError(ins);
+  if(error)return {ok:false,error};
+  if(isLastCharacterInstance(ins)&&!lastConfirmed)return {ok:false,error:'最後の同一キャラクターです。追加確認が必要です。'};
+  const snapshot=JSON.stringify(save),reward=characterRecycleReward(ins);
+  save.instances=save.instances.filter(entry=>entry.uid!==uidValue);
+  if(save.equippedSkills)delete save.equippedSkills[uidValue];
+  save.items[reward.itemId]=(save.items[reward.itemId]||0)+reward.count;
+  save.coins=(save.coins||0)+reward.coins;
+  registerItemDex(reward.itemId);
+  if(!saveGame()){
+    save=JSON.parse(snapshot);
+    return {ok:false,error:'保存できなかったため、変換前の状態に戻しました。'};
+  }
+  return {ok:true,reward};
+}
+function recycleCharacter(uidValue){
+  const ins=getInstance(uidValue),error=characterRecycleError(ins);
+  if(error){alert(error);return;}
+  if(!confirm(`${by(ins.id).name} Lv.${ins.level}（個体 ${String(ins.uid).slice(-6)}）を消費して、${characterRecycleRewardText(ins)}を獲得します。元には戻せません。変換しますか？`))return;
+  const last=isLastCharacterInstance(ins);
+  if(last&&!confirm('この形態のキャラクターは最後の1体です。所持個体がなくなります。それでも変換しますか？'))return;
+  const result=performCharacterRecycle(uidValue,last);
+  if(!result.ok){alert(result.error);return;}
+  renderParty();
+  if(typeof updateAppResourceBar==='function')updateAppResourceBar();
 }

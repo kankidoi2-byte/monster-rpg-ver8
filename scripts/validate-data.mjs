@@ -141,8 +141,8 @@ if (data) {
     if (monster.entityKind === 'character' && (!Number.isInteger(monster.characterNo) || monster.contractable !== false || monster.unitType !== 'character')) {
       fail(`Character ${monster.id} requires characterNo, legacy unitType:character, and contractable:false`);
     }
-    if (monster.entityKind === 'character' && (monster.eligibility.contract || monster.eligibility.alchemyCatalyst || monster.eligibility.alchemySuccess || monster.eligibility.alchemyFailure)) {
-      fail(`Character ${monster.id} cannot be contract or alchemy eligible`);
+    if (monster.entityKind === 'character' && (monster.eligibility.contract || monster.eligibility.alchemySuccess || monster.eligibility.alchemyFailure)) {
+      fail(`Character ${monster.id} cannot be wild-contract or alchemy-result eligible`);
     }
     if (monster.entityKind === 'monster' && monster.eligibility.contract !== (monster.contractable !== false)) {
       fail(`Monster ${monster.id} contract eligibility conflicts with contractable`);
