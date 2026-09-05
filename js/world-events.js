@@ -1,4 +1,5 @@
-/* World-map events are save-only, deterministic transitions. No UI, clock, or storage side effects.
+/* World-map events and one-time guide receipts are save-only, deterministic transitions.
+ * No UI, clock, or storage side effects. A guide receipt never consumes its event.
  * Provisional balance: Elysia 8% after a Light Plain victory; crisis 3%, water 12%,
  * starsea 10% after non-Easy ordinary victories. Golden Land keeps its existing
  * 3/5/8% difficulty rates. Entry persists until victory or explicit skip, never a timer.
@@ -6,6 +7,8 @@
  */
 const WORLD_EVENT_KEYS = Object.freeze(['elysia','crisis','rift','water_secret','starsea','golden_land']);
 const WORLD_FALSE_DRAGONS = Object.freeze(['false_dragon_alfa','false_dragon_beta','false_dragon_gamma']);
+const WORLD_EVENT_GUIDE_KEYS = Object.freeze(['map_intro','elysia','crisis','rift','special_entrance']);
+const WORLD_SPECIAL_ENTRANCE_KEYS = Object.freeze(['water_secret','starsea','golden_land']);
 function worldEventObject(value){return value!==null&&typeof value==='object'&&!Array.isArray(value);}
 function worldEventCount(value){const n=Number(value);return Number.isSafeInteger(n)&&n>=0?n:0;}
 function normalizeWorldEventEntry(key,value){
@@ -31,15 +34,35 @@ function normalizeWorldEventEntry(key,value){
 function normalizeWorldMapState(raw){
   const old=worldEventObject(raw)?raw:{};
   const active=worldEventObject(old.active)?{...old.active}:{};
+  const guides=worldEventObject(old.guides)?{...old.guides}:{};
   WORLD_EVENT_KEYS.forEach(key=>{
     active[key]=normalizeWorldEventEntry(key,active[key]);
+  });
+  WORLD_EVENT_GUIDE_KEYS.forEach(key=>{
+    guides[key]=guides[key]===true;
   });
   return {...old,version:Math.max(1,worldEventCount(old.version)),
     normalVictories:worldEventCount(old.normalVictories),
     lastVictoryReceiptNumber:worldEventCount(old.lastVictoryReceiptNumber),
     processedReceiptIds:Array.isArray(old.processedReceiptIds)?[...new Set(old.processedReceiptIds.filter(v=>typeof v==='string'))]:[],
-    riftCycle:worldEventCount(old.riftCycle),active,
+    riftCycle:worldEventCount(old.riftCycle),active,guides,
     history:Array.isArray(old.history)?old.history.slice(-30).map(entry=>worldEventObject(entry)?{...entry}:entry):[]};
+}
+function worldEventGuideKey(eventKey){
+  if(['elysia','crisis','rift'].includes(eventKey))return eventKey;
+  if(WORLD_SPECIAL_ENTRANCE_KEYS.includes(eventKey))return 'special_entrance';
+  return null;
+}
+function worldEventGuideIsUnread(raw,eventKey){
+  const next=normalizeWorldMapState(raw);
+  const guideKey=worldEventGuideKey(eventKey);
+  return Boolean(guideKey&&next.active[eventKey]&&!next.guides[guideKey]);
+}
+function markWorldEventGuideSeen(raw,eventKey){
+  const next=normalizeWorldMapState(raw);
+  const guideKey=worldEventGuideKey(eventKey);
+  if(guideKey)next.guides[guideKey]=true;
+  return next;
 }
 function rollWorldEventsAfterVictory(raw,details={},randomFn=Math.random){
   const next=normalizeWorldMapState(raw);

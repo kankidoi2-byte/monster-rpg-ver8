@@ -6,6 +6,9 @@ for(const file of ['data','core','state','world-events','save','world-map-flow']
   vm.runInContext(fs.readFileSync(new URL(`../js/${file}.js`,import.meta.url),'utf8'),c);
 const run=code=>vm.runInContext(code,c);
 run("save.progress.tutorial.status='completed';");
+assert.equal(run('worldMapOverviewIntroIsUnread()'),true,'completed and skipped saves get a one-time map introduction');
+assert.equal(run('worldMapDismissOverviewIntro()'),true);
+assert.equal(run('worldMapOverviewIntroIsUnread()'),false,'the introduction receipt is additive and persistent');
 assert.equal(run('MAPS.length'),19);
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'hard').some(m=>m.id==='hikari')"),false);
 assert.equal(run("worldMapAvailableDifficulties(MAPS.find(m=>m.id==='world_between')).length"),0);

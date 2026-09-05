@@ -1268,6 +1268,45 @@ function handleTutorialStellaSkillEquipped(skillId,uid){
   return true;
 }
 
+function prepareTutorialRescueWorldMapStep(stepId){
+  if(activeScreenId()!=='battleChoices')return false;
+  if(stepId==='rescue_world_map_grassland'){
+    if(typeof showWorldMapOverview!=='function')return false;
+    return showWorldMapOverview()!==false;
+  }
+  if(stepId==='rescue_world_map_depart'){
+    if(typeof showWorldMapOverview==='function')showWorldMapOverview();
+    if(typeof showWorldMapLocation!=='function')return false;
+    return showWorldMapLocation(TUTORIAL_FIRST_HUNT.mapId)!==false;
+  }
+  return false;
+}
+function handleTutorialWorldMapLocationSelection(mapId,eventKey=null){
+  if(tutorialCurrentStepId()!=='rescue_world_map_grassland')return false;
+  if(mapId===TUTORIAL_FIRST_HUNT.mapId&&eventKey==null)return false;
+  if(typeof showUiNotice==='function')showUiNotice('今は地図中央の「草原」を選んで、エルナのもとへ向かおう。','warning');
+  if(typeof showWorldMapOverview==='function')showWorldMapOverview();
+  return true;
+}
+function handleTutorialWorldMapDeparture(mapId,difficultyId,eventKey=null){
+  const stepId=tutorialCurrentStepId();
+  if(stepId==='rescue_world_map_grassland'){
+    if(typeof showUiNotice==='function')showUiNotice('まずは世界地図で「草原」を選ぼう。','warning');
+    if(typeof showWorldMapOverview==='function')showWorldMapOverview();
+    return true;
+  }
+  if(stepId!=='rescue_world_map_depart')return false;
+  const expected=mapId===TUTORIAL_FIRST_HUNT.mapId
+    &&difficultyId===TUTORIAL_FIRST_HUNT.difficultyId
+    &&eventKey==null;
+  if(!expected){
+    if(typeof showUiNotice==='function')showUiNotice('最初は草原のEasyを選んで、エルナを助けに行こう。','warning');
+    return true;
+  }
+  tutorialNext(true);
+  return true;
+}
+
 function tutorialFirstHuntIsPending(){
   if(typeof currentTutorialState!=='function')return false;
   const tutorial=currentTutorialState();
@@ -1500,6 +1539,7 @@ function tutorialContractInstance(){
 function tutorialContractInstanceUid(){return tutorialContractInstance()?.uid||null;}
 function prepareTutorialStep(step){
   if(step?.id==='starter_contracts_received'&&!ensureTutorialStarterContracts())return false;
+  if(['rescue_world_map_grassland','rescue_world_map_depart'].includes(step?.id))prepareTutorialRescueWorldMapStep(step.id);
   if(step?.id==='request_accept')renderTutorialSupplyRequest(document.getElementById('battleChoiceList'));
   if(['request_reward_claim','request_reward_received'].includes(step?.id))renderTutorialSupplyReward();
   if(step?.id==='stella_skill_open')renderTutorialStellaSkillCard();
@@ -1537,6 +1577,9 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'フレイガルとアクアロンの契約体を貸すぞ！ ふたりを呼び出して戦おう！',progressLabel:'CONTRACT'},
   {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！',progressLabel:'CONTRACT'},
   {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'本人エルナが共闘',text:'助けてくれるの？ 私も一緒に戦う。背中は任せて！',progressLabel:'GUEST'},
+  {id:'rescue_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押すと世界地図が開くぞ。まずはエルナがいる草原へ向かおう！',progressLabel:'WORLD MAP'},
+  {id:'rescue_world_map_grassland',screenId:'battleChoices',target:'[data-wm-place="grassland"]',advanceOnTarget:true,disableBack:true,title:'草原を選ぼう',text:'世界地図では行き先を選べる。中央の「草原」を押して、出現する相手と難易度を確認しよう！',progressLabel:'WORLD MAP'},
+  {id:'rescue_world_map_depart',screenId:'battleChoices',target:'[data-wm-depart]',externalAdvance:true,transition:'start_elna_rescue',nextStepId:'battle_enemy',disableBack:true,title:'草原へ出発',text:'最初はEasyで進もう。「この場所を探索する」を押したら、エルナの救援戦が始まるぞ！',progressLabel:'WORLD MAP'},
   {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'契約体2体と本人エルナの3人で行くぞ！ スライムはボクが逃がさない！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
   {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'上が敵、下が味方だ。HPを0にすると倒せる。攻撃を1つ選ぶと1ターン進むぞ！',progressLabel:'BATTLE'},
   {id:'battle_actor_open',screenId:'battle',target:'#battleSwitchButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'行動者を選ぼう',text:'ここを押すと、戦う仲間を選べるぞ！',progressLabel:'BATTLE'},
@@ -1657,8 +1700,8 @@ registerTutorialFlow(TUTORIAL_SKILL_GACHA_FLOW_ID,[
   {id:'skill_gacha_rates',screenId:'skillGacha',target:'#skillGachaRateList',title:'種類と排出率を確認',text:'モンスター技とキャラクター技は別のガチャです。獲得したカードは、仲間の技編集で条件とコスト内なら装備できます。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID,[
-  {id:'golden_land_intro',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'黄金郷が現れました',text:'ゴールド系モンスターだけが出現する希少マップです。勝利すると難易度に応じた追加コインを獲得できます。',progressLabel:'GOLDEN LAND'},
-  {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図なら次の候補に出現確定',text:'黄金郷への地図を使った場合、出発した時に地図を1枚消費します。候補を見ただけでは消費されません。',progressLabel:'GOLDEN LAND',nextLabel:'依頼を選ぶ'}
+  {id:'golden_land_intro',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'黄金郷への入口が現れました',text:'世界地図に現れる希少な入口です。ゴールド系モンスターだけが出現し、勝利すると難易度に応じた追加コインを獲得できます。',progressLabel:'GOLDEN LAND'},
+  {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図と自然発見は別の入口',text:'道具の地図を使った入口は出発時に1枚消費します。探索で自然に見つけた入口は消費せず、挑戦するまで保持されます。',progressLabel:'GOLDEN LAND',nextLabel:'世界地図へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_DEX_FLOW_ID,[
   {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'4つの図鑑',text:'モンスター、キャラクター、マップ、アイテムの発見記録を確認できます。項目を選ぶと詳細へ進みます。',progressLabel:'DEX'},
