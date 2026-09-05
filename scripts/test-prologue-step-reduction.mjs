@@ -12,7 +12,7 @@ const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flow
 assert.ok(flowStart>=0&&flowEnd>flowStart,'the prologue main flow is missing');
 const main=tutorial.slice(flowStart,flowEnd);
 const ids=[...main.matchAll(/\{id:'([^']+)'/g)].map(match=>match[1]);
-assert.equal(ids.length,86,'the reduced prologue must stay at 86 essential steps');
+assert.equal(ids.length,87,'the reduced prologue includes one added monster growth-tab action');
 assert.equal(new Set(ids).size,ids.length,'the reduced prologue must not contain duplicate step IDs');
 assert.equal(ids.indexOf('battle_enemy'),ids.indexOf('elna_rescue_start')+1,'rescue start must advance from 13/86 to the adjacent battle step, not jump to 60/86');
 assert.equal(ids.indexOf('home_party'),ids.indexOf('elna_contract_body')+1,'the contract must continue to the adjacent home guidance');
@@ -146,4 +146,4 @@ assert.ok(index.includes('tutorial-replay-scope-1-tutorial-replay-retired-1-tuto
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 
-console.log('Prologue step reduction validation passed (130 -> 86, old-save redirects, essential operations, merged explanations, and prior mobile fixes).');
+console.log('Prologue step reduction validation passed (130 -> 87 (including growth tab), old-save redirects, essential operations, merged explanations, and prior mobile fixes).');
