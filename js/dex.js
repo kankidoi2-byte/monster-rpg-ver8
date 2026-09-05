@@ -78,6 +78,7 @@ function monsterMapEncounterNote(map) {
 }
 function monsterObtainEntries(m) {
   const entries = [];
+  if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',icon:'✨',title:'キャラクターガチャ',note:'その他メニューから召喚・Lv.1で加入'});
   if (INITIAL_PARTY_IDS.includes(m.id)) entries.push({
     kind:'initial',icon:'🎒',title:'初期メンバー',note:'ゲーム開始時から仲間'
   });
@@ -125,7 +126,7 @@ function showDexDetail(id) {
   renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection);
 }
 function showCharacterDexDetail(id) {
-  renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber);
+  renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m));
 }
 function mapDexUnlocked(mapId){return typeof save!=='undefined'&&Array.isArray(save.mapDex)&&save.mapDex.includes(mapId);}
 function mapDexDifficulties(map){return (map.bossOnly||map.rareOnly)?['Hard','Extreme']:['Easy','Normal','Hard','Extreme'];}
