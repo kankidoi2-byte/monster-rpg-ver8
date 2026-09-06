@@ -112,3 +112,29 @@ assert.equal(vm.runInContext('save.coins=30;saveGame()',writeContext),false,'quo
 assert.equal(JSON.parse(writeStorage.get('mb_v95c')).coins,20,'failed writes must not replace the current save');
 
 console.log('Save migration validation passed (5 legacy fixtures, 3 corrupt fixtures, repair, quarantine, backup, integrity hash, and failed writes).');
+
+assert.equal(prepare({}).homeFavoriteId,null,'old saves default to no explicit favorite');
+assert.equal(prepare({homeFavoriteId:'missing'}).homeFavoriteId,null,'unknown favorites are repaired');
+assert.equal(prepare({homeFavoriteId:'aquaron'}).homeFavoriteId,'aquaron','known favorite survives save preparation');
+vm.runInContext("save.homeFavoriteId='elna_beginner'",writeContext);
+failPrimaryWrite=false;
+assert.equal(vm.runInContext('saveGame()',writeContext),true);
+assert.equal(JSON.parse(writeStorage.get('mb_v95c')).homeFavoriteId,'elna_beginner','favorite is included in saved data');
+
+const homeContext=vm.createContext({
+  save:{instances:[{uid:'a',id:'freigal'},{uid:'b',id:'aquaron'},{uid:'c',id:'aquaron'}],party:['a'],homeFavoriteId:'aquaron'},
+  by:id=>['freigal','aquaron'].includes(id)?{id,name:id}:null,
+  saveGame:()=>true,show:()=>{}
+});
+const uiSource=fs.readFileSync(new URL('../js/ui.js',import.meta.url),'utf8');
+vm.runInContext(uiSource.slice(uiSource.indexOf('function homeFavoriteChoices'),uiSource.indexOf('function renderHome(){')),homeContext);
+assert.equal(vm.runInContext('homeFavoriteChoices().length',homeContext),2,'duplicate instances do not duplicate favorite choices');
+assert.equal(vm.runInContext("save.party=['b'];homeFavoriteMonster().id",homeContext),'aquaron','party changes do not replace favorite');
+assert.equal(vm.runInContext("selectHomeFavorite('freigal')",homeContext),true);
+assert.equal(vm.runInContext("save.party[0]",homeContext),'b','favorite selection leaves party unchanged');
+assert.equal(vm.runInContext("selectHomeFavorite('missing')",homeContext),false,'unowned selection is refused');
+homeContext.saveGame=()=>false;
+assert.equal(vm.runInContext("selectHomeFavorite('aquaron')",homeContext),false);
+assert.equal(vm.runInContext('save.homeFavoriteId',homeContext),'freigal','failed save rolls back favorite');
+assert.equal(vm.runInContext("save.instances=[];homeFavoriteMonster()",homeContext),null,'empty inventory is supported');
+console.log('Favorite home validation passed (migration, persistence, independent selection, ownership, and failed writes).');

@@ -114,7 +114,7 @@ function initSave() {
   return {
     schemaVersion:SAVE_SCHEMA_VERSION,
     saveMeta:{migrations:['character_first_lock_v1'], lastSavedAt:null, integrityHash:null},
-    caught:[], instances:[], levels:{}, exp:{},
+    caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
@@ -189,6 +189,7 @@ function repairSave(payload,report=[]){
   if(!isSaveObject(payload.quarantine))payload.quarantine=defaults.quarantine;
   ['unknownInstances','unknownCaughtIds','invalidExpeditions'].forEach(key=>{if(!Array.isArray(payload.quarantine[key]))payload.quarantine[key]=[];});
   const knownMonsterIds=new Set((typeof M!=='undefined'&&Array.isArray(M)?M:[]).map(mon=>mon.id));const canValidateMonsters=knownMonsterIds.size>0;
+  if(typeof payload.homeFavoriteId!=='string'||(canValidateMonsters&&!knownMonsterIds.has(payload.homeFavoriteId)))payload.homeFavoriteId=null;
   const rawInstances=Array.isArray(payload.instances)?payload.instances:[];const seenUids=new Set();payload.instances=[];
   rawInstances.forEach((entry,index)=>{
     if(!isSaveObject(entry)||typeof entry.id!=='string'){report.push(`不正な個体データ${index+1}件目を隔離`);payload.quarantine.unknownInstances.push(entry);return;}

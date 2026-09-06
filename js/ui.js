@@ -40,6 +40,7 @@ function show(id) {
   updateAppResourceBar();
   updateContractorRankHeader();
   if (id === 'home') renderHome();
+  if (id === 'homeFavoriteSelect') renderHomeFavoriteOptions();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
   if (id === 'party')    renderParty();
   if (id === 'dexHub')   renderDexHub();
@@ -309,7 +310,46 @@ function updateAppNavigation(screenId){
   const section = appNavigationSection(screenId);
   nav.querySelectorAll('[data-nav]').forEach(button => button.classList.toggle('is-current', button.dataset.nav === section));
 }
+function homeFavoriteChoices(){
+  return [...new Set((save.instances || []).map(instance=>instance.id))].map(id=>by(id)).filter(Boolean);
+}
+function homeFavoriteMonster(){
+  const owned=homeFavoriteChoices();
+  return owned.find(mon=>mon.id===save.homeFavoriteId) || owned[0] || null;
+}
+function renderHomeFavorite(){
+  const stage=document.getElementById('homeFavoriteStage');
+  if(!stage)return;
+  const mon=homeFavoriteMonster();
+  stage.innerHTML=`<div class="home-favorite-art">${mon?vis(mon):'<div class="home-favorite-empty">最初の仲間を迎えよう</div>'}</div><div class="home-favorite-caption"><div><small>FAVORITE</small><strong>${mon?mon.name:'あなたの冒険が始まる'}</strong></div><button type="button" onclick="show('homeFavoriteSelect')">お気に入り変更</button></div>`;
+}
+function renderHomeFavoriteOptions(){
+  const list=document.getElementById('homeFavoriteOptions');
+  if(!list)return;
+  const selected=homeFavoriteMonster();
+  list.replaceChildren();
+  const choices=homeFavoriteChoices();
+  if(!choices.length){list.textContent='仲間を迎えると、ここから選べるようになります。';return;}
+  choices.forEach(mon=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='home-favorite-option';
+    button.setAttribute('aria-pressed',String(mon.id===selected?.id));
+    button.innerHTML=`${vis(mon, 'loading="lazy"')}<strong>${mon.name}</strong>${mon.id===selected?.id?'<small>表示中</small>':''}`;
+    button.addEventListener('click',()=>selectHomeFavorite(mon.id));
+    list.appendChild(button);
+  });
+}
+function selectHomeFavorite(id){
+  if(!homeFavoriteChoices().some(mon=>mon.id===id))return false;
+  const previous=save.homeFavoriteId;
+  save.homeFavoriteId=id;
+  if(!saveGame()){save.homeFavoriteId=previous;return false;}
+  show('home');
+  return true;
+}
 function renderHome(){
+  renderHomeFavorite();
   const partyPreview = document.getElementById('homePartyPreview');
   const growthPreview = document.getElementById('homeGrowthPreview');
   const expeditionPreview = document.getElementById('homeExpeditionPreview');
@@ -335,7 +375,7 @@ function renderHome(){
   if(expeditionPreview){
     const active=Array.isArray(save?.expeditions?.active) ? save.expeditions.active : [];
     const completed=active.filter(entry=>entry?.status==='complete').length;
-    expeditionPreview.innerHTML = completed ? `<div><span class="ui-eyebrow">EXPEDITION</span><strong>${completed}件の遠征報酬を受け取れます</strong></div><button onclick="showExpedition()">受け取る</button>` : `<div><span class="ui-eyebrow">EXPEDITION</span><strong>${active.length?'遠征が進行中です':'遠征枠が空いています'}</strong></div><button onclick="showExpedition()">${active.length?'確認':'派遣する'}</button>`;
+    expeditionPreview.innerHTML = `<button type="button" onclick="showExpedition()"><small>${completed?'報酬あり':active.length?'派遣中':'控えの仲間と冒険'}</small><strong>遠征</strong><span>${completed?`${completed}件 受け取る ›`:active.length?'状況を見る ›':'派遣する ›'}</span></button>`;
   }
 }
 function showTypeChart() {
