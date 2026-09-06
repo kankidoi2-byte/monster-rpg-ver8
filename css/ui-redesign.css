@@ -318,12 +318,6 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .home-story-row .home-adventure-copy strong{font-size:clamp(20px,5.2vw,28px);line-height:1.25}
 .home-story-row .home-adventure-copy>span{font-size:10px;line-height:1.5}
 .home-story-row .home-adventure-action{position:relative;inset:auto;align-self:flex-start;font-size:11px;padding:6px 10px}
-.home-story-row .home-notice-preview{width:100%;margin:0;min-width:0;display:flex}
-.home-story-row .home-notice-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:14px;border-radius:20px}
-.home-story-row .home-notice-copy>span{flex-wrap:wrap;gap:3px 8px}
-.home-story-row .home-notice-copy strong{white-space:normal;font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
-.home-story-row .home-notice-arrow{display:none}
-.home-story-row .notice-new-badge{position:absolute;top:12px;right:12px}
 .story-page-heading{text-align:left;margin-bottom:12px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px 12px}
 .story-page-heading .ui-back-link{position:static;margin:0}
 .story-page-heading h1{font-size:24px;margin:0}
@@ -345,3 +339,27 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .story-empty-state small{display:inline-block;margin-top:12px;padding:6px 12px;border-radius:999px;background:#edf4f7;color:#63798e}
 @media(min-width:600px){.home-story-row{grid-template-columns:minmax(0,260px) minmax(0,1fr)}}
 @media(max-width:360px){.home-story-row{gap:8px}.home-story-row .home-adventure,.home-story-row .home-notice-card{padding:10px}.home-story-row .home-adventure-copy strong{font-size:19px}.home-story-row .home-adventure-copy>span{font-size:9px}}
+
+
+/* Keep notices secondary; browse stories by chapter. */
+.home-welcome{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:3px 10px}
+.home-welcome>.ui-eyebrow{grid-column:1/-1}
+.home-welcome .home-notice-preview{width:auto;margin:0}
+.home-notice-button{display:flex;align-items:center;justify-content:center;gap:3px;min-height:44px;margin:0;padding:8px 12px;border:1px solid #bcd7e3;border-radius:12px;background:#ffffffc9;color:var(--ui-sky-700);font-size:12px;box-shadow:0 3px 8px #275b7512}
+.home-notice-button:focus-visible,.story-chapter-banner:focus-visible{outline:3px solid #e5a91d;outline-offset:3px}
+.home-story-row .home-adventure{margin:0}
+.story-chapter{width:min(100%,780px);margin:0 auto 14px;text-align:left}
+.story-chapter-banner{position:relative;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:140px;padding:22px;border:1px solid #e9d28e;border-radius:18px;overflow:hidden;cursor:pointer;list-style:none;color:#fff;background:linear-gradient(90deg,#112f4bf5 10%,#173c5ccd 52%,#173c5c55),url('../images/maps/world_between.webp') center 43%/cover;box-shadow:0 7px 18px #275b7525}
+.story-chapter-banner::-webkit-details-marker{display:none}
+.story-chapter-copy{display:grid;gap:7px}
+.story-chapter-copy small{font-size:10px;letter-spacing:.15em;color:#ffe2a0}
+.story-chapter-copy strong{font-family:Georgia,"Noto Serif JP",serif;font-size:28px;color:#fff}
+.story-chapter-copy>span{font-size:12px;color:#f5ebd5}
+.story-chapter-toggle{display:flex;align-items:center;gap:8px;flex-shrink:0;padding:8px 10px;border:1px solid #ffffff70;border-radius:999px;background:#173c5c99;color:#fff;font-size:11px}
+.chapter-close-label,.story-chapter[open] .chapter-open-label{display:none}
+.story-chapter[open] .chapter-close-label{display:inline}
+.story-chapter-episodes{padding-top:12px}
+.story-chapter[open] .story-chapter-episodes{animation:chapterReveal .22s ease-out}
+@keyframes chapterReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.story-chapter[open] .story-chapter-episodes{animation:none}}
+@media(max-width:360px){.home-notice-button{padding:8px;font-size:11px}.story-chapter-banner{padding:16px;gap:10px}.story-chapter-toggle{padding:7px 8px}}

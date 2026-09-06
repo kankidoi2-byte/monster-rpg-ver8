@@ -45,15 +45,8 @@ function renderNoticePreview() {
   const preview = document.getElementById('homeNoticePreview');
   const notice = latestGameNotice();
   if (!preview || !notice) return;
-  const meta = noticeCategoryMeta(notice.category);
-  preview.innerHTML = `<button type="button" class="home-notice-card" onclick="showNotices()">
-    <span class="home-notice-icon" aria-hidden="true">${meta.icon}</span>
-    <span class="home-notice-copy">
-      <span><b>${escapeNoticeHtml(meta.label)}</b><time datetime="${escapeNoticeHtml(notice.date)}">${escapeNoticeHtml(noticeDateLabel(notice.date))}</time></span>
-      <strong>${escapeNoticeHtml(notice.title)}</strong>
-    </span>
-    <span class="notice-new-badge" data-notice-unread>NEW</span>
-    <span class="home-notice-arrow" aria-hidden="true">›</span>
+  preview.innerHTML = `<button type="button" class="home-notice-button" onclick="showNotices()" aria-label="お知らせを開く">
+    <span>お知らせ</span><span class="notice-menu-dot" data-notice-unread aria-label="未読あり"></span>
   </button>`;
   updateNoticeIndicators();
 }
