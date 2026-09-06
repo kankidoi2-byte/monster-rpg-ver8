@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-favorite-home-frame',date:'2026-09-06',category:'update',
+    title:'お気に入りに金色のフレームを追加',
+    body:'ホームのお気に入り画像に、金色のフレームを付けました。仲間の名前も濃い文字と明るい名札で読みやすくしました。'
+  }),
+  Object.freeze({
     id:'20260906-favorite-home',date:'2026-09-06',category:'update',
     title:'お気に入りの仲間をホームに',
     body:'所持しているモンスターやキャラクターを、パーティーとは別にホームへ飾れるようになりました。「お気に入り変更」から選べます。ストーリー・遠征・編成をコンパクトにまとめました。'
