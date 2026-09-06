@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-favorite-home',date:'2026-09-06',category:'update',
+    title:'お気に入りの仲間をホームに',
+    body:'所持しているモンスターやキャラクターを、パーティーとは別にホームへ飾れるようになりました。「お気に入り変更」から選べます。ストーリー・遠征・編成をコンパクトにまとめました。'
+  }),
+  Object.freeze({
     id:'20260906-story-chapter-banner',date:'2026-09-06',category:'update',
     title:'物語を章ごとに選びやすく',
     body:'ホームのお知らせを小さなボタンにまとめました。メインストーリーの序章バナーを押すと各話が開き、もう一度押すと閉じます。'
