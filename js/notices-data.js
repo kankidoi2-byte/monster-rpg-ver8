@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-ornate-favorite-portrait',date:'2026-09-06',category:'update',
+    title:'お気に入りを豪華な肖像画に',
+    body:'ホームの額縁を、金色の彫刻と紋章を添えたデザインにしました。名前は中央の銘板に表示し、お気に入り変更ボタンを右上に移しました。'
+  }),
+  Object.freeze({
     id:'20260906-favorite-home-frame',date:'2026-09-06',category:'update',
     title:'お気に入りに金色のフレームを追加',
     body:'ホームのお気に入り画像に、金色のフレームを付けました。仲間の名前も濃い文字と明るい名札で読みやすくしました。'
