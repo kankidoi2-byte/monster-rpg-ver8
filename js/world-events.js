@@ -2,13 +2,14 @@
  * No UI, clock, or storage side effects. A guide receipt never consumes its event.
  * Provisional balance: Elysia 8% after a Light Plain victory; crisis 3%, water 12%,
  * starsea 10% after non-Easy ordinary victories. Golden Land keeps its existing
- * 3/5/8% difficulty rates. Entry persists until victory or explicit skip, never a timer.
+ * 3/5/8% difficulty rates. Entrances expire after 2/3 other completed battles; no wall clock timer.
  * Callers exclude tutorial/event battles. Use world-victory:<lifetime wins> receipts.
  */
 const WORLD_EVENT_KEYS = Object.freeze(['elysia','crisis','rift','water_secret','starsea','golden_land']);
 const WORLD_FALSE_DRAGONS = Object.freeze(['false_dragon_alfa','false_dragon_beta','false_dragon_gamma']);
 const WORLD_EVENT_GUIDE_KEYS = Object.freeze(['map_intro','elysia','crisis','rift','special_entrance']);
 const WORLD_SPECIAL_ENTRANCE_KEYS = Object.freeze(['water_secret','starsea','golden_land']);
+const WORLD_EVENT_BATTLE_LIMITS = Object.freeze({elysia:3,crisis:3,rift:3,water_secret:2,starsea:2,golden_land:2});
 function worldEventObject(value){return value!==null&&typeof value==='object'&&!Array.isArray(value);}
 function worldEventCount(value){const n=Number(value);return Number.isSafeInteger(n)&&n>=0?n:0;}
 function normalizeWorldEventEntry(key,value){
@@ -17,6 +18,9 @@ function normalizeWorldEventEntry(key,value){
   const maps={elysia:'light_plain',crisis:'starsea',rift:'world_between',water_secret:'water_secret',starsea:'starsea',golden_land:'golden_land'};
   const monsters={elysia:['hikari'],crisis:['doom_nemesion'],rift:WORLD_FALSE_DRAGONS,water_secret:['elna_water','suiren'],starsea:['nemesion'],golden_land:['slime_gold']};
   entry.mapId=maps[key];
+  const limit=WORLD_EVENT_BATTLE_LIMITS[key];
+  entry.remainingBattles=Number.isSafeInteger(entry.remainingBattles)&&entry.remainingBattles>0
+    ?Math.min(limit,entry.remainingBattles):limit;
   if(key==='rift'){
     // Retain pending opportunities and their current opponent; damaged references
     // cannot leave an unchallengeable entrance permanently occupying the event slot.
@@ -79,9 +83,9 @@ function rollWorldEventsAfterVictory(raw,details={},randomFn=Math.random){
   }
   next.normalVictories++;
   const add=(key,rate,event)=>{
-    if(next.active[key]||rate<=0)return;
+    if(next.active[key]||details.expiredKeys?.includes(key)||rate<=0)return;
     const roll=Number(randomFn());
-    if(Number.isFinite(roll)&&roll>=0&&roll<rate)next.active[key]={...event,source:'ordinary_victory',discoveredAtVictory:next.normalVictories};
+    if(Number.isFinite(roll)&&roll>=0&&roll<rate)next.active[key]={...event,remainingBattles:WORLD_EVENT_BATTLE_LIMITS[key],source:'ordinary_victory',discoveredAtVictory:next.normalVictories};
   };
   const difficulty=details.difficultyId;
   const eligible=['normal','hard','extreme'].includes(difficulty);
@@ -95,11 +99,11 @@ function rollWorldEventsAfterVictory(raw,details={},randomFn=Math.random){
 }
 function resolveWorldEvent(raw,key,outcome='defeat'){
   const next=normalizeWorldMapState(raw);
-  if(!WORLD_EVENT_KEYS.includes(key)||!next.active[key]||!['defeat','skip'].includes(outcome))return next;
+  if(!WORLD_EVENT_KEYS.includes(key)||!next.active[key]||!['defeat','skip','expired'].includes(outcome))return next;
   const entry=next.active[key];
   next.active[key]=null;
   next.history.push({key,outcome,monsterId:entry.monsterId||null,atVictory:next.normalVictories,
-    ...(key==='crisis'?{handledBy:outcome==='skip'?'false_dragons':'player'}:{})});
+    ...(key==='crisis'?{handledBy:outcome!=='defeat'?'false_dragons':'player'}:{})});
   next.history=next.history.slice(-30);
   if(key==='crisis'){
     const offset=next.riftCycle%WORLD_FALSE_DRAGONS.length;
@@ -108,11 +112,28 @@ function resolveWorldEvent(raw,key,outcome='defeat'){
     const pending=previous?([previous.monsterId,...(Array.isArray(previous.monsterIds)?previous.monsterIds:[])]).filter(id=>WORLD_FALSE_DRAGONS.includes(id)):[];
     const monsterIds=[...new Set([...pending,...fresh])];
     next.active.rift={...previous,mapId:'world_between',monsterId:monsterIds[0],monsterIds,
-      source:'crisis_trace',discoveredAtVictory:previous?.discoveredAtVictory??next.normalVictories};
+      remainingBattles:WORLD_EVENT_BATTLE_LIMITS.rift,source:'crisis_trace',discoveredAtVictory:previous?.discoveredAtVictory??next.normalVictories};
     next.riftCycle++;
-  }else if(key==='rift'){
+  }else if(key==='rift'&&outcome==='defeat'){
     const pending=Array.isArray(entry.monsterIds)?entry.monsterIds.filter(id=>WORLD_FALSE_DRAGONS.includes(id)&&id!==entry.monsterId):[];
-    if(pending.length)next.active.rift={...entry,monsterId:pending[0],monsterIds:pending};
+    if(pending.length)next.active.rift={...entry,monsterId:pending[0],monsterIds:pending,remainingBattles:WORLD_EVENT_BATTLE_LIMITS.rift};
   }
   return next;
+}
+
+// Age only entrances present before the result. Resolve crisis last so its new
+// traces receive their full lifetime, even when an old rift expires this battle.
+function advanceWorldEventsAfterBattle(raw,protectedKey=null){
+  let next=normalizeWorldMapState(raw);
+  const expiredKeys=[];
+  for(const key of WORLD_EVENT_KEYS){
+    const entry=next.active[key];
+    if(!entry||key===protectedKey)continue;
+    if(entry.remainingBattles===1)expiredKeys.push(key);
+    else entry.remainingBattles--;
+  }
+  for(const key of [...expiredKeys.filter(key=>key!=='crisis'),...expiredKeys.filter(key=>key==='crisis')])
+    next=resolveWorldEvent(next,key,'expired');
+  if(expiredKeys.includes(next.navigation?.eventKey))next.navigation={...next.navigation,eventKey:null};
+  return {state:next,expiredKeys};
 }

@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-world-entrance-expiry',date:'2026-09-06',category:'update',
+    title:'特殊な入口が冒険とともに移り変わります',
+    body:'秘境・星の海・黄金郷の自然入口はほかで2戦、女神の降臨・危機・偽竜の痕跡はほかで3戦すると終了します。残り1戦で警告します。危機は偽竜が対処し、新たな痕跡を残します。その入口への挑戦中やゲームを閉じている間は期限が進まず、閉じても再出現します。'
+  }),
+  Object.freeze({
     id:'20260906-immersive-favorite-home',date:'2026-09-06',category:'update',
     title:'お気に入りをもっと大きく',
     body:'ホームのイラストを大きく広げ、金箔や彫刻の質感がある額縁に変更しました。名前は額縁に添え、ストーリーと遠征は絵の下端から開けます。'

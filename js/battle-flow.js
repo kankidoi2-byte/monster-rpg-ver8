@@ -280,6 +280,7 @@ function performManualPartySwitch(nextIndex) {
   return true;
 }
 function losePartyBattle() {
+  if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
   completeBattleTurn();
   document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';
   endPartyRecovery();
@@ -306,6 +307,7 @@ function endPartyRecovery() {
 function runAway() {
   if (busy) return;
   if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
+  if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
   pStatus = null; eStatus = null;
   pPoisonTurns = 0; ePoisonTurns = 0;
   pParalysisTurns = 0; eParalysisTurns = 0;

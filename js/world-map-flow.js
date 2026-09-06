@@ -10,8 +10,8 @@ const WORLD_EVENT_LABELS = Object.freeze({
 const WORLD_EVENT_FIRST_GUIDES = Object.freeze({
   elysia:['はじめての降臨','光の平原に、★4「光の女神エリシア」がまれに降臨します。女神との試練は契約できず、通常の探索はそのまま続けられます。'],
   crisis:['はじめての世界危機','★5「滅亡の星ネメシオン」が世界へ影響を及ぼしています。自分で挑むか、今回は偽竜へ対処を任せるかを選べます。どちらを選んでも、偽竜の痕跡は残ります。'],
-  rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜たちの痕跡です。世界の狭間で3体へ順に挑めます。入口に制限時間はありません。'],
-  special_entrance:['はじめての特殊入口','探索で見つけた特殊な入口は、画面を閉じたり別の場所へ移動したりしても保持されます。準備ができた時に挑戦できます。']
+  rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜たちの痕跡です。世界の狭間で3体へ順に挑めます。ほかで3戦すると痕跡は消えます。1体倒すたびに猶予は3戦に戻ります。'],
+  special_entrance:['はじめての特殊入口','探索で見つけた特殊な入口は、ほかで2戦すると閉じます。閉じても再び見つかることがあります。ゲームを閉じている間は進みません。']
 });
 function clearResolvedWorldMapNavigation(state,eventKey){
   const next=typeof normalizeWorldMapSaveState==='function'
@@ -29,7 +29,7 @@ function worldMapActiveEvents(){
   return Object.entries(state.active).filter(([key,event])=>WORLD_EVENT_LABELS[key]&&event).map(([key,event])=>{
     const guideKey=typeof worldEventGuideKey==='function'?worldEventGuideKey(key):null;
     const guide=WORLD_EVENT_FIRST_GUIDES[guideKey];
-    return {...event,key,title:WORLD_EVENT_LABELS[key][0],description:WORLD_EVENT_LABELS[key][1],kind:key,
+    return {...event,key,title:WORLD_EVENT_LABELS[key][0],description:WORLD_EVENT_LABELS[key][1]+(event.remainingBattles===1?' 入口が消えかけている（ほかであと1戦）。':` ほかで${event.remainingBattles}戦すると${key==='crisis'?'偽竜が対処します':'入口が閉じます'}。`),kind:key,
       guideUnread:typeof worldEventGuideIsUnread==='function'&&worldEventGuideIsUnread(state,key),
       guideTitle:guide?.[0]||'',guideDescription:guide?.[1]||''};
   });
@@ -92,6 +92,7 @@ function worldMapSkipCrisis(){
 function recordWorldMapVictory(){
   const request=activeHuntRequest;
   if(!request?.worldMapExploration||request.worldMapResultRecorded)return;
+  const expiredKeys=recordWorldMapBattleResult();
   request.worldMapResultRecorded=true;
   if(request.worldMapEventKey){
     const event=normalizeWorldMapState(save.worldMap).active[request.worldMapEventKey];
@@ -108,6 +109,19 @@ function recordWorldMapVictory(){
   if(tutorial&&!['completed','skipped'].includes(tutorial.status))return;
   if(selectedMap?.bossOnly||selectedMap?.rareOnly||selectedMap?.goldenLand)return;
   save.worldMap=rollWorldEventsAfterVictory(save.worldMap,{
-    receiptId:`world-victory:${save.history.wins}`,difficultyId:request.difficultyId,mapId:request.mapId
+    expiredKeys,receiptId:`world-victory:${save.history.wins}`,difficultyId:request.difficultyId,mapId:request.mapId
   });
+}
+
+function recordWorldMapBattleResult({saveNow=false}={}){
+  const request=activeHuntRequest;
+  if(!request?.worldMapExploration||request.worldMapExpiryRecorded)return [];
+  request.worldMapExpiryRecorded=true;
+  const tutorial=save.progress?.tutorial;
+  if(tutorial&&!['completed','skipped'].includes(tutorial.status))return [];
+  const result=advanceWorldEventsAfterBattle(save.worldMap,request.worldMapEventKey);
+  save.worldMap=result.state;
+  for(const key of result.expiredKeys)clearWorldMapRuntimeEventSelection(key);
+  if(saveNow)saveGame();
+  return result.expiredKeys;
 }
