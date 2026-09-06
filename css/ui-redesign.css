@@ -373,14 +373,14 @@ body:has(#home.active):not(.title-mode){padding-bottom:0}
 #home .home-notice-preview{margin:0;width:auto}
 #home .home-notice-button{min-height:40px;padding:8px 12px;font-size:13px;border-radius:14px}
 .home-favorite-stage{position:relative;min-height:0;overflow:hidden;border-radius:24px;background:radial-gradient(ellipse at center,#d4e9e780,transparent 72%)}
-.home-favorite-art{position:absolute;inset:0 0 44px;display:flex;align-items:center;justify-content:center}
-#home .home-favorite-art img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:16px!important}
+.home-favorite-art{position:absolute;inset:4px 4px 56px;display:flex;align-items:center;justify-content:center}
+#home .home-favorite-art img{width:auto!important;height:auto!important;max-width:100%;max-height:100%;object-fit:contain!important;border-radius:6px!important;flex-shrink:0;border:3px double #b49148;padding:4px;background:linear-gradient(#d6b966,#d6b966) left top/18px 2px no-repeat,linear-gradient(#d6b966,#d6b966) left top/2px 18px no-repeat,linear-gradient(#d6b966,#d6b966) right top/18px 2px no-repeat,linear-gradient(#d6b966,#d6b966) right top/2px 18px no-repeat,linear-gradient(#d6b966,#d6b966) left bottom/18px 2px no-repeat,linear-gradient(#d6b966,#d6b966) left bottom/2px 18px no-repeat,linear-gradient(#d6b966,#d6b966) right bottom/18px 2px no-repeat,linear-gradient(#d6b966,#d6b966) right bottom/2px 18px no-repeat,#fffaf0;box-shadow:0 3px 10px #57451e24}
 .home-favorite-art .emoji{font-size:100px}
 .home-favorite-empty{color:var(--ink-soft);text-align:center}
-.home-favorite-caption{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px;background:linear-gradient(90deg,#f5faf4e6,#f5faf480);border-radius:12px}
+.home-favorite-caption{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px;background:#fffdf3;color:#20394b;border:1px solid #dfd5b7;border-radius:12px}
 .home-favorite-caption>div{min-width:0}
 .home-favorite-caption small{display:block;font-size:9px;letter-spacing:.16em;color:#326586}
-.home-favorite-caption strong{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-favorite-caption strong{display:block;color:#20394b;font-weight:800;text-shadow:none;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-favorite-caption button{flex-shrink:0;min-height:40px;padding:6px 10px;font-size:11px;border-radius:12px}
 #home .home-story-row{margin:0;gap:10px;grid-template-columns:1fr 1fr;width:100%}
 #home .home-adventure{aspect-ratio:auto;min-height:84px;height:84px;margin:0;padding:10px 12px;border-radius:18px;box-shadow:0 5px 16px #244d6414;display:flex;align-items:center}
