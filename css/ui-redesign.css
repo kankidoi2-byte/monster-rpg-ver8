@@ -420,3 +420,37 @@ body:has(#home.active):not(.title-mode){padding-bottom:0}
 @media(max-height:650px){#home.active{gap:5px;padding-top:4px}#home .home-adventure,#home .home-expedition-card button{height:68px;min-height:68px}#home .home-adventure-copy strong,#home .home-expedition-card strong{font-size:17px}}
 body:has(#home.active):not(.title-mode){min-height:100dvh}
 body:has(#home.active):not(.title-mode) .app-topbar{height:58px;min-height:58px}
+
+/* Immersive home: portrait first, actions near the lower edge. */
+#home.active{position:relative;padding:4px 8px calc(var(--ui-nav-height) + env(safe-area-inset-bottom,0px) + 14px);grid-template-rows:minmax(0,1fr) 50px;gap:6px}
+#home.active .home-welcome{position:absolute;z-index:4;top:8px;right:12px;width:auto;pointer-events:none}
+#home.active .home-welcome h1{display:none}
+#home.active .home-notice-preview{pointer-events:auto}
+#home.active .home-notice-button{min-height:34px;padding:6px 10px;font-size:11px;background:#fffdf2ed}
+#home.active .home-favorite-stage{grid-row:1;overflow:visible;border-radius:0;background:none}
+#home.active .home-favorite-art{inset:0 0 42px}
+#home.active .home-portrait-frame{width:min(calc(100cqw - 28px),calc((100cqh - 28px)*var(--portrait-ratio)));height:min(calc(100cqh - 28px),calc((100cqw - 28px)/var(--portrait-ratio)));border:14px solid transparent;border-image:url('../images/ui/home_realistic_frame_v1.webp') 92 80 114 80 stretch;background:#392a17;box-shadow:0 7px 18px #49301245}
+#home.active .home-portrait-frame::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 3px 4px 8px #26180d65,inset -1px -1px 3px #26180d35}
+#home.active .home-favorite-change{top:46px;right:4px;min-height:34px;background:#fff8e8ed}
+#home.active .home-favorite-caption{bottom:-45px;width:calc(100% + 20px);min-height:34px;padding:5px 17px;border-radius:3px 3px 12px 12px;z-index:2}
+#home.active .home-favorite-caption strong{font-size:13px;line-height:1.2}
+#home.active .home-favorite-caption::before,#home.active .home-favorite-caption::after{font-size:8px}
+#home.active .home-story-row{position:absolute;z-index:3;left:16px;right:16px;bottom:calc(var(--ui-nav-height) + env(safe-area-inset-bottom,0px) + 126px);width:auto;gap:8px}
+#home.active .home-adventure,#home.active .home-expedition-card button{height:48px;min-height:48px;padding:6px 12px}
+#home.active .home-adventure{border-radius:12px;background:linear-gradient(115deg,#163f57ed,#276078ed);border:1px solid #e0c983;box-shadow:0 3px 8px #163f5726}
+#home.active .home-adventure-copy{gap:1px}
+#home.active .home-adventure-copy strong{font-size:17px}
+#home.active .home-adventure-copy small{font-size:8px;padding:1px 5px}
+#home.active .home-story-symbol{width:30px;top:11px;right:10px;opacity:.5}
+#home.active .home-expedition-card{border-radius:12px;background:#fff7e4ed;border:1px solid #d7bd78}
+#home.active .home-expedition-card strong{font-size:17px;line-height:1.2}
+#home.active .home-expedition-card small{display:none}
+#home.active .home-expedition-card span{font-size:9px;line-height:1.2}
+#home.active .home-block{grid-row:2;display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:4px}
+#home.active .ui-section-heading{margin:0;display:block}
+#home.active .ui-section-heading>div{display:none}
+#home.active #homePartyEditButton{padding:4px;min-height:44px;font-size:11px}
+#home.active .home-party-member{background:#fffdf3ed}
+#home.active .home-favorite-empty{position:relative;text-align:center}
+#home.active .home-favorite-empty .home-favorite-caption{position:relative;bottom:auto;left:auto;transform:none;width:auto;margin-top:10px}
+@media(max-width:360px){#home.active .home-party-member{grid-template-columns:28px minmax(0,1fr);padding:4px}#home.active .home-party-member img{width:28px!important}}

@@ -321,7 +321,8 @@ function renderHomeFavorite(){
   const stage=document.getElementById('homeFavoriteStage');
   if(!stage)return;
   const mon=homeFavoriteMonster();
-  stage.innerHTML=`<button type="button" class="home-favorite-change" onclick="show('homeFavoriteSelect')">お気に入り変更</button><div class="home-favorite-art">${mon?`<div class="home-portrait-frame">${vis(mon, `onload="this.parentElement.style.setProperty('--portrait-ratio',this.naturalWidth/this.naturalHeight)"`)}<span class="home-portrait-crest" aria-hidden="true"></span></div>`:'<div class="home-favorite-empty">最初の仲間を迎えよう</div>'}</div><div class="home-favorite-caption"><div><small>FAVORITE</small><strong>${mon?mon.name:'あなたの冒険が始まる'}</strong></div></div>`;
+  const caption=`<div class="home-favorite-caption"><div><strong>${mon?mon.name:'あなたの冒険が始まる'}</strong></div></div>`;
+  stage.innerHTML=`<button type="button" class="home-favorite-change" onclick="show('homeFavoriteSelect')">お気に入り変更</button><div class="home-favorite-art">${mon?`<div class="home-portrait-frame">${vis(mon, `onload="this.parentElement.style.setProperty('--portrait-ratio',this.naturalWidth/this.naturalHeight)"`)}${caption}</div>`:`<div class="home-favorite-empty">最初の仲間を迎えよう${caption}</div>`}</div>`;
 }
 function renderHomeFavoriteOptions(){
   const list=document.getElementById('homeFavoriteOptions');

@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-immersive-favorite-home',date:'2026-09-06',category:'update',
+    title:'お気に入りをもっと大きく',
+    body:'ホームのイラストを大きく広げ、金箔や彫刻の質感がある額縁に変更しました。名前は額縁に添え、ストーリーと遠征は絵の下端から開けます。'
+  }),
+  Object.freeze({
     id:'20260906-ornate-favorite-portrait',date:'2026-09-06',category:'update',
     title:'お気に入りを豪華な肖像画に',
     body:'ホームの額縁を、金色の彫刻と紋章を添えたデザインにしました。名前は中央の銘板に表示し、お気に入り変更ボタンを右上に移しました。'
