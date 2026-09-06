@@ -63,7 +63,7 @@ function renderDexHub(){
   const mapCount=MAPS.filter(map=>save.mapDex?.includes(map.id)).length;
   const cards=[
     {id:'dexHubMonsterButton',screen:'dex',icon:'🐉',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
-    {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態',count:dexRegisteredCount(characters),total:characters.length},
+    {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態（登場予定を含む）',count:dexRegisteredCount(characters),total:characterDexEntries().length},
     {screen:'mapDex',icon:'🗺️',title:'マップ図鑑',desc:'土地・生息種・特殊イベント',count:mapCount,total:MAPS.length},
     {screen:'itemDex',icon:'🎒',title:'アイテム図鑑',desc:'入手した道具と素材',count:itemCount,total:ITEM_DEX_ITEMS.length}
   ];
@@ -121,6 +121,29 @@ function renderUnitDexDetail(id, targetId, numberLabel, detailSection=renderUnit
 }
 function characterDexNumber(m) {
   return `C-${String(m.characterNo).padStart(3,'0')}`;
+}
+function characterDexEntries() {
+  const characters=M.filter(isCharacterUnit);
+  const assigned=new Set(characters.map(unit=>unit.characterNo));
+  return [...characters,...CHARACTER_DEX_RESERVED_SLOTS.filter(slot=>!assigned.has(slot.characterNo))]
+    .sort((a,b)=>a.characterNo-b.characterNo);
+}
+function characterDexSlotVisual(slot, lazy=false) {
+  if(slot.imgKey && IMG[slot.imgKey]) return `<img class="character-dex-slot-image" src="${IMG[slot.imgKey]}" alt="${slot.name}"${lazy?' loading="lazy"':''} decoding="async">`;
+  return '<span class="character-dex-placeholder" aria-hidden="true">？</span>';
+}
+function showCharacterDexSlot(slotId) {
+  const slot=CHARACTER_DEX_RESERVED_SLOTS.find(entry=>entry.slotId===slotId);
+  const detail=document.getElementById('characterDexDetail');
+  if(!slot||!detail)return;
+  detail.innerHTML=`<div class="dex-detail ui-dex-detail">
+    ${characterDexSlotVisual(slot)}<h2>${slot.name}</h2>
+    <p>${characterDexNumber(slot)} / <span class="rarity">${slot.rarity}</span> ${typesHtml(slot.types)}</p>
+    <p><b>登場予定</b> · 序章</p>
+    <p>${slot.rarity.length===2?'キャラクターガチャで加入する基本形です。':'育成で解放する進化形です。'}</p>
+    <p>今後の登場に向けて図鑑の枠を用意しています。現在は入手・対戦できません。</p>
+  </div>`;
+  detail.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function monsterDexNumber(m) {
   return m.dexNo ?? m.no;
@@ -239,7 +262,10 @@ function renderCharacterDex() {
   if(!screen?.classList.contains('active')) return;
   document.getElementById('characterDexDetail').innerHTML = '';
   document.getElementById('characterDexList').innerHTML =
-    M.filter(isCharacterUnit).sort((a,b)=>(a.characterNo||999)-(b.characterNo||999)).map(m => `
+    characterDexEntries().map(m => m.planned ? `
+      <button class="monster-dex-card character-dex-card character-dex-planned" onclick="showCharacterDexSlot('${m.slotId}')">
+        <span class="monster-dex-no character-dex-no">${characterDexNumber(m)}</span>${characterDexSlotVisual(m, true)}<strong>${m.name}</strong>
+        <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>登場予定 · 詳細を見る ›</small></button>` : `
       <button class="monster-dex-card character-dex-card"${m.id==='elna_beginner'?` data-tutorial-character="${m.id}"`:''} onclick="showCharacterDexDetail('${m.id}')">
         <span class="monster-dex-no character-dex-no">${characterDexNumber(m)}</span>${vis(m, 'loading="lazy" decoding="async"')}<strong>${m.name}</strong>
         <span><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</span><small>詳細を見る ›</small></button>`).join('');
