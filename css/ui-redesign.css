@@ -306,3 +306,42 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 
 /* Dedicated alchemy material artwork fits both regular and compact slots. */
 .alchemy-material-icon .alchemy-material-image{display:block;width:100%;height:100%;min-height:0;object-fit:contain;border-radius:inherit}
+
+/* Compact story entrance and expandable story categories. */
+.home-story-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;width:min(100%,780px);margin:auto;align-items:stretch}
+.home-story-row .home-adventure{width:100%;height:auto;aspect-ratio:1;min-height:180px;border-radius:20px;background:radial-gradient(ellipse at 65% 15%,#487c99,transparent 65%),linear-gradient(145deg,#163954,#275e78);display:flex;flex-direction:column;justify-content:flex-end;padding:14px;gap:9px}
+.home-story-row .home-adventure-shade{display:none}
+.home-story-symbol{position:absolute;right:12%;top:9%;width:42%;color:#ffe2a0;opacity:.85}
+.home-story-symbol svg{display:block;width:100%;height:auto}
+.home-story-row .home-adventure-copy{position:relative;inset:auto;gap:5px}
+.home-story-row .home-adventure-copy small{font-size:9px;padding:3px 7px}
+.home-story-row .home-adventure-copy strong{font-size:clamp(20px,5.2vw,28px);line-height:1.25}
+.home-story-row .home-adventure-copy>span{font-size:10px;line-height:1.5}
+.home-story-row .home-adventure-action{position:relative;inset:auto;align-self:flex-start;font-size:11px;padding:6px 10px}
+.home-story-row .home-notice-preview{width:100%;margin:0;min-width:0;display:flex}
+.home-story-row .home-notice-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:14px;border-radius:20px}
+.home-story-row .home-notice-copy>span{flex-wrap:wrap;gap:3px 8px}
+.home-story-row .home-notice-copy strong{white-space:normal;font-size:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.home-story-row .home-notice-arrow{display:none}
+.home-story-row .notice-new-badge{position:absolute;top:12px;right:12px}
+.story-page-heading{text-align:left;margin-bottom:12px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px 12px}
+.story-page-heading .ui-back-link{position:static;margin:0}
+.story-page-heading h1{font-size:24px;margin:0}
+.story-page-heading p{grid-column:1/-1;margin:2px 0;font-size:12px}
+.story-category-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:min(100%,780px);margin:0 auto 18px;padding:5px;border-radius:16px;background:#dcecf3}
+.story-category-tabs button{min-width:0;min-height:44px;margin:0;padding:8px 3px;border-radius:12px;background:transparent;color:#416177;font-size:12px}
+.story-category-tabs button[aria-pressed="true"]{background:#fff;color:#12639e;box-shadow:0 3px 9px #275b7520}
+.story-category-tabs button:focus-visible,.home-story-row button:focus-visible{outline:3px solid #e5a91d;outline-offset:2px}
+.story-mode-screen [hidden]{display:none!important}
+.story-mode-screen .story-section-heading{display:flex;align-items:center;justify-content:space-between;color:var(--ui-muted);font-size:12px}
+.story-mode-screen .story-section-heading h2{font-size:20px}
+.story-mode-screen .story-continue-card{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:12px;gap:8px;margin-bottom:12px;border-radius:16px}
+.story-mode-screen .story-continue-card h2{font-size:14px}
+.story-mode-screen .story-continue-card button{margin:0;font-size:12px;min-height:44px;padding:8px 12px}
+.story-empty-state{width:min(100%,780px);margin:0 auto;padding:36px 18px;border:1px solid var(--ui-line);border-radius:20px;background:#ffffffb8;color:var(--ui-ink);text-align:center}
+.story-empty-state>span{display:block;font-size:44px;color:#52829c}
+.story-empty-state h2{font-size:18px;margin:12px 0}
+.story-empty-state p{font-size:13px;line-height:1.7;color:var(--ui-muted)}
+.story-empty-state small{display:inline-block;margin-top:12px;padding:6px 12px;border-radius:999px;background:#edf4f7;color:#63798e}
+@media(min-width:600px){.home-story-row{grid-template-columns:minmax(0,260px) minmax(0,1fr)}}
+@media(max-width:360px){.home-story-row{gap:8px}.home-story-row .home-adventure,.home-story-row .home-notice-card{padding:10px}.home-story-row .home-adventure-copy strong{font-size:19px}.home-story-row .home-adventure-copy>span{font-size:9px}}

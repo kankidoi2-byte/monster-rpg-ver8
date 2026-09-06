@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-story-hub-layout',date:'2026-09-06',category:'update',
+    title:'ストーリーの入口を見やすく',
+    body:'ホームのストーリーをコンパクトな四角いカードにし、お知らせを隣に配置しました。ストーリー画面ではメイン・キャラクター・サイドを切り替えられます。キャラクターとサイドの物語は今後追加予定です。'
+  }),
+  Object.freeze({
     id:'20260906-world-map-system',date:'2026-09-06',category:'update',
     title:'世界地図から冒険へ',
     body:'バトル画面から行き先を選んで探索できるようになりました。序章では草原への救援や王都の施設へ、世界地図を使って向かいます。光の平原への女神の降臨や、滅亡の星の接近など、世界の出来事も地図で確認できます。'
