@@ -55,35 +55,43 @@ function continuePrologueStory(){
 function renderHomeStoryCard(){
   const episode=currentStoryEpisode();
   const snapshot=storyProgressSnapshot();
-  const image=document.getElementById('homeAdventureImage');
   const kicker=document.getElementById('homeAdventureKicker');
   const title=document.getElementById('homeAdventureTitle');
   const summary=document.getElementById('homeAdventureSummary');
   const action=document.getElementById('homeAdventureAction');
-  if(!episode||!image||!kicker||!title||!summary||!action)return;
-  image.src=episode.image;image.alt=`序章 第${episode.number}話「${episode.title}」の舞台`;
+  if(!episode||!kicker||!title||!summary||!action)return;
   if(typeof tutorialCurrentStepId==='function'&&tutorialCurrentStepId()==='home_requests'){
-    image.src='images/maps/grassland.webp';image.alt='エルナを救援した草原';kicker.textContent='序章 第3話';title.textContent='救援依頼を報告';summary.textContent='エルナ救援の報酬を受け取り、次の旅に備える';action.textContent='依頼へ ›';return;
+    kicker.textContent='序章 第3話';title.textContent='救援依頼を報告';summary.textContent='エルナ救援の報酬を受け取る';action.textContent='依頼へ ›';return;
   }
   if(snapshot.finished){
-    kicker.textContent='ストーリーモード';title.textContent='序章の記録';summary.textContent='グノーシスたちとの始まりの物語を振り返る';action.textContent='物語を見る ›';return;
+    kicker.textContent=snapshot.tutorial.status==='skipped'?'序章スキップ済み':'序章クリア';title.textContent='ストーリー';summary.textContent='メイン・キャラクター・サイド';action.textContent='物語を見る ›';return;
   }
-  kicker.textContent='メインストーリー';title.textContent=`序章 第${episode.number}話　${episode.title}`;
-  summary.textContent=episode.summary;action.textContent=snapshot.tutorial.status==='not_started'?'物語を始める ›':'物語を進める ›';
+  kicker.textContent=`序章 第${episode.number}話`;title.textContent='ストーリー';
+  summary.textContent=episode.title;action.textContent=snapshot.tutorial.status==='not_started'?'物語を始める ›':'物語を進める ›';
+}
+const STORY_CATEGORIES=Object.freeze(['main','character','side']);
+function selectStoryCategory(category){
+  if(!STORY_CATEGORIES.includes(category))return;
+  STORY_CATEGORIES.forEach(key=>{
+    const button=document.getElementById('storyCategory-'+key);
+    const panel=document.getElementById('storyPanel-'+key);
+    if(button)button.setAttribute('aria-pressed',String(key===category));
+    if(panel)panel.hidden=key!==category;
+  });
 }
 function renderStoryMode(){
+  selectStoryCategory('main');
   const continueCard=document.getElementById('storyContinueCard');
   const list=document.getElementById('storyEpisodeList');
   if(!continueCard||!list)return;
   const snapshot=storyProgressSnapshot();
   const episode=currentStoryEpisode();
   const cleared=PROLOGUE_STORY_EPISODES.filter((_,index)=>['completed','skipped'].includes(storyEpisodeState(index,snapshot))).length;
+  const progress=document.getElementById('storyChapterProgress');
+  if(progress)progress.textContent=snapshot.tutorial.status==='skipped'?'スキップ済み':`${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`;
+  continueCard.hidden=snapshot.finished;
   continueCard.classList.toggle('is-complete',snapshot.finished);
-  if(snapshot.finished){
-    continueCard.innerHTML=`<div><span>PROLOGUE ${snapshot.tutorial.status==='skipped'?'SKIPPED':'CLEAR'}</span><h2>序章の記録</h2><p>全6話のあらすじをいつでも確認できます。</p></div><strong>${cleared} / ${PROLOGUE_STORY_EPISODES.length}</strong>`;
-  }else{
-    continueCard.innerHTML=`<img src="${episode.image}" alt=""><div><span>つづきから</span><h2>第${episode.number}話　${episode.title}</h2><p>${episode.summary}</p><button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'物語を始める':'物語を進める'} ›</button></div>`;
-  }
+  continueCard.innerHTML=snapshot.finished?'':`<div><span>つづきから</span><h2>第${episode.number}話　${episode.title}</h2></div><button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'再開する'} ›</button>`;
   list.innerHTML=PROLOGUE_STORY_EPISODES.map((entry,index)=>{
     const state=storyEpisodeState(index,snapshot);
     const statusLabel=state==='completed'?'CLEAR':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';

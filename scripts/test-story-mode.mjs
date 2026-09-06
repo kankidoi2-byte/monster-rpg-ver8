@@ -24,3 +24,39 @@ assert.ok(save.includes('chapterGate:false')&&save.includes('chapterGate:source.
 assert.ok(css.includes('.story-episode-card')&&css.includes('@media(max-width:480px)'),'mobile story layout is missing');
 
 console.log('Story mode validation passed (home entry, six episodes, checkpoints, old-save default, and mobile layout).');
+
+// Exercise switching and progress rendering without mutating a player's save.
+const { default: vm } = await import('node:vm');
+const elements = new Map();
+for (const id of [...index.matchAll(/id="([^"]+)"/g)].map(match=>match[1])) {
+  elements.set(id, {textContent:'',innerHTML:'',hidden:false,attributes:{},
+    setAttribute(name,value){this.attributes[name]=value;},classList:{toggle(){}}});
+}
+let tutorialState={status:'not_started',stepId:'intro_gnosis'};
+let checkpoint='intro_gnosis';
+const context=vm.createContext({
+  document:{getElementById:id=>elements.get(id)},
+  currentTutorialState:()=>tutorialState,
+  tutorialCurrentStepId:()=>checkpoint
+});
+vm.runInContext(story,context);
+for(const status of ['not_started','completed','skipped']){
+  tutorialState={status,stepId:'intro_gnosis'};
+  const before=JSON.stringify(tutorialState);
+  vm.runInContext('renderStoryMode();renderHomeStoryCard();',context);
+  assert.equal(elements.get('homeAdventureTitle').textContent,'ストーリー');
+  assert.equal(elements.get('storyContinueCard').hidden,status!=='not_started');
+  assert.equal((elements.get('storyEpisodeList').innerHTML.match(/<article /g)||[]).length,6);
+  for(const selected of ['character','side','main']){
+    vm.runInContext(`selectStoryCategory('${selected}')`,context);
+    for(const category of ['main','character','side']){
+      assert.equal(elements.get('storyPanel-'+category).hidden,category!==selected);
+      assert.equal(elements.get('storyCategory-'+category).attributes['aria-pressed'],String(category===selected));
+    }
+  }
+  assert.equal(JSON.stringify(tutorialState),before,'browsing categories must not write progress');
+}
+checkpoint='home_requests';
+vm.runInContext('renderHomeStoryCard()',context);
+assert.equal(elements.get('homeAdventureTitle').textContent,'救援依頼を報告');
+console.log('Story hub behavior passed (three categories, untouched progress, terminal states, six episodes, request guidance).');
