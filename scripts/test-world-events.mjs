@@ -105,3 +105,35 @@ assert.equal(emptyRift.active.rift.monsterIds.length,3);assert.equal(emptyRift.a
 const currentRift=c.normalizeWorldMapState({active:{rift:{monsterId:'false_dragon_beta',monsterIds:['false_dragon_gamma']}}});
 assert.deepEqual(plain(currentRift.active.rift.monsterIds),['false_dragon_beta','false_dragon_gamma']);
 console.log('World events passed: additive migration, independent persistence, one-time guides, receipt deduplication, Elysia/crisis, fair rift queues, loss/escape, and legacy values.');
+
+// Battle-count expiry and migration boundaries.
+let timed=c.normalizeWorldMapState({active:{water_secret:{},elysia:{},crisis:{},rift:{}}});
+assert.equal(timed.active.water_secret.remainingBattles,2);
+assert.equal(timed.active.rift.remainingBattles,3);
+const frozen=JSON.stringify(timed);
+let step=c.advanceWorldEventsAfterBattle(timed,'elysia');
+assert.equal(JSON.stringify(timed),frozen);
+assert.equal(step.state.active.elysia.remainingBattles,3);
+assert.equal(step.state.active.water_secret.remainingBattles,1);
+step=c.advanceWorldEventsAfterBattle(JSON.parse(JSON.stringify(step.state)),'elysia');
+assert.equal(step.state.active.water_secret,null);
+assert.equal(step.state.active.crisis.remainingBattles,1);
+step=c.advanceWorldEventsAfterBattle(step.state,'elysia');
+assert.equal(step.state.active.crisis,null);
+assert.equal(step.state.active.rift.remainingBattles,3,'new traces do not age on creation battle');
+assert.equal(step.state.active.rift.monsterIds.length,3);
+assert.equal(step.state.history.at(-1).handledBy,'false_dragons');
+assert.equal(step.state.history.at(-1).outcome,'expired');
+let next=c.advanceWorldEventsAfterBattle(step.state).state;
+next=c.resolveWorldEvent(next,'rift','defeat');
+assert.equal(next.active.rift.remainingBattles,3);
+for(let i=0;i<3;i++)next=c.advanceWorldEventsAfterBattle(next).state;
+assert.equal(next.active.rift,null,'expiry closes all pending dragons');
+let gate=c.normalizeWorldMapState({active:{golden_land:{remainingBattles:1}},navigation:{eventKey:'golden_land',mapId:'golden_land'}});
+const ended=c.advanceWorldEventsAfterBattle(gate);
+assert.equal(ended.state.navigation.eventKey,null);
+const rolled=c.rollWorldEventsAfterVictory(ended.state,{...details,expiredKeys:ended.expiredKeys},()=>0);
+assert.equal(rolled.active.golden_land,null,'no immediate reappearance');
+assert.equal(rolled.active.water_secret.remainingBattles,2,'newly discovered gates have full lifetime');
+assert.ok(c.rollWorldEventsAfterVictory(rolled,{...details,receiptId:'world-victory:2'},()=>0).active.golden_land,'later rediscovery is possible');
+console.log('Battle expiry passed: 2/3 boundaries, reload, protected challenge, crisis, rift reset, same-result suppression and rediscovery.');
