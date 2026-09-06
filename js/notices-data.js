@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260906-story-chapter-banner',date:'2026-09-06',category:'update',
+    title:'物語を章ごとに選びやすく',
+    body:'ホームのお知らせを小さなボタンにまとめました。メインストーリーの序章バナーを押すと各話が開き、もう一度押すと閉じます。'
+  }),
+  Object.freeze({
     id:'20260906-story-hub-layout',date:'2026-09-06',category:'update',
     title:'ストーリーの入口を見やすく',
     body:'ホームのストーリーをコンパクトな四角いカードにし、お知らせを隣に配置しました。ストーリー画面ではメイン・キャラクター・サイドを切り替えられます。キャラクターとサイドの物語は今後追加予定です。'

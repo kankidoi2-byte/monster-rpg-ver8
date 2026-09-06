@@ -54,7 +54,7 @@ expect(index.indexOf('js/notices-data.js') < index.indexOf('js/notices.js'), 'no
 
 vm.runInContext(uiSource, context);
 expect(context.hasUnreadGameNotice(), 'latest notice should be unread on first visit');
-expect(preview.innerHTML.includes(notices[0].title), 'home preview does not render the latest notice');
+expect(preview.innerHTML.includes('お知らせ') && preview.innerHTML.includes('data-notice-unread') && preview.innerHTML.includes('showNotices()'), 'compact home notice must retain navigation and unread indicator');
 expect(unreadIndicator.hidden === false, 'unread indicator should be visible before opening notices');
 context.showNotices();
 expect(context.shownScreen === 'notices', 'notice action does not open the notice screen');
