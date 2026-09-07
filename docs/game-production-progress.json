@@ -3,7 +3,7 @@
   "repository": "kankidoi2-byte/monster-rpg-ver8",
   "roadmap": "docs/game-production-automation-roadmap.md",
   "risk_contract": "tools/game-production-orchestrator/risk-approval-contract.json",
-  "updated_at": "2026-09-03T13:47:18.000Z",
+  "updated_at": "2026-09-07T21:20:00Z",
   "product_version": "v1",
   "overall_status": "completed",
   "completed_at": "2026-09-03T09:19:50.000Z",
@@ -630,19 +630,25 @@
     {
       "id": "verify-pr59-stopped-save-on-android",
       "title": "錬成・遠征停止セーブのAndroid再確認",
-      "status": "awaiting_approval",
+      "status": "completed",
       "owner_line": "system",
       "dependencies": [],
       "branch": null,
       "pull_request": 59,
-      "commit": null,
-      "tests": ["automated regression checks passed historically"],
+      "commit": "96754a516e6b93e59eac76ad619626f7e36de821",
+      "tests": [
+        "Historical automated regression checks passed; npm run check passed for PR #154",
+        "Android 16 / Chrome: existing-save and official stopped-save routes passed; before/after JSON compared; completion persisted after reload; original save restored"
+      ],
       "ci": "passed",
       "pages": "published",
       "risk_class": "manual_device",
-      "approval_required": true,
-      "next_start_point": "On the same stopped save, confirm the completed-alchemy explanation and already-guided expedition path continue to the prologue ending.",
-      "game_progress": "Code fix is already public; only device evidence remains."
+      "approval_required": false,
+      "next_start_point": null,
+      "game_progress": "PR #59 Android verification completed on 2026-09-04 JST; evidence merged in PR #154. Verification only, not production Cycle 5.",
+      "completion_pull_request": 154,
+      "record": "docs/pr59-android-verification-20260904.md",
+      "cycle": null
     },
     {
       "id": "gacha-presentations",
@@ -675,7 +681,7 @@
       "pages": null,
       "risk_class": "low_for_item_presentation_approval_required_for_character_gacha_rules",
       "approval_required": false,
-      "next_start_point": "Treat the existing item-gacha presentation separately and request approval before deciding unimplemented character-gacha rules.",
+      "next_start_point": "Audit additional item/character reveal presentation separately from the character gacha already shipped in PR #157 and integration in PR #159; obtain approval for any new rule changes.",
       "game_progress": "Keeps future item and character gacha work outside the completed skill-gacha cycle."
     },
     {
