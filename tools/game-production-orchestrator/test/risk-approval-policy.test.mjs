@@ -96,4 +96,32 @@ assert.equal(roadmap.includes('旧Phase 0〜63'), true);
 assert.equal(roadmap.includes('次の仕事を自動選択せず停止'), true);
 assert.equal(roadmap.includes('v2候補（v1には含めない）'), true);
 
+// Completed device verification must not advance the production cycle or remain pending.
+const pr59 = progress.backlog.find(item => item.id === 'verify-pr59-stopped-save-on-android');
+assert.equal(pr59.status, 'completed');
+assert.equal(pr59.pull_request, 59);
+assert.equal(pr59.completion_pull_request, 154);
+assert.equal(pr59.commit, '96754a516e6b93e59eac76ad619626f7e36de821');
+assert.equal(pr59.cycle, null);
+assert.equal(pr59.approval_required, false);
+assert.equal(pr59.next_start_point, null);
+assert.equal(pr59.record, 'docs/pr59-android-verification-20260904.md');
+const pr59Record = await readFile(new URL(`../../../${pr59.record}`, import.meta.url), 'utf8');
+assert.equal(pr59Record.includes('PR #59のAndroid実機確認完了'), true);
+assert.equal(roadmap.includes('PR #59確認をCycle 5として数えない'), true);
+assert.equal(roadmap.includes(`Cycle ${progress.current_cycle} / Phase ${progress.current_phase}`), true);
+assert.equal(roadmap.includes(`Cycle ${progress.next_cycle} / Phase 1`), true);
+
+// Publication evidence belongs to the current section; old approval gates stay historical.
+for (const file of ['world-map-progress.md', 'world-map-release-readiness.md']) {
+  const document = await readFile(new URL(`../../../docs/${file}`, import.meta.url), 'utf8');
+  const [current, historical] = document.split('## 当時の履歴：');
+  assert.ok(historical, `${file}: label the pre-publication history`);
+  assert.ok(current.includes('PR #164はmainへ統合・GitHub Pages公開済み'), file);
+  assert.ok(current.includes('44552c5658a3029c8ac4ede11c04f5e419041444'), file);
+  assert.ok(current.includes('33991442094') && current.includes('33991441294'), file);
+  assert.ok(current.includes('ユーザーが実際に遊んだ範囲では確認済み'), file);
+  assert.ok(current.includes('world-map-device-checklist.md'), file);
+}
+
 console.log('Game production orchestrator risk-based approval policy validation passed.');
