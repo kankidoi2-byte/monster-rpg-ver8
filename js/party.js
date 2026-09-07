@@ -1,9 +1,13 @@
 function renderParty() {
   const el = document.getElementById('partyList');
   if (!el) return;
+  // Keep the player's place when an item or lock action refreshes the roster.
+  const openInstanceUids = new Set([...(el.querySelectorAll?.('.monster-roster-details[open]') || [])]
+    .map(details => details.closest('[data-instance-uid]')?.dataset.instanceUid).filter(Boolean));
+  const inventoryOpen = Boolean(el.querySelector?.('.monster-inventory-summary')?.open);
   ensureContractScrollItem();
   const dataItems = getDataItems();
-  el.innerHTML = `<details class="monster-inventory-summary"><summary><span>💼 育成アイテム</span><strong>コイン ${save.coins||0}</strong></summary>
+  el.innerHTML = `<details class="monster-inventory-summary"${inventoryOpen?' open':''}><summary><span>💼 育成アイテム</span><strong>コイン ${save.coins||0}</strong></summary>
     <div><p>${itemCountText()}</p><p>💾 キロデータ × ${save.items.kilo_data||0} / 💿 メガデータ × ${save.items.mega_data||0} / 🧠 ギガデータ × ${save.items.giga_data||0}</p>
     <p>${itemInlineVisual(ITEM_DEX_BY_ID.water_mirror,'item-material-image')} 水鏡 × ${save.items.water_mirror||0} / 🌑 滅亡のカケラ × ${save.items.doom_fragment||0}</p>
     <p class="small">錬成素材：${SHOP_ITEMS.filter(it=>it.alchemyMaterial).map(it=>`${it.icon} ${it.name} × ${save.items[it.id]||0}`).join(' / ')}</p></div></details>`;
@@ -14,7 +18,7 @@ function renderParty() {
     el.innerHTML += `<article class="monster-roster-card" data-monster-id="${m.id}" data-instance-uid="${ins.uid}"${ins.uid===tutorialContractUid?' data-tutorial-contract-instance="true"':''}>
       <div class="monster-roster-visual">${vis(m)}<span>${ins.locked?'🔒':'個体'+(i+1)}</span></div>
       <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
-      <details class="monster-roster-details"><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>
+      <details class="monster-roster-details"${openInstanceUids.has(ins.uid)?' open':''}><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>
       ${instanceAlchemySummary(ins)}
       <div class="mini" data-tutorial-skill-summary><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button data-tutorial-skill-edit onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
       <div class="mini">
