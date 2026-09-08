@@ -17,7 +17,7 @@ function setMultiBattleLayout(active) {
 }
 
 function createMultiEnemy(mon, factionId) {
-  const level = activeHuntRequest?.enemyLevel || 1;
+  const level = huntLevelFor(mon, activeHuntRequest?.difficultyId || 'normal');
   const max = Math.max(1, Math.round(maxHp(mon, level) * (Number(huntDifficulty(activeHuntRequest?.difficultyId).hpMultiplier) || 1)));
   return {
     id:factionId, factionId, mon:structuredClone(mon), level, hp:max, maxHp:max,
@@ -62,11 +62,14 @@ function beginThreeWayBattle() {
 
 function createExistingMultiEnemy() {
   const entry = createMultiEnemy(enemy, 'enemy_a');
+  entry.level = activeHuntRequest?.enemyLevel || entry.level;
+  entry.maxHp = enemyMaxHp();
   entry.hp = Math.max(0, eHp);
   entry.attack = eAtk;
   entry.guard = eGuard;
   entry.status = eStatus;
   entry.poisonTurns = ePoisonTurns;
+  entry.poisonSourceIsPlayer = eStatus === 'poison' && ePoisonTurns > 0;
   entry.paralysisTurns = eParalysisTurns;
   entry.confusionTurns = eConfusionTurns;
   entry.sleepTurns = eSleepTurns;
@@ -86,6 +89,7 @@ function triggerInvasionIfDue() {
     enemies:[createExistingMultiEnemy(), createMultiEnemy(invader, 'enemy_b')],
     contractAttempts:Object.create(null)
   };
+  moveKokoroLinkEnemyTarget(singleEnemyKokoroLinkKey(),'enemy_a');
   activeHuntRequest.battleMode = 'invasion_active';
   pendingMultiBattleContractId = null;
   setMultiBattleLayout(true);
@@ -107,7 +111,7 @@ function setupMultiBattle() {
   const request = activeHuntRequest;
   document.getElementById('battleMapBanner').innerHTML =
     `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>`+
-    `<div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span><span>${multiBattle?.invasion?'❗ 乱入戦':'⚔️ 三つ巴'}</span><span>敵Lv.${request.enemyLevel}</span><span>報酬：2体分</span></div>`+
+    `<div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span><span>${multiBattle?.invasion?'❗ 乱入戦':'⚔️ 三つ巴'}</span><span>${multiBattle.enemies.map((entry,index)=>`敵${index===0?'A':'B'} Lv.${entry.level}`).join(' / ')}</span><span>報酬：2体分</span></div>`+
     `<div class="battle-hunt-conditions"><h3>特殊条件</h3>${huntConditionsHtml(request, true)}</div></div>`;
   renderSkillButtons();
   updateMultiBattleView();

@@ -1,0 +1,25 @@
+{
+  "date": "2026-09-08",
+  "base": "4ad50548f3dd9e5803cb7f2308c8df2e2d3c6f1a",
+  "parallelPR": 174,
+  "mainActions": [
+    {
+      "conclusion": "success",
+      "id": 34163073384,
+      "name": "Validate game data and assets",
+      "sha": "4ad50548f3dd9e5803cb7f2308c8df2e2d3c6f1a",
+      "status": "completed",
+      "url": "https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34163073384"
+    },
+    {
+      "conclusion": "success",
+      "id": 34163072577,
+      "name": "pages build and deployment",
+      "sha": "4ad50548f3dd9e5803cb7f2308c8df2e2d3c6f1a",
+      "status": "completed",
+      "url": "https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34163072577"
+    }
+  ],
+  "publishedContentVerification": "HTTP retrieval timed out; Pages workflow success verified independently",
+  "browserVerification": "http://127.0.0.1:4177/ denied with net::ERR_BLOCKED_BY_CLIENT; no production save modified"
+}

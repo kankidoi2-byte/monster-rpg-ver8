@@ -1,0 +1,28 @@
+{
+  "before": {
+    "effects": [
+      {
+        "category": "speed",
+        "rate": 0.2,
+        "durationTurns": 2,
+        "label": "鈍足",
+        "remainingTurns": 2,
+        "charges": 0
+      }
+    ],
+    "multiplier": 0.8
+  },
+  "after": {
+    "effects": [
+      {
+        "category": "speed",
+        "rate": 0.2,
+        "durationTurns": 2,
+        "label": "鈍足",
+        "remainingTurns": 2,
+        "charges": 0
+      }
+    ],
+    "multiplier": 0.8
+  }
+}

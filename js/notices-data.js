@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260908-multi-battle-level-poison',date:'2026-09-08',category:'fix',
+    title:'乱入・三つ巴の敵レベルと効果の引継ぎを修正',
+    body:'追加の敵が、その種族と難易度に設定されたレベルで登場するように修正しました。乱入前に与えた毒で相手を倒した場合も、自分が倒した相手として契約を試みられます。リンクで敵に与えた効果も乱入後へ引き継ぎます。'
+  }),
+  Object.freeze({
     id:'20260906-brigitte-dex-art',date:'2026-09-06',category:'update',
     title:'ブリジット系統のイラストを追加',
     body:'キャラクター図鑑No.15〜17に、接雷の従士ブリジット・雷壁騎士ブリジット・城塞隊長ブリジットのイラストを追加しました。詳細画面で3段階の姿を確認できます。現在は登場予定です。'

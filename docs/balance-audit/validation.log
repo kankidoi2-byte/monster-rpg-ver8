@@ -1,0 +1,597 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check
+> npm run check:world-map && npm run check:story-mode && npm run check:data && npm run check:data-contract && npm run check:diagnostics && npm run check:skill-taxonomy && npm run check:skill-gacha && npm run check:kokoro-link-engine && npm run check:kokoro-link-abilities && npm run check:kokoro-link-power && npm run check:kokoro-link-status && npm run check:kokoro-link-tactics && npm run check:kokoro-link-complete && npm run check:kokoro-link-balance && npm run check:kokoro-link-party && npm run check:kokoro-link-battle && npm run check:kokoro-link-animation && npm run check:kokoro-link-analysis && npm run check:notices && npm run check:images && npm run check:ui-contract && npm run check:battle-switch && npm run check:battle-motion && npm run check:monster-dex && npm run check:character-dex && npm run check:character-gacha && npm run check:character-recycle && npm run check:map-dex && npm run check:contract-animation && npm run check:post-battle-contract && npm run check:three-way && npm run check:hunt-difficulty && npm run check:alchemy && npm run check:expedition && npm run check:golden-land && npm run check:save && npm run check:tutorial && npm run check:tutorial-ui && npm run check:prologue-tutorial-engine && npm run check:prologue-save-v2 && npm run check:prologue-battle-basics && npm run check:prologue-rescue-stability && npm run check:prologue-elna-contract && npm run check:prologue-home-front && npm run check:prologue-home-back && npm run check:prologue-stella-intro && npm run check:prologue-stella-mock && npm run check:prologue-lumina-alchemy && npm run check:prologue-expedition-finale && npm run check:prologue-comprehensive && npm run check:prologue-continuity && npm run check:prologue-mobile-clarity && npm run check:prologue-step-reduction && npm run check:tutorial-phase4a && npm run check:tutorial-phase4b && npm run check:tutorial-phase4c && npm run check:tutorial-phase5a && npm run check:tutorial-phase5b && npm run check:tutorial-phase6 && npm run check:contractor-rank && npm run check:contractor-rank-migration && npm run check:contractor-rank-events && npm run check:contractor-rank-rewards && npm run check:dev-command-center-requirements && npm run check:dev-command-center-foundation && npm run check:dev-command-center-github-reader && npm run check:dev-command-center-github-actions-reader && npm run check:dev-command-center-github-pages-reader && npm run check:dev-command-center-unified-status && npm run check:dev-command-center-next-action && npm run check:dev-command-center-dashboard && npm run check:dev-command-center-diagnostic-import && npm run check:dev-command-center-issue-draft && npm run check:dev-command-center-issue-publication-approval && npm run check:dev-command-center-github-issue-writer && npm run check:dev-command-center-comprehensive && npm run check:dev-tools-agent-execution-contract && npm run check:dev-inspection-agent-manual && npm run check:dev-inspection-agent-triggers && npm run check:dev-inspection-agent-reports && npm run check:dev-inspection-agent-issue-drafts && npm run check:dev-inspection-agent-isolation && npm run check:dev-inspection-agent-proposals && npm run check:dev-inspection-agent-publication-approval && npm run check:dev-inspection-agent-github-writer && npm run check:dev-inspection-agent-limited-autonomy && npm run check:dev-inspection-agent-formal-operation && npm run check:game-production-orchestrator && npm run check:balance-audit
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:world-map
+> node scripts/test-world-events.mjs && node scripts/test-world-map.mjs && node scripts/test-world-map-ui.mjs && node scripts/test-world-map-navigation.mjs && node scripts/test-world-map-dex.mjs && node scripts/test-prologue-world-map-path.mjs && node scripts/test-prologue-world-map-facilities.mjs && node scripts/test-world-map-facility-ui.mjs && node scripts/test-world-map-tutorial-migration.mjs && node scripts/test-world-map-prologue-journey.mjs && node scripts/test-world-map-downgrade-safety.mjs
+
+World events passed: additive migration, independent persistence, one-time guides, receipt deduplication, Elysia/crisis, fair rift queues, loss/escape, and legacy values.
+Battle expiry passed: 2/3 boundaries, reload, protected challenge, crisis, rift reset, same-result suppression and rediscovery.
+World map adapter passed: 19 maps, rarity gates, events, save defaults, item preservation, victory dedupe and tutorial exclusion.
+Adapter expiry passed: result deduplication, reload, challenge protection and held items.
+World map UI contracts passed: 19 locations, navigation, candidates, event/ordinary entry, map discovery, departure guards. Browser/mobile visuals are not covered.
+World map navigation persistence passed: legacy defaults, repair, location/difficulty reload, horizontal scroll and stale-event cleanup.
+World map encyclopedia checks passed (19 difficulty sets, event-specific encounters, save-independent descriptions, contract/ID preservation).
+Prologue world-map path passed (Battle -> Grassland -> Easy departure -> deterministic rescue, exact resume view, and v2 checkpoint compatibility).
+Prologue facility routes passed (world map -> Magic Academy -> Stella / alchemy workshop -> Lumina, deterministic visits, resume, and old checkpoints).
+World map facility UI passed: tutorial-only CTA, escaped copy, handler routing, and no exploration battle.
+World-map tutorial migration fixtures passed: new/map/rescue/later checkpoints, v1 protection, terminal saves, idempotent assets, and one-time map intro.
+World-map prologue journey passed: 91 live steps, two rescue waves, both facility routes, rewards, alchemy, expedition, completion, and tutorial-free exploration.
+World-map downgrade safety passed: 9 dev steps persist to 3 IDs present in base main d31cfccd.
+Existing dev saves can still resume the 9 dev IDs; after downgrade, a short story/route may restart, but the safe targets do not directly repeat rewards or transitions.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:story-mode
+> node scripts/test-story-mode.mjs
+
+Story mode validation passed (home entry, six episodes, checkpoints, old-save default, and mobile layout).
+Story hub behavior passed (three categories, untouched progress, terminal states, six episodes, request guidance).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:data
+> node scripts/validate-data.mjs
+
+Game data validation passed (64 tagged entities (50 monsters, 14 characters), 19 maps, 26 items, 3 fusions, 4 alchemy recipes, 200 fixed skills).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:data-contract
+> node scripts/test-data-contract.mjs
+
+Canonical data contract validation passed (64 entities, 50-number monster dex, 14-character dex, 200 fixed skills, eligibility separation, and legacy skill-ID migration).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:diagnostics
+> node scripts/test-diagnostics.mjs
+
+Diagnostics aggregate report passed
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:skill-taxonomy
+> node scripts/test-skill-taxonomy.mjs
+
+Skill taxonomy validation passed (64 tagged units, 200 compatible fixed IDs, 166 consolidated equipment choices, finite card inventory, evolution grants).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:skill-gacha
+> node scripts/test-skill-gacha.mjs
+
+Skill gacha validation passed (existing draw rules, inventory safety, compact result grid, tap-only detail, reduced motion, and result actions).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-engine
+> node scripts/test-kokoro-link-engine.mjs
+
+Kokoro Link engine validation passed (50 monsters, active-monster scaling, rarity-only strength, monster eligibility, five-star restriction, pure calculation, and bounded effects).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-abilities
+> node scripts/test-kokoro-link-ability-rules.mjs
+
+Kokoro Link Phase 4-0 ability rules passed (10 attributes, rarity bands, primary-type routing, boss resistance, caps, deferral, and ★4/★5 exclusion).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-power
+> node scripts/test-kokoro-link-power-abilities.mjs
+
+Kokoro Link Phase 4-1 power abilities validated (10 attributes, one-star scope, consumption, and duration).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-status
+> node scripts/test-kokoro-link-status-abilities.mjs
+
+Kokoro Link Phase 4-2 status abilities validated (10 attributes, target binding, 70/35% rates, immunity, stacking, duration, and consumption).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-tactics
+> node scripts/test-kokoro-link-tactics-abilities.mjs
+
+Kokoro Link tactics abilities validated (10 attributes, choice, water guard, one-shot charges, foresight, and penetration).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-complete
+> node scripts/test-kokoro-link-phase4-complete.mjs
+
+Kokoro Link Phase 4 complete matrix passed (50 rarity/type combinations, level independence, exact bands, and ★4/★5 exclusion).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-balance
+> node scripts/test-kokoro-link-phase5-balance.mjs
+
+Kokoro Link Phase 5-1 balance validation passed (7,350 actual pairs, rarity packages, roster coverage, and no deferred actual ★3 source).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-party
+> node scripts/test-kokoro-link-party-state.mjs
+
+Kokoro Link party-state validation passed (one active, two reserves, once-per-UID use, switch recalculation, faint exclusion, combat eligibility, reset, and duplicate protection).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-battle
+> node scripts/test-kokoro-link-battle.mjs
+
+Kokoro Link battle validation passed (activation UI, target binding, no stacking, base boosts, ★1–★3 abilities, switch reuse, and lifecycle reset).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-animation
+> node scripts/test-kokoro-link-animation.mjs
+
+Kokoro Link animation validation passed (title above, large centered source, target cue below, strong late flash, one second, non-blocking input, aura, and reduced motion).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:kokoro-link-analysis
+> node scripts/test-kokoro-link-analysis.mjs
+
+Kokoro Link Phase 0 analysis validation passed (50 monsters, five rarities, proposed multipliers, parity metrics, and inverse-level risk).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:notices
+> node scripts/test-notices.mjs
+
+Notice data passed: 87 entries
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:images
+> node scripts/check-image-sizes.mjs
+
+Image size validation passed (124 files, 12854334 total bytes, 0 legacy warning(s)).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:ui-contract
+> node scripts/test-ui-contract.mjs
+
+UI compatibility validation passed (31 screens, 27 DOM contracts, 24 scripts).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:battle-switch
+> node scripts/test-battle-switch.mjs
+
+Battle switch validation passed (candidate filtering, HP preservation, turn consumption, and enemy response).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:battle-motion
+> node scripts/test-battle-motion.mjs
+
+Battle skill motion validation passed (all 160 attacks and 40 support skills, 200 total; normal and multi-battle wiring, reduced-motion fallback).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:monster-dex
+> node scripts/test-monster-obtain.mjs
+
+Monster acquisition display validation passed (50 monsters, initial party, maps, evolution, fusion, and alchemy).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:character-dex
+> node scripts/test-character-dex.mjs
+
+Character dex validation passed (14 playable forms + 36 reserved slots, stable IDs/numbers, replacement, rendering and acquisition isolation).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:character-gacha
+> node scripts/test-character-gacha.mjs
+
+Character gacha passed: all 3 base forms reachable, costs, duplicates/UIDs, rejection without mutation, real save/reload.
+Character gacha UI handlers passed: pool disclosure, affordability, ten-result rendering, immediate persistence.
+Character dex obtain hints match the three-character pool; Elysia and evolved forms excluded.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:character-recycle
+> node scripts/test-character-recycle.mjs
+
+Character recycle passed: first lock, duplicates, catalysts/results, protected instances, cancellation, last copy, rewards, double execution, storage rollback, old migration and reload.
+Roster rendering and fixed star-2 rewards at level 100 passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:map-dex
+> node scripts/test-map-dex.mjs
+
+Map dex validation passed (19 maps, metadata, ecosystems, discovery, hub, and cross-links).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:contract-animation
+> node scripts/test-contract-animation.mjs
+
+Contract animation validation passed (0–2 failure pulses and 3-pulse success).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:post-battle-contract
+> node scripts/test-post-battle-contract.mjs
+
+Post-battle contract validation passed (victory-only offer, one attempt, exclusions, and no automatic advance).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:three-way
+> node scripts/test-three-way.mjs
+
+Multi-faction battle validation passed (rates, invasion, side-by-side UI, card actions, and living-target fallback).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:hunt-difficulty
+> node scripts/test-hunt-difficulty.mjs
+
+Fixed hunt difficulty validation passed (Lv.100 cap, rarity gates, per-monster levels, and multi-enemy filtering).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:alchemy
+> node scripts/test-alchemy-workbench.mjs
+
+Alchemy workbench validation passed (materials, quantities, mandatory consumed catalyst, hidden result, resident Lumina advice, no designated remnants, and short-screen layout).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:expedition
+> node scripts/test-expedition.mjs
+
+Expedition validation passed (destinations, slots, suitability, locks, rewards, and map rates).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:golden-land
+> node scripts/test-golden-land.mjs
+
+Golden Land validation passed (appearance, bonuses, release rewards, reservation, and consumption).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:save
+> node scripts/test-save-migrations.mjs
+
+Save migration validation passed (5 legacy fixtures, 3 corrupt fixtures, repair, quarantine, backup, integrity hash, and failed writes).
+Favorite home validation passed (migration, persistence, independent selection, ownership, and failed writes).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial
+> node scripts/test-tutorial.mjs
+
+Tutorial save validation passed (v2 new save, v1 protection, resume, complete, skip, retired replay migration, guides, and idempotent grant flags).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-ui
+> node scripts/test-tutorial-ui.mjs
+
+Tutorial UI validation passed (story layers, transparent portrait, spotlight, bubble, navigation, resume-only entry, accessibility, and portrait placement).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-tutorial-engine
+> node scripts/test-prologue-tutorial-engine.mjs
+
+Prologue tutorial STEP engine checks passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-save-v2
+> node scripts/test-prologue-save-v2.mjs
+
+Prologue v2 save checks passed (deferred starters, v1 protection, exact resume, ownership repair, and idempotent grants).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-battle-basics
+> node scripts/test-prologue-battle-basics.mjs
+
+Prologue first-battle basics validation passed (actor, target, COST 0 normal attack, equipped skill cost, real action waits, and rescue resume checkpoint).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-rescue-stability
+> node scripts/test-prologue-rescue-stability.mjs
+
+Prologue rescue stability validation passed (free battle, two waves, stale win, missing enemy, defeat/retreat retry, interruption checkpoint, and double taps).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-elna-contract
+> node scripts/test-prologue-elna-contract.mjs
+
+Prologue Elna contract validation passed (dialogue, consent, three zooms, handprint, atomic grant, guest departure, role separation, party, replay, and rollback).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-home-front
+> node scripts/test-prologue-home-front.mjs
+
+Prologue home-front validation passed (party save, Elna character dex, Freigal/Aquaron monster dex, growth, skills, evolution, short Gnosis guidance, and Phase 10 checkpoint).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-home-back
+> node scripts/test-prologue-home-back.mjs
+
+Prologue home-back validation passed (request report, one-time alchemy supply reward, rollback, replay safety, and Stella checkpoint).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-stella-intro
+> node scripts/test-prologue-stella-intro.mjs
+
+Prologue Stella intro validation passed (transparent portrait, one-time card grant, actual equip actions, attributes, rollback, replay safety, and Phase 12 checkpoint).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-stella-mock
+> node scripts/test-prologue-stella-mock.mjs
+
+Prologue Stella mock battle validation passed (real advantage action, reward-free victory, retry paths, interruption resume, and Lumina checkpoint).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-lumina-alchemy
+> node scripts/test-prologue-lumina-alchemy.mjs
+
+Prologue Lumina alchemy validation passed (Galdra reward, transparent portrait, dedicated catalyst-free recipe, fixed resources, 100% first success, persistence rollback, replay safety, and Phase 14 checkpoint).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-expedition-finale
+> node scripts/test-prologue-expedition-finale.mjs
+
+Prologue expedition/finale validation passed (fresh dispatch, occupied/completed legacy routing, suitability, save lock, no-wait continuation, replay/idempotency, atomic completion, and free play without Chapter 1).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-comprehensive
+> node scripts/test-prologue-comprehensive.mjs
+
+Prologue comprehensive validation passed (dialogue/full skip, atomic mandatory rewards, retired replay migration, new/v1/mid-save safety, 360/412/1366 layouts, transparent portraits, and no Kanata).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-continuity
+> node scripts/test-prologue-continuity.mjs
+
+Prologue continuity validation passed (all dismissing boundaries are event-backed, direct checkpoints stay visible, and battle evolution cannot replace resumed guidance).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-mobile-clarity
+> node scripts/test-prologue-mobile-clarity.mjs
+
+Prologue mobile clarity validation passed (normal-position Stella skill actions, real skill-edit target, and visible Gnosis finale).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:prologue-step-reduction
+> node scripts/test-prologue-step-reduction.mjs
+
+Prologue step reduction validation passed (130 -> 96 (including world-map rescue, Royal Capital facilities, and growth tab), old-save redirects, essential operations, merged explanations, and prior mobile fixes).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-phase4a
+> node scripts/test-tutorial-phase4a.mjs
+
+Tutorial Phase 4A validation passed (transparent Gnosis portrait, approved call, name entry, contract explanation, world descent, resume, and no dex registration).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-phase4b
+> node scripts/test-tutorial-phase4b.mjs
+
+序章の契約体を準備できませんでした。 Error: starter_contract_save
+    at ensureTutorialStarterContracts (evalmachine.<anonymous>:476:56)
+    at evalmachine.<anonymous>:1:1
+    at Script.runInContext (node:vm:149:12)
+    at Object.runInContext (node:vm:301:6)
+    at file:///workspace/scratch/66f308fd53de/monster-rpg-ver8/scripts/test-tutorial-phase4b.mjs:82:17
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+Tutorial Phase 4B validation passed (Elna encounter, idempotent Freigal/Aquaron grant, temporary GUEST, two guaranteed Slime waves, real battle start, and safe outcome checkpoints).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-phase4c
+> node scripts/test-tutorial-phase4c.mjs
+
+Tutorial Phase 4C validation passed (atomic legacy contract safety, modern Elna contract path, old-save redirects, party setup, and completion).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-phase5a
+> node scripts/test-tutorial-phase5a.mjs
+
+Tutorial Phase 5A validation passed (one-time persisted guides, three-way rules, invasion timing, Kokoro Link use, and unchanged battle contracts).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-phase5b
+> node scripts/test-tutorial-phase5b.mjs
+
+Tutorial Phase 5B validation passed (eight persisted guide families, current rules, first-use routing, and no gameplay-rule changes).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:tutorial-phase6
+> node scripts/test-tutorial-phase6.mjs
+
+Tutorial Phase 6 integration passed (131 unique steps, 25 screens, 98 target contracts, Android/Chromebook placement, save/reload, and full regression wiring).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:contractor-rank
+> node scripts/test-contractor-rank.mjs
+
+Contractor Rank foundation validation passed (curve, cap, title unlock/equip, event dedupe, and bounded history).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:contractor-rank-migration
+> node scripts/test-contractor-rank-migration.mjs
+
+Contractor Rank legacy migration validation passed (activity reconstruction, boss detection, pending rewards, new-save guard, and idempotency).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:contractor-rank-events
+> node scripts/test-contractor-rank-events.mjs
+
+Contractor Rank event validation passed (battle, multi bonus, bosses, contracts, dex milestones, evolution, alchemy, expedition, and wiring).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:contractor-rank-rewards
+> node scripts/test-contractor-rank-rewards.mjs
+
+Contractor Rank reward validation passed (49 rewards, milestones, locks, individual/all claims, item registration, and idempotency).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-requirements
+> node scripts/test-dev-command-center-requirements.mjs
+
+Command center requirements validation passed (6 screens, 4 data sources, 6 acceptance criteria).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-foundation
+> node tools/dev-command-center/test/foundation.test.mjs
+
+Development command center foundation validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-github-reader
+> node tools/dev-command-center/test/github-reader.test.mjs
+
+Development command center GitHub reader validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-github-actions-reader
+> node tools/dev-command-center/test/github-actions-reader.test.mjs
+
+Development command center GitHub Actions reader validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-github-pages-reader
+> node tools/dev-command-center/test/github-pages-reader.test.mjs
+
+Development command center GitHub Pages reader validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-unified-status
+> node tools/dev-command-center/test/unified-status.test.mjs
+
+Development command center unified status validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-next-action
+> node tools/dev-command-center/test/next-action.test.mjs
+
+Development command center next action validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-dashboard
+> node tools/dev-command-center/test/dashboard.test.mjs
+
+Development command center mobile dashboard validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-diagnostic-import
+> node tools/dev-command-center/test/diagnostic-import.test.mjs
+
+Development command center diagnostic import validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-issue-draft
+> node tools/dev-command-center/test/issue-draft.test.mjs
+
+Development command center unposted Issue draft validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-issue-publication-approval
+> node tools/dev-command-center/test/issue-publication-approval.test.mjs
+
+Development command center Issue publication approval core validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-github-issue-writer
+> node tools/dev-command-center/test/github-issue-writer.test.mjs
+
+Development command center GitHub Issue writer validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-command-center-comprehensive
+> node tools/dev-command-center/test/comprehensive.test.mjs
+
+Development command center foundation validation passed.
+Development command center GitHub reader validation passed.
+Development command center GitHub Actions reader validation passed.
+Development command center GitHub Pages reader validation passed.
+Development command center unified status validation passed.
+Development command center mobile dashboard validation passed.
+Development command center Issue publication approval core validation passed.
+Development command center GitHub Issue writer validation passed.
+Development command center comprehensive validation passed (authentication, API failures, mobile layout, permissions, and explicit one-time Issue approval).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-tools-agent-execution-contract
+> node scripts/test-dev-tools-agent-execution-contract.mjs
+
+Agent execution contract validation passed (13 automatic permissions, 6 approval gates, 12 stop conditions).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-manual
+> node tools/dev-inspection-agent/test/manual-readonly-analysis.test.mjs
+
+Development inspection agent manual read-only analysis validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-triggers
+> node tools/dev-inspection-agent/test/trigger-coordinator.test.mjs
+
+Development inspection agent deduplicated trigger validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-reports
+> node tools/dev-inspection-agent/test/automatic-inspection-report.test.mjs
+
+Development inspection agent automatic unpublished report validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-issue-drafts
+> node tools/dev-inspection-agent/test/automatic-issue-draft.test.mjs
+
+Development inspection agent automatic unpublished Issue draft validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-isolation
+> node tools/dev-inspection-agent/test/isolated-remediation-environment.test.mjs
+
+Development inspection agent isolated remediation environment validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-proposals
+> node tools/dev-inspection-agent/test/minimal-patch-proposal.test.mjs
+
+Development inspection agent minimal patch proposal validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-publication-approval
+> node tools/dev-inspection-agent/test/patch-publication-approval.test.mjs
+
+Development inspection agent patch publication approval core validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-github-writer
+> node tools/dev-inspection-agent/test/github-patch-writer.test.mjs
+
+Development inspection agent GitHub patch writer validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-limited-autonomy
+> node tools/dev-inspection-agent/test/limited-autonomy-policy.test.mjs
+
+Development inspection agent limited autonomy policy validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:dev-inspection-agent-formal-operation
+> node tools/dev-inspection-agent/test/formal-inspection-agent.test.mjs
+
+Development inspection agent formal bounded operation validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:game-production-orchestrator
+> node tools/game-production-orchestrator/test/risk-approval-policy.test.mjs
+
+Game production orchestrator risk-based approval policy validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:balance-audit
+> node tools/balance-audit/test-regressions.mjs && node tools/balance-audit/test-link-invasion.mjs
+
+PASS: species levels, existing HP/level override, poison credit, reward idempotency
+PASS: poison KO attribution, single/multi damage/drain/guard parity
+PASS: real ★2 water link slow survives invasion, binds only old enemy, and expires
+
+> postcheck
+> npm run check:diagnostics-export && npm run check:diagnostics-comprehensive
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:diagnostics-export
+> node scripts/test-diagnostics-export.mjs
+
+Diagnostics export validation passed.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:diagnostics-comprehensive
+> node scripts/test-diagnostics-comprehensive.mjs
+
+Diagnostics aggregate report passed
+Save migration validation passed (5 legacy fixtures, 3 corrupt fixtures, repair, quarantine, backup, integrity hash, and failed writes).
+Favorite home validation passed (migration, persistence, independent selection, ownership, and failed writes).
+UI compatibility validation passed (31 screens, 27 DOM contracts, 24 scripts).
+Diagnostics export validation passed.
+Diagnostics comprehensive validation passed (core report, legacy saves, mobile UI, export actions, and approved Android evidence).

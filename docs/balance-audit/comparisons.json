@@ -1,0 +1,1336 @@
+{
+  "metadata": {
+    "seed": 20260908,
+    "n": 500,
+    "source": "4ad50548f3dd9e5803cb7f2308c8df2e2d3c6f1a"
+  },
+  "comparisons": [
+    {
+      "proposal": "multi species level bugfix",
+      "config": {
+        "party": [
+          "freiwolf",
+          "highaquaron",
+          "granbeat"
+        ],
+        "level": 10,
+        "map": "grassland",
+        "enemy": "slime",
+        "second": "seralphia",
+        "difficulty": "normal",
+        "mode": "three_way",
+        "policy": "damage"
+      },
+      "before": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 6.71,
+        "coinsPerAttempt": 25.292,
+        "expPerAttempt": 126.57
+      },
+      "after": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 16.104,
+        "coinsPerAttempt": 24.834,
+        "expPerAttempt": 127.022
+      }
+    },
+    {
+      "proposal": "multi species level bugfix",
+      "config": {
+        "party": [
+          "freiwolf",
+          "highaquaron",
+          "granbeat"
+        ],
+        "level": 10,
+        "map": "grassland",
+        "enemy": "seralphia",
+        "second": "slime",
+        "difficulty": "normal",
+        "mode": "three_way",
+        "policy": "damage"
+      },
+      "before": {
+        "winCI95": [
+          0.7416305610182787,
+          0.8140996526044155
+        ],
+        "n": 500,
+        "winRate": 0.78,
+        "capped": 0,
+        "turns": 23.276,
+        "coinsPerAttempt": 19.18,
+        "expPerAttempt": 98.972
+      },
+      "after": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 16.122,
+        "coinsPerAttempt": 24.972,
+        "expPerAttempt": 126.816
+      }
+    },
+    {
+      "proposal": "multi species level bugfix",
+      "config": {
+        "party": [
+          "freiwolf",
+          "highaquaron",
+          "granbeat"
+        ],
+        "level": 30,
+        "map": "grassland",
+        "enemy": "slime",
+        "second": "seralphia",
+        "difficulty": "normal",
+        "mode": "three_way",
+        "policy": "damage"
+      },
+      "before": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 6.682,
+        "coinsPerAttempt": 25.338,
+        "expPerAttempt": 126.676
+      },
+      "after": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 14.646,
+        "coinsPerAttempt": 25.134,
+        "expPerAttempt": 127.47
+      }
+    },
+    {
+      "proposal": "multi species level bugfix",
+      "config": {
+        "party": [
+          "freiwolf",
+          "highaquaron",
+          "granbeat"
+        ],
+        "level": 30,
+        "map": "grassland",
+        "enemy": "seralphia",
+        "second": "slime",
+        "difficulty": "normal",
+        "mode": "three_way",
+        "policy": "damage"
+      },
+      "before": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 23.908,
+        "coinsPerAttempt": 24.828,
+        "expPerAttempt": 126.676
+      },
+      "after": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 14.654,
+        "coinsPerAttempt": 24.992,
+        "expPerAttempt": 127.172
+      }
+    },
+    {
+      "proposal": "poison 10% to 5% (experimental, not recommended globally)",
+      "config": {
+        "party": [
+          "seralphia",
+          "granbeat",
+          "highaquaron"
+        ],
+        "level": 30,
+        "map": "starsea",
+        "enemy": "doom_nemesion",
+        "difficulty": "extreme",
+        "mode": "single",
+        "policy": "tactical",
+        "equipped": [
+          [
+            "skill_grassbeat_04",
+            "skill_rikasheef_03",
+            "skill_rikasheef_02"
+          ]
+        ],
+        "acquisition": "extra poison needle card required; monster gacha COST1 pool; conditional crisis encounter"
+      },
+      "withoutNeedle": {
+        "winCI95": [
+          0,
+          0.007624618530903363
+        ],
+        "n": 500,
+        "winRate": 0,
+        "capped": 280,
+        "turns": 159.366,
+        "coinsPerAttempt": 0,
+        "expPerAttempt": 0
+      },
+      "before": {
+        "winCI95": [
+          0.5362886484411069,
+          0.6224914125939485
+        ],
+        "n": 500,
+        "winRate": 0.58,
+        "capped": 0,
+        "turns": 13.982,
+        "coinsPerAttempt": 21.516,
+        "expPerAttempt": 80.034
+      },
+      "after": {
+        "winCI95": [
+          0.13961985448969885,
+          0.2054123937406974
+        ],
+        "n": 500,
+        "winRate": 0.17,
+        "capped": 235,
+        "turns": 158.022,
+        "coinsPerAttempt": 6.246,
+        "expPerAttempt": 24.528
+      }
+    },
+    {
+      "proposal": "poison 10% to 5% (experimental, not recommended globally)",
+      "config": {
+        "party": [
+          "seralphia",
+          "granbeat",
+          "highaquaron"
+        ],
+        "level": 60,
+        "map": "starsea",
+        "enemy": "doom_nemesion",
+        "difficulty": "extreme",
+        "mode": "single",
+        "policy": "tactical",
+        "equipped": [
+          [
+            "skill_grassbeat_04",
+            "skill_rikasheef_03",
+            "skill_rikasheef_02"
+          ]
+        ],
+        "acquisition": "extra poison needle card required; monster gacha COST1 pool; conditional crisis encounter"
+      },
+      "withoutNeedle": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 50.612,
+        "coinsPerAttempt": 37.32,
+        "expPerAttempt": 140.352
+      },
+      "before": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 12.956,
+        "coinsPerAttempt": 37.83,
+        "expPerAttempt": 139.854
+      },
+      "after": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 26.244,
+        "coinsPerAttempt": 38.274,
+        "expPerAttempt": 140.64
+      }
+    },
+    {
+      "proposal": "poison 10% to 5% (experimental, not recommended globally)",
+      "config": {
+        "party": [
+          "seralphia",
+          "granbeat",
+          "highaquaron"
+        ],
+        "level": 100,
+        "map": "starsea",
+        "enemy": "doom_nemesion",
+        "difficulty": "extreme",
+        "mode": "single",
+        "policy": "tactical",
+        "equipped": [
+          [
+            "skill_grassbeat_04",
+            "skill_rikasheef_03",
+            "skill_rikasheef_02"
+          ]
+        ],
+        "acquisition": "extra poison needle card required; monster gacha COST1 pool; conditional crisis encounter"
+      },
+      "withoutNeedle": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 36.23,
+        "coinsPerAttempt": 37.212,
+        "expPerAttempt": 141.078
+      },
+      "before": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 11.678,
+        "coinsPerAttempt": 37.026,
+        "expPerAttempt": 140.454
+      },
+      "after": {
+        "winCI95": [
+          0.9923753814690964,
+          0.9999999999999999
+        ],
+        "n": 500,
+        "winRate": 1,
+        "capped": 0,
+        "turns": 20.662,
+        "coinsPerAttempt": 37.836,
+        "expPerAttempt": 141.834
+      }
+    }
+  ],
+  "exped": [
+    {
+      "grade": "D",
+      "distance": "short",
+      "rows": [
+        {
+          "label": "before",
+          "coinsPerWin": 24,
+          "expPerWin": 18
+        },
+        {
+          "label": "after",
+          "coinsPerWin": 24,
+          "expPerWin": 18
+        }
+      ]
+    },
+    {
+      "grade": "D",
+      "distance": "medium",
+      "rows": [
+        {
+          "label": "before",
+          "coinsPerWin": 16,
+          "expPerWin": 12
+        },
+        {
+          "label": "after",
+          "coinsPerWin": 24,
+          "expPerWin": 18
+        }
+      ]
+    },
+    {
+      "grade": "D",
+      "distance": "long",
+      "rows": [
+        {
+          "label": "before",
+          "coinsPerWin": 14.4,
+          "expPerWin": 10.8
+        },
+        {
+          "label": "after",
+          "coinsPerWin": 24,
+          "expPerWin": 18
+        }
+      ]
+    },
+    {
+      "grade": "S",
+      "distance": "short",
+      "rows": [
+        {
+          "label": "before",
+          "coinsPerWin": 27.5568,
+          "expPerWin": 20.6676
+        },
+        {
+          "label": "after",
+          "coinsPerWin": 27.5568,
+          "expPerWin": 20.6676
+        }
+      ]
+    },
+    {
+      "grade": "S",
+      "distance": "medium",
+      "rows": [
+        {
+          "label": "before",
+          "coinsPerWin": 18.371199999999998,
+          "expPerWin": 13.7784
+        },
+        {
+          "label": "after",
+          "coinsPerWin": 27.5568,
+          "expPerWin": 20.6676
+        }
+      ]
+    },
+    {
+      "grade": "S",
+      "distance": "long",
+      "rows": [
+        {
+          "label": "before",
+          "coinsPerWin": 16.53408,
+          "expPerWin": 12.40056
+        },
+        {
+          "label": "after",
+          "coinsPerWin": 27.5568,
+          "expPerWin": 20.6676
+        }
+      ]
+    }
+  ],
+  "growth": [
+    {
+      "level": 10,
+      "before": 2700,
+      "after": 1350
+    },
+    {
+      "level": 30,
+      "before": 26100,
+      "after": 13050
+    },
+    {
+      "level": 60,
+      "before": 106200,
+      "after": 53100
+    },
+    {
+      "level": 100,
+      "before": 297000,
+      "after": 148500
+    }
+  ],
+  "repro": [
+    {
+      "label": "before",
+      "extraLevel": 5,
+      "extraHP": 273,
+      "poisonCredit": false
+    },
+    {
+      "label": "after",
+      "extraLevel": 46,
+      "extraHP": 765,
+      "poisonCredit": true
+    }
+  ],
+  "mechanics": {
+    "limits": [
+      {
+        "level": 1,
+        "skillCost": 4,
+        "hp": 55,
+        "speed": 40
+      },
+      {
+        "level": 3,
+        "skillCost": 4,
+        "hp": 79,
+        "speed": 40
+      },
+      {
+        "level": 10,
+        "skillCost": 7,
+        "hp": 163,
+        "speed": 40
+      },
+      {
+        "level": 30,
+        "skillCost": 13,
+        "hp": 403,
+        "speed": 40
+      },
+      {
+        "level": 100,
+        "skillCost": 37,
+        "hp": 1243,
+        "speed": 40
+      }
+    ],
+    "link": [
+      {
+        "id": "freigal",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.5,
+        "attackMultiplier": 1.5,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "freiwolf",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "aquaron",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 250,
+        "barrierCap": 250,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "highaquaron",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "shenhairon",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "tienhairon",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "grassbeat",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "thornbeat",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "granbeat",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "rikasheef",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "seralphia",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "nightmare",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "volteck",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 50,
+        "speedCap": 50,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "spaquinn",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "voltax",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "icegolem",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "proto_icegolem",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "nemes",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "nemesia",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "nemesion",
+        "rarity": 4,
+        "effectRate": 0.13,
+        "barrier": 65,
+        "barrierCap": 175,
+        "attackBonus": 0.13,
+        "attackMultiplier": 1.13,
+        "speedBonus": 13,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "doom_nemesion",
+        "rarity": 5,
+        "effectRate": 0.1,
+        "barrier": 50,
+        "barrierCap": 175,
+        "attackBonus": 0.1,
+        "attackMultiplier": 1.1,
+        "speedBonus": 10,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "suiren",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "slime",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 200,
+        "barrierCap": 200,
+        "attackBonus": 0.4,
+        "attackMultiplier": 1.4,
+        "speedBonus": 40,
+        "speedCap": 40,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "slime_gold",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "goblin",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 200,
+        "barrierCap": 200,
+        "attackBonus": 0.4,
+        "attackMultiplier": 1.4,
+        "speedBonus": 40,
+        "speedCap": 40,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "false_dragon_alfa",
+        "rarity": 5,
+        "effectRate": 0.1,
+        "barrier": 50,
+        "barrierCap": 175,
+        "attackBonus": 0.1,
+        "attackMultiplier": 1.1,
+        "speedBonus": 10,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "false_dragon_beta",
+        "rarity": 5,
+        "effectRate": 0.1,
+        "barrier": 50,
+        "barrierCap": 175,
+        "attackBonus": 0.1,
+        "attackMultiplier": 1.1,
+        "speedBonus": 10,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "false_dragon_gamma",
+        "rarity": 5,
+        "effectRate": 0.1,
+        "barrier": 50,
+        "barrierCap": 175,
+        "attackBonus": 0.1,
+        "attackMultiplier": 1.1,
+        "speedBonus": 10,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "volmoog",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "gran_volmoog",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "orcana",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "orca_stream",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "orca_abyss",
+        "rarity": 4,
+        "effectRate": 0.13,
+        "barrier": 65,
+        "barrierCap": 175,
+        "attackBonus": 0.13,
+        "attackMultiplier": 1.13,
+        "speedBonus": 13,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "tsubaki",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "alchemion",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "kimeragna",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "sylphin",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "zephyray",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "tempestray",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "ignaros",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "nocle",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "noclaid",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "noxvelg",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "luxseed",
+        "rarity": 1,
+        "effectRate": 0.35,
+        "barrier": 175,
+        "barrierCap": 175,
+        "attackBonus": 0.35,
+        "attackMultiplier": 1.35,
+        "speedBonus": 35,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "luxiard",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "lux_galdion",
+        "rarity": 3,
+        "effectRate": 0.19,
+        "barrier": 95,
+        "barrierCap": 175,
+        "attackBonus": 0.19,
+        "attackMultiplier": 1.19,
+        "speedBonus": 19,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "astralepis",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "galdra",
+        "rarity": 2,
+        "effectRate": 0.26,
+        "barrier": 130,
+        "barrierCap": 175,
+        "attackBonus": 0.26,
+        "attackMultiplier": 1.26,
+        "speedBonus": 26,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "kimeragna_apex",
+        "rarity": 4,
+        "effectRate": 0.13,
+        "barrier": 65,
+        "barrierCap": 175,
+        "attackBonus": 0.13,
+        "attackMultiplier": 1.13,
+        "speedBonus": 13,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      },
+      {
+        "id": "elixion",
+        "rarity": 5,
+        "effectRate": 0.1,
+        "barrier": 50,
+        "barrierCap": 175,
+        "attackBonus": 0.1,
+        "attackMultiplier": 1.1,
+        "speedBonus": 10,
+        "speedCap": 35,
+        "capsApplied": {
+          "barrier": false,
+          "attack": false,
+          "speed": false
+        }
+      }
+    ],
+    "unobtainableCharacters": [
+      "elysia",
+      "elysia_prayer",
+      "hikari",
+      "elna_middle",
+      "elna_advanced",
+      "elna_water",
+      "stella_wizard",
+      "stella_sorcerer",
+      "lumina_wizard",
+      "lumina_sorcerer",
+      "elna_kaen"
+    ]
+  }
+}
