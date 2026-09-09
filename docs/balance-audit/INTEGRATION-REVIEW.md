@@ -1,6 +1,15 @@
 # PR #175 integration review — 2026-09-10
 
-## Release status
+## Published after user device confirmation
+
+PR #175 is now merged and published at `d2e6fb123d544b5f525dff68692064bc16d2efe6`. The user reported device verification and explicitly authorized proceeding for PR #175. This is user-reported evidence, not agent device operation; device/browser/head/viewport-specific details were not supplied and are not invented. PR #174 approval was not reused.
+
+- [PR CI 34410294682](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34410294682), [main CI 34411215620](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34411215620) and [Pages 34411214650](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34411214650): success.
+- Public index and the three changed JS files: HTTP 200 and byte-identical to verified tree `c33cad49c3f65dc754a820d0e8002c83fec5128c`.
+- [Publication details](PUBLICATION.md) record hashes, delivered identifiers and document synchronization.
+- The following Draft/release-gate/browser-failure statements and validation matrix describe the earlier review stage. They are retained as history, not the current release status.
+
+## Release status at the original review
 
 **Draft / not merged / not published.** Automated checks are evidence of isolated code execution, not Android, Chromebook, visual layout, or browser reload verification. The user's PR #174 device approval is not approval of PR #175. The current request authorizes commits, push and PR updates, but requires unmet release gates to stop merge.
 
