@@ -1,0 +1,84 @@
+{
+  "source": "4ad50548f3dd9e5803cb7f2308c8df2e2d3c6f1a",
+  "originalPRHead": "7415001f0d16615533b425ce65d5ed0a5f607633",
+  "node": "v24.19.0",
+  "python": "3.12.14",
+  "seed": 20260908,
+  "prng": "Mulberry32",
+  "baseCases": 229,
+  "baseTrialsPerCase": 200,
+  "focusedTrialsPerArm": 500,
+  "totalBattleTrials": 54300,
+  "files": [
+    {
+      "name": "results.json",
+      "retained": true,
+      "kind": "json",
+      "sha256": "de36ddc47d3c8b4a08e9bb8234b05bb72f938f5781d8e668c90ae9ad70f6b21f",
+      "originalFileSha256": "6ff08f565eba52ef8c6d656f14d04f6bc002b8e1e54ca0edf3f765646f72649d"
+    },
+    {
+      "name": "comparisons.json",
+      "retained": true,
+      "kind": "json",
+      "sha256": "4c623d60e3bb9d2cff7acfad8e7e4f4de9bc9b5ebf01ecd1ddfb4db471c86312",
+      "originalFileSha256": "eb9e9fefb14456c7f7fa2ce954a3f9c3d9f37880760222d82401f2bc9b37eb9f"
+    },
+    {
+      "name": "economy.json",
+      "retained": true,
+      "kind": "json",
+      "sha256": "174b26f08789333d3a8fa1d15b63955d40db3becb402a2dde1acd0aaa71f4a13",
+      "originalFileSha256": "95759ba33e47426d549a5869c418ccde37f4cb95fda510b0ea63dc7333f22288"
+    },
+    {
+      "name": "mechanics.json",
+      "retained": true,
+      "kind": "json",
+      "sha256": "5f6411cc0e1f0a005d1b7f5216e6e92d55c5a707f0b503c3a86da40ff2b42fee",
+      "originalFileSha256": "ba5afcb37be43f560d477c1595547550a43088b5263393cc9bd57fbe1fbc9772"
+    },
+    {
+      "name": "acquisition-candidates.json",
+      "retained": true,
+      "kind": "json",
+      "sha256": "82c9f7ee78e39fb01f1e29e9db47011bd7c5078848cfe1c0067aecaa5612acf9",
+      "originalFileSha256": "0201d398a98412cf9081dd17c617873e61e078dbc3c0b95700b70ac5f3b36f07"
+    },
+    {
+      "name": "representative-log.json",
+      "retained": true,
+      "kind": "json",
+      "sha256": "d78487510f1d729b0d3743597fa3739fd46551f5ef7913427fb31d1f3774c2f9",
+      "originalFileSha256": "4be48b7fe4b2750aa74476fe2010d85e37f56a4e8263d750f080b3e0d6361a1b"
+    },
+    {
+      "name": "REPORT.md",
+      "retained": true,
+      "kind": "bytes",
+      "sha256": "0de462000c28b71fc965560ffa9c41ccabfbc2a6a4d51bd1fd78270f88490d75",
+      "originalFileSha256": "32e4b0586bdfeed89dffcc7e73d9bbd96a0ff32ab942a9aca5a8120a76ea6468"
+    },
+    {
+      "name": "battle-trials.jsonl.gz",
+      "retained": false,
+      "kind": "gzip-payload",
+      "sha256": "e96a626f16baa7d7ab9ba7fabf05d057f99f8752dbfae03e5f7232797faa30f7",
+      "originalFileSha256": "61e17b46e11266a9c2f9af9bc80f53bf4ec9a61d7a7ee0ae76e202f8e6b256db"
+    },
+    {
+      "name": "comparison-trials.json.gz",
+      "retained": false,
+      "kind": "gzip-payload",
+      "sha256": "365f3b6df559c82fe58e7f1174dc4d048cdee2b2df3951267184f52649f193b9",
+      "originalFileSha256": "728ad41352ab6035d6f4c8bb042fd5a36e350e954f3eb971cc4b7f8c77778799"
+    },
+    {
+      "name": "battles.csv",
+      "retained": false,
+      "kind": "bytes",
+      "sha256": "f49566859f148a2fd5c25988628773c8852e9c7a52e6a9b3f9b9f95bce0dcfb5",
+      "originalFileSha256": "f49566859f148a2fd5c25988628773c8852e9c7a52e6a9b3f9b9f95bce0dcfb5"
+    }
+  ]
+}

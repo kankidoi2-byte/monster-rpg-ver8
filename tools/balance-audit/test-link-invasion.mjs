@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {runtime} from './runtime.mjs';
+const r=runtime(),run=r.run;
+run(`save=initSave();save.instances=[];save.party=[];['freigal','highaquaron'].forEach(id=>{const i=addInstance(id,30);save.party.push(i.uid)});prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='seralphia';activeHuntRequest.invasionTurn=1;eHp=enemyMaxHp();battleTurnCount=1;var result=activateKokoroLinkSource(partyBattle[1].uid,partyBattle,0,{maxHp:playerMaxHp(),speed:monSpd(player,activeInstance)});applyKokoroLinkStatusAbilityForBattle(result.link,null,()=>0);`);
+const before=JSON.parse(JSON.stringify(run(`({effects:kokoroLinkEnemyEffectsFor('single'),multiplier:kokoroLinkEnemySpeedMultiplierFor('single')})`)));
+run('triggerInvasionIfDue()');
+const after=JSON.parse(JSON.stringify(run(`({effects:kokoroLinkEnemyEffectsFor('enemy_a'),multiplier:kokoroLinkEnemySpeedMultiplierFor('enemy_a')})`)));
+if(process.argv.includes('--record'))fs.writeFileSync(new URL(`../../docs/balance-audit/link-invasion-${process.env.AUDIT_REF?'before':'after'}.json`,import.meta.url),JSON.stringify({before,after},null,2)+'\n');
+assert.deepEqual(after,before,'invasion must preserve speed debuff and remaining turns');
+assert.equal(run(`kokoroLinkEnemyEffectsFor('single').length`),0,'no stale effect left under old key');
+assert.equal(run(`kokoroLinkEnemyEffectsFor('enemy_b').length`),0,'invader must not inherit the old opponent effect');
+assert.equal(run(`result.link.statusAbility.targetKey`),'enemy_a');
+run(`tickKokoroLinkEnemyEffects('enemy_a',500,500);`);
+assert.equal(run(`kokoroLinkEnemyEffectsFor('enemy_a')[0].remainingTurns`),1);
+run(`tickKokoroLinkEnemyEffects('enemy_a',500,500);`);
+assert.equal(run(`kokoroLinkEnemySpeedMultiplierFor('enemy_a')`),1,'effect expires without extending duration');
+console.log('PASS: real ★2 water link slow survives invasion, binds only old enemy, and expires');

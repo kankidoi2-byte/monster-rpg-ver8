@@ -1,0 +1,6 @@
+
+# Reproducible balance-audit outputs; checksums in reproduction-manifest.json.
+/docs/balance-audit/battle-trials.jsonl.gz
+/docs/balance-audit/comparison-trials.json.gz
+/docs/balance-audit/battles.csv
+/docs/balance-audit/validation.log

@@ -1,0 +1,48 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: invasion must preserve speed debuff and remaining turns
++ actual - expected
+
+  {
++   effects: [],
++   multiplier: 1
+-   effects: [
+-     {
+-       category: 'speed',
+-       charges: 0,
+-       durationTurns: 2,
+-       label: '鈍足',
+-       rate: 0.2,
+-       remainingTurns: 2
+-     }
+-   ],
+-   multiplier: 0.8
+  }
+
+    at file:///workspace/scratch/66f308fd53de/monster-rpg-ver8/tools/balance-audit/test-link-invasion.mjs:10:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: { effects: [], multiplier: 1 },
+  expected: {
+    effects: [
+      {
+        category: 'speed',
+        rate: 0.2,
+        durationTurns: 2,
+        label: '鈍足',
+        remainingTurns: 2,
+        charges: 0
+      }
+    ],
+    multiplier: 0.8
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

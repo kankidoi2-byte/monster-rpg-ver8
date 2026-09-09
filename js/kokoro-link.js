@@ -333,6 +333,22 @@ function applyKokoroLinkEnemyEffectComponents(targetKey,components=[]){
   return current;
 }
 
+// A pending invasion keeps the existing opponent; only its runtime key changes.
+function moveKokoroLinkEnemyTarget(fromKey,toKey){
+  if(!fromKey||!toKey||fromKey===toKey)return false;
+  const effects=kokoroLinkBattleState.enemyEffectsByTargetKey.get(fromKey);
+  if(effects){
+    kokoroLinkBattleState.enemyEffectsByTargetKey.set(toKey,effects);
+    kokoroLinkBattleState.enemyEffectsByTargetKey.delete(fromKey);
+  }
+  for(const link of kokoroLinkBattleState.linksByTargetUid.values()){
+    for(const ability of [link.statusAbility,link.tacticsAbility]){
+      if(ability?.targetKey===fromKey)ability.targetKey=toKey;
+    }
+  }
+  return true;
+}
+
 function kokoroLinkEnemyEffectsFor(targetKey){return kokoroLinkBattleState.enemyEffectsByTargetKey.get(targetKey)||[];}
 function removeKokoroLinkEnemyEffectCategory(targetKey,category){
   const active=kokoroLinkEnemyEffectsFor(targetKey).filter(effect=>effect.category!==category);if(active.length)kokoroLinkBattleState.enemyEffectsByTargetKey.set(targetKey,active);else kokoroLinkBattleState.enemyEffectsByTargetKey.delete(targetKey);
