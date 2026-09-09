@@ -245,7 +245,9 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   document.getElementById('battleOutcomeNote').textContent = note;
   const next = document.getElementById('next');
   next.classList.remove('hidden');
-  next.textContent = victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
+  next.textContent = typeof activeHuntRequest !== 'undefined' && activeHuntRequest?.worldMapExploration
+    ? '探索先へ戻る ›'
+    : victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
   setTimeout(() => outcome.classList.remove('is-revealing'), 850);
   if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
 }
