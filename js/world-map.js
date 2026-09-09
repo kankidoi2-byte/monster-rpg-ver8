@@ -5,15 +5,15 @@ const WORLD_MAP_PLACES = Object.freeze([
   {id:'starry_plain',x:72,y:13,icon:'✦',route:'北東の高原。星海へ通じる気配を観測する。'},
   {id:'forest',x:17,y:35,icon:'♣',route:'草原の西。南へ進むと光の平原と廃村に道が分かれる。'},
   {id:'grassland',x:44,y:26,icon:'✿',route:'世界の中央。王都・西の森・東の湖への分岐点。'},
-  {id:'lake',x:70,y:34,icon:'≈',route:'雪山の水を受け、東の海へ注ぐ湖。'},
-  {id:'water_secret',x:79,y:45,icon:'◇',route:'湖から海へ向かう支流の奥。入口が現れた時に探索できる。'},
-  {id:'seikai_irie',x:89,y:28,icon:'≈',route:'湖から続く川の河口。外海への玄関口。'},
+  {id:'lake',x:72,y:31,icon:'≈',route:'雪山の水を受け、南東の流出口から海へ注ぐ湖。'},
+  {id:'water_secret',x:67,y:43,icon:'◇',route:'湖の南東、海へ下る流れから分かれた上流支谷。入口が現れた時に探索できる。'},
+  {id:'seikai_irie',x:82.5,y:50,icon:'≈',route:'湖の南東流出口から続く川の河口。水辺の遺構が外海への目印。'},
   {id:'ruined_village',x:14,y:55,icon:'⌂',route:'森の南西。月影の洞窟がある周辺地方へ続く。'},
-  {id:'light_plain',x:31,y:49,icon:'☀',route:'森の南東。陽だまりの森の縁に広がる光の平原。'},
-  {id:'kaen_village',x:52,y:70,icon:'❀',route:'火山の北側。溶岩流から離れた斜面に里がある。'},
-  {id:'volcano',x:50,y:58,icon:'▲',route:'南部火山帯。華炎の里から山道を登る。'},
-  {id:'kaiyu_kaiiki',x:86,y:65,icon:'≈',route:'入江の沖に広がる外海。東にはまだ見ぬ航路がある。'},
-  {id:'deep_sea_end',x:86,y:82,icon:'▽',route:'外海のさらに下、光が届かない深海域。'}
+  {id:'light_plain',x:31.5,y:48,icon:'☀',route:'森の南東。陽だまりの森の縁に広がる光の平原。'},
+  {id:'kaen_village',x:52,y:69,icon:'❀',route:'火山の南側。溶岩流から離れた山あいに里がある。'},
+  {id:'volcano',x:52,y:57,icon:'▲',route:'南部火山帯。華炎の里から北へ山道を登る。'},
+  {id:'kaiyu_kaiiki',x:90,y:62,icon:'≈',route:'入り江の沖に循環する海流が広がる外海。東にはまだ見ぬ航路がある。'},
+  {id:'deep_sea_end',x:88,y:83,icon:'▽',route:'回遊海域の南東。連続する海面の下へ、水に満ちた海溝が深く沈む。'}
 ]);
 let worldMapSelectedId = null;
 let worldMapSelectedEvent = null;
@@ -107,10 +107,10 @@ function worldMapPlaceButton(map,{className='',eventKey=null,subtitle=''}={}) {
   return `<button type="button" class="wm-place ${className}${available||hasEvent?'':' is-sealed'}" data-wm-place="${worldMapEscape(map.id)}"${eventKey?` data-wm-event="${worldMapEscape(eventKey)}"`:''}${goldenGuideTarget?' data-tutorial-golden-land':''}><span>${worldMapEscape(map.name)}</span><small>${worldMapEscape(subtitle || (available?'探索先を見る':hasEvent?'特別な入口あり':'入口未出現・詳細を見る'))}</small></button>`;
 }
 function worldMapTerrainHTML() {
-  return '<img class="wm-terrain" src="images/maps/world_map_prologue_v1.webp" alt="" aria-hidden="true">';
+  return '<img class="wm-terrain" src="images/maps/world_map_prologue_v2.webp" alt="" aria-hidden="true">';
 }
 function worldMapTerrainEffectsHTML(events){
-  const anchors={elysia:{x:31,y:49},crisis:{x:72,y:13},rift:{x:21,y:15},water_secret:{x:79,y:45},starsea:{x:72,y:13},golden_land:{x:57,y:79}};
+  const anchors={elysia:{x:31.5,y:48},crisis:{x:72,y:13},rift:{x:21,y:15},water_secret:{x:70,y:42},starsea:{x:72,y:13},golden_land:{x:57,y:79}};
   return events.map(event=>{
     const point=anchors[event.key];
     return point?`<span class="wm-world-effect effect-${worldMapEscape(event.key)}" style="--wm-x:${point.x}%;--wm-y:${point.y}%" aria-hidden="true"></span>`:'';
