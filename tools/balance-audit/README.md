@@ -49,7 +49,13 @@ Files:
 - `mechanics.mjs`: isolated production one-action effects, type matrix, default-card acquisition and contract-stage sampling.
 - `test-regressions.mjs` / `test-link-invasion.mjs`: current-source regression checks, including actual poison KO after invasion.
 
-Raw base trials are gzip JSONL; focused trials are gzip JSON. For example:
+Raw base trials are gzip JSONL; focused trials are gzip JSON. They are generated locally and ignored by Git.
+The retained aggregates keep all fields and numeric values; formatting is one row per line.
+`npm run analyze:balance` verifies all 10 expected hashes, then normalizes aggregate formatting.
+`node tools/balance-audit/verify-reproduction.mjs --generated` verifies raw outputs too.
+`npm run check:balance-audit` verifies the 7 retained aggregate/report hashes without requiring raw outputs.
+For exploratory seeds or another source, run individual commands: the default manifest deliberately rejects changed results.
+See [the integration review](../../docs/balance-audit/INTEGRATION-REVIEW.md) for storage decisions and release gates. For example:
 
 ```sh
 python3 - <<'PY'

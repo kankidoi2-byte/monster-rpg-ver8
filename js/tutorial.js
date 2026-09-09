@@ -1760,7 +1760,7 @@ registerTutorialFlow(TUTORIAL_SKILL_GACHA_FLOW_ID,[
 ]);
 registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID,[
   {id:'golden_land_intro',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'黄金郷への入口が現れました',text:'世界地図に現れる希少な入口です。ゴールド系モンスターだけが出現し、勝利すると難易度に応じた追加コインを獲得できます。',progressLabel:'GOLDEN LAND'},
-  {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図と自然発見は別の入口',text:'道具の地図を使った入口は出発時に1枚消費します。探索で自然に見つけた入口は消費せず、挑戦するまで保持されます。',progressLabel:'GOLDEN LAND',nextLabel:'世界地図へ戻る'}
+  {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図と自然発見は別の入口',text:'道具の地図を使った入口は出発時に1枚消費します。探索で自然に見つけた入口は地図を消費しませんが、ほかで2戦すると閉じます。ゲームを閉じている間は進みません。',progressLabel:'GOLDEN LAND',nextLabel:'世界地図へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_DEX_FLOW_ID,[
   {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'4つの図鑑',text:'モンスター、キャラクター、マップ、アイテムの発見記録を確認できます。項目を選ぶと詳細へ進みます。',progressLabel:'DEX'},

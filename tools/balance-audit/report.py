@@ -9,6 +9,8 @@ report='''# 戦闘・育成・収集・経済バランス検証 — 2026-09-08
 
 ## 結論
 
+生ログ・CSV・全検査ログのリンクは当初コミットの履歴です。現在の保存方針・再現結果・公開条件は [統合レビュー](INTEGRATION-REVIEW.md) を参照してください。
+
 **明確な不具合3件を作業ブランチで修正。能力値・排出率・育成費用は変更していない。**
 54,300戦の本番処理シミュレーション、149,400回の技単発処理、抽選・育成・素材収集実験を行った。
 低レアのリンクと毒には十分な価値がある。一方、育成必要EXPの増え方と、特定技をガチャだけで狙う負担は大きい。
@@ -251,16 +253,16 @@ report+='''
 ## 修正・検証と納品
 
 修正ファイルは `js/multi-battle.js`・`js/kokoro-link.js`、プレイヤー向けお知らせ、該当キャッシュ識別子。保存形式・ID・本番バランス定数の変更なし。
-`npm run check` はpostcheckまで成功（`validation.log`）。新規回帰テストは修正前失敗を `regression-before.log` に保存。
+当初の `npm run check` はpostcheckまで成功（旧コミットの `validation.log`）。新規回帰テストは修正前失敗を `regression-before.log` に保存。
 修正後は種族Lv、既存敵のHP保持、毒撃破の帰属、報酬再付与防止、単体/複数敵の代表計算一致を確認。
 ブラウザ煙検証は接続制限で未実施なので、公開前に実画面で乱入・三つ巴と契約を確認すること。
 
 再実行方法は [ツールREADME](../../tools/balance-audit/README.md)。主要データ:
 
-- [基礎比較・全設定](results.json)、[戦闘集計CSV](battles.csv)、[全基礎試行 gzip JSONL](battle-trials.jsonl.gz)
-- [調整前後](comparisons.json)、[前後の全試行 gzip JSON](comparison-trials.json.gz)
+- [基礎比較・全設定](results.json)、[戦闘集計CSV](https://github.com/kankidoi2-byte/monster-rpg-ver8/blob/7415001f0d16615533b425ce65d5ed0a5f607633/docs/balance-audit/battles.csv)、[全基礎試行 gzip JSONL](https://github.com/kankidoi2-byte/monster-rpg-ver8/blob/7415001f0d16615533b425ce65d5ed0a5f607633/docs/balance-audit/battle-trials.jsonl.gz)
+- [調整前後](comparisons.json)、[前後の全試行 gzip JSON](https://github.com/kankidoi2-byte/monster-rpg-ver8/blob/7415001f0d16615533b425ce65d5ed0a5f607633/docs/balance-audit/comparison-trials.json.gz)
 - [育成・地域収益・素材](economy.json)、[技作用・属性・カード取得](mechanics.json)、[ガチャ調整比較](acquisition-candidates.json)
-- [代表戦闘ログ](representative-log.json)、[全検査ログ](validation.log)
+- [代表戦闘ログ](representative-log.json)、[全検査ログ](https://github.com/kankidoi2-byte/monster-rpg-ver8/blob/7415001f0d16615533b425ce65d5ed0a5f607633/docs/balance-audit/validation.log)
 
 採否を判断してほしいのは、①遠征の操作頻度による効率差を減らすか、②特定の最高COST技をもっと狙いやすくするか、③終盤育成の目標勝利数。
 今回の推奨順は **不具合3件のレビュー→遠征の供給増を検討→ガチャと育成の目標決め**。毒の一律半減は見送る。

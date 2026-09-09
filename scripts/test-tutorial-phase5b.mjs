@@ -43,7 +43,7 @@ assert.ok(flows.TUTORIAL_EXPEDITION_FLOW_ID.includes('1〜3体')&&flows.TUTORIAL
 assert.ok(flows.TUTORIAL_EXPEDITION_FLOW_ID.includes('50％'),'expedition guidance must explain early-return rewards');
 assert.ok(flows.TUTORIAL_FUSION_FLOW_ID.includes('指定アイテム')&&flows.TUTORIAL_EVOLUTION_FLOW_ID.includes('必要レベル'),'evolution and fusion guidance must distinguish current requirements');
 assert.ok(flows.TUTORIAL_SKILL_CARDS_FLOW_ID.includes('所持枚数')&&flows.TUTORIAL_SKILL_GACHA_FLOW_ID.includes('100コイン')&&flows.TUTORIAL_SKILL_GACHA_FLOW_ID.includes('900コイン'),'skill guidance must explain finite cards and current gacha prices');
-assert.ok(flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('出発時に1枚消費')&&flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('自然に見つけた入口は消費せず'),'Golden Land guidance must explain map consumption timing and natural-entry preservation');
+assert.ok(flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('出発時に1枚消費')&&flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('自然に見つけた入口は地図を消費しません')&&flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('ほかで2戦すると閉じます'),'Golden Land guidance must distinguish map-item consumption from the current two-battle entrance lifetime');
 assert.ok(flows.TUTORIAL_DEX_FLOW_ID.includes('モンスター、キャラクター、マップ、アイテム'),'dex guidance must explain all four records');
 assert.ok(flows.TUTORIAL_SHOP_ITEMS_FLOW_ID.includes('回復薬、強化薬、契約書')&&flows.TUTORIAL_BATTLE_ITEMS_FLOW_ID.includes('勝利後の契約'),'shop and item guidance must distinguish item use locations');
 assert.ok(flows.TUTORIAL_CONTRACTOR_RANK_FLOW_ID.includes('モンスターのレベルとは別')&&flows.TUTORIAL_CONTRACTOR_TITLES_FLOW_ID.includes('能力補正はありません'),'Rank and title guidance must explain progression and cosmetic-only titles');

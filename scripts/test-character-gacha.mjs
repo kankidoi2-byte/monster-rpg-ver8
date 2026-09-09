@@ -55,3 +55,13 @@ console.log('Character gacha UI handlers passed: pool disclosure, affordability,
 vm.runInContext(read('js/dex.js'),context);
 assert(run("M.filter(isCharacterUnit).every(unit=>monsterObtainEntries(unit).some(entry=>entry.kind==='gacha')===['elna_beginner','stella_apprentice','lumina_apprentice'].includes(unit.id))"));
 console.log('Character dex obtain hints match the three-character pool; Elysia and evolved forms excluded.');
+
+// The acquisition result must lead to the screen that can add the new ally.
+let destination=null;
+context.show=id=>{destination=id;};
+const equipAction=element('characterGachaResult').innerHTML.match(/<button onclick="([^"]+)">編成する<\/button>/);
+assert.ok(equipAction,'the result must offer a party action');
+run(equipAction[1]);
+assert.equal(destination,'partySet','編成する must open party setup, not the training roster');
+assert.match(read('index.html'),/<section id="partySet"/);
+console.log('Character acquisition result opens the party setup screen.');

@@ -7,9 +7,19 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260910-world-map-consistency',date:'2026-09-10',category:'update',
+    title:'世界地図の景観を各地の姿に合わせました',
+    body:'華炎の里や廃村、光の平原、高原遺跡、星空の平原、湖、蒼海地方などを、それぞれの探索先の景観に合わせて更新しました。地点の位置と道案内も、川・火山・海域のつながりに沿うよう調整しています。'
+  }),
+  Object.freeze({
     id:'20260908-multi-battle-level-poison',date:'2026-09-08',category:'fix',
     title:'乱入・三つ巴の敵レベルと効果の引継ぎを修正',
     body:'追加の敵が、その種族と難易度に設定されたレベルで登場するように修正しました。乱入前に与えた毒で相手を倒した場合も、自分が倒した相手として契約を試みられます。リンクで敵に与えた効果も乱入後へ引き継ぎます。'
+  }),
+  Object.freeze({
+    id:'20260908-growth-exploration-guidance',date:'2026-09-08',category:'fix',
+    title:'育成と探索の案内を改善',
+    body:'育成アイテム使用後も、開いていた個体情報を保つようにしました。キャラクターガチャ結果の「編成する」から編成画面へ進めるよう修正しました。世界地図からの戦闘後は「探索先へ戻る」と表示します。遠征の派遣案内と、黄金郷の入口が閉じる条件の説明も修正しました。'
   }),
   Object.freeze({
     id:'20260906-brigitte-dex-art',date:'2026-09-06',category:'update',
