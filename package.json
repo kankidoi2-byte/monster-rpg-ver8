@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check:world-map": "node scripts/test-world-events.mjs && node scripts/test-world-map.mjs && node scripts/test-world-map-ui.mjs && node scripts/test-world-map-navigation.mjs && node scripts/test-world-map-dex.mjs && node scripts/test-prologue-world-map-path.mjs && node scripts/test-prologue-world-map-facilities.mjs && node scripts/test-world-map-facility-ui.mjs && node scripts/test-world-map-tutorial-migration.mjs && node scripts/test-world-map-prologue-journey.mjs && node scripts/test-world-map-downgrade-safety.mjs",
+    "check:world-map": "node scripts/test-world-events.mjs && node scripts/test-world-map.mjs && node scripts/test-world-map-ui.mjs && node scripts/test-world-map-geography.mjs && node scripts/test-world-map-navigation.mjs && node scripts/test-world-map-dex.mjs && node scripts/test-prologue-world-map-path.mjs && node scripts/test-prologue-world-map-facilities.mjs && node scripts/test-world-map-facility-ui.mjs && node scripts/test-world-map-tutorial-migration.mjs && node scripts/test-world-map-prologue-journey.mjs && node scripts/test-world-map-downgrade-safety.mjs",
     "check:world-map-economy": "node scripts/compare-world-map-economy.mjs",
     "dev": "node scripts/dev-server.mjs",
     "check:story-mode": "node scripts/test-story-mode.mjs",

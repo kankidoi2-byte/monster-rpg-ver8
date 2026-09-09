@@ -80,7 +80,7 @@ Android実機の自然な幅に加え、利用可能ならChrome DevToolsの端�
 | `UI-02` | 地図を左右端まで指/トラックパッド/Shift+ホイールで移動。ページ全体の意図しない横スクロールや引っ掛かりがない。地図位置を中程にして1秒待つ→地点詳細→戻る→再読込し、概ね同じ横位置へ復帰する。 |  |  |  |  |  |  |  |
 | `UI-03` | 地図上のピンと下の場所一覧から同じ地点を開く。戻る、難易度、`この場所を探索する`、生態系summaryが44px相当で押せ、文字の重なり/切れ/極端な改行がない。 |  |  |  |  |  |  |  |
 | `UI-04` | 草原でEasy→Normal→Hard→Extreme（表示される範囲）を切替。選択色だけでなく状態が分かり、候補・Lv・危険度・倍率が更新される。詳細で再読込し、地点/難易度が復帰する。 |  |  |  |  |  |  |  |
-| `UI-05` | DevTools Network request blockingで`*world_map_prologue_v1.webp*`を遮断し再読込。画像が失敗しても地図領域、HTML地点名、場所一覧、戻る/出発操作が使える。遮断解除後に画像が戻る。Android単体で遮断不能ならリモートデバッグかChromebookで実施しAndroid欄は`B`。 |  |  |  |  |  |  |  |
+| `UI-05` | DevTools Network request blockingで`*world_map_prologue_v2.webp*`を遮断し再読込。画像が失敗しても地図領域、HTML地点名、場所一覧、戻る/出発操作が使える。遮断解除後に画像が戻る。Android単体で遮断不能ならリモートデバッグかChromebookで実施しAndroid欄は`B`。 |  |  |  |  |  |  |  |
 
 ## 4. 19地点と特殊入口（`F1-free` / `F2-events` / `F3-map-item`）
 

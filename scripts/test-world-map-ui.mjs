@@ -27,7 +27,7 @@ const context={
 vm.createContext(context);vm.runInContext(source,context);
 assert(context.renderWorldMap(list));
 for(const id of ids)assert(list.innerHTML.includes(`data-wm-place="${id}"`),id);
-assert.ok(list.innerHTML.includes('images/maps/world_map_prologue_v1.webp'),'the illustrated prologue terrain must replace the temporary SVG');
+assert.ok(list.innerHTML.includes('images/maps/world_map_prologue_v2.webp'),'the aligned prologue terrain must be rendered from its cache-safe filename');
 assert.equal(guideOffers,1,'an available Golden Land entry offers its guide after the target is rendered');
 assert.equal(discovered.length,0,'overview alone does not discover all maps');
 context.showWorldMapLocation('light_plain');
