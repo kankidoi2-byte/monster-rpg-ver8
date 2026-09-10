@@ -12,13 +12,14 @@ Updated: 2026-09-10
 - Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 7: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 8: complete (implementation, local checks, browser checks and implementation CI verified).
-- Phase 9: implementation and verification complete; implementation CI and completion handoff pending.
+- Phase 9: complete (asset production, implementation, local checks, browser checks and implementation CI verified).
+- Next: Phase 10. No execution remains active after this completion handoff.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 10 through 12: pending. Finish Phase 9 CI handoff, then resume Phase 10; do not repeat completed work.
+- Phases 10 through 12: pending. Resume Phase 10; do not repeat completed work.
 
 ## Evidence from the public repository
 
@@ -39,7 +40,7 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Finish Phase 9 CI confirmation if still pending, then implement Phase 10: save the Galdra/Aquaron/Elna party and send reserve Freigal on the short grassland expedition.
+4. Implement Phase 10: save the Galdra/Aquaron/Elna party and send reserve Freigal on the short grassland expedition.
 5. Preserve the completed alchemy transaction/result/farewell checkpoints and Galdra presentation. Phase 10 must not replay the alchemy transaction.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
@@ -162,7 +163,8 @@ Updated: 2026-09-10
 
 ## Phase 9 implementation record
 
-- Implementation commit and CI: pending publication/observation in this execution.
+- Implementation commit: `fe02da4e285c6d1f72deba96ec4173a0786ebb45`.
+- Implementation CI: https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34454966188 — completed/success observed 2026-09-10. The follow-up completion-record commit changes documentation only.
 - Refreshed the read-only source (modified 2026-09-09T13:44:38.697Z), main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, open/mergeable Draft PR #178 and successful Phase 8 completion CI. The source document was not edited or exported.
 - Used the existing `images/monsters/galdra_v1.webp` as the design reference and the built-in image-generation editing workflow. The generated cutout retains the black baby-dragon body, cyan eyes/chest core, two horns, two wings, four limbs and single tail. The initial generated transparency preview was validated and postprocessed into genuine alpha rather than accepting simulated checkerboard transparency.
 - Added `images/tutorial/characters/galdra_story_v1.webp`: 512 x 768, RGBA WebP, 71,812 bytes. It stays well below the 600 KiB monster budget and does not overwrite the existing battle/dex image.
