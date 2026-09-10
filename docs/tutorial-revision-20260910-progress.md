@@ -6,13 +6,14 @@ Updated: 2026-09-10
 
 - Phase 1 of 12: specification and implementation-impact review complete.
 - Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
-- Phase 3: implemented and locally verified; implementation CI pending. Current execution is finishing the handoff; do not duplicate it.
+- Phase 3: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
+- Next: Phase 4. No execution remains active after this completion handoff.
 - Runtime implementation: dialogue infrastructure plus opening/rescue integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 4 through 12: pending. Finish Phase 3 CI verification, then resume Phase 4; do not restart completed work.
+- Phases 4 through 12: pending. Resume Phase 4; do not restart completed work.
 
 ## Evidence from the public repository
 
@@ -33,7 +34,7 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Verify Phase 3 implementation CI, then implement Phase 4 (contract, party/dex/growth and reward integration).
+4. Phase 3 implementation CI is verified below. Refresh latest head checks, then implement Phase 4 (contract, party/dex/growth and reward integration).
 5. Preserve the existing contract transaction and stable checkpoints. Separate pre-contract consent from post-contract farewell in the revised conversation order. Keep contract-body grants idempotent.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
@@ -63,6 +64,9 @@ Updated: 2026-09-10
 - If another execution is active, do not duplicate it. If blocked, record the precise remaining requirement rather than marking the phase complete.
 
 ## Phase 3 implementation record
+
+- Implementation commit: `3581129021265605fd6f8696065defacf2c58952`.
+- Implementation CI: https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34445744158 — completed/success observed 2026-09-10. The follow-up completion-record commit changes documentation only.
 
 - Refreshed source at execution start: modified 2026-09-09T13:44:38.697Z. Source document was read only; no transcript/specification export into repository documentation.
 - Refreshed main: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`; PR #178 open/mergeable. Phase 2 latest completion-record CI was successful. Main Validate and Pages deployment were successful; production was not modified.
