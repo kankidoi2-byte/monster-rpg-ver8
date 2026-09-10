@@ -203,6 +203,18 @@ function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   }
   const below=Math.max(0,viewport.height-targetRect.bottom-gap-margin);
   const above=Math.max(0,targetRect.top-gap-margin);
+  // Short landscape viewports can leave no vertical space beside a map pin.
+  // Use horizontal room before allowing the guide to cover its action target.
+  if(Math.max(above,below)<height){
+    const right=viewport.width-targetRect.right-gap-margin;
+    const left=targetRect.left-gap-margin;
+    if(Math.max(right,left)>=width){
+      const side=right>=left?'right':'left';
+      return {left:side==='right'?targetRect.right+gap:targetRect.left-gap-width,
+        top:clamp(targetRect.top+(targetRect.height-height)/2,margin,viewport.height-height-margin),
+        maxHeight:viewport.height-margin*2,side};
+    }
+  }
   const side=below>=Math.min(height,180)||below>=above?'below':'above';
   const available=side==='below'?below:above;
   // A large highlighted card can leave almost no room above or below it. In that
@@ -278,8 +290,9 @@ function positionTutorialUi(){
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;
   bubble.style.visibility='visible';
-  arrow?.classList.toggle('is-empty',!hole||placement.side==='center');
-  if(arrow&&hole&&placement.side!=='center'){
+  const verticalArrow=placement.side==='above'||placement.side==='below';
+  arrow?.classList.toggle('is-empty',!hole||!verticalArrow);
+  if(arrow&&hole&&verticalArrow){
     arrow.className=`tutorial-arrow is-${placement.side==='below'?'up':'down'}`;
     arrow.style.left=`${Math.max(12,Math.min(viewport.width-34,hole.left+hole.width/2-11))}px`;
     arrow.style.top=`${placement.side==='below'?hole.bottom+1:hole.top-16}px`;
@@ -1595,7 +1608,7 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   if(kind==='victory'){
     const nextStep=rescue?'elna_rescue_complete':'victory_exp';
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
-    setTutorialStep(rescue?'elna_contract_intro':'first_contract');
+    setTutorialStep(rescue?'elna_rescue_complete':'first_contract');
     if(typeof saveGame==='function')saveGame();
     resumeTutorialMainFlowAfterEvent(nextStep,tutorial.replaying);
     return true;
@@ -1709,20 +1722,20 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'intro_gnosis',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'遠くから声がする',text:'ーい……',progressLabel:'PROLOGUE'},
   {id:'gnosis_call_2',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'声が近づいてくる',text:'おーい……',progressLabel:'PROLOGUE'},
   {id:'gnosis_call_3',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'すぐそばから聞こえる',text:'おーい！',progressLabel:'PROLOGUE'},
-  {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス。契約の力を案内するぞ！',progressLabel:'GNOSIS'},
+  {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス！ この世界へようこそ！',progressLabel:'GNOSIS'},
   {id:'gnosis_name',screenId:'home',mode:'external_action',input:'player_name',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'名前を教えて！',text:'君の名前は？ 呼びやすい名前にしてくれ！',progressLabel:'GNOSIS'},
-  {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界では、契約した相手の力を「契約体」として呼び出せる。ボクの力を少し貸すぞ！',progressLabel:'CONTRACT'},
-  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',chapterBreak:true,title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'第1話を終える'},
-  {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'スライムに囲まれた少女',text:'くっ……数が多い。でも、ここで退くわけには……！',progressLabel:'ENCOUNTER'},
-  {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入ろう！',progressLabel:'RESCUE'},
-  {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'フレイガルとアクアロンの契約体を貸すぞ！ ふたりを呼び出して戦おう！',progressLabel:'CONTRACT'},
-  {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！',progressLabel:'CONTRACT'},
-  {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'本人エルナが共闘',text:'助けてくれるの？ 私も一緒に戦う。背中は任せて！',progressLabel:'GUEST'},
+  {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界で君にやってもらいたいことがあるんだ。あ、大丈夫！ そのための力はボクが少し貸すから！',progressLabel:'CONTRACT'},
+  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',chapterBreak:true,title:'世界へ降りよう',text:'準備はいいな？ いいって顔だ！ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'第1話を終える'},
+  {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'スライムに囲まれた少女',text:'えいっ、やぁっ！ くっ……数が多い。いつの間にか囲まれちゃった……！',dialogue:[{"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "よし、着いたぞ。ここが君の冒険の舞台だ！ えっと、まずは……"}, {"text": "ん？ 何か音が聞こえるな。"}, {"speaker": "エルナ", "portrait": "images/tutorial/characters/elna_beginner.png?v=2", "text": "えいっ、やぁっ！ くっ……数が多い。いつの間にか囲まれちゃった……！"}],progressLabel:'ENCOUNTER'},
+  {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入った方がいいみたいだ！',progressLabel:'RESCUE'},
+  {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'さっそくボクの力を使って！ 大丈夫、君になら出来る！',progressLabel:'CONTRACT'},
+  {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！ この力で彼女を助けよう！',progressLabel:'CONTRACT'},
+  {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'本人エルナが共闘',text:'誰？ もしかして助けてくれるの？ ありがとう！ 背中は任せて！',dialogue:[{"text": "誰？ もしかして助けてくれるの？ ありがとう！ 背中は任せて！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "君とボク、それにあの子の3人で行くぞ！ 呼び出した契約体の力で、彼女を助けよう！"}],progressLabel:'GUEST'},
   {id:'rescue_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'elna_guest_join',disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押すと世界地図が開くぞ。まずはエルナがいる草原へ向かおう！',progressLabel:'WORLD MAP'},
   {id:'rescue_world_map_grassland',screenId:'battleChoices',target:'[data-wm-place="grassland"]',advanceOnTarget:true,persistAs:'elna_guest_join',disableBack:true,title:'草原を選ぼう',text:'世界地図では行き先を選べる。中央の「草原」を押して、出現する相手と難易度を確認しよう！',progressLabel:'WORLD MAP'},
   {id:'rescue_world_map_depart',screenId:'battleChoices',target:'[data-wm-depart]',externalAdvance:true,transition:'start_elna_rescue',nextStepId:'battle_enemy',persistAs:'elna_guest_join',disableBack:true,title:'草原へ出発',text:'最初はEasyで進もう。「この場所を探索する」を押したら、エルナの救援戦が始まるぞ！',progressLabel:'WORLD MAP'},
-  {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'契約体2体と本人エルナの3人で行くぞ！ スライムはボクが逃がさない！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
-  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'上が敵、下が味方だ。HPを0にすると倒せる。攻撃を1つ選ぶと1ターン進むぞ！',progressLabel:'BATTLE'},
+  {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'君とボク、それにあの子の3人で行くぞ！ 呼び出した契約体の力で、彼女を助けよう！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
+  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'上が敵、下が味方だ。HPを0にすると倒せる。コマンドを1つ選べば、君が呼び出した力が指示どおりに動いて1ターン進むぞ！',progressLabel:'BATTLE'},
   {id:'battle_actor_open',screenId:'battle',target:'#battleSwitchButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'行動者を選ぼう',text:'ここを押すと、戦う仲間を選べるぞ！',progressLabel:'BATTLE'},
   {id:'battle_actor_select',screenId:'battle',target:'[data-tutorial-actor-select]',externalAdvance:true,persistAs:'elna_rescue_start',title:'仲間を交代',text:'交代する仲間を1人選んでみよう！',progressLabel:'BATTLE'},
   {id:'battle_target',screenId:'battle',target:'#singleEnemyBox',advanceOnTarget:true,persistAs:'elna_rescue_start',title:'対象を選ぼう',text:'このスライムを押して、攻撃対象に決めよう！',progressLabel:'BATTLE'},
@@ -1732,7 +1745,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'battle_choose_skill',screenId:'battle',target:'[data-tutorial-skill]',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を使おう',text:'COSTは装備に必要な値だ。好きな技を1つ押して、実際に使ってみよう！',progressLabel:'BATTLE'},
   {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
-  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',persistAs:'elna_contract_intro',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'助かった……！ あなたたちが来てくれなかったら危なかった。ありがとう。',progressLabel:'RESCUE',nextLabel:'エルナと話す'},
+  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',persistAs:'elna_rescue_complete',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！\n\n\nあ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！',dialogue:[{"text": "ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！"}, {"text": "あ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！"}],progressLabel:'RESCUE',nextLabel:'エルナと話す'},
   {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'契約！ 契約を貰って！',progressLabel:'CONTRACT'},
   {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナの同意',text:'うん。助けてもらったあなたになら、私の力を預けられる。契約を受け取って！',progressLabel:'CONTRACT'},
   {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'契約書が3回反応して、手形が押されたら成功だ！',progressLabel:'CONTRACT',nextLabel:'契約する'},

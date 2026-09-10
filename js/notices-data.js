@@ -7,6 +7,11 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   Object.freeze({
+    id:'20260910-prologue-story-revision',date:'2026-09-10',category:'update',
+    title:'序章の会話を更新しました',
+    body:'目覚めからエルナの救援までの会話を更新しました。同じ場面の会話は、話者に合わせて読み進められます。横画面で案内が世界地図の操作ボタンに重ならないよう改善しました。'
+  }),
+  Object.freeze({
     id:'20260910-world-map-consistency',date:'2026-09-10',category:'update',
     title:'世界地図の景観を各地の姿に合わせました',
     body:'華炎の里や廃村、光の平原、高原遺跡、星空の平原、湖、蒼海地方などを、それぞれの探索先の景観に合わせて更新しました。地点の位置と道案内も、川・火山・海域のつながりに沿うよう調整しています。'

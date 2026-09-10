@@ -9,6 +9,8 @@ const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 // deterministic adapters. The adapters are not a DOM implementation: they
 // only expose the fields touched while the tutorial engine renders a step.
 let activeScreen='home';
+let testClock=Date.now();
+class JourneyDate extends Date {static now(){return testClock;}}
 const timers=[];
 const elements=new Map();
 function classList(){
@@ -70,7 +72,7 @@ let instanceSerial=0;
 const notices=[];
 
 const context=vm.createContext({
-  console,structuredClone,JSON,Math,Date,Set,Map,Object,Array,Number,String,Boolean,Promise,
+  console,structuredClone,JSON,Math,Date:JourneyDate,Set,Map,Object,Array,Number,String,Boolean,Promise,
   M:monsters,MAPS:maps,ALCHEMY_MONSTER_CONFIGS:{},
   SHOP_ITEMS:[{id:'contract_scroll'},...Object.values(items)],ITEM_DEX_ITEMS:Object.values(items),ITEM_DEX_BY_ID:items,ITEM_BY_ID:items,
   MAX_LEVEL:100,clampLevel:value=>Math.max(1,Math.min(100,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
@@ -136,6 +138,7 @@ assert.equal(state().status,'in_progress');
 const visited=[];
 let guard=0;
 while(state().status==='in_progress'){
+  testClock+=300; // A deliberate player input, after the dialogue double-tap guard.
   assert.ok(++guard<180,'prologue journey did not converge');
   if(!run('tutorialUiState.active')){reopenChapter();continue;}
   const id=step();

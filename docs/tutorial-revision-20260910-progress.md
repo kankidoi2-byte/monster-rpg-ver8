@@ -6,14 +6,13 @@ Updated: 2026-09-10
 
 - Phase 1 of 12: specification and implementation-impact review complete.
 - Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
-- Phase 3: in progress in the user-requested manual execution (2026-09-10). Do not start a duplicate execution.
-- Current work: opening/rescue dialogue integrated locally; targeted browser and compatibility verification in progress. Resume Phase 3 only after this execution ends.
-- Runtime implementation: presentation infrastructure only; production story data remains unchanged. Production remains unchanged.
+- Phase 3: implemented and locally verified; implementation CI pending. Current execution is finishing the handoff; do not duplicate it.
+- Runtime implementation: dialogue infrastructure plus opening/rescue integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 3 through 12: pending. Resume the earliest incomplete phase; do not restart completed work.
+- Phases 4 through 12: pending. Finish Phase 3 CI verification, then resume Phase 4; do not restart completed work.
 
 ## Evidence from the public repository
 
@@ -34,10 +33,10 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Phase 2 implementation CI is verified below. Refresh the latest head checks, then continue Phase 3 rather than reimplementing the presentation layer. Consult `docs/tutorial-dialogue-pages.md` for the API and authoring boundaries.
-5. Integrate only the opening/rescue scope from the user's approved requirements. Preserve name entry, world-map navigation, action gates, guest cleanup and victory/retry behavior. Do not copy the private source document wholesale into repository documentation.
-6. Add focused opening/rescue tests, run `npm run check`, inspect the diff and record outcomes. Do not introduce save migration without the required specific approval.
-7. Commit/push the bounded result and update this handoff. Later narrative/combat/alchemy/expedition phases remain pending.
+4. Verify Phase 3 implementation CI, then implement Phase 4 (contract, party/dex/growth and reward integration).
+5. Preserve the existing contract transaction and stable checkpoints. Separate pre-contract consent from post-contract farewell in the revised conversation order. Keep contract-body grants idempotent.
+6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
+7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
 ## Phase 2 implementation record
 
@@ -62,3 +61,19 @@ Updated: 2026-09-10
 - Preserve saves, stable IDs, unrelated edits and current gameplay outside the requested scope.
 - Before release: complete all phases, review the diff, update player notices for observable changes, pass the full checks and required CI, obtain any required approval/device verification, merge through PR and verify Pages and the published game.
 - If another execution is active, do not duplicate it. If blocked, record the precise remaining requirement rather than marking the phase complete.
+
+## Phase 3 implementation record
+
+- Refreshed source at execution start: modified 2026-09-09T13:44:38.697Z. Source document was read only; no transcript/specification export into repository documentation.
+- Refreshed main: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`; PR #178 open/mergeable. Phase 2 latest completion-record CI was successful. Main Validate and Pages deployment were successful; production was not modified.
+- Updated opening/rescue runtime dialogue using the presentation API. Arrival stays in the existing encounter checkpoint; the rally is also present on the normal map route, which starts combat directly.
+- Retained name entry and real map/action gates, deterministic rescue waves, temporary guest, starter transaction and retry behavior. No entity IDs, save fields, schema/tutorial versions or `mb_v95c` changes; no migration was added.
+- New rescue victories now checkpoint the existing `elna_rescue_complete` conversation until its pages finish, then advance to `elna_contract_intro`. Old saves already at the latter ID still resume there; they are not rewound. Battle interruption retains `elna_rescue_start`.
+- Fixed an observed landscape map-action obstruction: when vertical room is insufficient and horizontal room is available, position the guide beside its target. Added geometry regression checks.
+- New dependency-free integration checks cover encounter/speaker pages, interrupted dialogue, normal map-route rally and action blocking, victory/defeat/retreat/error, duplicate outcomes, and contract connection.
+- Existing journey fixture now advances its test clock between deliberate inputs to exercise the real double-tap guard. Historical wording assertions were updated to the revised runtime copy; gameplay assertions remain.
+- `npm run check` including postcheck passed. Notice-only follow-up passed `npm run check:notices`; `git diff --check` passed.
+- Chromium 140 browser checks: 360x640 and 844x390. Actual title/name/map/actor/target/normal attack/skill operations, encounter and battle reload, defeat/retry, two-wave production victory handling, victory-dialogue reload and duplicate-grant protection passed. HP was set deterministically for outcome coverage; this is not a balance playtest or a physical-device check.
+- Browser runner: `scripts/check-tutorial-opening-browser.cjs`, using the same optional environment-owned Playwright/browser setup as the Phase 2 runner. No test dependencies were added to production.
+- Player notice added on this branch for the revised opening and landscape fix. Expand/re-date appropriately at final release.
+- Phase 4 contract conversation onward remains pending; existing later content is intentionally not represented as revised or released. Physical Android/Chromebook checks and final publication remain later gates.
