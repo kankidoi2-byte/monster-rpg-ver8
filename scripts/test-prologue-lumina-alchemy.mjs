@@ -12,12 +12,17 @@ const tutorialCss=read('css/tutorial.css');
 const uiCss=read('css/ui-redesign.css');
 const manifest=JSON.parse(read('images/tutorial/characters/manifest.json'));
 const packageJson=JSON.parse(read('package.json'));
+const galdraStory=fs.readFileSync(new URL('../images/tutorial/characters/galdra_story_v1.webp',import.meta.url));
 
 const portrait=fs.readFileSync(new URL('../images/tutorial/characters/lumina_apprentice.png',import.meta.url));
 assert.ok(portrait.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),'Lumina portrait must be a PNG');
 assert.equal(portrait[25],6,'Lumina portrait must retain an RGBA alpha channel');
 const asset=manifest.characters.find(entry=>entry.id==='lumina_apprentice');
 assert.ok(asset?.validation?.rgba&&asset.validation.transparentPixels>0&&asset.validation.partialAlphaPixels>0,'Lumina portrait must contain real transparent and antialiased pixels');
+assert.equal(galdraStory.subarray(0,4).toString(),'RIFF','Galdra story art must be WebP');
+assert.equal(galdraStory.subarray(8,16).toString(),'WEBPVP8X','Galdra story art must use extended WebP');
+assert.ok((galdraStory[20]&0x10)!==0,'Galdra story art must contain an alpha channel');
+assert.ok(galdraStory.byteLength<=600*1024,'Galdra story art must stay within the monster image budget');
 
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
@@ -40,6 +45,11 @@ assert.match(luminaFlow,/id:'lumina_alchemy_result'[^\n]+persistAs:'lumina_alche
 assert.match(luminaFlow,/id:'lumina_farewell'[^\n]+persistAs:'lumina_farewell'[^\n]+chapterBreak:true[^\n]+nextStepId:'expedition_intro'/);
 assert.ok(luminaFlow.includes('素材4種類を各1個とコイン250枚'),'the fixed resources must be explained by Gnosis');
 assert.ok(!/speaker:'ルミナ'[^\n]+(?:成功率|コイン250|契約体は消費しない)/.test(luminaFlow),'Lumina must not deliver meta rules');
+assert.ok(luminaFlow.includes("portrait:'images/tutorial/characters/galdra_story_v1.webp'"),'Galdra must use its transparent story art');
+assert.ok(luminaFlow.includes("storyMotion:'fly'")&&luminaFlow.includes("storyMotion:'bite'"),'Galdra fly and bite motions must both be authored');
+assert.match(tutorialCss,/@keyframes tutorial-galdra-fly/);
+assert.match(tutorialCss,/@keyframes tutorial-galdra-bite/);
+assert.ok(index.includes('id="tutorialStoryEffectLayer"')&&index.includes('id="tutorialStoryEffect"'),'Galdra motion needs an independent story-effect layer');
 
 for(const target of ['tutorialAlchemyRecipeCard','tutorialAlchemyMaterials','tutorialAlchemyCoin','tutorialAlchemyRate','tutorialAlchemyStartButton','tutorialAlchemyResult']){
   assert.ok(alchemy.includes(`id=\"${target}\"`)||alchemy.includes(`id=\"${target}\" `),`missing stable alchemy target: ${target}`);

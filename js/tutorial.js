@@ -78,12 +78,16 @@ function normalizeTutorialDialogue(step){
   let inherited={speaker:step.speaker||null,portrait:step.portrait||null,scene:step.scene||null};
   for(const entry of step.dialogue){
     if(!entry||typeof entry!=='object'||typeof entry.text!=='string'||!entry.text.trim())return null;
-    if(Object.keys(entry).some(key=>!['text','speaker','portrait','scene'].includes(key)))return null;
+    if(Object.keys(entry).some(key=>!['text','speaker','portrait','scene','storyEffect','storyMotion'].includes(key)))return null;
     const page={text:entry.text};
     for(const key of ['speaker','portrait','scene']){
       if(entry[key]!==undefined&&entry[key]!==null&&typeof entry[key]!=='string')return null;
       page[key]=entry[key]===undefined?inherited[key]:entry[key]||null;
     }
+    if(entry.storyEffect!==undefined&&entry.storyEffect!==null&&typeof entry.storyEffect!=='string')return null;
+    if(entry.storyMotion!==undefined&&!['appear','fly','bite'].includes(entry.storyMotion))return null;
+    page.storyEffect=entry.storyEffect||null;
+    page.storyMotion=entry.storyMotion||null;
     inherited=page;
     dialogue.push(Object.freeze(page));
   }
@@ -116,6 +120,8 @@ function normalizeTutorialStep(step,index){
     speaker:typeof step.speaker==='string'&&step.speaker?step.speaker:null,
     portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
     scene:typeof step.scene==='string'&&step.scene?step.scene:null,
+    storyEffect:typeof step.storyEffect==='string'&&step.storyEffect?step.storyEffect:null,
+    storyMotion:['appear','fly','bite'].includes(step.storyMotion)?step.storyMotion:null,
     input:['player_name','elna_contract'].includes(step.input)?step.input:null,
     transition:TUTORIAL_TRANSITIONS.has(step.transition)?step.transition:null,
     title:typeof step.title==='string'&&step.title?step.title:'操作ガイド',
@@ -346,6 +352,8 @@ function renderTutorialStoryStep(step){
   const backdrop=document.getElementById('tutorialStoryBackdrop');
   const layer=document.getElementById('tutorialCharacterLayer');
   const portrait=document.getElementById('tutorialCharacterPortrait');
+  const effectLayer=document.getElementById('tutorialStoryEffectLayer');
+  const effect=document.getElementById('tutorialStoryEffect');
   const story=Boolean(step?.scene||step?.portrait);
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
   overlay?.classList.toggle('is-story-step',story);
@@ -364,6 +372,14 @@ function renderTutorialStoryStep(step){
     portrait.hidden=!step?.portrait;
     if(step?.portrait&&portrait.getAttribute('src')!==step.portrait)portrait.setAttribute('src',step.portrait);
     portrait.alt=step?.speaker?step.speaker:'';
+  }
+  if(effectLayer){
+    effectLayer.hidden=!step?.storyEffect;
+    effectLayer.dataset.motion=step?.storyMotion||'';
+  }
+  if(effect){
+    effect.hidden=!step?.storyEffect;
+    if(step?.storyEffect&&effect.getAttribute('src')!==step.storyEffect)effect.setAttribute('src',step.storyEffect);
   }
 }
 function confirmTutorialPlayerName(event){
@@ -1816,10 +1832,10 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'lumina_confirm',screenId:'alchemyConfirm',target:'#alchemyConfirmContent',persistAs:'lumina_alchemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'消費内容を確認',text:'実行する前に、消費する素材とコインを確認しよう！ 契約体は消費しない。確認できたな？ よし、始めるぞ！',progressLabel:'CONFIRM'},
   {id:'lumina_execute',screenId:'alchemyConfirm',target:'#alchemyExecuteButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を実行',text:'ここを押すと、素材とコインを使って錬成を実行するぞ！',progressLabel:'ALCHEMY'},
   {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'あっ、素材が反応してる…！ 今までと違うよ。お願い、うまくいって…！',progressLabel:'ALCHEMY'},
-  {id:'lumina_alchemy_result',screenId:'alchemyResult',persistAs:'lumina_alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成成功！',dialogue:[{text:'やった！成功だよ！ これでこれからも錬成できるね！'},{speaker:'ガルドラ',portrait:null,text:'ガルル！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'わっ！こいつ、動いた！'},{speaker:'ガルドラ',portrait:null,text:'ガァ～ウ'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',text:'なんだ？{{playerName}}の方に飛んでいったぞ？'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'うふふ。あなたのこと、親だと思ってるのかもね！'},{speaker:'ガルドラ',portrait:null,text:'ガル！'}],progressLabel:'LUMINA',nextStepId:'lumina_farewell'},
+  {id:'lumina_alchemy_result',screenId:'alchemyResult',persistAs:'lumina_alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成成功！',dialogue:[{text:'やった！成功だよ！ これでこれからも錬成できるね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'appear',text:'ガルル！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'わっ！こいつ、動いた！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガァ～ウ'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'fly',text:'なんだ？{{playerName}}の方に飛んでいったぞ？'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'うふふ。あなたのこと、親だと思ってるのかもね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガル！'}],progressLabel:'LUMINA',nextStepId:'lumina_farewell'},
   {id:'lumina_farewell',screenId:'home',persistAs:'lumina_farewell',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房での別れ',dialogue:[{text:'錬成に協力してくれてありがとう！あなた達のおかげだね！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'ふん、少しはやるじゃない！'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'…これからも手伝ってくれる？部屋の鍵なら開けておくから、いつでも来てね。'}],progressLabel:'LUMINA',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
   {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成はもう完了しているぞ。通常の錬成台は自由に使えるからな！',progressLabel:'REPLAY',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
-  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_home_open',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ 次は仲間を短い遠征へ送り出してみるぞ！',progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
+  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_home_open',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？',dialogue:[{text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガルル！ガウッ、ガウッ！'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'bite',text:'わっ！いてて！こら、噛むなって！{{playerName}}～！こいつも連れていくのか～！？'}],progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
   {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_intro',disableBack:true,title:'遠征を開こう',text:'ここを押すと、控えの仲間を遠征へ送り出せるぞ！',progressLabel:'EXPEDITION'},
   {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
   {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},

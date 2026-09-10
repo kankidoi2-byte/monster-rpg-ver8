@@ -45,6 +45,8 @@ assert.equal(run("normalizeTutorialStep({id:'old',text:'Old'},0).dialogue"),null
 for(const bad of [
   {dialogue:[]},{dialogue:[{text:''}]},{dialogue:[{text:4}]},
   {dialogue:[{text:'A',transition:'grant'}]},
+  {dialogue:[{text:'A',storyEffect:4}]},
+  {dialogue:[{text:'A',storyMotion:'spin'}]},
   {dialogue:[{text:'A'}],target:'#real'},
   {dialogue:[{text:'A'}],input:'elna_contract'},
   {dialogue:[{text:'A'}],transition:'start_elna_rescue'},
@@ -104,6 +106,17 @@ run(`registerTutorialFlow('skip_test',[
   {id:'question',dialogue:[{text:'Question'}],choices:[{id:'a',label:'A'},{id:'b',label:'B'}]},
   {id:'must_act',externalAdvance:true}]);startTutorialFlow('skip_test');skipTutorialDialogue();`);
 assert.equal(run('tutorialUiState.index'),1,'conversation skip stops at a choice');
+
+run(`registerTutorialFlow('effect_test',[
+  {id:'effect',speaker:'G',portrait:'g.webp',scene:'workshop',
+    dialogue:[{text:'Fly',storyEffect:'galdra.webp',storyMotion:'fly'},{text:'Clear'}]}]);
+  startTutorialFlow('effect_test');`);
+assert.equal(get('tutorialStoryEffectLayer').hidden,false);
+assert.equal(get('tutorialStoryEffectLayer').dataset.motion,'fly');
+assert.equal(get('tutorialStoryEffect').getAttribute('src'),null);
+assert.equal(get('tutorialStoryEffect').hidden,false);
+tick();run('tutorialNext()');
+assert.equal(get('tutorialStoryEffectLayer').hidden,true,'story effects must not leak into the next page');
 
 run(`registerTutorialFlow('chapter_test',[
   {id:'chapter',dialogue:[{text:'One'},{text:'Two'}],chapterBreak:true,nextStepId:'next'},

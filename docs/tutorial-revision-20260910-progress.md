@@ -12,13 +12,13 @@ Updated: 2026-09-10
 - Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 7: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 8: complete (implementation, local checks, browser checks and implementation CI verified).
-- Next: Phase 9. No execution remains active after this completion handoff.
+- Phase 9: implementation and verification complete; implementation CI and completion handoff pending.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 9 through 12: pending. Resume Phase 9; do not repeat completed work.
+- Phases 10 through 12: pending. Finish Phase 9 CI handoff, then resume Phase 10; do not repeat completed work.
 
 ## Evidence from the public repository
 
@@ -39,8 +39,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Implement Phase 9: Galdra transparent story asset and fly/bite presentation.
-5. Preserve the completed alchemy transaction/result/farewell checkpoints. Phase 9 adds presentation only; it must not alter result ownership or replay the transaction.
+4. Finish Phase 9 CI confirmation if still pending, then implement Phase 10: save the Galdra/Aquaron/Elna party and send reserve Freigal on the short grassland expedition.
+5. Preserve the completed alchemy transaction/result/farewell checkpoints and Galdra presentation. Phase 10 must not replay the alchemy transaction.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -158,4 +158,16 @@ Updated: 2026-09-10
 - No save fields, schema/tutorial version, stable item/monster/recipe IDs or `mb_v95c` changed; no migration. Story episode end now points to the normal farewell. Notice/cache keys updated.
 - Focused checks cover exact recipe configuration, Gnosis ownership of meta rules, no companion consumption, fixed success, preparation/completion rollback, one-time completion, result/farewell ordering and checkpoint persistence. Existing normal alchemy catalyst requirements remain asserted.
 - Chromium 140 at 360x640 and 844x390 passed real confirmation/execution: exact material/coin decrement, all pre-existing UIDs retained, one Galdra, result-dialogue reload without duplicate grant, mandatory farewell and expedition checkpoint. `npm run check` including postcheck and `git diff --check` passed. This is not physical Android/Chromebook verification.
-- Phase 9 owns Galdra's transparent story asset and fly/bite motion. Current dialogue/portrait-null placeholders deliberately avoid inventing an asset in this phase. Keep Draft; production remains unchanged.
+- Phase 9 owns Galdra's transparent story asset and fly/bite motion; Phase 8 deliberately left placeholders for that follow-up. Keep Draft; production remains unchanged.
+
+## Phase 9 implementation record
+
+- Implementation commit and CI: pending publication/observation in this execution.
+- Refreshed the read-only source (modified 2026-09-09T13:44:38.697Z), main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, open/mergeable Draft PR #178 and successful Phase 8 completion CI. The source document was not edited or exported.
+- Used the existing `images/monsters/galdra_v1.webp` as the design reference and the built-in image-generation editing workflow. The generated cutout retains the black baby-dragon body, cyan eyes/chest core, two horns, two wings, four limbs and single tail. The initial generated transparency preview was validated and postprocessed into genuine alpha rather than accepting simulated checkerboard transparency.
+- Added `images/tutorial/characters/galdra_story_v1.webp`: 512 x 768, RGBA WebP, 71,812 bytes. It stays well below the 600 KiB monster budget and does not overwrite the existing battle/dex image.
+- Added an independent non-interactive story-effect layer so Galdra can move without replacing the current speaker portrait. Result dialogue uses appear/fly motion; the following workshop introduction uses bite motion. Reduced-motion preference disables animation while retaining the asset.
+- The effect is transient per dialogue page and cannot persist into unrelated pages. No transaction, reward, save field, schema/tutorial version, stable ID or `mb_v95c` meaning changed. Existing one-time Galdra grant remains Phase 8 behavior.
+- Focused tests cover WebP alpha/budget, allowed/invalid story-effect schema, page cleanup, authored fly/bite motions and independent DOM layer.
+- Chromium 140 at 360x640 and 844x390 passed the real alchemy/result/farewell path, loaded the transparent Galdra asset, ran fly/bite animations, kept their final bounds inside the viewport, and retained one Galdra without a second grant. Screenshots were visually checked in both orientations. `npm run check` including postcheck and `git diff --check` passed. This is not physical Android/Chromebook verification.
+- Phase 10 owns the party swap, choice resolution and Freigal expedition transaction. Keep Draft; production remains unchanged.
