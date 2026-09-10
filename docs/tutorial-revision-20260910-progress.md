@@ -9,13 +9,14 @@ Updated: 2026-09-10
 - Phase 3: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
-- Phase 6: implemented; final verification and implementation CI handoff active.
+- Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
+- Next: Phase 7. No execution remains active after this completion handoff.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 7 through 12: pending. Finish Phase 6 handoff, then resume Phase 7.
+- Phases 7 through 12: pending. Resume Phase 7; do not repeat completed work.
 
 ## Evidence from the public repository
 
@@ -36,7 +37,7 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Refresh latest head checks and finish Phase 6 CI handoff if needed, then implement Phase 7: pursuit through the academy and workshop conversation.
+4. Refresh latest head checks, then implement Phase 7: pursuit through the academy and workshop conversation.
 5. Preserve completed opening/contract/reward and capital/skill preparation behavior. Phase 7 must replace the old workshop introduction while preserving the completed Stella battle and chapter checkpoints.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
@@ -119,7 +120,8 @@ Updated: 2026-09-10
 
 ## Phase 6 implementation record
 
-- Implementation commit and CI: pending publication/observation in this execution.
+- Implementation commit: `4379abf981a5d095c2cc7fd6d93db13d1be20fa0`.
+- Implementation CI: https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34449339014 — completed/success observed 2026-09-10. Completion-record follow-up changes documentation only.
 - Read latest source (modified 2026-09-09T13:44:38.697Z), refreshed main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, PR #178 open/mergeable, latest completion-head CI and main Validate/Pages success. Direct production HTTP probe did not complete in this environment; no new live-game verification is claimed. Source document remains unchanged.
 - Replaced the scripted Grassbeat practice opponent with existing character `stella_apprentice`, including existing combat art/moves. Reused capital/academy map metadata with a capital-specific start log; this is a scripted encounter, not a change to random Easy encounter eligibility.
 - Uses Easy level-one scaling (0.85 HP and attack), forced single battle, no invasion/second enemy and no usual hunt reward or contract settlement. Ordinary encounters, character data and starter records are unchanged.
