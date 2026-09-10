@@ -40,7 +40,7 @@ const setup=(choice='left')=>{
     startTutorialFlow('dialogue_test',{persist:true});`);
 };
 
-assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).length'),98,'registered production flow includes capital continuation');
+assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).length'),99,'registered production flow includes capital continuation and first-alchemy farewell');
 assert.equal(run("normalizeTutorialStep({id:'old',text:'Old'},0).dialogue"),null);
 for(const bad of [
   {dialogue:[]},{dialogue:[{text:''}]},{dialogue:[{text:4}]},

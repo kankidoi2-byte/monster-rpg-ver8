@@ -58,12 +58,47 @@ const assert=require('node:assert/strict');
       await page.screenshot({path:'/tmp/tutorial-workshop-'+width+'.png'});
       await next();await at('lumina_alchemy');
       assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),false);
-      // Preparation is the explicit existing transition; stop before execution (Phase 8).
       await next();await at('lumina_materials');
       assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),true);
       assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,instances:save.instances,skills:save.skillCards})),inventory);
+      const beforeAlchemy=await page.evaluate(()=>({
+        coins:save.coins,items:{...save.items},uids:save.instances.map(v=>v.uid),
+        contractIds:save.instances.filter(v=>['freigal','aquaron','elna_beginner'].includes(v.id)).map(v=>v.id).sort()
+      }));
+      assert.equal(await page.locator('#tutorialTitle').textContent(),'グノーシス');
+      await next();await at('lumina_start');await page.locator('.tutorial-target-active').click();
+      await at('lumina_confirm');
+      assert.equal(await page.locator('#tutorialTitle').textContent(),'グノーシス');
+      assert.ok((await page.locator('#alchemyConfirmContent').textContent()).includes('仲間の消費なし'));
+      await next();await at('lumina_execute');await page.locator('.tutorial-target-active').click();
+      await at('lumina_wait');
+      assert.equal(await page.locator('#tutorialTitle').textContent(),'ルミナ');
+      assert.ok((await page.locator('#tutorialText').textContent()).includes('お願い、うまくいって'));
+      await at('lumina_alchemy_result');
+      assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonCompleted),true);
+      assert.equal(await page.evaluate(()=>save.instances.filter(v=>v.id==='galdra').length),1);
+      assert.equal(await page.evaluate(()=>save.coins),beforeAlchemy.coins-250);
+      for(const id of ['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather']){
+        assert.equal(await page.evaluate(id=>save.items[id],id),beforeAlchemy.items[id]-1);
+      }
+      assert.deepEqual(await page.evaluate(()=>save.instances.filter(v=>['freigal','aquaron','elna_beginner'].includes(v.id)).map(v=>v.id).sort()),beforeAlchemy.contractIds);
+      assert.equal(await page.evaluate(uids=>uids.every(uid=>save.instances.some(v=>v.uid===uid)),beforeAlchemy.uids),true);
+      await next();await next();
+      await reload();await at('lumina_alchemy_result');
+      assert.equal(await page.locator('#tutorialTitle').textContent(),'ルミナ','result reload restarts the successful conversation');
+      assert.equal(await page.evaluate(()=>save.instances.filter(v=>v.id==='galdra').length),1);
+      assert.equal(await page.evaluate(()=>commitTutorialLuminaAlchemySuccess()),false,'completion cannot be committed twice');
+      for(let i=0;i<7;i++)await next();
+      await at('lumina_farewell');
+      for(const speaker of ['ルミナ','ステラ','ルミナ']){
+        assert.equal(await page.locator('#tutorialTitle').textContent(),speaker);
+        if(speaker!=='ルミナ'||(await page.locator('#tutorialText').textContent()).startsWith('錬成'))await next();
+        else await next();
+      }
+      assert.equal(await page.evaluate(()=>currentTutorialState().stepId),'expedition_intro');
+      assert.equal(await page.evaluate(()=>save.instances.filter(v=>v.id==='galdra').length),1);
       assert.equal(errors.length,0,errors.join('\n'));
-      console.log('PASS workshop '+width+'x'+height+': real map/entry, scene and shared speech, academy/workshop reload, all pages, no early consumption, preparation boundary');
+      console.log('PASS first alchemy '+width+'x'+height+': exact consumption, no contract consumption, one Galdra, result reload, mandatory farewell, expedition checkpoint');
       await context.close();
     }
   }finally{await browser?.close();server.kill();}

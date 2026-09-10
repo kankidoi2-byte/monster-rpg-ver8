@@ -12,7 +12,7 @@ const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flow
 assert.ok(flowStart>=0&&flowEnd>flowStart,'the prologue main flow is missing');
 const main=tutorial.slice(flowStart,flowEnd);
 const ids=[...main.matchAll(/\{id:'([^']+)'/g)].map(match=>match[1]);
-assert.equal(ids.length,98,'the reduced prologue includes rescue, Royal Capital facility routes, and one monster growth-tab action');
+assert.equal(ids.length,99,'the reduced prologue includes rescue, Royal Capital facility routes, first-alchemy farewell, and one monster growth-tab action');
 assert.equal(new Set(ids).size,ids.length,'the reduced prologue must not contain duplicate step IDs');
 assert.equal(ids.indexOf('battle_enemy'),ids.indexOf('elna_rescue_start')+1,'rescue start must advance from 13/86 to the adjacent battle step, not jump to 60/86');
 assert.equal(ids.indexOf('home_party'),ids.indexOf('elna_contract_body')+1,'the contract must continue to the adjacent home guidance');
@@ -127,7 +127,7 @@ for(const id of requiredActions)assert.ok(ids.includes(id),`essential operation 
 assert.match(main,/id:'battle_enemy'[^\n]+敵・味方・HP[^\n]+1ターン/,'battle overview must retain the merged enemy, ally, HP, and turn explanation');
 assert.match(main,/id:'battle_choose_skill'[^\n]+COST[^\n]+実際に使って/,'skill selection must retain the cost explanation and real operation');
 assert.match(main,/id:'stella_skill_equip'[^\n]+無属性・威力34・COST 2[^\n]+剣士タグ/,'Stella equip must retain the card details');
-assert.match(main,/id:'lumina_materials'[^\n]+4種類[^\n]+250コイン[^\n]+100％[^\n]+仲間は消費しない/,'alchemy materials must retain all recipe conditions');
+assert.match(main,/id:'lumina_materials'[^\n]+4種類[^\n]+250枚[^\n]+必ず成功[^\n]+契約体は消費しない/,'Gnosis must retain all first-alchemy conditions');
 
 const idSet=new Set(ids);
 for(const [,key,target] of main.matchAll(/\b(nextStepId|replayNextStepId|continueAt):'([^']+)'/g)){
@@ -146,4 +146,4 @@ assert.ok(index.includes('prologue-world-map-facilities-1'),'the browser must fe
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 
-console.log('Prologue step reduction validation passed (130 -> 98 (including world-map rescue, Royal Capital facilities, and growth tab), old-save redirects, essential operations, merged explanations, and prior mobile fixes).');
+console.log('Prologue step reduction validation passed (130 -> 99 (including world-map rescue, Royal Capital facilities, first-alchemy farewell, and growth tab), old-save redirects, essential operations, merged explanations, and prior mobile fixes).');

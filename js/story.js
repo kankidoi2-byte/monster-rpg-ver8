@@ -3,7 +3,7 @@ const PROLOGUE_STORY_EPISODES=Object.freeze([
   Object.freeze({id:'rescue',number:2,title:'草原の救援',startStepId:'elna_encounter',endStepId:'elna_contract_body',image:'images/maps/grassland.webp',summary:'スライムに囲まれたエルナを救い、初めての仲間と契約を結ぶ。'}),
   Object.freeze({id:'preparations',number:3,title:'契約者の支度',startStepId:'home_party',endStepId:'request_reward_received',image:'images/maps/light_plain.webp',summary:'編成・図鑑・育成を確かめ、救援依頼の報酬を受け取る。'}),
   Object.freeze({id:'stella',number:4,title:'王都での出会い',startStepId:'stella_intro',endStepId:'stella_mock_retry',image:'images/maps/magic_academy.webp',summary:'王都への道中でグノーシスの願いを聞き、突然の対決に備えて技を整える。'}),
-  Object.freeze({id:'lumina',number:5,title:'錬成の工房',startStepId:'lumina_intro',endStepId:'lumina_alchemy_replay',image:'images/maps/kaen_village.webp',summary:'逃げたステラを追って学園の地下工房へ。ルミナの錬成に協力する。'}),
+  Object.freeze({id:'lumina',number:5,title:'錬成の工房',startStepId:'lumina_intro',endStepId:'lumina_farewell',image:'images/maps/kaen_village.webp',summary:'逃げたステラを追って学園の地下工房へ。ルミナの錬成に協力する。'}),
   Object.freeze({id:'expedition',number:6,title:'最初の遠征',startStepId:'expedition_intro',endStepId:'prologue_complete',image:'images/maps/grassland.webp',summary:'仲間を草原へ送り出し、契約者としての最初の一歩を踏み出す。'})
 ]);
 

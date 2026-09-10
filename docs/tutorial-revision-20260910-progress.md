@@ -11,17 +11,17 @@ Updated: 2026-09-10
 - Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 7: complete (implementation, local checks, browser checks and implementation CI verified).
-- Phase 8: active in the user-requested execution; implementation, validation and completion handoff in progress. Do not duplicate this work.
+- Phase 8: implementation and verification complete; implementation CI and completion handoff pending.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 8 through 12: pending. Resume Phase 8; do not repeat completed work.
+- Phases 9 through 12: pending. Finish Phase 8 CI handoff, then resume Phase 9; do not repeat completed work.
 
 ## Evidence from the public repository
 
-- `js/tutorial.js` currently registers 98 main-flow steps.
+- `js/tutorial.js` currently registers 99 main-flow steps.
 - Presentation currently normalizes one speaker, portrait, scene and text per step.
 - `js/story.js` defines six prologue episodes; episode boundaries and tutorial checkpoints must be tested together.
 - Save contracts: `mb_v95c`, schema 4, tutorial version 2. Do not increment versions or change persistent meanings without reviewing migration impact and the approval contract.
@@ -38,8 +38,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Refresh latest head checks, then implement Phase 8: first alchemy and mandatory workshop farewell.
-5. Preserve completed battle/pursuit/workshop conversation and map-action checkpoints. Update alchemy operation copy/ownership and keep its transaction protections; initial success must lead to an ordinary farewell, not the old completion-only replay branch.
+4. Finish Phase 8 CI confirmation if still pending, then implement Phase 9: Galdra transparent story asset and fly/bite presentation.
+5. Preserve the completed alchemy transaction/result/farewell checkpoints. Phase 9 adds presentation only; it must not alter result ownership or replay the transaction.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -145,3 +145,15 @@ Updated: 2026-09-10
 - Added focused presentation tests for speaker/scene continuity, shared speech, both new/existing checkpoints, no page-turn saves and action-safe skip. Updated historical flow counts and post-battle scene expectations, retaining real map-route and legacy compatibility tests.
 - Chromium 140: 360x640 and 844x390 passed actual map/academy selection, facility entry, all conversation pages, shared speech, academy/workshop reload and explicit preparation boundary. Inventory/contracts unchanged through conversation and preparation; no early alchemy activation. Screenshots visually checked in both orientations. No physical Android/Chromebook verification is claimed.
 - `npm run check` including postcheck and `git diff --check` passed. Stella-to-workshop browser regression passed both viewports (start, battle reload, defeat/retry, natural victory, victory reload and next episode). No new unresolved setting question. Next Phase 8; retain Draft and do not publish this partial revision.
+
+## Phase 8 implementation record
+
+- Implementation commit and CI: pending publication/observation in this execution.
+- Refreshed the read-only source (modified 2026-09-09T13:44:38.697Z), main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, open/mergeable PR #178 and successful preceding/main CI. The source document was not edited or exported.
+- Kept the existing atomic tutorial alchemy transaction: four materials each one and 250 coins are consumed; no catalyst/contract body is selected or removed; success is forced; exactly one `galdra` result is created. Existing rollback restores the full save snapshot if completion/save fails. The prepared flag does not replenish resources after interruption.
+- Moved success-rate/cost/non-consumption rules to Gnosis. Lumina now expresses reaction, hope and success; the completion-only recap is also spoken by Gnosis. Deleted explanations were not restored.
+- Success now checkpoints `lumina_alchemy_result` instead of jumping to expedition. Added seven result dialogue pages and ordinary `lumina_farewell` with Lumina's thanks, Stella's response and the open-workshop invitation. Farewell is mandatory on the initial success path and closes the episode to `expedition_intro`; the existing completed/replay branch remains compatible without a second transaction.
+- No save fields, schema/tutorial version, stable item/monster/recipe IDs or `mb_v95c` changed; no migration. Story episode end now points to the normal farewell. Notice/cache keys updated.
+- Focused checks cover exact recipe configuration, Gnosis ownership of meta rules, no companion consumption, fixed success, preparation/completion rollback, one-time completion, result/farewell ordering and checkpoint persistence. Existing normal alchemy catalyst requirements remain asserted.
+- Chromium 140 at 360x640 and 844x390 passed real confirmation/execution: exact material/coin decrement, all pre-existing UIDs retained, one Galdra, result-dialogue reload without duplicate grant, mandatory farewell and expedition checkpoint. `npm run check` including postcheck and `git diff --check` passed. This is not physical Android/Chromebook verification.
+- Phase 9 owns Galdra's transparent story asset and fly/bite motion. Current dialogue/portrait-null placeholders deliberately avoid inventing an asset in this phase. Keep Draft; production remains unchanged.

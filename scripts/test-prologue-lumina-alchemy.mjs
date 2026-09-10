@@ -22,7 +22,7 @@ assert.ok(asset?.validation?.rgba&&asset.validation.transparentPixels>0&&asset.v
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
-const required=['lumina_intro','lumina_encounter','lumina_alchemy','lumina_materials','lumina_start','lumina_confirm','lumina_execute','lumina_wait','lumina_alchemy_result','lumina_alchemy_replay','expedition_intro'];
+const required=['lumina_intro','lumina_encounter','lumina_alchemy','lumina_materials','lumina_start','lumina_confirm','lumina_execute','lumina_wait','lumina_alchemy_result','lumina_farewell','lumina_alchemy_replay','expedition_intro'];
 let previous=-1;
 for(const id of required){
   const current=main.indexOf(`id:'${id}'`);
@@ -36,8 +36,10 @@ assert.ok(luminaFlow.includes("scene:'workshop'"),'the workshop must use its own
 assert.match(luminaFlow,/id:'lumina_alchemy'[^\n]+persistAs:'lumina_alchemy'[^\n]+transition:'prepare_lumina_alchemy'/);
 assert.match(luminaFlow,/id:'lumina_start'[^\n]+externalAdvance:true[^\n]+persistAs:'lumina_alchemy'/);
 assert.match(luminaFlow,/id:'lumina_execute'[^\n]+externalAdvance:true[^\n]+persistAs:'lumina_alchemy'/);
-assert.match(luminaFlow,/id:'lumina_alchemy_result'[^\n]+persistAs:'expedition_intro'/);
-assert.ok(luminaFlow.includes('素材4種類を各1個、250コイン、初回成功率100％'),'the four read-only resource steps must be consolidated');
+assert.match(luminaFlow,/id:'lumina_alchemy_result'[^\n]+persistAs:'lumina_alchemy_result'[^\n]+nextStepId:'lumina_farewell'/);
+assert.match(luminaFlow,/id:'lumina_farewell'[^\n]+persistAs:'lumina_farewell'[^\n]+chapterBreak:true[^\n]+nextStepId:'expedition_intro'/);
+assert.ok(luminaFlow.includes('素材4種類を各1個とコイン250枚'),'the fixed resources must be explained by Gnosis');
+assert.ok(!/speaker:'ルミナ'[^\n]+(?:成功率|コイン250|契約体は消費しない)/.test(luminaFlow),'Lumina must not deliver meta rules');
 
 for(const target of ['tutorialAlchemyRecipeCard','tutorialAlchemyMaterials','tutorialAlchemyCoin','tutorialAlchemyRate','tutorialAlchemyStartButton','tutorialAlchemyResult']){
   assert.ok(alchemy.includes(`id=\"${target}\"`)||alchemy.includes(`id=\"${target}\" `),`missing stable alchemy target: ${target}`);
@@ -128,7 +130,7 @@ assert.ok(tutorial.includes('tutorialShouldUseReplayNextStep(step)&&step?.replay
 const completion=makeContext({prepared:true,coins:250,owned:1});
 assert.equal(vm.runInContext('commitTutorialLuminaAlchemySuccess()',completion),true);
 assert.equal(completion.save.progress.tutorial.alchemyLessonCompleted,true);
-assert.equal(completion.save.progress.tutorial.stepId,'expedition_intro');
+assert.equal(completion.save.progress.tutorial.stepId,'lumina_alchemy_result');
 assert.equal(vm.runInContext('commitTutorialLuminaAlchemySuccess()',completion),false,'completion must be one-time');
 
 assert.equal(packageJson.scripts['check:prologue-lumina-alchemy'],'node scripts/test-prologue-lumina-alchemy.mjs');
