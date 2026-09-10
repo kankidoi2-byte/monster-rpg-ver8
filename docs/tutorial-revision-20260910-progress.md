@@ -13,17 +13,18 @@ Updated: 2026-09-10
 - Phase 7: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 8: complete (implementation, local checks, browser checks and implementation CI verified).
 - Phase 9: complete (asset production, implementation, local checks, browser checks and implementation CI verified).
-- Next: Phase 10. No execution remains active after this completion handoff.
+- Phase 10: implementation and local validation complete; implementation CI pending.
+- Next: Phase 11 after Phase 10 implementation CI succeeds. No execution remains active after this completion handoff.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 10 through 12: pending. Resume Phase 10; do not repeat completed work.
+- Phases 11 and 12: pending. Resume Phase 11 after recording Phase 10 CI; do not repeat completed work.
 
 ## Evidence from the public repository
 
-- `js/tutorial.js` currently registers 99 main-flow steps.
+- `js/tutorial.js` currently registers 102 main-flow steps.
 - Presentation currently normalizes one speaker, portrait, scene and text per step.
 - `js/story.js` defines six prologue episodes; episode boundaries and tutorial checkpoints must be tested together.
 - Save contracts: `mb_v95c`, schema 4, tutorial version 2. Do not increment versions or change persistent meanings without reviewing migration impact and the approval contract.
@@ -40,8 +41,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Implement Phase 10: save the Galdra/Aquaron/Elna party and send reserve Freigal on the short grassland expedition.
-5. Preserve the completed alchemy transaction/result/farewell checkpoints and Galdra presentation. Phase 10 must not replay the alchemy transaction.
+4. Run Phase 11 full-flow and compatibility verification: new start, checkpoint resumes, skip, completed save, existing expedition and world-map connection.
+5. Preserve the completed alchemy transaction/result/farewell, Galdra presentation, final party and active Freigal expedition. Do not replay one-time transactions.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -173,3 +174,17 @@ Updated: 2026-09-10
 - Focused tests cover WebP alpha/budget, allowed/invalid story-effect schema, page cleanup, authored fly/bite motions and independent DOM layer.
 - Chromium 140 at 360x640 and 844x390 passed the real alchemy/result/farewell path, loaded the transparent Galdra asset, ran fly/bite animations, kept their final bounds inside the viewport, and retained one Galdra without a second grant. Screenshots were visually checked in both orientations. `npm run check` including postcheck and `git diff --check` passed. This is not physical Android/Chromebook verification.
 - Phase 10 owns the party swap, choice resolution and Freigal expedition transaction. Keep Draft; production remains unchanged.
+
+## Phase 10 implementation record
+
+- Implementation commit and CI: pending at the time of this local completion record.
+- Refreshed the read-only source (modified 2026-09-09T13:44:38.697Z), main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, open/mergeable Draft PR #178 and successful Phase 9 completion CI. The source document was not edited or exported.
+- Added the two authored answers to Galdra joining; both converge on the same result. Gnosis explains the four available contracts and three-member battle limit, then directs the player to replace Freigal with Galdra.
+- Added explicit party-open and party-save operations. Fresh progress cannot continue until the saved party contains exactly Galdra, Aquaron and Elna; the initial Freigal/Aquaron/Elna party rule remains unchanged.
+- The expedition candidate and dispatch transaction now require reserve Freigal, Grassland and Short distance with exactly one dispatched member. Galdra cannot be dispatched by this tutorial route. The saved active party is retained while the Freigal expedition remains active at zero progress.
+- Existing active or completed expedition saves still use the protected recap route and are not overwritten. A newly dispatched tutorial expedition resumes at its active explanation after reload. The prologue continues immediately to the authored Gnosis epilogue and completion line without waiting for return.
+- No save fields, schema/tutorial version, stable entity/step IDs or `mb_v95c` meaning changed; no migration was added. New presentation checkpoints persist through existing tutorial state only. The one-time alchemy result remains untouched and cannot be granted again.
+- Focused tests cover both answers, exact party eligibility, Freigal-only dispatch, rejection of Galdra/wrong party/wrong distance, occupied/completed legacy routing, active-expedition reload, atomic prologue completion and no Chapter 1 state. The registry contains 102 main-flow steps; the dependency-free canonical journey passed 148 live page/action visits, persisted the party/expedition, reloaded successfully and entered free play.
+- `npm run check` including postcheck, notice checks, script syntax and `git diff --check` passed. The unreleased player notice and tutorial/data cache keys were expanded for this finale.
+- The optional browser runner was extended for real party controls, both mobile orientations, reload, expedition dispatch and no-wait completion. This run could not execute it because no Chromium binary was present and the environment-owned browser download timed out; this is recorded as unobserved, not passing. Phase 9 already verified the immediately preceding shared dialogue and mobile effect layout; Phase 11 must execute the extended browser runner when a browser is available.
+- Next: Phase 11 full-flow compatibility and browser verification. Keep the PR Draft; production remains unchanged.

@@ -433,15 +433,19 @@ function tutorialInitialPartyReady(party=typeof getPartyInstances==='function'?g
     &&members.some(instance=>instance?.id==='elna_beginner');
 }
 function canConfirmTutorialParty(party){
-  if(tutorialCurrentStepId()!=='party_save')return true;
+  const stepId=tutorialCurrentStepId();
+  if(!['party_save','expedition_party_save'].includes(stepId))return true;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   if(tutorial?.replaying)return true;
-  if(tutorialInitialPartyReady(party))return true;
-  if(typeof showUiNotice==='function')showUiNotice('フレイガル系統、アクアロン系統、エルナの3体を編成してください。','warning');
+  const ready=stepId==='party_save'?tutorialInitialPartyReady(party):tutorialExpeditionPartyReady(party);
+  if(ready)return true;
+  if(typeof showUiNotice==='function')showUiNotice(stepId==='party_save'
+    ?'フレイガル系統、アクアロン系統、エルナの3体を編成してください。'
+    :'ガルドラ、アクアロン、エルナの3体を編成し、フレイガルを控えにしてください。','warning');
   return false;
 }
 function handleTutorialPartySaved(){
-  if(!tutorialUiState.active||tutorialCurrentStepId()!=='party_save')return false;
+  if(!tutorialUiState.active||!['party_save','expedition_party_save'].includes(tutorialCurrentStepId()))return false;
   tutorialNext(true);
   return true;
 }
@@ -1216,7 +1220,8 @@ function handleTutorialLuminaAlchemyCompleted(){
   return resumeTutorialMainFlowAfterEvent('lumina_alchemy_result',replay);
 }
 const TUTORIAL_EXPEDITION_OPERATION_STEPS=Object.freeze([
-  'expedition_intro','expedition_home_open','expedition_destination','expedition_distance',
+  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save',
+  'expedition_home_open','expedition_destination','expedition_distance',
   'expedition_member','expedition_suitability','expedition_dispatch','expedition_active'
 ]);
 function tutorialHasExistingExpeditionActivity(){
@@ -1247,9 +1252,15 @@ function resolveTutorialExpeditionResumeStep(flowId,stepId,replay=false){
   if(!replay&&!markTutorialExistingExpeditionGuided())return stepId;
   return 'expedition_replay';
 }
+function tutorialExpeditionPartyReady(party=typeof getPartyInstances==='function'?getPartyInstances():[]){
+  const members=party||[],ids=members.map(instance=>instance?.id).filter(Boolean);
+  const partyUids=new Set(members.map(instance=>instance?.uid).filter(Boolean));
+  return ids.length===3&&['galdra','aquaron','elna_beginner'].every(id=>ids.includes(id))
+    &&Array.isArray(save?.instances)&&save.instances.some(instance=>instance?.id==='freigal'&&!partyUids.has(instance.uid));
+}
 function tutorialExpeditionCandidateInstance(){
   const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
-  return candidates.find(instance=>instance.id===TUTORIAL_LUMINA_ALCHEMY.resultId)||candidates[0]||null;
+  return candidates.find(instance=>instance.id==='freigal')||null;
 }
 function shouldMarkTutorialExpeditionMember(uid){
   // Distance selection renders the expedition screen before the tutorial engine
@@ -1274,7 +1285,9 @@ function commitTutorialExpeditionDispatch(entry){
   if(typeof currentTutorialState!=='function'||!entry)return false;
   const tutorial=currentTutorialState();
   if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
-  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length<1)return false;
+  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length!==1)return false;
+  const member=typeof getInstance==='function'?getInstance(entry.memberUids[0]):null;
+  if(member?.id!=='freigal'||!tutorialExpeditionPartyReady())return false;
   entry.tutorialPrologue=true;
   if(typeof markTutorialExpeditionDispatched!=='function'||!markTutorialExpeditionDispatched())return false;
   if(typeof setTutorialStep==='function')setTutorialStep('expedition_active');
@@ -1835,17 +1848,20 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'lumina_alchemy_result',screenId:'alchemyResult',persistAs:'lumina_alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成成功！',dialogue:[{text:'やった！成功だよ！ これでこれからも錬成できるね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'appear',text:'ガルル！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'わっ！こいつ、動いた！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガァ～ウ'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'fly',text:'なんだ？{{playerName}}の方に飛んでいったぞ？'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'うふふ。あなたのこと、親だと思ってるのかもね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガル！'}],progressLabel:'LUMINA',nextStepId:'lumina_farewell'},
   {id:'lumina_farewell',screenId:'home',persistAs:'lumina_farewell',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房での別れ',dialogue:[{text:'錬成に協力してくれてありがとう！あなた達のおかげだね！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'ふん、少しはやるじゃない！'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'…これからも手伝ってくれる？部屋の鍵なら開けておくから、いつでも来てね。'}],progressLabel:'LUMINA',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
   {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成はもう完了しているぞ。通常の錬成台は自由に使えるからな！',progressLabel:'REPLAY',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
-  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_home_open',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？',dialogue:[{text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガルル！ガウッ、ガウッ！'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'bite',text:'わっ！いてて！こら、噛むなって！{{playerName}}～！こいつも連れていくのか～！？'}],progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
-  {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_intro',disableBack:true,title:'遠征を開こう',text:'ここを押すと、控えの仲間を遠征へ送り出せるぞ！',progressLabel:'EXPEDITION'},
-  {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
-  {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},
-  {id:'expedition_member',screenId:'expedition',target:'[data-tutorial-expedition-member]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'派遣する仲間',text:'ここを押して、控えの仲間を1体選ぼう！',progressLabel:'EXPEDITION'},
-  {id:'expedition_suitability',screenId:'expedition',target:'#expeditionSuitability',persistAs:'expedition_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征適性',text:'属性、レベル、得意な能力から適性が決まる。Sに近いほど大成功しやすいぞ！',progressLabel:'SUITABILITY'},
-  {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離遠征へ派遣',text:'ここを押すと、選んだ仲間が短距離遠征へ出発するぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_party_plan',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？',dialogue:[{text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガルル！ガウッ、ガウッ！'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'bite',text:'わっ！いてて！こら、噛むなって！{{playerName}}～！こいつも連れていくのか～！？'}],choices:[{id:'yes',label:'うん'},{id:'of_course',label:'もちろん'}],progressLabel:'PROLOGUE',nextLabel:'一緒に行く'},
+  {id:'expedition_party_plan',screenId:'home',persistAs:'expedition_party_plan',nextStepId:'expedition_party_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'4つの契約の力',text:'ちぇ～。君がそういうなら仕方ないか。\nでもこれで、君が使える契約の力は4つになったぞ！ だけど1度のバトルで使える力は3つまで…。あ、そうだ！ ガルドラはボク達と一緒に行こう。今回はフレイガルに遠征を頼むんだ！ まずは編成でフレイガルとガルドラを入れ替えよう！',progressLabel:'PROLOGUE'},
+  {id:'expedition_party_open',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,persistAs:'expedition_party_plan',disableBack:true,title:'編成を開こう',text:'編成を開いて、フレイガルを控えにし、ガルドラを仲間へ入れよう！',progressLabel:'PARTY'},
+  {id:'expedition_party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,persistAs:'expedition_party_save',disableBack:true,title:'3体の編成を保存',text:'ガルドラ・アクアロン・エルナの3体に入れ替えたら、「この編成を保存」を押そう！',progressLabel:'PARTY'},
+  {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_home_open',disableBack:true,title:'遠征を開こう',text:'フレイガルを控えにして、ガルドラ・アクアロン・エルナの編成を保存できたな！ 次は遠征を開こう！',progressLabel:'EXPEDITION'},
+  {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_member',screenId:'expedition',target:'[data-tutorial-expedition-member]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを選ぼう',text:'控えのフレイガルを選ぼう！ 今回の遠征はフレイガルに任せるぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_suitability',screenId:'expedition',target:'#expeditionSuitability',persistAs:'expedition_home_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征適性',text:'属性、レベル、得意な能力から適性が決まる。Sに近いほど大成功しやすいぞ！',progressLabel:'SUITABILITY'},
+  {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを短距離遠征へ',text:'派遣する仲間がフレイガルになっていることを確認して、出発させよう！',progressLabel:'EXPEDITION'},
   {id:'expedition_active',screenId:'expedition',target:'[data-tutorial-expedition-active]',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征は進行中！',text:'帰還を待たなくて大丈夫！ バトルに勝つと進み、完了したらここで報酬を受け取れるぞ！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
   {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'派遣中または完了済みの遠征があるから、新しい遠征は増やさないぞ。遠征画面からいつでも状況を確認できる！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
-  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房からの見送り',text:'錬成も遠征も、もう自分で進められるね。新しい土地でどんな契約体と出会うのか、楽しみにしているよ！',progressLabel:'PROLOGUE'},
-  {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'ここまで完璧だ！ これからは自分のペースで、自由に冒険できるぞ！',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
+  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'冒険の始まり',text:'これで遠征はバッチリだな！いよいよこれから冒険が始まるぞ！楽しみだな～！',progressLabel:'PROLOGUE'},
+  {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'さぁ、{{playerName}}！次はどこに行く！？',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},

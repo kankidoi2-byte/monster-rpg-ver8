@@ -220,6 +220,16 @@ while(state().status==='in_progress'){
       assert.equal(run('commitTutorialLuminaAlchemySuccess()'),true);
       assert.equal(run('handleTutorialLuminaAlchemyCompleted()'),true);flushTimers();
       break;
+    case 'expedition_intro':
+      run("tutorialDialogueNeedsChoice(tutorialUiState.steps[tutorialUiState.index]) ? tutorialNext(false,'yes') : tutorialNext()");
+      break;
+    case 'expedition_party_save': {
+      context.saveView.party=['galdra','aquaron','elna_beginner'].map(id=>context.saveView.instances.find(instance=>instance.id===id).uid);
+      assert.equal(run('tutorialExpeditionPartyReady()'),true);
+      assert.equal(run('saveGame()'),true);
+      assert.equal(run('handleTutorialPartySaved()'),true);
+      break;
+    }
     case 'expedition_destination': assert.equal(run("handleTutorialExpeditionDestinationSelected('grassland')"),true);break;
     case 'expedition_distance': assert.equal(run("handleTutorialExpeditionDistanceSelected('short')"),true);break;
     case 'expedition_member': {
@@ -263,9 +273,10 @@ for(const flag of ['starterContractsGranted','elnaContractGranted','stellaSkillC
   assert.equal(finalSave.progress.tutorial[flag],true,`journey must finalize ${flag}`);
 }
 for(const id of ['freigal','aquaron','elna_beginner','galdra'])assert.equal(finalSave.instances.filter(instance=>instance.id===id).length,1,`${id} must be granted exactly once`);
-assert.deepEqual(finalSave.party.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['freigal','aquaron','elna_beginner']);
+assert.deepEqual(finalSave.party.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['galdra','aquaron','elna_beginner']);
 assert.equal(finalSave.expeditions.active.length,1,'the prologue must dispatch one short expedition without waiting for its return');
 assert.equal(finalSave.expeditions.active[0].tutorialPrologue,true);
+assert.deepEqual(finalSave.expeditions.active[0].memberUids.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['freigal'],'only reserve Freigal must be sent on the tutorial expedition');
 assert.equal(run('resumeTutorialIfNeeded()'),false,'completed prologue must not reopen');
 assert.equal(run("handleTutorialWorldMapDeparture('grassland','easy')"),false,'free exploration must no longer be intercepted by tutorial routing');
 assert.equal(activeScreen,'home','completion must return to free-play home');
@@ -276,7 +287,7 @@ const requiredJourneySteps=[
   'battle_enemy','battle_free','elna_contract_execute','home_party','request_reward_claim',
   'stella_road_response','stella_mock_battle','stella_mock_free',
   'lumina_world_map_open','lumina_world_map_visit','lumina_alchemy','lumina_wait',
-  'expedition_intro','expedition_dispatch','prologue_complete'
+  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_dispatch','prologue_complete'
 ];
 for(const id of requiredJourneySteps)assert.ok(visited.includes(id),`canonical new-save journey must visit ${id}`);
 
