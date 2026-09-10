@@ -15,7 +15,7 @@ const main=tutorial.slice(flowStart,flowEnd);
 assert.match(main,/id:'growth_skill_open'[^\n]+target:'\[data-monster-id="elna_beginner"\] \[data-tutorial-skill-edit\]'[^\n]+advanceOnTarget:true/,'the existing saved STEP must continue to target the real skill-edit button');
 assert.ok(party.includes('data-tutorial-skill-edit onclick="openSkillEdit('),'the highlighted element must execute the real skill editor action');
 assert.ok(!tutorial.includes('tutorial-growth-details-open')&&!css.includes('tutorial-growth-details-open'),'the retired replay-only promoted details control must be removed');
-assert.match(main,/id:'growth_elna_details'[^\n]+text:'レベルと経験値はカードで確認できる。黄色い枠の「育成・個体情報」を押すと/,'the main tutorial must guide the real roster control');
+assert.match(main,/id:'growth_elna_details'[^\n]+text:'レベルと経験値はカードで確認できる。ここを押すと/,'the revised text guides the highlighted real roster control');
 assert.ok(tutorial.includes("document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open')"),'only the skill-open STEP may promote the action above the mobile nav');
 assert.match(css,/body\.tutorial-growth-skill-open \[data-monster-id="elna_beginner"\]\{overflow:visible\}/,'the roster card must not clip the promoted action');
 assert.match(css,/body\.tutorial-growth-skill-open \[data-monster-id="elna_beginner"\] \[data-tutorial-skill-edit\]\{[^}]*position:fixed;[^}]*z-index:81;[^}]*bottom:calc\(var\(--ui-nav-height\) \+ 14px\);[^}]*width:min\(300px,calc\(100vw - 32px\)\)/,'the real action must remain visible and tappable above the fixed mobile nav');

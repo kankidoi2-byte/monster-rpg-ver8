@@ -18,7 +18,7 @@ for(const id of requiredOrder){
   assert.ok(current>previous,`Elna contract STEP is missing or out of order: ${id}`);
   previous=current;
 }
-assert.ok(mainFlow.includes("text:'契約！ 契約を貰って！'"),'the accepted Gnosis line must be exact');
+assert.ok(mainFlow.includes('え、だったら、契約！ {{playerName}}とエルナで契約をして！'),'the revised request uses the player name');
 assert.match(mainFlow,/id:'elna_contract_consent'[^\n]+speaker:'エルナ'/,'Elna herself must consent before the contract');
 assert.match(mainFlow,/id:'elna_contract_execute'[^\n]+input:'elna_contract'[^\n]+nextLabel:'契約する'/,'contract animation must start from an explicit player action');
 assert.match(mainFlow,/id:'elna_contract_body'[^\n]+persistAs:'home_party'[^\n]+nextStepId:'home_party'/,'the completed contract must continue directly into the home tutorial');
@@ -28,6 +28,24 @@ assert.ok(contractAnimation.includes("if (pulseCount === 3)")&&contractAnimation
 assert.ok(tutorial.includes("tutorialRole:'person'"),'the person guest descriptor must have its own data role');
 assert.ok(tutorial.includes("tutorialRole:'contract_body'"),'the persistent contract body must have its own data role');
 assert.ok(!mainFlow.includes('カナタ'),'Kanata must not appear in the prologue');
+const authored=[];
+vm.runInNewContext(mainFlow,{TUTORIAL_MAIN_FLOW_ID:'main',registerTutorialFlow:(_id,steps)=>authored.push(...steps)});
+const question=authored.find(step=>step.id==='elna_contract_consent');
+const execute=authored.find(step=>step.id==='elna_contract_execute');
+const departure=authored.find(step=>step.id==='elna_contract_departure');
+assert.equal(question.dialogue[0].text,'契約？');
+assert.equal(question.dialogue[1].speaker,'グノーシス');
+assert.ok(question.dialogue[1].text.includes('{{playerName}}'));
+assert.equal(question.input,undefined,'explanation cannot execute a contract');
+assert.equal(execute.speaker,'エルナ');
+assert.ok(execute.text.includes('その契約っていうの、してあげる！'),'consent is shown before the explicit contract button');
+assert.equal(execute.dialogue,undefined,'action stays separate from dialogue pages');
+assert.equal(departure.dialogue.length,5);
+assert.equal(departure.dialogue[0].speaker,'エルナ');
+assert.equal(departure.dialogue[1].speaker,'グノーシス');
+assert.equal(departure.dialogue[2].speaker,'エルナ');
+assert.ok(departure.dialogue[1].text.includes('{{playerName}}'));
+assert.ok(!departure.dialogue.some(page=>page.text.includes('その契約っていうの、してあげる！')),'consent must not be delayed until after granting the body');
 
 const fnStart=tutorial.indexOf('function tutorialElnaContractInstance');
 const fnEnd=tutorial.indexOf('async function confirmTutorialElnaContract',fnStart);

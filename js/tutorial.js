@@ -222,7 +222,10 @@ function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   // behind an undiscoverable inner scroll area. Keep the guide at its natural
   // height (up to the visual viewport) and allow it to overlap a non-interactive
   // part of the spotlight when there is not enough adjacent space.
-  const maxHeight=Math.min(Math.max(0,viewport.height-margin*2),Math.max(available,height));
+  // A required button must remain tappable. With a usable adjacent area,
+  // retain the scrollable guide there instead of covering that button.
+  const keepActionClear=options.avoidTarget===true&&available>=128;
+  const maxHeight=Math.min(Math.max(0,viewport.height-margin*2),keepActionClear?available:Math.max(available,height));
   const fittedHeight=Math.min(height,maxHeight);
   const top=side==='below'?targetRect.bottom+gap:targetRect.top-gap-fittedHeight;
   const centered=targetRect.left+(targetRect.width-width)/2;
@@ -246,7 +249,13 @@ function ensureTutorialTargetVisible(target){
   const viewportHeight=window.innerHeight||document.documentElement.clientHeight;
   const viewportWidth=window.innerWidth||document.documentElement.clientWidth;
   if(rect.top<8||rect.bottom>viewportHeight-8||rect.left<4||rect.right>viewportWidth-4){
-    target.scrollIntoView?.({block:'center',inline:'nearest'});
+    if(viewportWidth>viewportHeight&&rect.height<viewportHeight/2&&target.style){
+      const previousMargin=target.style.scrollMarginTop;
+      const headerBottom=document.querySelector('.app-topbar')?.getBoundingClientRect?.().bottom||0;
+      target.style.scrollMarginTop=`${Math.max(12,headerBottom+12)}px`;
+      target.scrollIntoView?.({block:'start',inline:'nearest'});
+      target.style.scrollMarginTop=previousMargin;
+    }else target.scrollIntoView?.({block:'center',inline:'nearest'});
   }
 }
 function positionTutorialUi(){
@@ -285,7 +294,7 @@ function positionTutorialUi(){
   bubble.style.maxHeight='calc(100svh - 20px)';
   const placement=overlay?.classList.contains('is-story-step')&&!hole
     ?calculateTutorialStoryPlacement(bubble.getBoundingClientRect(),viewport)
-    :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport);
+    :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport,{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;
@@ -1746,11 +1755,11 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
   {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',persistAs:'elna_rescue_complete',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！\n\n\nあ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！',dialogue:[{"text": "ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！"}, {"text": "あ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！"}],progressLabel:'RESCUE',nextLabel:'エルナと話す'},
-  {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'契約！ 契約を貰って！',progressLabel:'CONTRACT'},
-  {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナの同意',text:'うん。助けてもらったあなたになら、私の力を預けられる。契約を受け取って！',progressLabel:'CONTRACT'},
-  {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'契約書が3回反応して、手形が押されたら成功だ！',progressLabel:'CONTRACT',nextLabel:'契約する'},
-  {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'契約は結ばれたよ。呼ばれる契約体は私の力を写した存在。本人の私は、ここでお別れだね。',progressLabel:'CONTRACT'},
-  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',chapterBreak:true,disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'第2話を終える'},
+  {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'え、だったら、契約！ {{playerName}}とエルナで契約をして！',progressLabel:'CONTRACT'},
+  {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'契約への疑問',text:'契約？',dialogue:[{"text": "契約？"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "そう！ボクの力で、契約をすれば、{{playerName}}がいつでもエルナの力を使えるようになるってわけ！"}],progressLabel:'CONTRACT'},
+  {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'ふぅん。不思議な力を持っているのね。そんなの聞いたことがないわ。でも、いいよ！その契約っていうの、してあげる！あなた達は悪い人達でも無さそうだし！',progressLabel:'CONTRACT',nextLabel:'契約する'},
+  {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'はい、これでいいのかな？そしたら、寂しいけど私とは、ここでお別れだね。あ、最後に名前を教えて。',dialogue:[{"speaker": "エルナ", "portrait": "images/tutorial/characters/elna_beginner.png?v=2", "text": "はい、これでいいのかな？そしたら、寂しいけど私とは、ここでお別れだね。あ、最後に名前を教えて。"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "ボクはグノーシス！こっちは相棒の{{playerName}}！"}, {"speaker": "エルナ", "portrait": "images/tutorial/characters/elna_beginner.png?v=2", "text": "そっか！じゃあ、またね！グノーシス！{{playerName}}！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "行っちゃったな…。でも人助けってなんだかいいな！"}, {"text": "あ、そうだ！さっき契約したエルナの力を確認してみて！"}],progressLabel:'CONTRACT'},
+  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',chapterBreak:true,disableBack:true,title:'エルナの契約体',text:'これがエルナの契約体だ！ フレイガル、アクアロンと一緒に編成しておいたぞ！',progressLabel:'NEW ALLY',nextLabel:'第2話を終える'},
   {id:'home_party',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'編成を確認しよう',text:'ここを押すと、冒険へ連れていく仲間を編成できるぞ！',progressLabel:'HOME'},
   {id:'party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,disableBack:true,title:'3体の編成を保存',text:'フレイガル、アクアロン、エルナを確認したら「この編成を保存」を押そう！ 先頭がリーダーだぞ！',progressLabel:'PARTY'},
   {id:'home_dex_open',screenId:'home',target:'[data-nav="more"]',advanceOnTarget:true,title:'メニューを開こう',text:'図鑑はメニューの中だ。まずは下の「メニュー」を押そう！',progressLabel:'DEX'},
@@ -1763,14 +1772,14 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'home_growth_open',screenId:'dex',target:'[data-nav="monsters"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
   {id:'growth_tab_open',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成メニュー',text:'上の「育成」を押すと、仲間を強くする方法を選べるぞ！',progressLabel:'GROWTH'},
   {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
-  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。黄色い枠の「育成・個体情報」を押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。ここを押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
   {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
   {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'詳しい技編集は、このあと実際にカードを装備しながら覚えるぞ。育成を押して進化を確認しよう！',progressLabel:'GROWTH'},
   {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
   {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',advanceOnTarget:true,title:'依頼を見よう',text:'ここを押すと、討伐依頼と報酬を確認できるぞ！',progressLabel:'REQUEST'},
   {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,persistAs:'request_accept',title:'エルナ救援を報告',text:'救援が依頼として認められたぞ！ このボタンを押して、報告と報酬の確認へ進もう！',progressLabel:'REQUEST'},
-  {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚と錬成素材4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
-  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
+  {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚とアイテム4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
+  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ やったな！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
   {id:'stella_intro',screenId:'home',persistAs:'stella_intro',nextStepId:'stella_world_map_open',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
   {id:'stella_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'stella_intro',disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押して世界地図を開こう。ステラは王都の魔導学園にいるぞ！',progressLabel:'WORLD MAP'},
   {id:'stella_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,persistAs:'stella_intro',disableBack:true,title:'魔導学園を選ぼう',text:'「王都の施設」にある魔導学園を押そう。施設へ行く時も、この世界地図から選べるぞ！',progressLabel:'WORLD MAP'},

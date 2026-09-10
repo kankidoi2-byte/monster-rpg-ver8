@@ -28,6 +28,9 @@ for(const x of [170,570]){
   assert.ok(p.top>=0&&p.top+250<=390);
 }
 run('prepareTutorialStep=()=>{};'); // Presentation/outcome isolation; full browser check uses real setup.
+const compactAction=run('calculateTutorialPlacement({left:20,right:824,top:166,bottom:224,width:804,height:58},{width:360,height:250},{width:844,height:390},{avoidTarget:true})');
+assert.ok(compactAction.maxHeight>=128&&compactAction.maxHeight<250,'a wide required button gets a scrollable guide');
+assert.ok(compactAction.top+compactAction.maxHeight<=166||compactAction.top>=224,'required button stays outside the guide');
 const next=()=>{clock+=300;run('tutorialNext();');};
 run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'elna_encounter',persist:true});");
 const initialSaves=saveCount;
@@ -62,4 +65,10 @@ run("pauseTutorial();startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:currentTuto
 assert.equal(run('tutorialDialogueState.page'),0,'victory interruption replays thanks before contract');
 next();next();assert.equal(run('tutorialCurrentStepId()'),'elna_contract_intro');
 assert.equal(saved.stepId,'elna_contract_intro','finished thanks advances to existing contract checkpoint');
+let scrolled;
+context.window.innerWidth=844;context.window.innerHeight=390;
+context.landscapeTarget={style:{scrollMarginTop:'5px'},getBoundingClientRect:()=>({top:800,bottom:868,left:36,right:808,width:772,height:68}),scrollIntoView:options=>{scrolled=options;}};
+run('ensureTutorialTargetVisible(landscapeTarget)');
+assert.equal(scrolled.block,'start','short landscape scroll reserves room for the guide');
+assert.equal(context.landscapeTarget.style.scrollMarginTop,'5px','temporary scroll margin is restored');
 console.log('Opening/rescue integration passed: arrival, speakers, checkpoint replay, map action gate, victory/defeat/retreat/error, duplicate outcomes and contract connection.');

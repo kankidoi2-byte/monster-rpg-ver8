@@ -7,14 +7,13 @@ Updated: 2026-09-10
 - Phase 1 of 12: specification and implementation-impact review complete.
 - Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
 - Phase 3: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
-- Phase 4: in progress in the user-requested execution (2026-09-10). Do not duplicate this work.
-- Current work: contract/reward dialogue integrated; browser and compatibility verification in progress.
-- Runtime implementation: dialogue infrastructure plus opening/rescue integration in this Draft PR. Production remains unchanged.
+- Phase 4: implemented and locally verified; implementation CI pending. Current execution is finishing verification and handoff; do not duplicate it.
+- Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 4 through 12: pending. Resume Phase 4; do not restart completed work.
+- Phases 5 through 12: pending. Finish Phase 4 CI verification, then resume Phase 5.
 
 ## Evidence from the public repository
 
@@ -35,8 +34,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Phase 3 implementation CI is verified below. Refresh latest head checks, then implement Phase 4 (contract, party/dex/growth and reward integration).
-5. Preserve the existing contract transaction and stable checkpoints. Separate pre-contract consent from post-contract farewell in the revised conversation order. Keep contract-body grants idempotent.
+4. Verify Phase 4 implementation CI, then implement Phase 5 (road/capital encounter and skill/attribute preparation).
+5. Preserve completed opening/contract/reward behavior. Phase 5 must connect the revised encounter to real skill-card preparation and keep map navigation compatible; Phase 6 owns replacement battle rules.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -82,3 +81,18 @@ Updated: 2026-09-10
 - Browser runner: `scripts/check-tutorial-opening-browser.cjs`, using the same optional environment-owned Playwright/browser setup as the Phase 2 runner. No test dependencies were added to production.
 - Player notice added on this branch for the revised opening and landscape fix. Expand/re-date appropriately at final release.
 - Phase 4 contract conversation onward remains pending; existing later content is intentionally not represented as revised or released. Physical Android/Chromebook checks and final publication remain later gates.
+
+## Phase 4 implementation record
+
+- Refreshed source at execution start: modified 2026-09-09T13:44:38.697Z. Read only; source document was not edited or exported into repository documentation.
+- Refreshed main: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`; PR #178 open/mergeable, previous completion-head CI successful; main Validate/Pages successful.
+- Integrated the revised pre-contract explanation, explicit consent at the existing contract input, post-contract multi-speaker farewell, body introduction and preparation/reward copy. Preserved existing action targets and episode boundaries.
+- Existing `elna_contract_consent` hosts question/explanation pages; `elna_contract_execute` remains the explicit contract operation; `elna_contract_departure` remains post-grant dialogue. No new step IDs, save fields, schema/version changes or migration. Stable grant/reward transactions are unchanged.
+- Existing old saves at execution resume with consent before the operation. Post-grant saves resume farewell; no pre-grant dialogue is replayed as a new grant.
+- Added contract conversation assertions; kept and ran transaction tests for duplicate grants, existing-body reuse, failed-save rollback and replay protection. Reward remains 250 coins plus four materials, one each, with repeated-claim and failed-save coverage.
+- Browser: Chromium 140, 360x640 and 844x390. Actual contract operation; interrupted animation/reload on portrait and normal animation completion on landscape; party save, character/monster dex, growth details/skill navigation, request report and reward claim; reload and duplicate body/reward checks. Normal rank-up dialog is dismissed through its UI. Battle HP is controlled only in the test to reach the contract boundary.
+- Fixed observed landscape menu-button obstruction: scroll small offscreen targets below the fixed header, restore temporary scroll margin, and keep action guides within usable adjacent space with scrolling. Added geometry/scroll regressions; rechecked opening/rescue browser flow because positioning is shared.
+- `npm run check` including postcheck passed. Additional contract/scroll assertions and notice follow-up checks passed. `git diff --check` passed. Historical wording assertions now match revised runtime copy without removing transaction coverage.
+- Browser reproduction: `scripts/check-tutorial-contract-browser.cjs` with environment-owned Playwright and `PLAYWRIGHT_EXECUTABLE_PATH`; optional `TUTORIAL_VIEWPORT_WIDTH` selects one test viewport.
+- Expanded the existing unreleased player notice and cache keys. Production remains unchanged; physical Android/Chromebook verification is not claimed.
+- Phase 5 is next after CI success. Later content and release remain pending.
