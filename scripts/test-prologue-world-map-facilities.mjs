@@ -25,8 +25,8 @@ assert.match(main,/id:'stella_mock_victory'[^\n]+persistAs:'stella_mock_victory'
   'the published Stella-to-Lumina chapter checkpoint must remain intact');
 assert.match(main,/id:'stella_intro'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_road_response'[^\n]+scene:'grassland'/,
   'the existing Stella checkpoint must lead into the road and capital conversation');
-assert.match(main,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+nextStepId:'lumina_world_map_open'[^\n]+scene:'workshop'/,
-  'the existing Lumina checkpoint and workshop story scene must lead into its map route');
+assert.match(main,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+nextStepId:'lumina_world_map_open'[^\n]+scene:'capital'/,
+  'the existing Lumina checkpoint leads from capital pursuit into the map route');
 
 for(const prefix of ['stella','lumina']){
   assert.match(main,new RegExp(`id:'${prefix}_world_map_open'[^\\n]+target:'\\[data-nav="battle"\\]'[^\\n]+advanceOnTarget:true`));

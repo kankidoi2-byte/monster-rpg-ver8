@@ -1,0 +1,70 @@
+const path=require('node:path');
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?path.join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'playwright'):'playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+  const server=require('node:child_process').spawn(process.execPath,['scripts/dev-server.mjs'],{cwd:path.resolve(__dirname,'..'),stdio:['ignore','pipe','inherit']});
+  let browser;
+  try{
+    await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(new Error('Preview startup timed out')),10000);
+      server.stdout.once('data',()=>{clearTimeout(timer);resolve();});
+      server.once('error',error=>{clearTimeout(timer);reject(error);});
+      server.once('exit',code=>{clearTimeout(timer);reject(new Error(`Preview exited: ${code}`));});
+    });
+    browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH||undefined,args:['--no-sandbox']});
+
+    for(const [width,height] of [[360,640],[844,390]]){
+      if(process.env.TUTORIAL_VIEWPORT_WIDTH&&width!==Number(process.env.TUTORIAL_VIEWPORT_WIDTH))continue;
+      const context=await browser.newContext({viewport:{width,height},hasTouch:true,reducedMotion:'reduce'});
+      const page=await context.newPage();const errors=[];
+      page.on('pageerror',e=>errors.push(e.message));
+      await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
+        await page.locator('#contractorRankUpOverlay button').click();
+      });
+      const paint=async()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+      const at=async id=>{await page.waitForFunction(id=>tutorialCurrentStepId()===id,id);await paint();};
+      const next=async()=>{await page.waitForTimeout(300);await page.locator('#tutorialNextButton').click();await paint();};
+      const reload=async()=>{await page.reload({waitUntil:'networkidle'});if(await page.locator('#titleScreen').isVisible())await page.locator('#titleScreen').click();};
+      await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
+      await page.locator('#titleScreen').click();
+      await at('intro_gnosis');
+      await page.evaluate(()=>{
+        setTutorialPlayerName('追跡テスト');ensureTutorialStarterContracts();commitTutorialElnaContract();
+        commitTutorialAlchemySupplyReward();
+        startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_intro',persist:true});
+      });
+      const inventory=await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,instances:save.instances,skills:save.skillCards}));
+      for(let i=0;i<4;i++){assert.equal(await page.locator('#tutorialStoryBackdrop').getAttribute('data-scene'),'capital');await next();}
+      await at('lumina_world_map_open');await page.locator('.tutorial-target-active').click();
+      await at('lumina_world_map_academy');await page.locator('.tutorial-target-active').click();
+      await at('lumina_academy_arrival');
+      assert.equal(await page.locator('#tutorialStoryBackdrop').getAttribute('data-scene'),'academy');
+      await reload();await at('lumina_academy_arrival');
+      await next();await at('lumina_world_map_visit');await page.locator('.tutorial-target-active').click();
+      await at('lumina_encounter');
+      for(let i=0;i<4;i++)await next();
+      assert.equal(await page.locator('#tutorialTitle').textContent(),'ステラ・ルミナ');
+      assert.equal(await page.locator('#tutorialCharacterPortrait').isVisible(),false);
+      await reload();await at('lumina_encounter');
+      assert.equal(await page.locator('#tutorialTitle').textContent(),'ステラ');
+      const speakers=await page.evaluate(()=>tutorialUiState.steps[tutorialUiState.index].dialogue.map(p=>p.speaker));
+      for(let i=0;i<speakers.length;i++){
+        assert.equal(await page.locator('#tutorialTitle').textContent(),speakers[i]);
+        assert.equal(await page.locator('#tutorialStoryBackdrop').getAttribute('data-scene'),'workshop');
+        assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),false,'no early alchemy setup');
+        if(i<speakers.length-1)await next();
+      }
+      assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,instances:save.instances,skills:save.skillCards})),inventory,'conversation cannot consume or grant assets');
+      await page.screenshot({path:'/tmp/tutorial-workshop-'+width+'.png'});
+      await next();await at('lumina_alchemy');
+      assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),false);
+      // Preparation is the explicit existing transition; stop before execution (Phase 8).
+      await next();await at('lumina_materials');
+      assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),true);
+      assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,instances:save.instances,skills:save.skillCards})),inventory);
+      assert.equal(errors.length,0,errors.join('\n'));
+      console.log('PASS workshop '+width+'x'+height+': real map/entry, scene and shared speech, academy/workshop reload, all pages, no early consumption, preparation boundary');
+      await context.close();
+    }
+  }finally{await browser?.close();server.kill();}
+})().catch(error=>{console.error(error);process.exitCode=1;});

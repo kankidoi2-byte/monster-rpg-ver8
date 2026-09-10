@@ -15,7 +15,7 @@ function node(){
     addEventListener(type,handler){this.listeners[type]=handler;}};
 }
 const get=id=>{if(id==='tutorialMenuButton')return null;if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);};
-const context=vm.createContext({console,Date:{now:()=>clock},
+const context=vm.createContext({console,Date:{now:()=>clock},show(){},
   document:{getElementById:get,createElement:node,addEventListener(){},body:node(),
     querySelector:selector=>selector==='.screen.active'?{id:'home'}:null,activeElement:null},
   window:{addEventListener(){}},requestAnimationFrame(){},setTimeout(){},
@@ -40,7 +40,7 @@ const setup=(choice='left')=>{
     startTutorialFlow('dialogue_test',{persist:true});`);
 };
 
-assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).length'),97,'registered production flow includes capital continuation');
+assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).length'),98,'registered production flow includes capital continuation');
 assert.equal(run("normalizeTutorialStep({id:'old',text:'Old'},0).dialogue"),null);
 for(const bad of [
   {dialogue:[]},{dialogue:[{text:''}]},{dialogue:[{text:4}]},
@@ -135,3 +135,34 @@ for(const answer of ['accept','reluctant']){
   assert.equal(run('tutorialCurrentStepId()'),'stella_card_receive','skip must stop before the real card transaction');
 }
 console.log('Capital dialogue passed: both choices, mandatory answer, scene transition, checkpoint resume and action-safe skip.');
+// Real pursuit/workshop flow: scene checkpoints, shared speech and no early alchemy.
+// Rendering-only adapter; actual navigation is covered by the browser runner.
+context.document.querySelector=selector=>selector==='.screen.active'?{id:run('tutorialUiState.steps[tutorialUiState.index]?.screenId')||'home'}:null;
+tick();run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_intro',persist:true})");
+assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).find(s=>s.id==="lumina_intro").dialogue.length'),4);
+assert.equal(get('tutorialTitle').textContent,'ステラ');
+assert.equal(get('tutorialStoryBackdrop').dataset.scene,'capital');
+for(let i=0;i<4;i++){tick();run('tutorialNext()');}
+assert.equal(run('tutorialCurrentStepId()'),'lumina_world_map_open');
+tick();run('tutorialNext()');
+assert.equal(run('tutorialCurrentStepId()'),'lumina_world_map_open','pursuit still requires map operation');
+tick();run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_academy_arrival',persist:true})");
+assert.equal(saved.stepId,'lumina_academy_arrival');
+assert.equal(get('tutorialStoryBackdrop').dataset.scene,'academy');
+tick();run('skipTutorialDialogue()');
+assert.equal(run('tutorialCurrentStepId()'),'lumina_world_map_visit','skip stops at the real workshop entry');
+tick();run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_encounter',persist:true})");
+assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).find(s=>s.id==="lumina_encounter").dialogue.length'),23);
+const beforeWorkshop=saves;
+for(let i=0;i<4;i++){tick();run('tutorialNext()');}
+assert.equal(get('tutorialTitle').textContent,'ステラ・ルミナ');
+assert.equal(get('tutorialCharacterPortrait').hidden,true,'shared speech does not misrepresent one portrait as both people');
+assert.equal(get('tutorialStoryBackdrop').dataset.scene,'workshop');
+assert.equal(saved.stepId,'lumina_encounter');
+assert.equal(saves,beforeWorkshop,'workshop page changes do not mutate or prepare alchemy');
+tick();run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:currentTutorialState().stepId,persist:true})");
+assert.equal(run('tutorialDialogueState.page'),0);
+assert.equal(get('tutorialTitle').textContent,'ステラ');
+tick();run('skipTutorialDialogue()');
+assert.equal(run('tutorialCurrentStepId()'),'lumina_alchemy','skip stops before preparation transition');
+console.log('Workshop dialogue passed: pursuit/map boundary, academy checkpoint, shared speakers, restart and action-safe skip.');

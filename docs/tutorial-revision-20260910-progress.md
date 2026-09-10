@@ -10,17 +10,17 @@ Updated: 2026-09-10
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
-- Phase 7: execution active (pursuit/workshop conversation, verification and handoff). Do not duplicate this work.
+- Phase 7: implementation and browser checks completed; final checks and implementation CI handoff active.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 7 through 12: pending. Resume Phase 7; do not repeat completed work.
+- Phases 8 through 12: pending. Finish Phase 7 handoff, then resume Phase 8; do not repeat completed work.
 
 ## Evidence from the public repository
 
-- `js/tutorial.js` currently registers 97 main-flow steps.
+- `js/tutorial.js` currently registers 98 main-flow steps.
 - Presentation currently normalizes one speaker, portrait, scene and text per step.
 - `js/story.js` defines six prologue episodes; episode boundaries and tutorial checkpoints must be tested together.
 - Save contracts: `mb_v95c`, schema 4, tutorial version 2. Do not increment versions or change persistent meanings without reviewing migration impact and the approval contract.
@@ -37,8 +37,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Refresh latest head checks, then implement Phase 7: pursuit through the academy and workshop conversation.
-5. Preserve completed opening/contract/reward and capital/skill preparation behavior. Phase 7 must replace the old workshop introduction while preserving the completed Stella battle and chapter checkpoints.
+4. Refresh latest head checks and finish Phase 7 CI handoff if needed, then implement Phase 8: first alchemy and mandatory workshop farewell.
+5. Preserve completed battle/pursuit/workshop conversation and map-action checkpoints. Update alchemy operation copy/ownership and keep its transaction protections; initial success must lead to an ordinary farewell, not the old completion-only replay branch.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -131,3 +131,15 @@ Updated: 2026-09-10
 - Updated focused tests for person identity, unrestricted neutral/support/other-actor moves, no rewards, outcomes without an advantageous action, duplicate outcome rejection, interruption/checkpoint compatibility and full journey. Prior mock-specific assertions were replaced by the authorized rules; unrelated gates remain.
 - Chromium 140: 360x640 and 844x390 passed actual start, battle reload, neutral normal attack, deterministic defeat, UI retry, natural neutral-only victory (four attacks in each observed run), unchanged inventory/contracts and victory reload/next episode. Enemy HP was not edited for winning; these two observed runs are bounded difficulty evidence, not exhaustive balance or physical-device verification.
 - `npm run check` including postcheck and `git diff --check` passed. Opening/rescue regression browser passed both viewports (title/name/map/actor/attacks, defeat/retry, victory, save/reload) after the shared skill-button change. No new major story ambiguity was introduced. Next: Phase 7. Do not merge or publish before all phases/release gates complete.
+
+## Phase 7 implementation record
+
+- Implementation commit and CI: pending publication/observation in this execution.
+- Read latest source at execution start (modified 2026-09-09T13:44:38.697Z); source document unchanged. Refreshed main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, PR #178 open/mergeable, latest completion-head CI and main Validate/Pages successful. No other active execution was recorded; local worktree was clean.
+- Integrated four capital aftermath/pursuit pages, actual map selection and workshop entry, academy arrival and 23 workshop conversation pages. Revised navigation prompts describe pursuit instead of advance knowledge of the alchemy lesson. Shared speech uses the shared speaker label and no single-person portrait; subsequent pages restore their own portrait.
+- Added only `lumina_academy_arrival` as a conversation checkpoint between academy selection and workshop entry. Existing entry/visit/encounter IDs and facility handlers remain intact. Academy reload can re-enter the existing workshop detail/action; workshop reload restarts its current conversation, not the preceding battle. No save fields, schema/tutorial version, stable entity IDs or `mb_v95c` changes; no migration.
+- Conversation pages do not prepare alchemy, grant items, consume coins/contracts or trigger result handling. Skip stops at real map/entry operations and the existing alchemy preparation transition. Operation/result/farewell copy and behavior remain Phase 8 scope and are not represented as finished.
+- Updated episode summary, unreleased notice and cache keys. Runtime source text only; no private transcript/specification export into repository documentation.
+- Added focused presentation tests for speaker/scene continuity, shared speech, both new/existing checkpoints, no page-turn saves and action-safe skip. Updated historical flow counts and post-battle scene expectations, retaining real map-route and legacy compatibility tests.
+- Chromium 140: 360x640 and 844x390 passed actual map/academy selection, facility entry, all conversation pages, shared speech, academy/workshop reload and explicit preparation boundary. Inventory/contracts unchanged through conversation and preparation; no early alchemy activation. Screenshots visually checked in both orientations. No physical Android/Chromebook verification is claimed.
+- `npm run check` including postcheck and `git diff --check` passed. Stella-to-workshop browser regression passed both viewports (start, battle reload, defeat/retry, natural victory, victory reload and next episode). No new unresolved setting question. Next Phase 8; retain Draft and do not publish this partial revision.
