@@ -10,12 +10,18 @@ const worldMapFlowSource=read('js/world-map-flow.js');
 
 assert.match(saveSource,/const TUTORIAL_VERSION = 2;/,
   'world-map migration must not bump the published tutorial version');
+assert.match(saveSource,/const SAVE_KEY = 'mb_v95c';/,
+  'the published save key must stay stable');
 
 const mainStart=tutorialSource.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const mainEnd=tutorialSource.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',mainStart);
 assert.ok(mainStart>=0&&mainEnd>mainStart,'the persistent prologue flow must exist');
 const mainFlow=tutorialSource.slice(mainStart,mainEnd);
-const mainStepIds=[...mainFlow.matchAll(/\{id:'([^']+)'/g)].map(match=>match[1]);
+const mainStepRecords=[...mainFlow.matchAll(/^\s{2}\{id:'([^']+)'([^\n]*)$/gm)].map(match=>({
+  id:match[1],
+  persistAs:match[2].match(/persistAs:'([^']+)'/)?.[1]||null
+}));
+const mainStepIds=mainStepRecords.map(step=>step.id);
 const mainStepIdSet=new Set(mainStepIds);
 assert.equal(mainStepIdSet.size,mainStepIds.length,'persistent prologue step IDs must remain unique');
 
@@ -110,6 +116,16 @@ function assertInProgressFixture(stepId,label){
   assert.equal(resume.starts[0].options.persist,true);
   assert.equal(resume.starts[0].options.stepId,stepId,`${label}: resume must target the normalized checkpoint`);
   assertNoAutomaticGrant(before,after,label);
+}
+
+// Every state the live flow can persist must remain a valid, side-effect-free
+// resume target. Action-only pages persist at their declared safe parent.
+const durableCheckpoints=[...new Set(mainStepRecords.map(step=>step.persistAs||step.id))];
+for(const checkpoint of durableCheckpoints){
+  assertInProgressFixture(checkpoint,`durable checkpoint ${checkpoint}`);
+}
+for(const {id,persistAs} of mainStepRecords.filter(step=>step.persistAs)){
+  assert.ok(mainStepIdSet.has(persistAs),`${id}: persisted parent must exist: ${persistAs}`);
 }
 
 // A new save starts the persistent flow at its first real target without any grant.

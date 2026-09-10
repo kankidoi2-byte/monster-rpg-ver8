@@ -781,7 +781,9 @@ function commitTutorialFullSkip(){
       if(typeof markTutorialOnce!=='function'||!markTutorialOnce(flag))throw new Error(`tutorial_skip_flag_${flag}`);
     }
     if(typeof setTutorialElnaGuestActive==='function')setTutorialElnaGuestActive(false);
-    save.party=[...starters.map(instance=>instance.uid),elna.uid];
+    const aquaron=starters.find(instance=>instance.id==='aquaron');
+    if(!aquaron)throw new Error('tutorial_skip_party_reward');
+    save.party=[alchemyPartner.uid,aquaron.uid,elna.uid];
     save.progress.storyFlags={...(save.progress.storyFlags||{}),prologueCompleted:true};
     skipTutorial();
     if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_skip_save');

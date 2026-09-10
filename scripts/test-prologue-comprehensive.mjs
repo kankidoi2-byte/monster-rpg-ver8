@@ -92,7 +92,10 @@ function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress'
 const fresh=makeSkipContext();
 assert.equal(vm.runInContext('commitTutorialFullSkip()',fresh),true);
 assert.deepEqual(Array.from(fresh.save.instances,entry=>entry.id).sort(),['aquaron','elna_beginner','freigal','galdra']);
-assert.deepEqual(Array.from(fresh.save.party,uid=>fresh.save.instances.find(entry=>entry.uid===uid)?.id),['freigal','aquaron','elna_beginner']);
+assert.deepEqual(Array.from(fresh.save.party,uid=>fresh.save.instances.find(entry=>entry.uid===uid)?.id),['galdra','aquaron','elna_beginner'],
+  'full skip must leave the same active party as a normally completed prologue');
+assert.ok(fresh.save.instances.some(entry=>entry.id==='freigal'&&!fresh.save.party.includes(entry.uid)),
+  'full skip must retain Freigal in reserve without silently creating an expedition');
 assert.equal(fresh.save.skillCards.skill_elna_middle_01,1);
 for(const flag of requiredFlags)assert.equal(fresh.save.progress.tutorial[flag],true,`full skip must finalize ${flag}`);
 assert.equal(fresh.save.progress.tutorial.status,'skipped');
