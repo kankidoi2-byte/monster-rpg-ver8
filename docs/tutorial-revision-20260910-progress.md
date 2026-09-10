@@ -6,7 +6,8 @@ Updated: 2026-09-10
 
 - Phase 1 of 12: specification and implementation-impact review complete.
 - Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
-- Next: Phase 3, opening and rescue integration. Do not repeat Phase 2.
+- Phase 3: in progress in the user-requested manual execution (2026-09-10). Do not start a duplicate execution.
+- Current work: opening/rescue dialogue integrated locally; targeted browser and compatibility verification in progress. Resume Phase 3 only after this execution ends.
 - Runtime implementation: presentation infrastructure only; production story data remains unchanged. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
