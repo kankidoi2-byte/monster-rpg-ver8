@@ -5,8 +5,8 @@ Updated: 2026-09-10
 ## Status
 
 - Phase 1 of 12: specification and implementation-impact review complete.
-- Phase 2: implemented and locally verified; observe the implementation commit CI before marking complete.
-- Next after Phase 2 CI success: Phase 3, opening and rescue integration.
+- Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
+- Next: Phase 3, opening and rescue integration. Do not repeat Phase 2.
 - Runtime implementation: presentation infrastructure only; production story data remains unchanged. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
@@ -33,12 +33,15 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Verify Phase 2 implementation CI. If successful, continue Phase 3 rather than reimplementing the presentation layer. Consult `docs/tutorial-dialogue-pages.md` for the API and authoring boundaries.
+4. Phase 2 implementation CI is verified below. Refresh the latest head checks, then continue Phase 3 rather than reimplementing the presentation layer. Consult `docs/tutorial-dialogue-pages.md` for the API and authoring boundaries.
 5. Integrate only the opening/rescue scope from the user's approved requirements. Preserve name entry, world-map navigation, action gates, guest cleanup and victory/retry behavior. Do not copy the private source document wholesale into repository documentation.
 6. Add focused opening/rescue tests, run `npm run check`, inspect the diff and record outcomes. Do not introduce save migration without the required specific approval.
 7. Commit/push the bounded result and update this handoff. Later narrative/combat/alchemy/expedition phases remain pending.
 
 ## Phase 2 implementation record
+
+- Implementation commit: `c27c0318fa1d79e5054fcbf667bdd09e020d6967`.
+- Implementation CI: https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34443754188 — completed/success observed 2026-09-10. The follow-up completion-record commit changes documentation only.
 
 - Added optional immutable dialogue pages with inherited speaker/portrait/scene fields and explicit clearing. Shared speaker labels are supported; there is still one portrait layer.
 - Added 2–4 choices on the final page, converging to the normal continuation. Invalid/mixed action-page schemas are rejected. Existing 96 production steps and all story text are unchanged.
