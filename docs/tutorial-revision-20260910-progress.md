@@ -10,13 +10,14 @@ Updated: 2026-09-10
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
-- Phase 7: implementation and browser checks completed; final checks and implementation CI handoff active.
+- Phase 7: complete (implementation, local checks, browser checks and implementation CI verified).
+- Next: Phase 8. No execution remains active after this completion handoff.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 8 through 12: pending. Finish Phase 7 handoff, then resume Phase 8; do not repeat completed work.
+- Phases 8 through 12: pending. Resume Phase 8; do not repeat completed work.
 
 ## Evidence from the public repository
 
@@ -37,7 +38,7 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Refresh latest head checks and finish Phase 7 CI handoff if needed, then implement Phase 8: first alchemy and mandatory workshop farewell.
+4. Refresh latest head checks, then implement Phase 8: first alchemy and mandatory workshop farewell.
 5. Preserve completed battle/pursuit/workshop conversation and map-action checkpoints. Update alchemy operation copy/ownership and keep its transaction protections; initial success must lead to an ordinary farewell, not the old completion-only replay branch.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
@@ -134,7 +135,8 @@ Updated: 2026-09-10
 
 ## Phase 7 implementation record
 
-- Implementation commit and CI: pending publication/observation in this execution.
+- Implementation commit: `b4b7f0423d1af746b86978c01fa109ab6ff4df5c`.
+- Implementation CI: https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34451004388 — completed/success observed 2026-09-10. Completion-record follow-up changes documentation only.
 - Read latest source at execution start (modified 2026-09-09T13:44:38.697Z); source document unchanged. Refreshed main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, PR #178 open/mergeable, latest completion-head CI and main Validate/Pages successful. No other active execution was recorded; local worktree was clean.
 - Integrated four capital aftermath/pursuit pages, actual map selection and workshop entry, academy arrival and 23 workshop conversation pages. Revised navigation prompts describe pursuit instead of advance knowledge of the alchemy lesson. Shared speech uses the shared speaker label and no single-person portrait; subsequent pages restore their own portrait.
 - Added only `lumina_academy_arrival` as a conversation checkpoint between academy selection and workshop entry. Existing entry/visit/encounter IDs and facility handlers remain intact. Academy reload can re-enter the existing workshop detail/action; workshop reload restarts its current conversation, not the preceding battle. No save fields, schema/tutorial version, stable entity IDs or `mb_v95c` changes; no migration.
