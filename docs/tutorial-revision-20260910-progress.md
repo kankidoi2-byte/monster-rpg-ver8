@@ -8,7 +8,8 @@ Updated: 2026-09-10
 - Next: Phase 2, backward-compatible dialogue presentation infrastructure.
 - Runtime implementation: not started. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
-- Pull request: pending creation; resolve by this branch until recorded below.
+- Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
+- Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
 - Phases 2 through 12: pending. Resume the earliest incomplete phase; do not restart completed work.
 
