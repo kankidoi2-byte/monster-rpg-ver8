@@ -8,17 +8,17 @@ Updated: 2026-09-10
 - Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
 - Phase 3: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
-- Phase 5: in progress in the manually requested execution. Do not duplicate this phase while its implementation and verification are running.
+- Phase 5: implementation and local verification complete; implementation CI and completion handoff pending.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 5 through 12: pending. Resume Phase 5; do not repeat completed work.
+- Phases 6 through 12: pending. Finish Phase 5 CI handoff before continuing; do not repeat completed work.
 
 ## Evidence from the public repository
 
-- `js/tutorial.js` currently registers 96 main-flow steps.
+- `js/tutorial.js` currently registers 97 main-flow steps.
 - Presentation currently normalizes one speaker, portrait, scene and text per step.
 - `js/story.js` defines six prologue episodes; episode boundaries and tutorial checkpoints must be tested together.
 - Save contracts: `mb_v95c`, schema 4, tutorial version 2. Do not increment versions or change persistent meanings without reviewing migration impact and the approval contract.
@@ -35,8 +35,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Phase 4 implementation CI is verified below. Refresh latest head checks, then implement Phase 5 (road/capital encounter and skill/attribute preparation).
-5. Preserve completed opening/contract/reward behavior. Phase 5 must connect the revised encounter to real skill-card preparation and keep map navigation compatible; Phase 6 owns replacement battle rules.
+4. Finish Phase 5 CI confirmation if still pending, then implement Phase 6: actual Stella battle, victory/defeat/retry and the following connection.
+5. Preserve completed opening/contract/reward and capital/skill preparation behavior. Phase 6 must replace the remaining legacy practice battle without requiring a specific element or advantageous hit.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -100,3 +100,16 @@ Updated: 2026-09-10
 - Browser reproduction: `scripts/check-tutorial-contract-browser.cjs` with environment-owned Playwright and `PLAYWRIGHT_EXECUTABLE_PATH`; optional `TUTORIAL_VIEWPORT_WIDTH` selects one test viewport.
 - Expanded the existing unreleased player notice and cache keys. Production remains unchanged; physical Android/Chromebook verification is not claimed.
 - Phase 5 is next. Later content and release remain pending.
+
+
+## Phase 5 implementation record
+
+- Implementation commit and CI: pending publication/observation in this execution.
+- Refreshed the read-only source (modified 2026-09-09T13:44:38.697Z), main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, open/mergeable PR #178, preceding completion-head CI and main Validate/Pages at execution start. No source-document edits or transcript exports.
+- Added road conversation and two converging choices, then capital arrival/collision and skill preparation. Scene persists between speakers and changes at arrival. Gnosis handles the skill/attribute explanation. Updated episode label, unreleased notice and affected cache keys.
+- Added only `stella_road_response` as a conversation checkpoint. Existing entry, skill, facility and episode IDs remain available; save fields, schema/tutorial versions and `mb_v95c` are unchanged. New route bypasses the old pre-collision academy visit; its facility handlers remain supported for legacy entry paths.
+- Response checkpoint follows retained facility entries; explicit forward and previous links keep both continuation and Back out of the old route. Added optional previousStepId presentation configuration, with page-level Back unchanged. Reopening it restarts that conversation without repeating the choice. Both answers converge; no branch-dependent reward is introduced.
+- Existing one-time card transaction, replay protections and equipment operations remain unchanged. Full journey fixture now follows the choice/capital route and explicitly rejects the old pre-collision visit, while keeping workshop and free-exploration coverage.
+- Added dynamic checks for both answers, mandatory choice, scene change, checkpoint resume and skip stopping before the card transaction. Historical step-count and route assertions were updated; legacy facility and transaction coverage retained.
+- `npm run check` including postcheck passed; `git diff --check` passed. Chromium 140 at 360x640 and 844x390 verified both answers, Back, speaker/scene continuity, response and skill checkpoints, one-time card receipt, actual skill equipment and attribute-chart actions. Opening/rescue browser smoke also passed both viewports (title/name/map/actions, retry, victory, save/reload). No physical Android/Chromebook verification or production publication is claimed.
+- Phase 6 owns replacement of the still-existing legacy practice battle and its instructions. Do not merge or publish this intermediate revision. No new unresolved story-setting question was introduced in this phase.

@@ -40,7 +40,7 @@ const setup=(choice='left')=>{
     startTutorialFlow('dialogue_test',{persist:true});`);
 };
 
-assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).length'),96,'legacy production flow unchanged');
+assert.equal(run('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).length'),97,'registered production flow includes capital continuation');
 assert.equal(run("normalizeTutorialStep({id:'old',text:'Old'},0).dialogue"),null);
 for(const bad of [
   {dialogue:[]},{dialogue:[{text:''}]},{dialogue:[{text:4}]},
@@ -113,3 +113,25 @@ run(`registerTutorialFlow('chapter_test',[
 assert.equal(run('chapterCalls'),0,'chapter end cannot fire on an intermediate page');
 tick();run('tutorialNext();');assert.equal(run('chapterCalls'),1);
 console.log('Dialogue pages passed: validation, legacy flow, speakers/scenes, choices, literal names, double taps, Back, skip, resume, stale controls and chapter boundaries.');
+
+// Real capital checkpoint: choices converge without entering the retained legacy facility route.
+for(const answer of ['accept','reluctant']){
+  tick();run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'stella_intro',persist:true})");
+  tick();run('tutorialNext()');
+  tick();run('tutorialNext();skipTutorialDialogue()');
+  assert.equal(run('tutorialCurrentStepId()'),'stella_intro');
+  context.answer=answer;tick();run('tutorialNext(false,answer)');
+  assert.equal(run('tutorialCurrentStepId()'),'stella_road_response');
+  assert.equal(saved.stepId,'stella_road_response');
+  tick();run('tutorialPrevious()');
+  assert.equal(run('tutorialCurrentStepId()'),'stella_intro','Back must not enter the retained academy route');
+  tick();run('tutorialNext()');tick();run('tutorialNext(false,answer)');
+  tick();run('tutorialNext()');tick();run('tutorialNext()');
+  assert.equal(get('tutorialStoryBackdrop').dataset.scene,'capital');
+  tick();run("startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:savedCheckpoint,persist:true})".replace('savedCheckpoint',JSON.stringify(saved.stepId)));
+  assert.equal(run('tutorialDialogueState.page'),0,'resume restarts only the current conversation');
+  assert.equal(get('tutorialStoryBackdrop').dataset.scene,'grassland');
+  tick();run('skipTutorialDialogue()');
+  assert.equal(run('tutorialCurrentStepId()'),'stella_card_receive','skip must stop before the real card transaction');
+}
+console.log('Capital dialogue passed: both choices, mandatory answer, scene transition, checkpoint resume and action-safe skip.');

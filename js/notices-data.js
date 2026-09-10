@@ -9,7 +9,7 @@ const GAME_NOTICES = Object.freeze([
   Object.freeze({
     id:'20260910-prologue-story-revision',date:'2026-09-10',category:'update',
     title:'序章の会話を更新しました',
-    body:'目覚めからエルナとの契約・救援報酬までの会話を更新しました。同じ場面の会話は、話者に合わせて読み進められます。横画面で案内が世界地図や図鑑の操作ボタンに重ならないよう改善しました。'
+    body:'目覚めからエルナとの契約、王都への道中とステラとの出会いまでの会話を更新しました。同じ場面の会話は、話者に合わせて読み進められます。横画面で案内が世界地図や図鑑の操作ボタンに重ならないよう改善しました。'
   }),
   Object.freeze({
     id:'20260910-world-map-consistency',date:'2026-09-10',category:'update',

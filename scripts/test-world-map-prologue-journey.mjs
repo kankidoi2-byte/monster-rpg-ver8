@@ -30,7 +30,7 @@ function element(id=''){
     setAttribute(name,value){this[name]=value;},getAttribute(name){return this[name]??null;},
     toggleAttribute(name,force){this[name]=force!==false;},
     closest(){return element(`${id}:closest`);},contains(){return false;},focus(){},scrollIntoView(){},
-    setCustomValidity(){},reportValidity(){},
+    setCustomValidity(){},reportValidity(){},replaceChildren(){},appendChild(){},addEventListener(){},
     getBoundingClientRect(){return {top:100,bottom:140,left:20,right:180,width:160,height:40};}
   };
   elements.set(id,node);return node;
@@ -144,6 +144,9 @@ while(state().status==='in_progress'){
   const id=step();
   visited.push(id);
   switch(id){
+    case 'stella_intro':
+      run("tutorialDialogueNeedsChoice(tutorialUiState.steps[tutorialUiState.index]) ? tutorialNext(false,'accept') : tutorialNext()");
+      break;
     case 'gnosis_name':
       element('tutorialPlayerNameInput').value='Journey Tester';
       assert.equal(run('confirmTutorialPlayerName()'),false);
@@ -270,10 +273,12 @@ assert.equal(notices.length,0,`successful journey must not emit warnings: ${noti
 const requiredJourneySteps=[
   'intro_gnosis','gnosis_name','rescue_world_map_open','rescue_world_map_grassland','rescue_world_map_depart',
   'battle_enemy','battle_free','elna_contract_execute','home_party','request_reward_claim',
-  'stella_world_map_open','stella_world_map_visit','stella_mock_battle','stella_mock_free',
+  'stella_road_response','stella_mock_battle','stella_mock_free',
   'lumina_world_map_open','lumina_world_map_visit','lumina_alchemy','lumina_wait',
   'expedition_intro','expedition_dispatch','prologue_complete'
 ];
 for(const id of requiredJourneySteps)assert.ok(visited.includes(id),`canonical new-save journey must visit ${id}`);
 
-console.log(`World-map prologue journey passed: ${visited.length} live steps, two rescue waves, both facility routes, rewards, alchemy, expedition, completion, and tutorial-free exploration.`);
+console.log(`World-map prologue journey passed: ${visited.length} live steps, two rescue waves, capital conversation and workshop route, rewards, alchemy, expedition, completion, and tutorial-free exploration.`);
+
+assert.ok(!visited.includes('stella_world_map_visit'),'new capital route must not enter academy before the collision');

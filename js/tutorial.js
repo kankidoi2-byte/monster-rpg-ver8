@@ -112,6 +112,7 @@ function normalizeTutorialStep(step,index){
     id,
     mode,
     ...dialogue,
+    previousStepId:typeof step.previousStepId==='string'&&step.previousStepId?step.previousStepId:null,
     speaker:typeof step.speaker==='string'&&step.speaker?step.speaker:null,
     portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
     scene:typeof step.scene==='string'&&step.scene?step.scene:null,
@@ -595,7 +596,10 @@ function tutorialPrevious(){
     tutorialUiState.lastFocusedStep=null;renderTutorialStep();return;
   }
   if(tutorialUiState.index<=0)return;
-  tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
+  const previousId=tutorialUiState.steps[tutorialUiState.index]?.previousStepId;
+  const previousIndex=previousId?tutorialStepIndex(tutorialUiState.steps,previousId):tutorialUiState.index-1;
+  if(previousIndex<0)return;
+  tutorialUiState.index=previousIndex;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
 function tutorialLinkedStepIndex(index){
   const step=tutorialUiState.steps[index];
@@ -1780,19 +1784,20 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,persistAs:'request_accept',title:'エルナ救援を報告',text:'救援が依頼として認められたぞ！ このボタンを押して、報告と報酬の確認へ進もう！',progressLabel:'REQUEST'},
   {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚とアイテム4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
   {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ やったな！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
-  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',nextStepId:'stella_world_map_open',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
+  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',nextStepId:'stella_road_response',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'王都へ',text:'準備はできたな！ そしたら、とりあえず人の多い\n｢王都｣に行こう！',dialogue:[{"text": "準備はできたな！ そしたら、とりあえず人の多い\n｢王都｣に行こう！"}, {"text": "{{playerName}}にはやってほしいことがあるんだけど…ボクを元の姿に戻してほしいんだ。…いいかな？"}],choices:[{id:"accept",label:"うん、いいよ"},{id:"reluctant",label:"しょうがないな"}],progressLabel:'PROLOGUE'},
   {id:'stella_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'stella_intro',disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押して世界地図を開こう。ステラは王都の魔導学園にいるぞ！',progressLabel:'WORLD MAP'},
   {id:'stella_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,persistAs:'stella_intro',disableBack:true,title:'魔導学園を選ぼう',text:'「王都の施設」にある魔導学園を押そう。施設へ行く時も、この世界地図から選べるぞ！',progressLabel:'WORLD MAP'},
   {id:'stella_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,persistAs:'stella_intro',disableBack:true,title:'魔導学園へ入ろう',text:'今回は探索ではなく、ステラに会うのが目的だ。「魔導学園へ入る」を押そう！',progressLabel:'WORLD MAP'},
-  {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
-  {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるね。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
+  {id:'stella_road_response', previousStepId:'stella_intro', "screenId": "home", "persistAs": "stella_road_response", "nextStepId": "stella_encounter", "speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "scene": "grassland", "title": "王都での出会い", "dialogue": [{"text": "いいの！？ありがとう！よかったー！"}, {"text": "あ、ていうか、あれだぞ！この姿はボクの本当の姿じゃないからな！本当のボクはもっと威厳があって、カッコいいんだからな！"}, {"text": "って、そんなこと言ってる間に｢王都｣に着いたな。ここら辺だとこの街が一番人が多いはずだぞ。", "scene": "capital"}, {"text": "ここで協力してくれる仲間を探すんだ！…って、ん？誰か走ってくるぞ？"}, {"speaker": "？？？", "portrait": "images/tutorial/characters/stella_apprentice.png", "text": "どいて、どいてー！"}, {"text": "キャッ！"}, {"speaker": "？？？", "portrait": "images/tutorial/characters/stella_apprentice.png", "text": "いったーい！どいてって言ったでしょ！なんでぶつかってくるのよ！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "いやいや、ぶつかってきたのはそっちだろ！？"}, {"speaker": "？？？", "portrait": "images/tutorial/characters/stella_apprentice.png", "text": "関係ないわ！私が魔法でコテンパンにしてあげる！退かなかったこと、後悔しなさい！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "た、大変だぞ{{playerName}}！あっちは魔法使いだ！こっちも対抗するんだ！"}], "progressLabel": "PROLOGUE"},
+  {id:'stella_encounter',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'戦う前に技カードを準備しよう',text:'バトルの前に技カードの使い方を説明するぞ！負けられないバトルだからな！ちゃんと準備しないと！',progressLabel:'STELLA'},
+  {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるぞ。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
   {id:'stella_skill_open',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillEditButton',externalAdvance:true,persistAs:'stella_skill_open',disableBack:true,title:'カードを確認して技編集へ',text:'連続斬りの内容を確認したら、ここを押してエルナの技編集を開こう！',progressLabel:'SKILL CARD'},
   {id:'stella_skill_unequip',screenId:'skillEdit',target:'[data-tutorial-stella-unequip]',externalAdvance:true,disableBack:true,title:'技を1枚外そう',text:'ここを押して、今の技を1枚外そう。新しいカードを入れる空きを作るぞ！',progressLabel:'SKILL CARD'},
   {id:'stella_skill_equip',screenId:'skillEdit',target:'[data-tutorial-stella-skill-equip]',externalAdvance:true,disableBack:true,title:'連続斬りを装備',text:'無属性・威力34・COST 2で、エルナの剣士タグに合う技だ。ここを押して装備しよう！',progressLabel:'SKILL CARD'},
-  {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'技の属性',text:'技には属性があるよ。相手に有利な属性なら、ダメージが大きくなるの！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'技の属性',text:'技には属性がある！相手に有利な属性なら、ダメージが大きくなるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_more_open',screenId:'skillEdit',target:'[data-nav="more"]',advanceOnTarget:true,title:'属性表を見よう',text:'ここを押すと、属性相性を確認できるメニューへ進めるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_type_chart_open',screenId:'moreMenu',target:'#typeChartButton',advanceOnTarget:true,title:'属性相性',text:'ここを押すと、どの属性が有利か確認できるぞ！',progressLabel:'ATTRIBUTE'},
-  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪があるよ。矢印の向きを見れば有利属性が分かるからね！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪がある。矢印の向きを見れば有利属性が分かるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'次は相性を試そう',text:'装備できたね！ 森属性のグラスビートを用意したよ。炎属性が有利なことを実戦で確かめよう！',progressLabel:'STELLA',nextLabel:'模擬戦へ'},
   {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'炎は森に有利',text:'相手は森属性のグラスビート、先頭は炎属性のフレイガル。炎属性の技なら効果抜群だよ！',progressLabel:'MOCK BATTLE'},
   {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'技を開こう',text:'ここを押すと、フレイガルの技を選べるぞ！',progressLabel:'MOCK BATTLE'},

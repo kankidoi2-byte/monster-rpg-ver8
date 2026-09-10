@@ -23,8 +23,8 @@ assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\
   'the published request-to-Stella chapter checkpoint must remain intact');
 assert.match(main,/id:'stella_mock_victory'[^\n]+persistAs:'lumina_intro'[^\n]+nextStepId:'lumina_intro'[^\n]+chapterBreak:true/,
   'the published Stella-to-Lumina chapter checkpoint must remain intact');
-assert.match(main,/id:'stella_intro'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_world_map_open'[^\n]+scene:'academy'/,
-  'the existing Stella checkpoint and academy story scene must lead into its map route');
+assert.match(main,/id:'stella_intro'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_road_response'[^\n]+scene:'grassland'/,
+  'the existing Stella checkpoint must lead into the road and capital conversation');
 assert.match(main,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+nextStepId:'lumina_world_map_open'[^\n]+scene:'workshop'/,
   'the existing Lumina checkpoint and workshop story scene must lead into its map route');
 
