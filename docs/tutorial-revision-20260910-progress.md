@@ -10,7 +10,7 @@ Updated: 2026-09-10
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 6: complete (implementation, local checks, browser checks and implementation CI verified).
-- Next: Phase 7. No execution remains active after this completion handoff.
+- Phase 7: execution active (pursuit/workshop conversation, verification and handoff). Do not duplicate this work.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
