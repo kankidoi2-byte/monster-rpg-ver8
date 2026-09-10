@@ -25,7 +25,7 @@ assert.ok(tutorial.includes("target.scrollIntoView?.({block:'center',inline:'nea
 
 assert.match(main,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'[^\n]+nextLabel:'自由行動へ'/,'the final scene must render Gnosis as story dialogue instead of a target-only background');
 assert.ok(css.includes('.tutorial-overlay.is-ui-guide-step .tutorial-character-layer{display:none}'),'ordinary UI-guide steps must still protect their controls from portrait overlap');
-assert.ok(index.includes('tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1">'),'the mobile browser must fetch the normal-position skill button CSS');
+assert.match(index,/css\/tutorial\.css\?v=[^"]*tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1[^"]*">/,'the mobile browser must fetch the skill button CSS and allow newer revisions');
 assert.match(index, /js\/tutorial\.js\?v=[^"]*tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1[^"]*"><\/script>/, 'the mobile browser must fetch the normal-position skill button logic');
 assert.match(index, /js\/notices-data\.js\?v=[^"]*diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1[^"]*"><\/script>/, 'the mobile browser must fetch the skill button layout notice');
 assert.equal(packageJson.scripts['check:prologue-mobile-clarity'],'node scripts/test-prologue-mobile-clarity.mjs');

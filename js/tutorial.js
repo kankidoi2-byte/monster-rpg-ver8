@@ -26,6 +26,8 @@ const tutorialUiState={
   active:false,flowId:null,steps:[],index:0,persist:false,replay:false,
   returnScreen:null,target:null,previousFocus:null,lastFocusedStep:null,advancePendingStepId:null
 };
+// Presentation-only state: never serialized into a player's save.
+const tutorialDialogueState={step:null,page:0,lockedUntil:0,renderToken:0};
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
 const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true,tutorialRole:'person'});
@@ -66,15 +68,50 @@ function tutorialStepRequiresAction(step){return tutorialStepMode(step)!==TUTORI
 function tutorialStepAcceptsTargetAction(step){
   return tutorialStepMode(step)===TUTORIAL_STEP_MODE.TARGET_ACTION&&Boolean(step?.target);
 }
+function normalizeTutorialDialogue(step){
+  if(step.dialogue===undefined)return step.choices===undefined?{dialogue:null,choices:null}:null;
+  // Keep side effects and real-screen operations in separate steps. A page
+  // turn must never execute a contract, grant a reward or complete an action.
+  if(tutorialStepRequiresAction(step)||step.target||step.input||step.transition||step.waitForEvent||step.continueAt)return null;
+  if(!Array.isArray(step.dialogue)||!step.dialogue.length)return null;
+  const dialogue=[];
+  let inherited={speaker:step.speaker||null,portrait:step.portrait||null,scene:step.scene||null};
+  for(const entry of step.dialogue){
+    if(!entry||typeof entry!=='object'||typeof entry.text!=='string'||!entry.text.trim())return null;
+    if(Object.keys(entry).some(key=>!['text','speaker','portrait','scene'].includes(key)))return null;
+    const page={text:entry.text};
+    for(const key of ['speaker','portrait','scene']){
+      if(entry[key]!==undefined&&entry[key]!==null&&typeof entry[key]!=='string')return null;
+      page[key]=entry[key]===undefined?inherited[key]:entry[key]||null;
+    }
+    inherited=page;
+    dialogue.push(Object.freeze(page));
+  }
+  let choices=null;
+  if(step.choices!==undefined){
+    if(!Array.isArray(step.choices)||step.choices.length<2||step.choices.length>4)return null;
+    const ids=new Set();choices=[];
+    for(const choice of step.choices){
+      if(!choice||typeof choice.id!=='string'||!choice.id.trim()||ids.has(choice.id)
+        ||typeof choice.label!=='string'||!choice.label.trim()||choice.nextStepId!==undefined)return null;
+      ids.add(choice.id);choices.push(Object.freeze({id:choice.id,label:choice.label}));
+    }
+    choices=Object.freeze(choices);
+  }
+  return {dialogue:Object.freeze(dialogue),choices};
+}
 function normalizeTutorialStep(step,index){
   if(!step||typeof step!=='object'||(step.advanceOnTarget===true&&step.externalAdvance===true))return null;
   const id=typeof step.id==='string'&&step.id?step.id:`step_${index+1}`;
   const mode=inferTutorialStepMode(step);
   const target=typeof step.target==='string'&&step.target?step.target:null;
   if(mode===TUTORIAL_STEP_MODE.TARGET_ACTION&&!target)return null;
+  const dialogue=normalizeTutorialDialogue(step);
+  if(!dialogue)return null;
   return Object.freeze({
     id,
     mode,
+    ...dialogue,
     speaker:typeof step.speaker==='string'&&step.speaker?step.speaker:null,
     portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
     scene:typeof step.scene==='string'&&step.scene?step.scene:null,
@@ -253,6 +290,34 @@ function tutorialResolvedText(step){
   const playerName=typeof currentTutorialState==='function'?currentTutorialState().playerName:null;
   return String(step?.text||'').replaceAll('{{playerName}}',playerName||'契約者');
 }
+function tutorialDialogueView(step){
+  if(tutorialDialogueState.step!==step){
+    tutorialDialogueState.step=step;tutorialDialogueState.page=0;
+    tutorialDialogueState.renderToken+=1;
+  }
+  const page=step?.dialogue?.[tutorialDialogueState.page];
+  return page?{...step,...page}:step;
+}
+function tutorialDialogueHasMore(step){
+  return Boolean(step?.dialogue&&tutorialDialogueState.page<step.dialogue.length-1);
+}
+function tutorialDialogueNeedsChoice(step){return Boolean(step?.choices&&!tutorialDialogueHasMore(step));}
+function renderTutorialDialogueChoices(step){
+  const root=document.getElementById('tutorialDialogueChoices');
+  const token=++tutorialDialogueState.renderToken;
+  if(!root?.replaceChildren)return;
+  root.replaceChildren();root.hidden=!tutorialDialogueNeedsChoice(step);
+  if(root.hidden)return;
+  for(const choice of step.choices){
+    const button=document.createElement('button');
+    button.type='button';button.textContent=tutorialResolvedText({text:choice.label});
+    button.addEventListener('click',()=>{
+      if(token!==tutorialDialogueState.renderToken||tutorialUiState.steps[tutorialUiState.index]!==step)return;
+      tutorialNext(false,choice.id);
+    });
+    root.appendChild(button);
+  }
+}
 function renderTutorialStoryStep(step){
   const overlay=document.getElementById('tutorialOverlay');
   const backdrop=document.getElementById('tutorialStoryBackdrop');
@@ -261,6 +326,7 @@ function renderTutorialStoryStep(step){
   const story=Boolean(step?.scene||step?.portrait);
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
   overlay?.classList.toggle('is-story-step',story);
+  overlay?.classList.toggle('is-dialogue-pages',Boolean(step?.dialogue));
   // Full-body portraits support narrative dialogue, but they obscure the game
   // screen when the current step is explaining or highlighting a real UI target.
   // In UI-guide steps the speaker name remains in the bubble and the target wins.
@@ -425,7 +491,8 @@ function renderTutorialStep(){
   const overlay=document.getElementById('tutorialOverlay');
   const bubble=document.getElementById('tutorialBubble');
   if(!overlay||!bubble)return;
-  renderTutorialStoryStep(step);
+  const view=tutorialDialogueView(step);
+  renderTutorialStoryStep(view);
   bubble.scrollTop=0;
   clearTutorialTarget();
   tutorialUiState.target=step.target?document.querySelector(step.target):null;
@@ -433,8 +500,9 @@ function renderTutorialStep(){
   ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
-  document.getElementById('tutorialTitle').textContent=step.speaker||step.title;
-  document.getElementById('tutorialText').textContent=tutorialResolvedText(step);
+  document.getElementById('tutorialTitle').textContent=tutorialResolvedText({text:view.speaker||step.title});
+  document.getElementById('tutorialText').textContent=tutorialResolvedText(view);
+  renderTutorialDialogueChoices(step);
   const nameForm=document.getElementById('tutorialNameForm');
   const nameInput=document.getElementById('tutorialPlayerNameInput');
   if(nameForm)nameForm.hidden=step.input!=='player_name';
@@ -448,7 +516,7 @@ function renderTutorialStep(){
   const next=document.getElementById('tutorialNextButton');
   const actions=next?.closest('.tutorial-actions');
   const requiresAction=tutorialStepRequiresAction(step);
-  back.disabled=tutorialElnaContractBusy||tutorialUiState.index===0||step.disableBack;
+  back.disabled=tutorialElnaContractBusy||(tutorialUiState.index===0&&tutorialDialogueState.page===0)||step.disableBack;
   if(dialogueSkip){
     dialogueSkip.hidden=tutorialDialogueSkipTargetIndex()<0;
     dialogueSkip.disabled=tutorialElnaContractBusy;
@@ -456,9 +524,9 @@ function renderTutorialStep(){
   skip.disabled=tutorialElnaContractBusy;
   document.querySelector('.tutorial-pause')?.toggleAttribute('disabled',tutorialElnaContractBusy);
   skip.textContent=tutorialUiState.persist?'全体スキップ':'閉じる';
-  next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
-  next.hidden=requiresAction;
-  next.disabled=requiresAction||tutorialElnaContractBusy;
+  next.textContent=tutorialDialogueHasMore(step)?'次へ':step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
+  next.hidden=requiresAction||tutorialDialogueNeedsChoice(step);
+  next.disabled=requiresAction||tutorialElnaContractBusy||tutorialDialogueNeedsChoice(step);
   actions?.classList.toggle('is-target-action',requiresAction);
   actions?.classList.toggle('is-name-entry',step.input==='player_name');
   overlay.classList.remove('hidden');
@@ -498,8 +566,13 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}=
   return true;
 }
 function tutorialPrevious(){
-  if(tutorialElnaContractBusy||!tutorialUiState.active||tutorialUiState.index<=0)return;
+  if(tutorialElnaContractBusy||!tutorialUiState.active||Date.now()<tutorialDialogueState.lockedUntil)return;
   if(tutorialUiState.steps[tutorialUiState.index]?.disableBack)return;
+  if(tutorialDialogueState.page>0){
+    tutorialDialogueState.page-=1;tutorialDialogueState.lockedUntil=Date.now()+250;
+    tutorialUiState.lastFocusedStep=null;renderTutorialStep();return;
+  }
+  if(tutorialUiState.index<=0)return;
   tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
 function tutorialLinkedStepIndex(index){
@@ -512,7 +585,7 @@ function tutorialLinkedStepIndex(index){
 function tutorialDialogueSkipTargetIndex(){
   if(!tutorialUiState.active)return -1;
   const current=tutorialUiState.steps[tutorialUiState.index];
-  if(!current||tutorialStepRequiresAction(current)||current.transition||current.input||current.waitForEvent||current.continueAt)return -1;
+  if(!current||current.choices||tutorialStepRequiresAction(current)||current.transition||current.input||current.waitForEvent||current.continueAt)return -1;
   let index=tutorialUiState.index;
   const visited=new Set([index]);
   while(visited.size<=tutorialUiState.steps.length){
@@ -520,13 +593,13 @@ function tutorialDialogueSkipTargetIndex(){
     if(nextIndex<0||visited.has(nextIndex))return -1;
     visited.add(nextIndex);
     const next=tutorialUiState.steps[nextIndex];
-    if(tutorialStepRequiresAction(next)||next.transition||next.input||next.waitForEvent||next.continueAt||nextIndex===tutorialUiState.steps.length-1)return nextIndex;
+    if(next.choices||tutorialStepRequiresAction(next)||next.transition||next.input||next.waitForEvent||next.continueAt||nextIndex===tutorialUiState.steps.length-1)return nextIndex;
     index=nextIndex;
   }
   return -1;
 }
 function skipTutorialDialogue(){
-  if(tutorialElnaContractBusy||!tutorialUiState.active)return false;
+  if(tutorialElnaContractBusy||!tutorialUiState.active||Date.now()<tutorialDialogueState.lockedUntil)return false;
   const nextIndex=tutorialDialogueSkipTargetIndex();
   if(nextIndex<0)return false;
   tutorialUiState.index=nextIndex;tutorialUiState.lastFocusedStep=null;
@@ -581,9 +654,21 @@ function tutorialShouldUseReplayNextStep(step){
   }
   return false;
 }
-function tutorialNext(actionCompleted=false){
+function tutorialNext(actionCompleted=false,choiceId=null){
   if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
+  if(actionCompleted!==true&&Date.now()<tutorialDialogueState.lockedUntil)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.dialogue){
+    tutorialDialogueView(step);
+    if(Date.now()<tutorialDialogueState.lockedUntil)return;
+    if(tutorialDialogueHasMore(step)){
+      if(choiceId!==null)return;
+      tutorialDialogueState.page+=1;tutorialDialogueState.lockedUntil=Date.now()+250;
+      tutorialUiState.lastFocusedStep=null;renderTutorialStep();return;
+    }
+    if(step.choices&&!step.choices.some(choice=>choice.id===choiceId))return;
+    tutorialDialogueState.lockedUntil=Date.now()+250;
+  }
   if(step?.input==='elna_contract'&&actionCompleted!==true){void confirmTutorialElnaContract();return;}
   if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return;
   if(!tutorialStepCanAdvance(step))return;
@@ -689,6 +774,9 @@ function clearTutorialUi(){
   tutorialUiState.active=false;tutorialUiState.flowId=null;tutorialUiState.steps=[];
   tutorialUiState.index=0;tutorialUiState.persist=false;tutorialUiState.replay=false;
   tutorialUiState.returnScreen=null;tutorialUiState.previousFocus=null;tutorialUiState.lastFocusedStep=null;tutorialUiState.advancePendingStepId=null;
+  tutorialDialogueState.step=null;tutorialDialogueState.page=0;tutorialDialogueState.lockedUntil=0;tutorialDialogueState.renderToken+=1;
+  const choices=document.getElementById('tutorialDialogueChoices');
+  if(choices){choices.hidden=true;choices.replaceChildren?.();}
   previousFocus?.focus?.({preventScroll:true});
 }
 

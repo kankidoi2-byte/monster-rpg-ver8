@@ -44,6 +44,7 @@ const dialogueEnd=tutorial.indexOf('function tutorialStepCanAdvance',dialogueSta
 assert.ok(dialogueStart>=0&&dialogueEnd>dialogueStart);
 const dialogueContext=vm.createContext({
   tutorialElnaContractBusy:false,
+  tutorialDialogueState:{lockedUntil:0},
   tutorialUiState:{active:true,index:0,replay:false,lastFocusedStep:null,steps:[
     {id:'intro',mode:'dialogue',nextStepId:null,replayNextStepId:null},
     {id:'story',mode:'dialogue',nextStepId:'name',replayNextStepId:null},
