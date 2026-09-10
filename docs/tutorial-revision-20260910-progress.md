@@ -8,13 +8,14 @@ Updated: 2026-09-10
 - Phase 2 of 12: complete (implementation, local tests, browser checks and implementation CI verified).
 - Phase 3: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
-- Phase 5: implementation and local verification complete; implementation CI and completion handoff pending.
+- Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
+- Next: Phase 6. No execution remains active after this completion handoff.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 6 through 12: pending. Finish Phase 5 CI handoff before continuing; do not repeat completed work.
+- Phases 6 through 12: pending. Resume Phase 6; do not repeat completed work.
 
 ## Evidence from the public repository
 
@@ -35,7 +36,7 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Finish Phase 5 CI confirmation if still pending, then implement Phase 6: actual Stella battle, victory/defeat/retry and the following connection.
+4. Refresh latest head checks, then implement Phase 6: actual Stella battle, victory/defeat/retry and the following connection.
 5. Preserve completed opening/contract/reward and capital/skill preparation behavior. Phase 6 must replace the remaining legacy practice battle without requiring a specific element or advantageous hit.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
@@ -104,7 +105,8 @@ Updated: 2026-09-10
 
 ## Phase 5 implementation record
 
-- Implementation commit and CI: pending publication/observation in this execution.
+- Implementation commit: `e020f20aa471bf2c7a26429001af02a3c75fe775`.
+- Implementation CI: https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/34448451400 — completed/success observed 2026-09-10. Completion-record follow-up changes documentation only.
 - Refreshed the read-only source (modified 2026-09-09T13:44:38.697Z), main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, open/mergeable PR #178, preceding completion-head CI and main Validate/Pages at execution start. No source-document edits or transcript exports.
 - Added road conversation and two converging choices, then capital arrival/collision and skill preparation. Scene persists between speakers and changes at arrival. Gnosis handles the skill/attribute explanation. Updated episode label, unreleased notice and affected cache keys.
 - Added only `stella_road_response` as a conversation checkpoint. Existing entry, skill, facility and episode IDs remain available; save fields, schema/tutorial versions and `mb_v95c` are unchanged. New route bypasses the old pre-collision academy visit; its facility handlers remain supported for legacy entry paths.
