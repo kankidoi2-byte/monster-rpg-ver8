@@ -91,8 +91,8 @@ function renderSkillButtons(){
   const moves = getEquippedMovesForInstance(activeInstance);
   const el = document.getElementById('commands');
   if (!el) return;
-  const rescueBasicAttack=typeof isTutorialRescueBattleActive==='function'&&isTutorialRescueBattleActive()
-    ? '<button onclick="turn(-1)" data-tutorial-normal-attack class="skill-button normal" aria-label="通常攻撃、威力24、COST 0"><span>無属性</span><strong>通常攻撃</strong><small>威力 24 / COST 0</small></button>'
+  const rescueBasicAttack=(typeof isTutorialRescueBattleActive==='function'&&isTutorialRescueBattleActive())||(typeof isTutorialStellaMockBattleActive==='function'&&isTutorialStellaMockBattleActive())
+    ? '<button onclick="turn(-1)" data-tutorial-normal-attack data-tutorial-stella-advantage class="skill-button normal" aria-label="通常攻撃、威力24、COST 0"><span>無属性</span><strong>通常攻撃</strong><small>威力 24 / COST 0</small></button>'
     : '';
   el.innerHTML = rescueBasicAttack + moves.map((mv,i) => {
     const power = Number(mv[1]) || 0;

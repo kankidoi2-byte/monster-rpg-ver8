@@ -37,7 +37,7 @@ const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
   materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])
 });
 const TUTORIAL_STELLA_SKILL_ID='skill_elna_middle_01';
-const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'grassland',enemyId:'grassbeat',difficultyId:'easy',actorId:'freigal'});
+const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'easy'});
 const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
   recipeId:'galdra_standard',displayName:'ルミナの入門錬成',resultId:'galdra',
   coinOptionId:'high',coins:250,
@@ -1002,22 +1002,24 @@ function startTutorialStellaMockBattle(){
     if(!request)throw new Error('stella_mock_request_missing');
     partyBattle=[];
     startChosenBattle(TUTORIAL_STELLA_MOCK.mapId,TUTORIAL_STELLA_MOCK.enemyId,TUTORIAL_STELLA_MOCK.difficultyId,request.requestId);
-    const ready=activeScreenId()==='battle'&&tutorialMonsterInLineage(player?.id,TUTORIAL_STELLA_MOCK.actorId)&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
+    const ready=activeScreenId()==='battle'&&player?.id&&partyBattle.length>0&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
     if(!ready)throw new Error('stella_mock_battle_not_ready');
+    const log=document.getElementById('log');
+    if(log)log.textContent='王都でステラとの戦闘が始まった！';
     return true;
   }catch(error){
-    console.error('ステラ模擬戦を開始できませんでした。',error);
+    console.error('ステラとの戦闘を開始できませんでした。',error);
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;
     partyBattle=[];
-    if(typeof showUiNotice==='function')showUiNotice('模擬戦を開始できませんでした。もう一度お試しください。','warning');
+    if(typeof showUiNotice==='function')showUiNotice('ステラとの戦闘を開始できませんでした。もう一度お試しください。','warning');
     return false;
   }finally{
     tutorialTransitionBusy=false;
   }
 }
+// Historical hook/DOM names remain compatible; every selectable move is valid.
 function isTutorialStellaMockAdvantageMove(move,actor=typeof activeInstance!=='undefined'?activeInstance:null,target=typeof enemy!=='undefined'?enemy:null){
-  if(!isTutorialStellaMockBattleActive()||!tutorialMonsterInLineage(actor?.id,TUTORIAL_STELLA_MOCK.actorId)||target?.id!==TUTORIAL_STELLA_MOCK.enemyId)return false;
-  return Number(move?.[1])>0&&moveTypes(move).includes('fire')&&typeEff(moveTypes(move),target.types)>1;
+  return isTutorialStellaMockBattleActive()&&Array.isArray(move)&&Boolean(actor?.id)&&target?.id===TUTORIAL_STELLA_MOCK.enemyId;
 }
 function completeTutorialStellaMockVictory(){
   if(!isTutorialStellaMockBattleActive())return false;
@@ -1025,13 +1027,10 @@ function completeTutorialStellaMockVictory(){
   if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();
   if(typeof completeBattleTurn==='function')completeBattleTurn();
   eHp=0;pStatus=null;eStatus=null;pPoisonTurns=0;ePoisonTurns=0;
-  const cleared=tutorialBattleSession.advantageUsed===true;
   const log=document.getElementById('log');
-  if(log)log.innerHTML=cleared?'🔥 炎属性の技が効果抜群！<br><b>属性模擬戦に勝利した！</b>':'相性を確かめる前に模擬戦が終わった。もう一度、炎属性の技を試そう！';
-  if(typeof showBattleOutcome==='function')showBattleOutcome(cleared
-    ?{kind:'victory',title:'属性模擬戦クリア',note:'模擬戦のため通常報酬はありません。'}
-    :{kind:'retreat',title:'相性をもう一度確認',note:'フレイガルの炎属性の技を使って再挑戦しよう。'});
-  handleTutorialBattleOutcome(cleared?'victory':'error');
+  if(log)log.innerHTML='<b>ステラに勝利した！</b>';
+  if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'victory',title:'ステラに勝利',note:'この戦闘では通常の討伐報酬・契約判定は発生しません。'});
+  handleTutorialBattleOutcome('victory');
   busy=true;
   return true;
 }
@@ -1583,7 +1582,7 @@ function handleTutorialBattleAction(action,details={}){
   if(isTutorialStellaMockBattleActive()){
     const currentStep=tutorialCurrentStepId();
     if(action==='skill_panel_opened'&&currentStep==='stella_mock_skill_open')return queueTutorialActionAdvance(currentStep);
-    if(action==='skill'&&currentStep==='stella_mock_advantage'&&isTutorialStellaMockAdvantageMove(details.move,details.actor,details.target)){
+    if(['skill','normal_attack'].includes(action)&&currentStep==='stella_mock_advantage'&&isTutorialStellaMockAdvantageMove(details.move,details.actor,details.target)){
       tutorialBattleSession.advantageUsed=true;
       return queueTutorialActionAdvance(currentStep);
     }
@@ -1610,9 +1609,9 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   const rescue=tutorialBattleSession.kind==='elna_rescue';
   const stellaMock=tutorialBattleSession.kind==='stella_mock';
   if(stellaMock){
-    const cleared=kind==='victory'&&tutorialBattleSession.advantageUsed===true;
+    const cleared=kind==='victory';
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
-    setTutorialStep(cleared?'lumina_intro':'stella_mock_battle');
+    setTutorialStep(cleared?'stella_mock_victory':'stella_mock_battle');
     if(typeof saveGame==='function')saveGame();
     if(typeof endPartyRecovery==='function')endPartyRecovery();
     resumeTutorialMainFlowAfterEvent(cleared?'stella_mock_victory':'stella_mock_retry',tutorial.replaying);
@@ -1798,13 +1797,13 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_more_open',screenId:'skillEdit',target:'[data-nav="more"]',advanceOnTarget:true,title:'属性表を見よう',text:'ここを押すと、属性相性を確認できるメニューへ進めるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_type_chart_open',screenId:'moreMenu',target:'#typeChartButton',advanceOnTarget:true,title:'属性相性',text:'ここを押すと、どの属性が有利か確認できるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪がある。矢印の向きを見れば有利属性が分かるぞ！',progressLabel:'ATTRIBUTE'},
-  {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'次は相性を試そう',text:'装備できたね！ 森属性のグラスビートを用意したよ。炎属性が有利なことを実戦で確かめよう！',progressLabel:'STELLA',nextLabel:'模擬戦へ'},
-  {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'炎は森に有利',text:'相手は森属性のグラスビート、先頭は炎属性のフレイガル。炎属性の技なら効果抜群だよ！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'技を開こう',text:'ここを押すと、フレイガルの技を選べるぞ！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_advantage',screenId:'battle',target:'[data-tutorial-stella-advantage]',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'炎属性で攻撃',text:'炎属性の技を押して、効果抜群のダメージを確かめよう！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'効果抜群！',text:'今のが有利属性だよ！ あとは自由に戦って、グラスビートを倒してみよう！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_victory',screenId:'battle',persistAs:'lumina_intro',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'属性模擬戦クリア！',text:'ばっちり！ 相手の属性を見て、有利な技を選べば戦いを有利に進められるよ！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
-  {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'模擬戦を再開しよう',text:'進行は失われていないぞ！ 「依頼を選び直す」を押して、炎属性の技をもう一度試そう！',progressLabel:'RETRY'},
+  {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'あの魔法使いと戦おう',text:'装備できたな！ そしたらさっそくあの魔法使いと戦うぞ！',progressLabel:'STELLA',nextLabel:'戦闘へ'},
+  {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'魔法使いとの対決',text:'準備はできた？ 私の魔法でコテンパンにしてあげる！',progressLabel:'BATTLE'},
+  {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'仲間の技を選ぼう',text:'攻撃を開くと、今戦っている仲間の技を選べるぞ！',progressLabel:'BATTLE'},
+  {id:'stella_mock_advantage',screenId:'battle',target:'[data-tutorial-stella-advantage]',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'使う技を決めよう',text:'使いたい技を選んで、あの魔法使いを攻撃しよう！',progressLabel:'BATTLE'},
+  {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'仲間の力で戦おう',text:'よし、その調子だ！ 仲間の交代や技を使いながら、あの魔法使いに立ち向かうぞ！',progressLabel:'BATTLE'},
+  {id:'stella_mock_victory',screenId:'battle',persistAs:'stella_mock_victory',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'魔法使いに勝利！',text:'よし、勝ったぞ！ やったな、{{playerName}}！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
+  {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'魔法使いに再挑戦',text:'進行は失われていないぞ！ 仲間の編成や技を確認して、もう一度あの魔法使いに挑もう！',progressLabel:'RETRY'},
   {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',nextStepId:'lumina_world_map_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
   {id:'lumina_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'lumina_intro',disableBack:true,title:'もう一度、世界地図へ',text:'ルミナの錬成工房も王都にある。下の「バトル」を押して、世界地図から向かおう！',progressLabel:'WORLD MAP'},
   {id:'lumina_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,persistAs:'lumina_intro',disableBack:true,title:'魔導学園の工房へ',text:'王都の魔導学園を押そう。学園に併設された錬成工房で、ルミナが待っているぞ！',progressLabel:'WORLD MAP'},

@@ -9,13 +9,13 @@ Updated: 2026-09-10
 - Phase 3: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 4: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
 - Phase 5: complete (implementation, local checks, browser checks, repairs and implementation CI verified).
-- Phase 6: active in the user-requested execution; implementation, testing and completion handoff in progress. Do not duplicate this work.
+- Phase 6: implemented; final verification and implementation CI handoff active.
 - Runtime implementation: dialogue infrastructure, opening/rescue and contract/preparation/reward integration in this Draft PR. Production remains unchanged.
 - Branch: `feat/tutorial-revision-20260910-public`.
 - Pull request: https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178 (Draft).
 - Phase-one handoff commit: `2f9db294355fc25b2af7b21837b3095c0f5686ae`; use the latest remote head for resumption.
 - Baseline: `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`.
-- Phases 6 through 12: pending. Resume Phase 6; do not repeat completed work.
+- Phases 7 through 12: pending. Finish Phase 6 handoff, then resume Phase 7.
 
 ## Evidence from the public repository
 
@@ -36,8 +36,8 @@ Updated: 2026-09-10
 1. Refresh main, this branch, its PR, CI and applicable AGENTS instructions. Do not assume this recorded baseline is still current.
 2. Consult the user's task and privately retained requirements before implementation. Do not export private source documents or detailed source-derived specifications into this public repository.
 3. Resume this same branch. Do not publish the local rejected source-snapshot branch or cherry-pick its commits.
-4. Refresh latest head checks, then implement Phase 6: actual Stella battle, victory/defeat/retry and the following connection.
-5. Preserve completed opening/contract/reward and capital/skill preparation behavior. Phase 6 must replace the remaining legacy practice battle without requiring a specific element or advantageous hit.
+4. Refresh latest head checks and finish Phase 6 CI handoff if needed, then implement Phase 7: pursuit through the academy and workshop conversation.
+5. Preserve completed opening/contract/reward and capital/skill preparation behavior. Phase 7 must replace the old workshop introduction while preserving the completed Stella battle and chapter checkpoints.
 6. Use `docs/tutorial-dialogue-pages.md`; action/input steps cannot contain dialogue pages. Do not reinsert explanations removed from the source.
 7. Run focused compatibility checks and `npm run check`, review the diff, commit/push and record outcomes. Do not merge this incomplete tutorial revision.
 
@@ -115,3 +115,17 @@ Updated: 2026-09-10
 - Added dynamic checks for both answers, mandatory choice, scene change, checkpoint resume and skip stopping before the card transaction. Historical step-count and route assertions were updated; legacy facility and transaction coverage retained.
 - `npm run check` including postcheck passed; `git diff --check` passed. Chromium 140 at 360x640 and 844x390 verified both answers, Back, speaker/scene continuity, response and skill checkpoints, one-time card receipt, actual skill equipment and attribute-chart actions. Opening/rescue browser smoke also passed both viewports (title/name/map/actions, retry, victory, save/reload). No physical Android/Chromebook verification or production publication is claimed.
 - Phase 6 owns replacement of the still-existing legacy practice battle and its instructions. Do not merge or publish this intermediate revision. No new unresolved story-setting question was introduced in this phase.
+
+
+## Phase 6 implementation record
+
+- Implementation commit and CI: pending publication/observation in this execution.
+- Read latest source (modified 2026-09-09T13:44:38.697Z), refreshed main `fbf802a9a0a3e8b50bb6149221b254abf1f74cee`, PR #178 open/mergeable, latest completion-head CI and main Validate/Pages success. Direct production HTTP probe did not complete in this environment; no new live-game verification is claimed. Source document remains unchanged.
+- Replaced the scripted Grassbeat practice opponent with existing character `stella_apprentice`, including existing combat art/moves. Reused capital/academy map metadata with a capital-specific start log; this is a scripted encounter, not a change to random Easy encounter eligibility.
+- Uses Easy level-one scaling (0.85 HP and attack), forced single battle, no invasion/second enemy and no usual hunt reward or contract settlement. Ordinary encounters, character data and starter records are unchanged.
+- Any selected skill or normal attack advances guidance, regardless of element, effectiveness or actor. Added the existing neutral normal-attack button to this battle so empty/support-only equipment cannot block damage. Historical internal hook/DOM names remain compatible; they no longer impose an advantage check.
+- Any actual victory clears the battle, including a win without using a skill. Defeat/retreat/error lead to retry. Interruption restarts the existing battle checkpoint. Victory now persists `stella_mock_victory` until its conversation finishes, then continues to existing `lumina_intro`; old saves already at Lumina are not rewound. No save schema/version, fields, entity IDs or `mb_v95c` changes; no migration added.
+- Updated battle/start/victory/retry dialogue and speakers, notice and affected asset cache keys. Source sections after the victory boundary remain for Phase 7.
+- Updated focused tests for person identity, unrestricted neutral/support/other-actor moves, no rewards, outcomes without an advantageous action, duplicate outcome rejection, interruption/checkpoint compatibility and full journey. Prior mock-specific assertions were replaced by the authorized rules; unrelated gates remain.
+- Chromium 140: 360x640 and 844x390 passed actual start, battle reload, neutral normal attack, deterministic defeat, UI retry, natural neutral-only victory (four attacks in each observed run), unchanged inventory/contracts and victory reload/next episode. Enemy HP was not edited for winning; these two observed runs are bounded difficulty evidence, not exhaustive balance or physical-device verification.
+- `npm run check` including postcheck and `git diff --check` passed. Opening/rescue regression browser passed both viewports (title/name/map/actor/attacks, defeat/retry, victory, save/reload) after the shared skill-button change. No new major story ambiguity was introduced. Next: Phase 7. Do not merge or publish before all phases/release gates complete.

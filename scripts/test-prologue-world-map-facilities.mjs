@@ -21,7 +21,7 @@ assertOrdered(['stella_mock_victory','lumina_intro','lumina_world_map_open','lum
 
 assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_intro'[^\n]+chapterBreak:true/,
   'the published request-to-Stella chapter checkpoint must remain intact');
-assert.match(main,/id:'stella_mock_victory'[^\n]+persistAs:'lumina_intro'[^\n]+nextStepId:'lumina_intro'[^\n]+chapterBreak:true/,
+assert.match(main,/id:'stella_mock_victory'[^\n]+persistAs:'stella_mock_victory'[^\n]+nextStepId:'lumina_intro'[^\n]+chapterBreak:true/,
   'the published Stella-to-Lumina chapter checkpoint must remain intact');
 assert.match(main,/id:'stella_intro'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_road_response'[^\n]+scene:'grassland'/,
   'the existing Stella checkpoint must lead into the road and capital conversation');

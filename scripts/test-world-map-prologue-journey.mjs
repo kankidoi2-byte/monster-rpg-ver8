@@ -56,6 +56,7 @@ const monsters=[
   {id:'aquaron',types:['water'],moves:[['水撃',30,'water']]},
   {id:'elna_beginner',types:['normal'],moves:[['斬撃',20,'normal']]},
   {id:'slime',types:['normal'],rarity:'★',moves:[['体当たり',10,'normal']]},
+  {id:'stella_apprentice',types:['star','light'],rarity:'★★',moves:[['星屑弾',30,'star']]},
   {id:'grassbeat',types:['grass'],rarity:'★',moves:[['葉撃',10,'grass']]},
   {id:'galdra',types:['normal'],rarity:'★',moves:[['核撃',10,'normal']]}
 ];
@@ -204,7 +205,7 @@ while(state().status==='in_progress'){
     }
     case 'stella_mock_skill_open': assert.equal(run("handleTutorialBattleAction('skill_panel_opened')"),true);flushTimers();break;
     case 'stella_mock_advantage':
-      assert.equal(run("handleTutorialBattleAction('skill',{move:['炎撃',30,'fire'],actor:activeInstance,target:enemy})"),true);flushTimers();break;
+      assert.equal(run("handleTutorialBattleAction('skill',{move:['斬撃',20,'normal'],actor:activeInstance,target:enemy})"),true);flushTimers();break;
     case 'stella_mock_free':
       run('tutorialNext()');
       assert.equal(run("handleTutorialBattleOutcome('victory')"),true);flushTimers();
