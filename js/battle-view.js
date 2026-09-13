@@ -234,6 +234,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   if(typeof captureBattleLog==='function')captureBattleLog();
   if(typeof battleFeedback!=='undefined'){battleFeedback.finished=true;refreshBattleFeedback();}
   const victory = kind === 'victory';
+  if(victory&&typeof BattleAudio!=='undefined')BattleAudio.victory();
   const labels = {
     victory:['BATTLE CLEAR','★'], defeat:['BATTLE LOST','×'], retreat:['RETREAT','↩']
   };
