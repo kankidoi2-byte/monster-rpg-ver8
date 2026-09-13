@@ -388,7 +388,7 @@ function win() {
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
   saveGame();
-  document.getElementById('log').innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
+  document.getElementById('log').innerHTML = msg;
   // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）
   showBattleOutcome({
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
@@ -397,7 +397,7 @@ function win() {
   });
   const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
   if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
-  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
+  busy = true;
   renderParty();
   // The prologue resumes its next guide immediately after a tutorial battle.
   // Do not let an automatic evolution screen replace that resumed guide.

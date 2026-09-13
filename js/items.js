@@ -304,7 +304,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
   singleBattleContractAttempted = true;
 
   show('battle');
-  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
+  busy = true;
 
   if(ok){
     pStatus = null; eStatus = null;
@@ -318,7 +318,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
       ? commitTutorialFirstContract(itemId,enemy)
       : addInstance(enemy.id);
     if(!joinedInstance){
-      singleBattleContractAttempted=false;busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();
+      singleBattleContractAttempted=false;busy=false;
       if(typeof showUiNotice==='function')showUiNotice('契約状態を保存できませんでした。もう一度お試しください。','error');
       show('contractConfirm');
       return;
@@ -331,9 +331,9 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
     updateItems();
     renderParty();
     renderDex();
-    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}🤝 ${it.name}を使い、${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！`;if(typeof captureBattleLog==='function')captureBattleLog();
+    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}🤝 ${it.name}を使い、${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！`;
     refreshContractScrollDisplay();
-    busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
+    busy = false;
     show('battle');
     renderSingleBattleContractPanel();
     if(guaranteed&&typeof handleTutorialContractAnimationComplete==='function')handleTutorialContractAnimationComplete();
@@ -342,10 +342,10 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
 
   saveGame();
   await playContractAnimation({monsterName:enemy.name, stage:animationStage});
-  if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}📜 ${it.name}を使ったが、${enemy.name}との契約には失敗した……`;if(typeof captureBattleLog==='function')captureBattleLog();
+  if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}📜 ${it.name}を使ったが、${enemy.name}との契約には失敗した……`;
   updateItems();
   refreshContractScrollDisplay();
-  busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
+  busy = false;
   show('battle');
   renderSingleBattleContractPanel();
 }

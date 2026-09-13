@@ -231,6 +231,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   if (!battle || !outcome) return;
+  if(typeof captureBattleLog==='function')captureBattleLog();
   if(typeof battleFeedback!=='undefined'){battleFeedback.finished=true;refreshBattleFeedback();}
   const victory = kind === 'victory';
   const labels = {
