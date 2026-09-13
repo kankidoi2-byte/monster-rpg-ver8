@@ -579,3 +579,16 @@ body:has(#home.active):not(.title-mode) .app-topbar{height:58px;min-height:58px}
 
 #skillEdit.ui-screen-enter{animation:none}
 body:has(#skillEdit.active) .tutorial-bubble{transition:none}
+
+/* One duration source for contact timing, including pseudo-elements and shared families. */
+.battle-skill-cast,.battle-charge-cast,
+.battle-skill-motion,.battle-skill-motion::before,.battle-skill-motion::after,
+.battle-melee-motion,.battle-melee-motion::before,.battle-melee-motion::after,
+.battle-impact-motion,.battle-impact-motion::before,.battle-impact-motion::after,
+.battle-anatomy-motion,.battle-anatomy-motion::before,.battle-anatomy-motion::after,
+.battle-arcane-motion,.battle-arcane-motion::before,.battle-arcane-motion::after,
+.battle-support-motion,.battle-support-motion::before,.battle-support-motion::after{animation-duration:var(--skill-duration)!important}
+.battle-support-motion.is-debuff{animation:battleMeleeFade .36s ease-out forwards}
+.battle-support-motion.is-debuff::before{inset:3% 24%;clip-path:polygon(30% 0,70% 0,70% 56%,100% 56%,50% 100%,0 56%,30% 56%);background:linear-gradient(var(--skill-color),var(--skill-color-secondary) 62%,#fff);filter:drop-shadow(0 0 7px var(--skill-color));animation:battleDebuffFall .36s ease-out forwards}
+@keyframes battleDebuffFall{0%{opacity:0;transform:translateY(-28%) scale(.45)}48%{opacity:1;transform:translateY(4%) scale(1.08)}100%{opacity:0;transform:translateY(38%) scale(.8)}}
+@media(prefers-reduced-motion:reduce){.battle-element-flash{display:none}.battle-support-motion.is-debuff,.battle-support-motion.is-debuff::before{animation:none}}

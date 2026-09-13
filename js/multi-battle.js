@@ -12,6 +12,7 @@ function ensureMultiBattleDom() {
 }
 
 function setMultiBattleLayout(active) {
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   const battleScreen = document.getElementById('battle');
   if (battleScreen) battleScreen.classList.toggle('is-multi-battle', !!active);
 }
@@ -246,29 +247,29 @@ async function performMultiAttack(actor,target,move) {
     battleHistoryEntry(battleFeedback.action,'target');renderBattleInputState();
   }
   const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
-  const supportTargetId=effect==='sleep'?impactTargetId:sourceId;
-  const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,move):false;
-  if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return {animated:supportAnimated}; }
+  const supportTargetId=['sleep','debuff'].includes(effect)?impactTargetId:sourceId;
+  const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,move,{untilImpact:true}):false;
+  if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated}; }
   if(effect==='heal'){
     const amount=adjustedBattleHealing(24+(actorIsPlayer?(activeInstance?.level||1):1)*3);
     const before=actorIsPlayer?pHp:actor.hp;
     if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+amount);else actor.hp=Math.min(actor.maxHp,actor.hp+amount);
     const healed=(actorIsPlayer?pHp:actor.hp)-before;
     if(typeof battleHpResult==='function')battleHpResult(sourceId,before,actorIsPlayer?pHp:actor.hp,{label:'回復'});
-    appendMultiLog(`💚 ${a.name}はHPを${healed}回復した！`);updateMultiBattleView();return {animated:supportAnimated};
+    appendMultiLog(`💚 ${a.name}はHPを${healed}回復した！`);updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
-  if(effect==='buff'){if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);appendMultiLog(`⬆️ ${a.name}の攻撃力が上がった！`);return {animated:supportAnimated};}
+  if(effect==='buff'){if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);appendMultiLog(`⬆️ ${a.name}の攻撃力が上がった！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
   const targetEntry=defenderIsPlayer?null:target;
-  if(effect==='debuff'){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return {animated:supportAnimated};}
-  if(effect==='aqua_shield'){if(actorIsPlayer)pAquaShield=true;else actor.aquaShield=true;appendMultiLog(`💧 ${a.name}は水の盾を展開した！`);return {animated:supportAnimated};}
+  if(effect==='debuff'){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
+  if(effect==='aqua_shield'){if(actorIsPlayer)pAquaShield=true;else actor.aquaShield=true;appendMultiLog(`💧 ${a.name}は水の盾を展開した！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
   if(effect==='sleep'&&power<=0){
     const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.7):{chance:effectChance??.7,boosted:false};
     const boostMsg=chance.boosted?'<br>⭐ 星運上昇で成功率アップ！':'';
     if(Math.random()<chance.chance){if(defenderIsPlayer)pSleepTurns=2;else targetEntry.sleepTurns=2;appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
-    updateMultiBattleView();return {animated:supportAnimated};
+    updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
-  const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move):false;
-  if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return {animated};}
+  const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true}):false;
+  if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(animated):{animated};}
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
   const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
   const penetration=actorIsPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
@@ -295,11 +296,13 @@ async function performMultiAttack(actor,target,move) {
     const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.3):{chance:effectChance??.3,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
     if(Math.random()<chance.chance){
+    if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
+    if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true});
     const rawSecond=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map));
     const secondBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawSecond):{hpDamage:rawSecond,absorbed:0,barrierRemaining:0};
     const second=secondBarrier.hpDamage;const secondHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
-    if(typeof battleHpResult==='function')battleHpResult(impactTargetId,secondHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:'追加攻撃',damage:second,barrier:secondBarrier.absorbed});
+    if(typeof battleHpResult==='function')battleHpResult(impactTargetId,secondHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:'追加攻撃',damage:second,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});
     msg+=`<br>⚡ 電撃が連鎖した！ 追加で<b>${second}</b>ダメージ！`;
     const secondDefense=kokoroLinkDefenseMessage(secondBarrier);if(secondDefense)msg+=`<br>${secondDefense}`;
     }
@@ -323,7 +326,7 @@ async function performMultiAttack(actor,target,move) {
   if(!defenderIsPlayer&&targetEntry.hp<=0){targetEntry.alive=false;targetEntry.defeatedByPlayer=actorIsPlayer;appendMultiLog(`💀 ${targetEntry.mon.name}は${a.name}に倒された！`);}
   if(!actorIsPlayer&&actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;appendMultiLog(`💀 ${actor.mon.name}は反動で倒れた！`);}
   updateMultiBattleView();
-  if(animated)await battleMotionDelay(120);
+  if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
   return {animated};
 }
 
