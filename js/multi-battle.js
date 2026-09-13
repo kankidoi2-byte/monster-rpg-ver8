@@ -239,6 +239,12 @@ async function performMultiAttack(actor,target,move) {
     if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${a.name}はこんらんして動けない！`);return;}
     if(roll>=.75){const dmg=Math.max(1,Math.floor(12*actor.attack*enemyKokoroLinkAttackMultiplier(actor.id)));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
   }
+  if(typeof battleFeedback!=='undefined'){
+    const label=entry=>entry.kind==='player'?`味方・${player.name}`:`敵${multiBattle.enemies.indexOf(entry)===0?'A':'B'}・${entry.mon.name}`;
+    const selfEffect=['guard','heal','buff','aqua_shield'].includes(effect);
+    battleFeedback.action=`${label(actor)} → ${label(selfEffect?actor:target)}：「${name}」`;
+    battleHistoryEntry(battleFeedback.action,'target');renderBattleInputState();
+  }
   const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
   const supportTargetId=effect==='sleep'?impactTargetId:sourceId;
   const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,move):false;
