@@ -123,6 +123,9 @@ function reconcileBattleNode(node,next){
   if(node.nodeType!==next.nodeType||node.nodeName!==next.nodeName){node.replaceWith(next);return;}
   if(node.nodeType===3){if(node.nodeValue!==next.nodeValue)node.nodeValue=next.nodeValue;return;}
   if(node.nodeType!==1)return;
+  // The motion renderer owns this stable visual's transient classes/styles.
+  // Reconcile it only when the represented artwork actually changes.
+  if(node.classList.contains('multi-enemy-visual')&&node.id===next.id&&node.innerHTML===next.innerHTML)return;
   for(const attr of [...node.attributes])if(!next.hasAttribute(attr.name))node.removeAttribute(attr.name);
   for(const attr of [...next.attributes])if(node.getAttribute(attr.name)!==attr.value)node.setAttribute(attr.name,attr.value);
   const children=[...node.childNodes],incoming=[...next.childNodes];
