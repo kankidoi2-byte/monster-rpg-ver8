@@ -559,3 +559,23 @@ body:has(#home.active):not(.title-mode) .app-topbar{height:58px;min-height:58px}
   #battle.is-multi-battle:has(#commands:not(.hidden)) .battle-combatant img{height:90px!important}
   #battle:has(#commands:not(.hidden)) .battle-hp-result{display:none}
 }
+
+/* Skill loadout: a compact numeric summary below the actual app header. */
+#skillEdit{--skill-header-height:59px;overflow-anchor:none}
+#skillEditTarget{position:sticky;top:var(--skill-header-height);z-index:19;margin:0 -6px 12px;padding:8px 10px;border:1px solid #b9d6e5;border-radius:12px;background:#f4fbff;color:#18314a;box-shadow:0 4px 12px #18314a22;text-align:left}
+.skill-edit-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:800;line-height:1.4}
+.skill-edit-numbers{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:4px;font-variant-numeric:tabular-nums}
+.skill-edit-numbers>span{display:grid;font-size:12px;line-height:1.3}
+.skill-edit-numbers strong{font-size:22px;color:#12639e;white-space:nowrap}
+.skill-edit-numbers small{font-size:14px;color:#405d73}
+#skillEdit .skill-card.is-disabled{opacity:1;filter:saturate(.7)}
+#skillEdit .skill-card .small{color:#d9e5ef}
+#skillEdit .skill-equip-reason{color:#fff0ca;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#skillEdit .skill-card-title{overflow-wrap:anywhere;min-width:0}
+#skillEdit .skill-card button{min-height:44px;white-space:normal}
+#skillEdit .skill-card button:disabled{opacity:1;background:#3b4653;color:#e8edf3}
+#skillEdit .skill-filter-panel input[type="search"]{font-size:16px}
+@media(max-width:360px){#skillEdit{padding-inline:8px}.skill-edit-panel{padding:12px}.skill-edit-numbers{gap:4px}}
+
+#skillEdit.ui-screen-enter{animation:none}
+body:has(#skillEdit.active) .tutorial-bubble{transition:none}

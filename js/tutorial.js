@@ -255,6 +255,12 @@ function ensureTutorialTargetVisible(target){
   if(!rect||rect.width<=0||rect.height<=0)return;
   const viewportHeight=window.innerHeight||document.documentElement.clientHeight;
   const viewportWidth=window.innerWidth||document.documentElement.clientWidth;
+  const skillSummary=document.querySelector('#skillEdit.active #skillEditTarget');
+  const skillTop=skillSummary?Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0)+skillSummary.getBoundingClientRect().height+12:8;
+  if(skillSummary && target.closest?.('#skillEdit') && typeof window.scrollBy==='function'){
+    window.scrollBy({top:rect.top-skillTop,behavior:'instant'});
+    return;
+  }
   if(rect.top<8||rect.bottom>viewportHeight-8||rect.left<4||rect.right>viewportWidth-4){
     if(viewportWidth>viewportHeight&&rect.height<viewportHeight/2&&target.style){
       const previousMargin=target.style.scrollMarginTop;
@@ -302,6 +308,15 @@ function positionTutorialUi(){
   const placement=overlay?.classList.contains('is-story-step')&&!hole
     ?calculateTutorialStoryPlacement(bubble.getBoundingClientRect(),viewport)
     :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport,{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
+  // Reserve the loadout summary and bottom navigation only on the skill screen.
+  const skillSummary=document.querySelector('#skillEdit.active #skillEditTarget');
+  if(skillSummary){
+    const safeTop=Math.max(document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0,skillSummary.getBoundingClientRect().bottom)+8;
+    const safeBottom=Math.min(viewport.height,document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||viewport.height);
+    const safeHole=hole?{...hole,top:hole.top-safeTop,bottom:hole.bottom-safeTop}:null;
+    const safePlacement=calculateTutorialPlacement(safeHole,bubble.getBoundingClientRect(),{width:viewport.width,height:Math.max(0,safeBottom-safeTop)},{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
+    Object.assign(placement,safePlacement,{top:safePlacement.top+safeTop});
+  }
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;

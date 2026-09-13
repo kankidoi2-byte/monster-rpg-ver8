@@ -1,0 +1,12 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>技編成 確認版</title><style>body{margin:8px;font:14px system-ui;background:#e8f6ff;color:#18314a}button{padding:9px;margin:3px}iframe{display:block;max-width:100%;border:0;background:white}output{display:block;white-space:pre-wrap;margin:8px 0}</style>
+<p>技編成の確認版。検証用の仲間・カードで操作でき、セーブは書き込みません。</p>
+<div id="sizes"><button data-size="320,568">320×568</button><button data-size="360,640">360×640</button><button data-size="412,915">412×915</button><button data-size="844,390">844×390</button></div>
+<div id="cases"><button data-case="normal">通常</button><button data-case="full">技枠満杯</button><button data-case="exact">上限ちょうど</button><button data-case="short">コスト不足</button><button data-case="long">長い名前</button><button data-case="empty">検索結果なし</button><button data-case="tutorial">チュートリアル</button><button data-case="suite">自動検証</button></div>
+<output id="report">読み込み中</output><iframe id="game" title="技編成の本編画面" width="360" height="640"></iframe>
+<script>
+const game=document.querySelector('#game');
+document.querySelector('#sizes').onclick=e=>{if(!e.target.dataset.size)return;[game.width,game.height]=e.target.dataset.size.split(',');};
+document.querySelector('#cases').onclick=e=>{if(e.target.dataset.case){document.querySelector('#report').textContent='実行中：'+e.target.dataset.case;game.contentWindow.runSkillQA(e.target.dataset.case);}};
+window.addEventListener('message',e=>{if(e.source===game.contentWindow&&e.data.skillQAReport)document.querySelector('#report').textContent=e.data.skillQAReport;});
+fetch('../index.html').then(r=>r.text()).then(html=>{game.srcdoc=html.replace('<head>','<head><base href="../">').replace(/<script src="js\/init.js[^>]*><\/script>/,'<script src="scripts/skill-loadout-fixture.js"><\/script>');});
+</script></html>
