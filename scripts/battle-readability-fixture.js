@@ -15,8 +15,12 @@ if(window.parent!==window){
     eHp=enemyMaxHp();update();window.scrollTo(0,0);
   }
   function qaBounds(){
-    const ids=['pHpText',multiBattle?.active?'enemy_aStatus':'eHpText','battleSkillButton'];
-    return ids.map(id=>{const r=document.getElementById(id).getBoundingClientRect();return `${id}: ${Math.round(r.top)}–${Math.round(r.bottom)} / 高さ${innerHeight}`;}).join('\n');
+    const ids=['pHpText',multiBattle?.active?'#enemy_aCard .battle-hp-line':'eHpText','battleSkillButton'];
+    const pad=document.querySelector('.battle-command-pad'),dock=document.querySelector('.battle-command-dock');
+    const buttons=[...pad.querySelectorAll('button')].map(e=>{const r=e.getBoundingClientRect();return `${e.innerText.replace(/\s+/g,' ')}: ${Math.round(r.width)}×${Math.round(r.height)}`;}).join(', ');
+    const dr=dock.getBoundingClientRect(),hr=document.getElementById('pHpText').getBoundingClientRect();
+    const summary=`コマンド下端 ${Math.round(pad.getBoundingClientRect().bottom)} / HP遮蔽 ${dr.left<hr.right&&dr.right>hr.left&&dr.top<hr.bottom&&dr.bottom>hr.top} / 横溢れ ${document.documentElement.scrollWidth>innerWidth}\n${buttons}\n`; 
+    return summary+ids.map(id=>{const r=(id.startsWith('#')?document.querySelector(id):document.getElementById(id)).getBoundingClientRect();return `${id}: ${Math.round(r.top)}–${Math.round(r.bottom)} / 高さ${innerHeight}`;}).join('\n');
   }
   function qaReport(text){parent.postMessage({battleQAReport:text},parent.location.origin);}
   async function qaAction(effect){
@@ -59,7 +63,13 @@ if(window.parent!==window){
       else if(test==='poison'){pStatus='poison';pPoisonTurns=2;update();applyPoisonEndTurn();}
       else if(test==='sleep'){pSleepTurns=1;await performAction(player,enemy,['通常攻撃',24,'normal'],true);}
       else if(['repeat','heal','drain','recoil'].includes(test)){pHp=playerMaxHp()-3;update();await qaAction(test==='repeat'?'repeat_attack':test);}
-      else toggleBattleSkillPanel();
+      else {
+        if(test==='invasion'){
+          activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='goblin';activeHuntRequest.invasionTurn=0;
+          if(!triggerInvasionIfDue())throw Error('乱入への移行失敗');
+        }
+        toggleBattleSkillPanel();
+      }
       qaReport(qaBounds());
     }catch(error){qaReport('FAIL '+error.stack);}
   });

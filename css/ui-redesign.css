@@ -483,11 +483,10 @@ body:has(#home.active):not(.title-mode) .app-topbar{height:58px;min-height:58px}
 #battle .battle-action-status{padding:6px 8px;margin-top:5px;border-left:3px solid #d6a62c;background:#fff9dc;color:#314658;font-size:14px;font-weight:700;line-height:1.35}
 #battle .battle-command-dock{position:relative;right:auto;bottom:auto;transform:none;width:100%;margin-top:6px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));border-radius:16px;z-index:4}
 #battle .battle-command-title{display:none}
-#battle .battle-command-pad{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:48px;gap:4px;margin-top:4px}
-#battle .battle-command-pad .battle-pad-button{grid-column:auto;grid-row:1;flex-direction:column;gap:1px;min-height:44px;width:auto;height:auto;padding:4px 2px;border-radius:10px;display:flex!important}
+/* Keep the familiar cross-shaped controls in normal flow below the battle. */
+#battle .battle-command-pad{grid-template-columns:repeat(3,minmax(72px,92px));grid-template-rows:44px 66px 44px;gap:4px;margin-top:4px}
+#battle .battle-command-pad .battle-pad-button{min-height:44px}
 #battle .battle-command-pad .battle-pad-button strong{font-size:14px}
-#battle .battle-command-pad .battle-pad-button small{display:none}
-#battle .battle-command-pad .battle-pad-center{justify-self:stretch;border-width:1px!important}
 #battle .battle-command-dock #commands{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:0 0 6px;max-height:190px;overflow:auto}
 #battle .battle-command-dock #commands button{min-height:56px;padding:5px 3px}
 #battle .battle-command-dock #commands button>strong{font-size:14px;white-space:normal;overflow:visible}
@@ -516,7 +515,7 @@ body:has(#home.active):not(.title-mode) .app-topbar{height:58px;min-height:58px}
 #battle.is-finished .battle-outcome{position:relative;right:auto;bottom:auto;transform:none;width:100%;max-height:none;margin-top:8px}
 #battle.is-finished .battle-command-dock{display:none}
 @media(max-height:620px){#battle .battle-combatant img{height:110px!important}#battle .battle-side-label{display:none}#battle .battle-combatant{padding:5px}#battle .battle-hp-result{font-size:12px}#battle .battle-status{max-height:64px}}
-@media(min-width:700px){#battle .battle-combatant img{height:180px!important}#battle .battle-command-pad{grid-template-rows:54px}}
+@media(min-width:700px){#battle .battle-combatant img{height:180px!important}}
 @keyframes battleResultAppear{from{opacity:.4}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#battle .battle-hp-result{animation:none}#battle .multi-enemy-hp .hp,#battle .multi-enemy-hp .hp-trail{transition:none}}
 @media(max-height:740px){

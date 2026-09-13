@@ -1,7 +1,7 @@
 <!doctype html><html lang="ja"><meta charset="utf-8"><title>戦闘表示 検証</title><style>body{font:14px sans-serif;background:#dde7ee}button{padding:8px;margin:3px}iframe{display:block;border:2px solid #38576e;background:white}#report{white-space:pre-wrap}</style>
 <p>検証用データで動作します。セーブは書き込みません。</p>
 <div id="sizes"><button data-size="360,640">360×640</button><button data-size="320,568">320×568</button><button data-size="412,915">412×915</button><button data-size="844,390">844×390</button></div>
-<div id="cases"><button data-case="single">通常戦</button><button data-case="multi">三つ巴</button><button data-case="status">状態・障壁</button><button data-case="repeat">追加攻撃</button><button data-case="poison">毒</button><button data-case="heal">回復</button><button data-case="drain">吸収</button><button data-case="recoil">反動</button><button data-case="sleep">行動不能</button><button data-case="suite">自動検証</button></div>
+<div id="cases"><button data-case="single">通常戦</button><button data-case="multi">三つ巴</button><button data-case="invasion">乱入</button><button data-case="status">状態・障壁</button><button data-case="repeat">追加攻撃</button><button data-case="poison">毒</button><button data-case="heal">回復</button><button data-case="drain">吸収</button><button data-case="recoil">反動</button><button data-case="sleep">行動不能</button><button data-case="suite">自動検証</button></div>
 <output id="report">読み込み中</output><iframe id="game" title="検証中の本編" width="360" height="640"></iframe>
 <script>
 const game=document.querySelector('#game');

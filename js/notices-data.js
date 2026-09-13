@@ -6,7 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
-  Object.freeze({id:'20260913-battle-readability',date:'2026-09-13',category:'update',title:'戦闘中の状態と行動が分かりやすくなりました',body:'モンスターとHP、技の配置を見直しました。HPの近くで状態異常や防御を確認でき、行動中は仲間・敵の名前と技を表示します。追加攻撃、毒、回復、反動のHP変化を表示し、戦闘履歴から前の行動も読み返せます。'}),
+  Object.freeze({id:'20260913-battle-readability',date:'2026-09-13',category:'update',title:'戦闘中の状態と行動が分かりやすくなりました',body:'モンスターとHP、技の配置を見直しました。コマンドは従来の十字配置で、HPに重ならない位置に表示します。HPの近くで状態異常や防御を確認でき、行動中は仲間・敵の名前と技を表示します。追加攻撃、毒、回復、反動のHP変化を表示し、戦闘履歴から前の行動も読み返せます。'}),
   Object.freeze({
     id:'20260910-prologue-story-revision',date:'2026-09-10',category:'update',
     title:'序章の会話を更新しました',
