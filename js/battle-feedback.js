@@ -32,6 +32,7 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof BattleAudio!=='undefined')BattleAudio.reset();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
   battleFeedback.hp.clear();battleFeedback.states.clear();battleFeedback.results.clear();battleFeedback.sequence++;
   const log=document.getElementById('log');if(log)log.innerHTML='';
@@ -90,6 +91,7 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const text=`${label} ${loss<0||/回復|吸収|再生/.test(label)?'+':'−'}${amount}${reduced?` / 軽減 ${reduced}`:''}${barrier?` / 障壁 ${barrier}`:''}${over?` / 超過 ${over}`:''}`;
   battleFeedback.hp.set(u.key,Math.max(0,after));
   battleHistoryEntry(`${u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
+  if(typeof BattleAudio!=='undefined')BattleAudio.hp(before,after,{impact,effectiveness});
   if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);

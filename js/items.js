@@ -212,8 +212,9 @@ function useBattleItem(id) {
     pAtk = 2;
     msg = `⚡ 力の薬を使った！ ${player.name}の攻撃力が2倍になった！`;
   }
-  saveGame(); updateItems(); update();
+  saveGame(); updateItems();
   show('battle');
+  update();
   const log = document.getElementById('log');
   if(log) log.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
 }
