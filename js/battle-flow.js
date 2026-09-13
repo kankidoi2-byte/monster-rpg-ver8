@@ -112,7 +112,7 @@ function isBossClassMonster(mon){
 function playBossCaution(mon, onComplete){
   if(bossCautionPlaying) return;
   bossCautionPlaying = true;
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 
   const overlay = document.getElementById('bossCautionOverlay');
   const enemyName = document.getElementById('cautionEnemyName');
@@ -120,7 +120,7 @@ function playBossCaution(mon, onComplete){
 
   if(!overlay){
     bossCautionPlaying = false;
-    busy = false;
+    busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     onComplete();
     return;
   }
@@ -135,7 +135,7 @@ function playBossCaution(mon, onComplete){
     overlay.classList.remove('active');
     overlay.setAttribute('aria-hidden','true');
     bossCautionPlaying = false;
-    busy = false;
+    busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     bossCautionTimer = null;
     onComplete();
   }, 1800);
@@ -173,6 +173,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     }
     updateItems();
   }
+  if(typeof resetBattleFeedback==='function')resetBattleFeedback();
   battleRewardGranted = false;
   singleBattleContractAttempted = false;
   resetBattleTurnCounter();
@@ -198,12 +199,12 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   multiBattle = null;
   if (typeof setMultiBattleLayout === 'function') setMultiBattleLayout(false);
   pendingMultiBattleContractId = null;
-  busy = false;
+  busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
   hideBattleOutcome();
   show('battle');
   setupBattle();
   document.getElementById('log').innerHTML =
-    `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;
+    `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function afterBattleNext() {
   singleBattleContractAttempted = false;
@@ -229,7 +230,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   pHp = next.hp;
   pAtk = 1; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
   const log = document.getElementById('log');
-  if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;
+  if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
   renderSkillButtons();
@@ -248,10 +249,10 @@ function switchPartyMember() {
 function performManualPartySwitch(nextIndex) {
   if (busy || !livingPartySwitchCandidates().some(candidate => candidate.index === nextIndex)) return false;
   const previousName = player.name;
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   startBattleTurn();
   if (!changeActivePartyMember(nextIndex, {message:`🔄 ${previousName}から<b>${partyBattle[nextIndex].mon.name}</b>へ交代した！`})) {
-    busy = false;
+    busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     return false;
   }
   if (multiBattle?.active) {
@@ -272,7 +273,7 @@ function performManualPartySwitch(nextIndex) {
       if (!switchPartyMember()) return;
       completeBattleTurn();
       if (triggerInvasionIfDue()) return;
-      busy = false;
+      busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
       return;
     }
     finishTurnWithPoison();
@@ -282,11 +283,11 @@ function performManualPartySwitch(nextIndex) {
 function losePartyBattle() {
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
   completeBattleTurn();
-  document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';
+  document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';if(typeof captureBattleLog==='function')captureBattleLog();
   endPartyRecovery();
   showBattleOutcome({kind:'defeat',title:'パーティー全滅',note:'編成や相性を見直して、もう一度挑もう。'});
   if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('defeat');
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
 function endPartyRecovery() {
   partyBattle.forEach(p => { p.hp = instanceMaxHp(p.inst); p.fainted = false; });
@@ -317,10 +318,10 @@ function runAway() {
   pAquaShield = false; eAquaShield = false;
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
-  document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';
+  document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';if(typeof captureBattleLog==='function')captureBattleLog();
   showBattleOutcome({kind:'retreat',title:'撤退成功',note:'態勢を整えてから再挑戦できる。'});
   if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('retreat');
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
 function win() {
   if (eHp > 0) return;
@@ -387,7 +388,7 @@ function win() {
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
   saveGame();
-  document.getElementById('log').innerHTML = msg;
+  document.getElementById('log').innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
   // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）
   showBattleOutcome({
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
@@ -396,7 +397,7 @@ function win() {
   });
   const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
   if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   renderParty();
   // The prologue resumes its next guide immediately after a tutorial battle.
   // Do not let an automatic evolution screen replace that resumed guide.

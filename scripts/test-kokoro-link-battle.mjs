@@ -69,6 +69,7 @@ assert(rulesSource.includes('resolvePlayerIncomingDamage'),'single battle damage
 assert(rulesSource.includes('kokoroLinkMovePowerMultiplierFor')&&rulesSource.includes('playerKokoroLinkChance')&&rulesSource.includes('applyPlayerKokoroLinkRegeneration'),'single battle must consume active one-star abilities');
 assert(rulesSource.includes('applyKokoroLinkStatusAbilityForBattle')&&rulesSource.includes('tickSingleEnemyKokoroLinkEffects'),'single battle must apply and expire two-star enemy effects');
 assert(rulesSource.includes('applyKokoroLinkTacticsAbilityForBattle')&&rulesSource.includes('nextEnemyMoveWithKokoroLinkForesight')&&rulesSource.includes('kokoroLinkPenetratedMultiplier'),'single battle must apply three-star tactical support');
-assert(multiSource.includes('resolvePlayerIncomingDamage')&&multiSource.includes('kokoroLinkStatusHtml')&&multiSource.includes('applyPlayerKokoroLinkLifeSteal'),'multi battle must share link effects, abilities, and display');
+const feedbackSource=fs.readFileSync(new URL('../js/battle-feedback.js',import.meta.url),'utf8');
+assert(multiSource.includes('resolvePlayerIncomingDamage')&&multiSource.includes('refreshBattleFeedback')&&feedbackSource.includes('kokoroLinkStatusHtml')&&multiSource.includes('applyPlayerKokoroLinkLifeSteal'),'multi battle must share link effects, abilities, and display');
 
 console.log('Kokoro Link battle validation passed (activation UI, target binding, no stacking, base boosts, ★1–★3 abilities, switch reuse, and lifecycle reset).');

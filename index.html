@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="css/character-gacha.css?v=character-gacha-1">
 <link rel="stylesheet" href="css/world-map.css?v=world-map-3-consistency">
 <link rel="stylesheet" href="css/style.css?v=mobile-load-phase2-1-lumina-alchemy-wait-1">
-<link rel="stylesheet" href="css/ui-redesign.css?v=kokoro-link-scaling-1-unified-gacha-navigation-1-kokoro-link-animation-3-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-2-prologue-story-mode-1-story-hub-2-chapter-banner-1-favorite-home-1-favorite-frame-1-ornate-portrait-1-immersive-home-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1">
+<link rel="stylesheet" href="css/ui-redesign.css?v=kokoro-link-scaling-1-unified-gacha-navigation-1-kokoro-link-animation-3-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-2-prologue-story-mode-1-story-hub-2-chapter-banner-1-favorite-home-1-favorite-frame-1-ornate-portrait-1-immersive-home-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-battle-readability-1">
 <link rel="stylesheet" href="css/contract-animation.css?v=contract-animation-1">
 <link rel="stylesheet" href="css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1-prologue-mobile-dex-elna-1-prologue-readable-panel-1-prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1-tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-dialogue-pages-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-galdra-motion-1">
 </head>
@@ -264,7 +264,7 @@
       <div class="battle-vitals">
         <div class="battle-hp-line"><strong>HP</strong><span id="pHpText"></span></div>
         <div class="bar"><div id="pHpTrail" class="hp-trail" aria-hidden="true"></div><div id="pHpBar" class="hp" role="progressbar" aria-label="味方のHP"></div></div>
-        <details class="battle-detail"><summary>状態・成長</summary><p id="pInfo" class="small"></p><div class="bar battle-exp"><div id="pExpBar" class="exp"></div></div><p id="pExpText" class="small"></p></details>
+        <div id="pBattleStatus" class="battle-status" aria-label="味方の有効状態"></div><details class="battle-detail"><summary>能力・成長</summary><p id="pInfo" class="small"></p><div class="bar battle-exp"><div id="pExpBar" class="exp"></div></div><p id="pExpText" class="small"></p></details>
       </div>
     </div>
     <div class="battle-versus" aria-hidden="true">VS</div>
@@ -274,11 +274,13 @@
       <div class="battle-vitals">
         <div class="battle-hp-line"><strong>HP</strong><span id="eHpText"></span></div>
         <div class="bar"><div id="eHpTrail" class="hp-trail" aria-hidden="true"></div><div id="eHpBar" class="hp" role="progressbar" aria-label="敵のHP"></div></div>
-        <details class="battle-detail"><summary>状態を見る</summary><p id="eInfo" class="small"></p></details>
+        <div id="eBattleStatus" class="battle-status" aria-label="敵の有効状態"></div><details class="battle-detail"><summary>能力を見る</summary><p id="eInfo" class="small"></p></details>
       </div>
     </div>
   </div>
-  <details class="battle-log-panel" open><summary>バトルログ</summary><div id="log" class="log" aria-live="polite" aria-atomic="true"></div></details>
+  <div id="battleActionStatus" class="battle-action-status" role="status" aria-live="polite">技を選んでください</div>
+  <details class="battle-log-panel"><summary>戦闘履歴 <span id="battleHistoryCount">0件</span></summary><ol id="battleHistory" class="battle-history"></ol></details>
+  <div id="log" class="log hidden"></div>
   <section id="battleOutcome" class="battle-outcome hidden" aria-live="assertive" aria-labelledby="battleOutcomeTitle">
     <div id="battleOutcomeIcon" class="battle-outcome-icon" aria-hidden="true">★</div>
     <div class="battle-outcome-copy">
@@ -291,7 +293,7 @@
     <button id="next" class="hidden battle-next-button" onclick="afterBattleNext()">次の冒険へ ›</button>
   </section>
   <div class="cmd battle-command-dock">
-    <div class="battle-command-title"><span>YOUR TURN</span><h2 id="battleCommandTitle">コマンドを選ぶ</h2></div>
+    <div class="battle-command-title"><span id="battleInputLabel">操作可能</span><h2 id="battleCommandTitle">コマンドを選ぶ</h2></div>
     <div id="commands" class="battle-skill-panel hidden" aria-label="装備中の技"></div>
     <div id="multiTargetSelect" class="multi-target-select hidden"></div>
     <div class="battle-command-pad" aria-label="バトルコマンド">
@@ -577,9 +579,9 @@
 <script src="js/save.js?v=skill-inventory-1-fixed-hunt-1-contractor-rank-ui-1-tutorial-phase3a-1-prologue-v2-save-1-prologue-lumina-alchemy-1-dev-tools-phase8-tutorial-replay-retired-1-prologue-story-mode-1-character-recycle-1-world-map-2-favorite-home-1"></script>
 <script src="js/contractor-rank.js?v=contractor-rank-ui-1-contractor-reward-1"></script>
 <script src="js/ui.js?v=skill-gacha-1-unified-gacha-navigation-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-stella-intro-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-story-mode-1-character-gacha-1-favorite-home-1-ornate-portrait-1-immersive-home-1"></script>
-<script src="js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1-unified-gacha-navigation-1-prologue-stella-mock-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1-prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1-world-map-2-prologue-world-map-facilities-1-first-play-audit-1-dialogue-pages-1-opening-rescue-1-contract-reward-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-galdra-motion-1-freigal-expedition-1-phase11-compatibility-1"></script>
+<script src="js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1-unified-gacha-navigation-1-prologue-stella-mock-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1-prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1-world-map-2-prologue-world-map-facilities-1-first-play-audit-1-dialogue-pages-1-opening-rescue-1-contract-reward-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-galdra-motion-1-freigal-expedition-1-phase11-compatibility-1-battle-readability-1"></script>
 <script src="js/story.js?v=prologue-story-mode-1-story-hub-2-chapter-banner-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1"></script>
-<script src="js/notices-data.js?v=story-hub-2-world-map-2-character-recycle-1-unified-gacha-navigation-1-character-gacha-1-lumina-alchemy-wait-1-kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-skill-gacha-compact-result-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1-chapter-banner-1-favorite-home-1-favorite-frame-1-ornate-portrait-1-immersive-home-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-first-play-audit-1-world-map-consistency-1-balance-audit-20260908-opening-rescue-1-contract-reward-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-freigal-expedition-1-phase11-compatibility-1"></script>
+<script src="js/notices-data.js?v=story-hub-2-world-map-2-character-recycle-1-unified-gacha-navigation-1-character-gacha-1-lumina-alchemy-wait-1-kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-skill-gacha-compact-result-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1-chapter-banner-1-favorite-home-1-favorite-frame-1-ornate-portrait-1-immersive-home-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-first-play-audit-1-world-map-consistency-1-balance-audit-20260908-opening-rescue-1-contract-reward-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-freigal-expedition-1-phase11-compatibility-1-battle-readability-1"></script>
 <script src="js/notices.js?v=notice-center-1-chapter-banner-1"></script>
 <script src="js/skills.js?v=evolution-skill-cards-1-prologue-battle-basics-1-prologue-stella-intro-1-prologue-stella-mock-1-stella-battle-1"></script>
 <script src="js/character-gacha.js?v=character-gacha-1-first-play-audit-1-character-recycle-1"></script>
@@ -588,12 +590,13 @@
 <script src="js/party.js?v=golden-land-release-1-fixed-hunt-1-tutorial-phase4c-1-prologue-home-front-1-character-recycle-1-first-play-audit-1"></script>
 <script src="js/progression.js?v=evolution-skill-cards-1-fixed-hunt-1"></script>
 <script src="js/contract-animation.js?v=contract-animation-1"></script>
-<script src="js/items.js?v=elna-character-dex-1-battle-command-pad-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase4c-1"></script>
+<script src="js/items.js?v=elna-character-dex-1-battle-command-pad-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase4c-1-battle-readability-1"></script>
 <script src="js/alchemy.js?v=phase3-prologue-1-elixion-neutral-1-prologue-lumina-alchemy-1-dev-tools-phase8-lumina-alchemy-wait-1-character-recycle-1"></script>
-<script src="js/battle-view.js?v=battle-switch-1-kokoro-link-animation-3-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase5a-1-prologue-battle-basics-1-first-play-audit-1"></script>
-<script src="js/battle-rules.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-tutorial-phase4b-1-prologue-battle-basics-1-prologue-stella-mock-1-world-map-1"></script>
-<script src="js/battle-flow.js?v=battle-switch-1-battle-skill-motion-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase4b-1-tutorial-phase5b-1-prologue-elna-rescue-1-prologue-rescue-stability-1-prologue-stella-mock-1-prologue-continuity-1-world-map-1"></script>
-<script src="js/multi-battle.js?v=kokoro-link-phase5-1-battle-skill-motion-1-fixed-hunt-1-tutorial-phase5a-1-world-map-1-balance-audit-20260908"></script>
+<script src="js/battle-feedback.js?v=battle-readability-1"></script>
+<script src="js/battle-view.js?v=battle-switch-1-kokoro-link-animation-3-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase5a-1-prologue-battle-basics-1-first-play-audit-1-battle-readability-1"></script>
+<script src="js/battle-rules.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-tutorial-phase4b-1-prologue-battle-basics-1-prologue-stella-mock-1-world-map-1-battle-readability-1"></script>
+<script src="js/battle-flow.js?v=battle-switch-1-battle-skill-motion-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase4b-1-tutorial-phase5b-1-prologue-elna-rescue-1-prologue-rescue-stability-1-prologue-stella-mock-1-prologue-continuity-1-world-map-1-battle-readability-1"></script>
+<script src="js/multi-battle.js?v=kokoro-link-phase5-1-battle-skill-motion-1-fixed-hunt-1-tutorial-phase5a-1-world-map-1-balance-audit-20260908-battle-readability-1"></script>
 <script src="js/expedition.js?v=golden-land-release-1-fixed-hunt-1-prologue-expedition-finale-1-legacy-save-fix-1-dev-tools-phase8-first-play-audit-1"></script>
 <script src="js/diagnostics-ui.js?v=dev-tools-phase9"></script>
 <script src="js/world-map-flow.js?v=world-map-2"></script>

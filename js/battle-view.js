@@ -17,7 +17,7 @@ function setupBattle() {
       `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>
         <div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span>
         <span>敵Lv.${request.enemyLevel}</span><span>報酬 ×${request.rewardText}</span></div>
-        <div class="battle-hunt-conditions"><h3>特殊条件</h3>${huntConditionsHtml(request, true)}</div></div>`;
+        <details class="battle-hunt-conditions"><summary>条件</summary>${huntConditionsHtml(request, true)}</details></div>`;
   }
   document.getElementById('pName').textContent = player.name;
   document.getElementById('pVis').innerHTML = vis(player);
@@ -59,6 +59,7 @@ function toggleBattleSkillPanel(){
   button.setAttribute('aria-expanded',String(opening));
   button.innerHTML=opening?'<span aria-hidden="true">×</span><strong>閉じる</strong><small>戻る</small>':'<span aria-hidden="true">✨</span><strong>技</strong><small>決定</small>';
   if(title)title.textContent=opening?'技を選ぶ':'コマンドを選ぶ';
+  if(typeof renderBattleInputState==='function')renderBattleInputState();
   if(opening&&typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('skill_panel_opened');
 }
 function renderBattleSwitchButton(){
@@ -216,6 +217,7 @@ function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal
   setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); flash.remove(); }, isStrong ? 820 : 650);
 }
 function hideBattleOutcome() {
+  if(typeof battleFeedback!=='undefined')battleFeedback.finished=false;
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   battle?.classList.remove('is-finished');
@@ -229,6 +231,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   if (!battle || !outcome) return;
+  if(typeof battleFeedback!=='undefined'){battleFeedback.finished=true;refreshBattleFeedback();}
   const victory = kind === 'victory';
   const labels = {
     victory:['BATTLE CLEAR','★'], defeat:['BATTLE LOST','×'], retreat:['RETREAT','↩']
@@ -408,7 +411,7 @@ function beginKokoroLinkOriginChoice(){
   picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
 }
 function selectKokoroLinkOriginChoice(optionId){
-  if(pendingKokoroLinkTacticsMode!=='origin-choice')return;const msg=applyKokoroLinkOriginChoiceForBattle(optionId),log=document.getElementById('log');if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+msg;cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
+  if(pendingKokoroLinkTacticsMode!=='origin-choice')return;const msg=applyKokoroLinkOriginChoiceForBattle(optionId),log=document.getElementById('log');if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+msg;if(typeof captureBattleLog==='function')captureBattleLog();cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
 }
 function beginKokoroLinkFreeSwitch(){
   const picker=document.getElementById('multiTargetSelect'),candidates=partyBattle.map((entry,index)=>({entry,index})).filter(item=>item.index!==activePartyIdx&&!item.entry.fainted&&item.entry.hp>0);if(!picker||!candidates.length)return;
@@ -427,11 +430,11 @@ function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(!targetId&&multiBattle?.active&&kokoroLinkSourceNeedsEnemyTarget(source)){beginKokoroLinkStatusTargetSelection(sourceUid);return;}
   const result=activateCurrentKokoroLink(sourceUid,kokoroLinkTargetStats());
   const log=document.getElementById('log');
-  if(!result.ok){if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`⚠️ ${kokoroLinkFailureText(result.reason)}`;renderKokoroLinkPanel();return;}
+  if(!result.ok){if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`⚠️ ${kokoroLinkFailureText(result.reason)}`;if(typeof captureBattleLog==='function')captureBattleLog();renderKokoroLinkPanel();return;}
   const {link}=result;
   const statusMsg=link.statusAbility&&typeof applyKokoroLinkStatusAbilityForBattle==='function'?applyKokoroLinkStatusAbilityForBattle(link,targetId):'';
   const tacticsMsg=link.tacticsAbility&&typeof applyKokoroLinkTacticsAbilityForBattle==='function'?applyKokoroLinkTacticsAbilityForBattle(link,targetId):'';
-  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}${link.powerAbility?`<br>✨ ★1リンク能力「${link.powerAbility.label}」：${link.powerAbility.summary}`:''}${statusMsg?`<br>${statusMsg}`:''}${tacticsMsg?`<br>${tacticsMsg}`:''}`;
+  if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`💞 <b>${link.sourceName}</b>と<b>${link.targetName}</b>のココロが繋がった！<br>🛡️ 最終効果：障壁${link.effects.barrier}・攻撃ダメージ+${Math.round(link.effects.attackBonus*100)}%・素早さ+${link.effects.speedBonus}${link.powerAbility?`<br>✨ ★1リンク能力「${link.powerAbility.label}」：${link.powerAbility.summary}`:''}${statusMsg?`<br>${statusMsg}`:''}${tacticsMsg?`<br>${tacticsMsg}`:''}`;if(typeof captureBattleLog==='function')captureBattleLog();
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   renderKokoroLinkPanel();
   update();
@@ -440,14 +443,15 @@ function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(link.tacticsAbility?.id==='free_switch'&&link.tacticsAbility.charges>0)beginKokoroLinkFreeSwitch();
 }
 function update() {
+  if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();
   if (multiBattle?.active) { updateMultiBattleView(); return; }
   if (!player || !enemy) return;
   pHp = Math.max(0,pHp); eHp = Math.max(0,eHp);
   const pm = playerMaxHp(), em = enemyMaxHp();
   const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
-  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}${statusHtml(pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pFlareCharge,pAquaShield)}${kokoroLinkStatusHtml()}`;
+  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}`;
   const enemyLevel = activeHuntRequest?.enemyLevel || 1;
-  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey())}${statusHtml(eStatus,ePoisonTurns,eParalysisTurns,eConfusionTurns,eSleepTurns,eFlareCharge,eAquaShield)}${enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())}`;
+  document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey())}`;
   const pBar = document.getElementById('pHpBar');
   const pp = pHp/pm*100;
   pBar.style.width = pp+'%';

@@ -981,7 +981,7 @@ function failTutorialRescueBattle(reason){
   tutorialBattleSession.enemyQueue=[];
   if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'retreat',title:'救援戦を再準備',note:'スライムを準備できませんでした。進行を保持して再挑戦できます。'});
   handleTutorialBattleOutcome('error');
-  busy=true;
+  busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   return true;
 }
 function continueTutorialRescueWave(){
@@ -989,17 +989,18 @@ function continueTutorialRescueWave(){
   const nextId=tutorialBattleSession.enemyQueue[0];
   const nextEnemy=by(nextId);
   if(!nextEnemy)return failTutorialRescueBattle('rescue_enemy_missing');
-  busy=true;
+  busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   try{
     enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
     ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
     battleRewardGranted=false;
+    if(typeof forgetBattleEnemyFeedback==='function')forgetBattleEnemyFeedback();
     setupBattle();
     if(enemy?.id!==nextId||eHp<=0)throw new Error('rescue_enemy_not_ready');
     tutorialBattleSession.enemyQueue.shift();
     const log=document.getElementById('log');
-    if(log)log.innerHTML='<b>もう1体のスライム</b>が飛び出した！ エルナを守りながら戦おう！';
-    busy=false;
+    if(log)log.innerHTML='<b>もう1体のスライム</b>が飛び出した！ エルナを守りながら戦おう！';if(typeof captureBattleLog==='function')captureBattleLog();
+    busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     return true;
   }catch(error){
     return failTutorialRescueBattle(error);
@@ -1050,10 +1051,10 @@ function completeTutorialStellaMockVictory(){
   if(typeof completeBattleTurn==='function')completeBattleTurn();
   eHp=0;pStatus=null;eStatus=null;pPoisonTurns=0;ePoisonTurns=0;
   const log=document.getElementById('log');
-  if(log)log.innerHTML='<b>ステラに勝利した！</b>';
+  if(log)log.innerHTML='<b>ステラに勝利した！</b>';if(typeof captureBattleLog==='function')captureBattleLog();
   if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'victory',title:'ステラに勝利',note:'この戦闘では通常の討伐報酬・契約判定は発生しません。'});
   handleTutorialBattleOutcome('victory');
-  busy=true;
+  busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   return true;
 }
 function runTutorialTransition(transition){

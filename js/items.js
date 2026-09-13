@@ -182,6 +182,7 @@ function useBattleItemFromMenu(id){
   useBattleItem(id);
 }
 function useBattleItem(id) {
+  if(busy)return;
   ensureContractScrollItem();
   if(ITEM_BY_ID[id]?.contract) { alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
   const it = ITEM_BY_ID[id];
@@ -214,7 +215,7 @@ function useBattleItem(id) {
   saveGame(); updateItems(); update();
   show('battle');
   const log = document.getElementById('log');
-  if(log) log.innerHTML = msg;
+  if(log) log.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function chooseDefaultContractItem(){
   ensureContractScrollItem();
@@ -303,7 +304,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
   singleBattleContractAttempted = true;
 
   show('battle');
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 
   if(ok){
     pStatus = null; eStatus = null;
@@ -317,7 +318,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
       ? commitTutorialFirstContract(itemId,enemy)
       : addInstance(enemy.id);
     if(!joinedInstance){
-      singleBattleContractAttempted=false;busy=false;
+      singleBattleContractAttempted=false;busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();
       if(typeof showUiNotice==='function')showUiNotice('契約状態を保存できませんでした。もう一度お試しください。','error');
       show('contractConfirm');
       return;
@@ -330,9 +331,9 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
     updateItems();
     renderParty();
     renderDex();
-    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}🤝 ${it.name}を使い、${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！`;
+    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}🤝 ${it.name}を使い、${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！`;if(typeof captureBattleLog==='function')captureBattleLog();
     refreshContractScrollDisplay();
-    busy = false;
+    busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     show('battle');
     renderSingleBattleContractPanel();
     if(guaranteed&&typeof handleTutorialContractAnimationComplete==='function')handleTutorialContractAnimationComplete();
@@ -341,10 +342,10 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
 
   saveGame();
   await playContractAnimation({monsterName:enemy.name, stage:animationStage});
-  if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}📜 ${it.name}を使ったが、${enemy.name}との契約には失敗した……`;
+  if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}📜 ${it.name}を使ったが、${enemy.name}との契約には失敗した……`;if(typeof captureBattleLog==='function')captureBattleLog();
   updateItems();
   refreshContractScrollDisplay();
-  busy = false;
+  busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
   show('battle');
   renderSingleBattleContractPanel();
 }

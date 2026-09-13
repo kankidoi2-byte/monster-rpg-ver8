@@ -27,7 +27,9 @@ function kokoroLinkDefenseMessage(result){
 function applyPlayerKokoroLinkRegeneration(){
   if(typeof tickKokoroLinkRegeneration!=='function')return '';
   const result=tickKokoroLinkRegeneration(activeInstance,pHp,playerMaxHp());
+  const before=pHp;
   pHp=result.hp;
+  if(result.healed&&typeof battleHpResult==='function')battleHpResult('pVis',before,pHp,{label:'再生'});
   if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
   return result.healed?`🌿 森命再生でHPを${result.healed}回復！（残り${result.remainingTurns}ターン）`:'';
 }
@@ -38,6 +40,7 @@ function applyPlayerKokoroLinkLifeSteal(actualDamage){
   const before=pHp;
   pHp=Math.min(playerMaxHp(),pHp+result.healing);
   if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
+  if(typeof battleHpResult==='function')battleHpResult('pVis',before,pHp,{label:'吸収'});
   return `🌑 闇命吸収でHPを${pHp-before}回復！`;
 }
 function playerKokoroLinkChance(baseChance){
@@ -205,25 +208,26 @@ function tryConfusionAction(isPlayer) {
   return result;
 }
 async function performAction(attacker, defender, move, isPlayer) {
+  if(typeof beginBattleAction==='function')beginBattleAction(attacker,move,isPlayer);
   const logEl = document.getElementById('log');
   const sleep = trySleepAction(isPlayer);
   if (!sleep.canAct) {
-    logEl.innerHTML = sleep.message;
+    logEl.innerHTML = sleep.message;if(typeof captureBattleLog==='function')captureBattleLog();
     return {acted:false,animated:false};
   }
   const paralysis = tryParalysisAction(isPlayer);
   if (!paralysis.canAct) {
-    logEl.innerHTML = paralysis.message;
+    logEl.innerHTML = paralysis.message;if(typeof captureBattleLog==='function')captureBattleLog();
     return {acted:false,animated:false};
   }
   const confusion = tryConfusionAction(isPlayer);
   if (!confusion.canAct) {
-    logEl.innerHTML = confusion.message;
+    logEl.innerHTML = confusion.message;if(typeof captureBattleLog==='function')captureBattleLog();
     return {acted:false,animated:false};
   }
   const result=await doAttack(attacker, defender, move, isPlayer);
   const extra = [paralysis.message, confusion.message].filter(Boolean).join('<br>');
-  if (extra) logEl.innerHTML += `<br>${extra}`;
+  if (extra) logEl.innerHTML += `<br>${extra}`;if(typeof captureBattleLog==='function')captureBattleLog();
   return {acted:true,animated:!!result?.animated};
 }
 function applyPoisonToTarget(targetIsPlayer) {
@@ -245,7 +249,9 @@ function applyPoisonEndTurn() {
   const msgs = [];
   if (pStatus === 'poison' && pPoisonTurns > 0 && pHp > 0) {
     const dmg = Math.max(1, Math.floor(playerMaxHp() * poison.maxHpDamageRate));
+    const before=pHp;
     pHp = Math.max(0, pHp - dmg);
+    if(typeof battleHpResult==='function')battleHpResult('pVis',before,pHp,{label:'毒',damage:dmg});
     pPoisonTurns--;
     if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
     msgs.push(`☠️ ${player.name}は毒で${dmg}ダメージ！ 残り${pPoisonTurns}ターン${pHp <= 0 ? '<br>💀 '+player.name+'は毒で戦闘不能になった！' : ''}`);
@@ -253,7 +259,9 @@ function applyPoisonEndTurn() {
   }
   if (eStatus === 'poison' && ePoisonTurns > 0 && eHp > 0) {
     const dmg = Math.max(1, Math.floor(enemyMaxHp() * poison.maxHpDamageRate));
+    const before=eHp;
     eHp = Math.max(0, eHp - dmg);
+    if(typeof battleHpResult==='function')battleHpResult('eVis',before,eHp,{label:'毒',damage:dmg});
     ePoisonTurns--;
     msgs.push(`☠️ ${enemy.name}は毒で${dmg}ダメージ！ 残り${ePoisonTurns}ターン${eHp <= 0 ? '<br>💀 '+enemy.name+'は毒で戦闘不能になった！' : ''}`);
     if(ePoisonTurns <= 0){ eStatus = null; if(eHp > 0) msgs.push(`✨ ${enemy.name}の毒が治った！`); }
@@ -265,15 +273,16 @@ function finishTurnWithPoison() {
   const logEl = document.getElementById('log');
   completeBattleTurn();
   const poisonMsg = applyPoisonEndTurn();
-  if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;
-  const linkStatusMsg=tickSingleEnemyKokoroLinkEffects();if(linkStatusMsg)logEl.innerHTML+=`<br>${linkStatusMsg}`;
+  if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();
+  const linkStatusMsg=tickSingleEnemyKokoroLinkEffects();if(linkStatusMsg)logEl.innerHTML+=`<br>${linkStatusMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();
   if (eHp <= 0) { win(); return; }
-  if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;}
+  if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();}
   if (pHp <= 0) {
     if (!switchPartyMember()) return;
   }
   if (triggerInvasionIfDue()) return;
-  busy = false;
+  update();
+  busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
 async function turn(i) {
   if (busy) return;
@@ -281,7 +290,7 @@ async function turn(i) {
   const playerMove = i===-1?['通常攻撃',24,'normal',null,null,0]:getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
   if (typeof closeBattleSkillPanel === 'function') closeBattleSkillPanel();
   if (multiBattle?.active) { chooseMultiBattleTarget(i); return; }
-  busy = true;
+  busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   startBattleTurn();
   if(typeof handleTutorialBattleAction==='function')handleTutorialBattleAction(tutorialAction,{move:playerMove,actor:activeInstance,target:enemy});
   else if(tutorialAction==='skill'&&typeof handleTutorialFirstSkillUsed==='function')handleTutorialFirstSkillUsed();
@@ -305,7 +314,7 @@ async function turn(i) {
       if (!switchPartyMember()) return;
       completeBattleTurn();
       if (triggerInvasionIfDue()) return;
-      busy = false;
+      busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
       return;
     }
     finishTurnWithPoison();
@@ -316,7 +325,7 @@ async function turn(i) {
       if (!switchPartyMember()) return;
       completeBattleTurn();
       if (triggerInvasionIfDue()) return;
-      busy = false;
+      busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
       return;
     }
     await battleMotionDelay(enemyResult.animated?140:700);
@@ -335,7 +344,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   // 補助技
   if (effect === 'guard') {
     isPlayer ? pGuard=true : eGuard=true;
-    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`; update(); return {animated:supportAnimated};
+    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
   }
   if (effect === 'heal') {
     const baseHealing = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
@@ -344,19 +353,20 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
     const healed = (isPlayer ? pHp : eHp) - before;
-    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`; update(); return {animated:supportAnimated};
+    if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:effect==='drain'?'吸収':'回復'});
+    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
   }
   if (effect === 'buff') {
     isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
-    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`; update(); return {animated:supportAnimated};
+    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
   }
   if (effect === 'debuff') {
     isPlayer ? eAtk=Math.max(.65,eAtk-.2) : pAtk=Math.max(.65,pAtk-.2);
-    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`; update(); return {animated:supportAnimated};
+    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
   }
   if (effect === 'aqua_shield') {
     if (isPlayer) pAquaShield = true; else eAquaShield = true;
-    logEl.innerHTML = `💧 ${attacker.name}は水の盾を展開した！ 次に受ける攻撃ダメージを半減する！`;
+    logEl.innerHTML = `💧 ${attacker.name}は水の盾を展開した！ 次に受ける攻撃ダメージを半減する！`;if(typeof captureBattleLog==='function')captureBattleLog();
     update();
     return {animated:supportAnimated};
   }
@@ -369,12 +379,12 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     } else {
       msg += `<br>しかし、${defender.name}には効かなかった！`;
     }
-    logEl.innerHTML = msg;
+    logEl.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
     update();
     return {animated:supportAnimated};
   }
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,mv):false;
-  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;update();return {animated};}
+  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;if(typeof captureBattleLog==='function')captureBattleLog();update();return {animated};}
   // ダメージ計算
   const r = typeEff(type, defender.types);
   const hasFlareCharge = effect !== 'flare_charge' && power > 0 && (isPlayer ? pFlareCharge : eFlareCharge);
@@ -402,6 +412,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if (shield) pAquaShield = false;
   }
   const actualDamage = Math.min(dmg, Math.max(0, defenderHpBefore));
+  if(typeof battleHpResult==='function')battleHpResult(targetId,defenderHpBefore,isPlayer?eHp:pHp,{label:linkBarrier.evaded?'回避':`被弾${g?'・防御':''}${shield?'・水の盾':''}`,damage:dmg,barrier:linkBarrier.absorbed,reduced:linkBarrier.reduced,effectiveness:r,types:moveTypes(mv),power,impact:true});
 
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
   const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
@@ -425,17 +436,18 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
     const healed = (isPlayer ? pHp : eHp) - before;
+    if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:effect==='drain'?'吸収':'回復'});
     msg += `<br>🌱 HPを${healed}吸収した！`;
   }
   if(isPlayer){const linkHeal=applyPlayerKokoroLinkLifeSteal(actualDamage);if(linkHeal)msg+=`<br>${linkHeal}`;}
   if (effect === 'recoil') {
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
-    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{if (isPlayer) pHp -= 8; else eHp -= 8;msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp -= 8; else eHp -= 8;if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:8});msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}
   }
   if (effect === 'alchemy_recoil') {
     const recoilDamage = alchemyRecoilDamage(actualDamage);
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
-    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;}
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:recoilDamage});msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;}
   }
   if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.5):{chance:Number.isFinite(effectChance)?effectChance:0.5,boosted:false};
@@ -469,14 +481,17 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
     const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
     const secondDmg = secondBarrier.hpDamage;
+    const secondHpBefore=isPlayer?eHp:pHp;
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
+    if(typeof battleHpResult==='function')battleHpResult(targetId,secondHpBefore,isPlayer?eHp:pHp,{label:'追加攻撃',damage:secondDmg,barrier:secondBarrier.absorbed});
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
     const secondDefenseMsg=kokoroLinkDefenseMessage(secondBarrier);if(secondDefenseMsg)msg+=`<br>${secondDefenseMsg}`;
     }
   }
-  logEl.innerHTML = msg;
+  logEl.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
   // ヒットアニメとダメージ表示
-  if (typeof playBattleImpact === 'function') playBattleImpact(targetId, dmg, r, moveTypes(mv), power);
+  if (typeof battleHpResult === 'function') { /* Impacts were presented per hit above. */ }
+  else if (typeof playBattleImpact === 'function') playBattleImpact(targetId, dmg, r, moveTypes(mv), power);
   else {
     const el = document.getElementById(targetId);
     el.classList.remove('hit-anim'); void el.offsetWidth; el.classList.add('hit-anim');
