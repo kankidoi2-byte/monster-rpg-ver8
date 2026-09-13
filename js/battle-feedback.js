@@ -32,6 +32,7 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
   battleFeedback.hp.clear();battleFeedback.states.clear();battleFeedback.results.clear();battleFeedback.sequence++;
   const log=document.getElementById('log');if(log)log.innerHTML='';
@@ -40,6 +41,7 @@ function resetBattleFeedback(){
   document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
 }
 function beginBattleAction(actor,move,isPlayer){
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.results.clear();document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
   const log=document.getElementById('log');if(log)log.innerHTML='';battleFeedback.lastLog='';
   battleFeedback.action=`${isPlayer?'味方':'敵'}・${actor.name}の「${move[0]}」`;
@@ -89,10 +91,24 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const over=damage===null?0:Math.max(0,damage-Math.max(0,before));
   const text=`${label} ${loss<0||/回復|吸収|再生/.test(label)?'+':'−'}${amount}${reduced?` / 軽減 ${reduced}`:''}${barrier?` / 障壁 ${barrier}`:''}${over?` / 超過 ${over}`:''}`;
   battleFeedback.hp.set(u.key,Math.max(0,after));
+  renderBattleHpAtImpact(u,after);
   battleHistoryEntry(`${u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
   if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);
+}
+// Update only presentation here: do not clamp game state or run turn logic.
+// A repeat attack must visibly consume HP once per hit, before its final update().
+function renderBattleHpAtImpact(u,after){
+  const hp=Math.max(0,after),pct=hp/u.max*100;
+  const prefix=u.vis==='pVis'?'p':u.vis==='eVis'?'e':null;
+  const host=prefix?null:document.getElementById(u.vis)?.closest?.('.multi-enemy-card');
+  const bar=prefix?document.getElementById(`${prefix}HpBar`):host?.querySelector('.hp');
+  const trail=prefix?document.getElementById(`${prefix}HpTrail`):host?.querySelector('.hp-trail');
+  const label=prefix?document.getElementById(`${prefix}HpText`):host?.querySelector('.battle-hp-line span');
+  if(bar){bar.style.width=`${pct}%`;bar.className='hp'+(pct<25?' hp-danger':pct<50?' hp-warn':'');bar.setAttribute('aria-valuenow',String(hp));}
+  if(trail)trail.style.width=`${pct}%`;
+  if(label)label.textContent=`${hp} / ${u.max}`;
 }
 function renderBattleHpResults(u,queue){
   const target=document.getElementById(u.vis);if(!target)return;
@@ -147,6 +163,7 @@ function renderMultiBattleCards(html){
   [...grid.children].forEach(node=>{if(!ids.has(node.id))node.remove();});
 }
 function forgetBattleEnemyFeedback(){
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   document.getElementById('singleEnemyBox')?.querySelector('.battle-hp-result')?.remove();
   for(const map of [battleFeedback.hp,battleFeedback.states,battleFeedback.results])for(const key of map.keys())if(key.startsWith('single:'))map.delete(key);
   battleFeedback.action='';

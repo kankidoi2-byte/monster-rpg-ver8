@@ -232,6 +232,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   const log = document.getElementById('log');
   if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();
   document.getElementById('pName').textContent = player.name;
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   document.getElementById('pVis').innerHTML = vis(player);
   renderSkillButtons();
   if (typeof renderKokoroLinkPanel === 'function') renderKokoroLinkPanel();

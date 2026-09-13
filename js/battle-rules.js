@@ -339,12 +339,12 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const [name, power, type, effect, effectChance] = mv;
   const logEl = document.getElementById('log');
   const sourceId=isPlayer?'pVis':'eVis',targetId=isPlayer?'eVis':'pVis';
-  const supportTargetId=effect==='sleep'?targetId:sourceId;
-  const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,mv):false;
+  const supportTargetId=['sleep','debuff'].includes(effect)?targetId:sourceId;
+  const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,mv,{untilImpact:true}):false;
   // 補助技
   if (effect === 'guard') {
     isPlayer ? pGuard=true : eGuard=true;
-    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
+    logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'heal') {
     const baseHealing = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
@@ -354,21 +354,21 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
     const healed = (isPlayer ? pHp : eHp) - before;
     if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:effect==='drain'?'吸収':'回復'});
-    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
+    logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'buff') {
     isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
-    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
+    logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'debuff') {
     isPlayer ? eAtk=Math.max(.65,eAtk-.2) : pAtk=Math.max(.65,pAtk-.2);
-    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return {animated:supportAnimated};
+    logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'aqua_shield') {
     if (isPlayer) pAquaShield = true; else eAquaShield = true;
     logEl.innerHTML = `💧 ${attacker.name}は水の盾を展開した！ 次に受ける攻撃ダメージを半減する！`;if(typeof captureBattleLog==='function')captureBattleLog();
     update();
-    return {animated:supportAnimated};
+    return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'sleep') {
     let msg = `🌿 ${attacker.name}の「${name}」！`;
@@ -381,10 +381,10 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     }
     logEl.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
     update();
-    return {animated:supportAnimated};
+    return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
-  const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,mv):false;
-  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;if(typeof captureBattleLog==='function')captureBattleLog();update();return {animated};}
+  const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true}):false;
+  if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;if(typeof captureBattleLog==='function')captureBattleLog();update();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(animated):{animated};}
   // ダメージ計算
   const r = typeEff(type, defender.types);
   const hasFlareCharge = effect !== 'flare_charge' && power > 0 && (isPlayer ? pFlareCharge : eFlareCharge);
@@ -477,13 +477,15 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.30):{chance:Number.isFinite(effectChance)?effectChance:0.30,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
     if(Math.random()<chance.chance){
+    if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
+    if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true});
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
     const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
     const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
     const secondDmg = secondBarrier.hpDamage;
     const secondHpBefore=isPlayer?eHp:pHp;
     if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
-    if(typeof battleHpResult==='function')battleHpResult(targetId,secondHpBefore,isPlayer?eHp:pHp,{label:'追加攻撃',damage:secondDmg,barrier:secondBarrier.absorbed});
+    if(typeof battleHpResult==='function')battleHpResult(targetId,secondHpBefore,isPlayer?eHp:pHp,{label:'追加攻撃',damage:secondDmg,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(mv),power,impact:true});
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
     const secondDefenseMsg=kokoroLinkDefenseMessage(secondBarrier);if(secondDefenseMsg)msg+=`<br>${secondDefenseMsg}`;
     }
@@ -499,6 +501,6 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (partyBattle[activePartyIdx] && !isPlayer) partyBattle[activePartyIdx].hp = Math.max(0, pHp);
   update();
-  if(animated)await battleMotionDelay(120);
+  if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
   return {animated};
 }

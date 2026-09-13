@@ -178,6 +178,7 @@ context.document = {
   }
 };
 context.matchMedia = () => ({matches:false});
+context.clearTimeout = () => {};
 context.setTimeout = callback => { callback(); return 1; };
 vm.runInContext(battleView, context, {filename:'js/battle-view.js'});
 const rendered = await vm.runInContext("playBattleSkillMotion('sourceVis','targetVis',skillToMove('skill_nemes_03'))", context);
@@ -277,11 +278,11 @@ for (const [skillId,form,family] of [
 
 assert(battleView.includes('async function playBattleSkillMotion'), 'the battle view must expose the projectile renderer');
 assert(battleView.includes('BATTLE_MOTION_DURATIONS'), 'each battle motion must use an explicit duration');
-assert(battleRules.includes("await playBattleSkillMotion(sourceId,targetId,mv)"), 'single battles must await the tagged motion before impact');
-assert(battleRules.includes("await playBattleSkillMotion(sourceId,supportTargetId,mv)"), 'single battles must await self- or enemy-targeted support motion before applying the effect');
+assert(battleRules.includes("await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true})"), 'single battles must await the tagged motion before impact');
+assert(battleRules.includes("await playBattleSkillMotion(sourceId,supportTargetId,mv,{untilImpact:true})"), 'single battles must await self- or enemy-targeted support motion before applying the effect');
 assert(battleFlow.includes('await performAction(enemy,player,enemyAction.move,false)'), 'manual-switch retaliation must await its attack motion');
-assert(multiBattle.includes('await playBattleSkillMotion(sourceId,impactTargetId,move)'), 'multi battles must target the selected combatant');
-assert(multiBattle.includes('await playBattleSkillMotion(sourceId,supportTargetId,move)'), 'multi battles must await support motion on the correct combatant');
+assert(multiBattle.includes('await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true})'), 'multi battles must target the selected combatant');
+assert(multiBattle.includes('await playBattleSkillMotion(sourceId,supportTargetId,move,{untilImpact:true})'), 'multi battles must await support motion on the correct combatant');
 assert(css.includes('.battle-skill-motion.is-beam') && css.includes('@keyframes battleSkillBeam'), 'beam styling is missing');
 assert(css.includes('.battle-skill-motion.is-breath') && css.includes('@keyframes battleSkillBreath'), 'breath styling is missing');
 assert(css.includes('.battle-melee-motion.is-sword') && css.includes('@keyframes battleSwordCut'), 'sword styling is missing');

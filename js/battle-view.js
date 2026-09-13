@@ -1,4 +1,5 @@
 function setupBattle() {
+  clearBattleVisuals();
   pendingKokoroLinkStatusSourceUid=null;
   pendingKokoroLinkTacticsMode=null;
   const targetSelect = document.getElementById('multiTargetSelect');
@@ -108,7 +109,7 @@ const BATTLE_MOTION_COLORS=Object.freeze({
   fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
-const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340,roar:480,wave:460,projectile:420,lightning:440,field:520,mystic:480,guard:440,heal:500,buff:460,shield:500,sleep:520});
+const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340,roar:480,wave:460,projectile:420,lightning:440,field:520,mystic:480,guard:440,heal:500,buff:460,debuff:360,shield:500,sleep:520});
 const BATTLE_MELEE_FORMS=Object.freeze(['sword','claw','fang']);
 const BATTLE_COLLISION_FORMS=Object.freeze(['charge','strike','body']);
 const BATTLE_LUNGE_FORMS=Object.freeze(['charge','body']);
@@ -117,7 +118,7 @@ const BATTLE_PIERCE_FORMS=Object.freeze(['horn','beak','dagger']);
 const BATTLE_BLUNT_FORMS=Object.freeze(['fist','club']);
 const BATTLE_ANATOMY_FORMS=Object.freeze([...BATTLE_SWEEP_FORMS,...BATTLE_PIERCE_FORMS,...BATTLE_BLUNT_FORMS]);
 const BATTLE_ARCANE_FORMS=Object.freeze(['lightning','field','mystic']);
-const BATTLE_SUPPORT_FORMS=Object.freeze(['guard','heal','buff','shield','sleep']);
+const BATTLE_SUPPORT_FORMS=Object.freeze(['guard','heal','buff','debuff','shield','sleep']);
 function battleAnatomyFamily(form){
   if(BATTLE_SWEEP_FORMS.includes(form))return 'sweep';
   if(BATTLE_PIERCE_FORMS.includes(form))return 'pierce';
@@ -126,7 +127,22 @@ function battleAnatomyFamily(form){
 function battleMotionDelay(ms){
   return new Promise(resolve => setTimeout(resolve,ms));
 }
-async function playBattleSkillMotion(sourceId,targetId,mv){
+// Fractions are the arrival/contact keyframes in ui-redesign.css, not effect endings.
+const BATTLE_MOTION_CONTACT=Object.freeze({breath:.32,beam:.24,sword:.24,claw:.28,fang:.42,magic:.78,blade:.82,charge:.64,strike:.38,body:.64,tail:.34,horn:.38,fist:.58,wing:.34,fin:.34,leg:.34,beak:.38,club:.58,dagger:.38,roar:.78,wave:.80,projectile:.82,lightning:.44,field:.48,mystic:.55,guard:.48,heal:.45,buff:.48,debuff:.48,shield:.52,sleep:.42});
+const battleVisuals=new Set();
+const battleMotionTails=new Set();
+function clearBattleVisuals(){
+  for(const cleanup of [...battleVisuals])cleanup();
+}
+async function finishBattleSkillMotion(animated){
+  await Promise.all([...battleMotionTails]);
+  return {animated};
+}
+function battleMotionTiming(motion){
+  const duration=motion.skillId?BATTLE_MOTION_DURATIONS[motion.form]||350:motion.form==='strike'?240:BATTLE_MOTION_DURATIONS[motion.form]||350;
+  return {duration,contact:Math.round(duration*(BATTLE_MOTION_CONTACT[motion.form]||.5))};
+}
+async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
   const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;
   if(!motion?.animated)return false;
   const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -138,17 +154,18 @@ async function playBattleSkillMotion(sourceId,targetId,mv){
   const targetCenter={x:targetRect.left-stageRect.left+targetRect.width/2,y:targetRect.top-stageRect.top+targetRect.height/2};
   const rawDx=targetCenter.x-sourceCenter.x,rawDy=targetCenter.y-sourceCenter.y,rawDistance=Math.hypot(rawDx,rawDy);
   const support=BATTLE_SUPPORT_FORMS.includes(motion.form);
-  if(rawDistance<8&&!support)return false;
   const ux=rawDistance<8?0:rawDx/rawDistance,uy=rawDistance<8?0:rawDy/rawDistance;
   const sourceInset=Math.min(sourceRect.width,sourceRect.height)*.24,targetInset=Math.min(targetRect.width,targetRect.height)*.18;
   const start={x:sourceCenter.x+ux*sourceInset,y:sourceCenter.y+uy*sourceInset};
   const end={x:targetCenter.x-ux*targetInset,y:targetCenter.y-uy*targetInset};
   const dx=end.x-start.x,dy=end.y-start.y,distance=Math.max(12,Math.hypot(dx,dy));
+  const {duration,contact}=battleMotionTiming(motion);
   const types=normalizeMoveTypes(motion.types),primary=types[0]||'normal',secondary=types[1]||primary;
   const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form),collision=BATTLE_COLLISION_FORMS.includes(motion.form),anatomy=BATTLE_ANATOMY_FORMS.includes(motion.form),arcane=BATTLE_ARCANE_FORMS.includes(motion.form);
   const targetLocal=melee||collision||anatomy||arcane||support,anatomyFamily=anatomy?battleAnatomyFamily(motion.form):'';
   effect.className=`${melee?'battle-melee-motion':collision?'battle-impact-motion':anatomy?'battle-anatomy-motion':arcane?'battle-arcane-motion':support?'battle-support-motion':'battle-skill-motion'} is-${motion.form}${anatomyFamily?` is-${anatomyFamily}`:''} is-${battleImpactType(primary)}`;
   effect.setAttribute('aria-hidden','true');
+  effect.style.setProperty('--skill-duration',`${duration}ms`);
   if(targetLocal){
     const size=Math.max(58,Math.min(104,Math.min(targetRect.width,targetRect.height)*.72));
     effect.style.left=`${targetCenter.x}px`;
@@ -175,23 +192,31 @@ async function playBattleSkillMotion(sourceId,targetId,mv){
     source.style.setProperty('--battle-recoil-y',`${uy*travel*-.18}px`);
   }
   void source.offsetWidth;
+  source.style.setProperty('--skill-duration',`${duration}ms`);
   source.classList.add(castClass);
   stage.appendChild(effect);
-  await battleMotionDelay(BATTLE_MOTION_DURATIONS[motion.form]||350);
-  source.classList.remove(castClass);
-  if(lunge){
-    source.style.removeProperty('--battle-lunge-x');
-    source.style.removeProperty('--battle-lunge-y');
-    source.style.removeProperty('--battle-recoil-x');
-    source.style.removeProperty('--battle-recoil-y');
-  }
-  effect.remove();
+  // Force the CSS animation onto the same timeline as the contact timer.
+  void effect.offsetWidth;
+  let timer,settle;
+  const tail=new Promise(resolve=>{settle=resolve;});
+  const cleanup=()=>{
+    clearTimeout(timer);
+    source.classList.remove(castClass);
+    for(const property of ['--skill-duration','--battle-lunge-x','--battle-lunge-y','--battle-recoil-x','--battle-recoil-y'])source.style.removeProperty(property);
+    effect.remove();battleVisuals.delete(cleanup);battleMotionTails.delete(tail);settle();
+  };
+  battleVisuals.add(cleanup);battleMotionTails.add(tail);
+  timer=setTimeout(cleanup,duration);
+  if(untilImpact)await battleMotionDelay(contact);else await tail;
   return true;
 }
+
+const battleImpactOwners=new WeakMap();
 function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal', power=0) {
   const target = document.getElementById(targetId);
   const stage = document.querySelector('#battle .battle-arena');
   if (!target || !stage) return;
+  battleImpactOwners.get(target)?.();
   const impactType = battleImpactType(typeOrTypes);
   const isStrong = Number(power) >= 50;
   target.classList.remove('battle-hit-impact');
@@ -213,8 +238,16 @@ function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal
   flash.className = `battle-element-flash is-${impactType}${isStrong ? ' is-strong' : ''}`;
   flash.setAttribute('aria-hidden', 'true');
   stage.appendChild(flash);
-  setTimeout(() => stage.classList.remove('battle-impact-stop', 'battle-impact-strong'), isStrong ? 190 : 130);
-  setTimeout(() => { target.classList.remove('battle-hit-impact'); burst.remove(); flash.remove(); }, isStrong ? 820 : 650);
+  let stopTimer,removeTimer;
+  const cleanup=()=>{
+    clearTimeout(stopTimer);clearTimeout(removeTimer);
+    target.classList.remove('battle-hit-impact');burst.remove();flash.remove();
+    battleImpactOwners.delete(target);battleVisuals.delete(cleanup);
+    if(!stage.querySelector?.('.battle-element-flash'))stage.classList.remove('battle-impact-stop','battle-impact-strong');
+  };
+  battleImpactOwners.set(target,cleanup);battleVisuals.add(cleanup);
+  stopTimer=setTimeout(()=>stage.classList.remove('battle-impact-stop','battle-impact-strong'),isStrong?190:130);
+  removeTimer=setTimeout(cleanup,isStrong?820:650);
 }
 function hideBattleOutcome() {
   if(typeof battleFeedback!=='undefined')battleFeedback.finished=false;
