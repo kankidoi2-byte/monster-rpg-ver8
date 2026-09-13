@@ -182,6 +182,7 @@ function useBattleItemFromMenu(id){
   useBattleItem(id);
 }
 function useBattleItem(id) {
+  if(busy)return;
   ensureContractScrollItem();
   if(ITEM_BY_ID[id]?.contract) { alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
   const it = ITEM_BY_ID[id];
@@ -214,7 +215,7 @@ function useBattleItem(id) {
   saveGame(); updateItems(); update();
   show('battle');
   const log = document.getElementById('log');
-  if(log) log.innerHTML = msg;
+  if(log) log.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function chooseDefaultContractItem(){
   ensureContractScrollItem();
