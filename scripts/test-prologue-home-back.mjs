@@ -26,7 +26,7 @@ assert.match(main,/id:'request_reward_claim'[^\n]+target:'#tutorialRequestClaimB
 assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_intro'/);
 assert.ok(main.includes('ここを押すと、討伐依頼と報酬を確認できるぞ！'));
 assert.ok(main.includes('このボタンを押して、報告と報酬の確認へ進もう！'));
-assert.ok(main.includes('報酬はコイン250枚と錬成素材4種類だ'));
+assert.ok(main.includes('報酬はコイン250枚とアイテム4種類だ'));
 assert.ok(!main.includes('カナタ'),'Kanata must not appear in the prologue');
 
 for(const token of [

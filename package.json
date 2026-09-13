@@ -54,7 +54,7 @@
     "check:contractor-rank-rewards": "node scripts/test-contractor-rank-rewards.mjs",
     "analyze:kokoro-link": "node scripts/kokoro-link-analysis.mjs",
     "analyze:kokoro-link-balance": "node scripts/kokoro-link-phase5-balance.mjs",
-    "check:prologue-tutorial-engine": "node scripts/test-prologue-tutorial-engine.mjs",
+    "check:prologue-tutorial-engine": "node scripts/test-prologue-tutorial-engine.mjs && node scripts/test-tutorial-dialogue-pages.mjs && node scripts/test-tutorial-opening-rescue.mjs",
     "check:prologue-save-v2": "node scripts/test-prologue-save-v2.mjs",
     "check:prologue-battle-basics": "node scripts/test-prologue-battle-basics.mjs",
     "check:prologue-rescue-stability": "node scripts/test-prologue-rescue-stability.mjs",

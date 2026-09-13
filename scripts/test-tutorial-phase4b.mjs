@@ -28,8 +28,8 @@ for(const id of encounterSteps){
 }
 const encounter=tutorial.slice(tutorial.indexOf("id:'elna_encounter'"),tutorial.indexOf("id:'home_party'"));
 assert.ok(encounter.includes('スライムに囲まれてる')||encounter.includes('スライムに囲まれた'),'the story must visibly establish that Slimes surround Elna');
-assert.ok(encounter.includes('助けに入ろう！')&&encounter.includes('フレイガルとアクアロンの契約体を貸すぞ！'),'Gnosis must call for the rescue and lend the two contract bodies');
-assert.ok(encounter.includes('本人エルナが共闘')&&encounter.includes('私も一緒に戦う'),'the encounter must distinguish Elna herself joining as a guest');
+assert.ok(encounter.includes('助けに入った方がいいみたいだ！')&&encounter.includes('さっそくボクの力を使って！')&&encounter.includes('炎のフレイガルと、水のアクアロンだ！'),'the revised rescue introduces the two borrowed powers');
+assert.ok(encounter.includes('本人エルナが共闘')&&encounter.includes('背中は任せて！'),'Elna herself joins the rescue as a guest');
 assert.ok(encounter.includes("transition:'start_elna_rescue'")&&encounter.includes("nextStepId:'battle_enemy'"),'the rescue confirmation must start real combat before battle guidance');
 assert.ok(!encounter.includes('カナタ'),'Kanata must not appear in the prologue encounter');
 assert.ok((encounter.match(/images\/tutorial\/characters\/elna_beginner\.png/g)||[]).length>=2,'Elna dialogue must use the existing transparent portrait');
@@ -104,7 +104,7 @@ assert.ok(flow.includes("tutorialBattlePartyInstances(savedParty)"),'the real ba
 assert.ok(flow.indexOf("continueTutorialRescueWave")<flow.indexOf("if (battleRewardGranted) return;",flow.indexOf('function win()')),'the next guaranteed Slime must spawn before victory rewards are finalized');
 assert.ok(tutorial.includes('function continueTutorialRescueWave')&&tutorial.includes("tutorialBattleSession.enemyQueue.shift()")&&tutorial.includes('setupBattle()'),'the second Slime must be generated as an actual sequential battle wave');
 assert.ok(tutorial.includes("rescue?'elna_rescue_complete':'victory_exp'")&&tutorial.includes("rescue?'elna_rescue_retry':'battle_retry'"),'rescue outcomes must stay on the prologue path rather than the old Slime-contract path');
-assert.ok(tutorial.includes("persistAs:'elna_contract_intro'")&&tutorial.includes("nextStepId:'elna_contract_intro'"),'victory must continue from the safe Phase 8 contract checkpoint');
+assert.ok(tutorial.includes("persistAs:'elna_rescue_complete'")&&tutorial.includes("nextStepId:'elna_contract_intro'"),'victory must preserve unread thanks before advancing to the existing contract checkpoint');
 assert.ok(flow.includes("handleTutorialBattleOutcome('defeat')")&&flow.includes("handleTutorialBattleOutcome('retreat')"),'defeat and retreat must remain recoverable');
 
 console.log('Tutorial Phase 4B validation passed (Elna encounter, idempotent Freigal/Aquaron grant, temporary GUEST, two guaranteed Slime waves, real battle start, and safe outcome checkpoints).');

@@ -26,6 +26,8 @@ const tutorialUiState={
   active:false,flowId:null,steps:[],index:0,persist:false,replay:false,
   returnScreen:null,target:null,previousFocus:null,lastFocusedStep:null,advancePendingStepId:null
 };
+// Presentation-only state: never serialized into a player's save.
+const tutorialDialogueState={step:null,page:0,lockedUntil:0,renderToken:0};
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
 const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true,tutorialRole:'person'});
@@ -35,7 +37,7 @@ const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
   materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])
 });
 const TUTORIAL_STELLA_SKILL_ID='skill_elna_middle_01';
-const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'grassland',enemyId:'grassbeat',difficultyId:'easy',actorId:'freigal'});
+const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'easy'});
 const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
   recipeId:'galdra_standard',displayName:'ルミナの入門錬成',resultId:'galdra',
   coinOptionId:'high',coins:250,
@@ -66,18 +68,60 @@ function tutorialStepRequiresAction(step){return tutorialStepMode(step)!==TUTORI
 function tutorialStepAcceptsTargetAction(step){
   return tutorialStepMode(step)===TUTORIAL_STEP_MODE.TARGET_ACTION&&Boolean(step?.target);
 }
+function normalizeTutorialDialogue(step){
+  if(step.dialogue===undefined)return step.choices===undefined?{dialogue:null,choices:null}:null;
+  // Keep side effects and real-screen operations in separate steps. A page
+  // turn must never execute a contract, grant a reward or complete an action.
+  if(tutorialStepRequiresAction(step)||step.target||step.input||step.transition||step.waitForEvent||step.continueAt)return null;
+  if(!Array.isArray(step.dialogue)||!step.dialogue.length)return null;
+  const dialogue=[];
+  let inherited={speaker:step.speaker||null,portrait:step.portrait||null,scene:step.scene||null};
+  for(const entry of step.dialogue){
+    if(!entry||typeof entry!=='object'||typeof entry.text!=='string'||!entry.text.trim())return null;
+    if(Object.keys(entry).some(key=>!['text','speaker','portrait','scene','storyEffect','storyMotion'].includes(key)))return null;
+    const page={text:entry.text};
+    for(const key of ['speaker','portrait','scene']){
+      if(entry[key]!==undefined&&entry[key]!==null&&typeof entry[key]!=='string')return null;
+      page[key]=entry[key]===undefined?inherited[key]:entry[key]||null;
+    }
+    if(entry.storyEffect!==undefined&&entry.storyEffect!==null&&typeof entry.storyEffect!=='string')return null;
+    if(entry.storyMotion!==undefined&&!['appear','fly','bite'].includes(entry.storyMotion))return null;
+    page.storyEffect=entry.storyEffect||null;
+    page.storyMotion=entry.storyMotion||null;
+    inherited=page;
+    dialogue.push(Object.freeze(page));
+  }
+  let choices=null;
+  if(step.choices!==undefined){
+    if(!Array.isArray(step.choices)||step.choices.length<2||step.choices.length>4)return null;
+    const ids=new Set();choices=[];
+    for(const choice of step.choices){
+      if(!choice||typeof choice.id!=='string'||!choice.id.trim()||ids.has(choice.id)
+        ||typeof choice.label!=='string'||!choice.label.trim()||choice.nextStepId!==undefined)return null;
+      ids.add(choice.id);choices.push(Object.freeze({id:choice.id,label:choice.label}));
+    }
+    choices=Object.freeze(choices);
+  }
+  return {dialogue:Object.freeze(dialogue),choices};
+}
 function normalizeTutorialStep(step,index){
   if(!step||typeof step!=='object'||(step.advanceOnTarget===true&&step.externalAdvance===true))return null;
   const id=typeof step.id==='string'&&step.id?step.id:`step_${index+1}`;
   const mode=inferTutorialStepMode(step);
   const target=typeof step.target==='string'&&step.target?step.target:null;
   if(mode===TUTORIAL_STEP_MODE.TARGET_ACTION&&!target)return null;
+  const dialogue=normalizeTutorialDialogue(step);
+  if(!dialogue)return null;
   return Object.freeze({
     id,
     mode,
+    ...dialogue,
+    previousStepId:typeof step.previousStepId==='string'&&step.previousStepId?step.previousStepId:null,
     speaker:typeof step.speaker==='string'&&step.speaker?step.speaker:null,
     portrait:typeof step.portrait==='string'&&step.portrait?step.portrait:null,
     scene:typeof step.scene==='string'&&step.scene?step.scene:null,
+    storyEffect:typeof step.storyEffect==='string'&&step.storyEffect?step.storyEffect:null,
+    storyMotion:['appear','fly','bite'].includes(step.storyMotion)?step.storyMotion:null,
     input:['player_name','elna_contract'].includes(step.input)?step.input:null,
     transition:TUTORIAL_TRANSITIONS.has(step.transition)?step.transition:null,
     title:typeof step.title==='string'&&step.title?step.title:'操作ガイド',
@@ -166,6 +210,18 @@ function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   }
   const below=Math.max(0,viewport.height-targetRect.bottom-gap-margin);
   const above=Math.max(0,targetRect.top-gap-margin);
+  // Short landscape viewports can leave no vertical space beside a map pin.
+  // Use horizontal room before allowing the guide to cover its action target.
+  if(Math.max(above,below)<height){
+    const right=viewport.width-targetRect.right-gap-margin;
+    const left=targetRect.left-gap-margin;
+    if(Math.max(right,left)>=width){
+      const side=right>=left?'right':'left';
+      return {left:side==='right'?targetRect.right+gap:targetRect.left-gap-width,
+        top:clamp(targetRect.top+(targetRect.height-height)/2,margin,viewport.height-height-margin),
+        maxHeight:viewport.height-margin*2,side};
+    }
+  }
   const side=below>=Math.min(height,180)||below>=above?'below':'above';
   const available=side==='below'?below:above;
   // A large highlighted card can leave almost no room above or below it. In that
@@ -173,7 +229,10 @@ function calculateTutorialPlacement(targetRect,bubbleSize,viewport,options={}){
   // behind an undiscoverable inner scroll area. Keep the guide at its natural
   // height (up to the visual viewport) and allow it to overlap a non-interactive
   // part of the spotlight when there is not enough adjacent space.
-  const maxHeight=Math.min(Math.max(0,viewport.height-margin*2),Math.max(available,height));
+  // A required button must remain tappable. With a usable adjacent area,
+  // retain the scrollable guide there instead of covering that button.
+  const keepActionClear=options.avoidTarget===true&&available>=128;
+  const maxHeight=Math.min(Math.max(0,viewport.height-margin*2),keepActionClear?available:Math.max(available,height));
   const fittedHeight=Math.min(height,maxHeight);
   const top=side==='below'?targetRect.bottom+gap:targetRect.top-gap-fittedHeight;
   const centered=targetRect.left+(targetRect.width-width)/2;
@@ -197,7 +256,13 @@ function ensureTutorialTargetVisible(target){
   const viewportHeight=window.innerHeight||document.documentElement.clientHeight;
   const viewportWidth=window.innerWidth||document.documentElement.clientWidth;
   if(rect.top<8||rect.bottom>viewportHeight-8||rect.left<4||rect.right>viewportWidth-4){
-    target.scrollIntoView?.({block:'center',inline:'nearest'});
+    if(viewportWidth>viewportHeight&&rect.height<viewportHeight/2&&target.style){
+      const previousMargin=target.style.scrollMarginTop;
+      const headerBottom=document.querySelector('.app-topbar')?.getBoundingClientRect?.().bottom||0;
+      target.style.scrollMarginTop=`${Math.max(12,headerBottom+12)}px`;
+      target.scrollIntoView?.({block:'start',inline:'nearest'});
+      target.style.scrollMarginTop=previousMargin;
+    }else target.scrollIntoView?.({block:'center',inline:'nearest'});
   }
 }
 function positionTutorialUi(){
@@ -236,13 +301,14 @@ function positionTutorialUi(){
   bubble.style.maxHeight='calc(100svh - 20px)';
   const placement=overlay?.classList.contains('is-story-step')&&!hole
     ?calculateTutorialStoryPlacement(bubble.getBoundingClientRect(),viewport)
-    :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport);
+    :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport,{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;
   bubble.style.visibility='visible';
-  arrow?.classList.toggle('is-empty',!hole||placement.side==='center');
-  if(arrow&&hole&&placement.side!=='center'){
+  const verticalArrow=placement.side==='above'||placement.side==='below';
+  arrow?.classList.toggle('is-empty',!hole||!verticalArrow);
+  if(arrow&&hole&&verticalArrow){
     arrow.className=`tutorial-arrow is-${placement.side==='below'?'up':'down'}`;
     arrow.style.left=`${Math.max(12,Math.min(viewport.width-34,hole.left+hole.width/2-11))}px`;
     arrow.style.top=`${placement.side==='below'?hole.bottom+1:hole.top-16}px`;
@@ -253,14 +319,45 @@ function tutorialResolvedText(step){
   const playerName=typeof currentTutorialState==='function'?currentTutorialState().playerName:null;
   return String(step?.text||'').replaceAll('{{playerName}}',playerName||'契約者');
 }
+function tutorialDialogueView(step){
+  if(tutorialDialogueState.step!==step){
+    tutorialDialogueState.step=step;tutorialDialogueState.page=0;
+    tutorialDialogueState.renderToken+=1;
+  }
+  const page=step?.dialogue?.[tutorialDialogueState.page];
+  return page?{...step,...page}:step;
+}
+function tutorialDialogueHasMore(step){
+  return Boolean(step?.dialogue&&tutorialDialogueState.page<step.dialogue.length-1);
+}
+function tutorialDialogueNeedsChoice(step){return Boolean(step?.choices&&!tutorialDialogueHasMore(step));}
+function renderTutorialDialogueChoices(step){
+  const root=document.getElementById('tutorialDialogueChoices');
+  const token=++tutorialDialogueState.renderToken;
+  if(!root?.replaceChildren)return;
+  root.replaceChildren();root.hidden=!tutorialDialogueNeedsChoice(step);
+  if(root.hidden)return;
+  for(const choice of step.choices){
+    const button=document.createElement('button');
+    button.type='button';button.textContent=tutorialResolvedText({text:choice.label});
+    button.addEventListener('click',()=>{
+      if(token!==tutorialDialogueState.renderToken||tutorialUiState.steps[tutorialUiState.index]!==step)return;
+      tutorialNext(false,choice.id);
+    });
+    root.appendChild(button);
+  }
+}
 function renderTutorialStoryStep(step){
   const overlay=document.getElementById('tutorialOverlay');
   const backdrop=document.getElementById('tutorialStoryBackdrop');
   const layer=document.getElementById('tutorialCharacterLayer');
   const portrait=document.getElementById('tutorialCharacterPortrait');
+  const effectLayer=document.getElementById('tutorialStoryEffectLayer');
+  const effect=document.getElementById('tutorialStoryEffect');
   const story=Boolean(step?.scene||step?.portrait);
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
   overlay?.classList.toggle('is-story-step',story);
+  overlay?.classList.toggle('is-dialogue-pages',Boolean(step?.dialogue));
   // Full-body portraits support narrative dialogue, but they obscure the game
   // screen when the current step is explaining or highlighting a real UI target.
   // In UI-guide steps the speaker name remains in the bubble and the target wins.
@@ -275,6 +372,14 @@ function renderTutorialStoryStep(step){
     portrait.hidden=!step?.portrait;
     if(step?.portrait&&portrait.getAttribute('src')!==step.portrait)portrait.setAttribute('src',step.portrait);
     portrait.alt=step?.speaker?step.speaker:'';
+  }
+  if(effectLayer){
+    effectLayer.hidden=!step?.storyEffect;
+    effectLayer.dataset.motion=step?.storyMotion||'';
+  }
+  if(effect){
+    effect.hidden=!step?.storyEffect;
+    if(step?.storyEffect&&effect.getAttribute('src')!==step.storyEffect)effect.setAttribute('src',step.storyEffect);
   }
 }
 function confirmTutorialPlayerName(event){
@@ -328,15 +433,19 @@ function tutorialInitialPartyReady(party=typeof getPartyInstances==='function'?g
     &&members.some(instance=>instance?.id==='elna_beginner');
 }
 function canConfirmTutorialParty(party){
-  if(tutorialCurrentStepId()!=='party_save')return true;
+  const stepId=tutorialCurrentStepId();
+  if(!['party_save','expedition_party_save'].includes(stepId))return true;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   if(tutorial?.replaying)return true;
-  if(tutorialInitialPartyReady(party))return true;
-  if(typeof showUiNotice==='function')showUiNotice('フレイガル系統、アクアロン系統、エルナの3体を編成してください。','warning');
+  const ready=stepId==='party_save'?tutorialInitialPartyReady(party):tutorialExpeditionPartyReady(party);
+  if(ready)return true;
+  if(typeof showUiNotice==='function')showUiNotice(stepId==='party_save'
+    ?'フレイガル系統、アクアロン系統、エルナの3体を編成してください。'
+    :'ガルドラ、アクアロン、エルナの3体を編成し、フレイガルを控えにしてください。','warning');
   return false;
 }
 function handleTutorialPartySaved(){
-  if(!tutorialUiState.active||tutorialCurrentStepId()!=='party_save')return false;
+  if(!tutorialUiState.active||!['party_save','expedition_party_save'].includes(tutorialCurrentStepId()))return false;
   tutorialNext(true);
   return true;
 }
@@ -425,7 +534,8 @@ function renderTutorialStep(){
   const overlay=document.getElementById('tutorialOverlay');
   const bubble=document.getElementById('tutorialBubble');
   if(!overlay||!bubble)return;
-  renderTutorialStoryStep(step);
+  const view=tutorialDialogueView(step);
+  renderTutorialStoryStep(view);
   bubble.scrollTop=0;
   clearTutorialTarget();
   tutorialUiState.target=step.target?document.querySelector(step.target):null;
@@ -433,8 +543,9 @@ function renderTutorialStep(){
   ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
-  document.getElementById('tutorialTitle').textContent=step.speaker||step.title;
-  document.getElementById('tutorialText').textContent=tutorialResolvedText(step);
+  document.getElementById('tutorialTitle').textContent=tutorialResolvedText({text:view.speaker||step.title});
+  document.getElementById('tutorialText').textContent=tutorialResolvedText(view);
+  renderTutorialDialogueChoices(step);
   const nameForm=document.getElementById('tutorialNameForm');
   const nameInput=document.getElementById('tutorialPlayerNameInput');
   if(nameForm)nameForm.hidden=step.input!=='player_name';
@@ -448,7 +559,7 @@ function renderTutorialStep(){
   const next=document.getElementById('tutorialNextButton');
   const actions=next?.closest('.tutorial-actions');
   const requiresAction=tutorialStepRequiresAction(step);
-  back.disabled=tutorialElnaContractBusy||tutorialUiState.index===0||step.disableBack;
+  back.disabled=tutorialElnaContractBusy||(tutorialUiState.index===0&&tutorialDialogueState.page===0)||step.disableBack;
   if(dialogueSkip){
     dialogueSkip.hidden=tutorialDialogueSkipTargetIndex()<0;
     dialogueSkip.disabled=tutorialElnaContractBusy;
@@ -456,9 +567,9 @@ function renderTutorialStep(){
   skip.disabled=tutorialElnaContractBusy;
   document.querySelector('.tutorial-pause')?.toggleAttribute('disabled',tutorialElnaContractBusy);
   skip.textContent=tutorialUiState.persist?'全体スキップ':'閉じる';
-  next.textContent=step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
-  next.hidden=requiresAction;
-  next.disabled=requiresAction||tutorialElnaContractBusy;
+  next.textContent=tutorialDialogueHasMore(step)?'次へ':step.nextLabel||(tutorialUiState.index===tutorialUiState.steps.length-1?'完了':'次へ');
+  next.hidden=requiresAction||tutorialDialogueNeedsChoice(step);
+  next.disabled=requiresAction||tutorialElnaContractBusy||tutorialDialogueNeedsChoice(step);
   actions?.classList.toggle('is-target-action',requiresAction);
   actions?.classList.toggle('is-name-entry',step.input==='player_name');
   overlay.classList.remove('hidden');
@@ -498,9 +609,17 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}=
   return true;
 }
 function tutorialPrevious(){
-  if(tutorialElnaContractBusy||!tutorialUiState.active||tutorialUiState.index<=0)return;
+  if(tutorialElnaContractBusy||!tutorialUiState.active||Date.now()<tutorialDialogueState.lockedUntil)return;
   if(tutorialUiState.steps[tutorialUiState.index]?.disableBack)return;
-  tutorialUiState.index-=1;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
+  if(tutorialDialogueState.page>0){
+    tutorialDialogueState.page-=1;tutorialDialogueState.lockedUntil=Date.now()+250;
+    tutorialUiState.lastFocusedStep=null;renderTutorialStep();return;
+  }
+  if(tutorialUiState.index<=0)return;
+  const previousId=tutorialUiState.steps[tutorialUiState.index]?.previousStepId;
+  const previousIndex=previousId?tutorialStepIndex(tutorialUiState.steps,previousId):tutorialUiState.index-1;
+  if(previousIndex<0)return;
+  tutorialUiState.index=previousIndex;tutorialUiState.lastFocusedStep=null;persistTutorialStep();renderTutorialStep();
 }
 function tutorialLinkedStepIndex(index){
   const step=tutorialUiState.steps[index];
@@ -512,7 +631,7 @@ function tutorialLinkedStepIndex(index){
 function tutorialDialogueSkipTargetIndex(){
   if(!tutorialUiState.active)return -1;
   const current=tutorialUiState.steps[tutorialUiState.index];
-  if(!current||tutorialStepRequiresAction(current)||current.transition||current.input||current.waitForEvent||current.continueAt)return -1;
+  if(!current||current.choices||tutorialStepRequiresAction(current)||current.transition||current.input||current.waitForEvent||current.continueAt)return -1;
   let index=tutorialUiState.index;
   const visited=new Set([index]);
   while(visited.size<=tutorialUiState.steps.length){
@@ -520,13 +639,13 @@ function tutorialDialogueSkipTargetIndex(){
     if(nextIndex<0||visited.has(nextIndex))return -1;
     visited.add(nextIndex);
     const next=tutorialUiState.steps[nextIndex];
-    if(tutorialStepRequiresAction(next)||next.transition||next.input||next.waitForEvent||next.continueAt||nextIndex===tutorialUiState.steps.length-1)return nextIndex;
+    if(next.choices||tutorialStepRequiresAction(next)||next.transition||next.input||next.waitForEvent||next.continueAt||nextIndex===tutorialUiState.steps.length-1)return nextIndex;
     index=nextIndex;
   }
   return -1;
 }
 function skipTutorialDialogue(){
-  if(tutorialElnaContractBusy||!tutorialUiState.active)return false;
+  if(tutorialElnaContractBusy||!tutorialUiState.active||Date.now()<tutorialDialogueState.lockedUntil)return false;
   const nextIndex=tutorialDialogueSkipTargetIndex();
   if(nextIndex<0)return false;
   tutorialUiState.index=nextIndex;tutorialUiState.lastFocusedStep=null;
@@ -581,9 +700,21 @@ function tutorialShouldUseReplayNextStep(step){
   }
   return false;
 }
-function tutorialNext(actionCompleted=false){
+function tutorialNext(actionCompleted=false,choiceId=null){
   if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
+  if(actionCompleted!==true&&Date.now()<tutorialDialogueState.lockedUntil)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.dialogue){
+    tutorialDialogueView(step);
+    if(Date.now()<tutorialDialogueState.lockedUntil)return;
+    if(tutorialDialogueHasMore(step)){
+      if(choiceId!==null)return;
+      tutorialDialogueState.page+=1;tutorialDialogueState.lockedUntil=Date.now()+250;
+      tutorialUiState.lastFocusedStep=null;renderTutorialStep();return;
+    }
+    if(step.choices&&!step.choices.some(choice=>choice.id===choiceId))return;
+    tutorialDialogueState.lockedUntil=Date.now()+250;
+  }
   if(step?.input==='elna_contract'&&actionCompleted!==true){void confirmTutorialElnaContract();return;}
   if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return;
   if(!tutorialStepCanAdvance(step))return;
@@ -650,7 +781,9 @@ function commitTutorialFullSkip(){
       if(typeof markTutorialOnce!=='function'||!markTutorialOnce(flag))throw new Error(`tutorial_skip_flag_${flag}`);
     }
     if(typeof setTutorialElnaGuestActive==='function')setTutorialElnaGuestActive(false);
-    save.party=[...starters.map(instance=>instance.uid),elna.uid];
+    const aquaron=starters.find(instance=>instance.id==='aquaron');
+    if(!aquaron)throw new Error('tutorial_skip_party_reward');
+    save.party=[alchemyPartner.uid,aquaron.uid,elna.uid];
     save.progress.storyFlags={...(save.progress.storyFlags||{}),prologueCompleted:true};
     skipTutorial();
     if(typeof saveGame!=='function'||!saveGame())throw new Error('tutorial_skip_save');
@@ -689,6 +822,9 @@ function clearTutorialUi(){
   tutorialUiState.active=false;tutorialUiState.flowId=null;tutorialUiState.steps=[];
   tutorialUiState.index=0;tutorialUiState.persist=false;tutorialUiState.replay=false;
   tutorialUiState.returnScreen=null;tutorialUiState.previousFocus=null;tutorialUiState.lastFocusedStep=null;tutorialUiState.advancePendingStepId=null;
+  tutorialDialogueState.step=null;tutorialDialogueState.page=0;tutorialDialogueState.lockedUntil=0;tutorialDialogueState.renderToken+=1;
+  const choices=document.getElementById('tutorialDialogueChoices');
+  if(choices){choices.hidden=true;choices.replaceChildren?.();}
   previousFocus?.focus?.({preventScroll:true});
 }
 
@@ -888,22 +1024,24 @@ function startTutorialStellaMockBattle(){
     if(!request)throw new Error('stella_mock_request_missing');
     partyBattle=[];
     startChosenBattle(TUTORIAL_STELLA_MOCK.mapId,TUTORIAL_STELLA_MOCK.enemyId,TUTORIAL_STELLA_MOCK.difficultyId,request.requestId);
-    const ready=activeScreenId()==='battle'&&tutorialMonsterInLineage(player?.id,TUTORIAL_STELLA_MOCK.actorId)&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
+    const ready=activeScreenId()==='battle'&&player?.id&&partyBattle.length>0&&enemy?.id===TUTORIAL_STELLA_MOCK.enemyId;
     if(!ready)throw new Error('stella_mock_battle_not_ready');
+    const log=document.getElementById('log');
+    if(log)log.textContent='王都でステラとの戦闘が始まった！';
     return true;
   }catch(error){
-    console.error('ステラ模擬戦を開始できませんでした。',error);
+    console.error('ステラとの戦闘を開始できませんでした。',error);
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;
     partyBattle=[];
-    if(typeof showUiNotice==='function')showUiNotice('模擬戦を開始できませんでした。もう一度お試しください。','warning');
+    if(typeof showUiNotice==='function')showUiNotice('ステラとの戦闘を開始できませんでした。もう一度お試しください。','warning');
     return false;
   }finally{
     tutorialTransitionBusy=false;
   }
 }
+// Historical hook/DOM names remain compatible; every selectable move is valid.
 function isTutorialStellaMockAdvantageMove(move,actor=typeof activeInstance!=='undefined'?activeInstance:null,target=typeof enemy!=='undefined'?enemy:null){
-  if(!isTutorialStellaMockBattleActive()||!tutorialMonsterInLineage(actor?.id,TUTORIAL_STELLA_MOCK.actorId)||target?.id!==TUTORIAL_STELLA_MOCK.enemyId)return false;
-  return Number(move?.[1])>0&&moveTypes(move).includes('fire')&&typeEff(moveTypes(move),target.types)>1;
+  return isTutorialStellaMockBattleActive()&&Array.isArray(move)&&Boolean(actor?.id)&&target?.id===TUTORIAL_STELLA_MOCK.enemyId;
 }
 function completeTutorialStellaMockVictory(){
   if(!isTutorialStellaMockBattleActive())return false;
@@ -911,13 +1049,10 @@ function completeTutorialStellaMockVictory(){
   if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();
   if(typeof completeBattleTurn==='function')completeBattleTurn();
   eHp=0;pStatus=null;eStatus=null;pPoisonTurns=0;ePoisonTurns=0;
-  const cleared=tutorialBattleSession.advantageUsed===true;
   const log=document.getElementById('log');
-  if(log)log.innerHTML=cleared?'🔥 炎属性の技が効果抜群！<br><b>属性模擬戦に勝利した！</b>':'相性を確かめる前に模擬戦が終わった。もう一度、炎属性の技を試そう！';
-  if(typeof showBattleOutcome==='function')showBattleOutcome(cleared
-    ?{kind:'victory',title:'属性模擬戦クリア',note:'模擬戦のため通常報酬はありません。'}
-    :{kind:'retreat',title:'相性をもう一度確認',note:'フレイガルの炎属性の技を使って再挑戦しよう。'});
-  handleTutorialBattleOutcome(cleared?'victory':'error');
+  if(log)log.innerHTML='<b>ステラに勝利した！</b>';
+  if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'victory',title:'ステラに勝利',note:'この戦闘では通常の討伐報酬・契約判定は発生しません。'});
+  handleTutorialBattleOutcome('victory');
   busy=true;
   return true;
 }
@@ -1073,7 +1208,7 @@ function commitTutorialLuminaAlchemySuccess(){
   if(tutorial.replaying)return true;
   if(tutorial.alchemyLessonCompleted===true)return false;
   if(typeof markTutorialAlchemyLessonCompleted!=='function'||!markTutorialAlchemyLessonCompleted())return false;
-  if(typeof setTutorialStep==='function')setTutorialStep('expedition_intro');
+  if(typeof setTutorialStep==='function')setTutorialStep('lumina_alchemy_result');
   return true;
 }
 function handleTutorialAlchemyConfirmationOpened(){
@@ -1087,7 +1222,8 @@ function handleTutorialLuminaAlchemyCompleted(){
   return resumeTutorialMainFlowAfterEvent('lumina_alchemy_result',replay);
 }
 const TUTORIAL_EXPEDITION_OPERATION_STEPS=Object.freeze([
-  'expedition_intro','expedition_home_open','expedition_destination','expedition_distance',
+  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save',
+  'expedition_home_open','expedition_destination','expedition_distance',
   'expedition_member','expedition_suitability','expedition_dispatch','expedition_active'
 ]);
 function tutorialHasExistingExpeditionActivity(){
@@ -1118,9 +1254,15 @@ function resolveTutorialExpeditionResumeStep(flowId,stepId,replay=false){
   if(!replay&&!markTutorialExistingExpeditionGuided())return stepId;
   return 'expedition_replay';
 }
+function tutorialExpeditionPartyReady(party=typeof getPartyInstances==='function'?getPartyInstances():[]){
+  const members=party||[],ids=members.map(instance=>instance?.id).filter(Boolean);
+  const partyUids=new Set(members.map(instance=>instance?.uid).filter(Boolean));
+  return ids.length===3&&['galdra','aquaron','elna_beginner'].every(id=>ids.includes(id))
+    &&Array.isArray(save?.instances)&&save.instances.some(instance=>instance?.id==='freigal'&&!partyUids.has(instance.uid));
+}
 function tutorialExpeditionCandidateInstance(){
   const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
-  return candidates.find(instance=>instance.id===TUTORIAL_LUMINA_ALCHEMY.resultId)||candidates[0]||null;
+  return candidates.find(instance=>instance.id==='freigal')||null;
 }
 function shouldMarkTutorialExpeditionMember(uid){
   // Distance selection renders the expedition screen before the tutorial engine
@@ -1145,7 +1287,9 @@ function commitTutorialExpeditionDispatch(entry){
   if(typeof currentTutorialState!=='function'||!entry)return false;
   const tutorial=currentTutorialState();
   if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
-  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length<1)return false;
+  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length!==1)return false;
+  const member=typeof getInstance==='function'?getInstance(entry.memberUids[0]):null;
+  if(member?.id!=='freigal'||!tutorialExpeditionPartyReady())return false;
   entry.tutorialPrologue=true;
   if(typeof markTutorialExpeditionDispatched!=='function'||!markTutorialExpeditionDispatched())return false;
   if(typeof setTutorialStep==='function')setTutorialStep('expedition_active');
@@ -1469,7 +1613,7 @@ function handleTutorialBattleAction(action,details={}){
   if(isTutorialStellaMockBattleActive()){
     const currentStep=tutorialCurrentStepId();
     if(action==='skill_panel_opened'&&currentStep==='stella_mock_skill_open')return queueTutorialActionAdvance(currentStep);
-    if(action==='skill'&&currentStep==='stella_mock_advantage'&&isTutorialStellaMockAdvantageMove(details.move,details.actor,details.target)){
+    if(['skill','normal_attack'].includes(action)&&currentStep==='stella_mock_advantage'&&isTutorialStellaMockAdvantageMove(details.move,details.actor,details.target)){
       tutorialBattleSession.advantageUsed=true;
       return queueTutorialActionAdvance(currentStep);
     }
@@ -1496,9 +1640,9 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   const rescue=tutorialBattleSession.kind==='elna_rescue';
   const stellaMock=tutorialBattleSession.kind==='stella_mock';
   if(stellaMock){
-    const cleared=kind==='victory'&&tutorialBattleSession.advantageUsed===true;
+    const cleared=kind==='victory';
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
-    setTutorialStep(cleared?'lumina_intro':'stella_mock_battle');
+    setTutorialStep(cleared?'stella_mock_victory':'stella_mock_battle');
     if(typeof saveGame==='function')saveGame();
     if(typeof endPartyRecovery==='function')endPartyRecovery();
     resumeTutorialMainFlowAfterEvent(cleared?'stella_mock_victory':'stella_mock_retry',tutorial.replaying);
@@ -1507,7 +1651,7 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   if(kind==='victory'){
     const nextStep=rescue?'elna_rescue_complete':'victory_exp';
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
-    setTutorialStep(rescue?'elna_contract_intro':'first_contract');
+    setTutorialStep(rescue?'elna_rescue_complete':'first_contract');
     if(typeof saveGame==='function')saveGame();
     resumeTutorialMainFlowAfterEvent(nextStep,tutorial.replaying);
     return true;
@@ -1621,20 +1765,20 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'intro_gnosis',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'遠くから声がする',text:'ーい……',progressLabel:'PROLOGUE'},
   {id:'gnosis_call_2',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'声が近づいてくる',text:'おーい……',progressLabel:'PROLOGUE'},
   {id:'gnosis_call_3',screenId:'home',speaker:'？？？',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'すぐそばから聞こえる',text:'おーい！',progressLabel:'PROLOGUE'},
-  {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス。契約の力を案内するぞ！',progressLabel:'GNOSIS'},
+  {id:'gnosis_reveal',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'グノーシス',text:'やっと起きた！ ボクはグノーシス！ この世界へようこそ！',progressLabel:'GNOSIS'},
   {id:'gnosis_name',screenId:'home',mode:'external_action',input:'player_name',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'名前を教えて！',text:'君の名前は？ 呼びやすい名前にしてくれ！',progressLabel:'GNOSIS'},
-  {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界では、契約した相手の力を「契約体」として呼び出せる。ボクの力を少し貸すぞ！',progressLabel:'CONTRACT'},
-  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',chapterBreak:true,title:'世界へ降りよう',text:'準備はいいな？ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'第1話を終える'},
-  {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'スライムに囲まれた少女',text:'くっ……数が多い。でも、ここで退くわけには……！',progressLabel:'ENCOUNTER'},
-  {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入ろう！',progressLabel:'RESCUE'},
-  {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'フレイガルとアクアロンの契約体を貸すぞ！ ふたりを呼び出して戦おう！',progressLabel:'CONTRACT'},
-  {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！',progressLabel:'CONTRACT'},
-  {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'本人エルナが共闘',text:'助けてくれるの？ 私も一緒に戦う。背中は任せて！',progressLabel:'GUEST'},
+  {id:'gnosis_contract_power',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'void',title:'契約の力',text:'よし、{{playerName}}だな！ この世界で君にやってもらいたいことがあるんだ。あ、大丈夫！ そのための力はボクが少し貸すから！',progressLabel:'CONTRACT'},
+  {id:'gnosis_descent',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',persistAs:'elna_encounter',nextStepId:'elna_encounter',chapterBreak:true,title:'世界へ降りよう',text:'準備はいいな？ いいって顔だ！ それじゃあ、世界へ降りよう！',progressLabel:'PROLOGUE',nextLabel:'第1話を終える'},
+  {id:'elna_encounter',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'スライムに囲まれた少女',text:'えいっ、やぁっ！ くっ……数が多い。いつの間にか囲まれちゃった……！',dialogue:[{"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "よし、着いたぞ。ここが君の冒険の舞台だ！ えっと、まずは……"}, {"text": "ん？ 何か音が聞こえるな。"}, {"speaker": "エルナ", "portrait": "images/tutorial/characters/elna_beginner.png?v=2", "text": "えいっ、やぁっ！ くっ……数が多い。いつの間にか囲まれちゃった……！"}],progressLabel:'ENCOUNTER'},
+  {id:'gnosis_rescue_alert',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'助けに入ろう！',text:'まずいぞ！ あの子、スライムに囲まれてる！ 助けに入った方がいいみたいだ！',progressLabel:'RESCUE'},
+  {id:'gnosis_starter_contracts',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'契約体を貸すぞ！',text:'さっそくボクの力を使って！ 大丈夫、君になら出来る！',progressLabel:'CONTRACT'},
+  {id:'starter_contracts_received',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'2体の契約体',text:'よし、呼び出せた！ 炎のフレイガルと、水のアクアロンだ！ この力で彼女を助けよう！',progressLabel:'CONTRACT'},
+  {id:'elna_guest_join',screenId:'home',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',title:'本人エルナが共闘',text:'誰？ もしかして助けてくれるの？ ありがとう！ 背中は任せて！',dialogue:[{"text": "誰？ もしかして助けてくれるの？ ありがとう！ 背中は任せて！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "君とボク、それにあの子の3人で行くぞ！ 呼び出した契約体の力で、彼女を助けよう！"}],progressLabel:'GUEST'},
   {id:'rescue_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'elna_guest_join',disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押すと世界地図が開くぞ。まずはエルナがいる草原へ向かおう！',progressLabel:'WORLD MAP'},
   {id:'rescue_world_map_grassland',screenId:'battleChoices',target:'[data-wm-place="grassland"]',advanceOnTarget:true,persistAs:'elna_guest_join',disableBack:true,title:'草原を選ぼう',text:'世界地図では行き先を選べる。中央の「草原」を押して、出現する相手と難易度を確認しよう！',progressLabel:'WORLD MAP'},
   {id:'rescue_world_map_depart',screenId:'battleChoices',target:'[data-wm-depart]',externalAdvance:true,transition:'start_elna_rescue',nextStepId:'battle_enemy',persistAs:'elna_guest_join',disableBack:true,title:'草原へ出発',text:'最初はEasyで進もう。「この場所を探索する」を押したら、エルナの救援戦が始まるぞ！',progressLabel:'WORLD MAP'},
-  {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'契約体2体と本人エルナの3人で行くぞ！ スライムはボクが逃がさない！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
-  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'上が敵、下が味方だ。HPを0にすると倒せる。攻撃を1つ選ぶと1ターン進むぞ！',progressLabel:'BATTLE'},
+  {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'君とボク、それにあの子の3人で行くぞ！ 呼び出した契約体の力で、彼女を助けよう！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
+  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'上が敵、下が味方だ。HPを0にすると倒せる。コマンドを1つ選べば、君が呼び出した力が指示どおりに動いて1ターン進むぞ！',progressLabel:'BATTLE'},
   {id:'battle_actor_open',screenId:'battle',target:'#battleSwitchButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'行動者を選ぼう',text:'ここを押すと、戦う仲間を選べるぞ！',progressLabel:'BATTLE'},
   {id:'battle_actor_select',screenId:'battle',target:'[data-tutorial-actor-select]',externalAdvance:true,persistAs:'elna_rescue_start',title:'仲間を交代',text:'交代する仲間を1人選んでみよう！',progressLabel:'BATTLE'},
   {id:'battle_target',screenId:'battle',target:'#singleEnemyBox',advanceOnTarget:true,persistAs:'elna_rescue_start',title:'対象を選ぼう',text:'このスライムを押して、攻撃対象に決めよう！',progressLabel:'BATTLE'},
@@ -1644,12 +1788,12 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'battle_choose_skill',screenId:'battle',target:'[data-tutorial-skill]',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を使おう',text:'COSTは装備に必要な値だ。好きな技を1つ押して、実際に使ってみよう！',progressLabel:'BATTLE'},
   {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
-  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',persistAs:'elna_contract_intro',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'助かった……！ あなたたちが来てくれなかったら危なかった。ありがとう。',progressLabel:'RESCUE',nextLabel:'エルナと話す'},
-  {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'契約！ 契約を貰って！',progressLabel:'CONTRACT'},
-  {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナの同意',text:'うん。助けてもらったあなたになら、私の力を預けられる。契約を受け取って！',progressLabel:'CONTRACT'},
-  {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'契約書が3回反応して、手形が押されたら成功だ！',progressLabel:'CONTRACT',nextLabel:'契約する'},
-  {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'契約は結ばれたよ。呼ばれる契約体は私の力を写した存在。本人の私は、ここでお別れだね。',progressLabel:'CONTRACT'},
-  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',chapterBreak:true,disableBack:true,title:'エルナの契約体',text:'できた！ これでエルナの契約体を呼べるぞ！ フレイガル、アクアロンと一緒に編成しておいた！',progressLabel:'NEW ALLY',nextLabel:'第2話を終える'},
+  {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',persistAs:'elna_rescue_complete',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！\n\n\nあ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！',dialogue:[{"text": "ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！"}, {"text": "あ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！"}],progressLabel:'RESCUE',nextLabel:'エルナと話す'},
+  {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'え、だったら、契約！ {{playerName}}とエルナで契約をして！',progressLabel:'CONTRACT'},
+  {id:'elna_contract_consent',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'契約への疑問',text:'契約？',dialogue:[{"text": "契約？"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "そう！ボクの力で、契約をすれば、{{playerName}}がいつでもエルナの力を使えるようになるってわけ！"}],progressLabel:'CONTRACT'},
+  {id:'elna_contract_execute',screenId:'battle',input:'elna_contract',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'契約を結ぼう！',text:'ふぅん。不思議な力を持っているのね。そんなの聞いたことがないわ。でも、いいよ！その契約っていうの、してあげる！あなた達は悪い人達でも無さそうだし！',progressLabel:'CONTRACT',nextLabel:'契約する'},
+  {id:'elna_contract_departure',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',disableBack:true,title:'本人エルナとの別れ',text:'はい、これでいいのかな？そしたら、寂しいけど私とは、ここでお別れだね。あ、最後に名前を教えて。',dialogue:[{"speaker": "エルナ", "portrait": "images/tutorial/characters/elna_beginner.png?v=2", "text": "はい、これでいいのかな？そしたら、寂しいけど私とは、ここでお別れだね。あ、最後に名前を教えて。"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "ボクはグノーシス！こっちは相棒の{{playerName}}！"}, {"speaker": "エルナ", "portrait": "images/tutorial/characters/elna_beginner.png?v=2", "text": "そっか！じゃあ、またね！グノーシス！{{playerName}}！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "行っちゃったな…。でも人助けってなんだかいいな！"}, {"text": "あ、そうだ！さっき契約したエルナの力を確認してみて！"}],progressLabel:'CONTRACT'},
+  {id:'elna_contract_body',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',persistAs:'home_party',nextStepId:'home_party',chapterBreak:true,disableBack:true,title:'エルナの契約体',text:'これがエルナの契約体だ！ フレイガル、アクアロンと一緒に編成しておいたぞ！',progressLabel:'NEW ALLY',nextLabel:'第2話を終える'},
   {id:'home_party',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,title:'編成を確認しよう',text:'ここを押すと、冒険へ連れていく仲間を編成できるぞ！',progressLabel:'HOME'},
   {id:'party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,disableBack:true,title:'3体の編成を保存',text:'フレイガル、アクアロン、エルナを確認したら「この編成を保存」を押そう！ 先頭がリーダーだぞ！',progressLabel:'PARTY'},
   {id:'home_dex_open',screenId:'home',target:'[data-nav="more"]',advanceOnTarget:true,title:'メニューを開こう',text:'図鑑はメニューの中だ。まずは下の「メニュー」を押そう！',progressLabel:'DEX'},
@@ -1662,58 +1806,64 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'home_growth_open',screenId:'dex',target:'[data-nav="monsters"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
   {id:'growth_tab_open',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成メニュー',text:'上の「育成」を押すと、仲間を強くする方法を選べるぞ！',progressLabel:'GROWTH'},
   {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
-  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。黄色い枠の「育成・個体情報」を押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。ここを押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
   {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
   {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'詳しい技編集は、このあと実際にカードを装備しながら覚えるぞ。育成を押して進化を確認しよう！',progressLabel:'GROWTH'},
   {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
   {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',advanceOnTarget:true,title:'依頼を見よう',text:'ここを押すと、討伐依頼と報酬を確認できるぞ！',progressLabel:'REQUEST'},
   {id:'request_accept',screenId:'battleChoices',target:'[data-tutorial-request-open]',externalAdvance:true,persistAs:'request_accept',title:'エルナ救援を報告',text:'救援が依頼として認められたぞ！ このボタンを押して、報告と報酬の確認へ進もう！',progressLabel:'REQUEST'},
-  {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚と錬成素材4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
-  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ この素材とコインは、あとで錬成に使うぞ！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
-  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',nextStepId:'stella_world_map_open',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'academy',title:'技に詳しい子を探そう',text:'準備はできたな！ 技と属性に詳しいステラに会いに行くぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
+  {id:'request_reward_claim',screenId:'tutorialRequestReport',target:'#tutorialRequestClaimButton',externalAdvance:true,persistAs:'request_reward_claim',disableBack:true,title:'報酬を受け取ろう',text:'報酬はコイン250枚とアイテム4種類だ。内容を確認して、このボタンで受け取ろう！',progressLabel:'REWARD'},
+  {id:'request_reward_received',screenId:'tutorialRequestReport',target:'#tutorialRequestRewardStatus',persistAs:'stella_intro',nextStepId:'stella_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'報酬受領完了',text:'よし、受け取れた！ やったな！',progressLabel:'REWARD',nextLabel:'第3話を終える'},
+  {id:'stella_intro',screenId:'home',persistAs:'stella_intro',nextStepId:'stella_road_response',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',title:'王都へ',text:'準備はできたな！ そしたら、とりあえず人の多い\n｢王都｣に行こう！',dialogue:[{"text": "準備はできたな！ そしたら、とりあえず人の多い\n｢王都｣に行こう！"}, {"text": "{{playerName}}にはやってほしいことがあるんだけど…ボクを元の姿に戻してほしいんだ。…いいかな？"}],choices:[{id:"accept",label:"うん、いいよ"},{id:"reluctant",label:"しょうがないな"}],progressLabel:'PROLOGUE'},
   {id:'stella_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'stella_intro',disableBack:true,title:'世界地図を開こう',text:'下の「バトル」を押して世界地図を開こう。ステラは王都の魔導学園にいるぞ！',progressLabel:'WORLD MAP'},
   {id:'stella_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,persistAs:'stella_intro',disableBack:true,title:'魔導学園を選ぼう',text:'「王都の施設」にある魔導学園を押そう。施設へ行く時も、この世界地図から選べるぞ！',progressLabel:'WORLD MAP'},
   {id:'stella_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,persistAs:'stella_intro',disableBack:true,title:'魔導学園へ入ろう',text:'今回は探索ではなく、ステラに会うのが目的だ。「魔導学園へ入る」を押そう！',progressLabel:'WORLD MAP'},
-  {id:'stella_encounter',screenId:'home',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'見習い魔法使いステラ',text:'こんにちは！ グノーシスから聞いたよ。技カードの使い方なら、私に任せて！',progressLabel:'STELLA'},
-  {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるね。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
+  {id:'stella_road_response', previousStepId:'stella_intro', "screenId": "home", "persistAs": "stella_road_response", "nextStepId": "stella_encounter", "speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "scene": "grassland", "title": "王都での出会い", "dialogue": [{"text": "いいの！？ありがとう！よかったー！"}, {"text": "あ、ていうか、あれだぞ！この姿はボクの本当の姿じゃないからな！本当のボクはもっと威厳があって、カッコいいんだからな！"}, {"text": "って、そんなこと言ってる間に｢王都｣に着いたな。ここら辺だとこの街が一番人が多いはずだぞ。", "scene": "capital"}, {"text": "ここで協力してくれる仲間を探すんだ！…って、ん？誰か走ってくるぞ？"}, {"speaker": "？？？", "portrait": "images/tutorial/characters/stella_apprentice.png", "text": "どいて、どいてー！"}, {"text": "キャッ！"}, {"speaker": "？？？", "portrait": "images/tutorial/characters/stella_apprentice.png", "text": "いったーい！どいてって言ったでしょ！なんでぶつかってくるのよ！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "いやいや、ぶつかってきたのはそっちだろ！？"}, {"speaker": "？？？", "portrait": "images/tutorial/characters/stella_apprentice.png", "text": "関係ないわ！私が魔法でコテンパンにしてあげる！退かなかったこと、後悔しなさい！"}, {"speaker": "グノーシス", "portrait": "images/tutorial/characters/gnosis-dialogue-transparent-final.png", "text": "た、大変だぞ{{playerName}}！あっちは魔法使いだ！こっちも対抗するんだ！"}], "progressLabel": "PROLOGUE"},
+  {id:'stella_encounter',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'戦う前に技カードを準備しよう',text:'バトルの前に技カードの使い方を説明するぞ！負けられないバトルだからな！ちゃんと準備しないと！',progressLabel:'STELLA'},
+  {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるぞ。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
   {id:'stella_skill_open',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillEditButton',externalAdvance:true,persistAs:'stella_skill_open',disableBack:true,title:'カードを確認して技編集へ',text:'連続斬りの内容を確認したら、ここを押してエルナの技編集を開こう！',progressLabel:'SKILL CARD'},
   {id:'stella_skill_unequip',screenId:'skillEdit',target:'[data-tutorial-stella-unequip]',externalAdvance:true,disableBack:true,title:'技を1枚外そう',text:'ここを押して、今の技を1枚外そう。新しいカードを入れる空きを作るぞ！',progressLabel:'SKILL CARD'},
   {id:'stella_skill_equip',screenId:'skillEdit',target:'[data-tutorial-stella-skill-equip]',externalAdvance:true,disableBack:true,title:'連続斬りを装備',text:'無属性・威力34・COST 2で、エルナの剣士タグに合う技だ。ここを押して装備しよう！',progressLabel:'SKILL CARD'},
-  {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'技の属性',text:'技には属性があるよ。相手に有利な属性なら、ダメージが大きくなるの！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'技の属性',text:'技には属性がある！相手に有利な属性なら、ダメージが大きくなるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_more_open',screenId:'skillEdit',target:'[data-nav="more"]',advanceOnTarget:true,title:'属性表を見よう',text:'ここを押すと、属性相性を確認できるメニューへ進めるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_type_chart_open',screenId:'moreMenu',target:'#typeChartButton',advanceOnTarget:true,title:'属性相性',text:'ここを押すと、どの属性が有利か確認できるぞ！',progressLabel:'ATTRIBUTE'},
-  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪があるよ。矢印の向きを見れば有利属性が分かるからね！',progressLabel:'ATTRIBUTE'},
-  {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'次は相性を試そう',text:'装備できたね！ 森属性のグラスビートを用意したよ。炎属性が有利なことを実戦で確かめよう！',progressLabel:'STELLA',nextLabel:'模擬戦へ'},
-  {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'炎は森に有利',text:'相手は森属性のグラスビート、先頭は炎属性のフレイガル。炎属性の技なら効果抜群だよ！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'技を開こう',text:'ここを押すと、フレイガルの技を選べるぞ！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_advantage',screenId:'battle',target:'[data-tutorial-stella-advantage]',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'炎属性で攻撃',text:'炎属性の技を押して、効果抜群のダメージを確かめよう！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'効果抜群！',text:'今のが有利属性だよ！ あとは自由に戦って、グラスビートを倒してみよう！',progressLabel:'MOCK BATTLE'},
-  {id:'stella_mock_victory',screenId:'battle',persistAs:'lumina_intro',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'academy',title:'属性模擬戦クリア！',text:'ばっちり！ 相手の属性を見て、有利な技を選べば戦いを有利に進められるよ！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
-  {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'模擬戦を再開しよう',text:'進行は失われていないぞ！ 「依頼を選び直す」を押して、炎属性の技をもう一度試そう！',progressLabel:'RETRY'},
-  {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',nextStepId:'lumina_world_map_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'工房へ行こう！',text:'属性も分かったな！ 次はルミナの工房で、錬成を教えてもらうぞ！',progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
-  {id:'lumina_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'lumina_intro',disableBack:true,title:'もう一度、世界地図へ',text:'ルミナの錬成工房も王都にある。下の「バトル」を押して、世界地図から向かおう！',progressLabel:'WORLD MAP'},
-  {id:'lumina_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,persistAs:'lumina_intro',disableBack:true,title:'魔導学園の工房へ',text:'王都の魔導学園を押そう。学園に併設された錬成工房で、ルミナが待っているぞ！',progressLabel:'WORLD MAP'},
-  {id:'lumina_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,persistAs:'lumina_intro',disableBack:true,title:'錬成工房へ入ろう',text:'「錬成工房へ入る」を押して、ルミナに錬成を教えてもらおう！',progressLabel:'WORLD MAP'},
-  {id:'lumina_encounter',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'見習い錬金術師ルミナ',text:'ようこそ！ 練習用の錬成核は用意したよ。仲間を消費せず、素材4つと250コインで入門錬成を試そう。',progressLabel:'LUMINA'},
+  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪がある。矢印の向きを見れば有利属性が分かるぞ！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'あの魔法使いと戦おう',text:'装備できたな！ そしたらさっそくあの魔法使いと戦うぞ！',progressLabel:'STELLA',nextLabel:'戦闘へ'},
+  {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'魔法使いとの対決',text:'準備はできた？ 私の魔法でコテンパンにしてあげる！',progressLabel:'BATTLE'},
+  {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'仲間の技を選ぼう',text:'攻撃を開くと、今戦っている仲間の技を選べるぞ！',progressLabel:'BATTLE'},
+  {id:'stella_mock_advantage',screenId:'battle',target:'[data-tutorial-stella-advantage]',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'使う技を決めよう',text:'使いたい技を選んで、あの魔法使いを攻撃しよう！',progressLabel:'BATTLE'},
+  {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'仲間の力で戦おう',text:'よし、その調子だ！ 仲間の交代や技を使いながら、あの魔法使いに立ち向かうぞ！',progressLabel:'BATTLE'},
+  {id:'stella_mock_victory',screenId:'battle',persistAs:'stella_mock_victory',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'魔法使いに勝利！',text:'よし、勝ったぞ！ やったな、{{playerName}}！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
+  {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'魔法使いに再挑戦',text:'進行は失われていないぞ！ 仲間の編成や技を確認して、もう一度あの魔法使いに挑もう！',progressLabel:'RETRY'},
+  {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',nextStepId:'lumina_world_map_open',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'capital',title:'逃げた魔法使いを追おう',dialogue:[{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"capital","text":"いったーい！少しは手加減しなさいよ！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"capital","text":"ふふん！見たか！これがボク達の力だ！"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"capital","text":"ぐぬぬ…！この借りはいつか返すんだから！覚えてなさいよぉー！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"capital","text":"あ！待て！\n{{playerName}}！逃げたあの魔法使いを追いかけよう！"}],progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
+  {id:'lumina_world_map_open',screenId:'home',target:'[data-nav="battle"]',advanceOnTarget:true,persistAs:'lumina_intro',disableBack:true,title:'もう一度、世界地図へ',text:'逃げた魔法使いを追おう。下の「バトル」を押して、世界地図を開こう！',progressLabel:'WORLD MAP'},
+  {id:'lumina_world_map_academy',screenId:'battleChoices',target:'[data-wm-place="magic_academy"]',advanceOnTarget:true,persistAs:'lumina_intro',disableBack:true,title:'魔法学園を選ぼう',text:'魔法使いが向かった学園を選ぼう。王都の「魔導学園」を押すんだ！',progressLabel:'WORLD MAP'},
+  {id:'lumina_academy_arrival',screenId:'battleChoices',persistAs:'lumina_academy_arrival',disableBack:true,scene:'academy',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'魔法学園へ',text:"うわっ！広い建物だなぁー！それであの魔法使いはどこに…っていた！待てー！",progressLabel:'PROLOGUE'},
+  {id:'lumina_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,persistAs:'lumina_intro',disableBack:true,title:'錬成工房へ入ろう',text:'魔法使いは学園の地下へ行ったぞ。「錬成工房へ入る」を押して追いかけよう！',progressLabel:'WORLD MAP'},
+  {id:'lumina_encounter',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'見習い錬金術師ルミナ',dialogue:[{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"うぇーん！ルミナー！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"うわっ！ステラ、どうしたの？"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"変な奴らにいじめられたのぉー！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"変な奴らとはなんだ！ぶつかってきたのはそっちだろ！"},{"speaker":"ステラ・ルミナ","portrait":null,"scene":"workshop","text":"うわぁっ！"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"なによ！わざわざ私をつけてきたっていうの！？さてはストーカーね、あなたたち！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"そんなわけあるか！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"あ、あなた達がステラをいじめたんですか…？"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"ちっがーう！ そっちからバトルしてきたから返り討ちにしただけ！負けた途端に逃げたから文句でも言ってやろうと思ったんだ！"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"別に、負けてないわ"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"どっからどう見ても負けただろ！…って、もしかしてここで｢錬成｣とかしてる？"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"えっ！すごい！どうして分かったの！？"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"ふふん！｢錬成｣についてはそれなりに詳しいからな！でもあんまり上手くいってなさそう？"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"うっ…。じ、実は色々試してるんだけど、まだ1回も成功したことなくて…。"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"あっ、ルミナまでいじめるのね！このストーカー共！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"だからストーカーじゃない！｢錬成｣が上手くいってないのは多分、素材が揃ってないからだね。"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"素材…？それなら、ここにたくさんあるけど…。"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"いや、1個足りてないのがあるよ！素になるモンスターを入れないと！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"えぇっ！？でもモンスターを捕獲なんて、私じゃ出来ないし…。それに可哀想だよ？"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"ふふん！なら、良い方法があるよ！{{playerName}}が契約したモンスターを使うんだ！あれならボクの力でモンスターを再現しただけだから、問題なし！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"すごい…。それなら出来るかも…！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"さっそくやってみよう！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"それじゃあ、やってみよう！ 今度こそ、うまくいくといいな…。"}],progressLabel:'LUMINA'},
   {id:'lumina_alchemy',screenId:'home',persistAs:'lumina_alchemy',transition:'prepare_lumina_alchemy',nextStepId:'lumina_materials',replayNextStepId:'lumina_alchemy_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'錬成台を開こう！',text:'ここを押すと、素材を組み合わせて新しい契約体を生み出せるぞ！',progressLabel:'ALCHEMY',nextLabel:'錬成台へ'},
-  {id:'lumina_materials',screenId:'alchemy',target:'#tutorialAlchemyMaterials',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'投入内容を確認',text:'素材4種類を各1個、250コイン、初回成功率100％だよ。今回は練習用錬成核だから、仲間は消費しないの。',progressLabel:'ALCHEMY'},
+  {id:'lumina_materials',screenId:'alchemy',target:'#tutorialAlchemyMaterials',persistAs:'lumina_alchemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'投入内容を確認',text:'今回使うのは素材4種類を各1個とコイン250枚だ！ 初回は必ず成功して、契約体は消費しないぞ！',progressLabel:'ALCHEMY'},
   {id:'lumina_start',screenId:'alchemy',target:'#tutorialAlchemyStartButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を始めよう',text:'ここを押すと、入門錬成の確認へ進めるぞ！',progressLabel:'ALCHEMY'},
-  {id:'lumina_confirm',screenId:'alchemyConfirm',target:'#alchemyConfirmContent',persistAs:'lumina_alchemy',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'消費内容を確認',text:'素材4個と250コイン、成功率100％を確認してね。今回は仲間を消費しないよ！',progressLabel:'CONFIRM'},
+  {id:'lumina_confirm',screenId:'alchemyConfirm',target:'#alchemyConfirmContent',persistAs:'lumina_alchemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'消費内容を確認',text:'実行する前に、消費する素材とコインを確認しよう！ 契約体は消費しない。確認できたな？ よし、始めるぞ！',progressLabel:'CONFIRM'},
   {id:'lumina_execute',screenId:'alchemyConfirm',target:'#alchemyExecuteButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を実行',text:'ここを押すと、素材とコインを使って錬成を実行するぞ！',progressLabel:'ALCHEMY'},
-  {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'素材の反応をひとつに結んでいるよ。もうすぐ新しい契約体が生まれるからね！',progressLabel:'ALCHEMY'},
-  {id:'lumina_alchemy_result',screenId:'alchemyResult',target:'#tutorialAlchemyResult',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'入門錬成成功！',text:'成功だよ！ これで素材とコイン、成功率を確認しながら自分で錬成できるね。',progressLabel:'LUMINA',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
-  {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成の報酬は一度だけだよ。通常の錬成台は自由に使ってね！',progressLabel:'REPLAY',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
-  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_home_open',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ 次は仲間を短い遠征へ送り出してみるぞ！',progressLabel:'PROLOGUE',nextLabel:'遠征へ'},
-  {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_intro',disableBack:true,title:'遠征を開こう',text:'ここを押すと、控えの仲間を遠征へ送り出せるぞ！',progressLabel:'EXPEDITION'},
-  {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
-  {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},
-  {id:'expedition_member',screenId:'expedition',target:'[data-tutorial-expedition-member]',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'派遣する仲間',text:'ここを押して、控えの仲間を1体選ぼう！',progressLabel:'EXPEDITION'},
-  {id:'expedition_suitability',screenId:'expedition',target:'#expeditionSuitability',persistAs:'expedition_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征適性',text:'属性、レベル、得意な能力から適性が決まる。Sに近いほど大成功しやすいぞ！',progressLabel:'SUITABILITY'},
-  {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_intro',disableBack:true,title:'短距離遠征へ派遣',text:'ここを押すと、選んだ仲間が短距離遠征へ出発するぞ！',progressLabel:'EXPEDITION'},
+  {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'あっ、素材が反応してる…！ 今までと違うよ。お願い、うまくいって…！',progressLabel:'ALCHEMY'},
+  {id:'lumina_alchemy_result',screenId:'alchemyResult',persistAs:'lumina_alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成成功！',dialogue:[{text:'やった！成功だよ！ これでこれからも錬成できるね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'appear',text:'ガルル！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'わっ！こいつ、動いた！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガァ～ウ'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'fly',text:'なんだ？{{playerName}}の方に飛んでいったぞ？'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'うふふ。あなたのこと、親だと思ってるのかもね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガル！'}],progressLabel:'LUMINA',nextStepId:'lumina_farewell'},
+  {id:'lumina_farewell',screenId:'home',persistAs:'lumina_farewell',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房での別れ',dialogue:[{text:'錬成に協力してくれてありがとう！あなた達のおかげだね！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'ふん、少しはやるじゃない！'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'…これからも手伝ってくれる？部屋の鍵なら開けておくから、いつでも来てね。'}],progressLabel:'LUMINA',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
+  {id:'lumina_alchemy_replay',screenId:'alchemy',persistAs:'expedition_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'入門錬成は完了済み',text:'入門錬成はもう完了しているぞ。通常の錬成台は自由に使えるからな！',progressLabel:'REPLAY',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
+  {id:'expedition_intro',screenId:'home',persistAs:'expedition_intro',nextStepId:'expedition_party_plan',replayNextStepId:'expedition_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'次は遠征だ！',text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？',dialogue:[{text:'錬成もばっちりだな！ ていうか、ソイツ、ずっと{{playerName}}に付いてきてるぞ？'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガルル！ガウッ、ガウッ！'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'bite',text:'わっ！いてて！こら、噛むなって！{{playerName}}～！こいつも連れていくのか～！？'}],choices:[{id:'yes',label:'うん'},{id:'of_course',label:'もちろん'}],progressLabel:'PROLOGUE',nextLabel:'一緒に行く'},
+  {id:'expedition_party_plan',screenId:'home',persistAs:'expedition_party_plan',nextStepId:'expedition_party_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'4つの契約の力',text:'ちぇ～。君がそういうなら仕方ないか。\nでもこれで、君が使える契約の力は4つになったぞ！ だけど1度のバトルで使える力は3つまで…。あ、そうだ！ ガルドラはボク達と一緒に行こう。今回はフレイガルに遠征を頼むんだ！ まずは編成でフレイガルとガルドラを入れ替えよう！',progressLabel:'PROLOGUE'},
+  {id:'expedition_party_open',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,persistAs:'expedition_party_plan',disableBack:true,title:'編成を開こう',text:'編成を開いて、フレイガルを控えにし、ガルドラを仲間へ入れよう！',progressLabel:'PARTY'},
+  {id:'expedition_party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,persistAs:'expedition_party_save',disableBack:true,title:'3体の編成を保存',text:'ガルドラ・アクアロン・エルナの3体に入れ替えたら、「この編成を保存」を押そう！',progressLabel:'PARTY'},
+  {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_home_open',disableBack:true,title:'遠征を開こう',text:'フレイガルを控えにして、ガルドラ・アクアロン・エルナの編成を保存できたな！ 次は遠征を開こう！',progressLabel:'EXPEDITION'},
+  {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_member',screenId:'expedition',target:'[data-tutorial-expedition-member]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを選ぼう',text:'控えのフレイガルを選ぼう！ 今回の遠征はフレイガルに任せるぞ！',progressLabel:'EXPEDITION'},
+  {id:'expedition_suitability',screenId:'expedition',target:'#expeditionSuitability',persistAs:'expedition_home_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征適性',text:'属性、レベル、得意な能力から適性が決まる。Sに近いほど大成功しやすいぞ！',progressLabel:'SUITABILITY'},
+  {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを短距離遠征へ',text:'派遣する仲間がフレイガルになっていることを確認して、出発させよう！',progressLabel:'EXPEDITION'},
   {id:'expedition_active',screenId:'expedition',target:'[data-tutorial-expedition-active]',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征は進行中！',text:'帰還を待たなくて大丈夫！ バトルに勝つと進み、完了したらここで報酬を受け取れるぞ！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
   {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'派遣中または完了済みの遠征があるから、新しい遠征は増やさないぞ。遠征画面からいつでも状況を確認できる！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
-  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房からの見送り',text:'錬成も遠征も、もう自分で進められるね。新しい土地でどんな契約体と出会うのか、楽しみにしているよ！',progressLabel:'PROLOGUE'},
-  {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'ここまで完璧だ！ これからは自分のペースで、自由に冒険できるぞ！',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
+  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'冒険の始まり',text:'これで遠征はバッチリだな！いよいよこれから冒険が始まるぞ！楽しみだな～！',progressLabel:'PROLOGUE'},
+  {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'さぁ、{{playerName}}！次はどこに行く！？',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},

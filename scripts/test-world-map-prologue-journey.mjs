@@ -9,6 +9,8 @@ const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 // deterministic adapters. The adapters are not a DOM implementation: they
 // only expose the fields touched while the tutorial engine renders a step.
 let activeScreen='home';
+let testClock=Date.now();
+class JourneyDate extends Date {static now(){return testClock;}}
 const timers=[];
 const elements=new Map();
 function classList(){
@@ -28,7 +30,7 @@ function element(id=''){
     setAttribute(name,value){this[name]=value;},getAttribute(name){return this[name]??null;},
     toggleAttribute(name,force){this[name]=force!==false;},
     closest(){return element(`${id}:closest`);},contains(){return false;},focus(){},scrollIntoView(){},
-    setCustomValidity(){},reportValidity(){},
+    setCustomValidity(){},reportValidity(){},replaceChildren(){},appendChild(){},addEventListener(){},
     getBoundingClientRect(){return {top:100,bottom:140,left:20,right:180,width:160,height:40};}
   };
   elements.set(id,node);return node;
@@ -54,6 +56,7 @@ const monsters=[
   {id:'aquaron',types:['water'],moves:[['水撃',30,'water']]},
   {id:'elna_beginner',types:['normal'],moves:[['斬撃',20,'normal']]},
   {id:'slime',types:['normal'],rarity:'★',moves:[['体当たり',10,'normal']]},
+  {id:'stella_apprentice',types:['star','light'],rarity:'★★',moves:[['星屑弾',30,'star']]},
   {id:'grassbeat',types:['grass'],rarity:'★',moves:[['葉撃',10,'grass']]},
   {id:'galdra',types:['normal'],rarity:'★',moves:[['核撃',10,'normal']]}
 ];
@@ -70,7 +73,7 @@ let instanceSerial=0;
 const notices=[];
 
 const context=vm.createContext({
-  console,structuredClone,JSON,Math,Date,Set,Map,Object,Array,Number,String,Boolean,Promise,
+  console,structuredClone,JSON,Math,Date:JourneyDate,Set,Map,Object,Array,Number,String,Boolean,Promise,
   M:monsters,MAPS:maps,ALCHEMY_MONSTER_CONFIGS:{},
   SHOP_ITEMS:[{id:'contract_scroll'},...Object.values(items)],ITEM_DEX_ITEMS:Object.values(items),ITEM_DEX_BY_ID:items,ITEM_BY_ID:items,
   MAX_LEVEL:100,clampLevel:value=>Math.max(1,Math.min(100,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
@@ -136,11 +139,15 @@ assert.equal(state().status,'in_progress');
 const visited=[];
 let guard=0;
 while(state().status==='in_progress'){
+  testClock+=300; // A deliberate player input, after the dialogue double-tap guard.
   assert.ok(++guard<180,'prologue journey did not converge');
   if(!run('tutorialUiState.active')){reopenChapter();continue;}
   const id=step();
   visited.push(id);
   switch(id){
+    case 'stella_intro':
+      run("tutorialDialogueNeedsChoice(tutorialUiState.steps[tutorialUiState.index]) ? tutorialNext(false,'accept') : tutorialNext()");
+      break;
     case 'gnosis_name':
       element('tutorialPlayerNameInput').value='Journey Tester';
       assert.equal(run('confirmTutorialPlayerName()'),false);
@@ -198,7 +205,7 @@ while(state().status==='in_progress'){
     }
     case 'stella_mock_skill_open': assert.equal(run("handleTutorialBattleAction('skill_panel_opened')"),true);flushTimers();break;
     case 'stella_mock_advantage':
-      assert.equal(run("handleTutorialBattleAction('skill',{move:['炎撃',30,'fire'],actor:activeInstance,target:enemy})"),true);flushTimers();break;
+      assert.equal(run("handleTutorialBattleAction('skill',{move:['斬撃',20,'normal'],actor:activeInstance,target:enemy})"),true);flushTimers();break;
     case 'stella_mock_free':
       run('tutorialNext()');
       assert.equal(run("handleTutorialBattleOutcome('victory')"),true);flushTimers();
@@ -213,6 +220,16 @@ while(state().status==='in_progress'){
       assert.equal(run('commitTutorialLuminaAlchemySuccess()'),true);
       assert.equal(run('handleTutorialLuminaAlchemyCompleted()'),true);flushTimers();
       break;
+    case 'expedition_intro':
+      run("tutorialDialogueNeedsChoice(tutorialUiState.steps[tutorialUiState.index]) ? tutorialNext(false,'yes') : tutorialNext()");
+      break;
+    case 'expedition_party_save': {
+      context.saveView.party=['galdra','aquaron','elna_beginner'].map(id=>context.saveView.instances.find(instance=>instance.id===id).uid);
+      assert.equal(run('tutorialExpeditionPartyReady()'),true);
+      assert.equal(run('saveGame()'),true);
+      assert.equal(run('handleTutorialPartySaved()'),true);
+      break;
+    }
     case 'expedition_destination': assert.equal(run("handleTutorialExpeditionDestinationSelected('grassland')"),true);break;
     case 'expedition_distance': assert.equal(run("handleTutorialExpeditionDistanceSelected('short')"),true);break;
     case 'expedition_member': {
@@ -256,9 +273,10 @@ for(const flag of ['starterContractsGranted','elnaContractGranted','stellaSkillC
   assert.equal(finalSave.progress.tutorial[flag],true,`journey must finalize ${flag}`);
 }
 for(const id of ['freigal','aquaron','elna_beginner','galdra'])assert.equal(finalSave.instances.filter(instance=>instance.id===id).length,1,`${id} must be granted exactly once`);
-assert.deepEqual(finalSave.party.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['freigal','aquaron','elna_beginner']);
+assert.deepEqual(finalSave.party.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['galdra','aquaron','elna_beginner']);
 assert.equal(finalSave.expeditions.active.length,1,'the prologue must dispatch one short expedition without waiting for its return');
 assert.equal(finalSave.expeditions.active[0].tutorialPrologue,true);
+assert.deepEqual(finalSave.expeditions.active[0].memberUids.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['freigal'],'only reserve Freigal must be sent on the tutorial expedition');
 assert.equal(run('resumeTutorialIfNeeded()'),false,'completed prologue must not reopen');
 assert.equal(run("handleTutorialWorldMapDeparture('grassland','easy')"),false,'free exploration must no longer be intercepted by tutorial routing');
 assert.equal(activeScreen,'home','completion must return to free-play home');
@@ -267,10 +285,12 @@ assert.equal(notices.length,0,`successful journey must not emit warnings: ${noti
 const requiredJourneySteps=[
   'intro_gnosis','gnosis_name','rescue_world_map_open','rescue_world_map_grassland','rescue_world_map_depart',
   'battle_enemy','battle_free','elna_contract_execute','home_party','request_reward_claim',
-  'stella_world_map_open','stella_world_map_visit','stella_mock_battle','stella_mock_free',
+  'stella_road_response','stella_mock_battle','stella_mock_free',
   'lumina_world_map_open','lumina_world_map_visit','lumina_alchemy','lumina_wait',
-  'expedition_intro','expedition_dispatch','prologue_complete'
+  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_dispatch','prologue_complete'
 ];
 for(const id of requiredJourneySteps)assert.ok(visited.includes(id),`canonical new-save journey must visit ${id}`);
 
-console.log(`World-map prologue journey passed: ${visited.length} live steps, two rescue waves, both facility routes, rewards, alchemy, expedition, completion, and tutorial-free exploration.`);
+console.log(`World-map prologue journey passed: ${visited.length} live steps, two rescue waves, capital conversation and workshop route, rewards, alchemy, expedition, completion, and tutorial-free exploration.`);
+
+assert.ok(!visited.includes('stella_world_map_visit'),'new capital route must not enter academy before the collision');

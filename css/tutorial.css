@@ -17,7 +17,21 @@
 .tutorial-character-layer img{display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 14px 20px rgba(0,0,0,.38))}
 .tutorial-character-layer[data-portrait="elna_beginner"] img{width:auto;height:100%;aspect-ratio:2/3}
 .tutorial-character-layer img[hidden]{display:none}
+.tutorial-story-effect-layer{position:fixed;z-index:3;inset:0;display:grid;place-items:center;pointer-events:none;overflow:hidden}
+.tutorial-story-effect-layer[hidden],.tutorial-story-effect-layer img[hidden]{display:none}
+.tutorial-story-effect-layer img{display:block;width:min(34vw,330px);max-height:76svh;object-fit:contain;filter:drop-shadow(0 14px 20px rgba(0,0,0,.42));transform-origin:50% 62%}
+.tutorial-story-effect-layer[data-motion="appear"] img{animation:tutorial-galdra-appear .62s cubic-bezier(.2,.78,.3,1) both}
+.tutorial-story-effect-layer[data-motion="fly"] img{animation:tutorial-galdra-fly 1.05s cubic-bezier(.18,.74,.2,1) both}
+.tutorial-story-effect-layer[data-motion="bite"] img{animation:tutorial-galdra-bite 1.05s cubic-bezier(.25,.72,.24,1) both}
+@keyframes tutorial-galdra-appear{0%{opacity:0;transform:translateY(18svh) scale(.42)}72%{opacity:1;transform:translateY(-2svh) scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes tutorial-galdra-fly{0%{opacity:.18;transform:translate(34vw,18svh) scale(.36) rotate(7deg)}58%{opacity:1;transform:translate(2vw,-4svh) scale(.86) rotate(-4deg)}100%{opacity:1;transform:translate(-8vw,0) scale(1) rotate(0)}}
+@keyframes tutorial-galdra-bite{0%{opacity:.35;transform:translate(28vw,9svh) scale(.45)}52%{opacity:1;transform:translate(-3vw,-1svh) scale(.96) rotate(-4deg)}68%{transform:translate(-7vw,0) scale(1.08) rotate(5deg)}82%{transform:translate(-4vw,-1svh) scale(.98) rotate(-3deg)}100%{opacity:1;transform:translate(-6vw,0) scale(1.02)}}
 .tutorial-overlay.is-ui-guide-step .tutorial-character-layer{display:none}
+.tutorial-dialogue-choices{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
+.tutorial-dialogue-choices[hidden]{display:none}
+.tutorial-dialogue-choices button{min-height:48px;margin:0;white-space:normal;overflow-wrap:anywhere;text-align:left;padding:12px;font-size:16px}
+.is-dialogue-pages #tutorialText{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.is-dialogue-pages #tutorialTitle{overflow-wrap:anywhere;min-width:0}
 .tutorial-bubble{position:fixed;z-index:4;display:grid;width:min(360px,calc(100vw - 20px));max-height:calc(100svh - 20px);overflow-x:hidden;overflow-y:auto;gap:9px;padding:15px;border:2px solid #fff;border-radius:22px;background:linear-gradient(150deg,#f7fcff,#fff9dd);box-shadow:0 18px 48px rgba(0,18,34,.42);pointer-events:auto;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;outline:none;transition:top .18s,left .18s}
 .tutorial-bubble:focus-visible{box-shadow:0 0 0 4px #31a8d8,0 18px 48px rgba(0,18,34,.42)}
 .tutorial-bubble-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.tutorial-bubble-head>div{display:flex;align-items:center;gap:8px}.tutorial-bubble-head span{color:#1778a6;font-size:9px;font-weight:1000;letter-spacing:.14em}.tutorial-bubble-head strong{color:#5d7584;font-size:11px}
@@ -36,6 +50,8 @@ body.tutorial-growth-skill-open [data-monster-id="elna_beginner"] [data-tutorial
 .tutorial-stella-skill-card{display:grid;gap:10px;padding:18px;border:2px solid rgba(130,91,213,.42);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(236,229,255,.95));box-shadow:0 15px 38px rgba(33,23,66,.2);color:#27203c}
 .tutorial-stella-skill-card p,.tutorial-stella-skill-card small{margin:0}
 .tutorial-stella-card-panel>button{min-height:48px}
-@media(max-width:719px){.tutorial-character-layer{left:0;bottom:43svh;width:100vw;height:56svh}.tutorial-character-layer img{max-width:92vw}.tutorial-overlay.is-story-step .tutorial-bubble{max-height:calc(100svh - 20px)}}
+@media(max-width:719px){.tutorial-character-layer{left:0;bottom:43svh;width:100vw;height:56svh}.tutorial-character-layer img{max-width:92vw}.tutorial-story-effect-layer{bottom:39svh}.tutorial-story-effect-layer img{width:min(62vw,280px);max-height:53svh}.tutorial-overlay.is-story-step .tutorial-bubble{max-height:calc(100svh - 20px)}}
 @media(max-width:480px){.tutorial-bubble{width:calc(100vw - 16px);padding:13px;border-radius:19px}.tutorial-bubble h2{font-size:18px}.tutorial-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.tutorial-next{grid-column:1/-1;grid-row:1}.tutorial-back,.tutorial-dialogue-skip,.tutorial-skip{grid-row:2}.tutorial-actions button{padding-inline:6px;font-size:11px}.tutorial-arrow{display:none}.tutorial-name-form{grid-template-columns:1fr}.tutorial-name-form label{grid-column:auto}.tutorial-name-form button{width:100%}}
-@media(prefers-reduced-motion:reduce){.tutorial-shade,.tutorial-spotlight,.tutorial-bubble,.tutorial-progress>span{transition:none}}
+@media(prefers-reduced-motion:reduce){.tutorial-shade,.tutorial-spotlight,.tutorial-bubble,.tutorial-progress>span{transition:none}.tutorial-story-effect-layer img{animation:none!important}}
+
+.tutorial-story-backdrop[data-scene="capital"]{background:linear-gradient(180deg,#96cbe2 0%,#e4edf1 44%,#b8a48b 45%,#dbc8a5 76%,#8f7965 100%)}
