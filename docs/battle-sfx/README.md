@@ -48,3 +48,18 @@ Home and battle have an **効果音** button. Audition includes four sounds, vol
 - **Not verified by listening:** timbre, subjective comfort, speaker/headphone loudness and Android hardware latency. A successful Web Audio start is not proof of audible output on an actual Android device.
 - Android manual: open audition in Chrome, start at 25%, compare all four; check device media volume; change mute/volume and reload; rapid taps; leave browser during battle then return; ensure no old sounds catch up; check actual HP/number synchronization and final victory. Do not treat these as passed before user confirmation.
 - Cloud Chrome game smoke: title and home rendered. The tutorial skip interaction then timed out and browser tab refresh also timed out. Party selection, hunt selection, battle start and save/reload **were not completed in the real browser**. VM integration and existing regression tests passed, but do not replace this missing UI smoke or Android verification.
+
+
+## v2 — Android no-sound report
+
+User reported no sound despite YouTube being audible. Code review found a touch activation bug: v1 attempted resume on pointerdown (touch is not a qualifying activation) and its `resuming` boolean could then prevent later retries indefinitely. V1 audition also discarded the first requested sample while resume was pending. Desktop mouse starts did not cover this path.
+
+- Listen to trusted non-mouse pointerup, touchend, click, keyboard and mouse-down events; retry resume in the current gesture even if an older promise remains pending.
+- Explicit audition awaits resume for at most 300ms, then discards the request. Generation checks cancel hidden, closed, muted, navigated, superseded or expired auditions. Battle playback still never awaits audio.
+- Both settings dialog and audition page use this path and display failed-start reasons. Page labels revision v2 and cache-busts the updated scripts.
+- Four native HTML audio controls provide an alternative audition route using the exact same original PCM, with mute/volume synchronized and background pausing. `node scripts/export-battle-audio.mjs` reproduces `audio/sfx/*_v1.wav` (about 119 KB total, no third-party sources). These files are used only on the alternative audition page, not fetched by battles.
+- Regression tests cover touch activation, an indefinitely pending earlier resume, first-tap audition, hidden/expired/superseded cancellation. The device-specific root cause is still an inference until the user retries; no Android listening success is claimed.
+
+Activation references: https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/User_activation and https://developer.chrome.com/blog/autoplay .
+
+- v2 complete local checks PASS. Cloud browser retry timed out and reset its connection; v2 real-browser/Android listening remains unverified.

@@ -1,7 +1,7 @@
-/* Original procedural SFX. No samples, network requests, timers, or gameplay RNG. */
+/* Original procedural SFX. No external samples or gameplay RNG; battle playback never waits. */
 const BattleAudio=(()=>{
   const KEY='mb_battle_audio_v1',DEFAULTS={muted:false,volume:0.25};
-  let settings={...DEFAULTS},ctx=null,master=null,ready=false,resuming=false,won=false,lastHit=-Infinity,lastKind='',screen='home';
+  let settings={...DEFAULTS},ctx=null,master=null,ready=false,won=false,lastHit=-Infinity,lastKind='',screen='home',generation=0,lastError='';
   const voices=new Set(),buffers=new Map();
   try{const s=JSON.parse(localStorage.getItem(KEY));if(s){settings.muted=s.muted===true;if(Number.isFinite(s.volume))settings.volume=Math.max(0,Math.min(1,s.volume));}}catch(_e){}
   const durations={hit:.115,weak:.165,heal:.38,victory:.68};
@@ -22,16 +22,49 @@ const BattleAudio=(()=>{
     }
     return data;
   }
-  function stop(){for(const v of voices){try{v.source.stop();v.source.disconnect();v.gain.disconnect();}catch(_e){}}voices.clear();}
+  function stop(){generation++;for(const v of voices){try{v.source.stop();v.source.disconnect();v.gain.disconnect();}catch(_e){}}voices.clear();}
   function unlock(){
-    if(document.hidden)return;
+    if(document.hidden)return Promise.resolve(false);
+    const ticket=generation;
     try{
-      if(!ctx){const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;ctx=new Audio({latencyHint:'interactive'});master=ctx.createGain();master.gain.value=settings.muted?0:settings.volume*.5;master.connect(ctx.destination);
+      if(!ctx){const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio){lastError='この表示環境は効果音の再生に対応していません。';return Promise.resolve(false);}ctx=new Audio({latencyHint:'interactive'});master=ctx.createGain();master.gain.value=settings.muted?0:settings.volume*.5;master.connect(ctx.destination);
         ctx.onstatechange=()=>{if(ctx.state!=='running'){ready=false;stop();}};
       }
-      ready=true;
-      if(ctx.state!=='running'&&!resuming){resuming=true;Promise.resolve(ctx.resume()).catch(()=>{ready=false;}).finally(()=>{resuming=false;});}
-    }catch(_e){ready=false;}
+      if(ctx.state==='running'){ready=true;lastError='';return Promise.resolve(true);}
+      ready=false;
+      // Always retry resume in the CURRENT gesture. A promise from a premature
+      // touch pointerdown can remain pending forever and must not lock this out.
+      return Promise.resolve(ctx.resume()).then(()=>{
+        if(ticket!==generation||document.hidden)return false;
+        ready=ctx.state==='running';if(ready)lastError='';return ready;
+      }).catch(()=>{if(ticket===generation){ready=false;lastError='ブラウザが音声の開始を許可しませんでした。';}return false;});
+    }catch(_e){ready=false;lastError='音声を開始できませんでした。';return Promise.resolve(false);}
+  }
+  function status(){
+    if(settings.muted)return 'ミュートがONです。';
+    if(settings.volume===0)return '効果音の音量が0%です。';
+    if(document.hidden)return '画面が非表示のため停止しています。';
+    if(lastError)return lastError;
+    if(!ctx||ctx.state!=='running'||!ready)return '音声の開始待ちです。もう一度タップしてください。';
+    return '再生処理は動作しています。無音なら下の音声ファイルでも確認できます。';
+  }
+  async function audition(kind){
+    stop();lastHit=-Infinity;lastKind='';
+    const ticket=generation;
+    // Only an explicit audition may wait briefly for initial resume. Battle
+    // events still never wait or queue. Closing/hiding/muting cancels this.
+    let timer;
+    try{
+      const ok=await Promise.race([unlock(),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),300);})]);
+      if(!ok||ticket!==generation||document.hidden)return false;
+      return play(kind,{preview:true});
+    }finally{clearTimeout(timer);}
+  }
+  async function auditionButton(kind){
+    const started=await audition(kind);
+    const el=document.getElementById('battleAudioStatus');
+    if(el)el.textContent=started?'再生処理を開始しました。':status();
+    return started;
   }
   function play(kind,{preview=false}={}){
     // A suspended/hidden event is discarded; never replay it when resume resolves.
@@ -50,7 +83,7 @@ const BattleAudio=(()=>{
       const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;gain.gain.value=1;
       source.connect(gain);gain.connect(master);const v={source,gain,kind};voices.add(v);
       source.onended=()=>{voices.delete(v);source.disconnect();gain.disconnect();};source.start(now);return true;
-    }catch(_e){stop();return false;}
+    }catch(_e){lastError='音声を出力できませんでした。';stop();return false;}
   }
   function hp(before,after,{impact=false,effectiveness=1}={}){
     if(won)return false;
@@ -62,19 +95,20 @@ const BattleAudio=(()=>{
   function victory(){if(won)return false;won=true;return play('victory');}
   function reset(){stop();won=false;lastHit=-Infinity;lastKind='';}
   function navigate(id){if(screen!==id)stop();screen=id;}
-  function persist(){try{localStorage.setItem(KEY,JSON.stringify(settings));}catch(_e){}if(master)master.gain.value=settings.muted?0:settings.volume*.5;if(settings.muted||settings.volume===0)stop();render();}
+  function persist(){generation++;try{localStorage.setItem(KEY,JSON.stringify(settings));}catch(_e){}if(master)master.gain.value=settings.muted?0:settings.volume*.5;if(settings.muted||settings.volume===0)stop();render();}
   function render(){
     document.querySelectorAll('[data-sfx-volume]').forEach(el=>{el.value=Math.round(settings.volume*100);});
     document.querySelectorAll('[data-sfx-level]').forEach(el=>{el.textContent=`${Math.round(settings.volume*100)}%`;});
     document.querySelectorAll('[data-sfx-mute]').forEach(el=>{el.checked=settings.muted;});
   }
   function background(){ready=false;stop();}
-  document.addEventListener('pointerdown',e=>{if(e.isTrusted)unlock();},{capture:true,passive:true});
+  document.addEventListener('pointerdown',e=>{if(e.isTrusted&&e.pointerType==='mouse')unlock();},{capture:true,passive:true});
+  for(const type of ['pointerup','touchend','click'])document.addEventListener(type,e=>{if(e.isTrusted)unlock();},{capture:true,passive:true});
   document.addEventListener('keydown',e=>{if(e.isTrusted)unlock();},{capture:true});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)background();});
   window.addEventListener('pagehide',background);
   window.addEventListener('blur',background);
-  return {play,hp,victory,reset,navigate,stop,unlock,render,synthesize,durations,
+  return {play,hp,victory,reset,navigate,stop,unlock,audition,auditionButton,status,render,synthesize,durations,
     getSettings:()=>({...settings}),
     setVolume:v=>{if(Number.isFinite(Number(v)))settings.volume=Math.max(0,Math.min(1,Number(v)));persist();},
     setMuted:v=>{settings.muted=!!v;persist();},

@@ -13,7 +13,7 @@ const host = argumentValue('--host', '0.0.0.0');
 const port = Number(argumentValue('--port', '4173'));
 const mime = {
   '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8',
-  '.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.webp':'image/webp',
+  '.wav':'audio/wav','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.webp':'image/webp',
   '.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.svg':'image/svg+xml'
 };
 

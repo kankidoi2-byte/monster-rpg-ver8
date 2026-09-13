@@ -1,15 +1,24 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>戦闘の効果音を試聴</title><link rel="stylesheet" href="css/battle-audio.css?v=battle-sfx-1"><style>body{margin:0;background:#0d1726;color:#f3eddf;font:16px/1.6 system-ui,sans-serif}main{max-width:440px;margin:auto;padding:24px 18px}h1{font-size:24px}button{font:inherit;color:inherit;background:#283b52;border:1px solid #899cb7;border-radius:10px;min-height:56px;padding:12px;cursor:pointer}small{display:block;color:#c1ccdb}a{color:#e2c789}.controls{display:grid;gap:14px;margin:22px 0}input[type=range]{width:100%;height:44px;accent-color:#dbba72}input[type=checkbox]{width:22px;height:22px;vertical-align:middle}output{float:right}#status{min-height:52px;padding:12px;border:1px solid #899cb7;border-radius:10px}.checks{display:grid;gap:10px;margin-top:20px}</style></head><body><main>
-<h1>戦闘の効果音を試聴</h1><p>4種類の短い合成音です。初期音量は25%。端末のメディア音量も調整してください。</p>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>戦闘の効果音を試聴</title><link rel="stylesheet" href="css/battle-audio.css?v=battle-sfx-2"><style>body{margin:0;background:#0d1726;color:#f3eddf;font:16px/1.6 system-ui,sans-serif}main{max-width:440px;margin:auto;padding:24px 18px}h1{font-size:24px}button{font:inherit;color:inherit;background:#283b52;border:1px solid #899cb7;border-radius:10px;min-height:56px;padding:12px;cursor:pointer}small{display:block;color:#c1ccdb}a{color:#e2c789}.controls{display:grid;gap:14px;margin:22px 0}input[type=range]{width:100%;height:44px;accent-color:#dbba72}input[type=checkbox]{width:22px;height:22px;vertical-align:middle}output{float:right}#status{min-height:52px;padding:12px;border:1px solid #899cb7;border-radius:10px}.checks{display:grid;gap:10px;margin-top:20px}</style></head><body><main>
+<h1>戦闘の効果音を試聴</h1><small>タッチ再生修正版 v2</small><p>4種類の短い合成音です。初期音量は25%。端末のメディア音量も調整してください。</p>
 <div class="controls"><label><input type="checkbox" data-sfx-mute onchange="BattleAudio.setMuted(this.checked)"> ミュート</label><label>音量 <output data-sfx-level>25%</output><input type="range" min="0" max="100" data-sfx-volume aria-label="効果音の音量" oninput="BattleAudio.setVolume(this.value/100)"></label></div>
 <div class="sfx-samples"><button onclick="sample('hit')">通常命中<small>低めの打撃・0.115秒</small></button><button onclick="sample('weak')">弱点命中<small>響きのある打撃・0.165秒</small></button><button onclick="sample('heal')">回復<small>上昇する3音・0.38秒</small></button><button onclick="sample('victory')">勝利<small>短い4音・0.68秒</small></button></div>
 <p id="status" role="status">ボタンを押して比較できます。</p>
+<details><summary>まだ無音の場合：音声ファイルで試す</summary><p>下の▶は別の再生方式です。同じ4種類の音を確認できます。</p><p>通常命中</p><audio controls preload="none" data-sfx-native src="audio/sfx/hit_v1.wav" style="width:100%"></audio><p>弱点命中</p><audio controls preload="none" data-sfx-native src="audio/sfx/weak_v1.wav" style="width:100%"></audio><p>回復</p><audio controls preload="none" data-sfx-native src="audio/sfx/heal_v1.wav" style="width:100%"></audio><p>勝利</p><audio controls preload="none" data-sfx-native src="audio/sfx/victory_v1.wav" style="width:100%"></audio></details>
 <div class="checks"><button onclick="burst()">連続命中を確認（10回分）</button><button onclick="zero()">全回復済みを確認（回復量0）</button><button onclick="doubleWin()">勝利の重複防止を確認</button></div>
 <p><a href="index.html">効果音を追加したゲームを開く →</a></p><p><small>自作の数式合成音。外部素材・有料素材は使用していません。ここで変更した音量・ミュートは同じ確認版ゲームにも反映されます。本番とは別のセーブ領域です。</small></p>
-<script src="js/battle-audio.js?v=battle-sfx-1"></script><script>
+<script src="js/battle-audio.js?v=battle-sfx-2"></script><script>
 BattleAudio.render();BattleAudio.navigate('battle');
+const nativePlayers=[...document.querySelectorAll('[data-sfx-native]')];
+function stopNative(){for(const p of nativePlayers)p.pause();}
+for(const p of nativePlayers)p.addEventListener('play',()=>{const s=BattleAudio.getSettings();p.volume=s.volume*.5;p.muted=s.muted;BattleAudio.stop();for(const other of nativePlayers)if(other!==p)other.pause();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopNative();});
+window.addEventListener('pagehide',stopNative);
+for(const event of ['input','change'])document.addEventListener(event,()=>{const s=BattleAudio.getSettings();for(const p of nativePlayers){p.volume=s.volume*.5;p.muted=s.muted;}});
+for(const p of nativePlayers){const s=BattleAudio.getSettings();p.volume=s.volume*.5;p.muted=s.muted;}
 const names={hit:'通常命中',weak:'弱点命中',heal:'回復',victory:'勝利'};
 function report(text){document.getElementById('status').textContent=text;}
-function sample(kind){BattleAudio.reset();report(BattleAudio.play(kind,{preview:true})?names[kind]+'：再生を開始しました。':'再生しませんでした。ミュート・音量を確認し、もう一度タップしてください。');}
+let sampleRequest=0;
+async function sample(kind){const request=++sampleRequest;stopNative();report('音声を準備しています…');const started=await BattleAudio.audition(kind);if(request!==sampleRequest)return;report(started?names[kind]+'：再生処理を開始しました。':BattleAudio.status());}
 function burst(){BattleAudio.reset();let played=0;for(let i=0;i<10;i++)if(BattleAudio.hp(100,90,{impact:true}))played++;report('同時に確定した10回の命中 → '+played+'音を再生（通常は1音）。');}
 function zero(){BattleAudio.reset();report(BattleAudio.hp(100,100)?'予期しない再生':'HP 100 → 100：回復量0なので無音です。');}
 function doubleWin(){BattleAudio.reset();let n=0;if(BattleAudio.victory())n++;if(BattleAudio.victory())n++;report('勝利結果を2回表示 → '+n+'回再生（通常は1回）。');}
