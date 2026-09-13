@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260913-nemes-family-art',date:'2026-09-13',category:'update',title:'ネメスたちのイラストを更新しました',body:'ネメス、ネメシア、ネメシオン、滅亡の星 ネメシオンのイラストを更新しました。図鑑や編成、戦闘で新しい姿をご覧いただけます。'}),
   Object.freeze({id:'20260913-skill-impact-sync',date:'2026-09-13',category:'fix',title:'技が当たる瞬間とHP・ダメージ表示を同期',body:'技の命中や回復の演出に合わせて、数字とHPが変化するよう調整しました。通常攻撃と弱体化の共通演出を補い、追加攻撃は2撃目の命中も表示します。交代や次の敵の登場時に、前の演出が残らないよう改善しました。技の威力・確率・効果は変わりません。'}),
   Object.freeze({id:'20260913-skill-loadout-status',date:'2026-09-13',category:'update',title:'技編成中の残りコストを確認しやすくしました',body:'技カードを探している間も、対象名・使用コスト・残りコスト・技枠を画面上部に表示します。装備できない理由や不足コストを確認でき、装備・解除後も検索条件と一覧の位置を保ちます。'}),
   Object.freeze({id:'20260913-multi-battle-motion',date:'2026-09-13',category:'fix',title:'三つ巴・乱入戦の被弾演出と攻撃先を改善',body:'敵のHPや状態が更新されても、被弾時の動きが途中で消えないよう修正しました。行動中は敵A・敵B・味方を区別し、誰が誰へ技を使っているかを表示します。戦闘画面と十字配置のコマンドは維持しています。'}),
