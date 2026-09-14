@@ -48,7 +48,8 @@
 
 ## Required checks
 
-- Run `npm run check` after changing JavaScript, game data, or image assets.
+- During implementation, run the checks relevant to the affected code or assets. Once a coherent change to JavaScript, game data, or image assets is ready for final validation, run the full `npm run check` before proposing a merge.
+- Reuse successful results for unchanged inputs and environment. Rerun checks when subsequent changes affect their coverage, a failure needs verification, or a concrete unresolved risk remains. Required CI checks must still pass on the current PR head.
 - Fix all validation failures before proposing a merge.
 - For gameplay changes, smoke-test title screen, home, party selection, hunt selection, battle start, affected feature, save, and reload.
 - Report the files changed, checks run, and anything that still needs manual Android or Chromebook verification.
@@ -61,6 +62,12 @@
 - Use a new stable notice `id`; never rename or reuse a published notice ID.
 - Write the title and body for players rather than copying commit messages or implementation details.
 - Run `npm run check:notices` as part of `npm run check`. If no notice is needed, state why in the pull request.
+
+## Task completion
+
+- Match the stopping point to the user's request: planning requests end with an actionable plan and material open decisions; implementation requests include implementation, relevant verification, and fixes for failures caused by the change; publication requests include the existing merge gates and verification of the published result.
+- Continue authorized work through that stopping point without requesting confirmation for each routine step. Apply the existing risk-based approval contract and stop conditions; this section does not expand publication or other permissions.
+- If blocked, report the concrete blocker, completed work, and remaining step. Do not report unperformed verification or publication as complete.
 
 ## Git workflow
 
