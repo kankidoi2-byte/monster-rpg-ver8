@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260916-english-study-menu',date:'2026-09-16',category:'update',title:'英語学習の入口をメニューへ移動しました',body:'英語学習は、画面下の「メニュー」から開けるようになりました。🔤アイコンの「英語学習」を選ぶと、これまでと同じ学習ノートを利用できます。'}),
   Object.freeze({id:'20260914-english-study',date:'2026-09-14',category:'update',title:'英語学習ノートを追加しました',body:'ホームから英語学習ノートを開けます。毎日の3単語、確認問題、復習、単語帳を利用できます。対象の単語に正解すると1日1ptまで貯まります。アイテム交換は準備中です。'}),
   Object.freeze({id:'20260913-nemes-family-art',date:'2026-09-13',category:'update',title:'ネメスたちのイラストを更新しました',body:'ネメス、ネメシア、ネメシオン、滅亡の星 ネメシオンのイラストを更新しました。図鑑や編成、戦闘で新しい姿をご覧いただけます。'}),
   Object.freeze({id:'20260913-skill-impact-sync',date:'2026-09-13',category:'fix',title:'技が当たる瞬間とHP・ダメージ表示を同期',body:'技の命中や回復の演出に合わせて、数字とHPが変化するよう調整しました。通常攻撃と弱体化の共通演出を補い、追加攻撃は2撃目の命中も表示します。交代や次の敵の登場時に、前の演出が残らないよう改善しました。技の威力・確率・効果は変わりません。'}),
