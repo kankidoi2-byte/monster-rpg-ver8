@@ -53,3 +53,6 @@ assert.doesNotMatch(run("MAPS.find(map=>map.id==='light_plain').ecosystem"),/ヒ
 assert.match(run("MAPS.find(map=>map.id==='light_plain').ecosystem"),/降臨/);
 assert.match(run("[...SHOP_ITEMS,...ITEM_DEX_EXTRA].find(item=>item.id==='golden_land_map').desc"),/世界地図.*出発.*1枚消費/);
 console.log('World map encyclopedia checks passed (19 difficulty sets, event-specific encounters, save-independent descriptions, contract/ID preservation).');
+
+assert.equal(run("monsterObtainEntries(by('tienhairon')).some(e=>e.mapId==='deep_sea_end')"),false);
+assert.equal(run("monsterObtainEntries(by('tienhairon')).some(e=>e.mapId==='water_secret')"),true);

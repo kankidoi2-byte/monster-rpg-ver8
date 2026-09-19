@@ -14,6 +14,13 @@ assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'hard').
 assert.equal(run("worldMapAvailableDifficulties(MAPS.find(m=>m.id==='world_between')).length"),0);
 run("save.worldMap=rollWorldEventsAfterVictory(null,{receiptId:'world-victory:1',difficultyId:'hard',mapId:'light_plain'},()=>0)");
 assert.equal(run('worldMapActiveEvents().length'),5);
+assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='water_secret'),'hard','water_secret').some(m=>m.id==='tienhairon')"),true,'secret water entrance offers Tienhairon');
+for(const difficulty of ['easy','normal','hard','extreme']){
+  c.habitatDifficulty=difficulty;
+  assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='deep_sea_end'),habitatDifficulty).some(m=>m.id==='tienhairon')"),false,'deep sea must no longer offer Tienhairon');
+}
+assert.equal(run("normalizeWorldMapState(JSON.parse(JSON.stringify({active:{water_secret:{monsterId:'tienhairon'}}}))).active.water_secret.monsterId"),'tienhairon','event target survives reload normalization');
+
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'hard','elysia')[0].id"),'hikari');
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'extreme','elysia').length"),0);
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='starsea'),'hard','starsea')[0].id"),'nemesion');
