@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260920-volteck-family-art',date:'2026-09-20',category:'update',title:'ボルテックたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるボルテック、スパクイン、ボルタックスのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
   Object.freeze({id:'20260919-beetle-family-art',date:'2026-09-19',category:'update',title:'グラスビートたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるグラスビート、ソーンビート、グランビートのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
   Object.freeze({id:'20260919-tienhairon-habitat',date:'2026-09-19',category:'update',title:'ティエンハイロンの生息地を変更しました',body:'ティエンハイロンが「深き海の果て」に代わり「流水の秘境」で出現するようになりました。蒼海の入り江・回遊海域での出現や、能力・技・進化条件は変わりません。'}),
   Object.freeze({id:'20260919-shenhairon-tienhairon-art',date:'2026-09-19',category:'update',title:'シェンハイロンとティエンハイロンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるシェンハイロンとティエンハイロンのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
