@@ -51,9 +51,9 @@ const IMG={
   nemes:"images/monsters/nemes_v2.webp",
   basicChart:"images/monsters/basicChart.webp",
   specialChart:"images/monsters/specialChart.webp",
-  icegolem:"images/monsters/icegolem.webp",
+  icegolem:"images/monsters/icegolem_20260920.webp",
   volteck:"images/monsters/volteck_20260920.webp",
-  nightmare:"images/monsters/nightmare.webp",
+  nightmare:"images/monsters/nightmare_20260920.webp",
   shenhairon:"images/monsters/shenhairon_20260919.webp",
   tienhairon:"images/monsters/tienhairon_20260919.webp",
   highaquaron:"images/monsters/highaquaron_20260919.webp",
@@ -80,7 +80,7 @@ const IMG={
   luxseed:'images/monsters/luxseed.webp',
   luxiard:'images/monsters/luxiard.webp',
   lux_galdion:'images/monsters/lux_galdion.webp',
-  astralepis:'images/monsters/astralepis.webp',
+  astralepis:'images/monsters/astralepis_20260920.webp',
   kimeragna_apex:'images/monsters/kimeragna_apex.webp',
   elixion:'images/monsters/elixion.webp'
 };
