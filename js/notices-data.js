@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260919-shenhairon-tienhairon-art',date:'2026-09-19',category:'update',title:'シェンハイロンとティエンハイロンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるシェンハイロンとティエンハイロンのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
   Object.freeze({id:'20260919-aquaron-highaquaron-art',date:'2026-09-19',category:'update',title:'アクアロンとハイアクアロンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるアクアロンとハイアクアロンのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
   Object.freeze({id:'20260919-freigal-freiwolf-art',date:'2026-09-19',category:'update',title:'フレイガルとフレイウルフのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるフレイガルとフレイウルフのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
   Object.freeze({id:'20260916-english-study-menu',date:'2026-09-16',category:'update',title:'英語学習の入口をメニューへ移動しました',body:'英語学習は、画面下の「メニュー」から開けるようになりました。🔤アイコンの「英語学習」を選ぶと、これまでと同じ学習ノートを利用できます。'}),
