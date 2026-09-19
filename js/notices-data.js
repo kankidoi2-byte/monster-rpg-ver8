@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260920-slime-gold-goblin-art',date:'2026-09-20',category:'update',title:'スライムたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるスライム、スライムゴールド、ゴブリンのイラストを更新しました。能力・技・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-sylphin-family-art',date:'2026-09-20',category:'update',title:'シルフィンたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるシルフィン、ゼファーレイ、テンペストレイのイラストを更新しました。能力・技・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-nightmare-icegolem-astralepis-art',date:'2026-09-20',category:'update',title:'ナイトメアたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるナイトメア、アイスゴーレム、アストラレピスのイラストを更新しました。能力・技・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-volteck-family-art',date:'2026-09-20',category:'update',title:'ボルテックたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるボルテック、スパクイン、ボルタックスのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
