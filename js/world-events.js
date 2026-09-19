@@ -16,7 +16,7 @@ function normalizeWorldEventEntry(key,value){
   if(!worldEventObject(value))return null;
   const entry={...value};
   const maps={elysia:'light_plain',crisis:'starsea',rift:'world_between',water_secret:'water_secret',starsea:'starsea',golden_land:'golden_land'};
-  const monsters={elysia:['hikari'],crisis:['doom_nemesion'],rift:WORLD_FALSE_DRAGONS,water_secret:['elna_water','suiren'],starsea:['nemesion'],golden_land:['slime_gold']};
+  const monsters={elysia:['hikari'],crisis:['doom_nemesion'],rift:WORLD_FALSE_DRAGONS,water_secret:['elna_water','suiren','tienhairon'],starsea:['nemesion'],golden_land:['slime_gold']};
   entry.mapId=maps[key];
   const limit=WORLD_EVENT_BATTLE_LIMITS[key];
   entry.remainingBattles=Number.isSafeInteger(entry.remainingBattles)&&entry.remainingBattles>0

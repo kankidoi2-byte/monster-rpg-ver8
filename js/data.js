@@ -184,12 +184,12 @@ const MAPS = [
     note:'矢印は沈降物や深海魔力から大型種へ渡る推定上の流れを示す。戦闘での強さ順ではない。',
     layers:[
       {role:'第4層・深淵の支配種',ids:['orca_abyss'],detail:'最奥の高密度な魔力域を占有し、ほかの大型種を遠ざける。'},
-      {role:'第3層・定着する海竜',ids:['shenhairon','tienhairon'],detail:'海底地形に沿って移動し、深海の限られた資源を利用する。'},
+      {role:'第3層・定着する海竜',ids:['shenhairon'],detail:'海底地形に沿って移動し、深海の限られた資源を利用する。'},
       {role:'第2層・深海の遊泳者',ids:['orca_stream'],detail:'上層から沈む餌や魔力を追い、暗い水層を広く巡る。'},
       {role:'第1層・深海の供給源',labels:['マリンスノー','海底の微小生物','深海の魔力'],detail:'上層から沈む有機物と海底の魔力が、光のない環境を支える。'}
     ]
    },
-   enemyIds:['orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','shenhairon','shenhairon','shenhairon','shenhairon','tienhairon','tienhairon','tienhairon','tienhairon','orca_abyss','orca_abyss','orca_abyss']},
+   enemyIds:['orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','shenhairon','shenhairon','shenhairon','shenhairon','orca_abyss','orca_abyss','orca_abyss']},
   {id:'snow_mountain', name:'雪山', image:MAPIMG.snow_mountain, chapter:'序章', region:'北部山岳', desc:'一年を通じて雪と氷に閉ざされた山岳。寒冷地に強い種が生息する。', ecosystem:'氷に適応したゴーレム類を中心に、水辺の種や一般種も寒冷地へ入り込む。種数は限られるが、耐寒性の高い生物が残る。',
    ecosystemDiagram:{
     heading:'雪山の生態系ピラミッド',
@@ -319,17 +319,18 @@ const MAPS = [
     ]
    },
    enemyIds:['nemesion','doom_nemesion'], bossOnly:true, appearRate:0.10},
-  {id:'water_secret', name:'流水の秘境', image:MAPIMG.water_secret, chapter:'序章', region:'蒼海地方', desc:'清流と水鏡に守られた秘境。選ばれた水の使い手だけが姿を見せる。', ecosystem:'水の使い手エルナとスイレンが現れる限定的な環境。一般的な水棲種の群れではなく、水の力に選ばれた存在だけが確認される。',
+  {id:'water_secret', name:'流水の秘境', image:MAPIMG.water_secret, chapter:'序章', region:'蒼海地方', desc:'清流と水鏡に守られた秘境。選ばれた水の使い手だけが姿を見せる。', ecosystem:'水の使い手エルナとスイレン、優雅な水竜ティエンハイロンが現れる限定的な環境。一般的な水棲種の群れではなく、水の力に選ばれた存在だけが確認される。',
    ecosystemDiagram:{
     heading:'流水の秘境の共生構造図',
     note:'自然の食物連鎖ではなく、清流、精霊、選ばれた守り手が保つ限定的な共生関係を示す。',
     layers:[
+      {role:'秘境に棲む水竜',ids:['tienhairon'],detail:'清流と水鏡に囲まれた秘境に棲む、優雅な水竜。'},
       {role:'秘境の守り手',ids:['elna_water'],detail:'水鏡の力を受け、流れを乱す脅威から秘境を守る。'},
       {role:'水の循環者',ids:['suiren'],detail:'清流の魔力を巡らせ、水鏡が力を保てる環境を整える。'},
       {role:'環境基盤',labels:['清流・湧水','水鏡の魔力','水辺の草花'],detail:'澄んだ水と水鏡の力が、秘境の閉じた環境を支える。'}
     ]
    },
-   enemyIds:['elna_water','suiren'], rareOnly:true, appearRate:0.12},
+   enemyIds:['elna_water','suiren','tienhairon'], rareOnly:true, appearRate:0.12},
   {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。世界の危機の後に残る痕跡から、偽竜へと至る。', ecosystem:'世界の危機に介入する三体の偽竜が確認される、通常の地域生態系から隔絶された領域。無と光の性質を備えた機械竜は、地上の生物とは異なる法則の中に存在する。',
    ecosystemDiagram:{
     heading:'世界の狭間の存在構造図',
