@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260919-freigal-freiwolf-art',date:'2026-09-19',category:'update',title:'フレイガルとフレイウルフのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるフレイガルとフレイウルフのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
   Object.freeze({id:'20260916-english-study-menu',date:'2026-09-16',category:'update',title:'英語学習の入口をメニューへ移動しました',body:'英語学習は、画面下の「メニュー」から開けるようになりました。🔤アイコンの「英語学習」を選ぶと、これまでと同じ学習ノートを利用できます。'}),
   Object.freeze({id:'20260914-english-study',date:'2026-09-14',category:'update',title:'英語学習ノートを追加しました',body:'ホームから英語学習ノートを開けます。毎日の3単語、確認問題、復習、単語帳を利用できます。対象の単語に正解すると1日1ptまで貯まります。アイテム交換は準備中です。'}),
   Object.freeze({id:'20260913-nemes-family-art',date:'2026-09-13',category:'update',title:'ネメスたちのイラストを更新しました',body:'ネメス、ネメシア、ネメシオン、滅亡の星 ネメシオンのイラストを更新しました。図鑑や編成、戦闘で新しい姿をご覧いただけます。'}),
