@@ -81,7 +81,7 @@ assert.equal(elixion.moves[0][2],'normal','Elixion\'s first exclusive move must 
 assert.deepEqual([...elixion.moves[2][2]],['normal','dragon'],'Elixion Nova must be neutral/dragon');
 assert.equal(galdra.dexNo,46,'Galdra must occupy monster dex No.46');
 assert.deepEqual([...galdra.types],['normal','dragon'],'Galdra must be a neutral/dragon monster');
-assert.equal(contract.monsters.find(monster => monster.id === 'astralepis').dexNo,16,'Astralepis must occupy the former goddess slot');
+assert.equal(contract.monsters.find(monster => monster.id === 'astralepis').dexNo,38,'Astralepis must occupy monster dex No.38');
 assert(!contract.failureIds.includes('elna_advanced'),'characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('stella_wizard'),'Stella characters must not enter alchemy failure results');
 assert(!contract.failureIds.includes('lumina_wizard'),'Lumina characters must not enter alchemy failure results');
