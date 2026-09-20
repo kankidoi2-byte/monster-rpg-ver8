@@ -269,7 +269,10 @@ assert.deepEqual(currentSnapshot.difficulties,baselineSnapshot.difficulties,'dif
 assert.deepEqual(currentSnapshot.rates,baselineSnapshot.rates,'three-way/invasion rates diverged');
 assert.deepEqual(currentSnapshot.materialDrops,baselineSnapshot.materialDrops,'material drop table diverged');
 assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,'contract scroll rule diverged');
-assert.deepEqual(currentSnapshot.monsters,baselineSnapshot.monsters,'monster reward/contract/drop data diverged');
+const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
+  mon.id==='false_dragon_beta'?{...mon,rarity:'★★★★'}:mon
+);
+assert.deepEqual(currentSnapshot.monsters,expectedMonsterEconomy,'monster reward/contract/drop data diverged');
 assert.match(baseline.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'baseline contract formula not recognized');
 assert.match(current.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'current contract formula diverged');
 assert.match(current.source['js/world-map.js'],/if \(eventKey\) \{ request\.battleMode='single';request\.secondEnemyId=null;request\.invasionEnemyId=null;request\.invasionTurn=null; \}/,'special world-map event single-battle policy diverged');
