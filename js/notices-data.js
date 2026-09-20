@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260920-monster-dex-reorder',date:'2026-09-20',category:'update',title:'モンスター図鑑の並び順を整理しました',body:'進化系統、単一モンスター、★5、錬成モンスターのまとまりが分かるよう、モンスター図鑑No.1〜50を再編しました。モンスターの内部ID、所持・育成状態、能力、技、出現場所、進化・錬成条件は変更しておらず、既存のセーブデータはそのまま利用できます。'}),
   Object.freeze({id:'20260920-map-art-renewal',date:'2026-09-20',category:'update',title:'全マップの景観イラストを刷新しました',body:'草原から黄金郷まで、現在登場する全19マップの景観イラストを新しくしました。戦闘画面、タイトル画面、マップ図鑑、モンスター図鑑の出現場所で各地の新しい景観を確認できます。マップ図鑑の詳細では景色の全体を表示し、画像を押すと全画面で鑑賞できます。マップの出現条件・敵・難易度・報酬に変更はありません。'}),
   Object.freeze({id:'20260920-morgram-renewal',date:'2026-09-20',category:'update',title:'偽竜 code:gammaをモルグラムへ更新しました',body:'図鑑No.31の偽竜 code:gammaを、★4・森属性の「モルグラム」へ変更しました。新しいイラストで森林のHardに出現します。内部IDは維持され、既存の所持・図鑑・セーブデータは引き継がれます。能力値と技に変更はありません。'}),
   Object.freeze({id:'20260920-ashleia-renewal',date:'2026-09-20',category:'update',title:'偽竜 code:betaをアシュレイアへ更新しました',body:'図鑑No.30の偽竜 code:betaを、★4・火属性の「アシュレイア」へ変更しました。新しいイラストで火山のHardに出現します。内部IDは維持され、既存の所持・図鑑・セーブデータは引き継がれます。能力値と技に変更はありません。'}),
