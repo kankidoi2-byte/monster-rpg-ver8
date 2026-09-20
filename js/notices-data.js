@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260920-nemesion-pair-art',date:'2026-09-20',category:'update',title:'ネメシオンたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるネメシオンと滅亡の星 ネメシオンのイラストを更新しました。能力・属性・技・進化・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-kimeragna-pair-art',date:'2026-09-20',category:'update',title:'キメラグナたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるキメラグナとキメラグナ・アペクスのイラストを更新しました。能力・属性・技・進化・出現設定・錬成条件に変更はありません。'}),
   Object.freeze({id:'20260920-alfa-elixion-art',date:'2026-09-20',category:'update',title:'偽竜 code:alfaとエリクシオンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示される偽竜 code:alfaと賢金神竜エリクシオンのイラストを更新しました。能力・属性・技・出現設定・錬成条件に変更はありません。'}),
   Object.freeze({id:'20260920-ignaros-alchemion-art',date:'2026-09-20',category:'update',title:'イグナロスとアルケミオンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるイグナロスとアルケミオンのイラストを更新しました。能力・属性・技・進化・出現設定・錬成条件に変更はありません。'}),
