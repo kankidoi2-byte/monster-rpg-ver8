@@ -104,7 +104,9 @@ function normalizedRuleSource(source){
     .replace(/\s+/g,'');
 }
 
-function simulateTwentyWins(rules){
+function simulateTwentyWins(rules,grasslandEnemyIds=null){
+  const originalGrasslandEnemyIds=canonicalValue(rules,`[...MAPS.find(map=>map.id==='grassland').enemyIds]`);
+  if(grasslandEnemyIds)canonicalValue(rules,`MAPS.find(map=>map.id==='grassland').enemyIds=[...grasslandEnemyIds]`,{grasslandEnemyIds});
   const random=mulberry32(BATTLE_SEED);
   const battles=[];
   const expeditionTotals={completions:0,coins:0,exp:0,items:{}};
@@ -169,6 +171,7 @@ function simulateTwentyWins(rules){
       exp,coins,materials,virtualContractCheck,expeditionProgress
     });
   }
+  if(grasslandEnemyIds)canonicalValue(rules,`MAPS.find(map=>map.id==='grassland').enemyIds=[...originalGrasslandEnemyIds]`,{originalGrasslandEnemyIds});
   return {battles,totals:summarizeBattles(battles),expeditionTotals};
 }
 
@@ -282,8 +285,10 @@ for(const [file,name] of [
   );
 }
 
-const oldMode=simulateTwentyWins(baseline);
-const worldMapMode=simulateTwentyWins(current);
+// Keep the encounter roster fixed so this check isolates reward-rule parity from intentional habitat changes.
+const baselineGrasslandEnemyIds=baselineSnapshot.maps.find(map=>map.id==='grassland').enemyIds;
+const oldMode=simulateTwentyWins(baseline,baselineGrasslandEnemyIds);
+const worldMapMode=simulateTwentyWins(current,baselineGrasslandEnemyIds);
 assert.equal(oldMode.battles.length,20);
 assert.equal(worldMapMode.battles.length,20);
 assert.equal(oldMode.totals.normalWins,10);
