@@ -213,6 +213,32 @@ function mapDexEcosystemDiagram(map){
   const cycles=(diagram.cycles||[]).map(entry=>`<div class="map-dex-ecosystem-cycle"><strong>${entry.role}</strong><div>${mapDexEcosystemMembers(entry)}</div><small>${entry.detail||''}</small></div>`).join('');
   return `<section class="map-dex-pyramid" aria-labelledby="mapDexPyramidHeading"><div class="map-dex-pyramid-heading"><h4 id="mapDexPyramidHeading">${diagram.heading||'生態系ピラミッド'}</h4><span>図説</span></div><p>${diagram.note||''}</p><div class="map-dex-pyramid-layers">${layers}</div>${cycles?`<div class="map-dex-ecosystem-cycles">${cycles}</div>`:''}</section>`;
 }
+function closeMapArtwork(){
+  const dialog=document.getElementById('mapArtworkDialog');
+  if(!dialog)return;
+  if(typeof dialog.close==='function')dialog.close();
+  else dialog.removeAttribute('open');
+}
+function ensureMapArtworkDialog(){
+  let dialog=document.getElementById('mapArtworkDialog');
+  if(dialog)return dialog;
+  dialog=document.createElement('dialog');
+  dialog.id='mapArtworkDialog';
+  dialog.className='map-artwork-dialog';
+  dialog.setAttribute('aria-label','マップ全景');
+  dialog.innerHTML='<button type="button" class="map-artwork-dialog-close" onclick="closeMapArtwork()" aria-label="全景表示を閉じる">×</button><img alt="">';
+  dialog.addEventListener('click',event=>{if(event.target===dialog)closeMapArtwork();});
+  document.body.appendChild(dialog);
+  return dialog;
+}
+function openMapArtwork(mapId){
+  const map=MAPS.find(entry=>entry.id===mapId);if(!map)return;
+  const dialog=ensureMapArtworkDialog(),image=dialog.querySelector('img');
+  image.src=mapPortraitImage(map);
+  image.alt=`${map.name}の全景`;
+  if(typeof dialog.showModal==='function')dialog.showModal();
+  else dialog.setAttribute('open','');
+}
 function showMapDexDetail(mapId){
   const map=MAPS.find(entry=>entry.id===mapId),detail=document.getElementById('mapDexDetail');
   if(!map||!detail)return;
@@ -220,9 +246,9 @@ function showMapDexDetail(mapId){
     detail.innerHTML='<div class="dex-detail ui-dex-detail map-dex-locked-detail"><span>🔒</span><h2>未発見のマップ</h2><p>討伐依頼でこの土地を発見すると、詳しい情報が登録されます。</p></div>';
     return;
   }
-  const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean),ecosystem=mapDexEcosystemProfile(map);
+  const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean),ecosystem=mapDexEcosystemProfile(map),mapImage=mapPortraitImage(map);
   detail.innerHTML=`<article class="dex-detail ui-dex-detail map-dex-detail">
-    <img class="map-dex-hero" src="${mapPortraitImage(map)}" alt="${map.name}"><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
+    <button type="button" class="map-dex-hero-stage" onclick="openMapArtwork('${map.id}')" aria-label="${map.name}の全景を表示" aria-haspopup="dialog"><span class="map-dex-hero-backdrop" style="background-image:url('${mapImage}')" aria-hidden="true"></span><img class="map-dex-hero" src="${mapImage}" alt="${map.name}"><span class="map-dex-hero-hint" aria-hidden="true">⛶ 全景を見る</span></button><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
     <section class="map-dex-ecosystem" aria-labelledby="mapDexEcosystemHeading"><h3 id="mapDexEcosystemHeading">生態系</h3><p>${map.ecosystem||mapDexEcosystemFallback(map,ecosystem)}</p>
     ${mapDexEcosystemDiagram(map)}
     <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${skillTypeIcon(entry.type)} ${TN[entry.type]||entry.type}<small>${entry.rate}%</small></span>`).join('')}</div>
