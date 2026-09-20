@@ -32,7 +32,7 @@ const IMG={
   rikasheef:'images/monsters/rikasheef_20260920.webp',
   false_dragon_gamma:"images/monsters/false_dragon_gamma.webp",
   false_dragon_beta:"images/monsters/false_dragon_beta.webp",
-  false_dragon_alfa:"images/monsters/false_dragon_alfa.webp",
+  false_dragon_alfa:"images/monsters/false_dragon_alfa_20260920.webp",
   voltax:"images/monsters/voltax_20260920.webp",
   spaquinn:"images/monsters/spaquinn_20260920.webp",
   goblin:"images/monsters/goblin_20260920.webp",
@@ -82,7 +82,7 @@ const IMG={
   lux_galdion:'images/monsters/lux_galdion_20260920.webp',
   astralepis:'images/monsters/astralepis_20260920_v3.webp',
   kimeragna_apex:'images/monsters/kimeragna_apex.webp',
-  elixion:'images/monsters/elixion.webp'
+  elixion:'images/monsters/elixion_20260920.webp'
 };
 const MAPIMG={
   magic_academy:'images/maps/magic_academy.webp',
