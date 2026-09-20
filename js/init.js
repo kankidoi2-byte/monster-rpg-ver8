@@ -24,7 +24,7 @@ saveGame();
 renderParty();
 
 function chooseDifferentTitleMap(){
-  const candidates=MAPS.filter(map=>map && map.image);
+  const candidates=MAPS.filter(map=>map && mapPortraitImage(map));
   if(!candidates.length) return null;
   let last='';
   try{ last=localStorage.getItem(TITLE_LAST_MAP_KEY)||''; }catch(_e){}
@@ -50,7 +50,8 @@ function initTitleScreen(){
     const bg=document.getElementById('titleBg');
     const mon=document.getElementById('titleMonster');
     const scene=document.getElementById('titleSceneName');
-    if(bg && map?.image) bg.style.backgroundImage=`url("${map.image}")`;
+    const mapImage=mapPortraitImage(map);
+    if(bg && mapImage) bg.style.backgroundImage=`url("${mapImage}")`;
     if(mon && monster){mon.src=IMG[monster.imgKey];mon.alt=monster.name;mon.hidden=false;}
     if(scene) scene.textContent=map ? `${map.name}${monster ? ' — '+monster.name : ''}` : '';
     const begin=()=>startFromTitle();
