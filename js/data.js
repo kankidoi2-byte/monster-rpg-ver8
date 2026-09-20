@@ -27,7 +27,7 @@ const IMG={
   stella_apprentice:'images/monsters/stella_apprentice.webp',
   gran_volmoog:'images/monsters/gran_volmoog_20260920.webp',
   volmoog:'images/monsters/volmoog_20260920.webp',
-  proto_icegolem:'images/monsters/proto_icegolem.webp',
+  proto_icegolem:'images/monsters/golem_20260920.webp',
   seralphia:'images/monsters/seralphia_20260920.webp',
   rikasheef:'images/monsters/rikasheef_20260920.webp',
   false_dragon_gamma:"images/monsters/false_dragon_gamma.webp",
@@ -150,7 +150,7 @@ const MAPS = [
     cycles:[
       {role:'水の循環者',ids:['suiren'],detail:'清流の魔力を巡らせ、水の濁りや淀みを抑える。'},
       {role:'湖畔への来訪者',ids:['goblin'],detail:'岸辺で木の実や水生素材を集める雑食者。'},
-      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'氷核で動く存在で、自然の食物連鎖とは別に湖畔を巡回する。'}
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'胸部の魔力核で動く石造の存在で、自然の食物連鎖とは別に湖畔を巡回する。'}
     ]
    },
    enemyIds:['aquaron','highaquaron','suiren','goblin','proto_icegolem']},
@@ -190,7 +190,7 @@ const MAPS = [
     ]
    },
    enemyIds:['orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','shenhairon','shenhairon','shenhairon','shenhairon','orca_abyss','orca_abyss','orca_abyss']},
-  {id:'snow_mountain', name:'雪山', image:MAPIMG.snow_mountain, chapter:'序章', region:'北部山岳', desc:'一年を通じて雪と氷に閉ざされた山岳。寒冷地に強い種が生息する。', ecosystem:'氷に適応したゴーレム類を中心に、水辺の種や一般種も寒冷地へ入り込む。種数は限られるが、耐寒性の高い生物が残る。',
+  {id:'snow_mountain', name:'雪山', image:MAPIMG.snow_mountain, chapter:'序章', region:'北部山岳', desc:'一年を通じて雪と氷に閉ざされた山岳。寒冷地に強い種が生息する。', ecosystem:'ゴーレム類を中心に、水辺の種や一般種も寒冷地へ入り込む。種数は限られるが、耐寒性の高い生物が残る。',
    ecosystemDiagram:{
     heading:'雪山の生態系ピラミッド',
     note:'矢印は乏しい植生と雪解け水から耐寒種へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
@@ -201,7 +201,7 @@ const MAPS = [
     ],
     cycles:[
       {role:'分解・循環者',ids:['slime'],detail:'雪の下の枯葉や残留魔力を取り込み、わずかな土へ養分を戻す。'},
-      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'氷核で動く試作体で、自然の食物連鎖とは別に雪原を歩く。'},
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'胸部の魔力核で動く石造の個体で、自然の食物連鎖とは別に雪原を歩く。'},
       {role:'山越えの来訪者',ids:['goblin'],detail:'風の弱い岩陰をたどり、食料や鉱石を探す。'}
     ]
    },
@@ -498,9 +498,9 @@ const M = [
    hp:145,spd:32,catchRate:.28,
    desc:'氷河から生まれた水属性のゴーレム。',
    moves:[["氷の拳",26,"water",null,null,null,null,null,"skill_icegolem_01"],["守りを固める",0,"normal","guard",null,null,null,null,"skill_icegolem_02"],["凍結クラッシュ",40,"water",null,null,null,null,null,"skill_icegolem_03"]]},
-  {id:'proto_icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'proto_icegolem',no:14,name:'プロトアイスゴーレム',rarity:'★★',types:['water'],huntLevels:{normal:18,hard:44},
+  {id:'proto_icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'proto_icegolem',no:14,name:'ゴーレム',rarity:'★★',types:['normal'],huntLevels:{normal:18,hard:44},
    hp:180,spd:18,catchRate:.16,
-   desc:'古代の氷核から造られた試作型ゴーレム。アイスゴーレムより鈍重だが、破壊力に優れる。',
+   desc:'古代の技術で造られた石造のゴーレム。胸部の魔力核を動力とし、重い拳で敵を打ち砕く。',
    moves:[["氷塊拳",44,"water",null,null,null,null,null,"skill_proto_icegolem_01"],["重装防御",0,"normal","guard",null,null,null,null,"skill_proto_icegolem_02"],["大氷河クラッシュ",70,"water",null,null,null,null,null,"skill_proto_icegolem_03"]]},
   {id:'elysia',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_prologue',no:62,name:'エリシア',rarity:'★★',types:['light'],unitType:'character',characterNo:12,contractable:false,
    hp:120,spd:82,catchRate:0,evolution:'elysia_prayer',evolutionLevel:2,
