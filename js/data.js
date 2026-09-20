@@ -77,9 +77,9 @@ const IMG={
   nocle:'images/monsters/nocle_20260920.webp',
   noclaid:'images/monsters/noclaid_20260920.webp',
   noxvelg:'images/monsters/noxvelg_20260920.webp',
-  luxseed:'images/monsters/luxseed.webp',
-  luxiard:'images/monsters/luxiard.webp',
-  lux_galdion:'images/monsters/lux_galdion.webp',
+  luxseed:'images/monsters/luxseed_20260920.webp',
+  luxiard:'images/monsters/luxiard_20260920.webp',
+  lux_galdion:'images/monsters/lux_galdion_20260920.webp',
   astralepis:'images/monsters/astralepis_20260920_v3.webp',
   kimeragna_apex:'images/monsters/kimeragna_apex.webp',
   elixion:'images/monsters/elixion.webp'
