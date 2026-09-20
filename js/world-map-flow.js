@@ -10,7 +10,7 @@ const WORLD_EVENT_LABELS = Object.freeze({
 const WORLD_EVENT_FIRST_GUIDES = Object.freeze({
   elysia:['はじめての降臨','光の平原に、★4「光の女神エリシア」がまれに降臨します。女神との試練は契約できず、通常の探索はそのまま続けられます。'],
   crisis:['はじめての世界危機','★5「滅亡の星ネメシオン」が世界へ影響を及ぼしています。自分で挑むか、今回は偽竜へ対処を任せるかを選べます。どちらを選んでも、偽竜の痕跡は残ります。'],
-  rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜たちの痕跡です。世界の狭間で3体へ順に挑めます。ほかで3戦すると痕跡は消えます。1体倒すたびに猶予は3戦に戻ります。'],
+  rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜たちの痕跡です。世界の狭間で2体へ順に挑めます。ほかで3戦すると痕跡は消えます。1体倒すたびに猶予は3戦に戻ります。'],
   special_entrance:['はじめての特殊入口','探索で見つけた特殊な入口は、ほかで2戦すると閉じます。閉じても再び見つかることがあります。ゲームを閉じている間は進みません。']
 });
 function clearResolvedWorldMapNavigation(state,eventKey){
@@ -71,7 +71,7 @@ function worldMapCandidates(map,difficultyId,eventKey=null){
     const mon=by(event.monsterId);
     return isHuntMonsterEligible(mon,difficultyId)?[mon]:[];
   }
-  const eventOnly=new Set(['hikari','doom_nemesion','false_dragon_alfa','false_dragon_beta','false_dragon_gamma']);
+  const eventOnly=new Set(['hikari','doom_nemesion','false_dragon_alfa','false_dragon_gamma']);
   return huntCandidatesFor(map,difficultyId).filter(mon=>!eventOnly.has(mon.id)&&!mon.alchemyExclusive);
 }
 function worldMapAvailableDifficulties(map,eventKey=null){

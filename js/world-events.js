@@ -6,7 +6,7 @@
  * Callers exclude tutorial/event battles. Use world-victory:<lifetime wins> receipts.
  */
 const WORLD_EVENT_KEYS = Object.freeze(['elysia','crisis','rift','water_secret','starsea','golden_land']);
-const WORLD_FALSE_DRAGONS = Object.freeze(['false_dragon_alfa','false_dragon_beta','false_dragon_gamma']);
+const WORLD_FALSE_DRAGONS = Object.freeze(['false_dragon_alfa','false_dragon_gamma']);
 const WORLD_EVENT_GUIDE_KEYS = Object.freeze(['map_intro','elysia','crisis','rift','special_entrance']);
 const WORLD_SPECIAL_ENTRANCE_KEYS = Object.freeze(['water_secret','starsea','golden_land']);
 const WORLD_EVENT_BATTLE_LIMITS = Object.freeze({elysia:3,crisis:3,rift:3,water_secret:2,starsea:2,golden_land:2});

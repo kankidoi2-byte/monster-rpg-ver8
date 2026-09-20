@@ -32,7 +32,7 @@ assert.equal(run("worldMapAvailableDifficulties(MAPS.find(m=>m.id==='golden_land
 assert.equal(run('save.items.golden_land_map'),2,'rendering or candidate lookup must not consume');
 run("save.worldMap.futureField={preserved:true};globalThis.before=structuredClone(save);repairSave(save,[])");
 assert.equal(run('save.worldMap.futureField.preserved'),true);
-assert.equal(run('save.worldMap.active.rift.monsterIds.length'),3);
+assert.equal(run('save.worldMap.active.rift.monsterIds.length'),2);
 assert.equal(run('save.items.golden_land_map'),2);
 run("save.worldMap=normalizeWorldMapState(null);save.history.wins=22;selectedMap=MAPS[0];activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'hard'};recordWorldMapVictory();recordWorldMapVictory();");
 assert.equal(run('save.worldMap.normalVictories'),1);
