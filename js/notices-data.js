@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260920-nocle-family-art',date:'2026-09-20',category:'update',title:'ノクルたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるノクル、ノクレイド、ノクスヴェルグのイラストを更新しました。能力・属性・技・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-golem-habitats',date:'2026-09-20',category:'update',title:'ゴーレムの出現場所を変更しました',body:'ゴーレムは雪山に代わり、草原・湖・森林・光の平原・高原遺跡に出現するようになりました。レアリティ・属性・能力・技に変更はありません。'}),
   Object.freeze({id:'20260920-golem-renewal',date:'2026-09-20',category:'update',title:'プロトアイスゴーレムをゴーレムへ更新しました',body:'図鑑No.14のプロトアイスゴーレムを「ゴーレム」へ変更し、属性を無属性に更新しました。図鑑・編成・戦闘などで表示されるイラストも新しくなりました。レアリティ・能力・技・出現場所に変更はありません。'}),
   Object.freeze({id:'20260920-astralepis-galdra-art',date:'2026-09-20',category:'update',title:'アストラレピスとガルドラのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるアストラレピスとガルドラのイラストを更新しました。能力・技・出現設定に変更はありません。'}),
