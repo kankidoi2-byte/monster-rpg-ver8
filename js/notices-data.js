@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260920-golem-renewal',date:'2026-09-20',category:'update',title:'プロトアイスゴーレムをゴーレムへ更新しました',body:'図鑑No.14のプロトアイスゴーレムを「ゴーレム」へ変更し、属性を無属性に更新しました。図鑑・編成・戦闘などで表示されるイラストも新しくなりました。レアリティ・能力・技・出現場所に変更はありません。'}),
   Object.freeze({id:'20260920-astralepis-galdra-art',date:'2026-09-20',category:'update',title:'アストラレピスとガルドラのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるアストラレピスとガルドラのイラストを更新しました。能力・技・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-astralepis-suiren-tsubaki-art',date:'2026-09-20',category:'update',title:'アストラレピスたちのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるアストラレピス、水の精霊スイレン、炎の精霊ツバキのイラストを更新しました。能力・技・出現設定に変更はありません。'}),
   Object.freeze({id:'20260920-volmoog-gran-volmoog-art',date:'2026-09-20',category:'update',title:'ボルモーグとグランボルモーグのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるボルモーグとグランボルモーグのイラストを更新しました。能力・技・進化条件に変更はありません。'}),
