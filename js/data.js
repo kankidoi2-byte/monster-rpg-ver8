@@ -69,7 +69,7 @@ const IMG={
   tsubaki:'images/monsters/tsubaki_20260920.webp',
   elnaKaen:'images/monsters/elna_kaen.webp',
   alchemion:'images/monsters/alchemion_20260920.webp',
-  kimeragna:'images/monsters/kimeragna.webp',
+  kimeragna:'images/monsters/kimeragna_20260920.webp',
   sylphin:'images/monsters/sylphin_20260920.webp',
   zephyray:'images/monsters/zephyray_20260920.webp',
   tempestray:'images/monsters/tempestray_20260920.webp',
@@ -81,7 +81,7 @@ const IMG={
   luxiard:'images/monsters/luxiard_20260920.webp',
   lux_galdion:'images/monsters/lux_galdion_20260920.webp',
   astralepis:'images/monsters/astralepis_20260920_v3.webp',
-  kimeragna_apex:'images/monsters/kimeragna_apex.webp',
+  kimeragna_apex:'images/monsters/kimeragna_apex_20260920.webp',
   elixion:'images/monsters/elixion_20260920.webp'
 };
 const MAPIMG={
