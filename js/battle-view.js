@@ -14,8 +14,11 @@ function setupBattle() {
   }
   if (selectedMap && document.getElementById('battleMapBanner')) {
     const request = activeHuntRequest || createHuntRequest(selectedMap, enemy, 'normal');
+    const mapImage = battleMapImage(selectedMap);
+    const battleScreen = document.getElementById('battle');
+    if (battleScreen) battleScreen.style.setProperty('--battle-map-image', `url("${mapImage}")`);
     document.getElementById('battleMapBanner').innerHTML =
-      `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>
+      `<div class="panel"><img class="map-img" src="${mapImage}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>
         <div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span>
         <span>敵Lv.${request.enemyLevel}</span><span>報酬 ×${request.rewardText}</span></div>
         <details class="battle-hunt-conditions"><summary>条件</summary>${huntConditionsHtml(request, true)}</details></div>`;

@@ -107,6 +107,35 @@ const MAPIMG={
   golden_land:'images/maps/golden_land.webp'
 };
 
+// Portrait artwork shared by battle, title, and encyclopedia surfaces.
+const BATTLE_MAPIMG={
+  grassland:'images/maps/grassland_battle_v1.webp',
+  volcano:'images/maps/volcano_battle_v1.webp',
+  lake:'images/maps/lake_battle_v1.webp',
+  snow_mountain:'images/maps/snow_mountain_battle_v1.webp',
+  forest:'images/maps/forest_battle_v1.webp',
+  ruined_village:'images/maps/ruined_village_battle_v1.webp',
+  light_plain:'images/maps/light_plain_battle_v1.webp',
+  highland_ruins:'images/maps/highland_ruins_battle_v1.webp',
+  seikai_irie:'images/maps/seikai_irie_battle_v1.webp',
+  kaiyu_kaiiki:'images/maps/kaiyu_kaiiki_battle_v1.webp',
+  deep_sea_end:'images/maps/deep_sea_end_battle_v1.webp',
+  arena:'images/maps/arena_battle_v1.webp',
+  magic_academy:'images/maps/magic_academy_battle_v1.webp',
+  starry_plain:'images/maps/starry_plain_battle_v1.webp',
+  water_secret:'images/maps/water_secret_battle_v1.webp',
+  kaen_village:'images/maps/kaen_village_battle_v1.webp',
+  starsea:'images/maps/starsea_battle_v1.webp',
+  world_between:'images/maps/world_between_battle_v1.webp',
+  golden_land:'images/maps/golden_land_battle_v1.webp'
+};
+function mapPortraitImage(map){
+  return BATTLE_MAPIMG[map?.id] || map?.image || '';
+}
+function battleMapImage(map){
+  return mapPortraitImage(map);
+}
+
 /* ===== マップデータ ===== */
 const MAPS = [
   {id:'grassland', name:'草原', image:MAPIMG.grassland, chapter:'序章', region:'中央平原', desc:'旅の始まりに広がる穏やかな草原。森・雷・無属性の生き物が行き交う。', ecosystem:'中央平原では、草木と大地に満ちる魔力を起点に、小型種、草食種、空の捕食者へと命がつながっている。スライムは枯草や残留魔力を取り込んで養分を土へ戻し、風を泳ぐシルフィン系は花粉や種子を運ぶ。雷雲が近づくとボルテック系も集まり、開けた空と地上を分け合う多属性の生態系が形づくられる。',

@@ -112,7 +112,7 @@ function setupMultiBattle() {
   document.getElementById('multiEnemyGrid').classList.remove('hidden');
   const request = activeHuntRequest;
   document.getElementById('battleMapBanner').innerHTML =
-    `<div class="panel"><img class="map-img" src="${selectedMap.image}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>`+
+    `<div class="panel"><img class="map-img" src="${battleMapImage(selectedMap)}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>`+
     `<div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span><span>${multiBattle?.invasion?'❗ 乱入戦':'⚔️ 三つ巴'}</span><span>${multiBattle.enemies.map((entry,index)=>`敵${index===0?'A':'B'} Lv.${entry.level}`).join(' / ')}</span><span>報酬：2体分</span></div>`+
     `<details class="battle-hunt-conditions"><summary>条件</summary>${huntConditionsHtml(request, true)}</details></div>`;
   renderSkillButtons();

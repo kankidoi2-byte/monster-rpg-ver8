@@ -87,7 +87,7 @@ function monsterObtainEntries(m) {
   });
   MAPS.filter(map=>(map.enemyIds||[]).includes(m.id)).forEach(map=>{
     const unlocked=mapDexUnlocked(map.id);
-    entries.push({kind:'map',mapId:map.id,image:unlocked?map.image:null,icon:'🔒',title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map,m):'探索先や特殊な入口を発見すると詳細が登録されます'});
+    entries.push({kind:'map',mapId:map.id,image:unlocked?mapPortraitImage(map):null,icon:'🔒',title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map,m):'探索先や特殊な入口を発見すると詳細が登録されます'});
   });
   M.forEach(from=>{
     if (from.evolution === m.id) entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:`Lv.${from.evolutionLevel}で進化`});
@@ -222,7 +222,7 @@ function showMapDexDetail(mapId){
   }
   const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean),ecosystem=mapDexEcosystemProfile(map);
   detail.innerHTML=`<article class="dex-detail ui-dex-detail map-dex-detail">
-    <img class="map-dex-hero" src="${map.image}" alt="${map.name}"><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
+    <img class="map-dex-hero" src="${mapPortraitImage(map)}" alt="${map.name}"><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
     <section class="map-dex-ecosystem" aria-labelledby="mapDexEcosystemHeading"><h3 id="mapDexEcosystemHeading">生態系</h3><p>${map.ecosystem||mapDexEcosystemFallback(map,ecosystem)}</p>
     ${mapDexEcosystemDiagram(map)}
     <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${skillTypeIcon(entry.type)} ${TN[entry.type]||entry.type}<small>${entry.rate}%</small></span>`).join('')}</div>
@@ -244,7 +244,7 @@ function renderMapDex(){
   document.getElementById('mapDexDetail').innerHTML='';
   document.getElementById('mapDexList').innerHTML=MAPS.map(map=>{
     const unlocked=mapDexUnlocked(map.id);
-    return `<button class="map-dex-card ${unlocked?'':'locked'}" onclick="showMapDexDetail('${map.id}')"><div class="map-dex-visual">${unlocked?`<img src="${map.image}" alt="${map.name}" loading="lazy" decoding="async">`:'<span>🔒</span>'}</div><div><small>${unlocked?`${map.chapter||'章未設定'}・${map.region||'地域未設定'}`:'未発見'}</small><strong>${unlocked?map.name:'？？？'}</strong><span>${unlocked?`${new Set(map.enemyIds||[]).size}種を確認`:'討伐依頼で発見できます'}</span></div></button>`;
+    return `<button class="map-dex-card ${unlocked?'':'locked'}" onclick="showMapDexDetail('${map.id}')"><div class="map-dex-visual">${unlocked?`<img src="${mapPortraitImage(map)}" alt="${map.name}" loading="lazy" decoding="async">`:'<span>🔒</span>'}</div><div><small>${unlocked?`${map.chapter||'章未設定'}・${map.region||'地域未設定'}`:'未発見'}</small><strong>${unlocked?map.name:'？？？'}</strong><span>${unlocked?`${new Set(map.enemyIds||[]).size}種を確認`:'討伐依頼で発見できます'}</span></div></button>`;
   }).join('');
 }
 function renderDex() {
