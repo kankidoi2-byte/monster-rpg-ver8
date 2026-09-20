@@ -270,7 +270,7 @@ assert.deepEqual(currentSnapshot.rates,baselineSnapshot.rates,'three-way/invasio
 assert.deepEqual(currentSnapshot.materialDrops,baselineSnapshot.materialDrops,'material drop table diverged');
 assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,'contract scroll rule diverged');
 const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
-  mon.id==='false_dragon_beta'?{...mon,rarity:'★★★★'}:mon
+  ['false_dragon_beta','false_dragon_gamma'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
 );
 assert.deepEqual(currentSnapshot.monsters,expectedMonsterEconomy,'monster reward/contract/drop data diverged');
 assert.match(baseline.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'baseline contract formula not recognized');
