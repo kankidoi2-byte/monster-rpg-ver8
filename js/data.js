@@ -121,10 +121,10 @@ const MAPS = [
     ],
     cycles:[
       {role:'分解・循環者',ids:['slime','slime_gold'],detail:'枯草や残留魔力を取り込み、養分を土へ戻す。'},
-      {role:'外部からの来訪者',ids:['goblin'],detail:'群れで草原を横断し、木の実や素材を集める遊動性の雑食者。'}
+      {role:'草原を巡る存在',ids:['goblin','proto_icegolem'],detail:'ゴブリンは木の実や素材を集めながら横断し、ゴーレムは胸部の魔力核で古代の道を巡回する。'}
     ]
    },
-   enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray']},
+   enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray','proto_icegolem']},
   {id:'volcano', name:'火山', image:MAPIMG.volcano, chapter:'序章', region:'南部火山帯', desc:'灼熱の溶岩と火山灰に覆われた危険地帯。火に適応したモンスターが多い。', ecosystem:'高熱に耐える火属性種が中心。火山灰の岩場にはゴブリンも入り込み、炎の精霊や獣と生息域を分け合っている。',
    ecosystemDiagram:{
     heading:'火山の生態系ピラミッド',
@@ -190,7 +190,7 @@ const MAPS = [
     ]
    },
    enemyIds:['orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','orca_stream','shenhairon','shenhairon','shenhairon','shenhairon','orca_abyss','orca_abyss','orca_abyss']},
-  {id:'snow_mountain', name:'雪山', image:MAPIMG.snow_mountain, chapter:'序章', region:'北部山岳', desc:'一年を通じて雪と氷に閉ざされた山岳。寒冷地に強い種が生息する。', ecosystem:'ゴーレム類を中心に、水辺の種や一般種も寒冷地へ入り込む。種数は限られるが、耐寒性の高い生物が残る。',
+  {id:'snow_mountain', name:'雪山', image:MAPIMG.snow_mountain, chapter:'序章', region:'北部山岳', desc:'一年を通じて雪と氷に閉ざされた山岳。寒冷地に強い種が生息する。', ecosystem:'アイスゴーレムを中心に、水辺の種や一般種も寒冷地へ入り込む。種数は限られるが、耐寒性の高い生物が残る。',
    ecosystemDiagram:{
     heading:'雪山の生態系ピラミッド',
     note:'矢印は乏しい植生と雪解け水から耐寒種へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
@@ -201,11 +201,10 @@ const MAPS = [
     ],
     cycles:[
       {role:'分解・循環者',ids:['slime'],detail:'雪の下の枯葉や残留魔力を取り込み、わずかな土へ養分を戻す。'},
-      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'胸部の魔力核で動く石造の個体で、自然の食物連鎖とは別に雪原を歩く。'},
       {role:'山越えの来訪者',ids:['goblin'],detail:'風の弱い岩陰をたどり、食料や鉱石を探す。'}
     ]
    },
-   enemyIds:['icegolem','proto_icegolem','slime','aquaron','goblin']},
+   enemyIds:['icegolem','slime','aquaron','goblin']},
   {id:'forest', name:'森林', image:MAPIMG.forest, chapter:'序章', region:'緑樹地方', desc:'深い緑と古木が広がる森林。森の力を宿す多様な生命が暮らす。', ecosystem:'グラスビート系が個体数の中心を占め、草木に紛れる獣や小型種が共存する。同じ系統の成長段階を一つの森で確認できる。',
    ecosystemDiagram:{
     heading:'森林の生態系ピラミッド',
@@ -218,10 +217,11 @@ const MAPS = [
     ],
     cycles:[
       {role:'分解・循環者',ids:['slime'],detail:'落ち葉と残留魔力を取り込み、森の土へ養分を戻す。'},
-      {role:'外部からの採集者',ids:['goblin'],detail:'木の実や枝を求めて林縁から入り込む雑食者。'}
+      {role:'外部からの採集者',ids:['goblin'],detail:'木の実や枝を求めて林縁から入り込む雑食者。'},
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'古木の間に残る石造の道を、胸部の魔力核で巡回する。'}
     ]
    },
-   enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare']},
+   enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare','proto_icegolem']},
   {id:'light_plain', name:'光の平原', image:MAPIMG.light_plain, chapter:'序章', region:'光明地方', desc:'柔らかな光が絶えず降り注ぐ平原。光属性のモンスターが力を得る。', ecosystem:'光竜系が光の強い環境を利用し、水辺由来の種や一般種と共に暮らしている。光の女神エリシアは群れで生息する存在ではなく、まれにこの平原へ降臨する。',
    ecosystemDiagram:{
     heading:'光の平原の生態系ピラミッド',
@@ -235,10 +235,11 @@ const MAPS = [
     cycles:[
       {role:'光と水の循環者',ids:['suiren'],detail:'小川の水と光の魔力を巡らせ、生産基盤を整える。'},
       {role:'分解・循環者',ids:['slime'],detail:'枯草や残留魔力を取り込み、土へ養分を戻す。'},
-      {role:'外部からの来訪者',ids:['goblin'],detail:'林縁から入り、木の実や光る素材を集める。'}
+      {role:'外部からの来訪者',ids:['goblin'],detail:'林縁から入り、木の実や光る素材を集める。'},
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'光を受ける石造の道を、胸部の魔力核で巡回する。'}
     ]
    },
-   enemyIds:['hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','slime','slime','slime','goblin','goblin','suiren','aquaron','luxseed','luxseed','luxseed','luxiard']},
+   enemyIds:['hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','hikari','slime','slime','slime','goblin','goblin','suiren','aquaron','luxseed','luxseed','luxseed','luxiard','proto_icegolem']},
   {id:'starry_plain', name:'星空の平原', image:MAPIMG.starry_plain, chapter:'序章', region:'星見地方', desc:'昼夜を問わず星が瞬く不思議な平原。星の力を宿す種が現れる。', ecosystem:'ネメス系が星の力に応じて広く分布する。雷や闇など夜空と相性のよい種も混ざり、星属性を中心に多様性が保たれる。',
    ecosystemDiagram:{
     heading:'星空の平原の生態系ピラミッド',
@@ -267,10 +268,11 @@ const MAPS = [
     ],
     cycles:[
       {role:'分解・循環者',ids:['slime'],detail:'遺跡の窪みにたまる枯草や残留魔力を分解する。'},
-      {role:'遺跡への来訪者',ids:['goblin'],detail:'風を避けられる石壁をたどり、遺物や素材を探す。'}
+      {role:'遺跡への来訪者',ids:['goblin'],detail:'風を避けられる石壁をたどり、遺物や素材を探す。'},
+      {role:'古代の人工個体',ids:['proto_icegolem'],detail:'遺跡に残された経路を、胸部の魔力核で巡回する。'}
     ]
    },
-   enemyIds:['volteck','volteck','volteck','volteck','volteck','volteck','volteck','volteck','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','volmoog','volmoog','volmoog','voltax','voltax','slime','goblin','sylphin','sylphin','zephyray','tempestray']},
+   enemyIds:['volteck','volteck','volteck','volteck','volteck','volteck','volteck','volteck','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','spaquinn','volmoog','volmoog','volmoog','voltax','voltax','slime','goblin','sylphin','sylphin','zephyray','tempestray','proto_icegolem']},
   {id:'arena', name:'闘技場', image:MAPIMG.arena, chapter:'序章', region:'王都地方', desc:'戦士たちが腕を競う石造りの闘技場。鍛え上げられた剣士と対峙する。', ecosystem:'野生の生態系ではなく、修練段階の異なるエルナが対戦者として現れる人工的な戦闘環境。出現傾向は剣士の成長段階を反映する。',
    ecosystemDiagram:{
     heading:'闘技場の戦闘環境構造図',
