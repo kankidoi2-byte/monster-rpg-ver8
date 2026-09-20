@@ -30,7 +30,7 @@ const IMG={
   proto_icegolem:'images/monsters/golem_20260920.webp',
   seralphia:'images/monsters/seralphia_20260920.webp',
   rikasheef:'images/monsters/rikasheef_20260920.webp',
-  false_dragon_gamma:"images/monsters/false_dragon_gamma.webp",
+  false_dragon_gamma:"images/monsters/morgram_20260920.webp",
   false_dragon_beta:"images/monsters/ashleia_20260920.webp",
   false_dragon_alfa:"images/monsters/false_dragon_alfa_20260920.webp",
   voltax:"images/monsters/voltax_20260920.webp",
@@ -205,11 +205,12 @@ const MAPS = [
     ]
    },
    enemyIds:['icegolem','slime','aquaron','goblin']},
-  {id:'forest', name:'森林', image:MAPIMG.forest, chapter:'序章', region:'緑樹地方', desc:'深い緑と古木が広がる森林。森の力を宿す多様な生命が暮らす。', ecosystem:'グラスビート系が個体数の中心を占め、草木に紛れる獣や小型種が共存する。同じ系統の成長段階を一つの森で確認できる。',
+  {id:'forest', name:'森林', image:MAPIMG.forest, chapter:'序章', region:'緑樹地方', desc:'深い緑と古木が広がる森林。森の力を宿す多様な生命が暮らす。', ecosystem:'グラスビート系が個体数の中心を占め、草木に紛れる獣や小型種が共存する。森の深部では、古木と菌類が一体化した巨体モルグラムが森を巡回している。',
    ecosystemDiagram:{
     heading:'森林の生態系ピラミッド',
     note:'矢印は木々が蓄えた力から採食者や夜の捕食者へ渡る主なエネルギーの流れを示す。戦闘での強さ順ではない。',
     layers:[
+      {role:'第5層・古森の守護巨体',ids:['false_dragon_gamma'],detail:'古木と菌類の力を蓄えたモルグラムが、森の深部を巡回して環境の均衡を守る。'},
       {role:'第4層・夜の捕食者',ids:['nightmare'],detail:'暗い林床で小型種を狙い、夜間の生物相へ影響する。'},
       {role:'第3層・森の大型守護者',ids:['granbeat','seralphia'],detail:'成長した森属性種として広い縄張りを使い、植生の均衡を守る。'},
       {role:'第2層・若葉の採食者',ids:['grassbeat','thornbeat','rikasheef'],detail:'葉や樹液を利用しながら、花粉や種子の移動にも関わる。'},
@@ -221,7 +222,7 @@ const MAPS = [
       {role:'古代の人工個体',ids:['proto_icegolem'],detail:'古木の間に残る石造の道を、胸部の魔力核で巡回する。'}
     ]
    },
-   enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare','proto_icegolem']},
+   enemyIds:['grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','grassbeat','rikasheef','rikasheef','rikasheef','rikasheef','thornbeat','thornbeat','thornbeat','thornbeat','thornbeat','granbeat','granbeat','seralphia','seralphia','slime','slime','slime','goblin','goblin','nightmare','proto_icegolem','false_dragon_gamma']},
   {id:'light_plain', name:'光の平原', image:MAPIMG.light_plain, chapter:'序章', region:'光明地方', desc:'柔らかな光が絶えず降り注ぐ平原。光属性のモンスターが力を得る。', ecosystem:'光竜系が光の強い環境を利用し、水辺由来の種や一般種と共に暮らしている。光の女神エリシアは群れで生息する存在ではなく、まれにこの平原へ降臨する。',
    ecosystemDiagram:{
     heading:'光の平原の生態系ピラミッド',
@@ -333,17 +334,16 @@ const MAPS = [
     ]
    },
    enemyIds:['elna_water','suiren','tienhairon'], rareOnly:true, appearRate:0.12},
-  {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。世界の危機の後に残る痕跡から、偽竜へと至る。', ecosystem:'世界の危機に介入する二体の偽竜が確認される、通常の地域生態系から隔絶された領域。無と光の性質を備えた機械竜は、地上の生物とは異なる法則の中に存在する。',
+  {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。世界の危機の後に残る痕跡から、偽竜へと至る。', ecosystem:'世界の危機に介入する偽竜が確認される、通常の地域生態系から隔絶された領域。無と光の性質を備えた機械竜は、地上の生物とは異なる法則の中に存在する。',
    ecosystemDiagram:{
     heading:'世界の狭間の存在構造図',
-    note:'自然の食物連鎖ではなく、境界エネルギーを利用する二体の偽竜の完成段階を示す。',
+    note:'自然の食物連鎖ではなく、境界エネルギーを利用する偽竜の構造を示す。',
     layers:[
-      {role:'第3段階・完成個体',ids:['false_dragon_gamma'],detail:'光と虚無を同時に操り、狭間へ最も強く適応した偽竜。'},
       {role:'第1段階・基礎個体',ids:['false_dragon_alfa'],detail:'神に似せた構造を持ち、境界の力を取り込む偽竜の基礎形。'},
-      {role:'領域基盤',labels:['空間の裂け目','光と虚無の残響'],detail:'世界同士の境界から漏れる不安定な力が、二体の活動源となる。'}
+      {role:'領域基盤',labels:['空間の裂け目','光と虚無の残響'],detail:'世界同士の境界から漏れる不安定な力が、偽竜の活動源となる。'}
     ]
    },
-   enemyIds:['false_dragon_alfa','false_dragon_gamma'], bossOnly:true, appearRate:0.08},
+   enemyIds:['false_dragon_alfa'], bossOnly:true, appearRate:0.08},
   {id:'kaen_village', name:'華炎の里', image:MAPIMG.kaen_village, chapter:'序章', region:'南部火山帯', desc:'火の恵みとともに暮らす里。炎を操る戦士とモンスターが集う。', ecosystem:'炎の精霊ツバキが里の周辺に多く、華炎のエルナも現れる。火の力と共存する者だけでまとまった、火属性中心の環境。',
    ecosystemDiagram:{
     heading:'華炎の里の共生構造図',
@@ -571,9 +571,9 @@ const M = [
    hp:390,spd:88,catchRate:.04,
    desc:'火山の上昇気流に乗って飛ぶ大型の火炎鳥。赤黒い翼に炎をまとい、火口上空を縄張りとしている。',
    moves:[["断界光",76,"light",null,null,null,null,null,"skill_false_dragon_beta_01"],["偽竜の翼撃",62,"normal",null,null,null,null,null,"skill_false_dragon_beta_02"],["コード・ベータ",94,"light",null,null,null,null,null,"skill_false_dragon_beta_03"]]},
-  {id:'false_dragon_gamma',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_gamma',no:31,name:'偽竜 code:gamma',rarity:'★★★★★',types:['normal','light'],
-   hp:420,spd:94,catchRate:.035,bossClass:'超ボス級',
-   desc:'世界の狭間に現れる三体目の偽竜。完成度を増した銀翼の機械竜で、光と虚無を同時に操る超ボス級モンスター。',
+  {id:'false_dragon_gamma',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_gamma',no:31,name:'モルグラム',rarity:'★★★★',types:['grass'],huntLevels:{hard:94},
+   hp:420,spd:94,catchRate:.035,
+   desc:'古木と巨大な菌類が一体化した森林の守護巨体。苔むした木の身体で森の深部を巡回し、大地を揺らす。',
    moves:[["虚無光翼",82,"light",null,null,null,null,null,"skill_false_dragon_gamma_01"],["偽竜の咆哮",66,"normal",null,null,null,null,null,"skill_false_dragon_gamma_02"],["コード・ガンマ",100,"light",null,null,null,null,null,"skill_false_dragon_gamma_03"]]},
   {id:'volmoog',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'volmoog',no:34,name:'ボルモーグ',rarity:'★★',types:['thunder'],huntLevels:{normal:23,hard:51},
    hp:155,spd:72,catchRate:.20,evolution:'gran_volmoog',evolutionLevel:2,
@@ -718,8 +718,9 @@ const UNIT_TAG_GROUPS = Object.freeze([
   Object.freeze({ids:['tsubaki'], tags:['anatomy:wing']}),
   Object.freeze({ids:['slime','slime_gold'], tags:['species:slime','anatomy:body','capability:charge']}),
   Object.freeze({ids:['goblin'], tags:['species:humanoid','weapon:club','weapon:dagger','capability:roar']}),
-  Object.freeze({ids:['false_dragon_alfa','false_dragon_gamma'], tags:['species:dragon','origin:construct','anatomy:claw','anatomy:wing','capability:beam','capability:roar','capability:magic']}),
+  Object.freeze({ids:['false_dragon_alfa'], tags:['species:dragon','origin:construct','anatomy:claw','anatomy:wing','capability:beam','capability:roar','capability:magic']}),
   Object.freeze({ids:['false_dragon_beta'], tags:['species:avian','anatomy:beak','anatomy:claw','anatomy:wing','capability:magic','capability:charge']}),
+  Object.freeze({ids:['false_dragon_gamma'], tags:['species:construct','anatomy:fist','armor:heavy','capability:roar','capability:charge','capability:magic']}),
   Object.freeze({ids:['volmoog','gran_volmoog'], tags:['species:beast','anatomy:claw','armor:heavy','capability:roar','capability:charge']}),
   Object.freeze({ids:['orcana','orca_stream','orca_abyss'], tags:['species:aquatic','anatomy:fin','anatomy:tail','capability:magic','capability:charge']}),
   Object.freeze({ids:['alchemion'], tags:['origin:alchemy','species:construct','anatomy:body']}),
