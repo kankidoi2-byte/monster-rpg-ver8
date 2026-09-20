@@ -31,7 +31,7 @@ const IMG={
   seralphia:'images/monsters/seralphia_20260920.webp',
   rikasheef:'images/monsters/rikasheef_20260920.webp',
   false_dragon_gamma:"images/monsters/false_dragon_gamma.webp",
-  false_dragon_beta:"images/monsters/false_dragon_beta.webp",
+  false_dragon_beta:"images/monsters/ashleia_20260920.webp",
   false_dragon_alfa:"images/monsters/false_dragon_alfa_20260920.webp",
   voltax:"images/monsters/voltax_20260920.webp",
   spaquinn:"images/monsters/spaquinn_20260920.webp",
@@ -125,19 +125,19 @@ const MAPS = [
     ]
    },
    enemyIds:['slime','grassbeat','volteck','slime_gold','goblin','spaquinn','voltax','rikasheef','seralphia','sylphin','sylphin','zephyray','proto_icegolem']},
-  {id:'volcano', name:'火山', image:MAPIMG.volcano, chapter:'序章', region:'南部火山帯', desc:'灼熱の溶岩と火山灰に覆われた危険地帯。火に適応したモンスターが多い。', ecosystem:'高熱に耐える火属性種が中心。火山灰の岩場にはゴブリンも入り込み、炎の精霊や獣と生息域を分け合っている。',
+  {id:'volcano', name:'火山', image:MAPIMG.volcano, chapter:'序章', region:'南部火山帯', desc:'灼熱の溶岩と火山灰に覆われた危険地帯。火に適応したモンスターが多い。', ecosystem:'高熱に耐える火属性種が中心。火山灰の岩場にはゴブリンも入り込み、炎の精霊や獣、火炎鳥と生息域を分け合っている。',
    ecosystemDiagram:{
     heading:'火山の生態系ピラミッド',
     note:'矢印は火山の熱と地熱魔力が生物へ渡る流れを示す。戦闘での強さ順ではない。',
     layers:[
-      {role:'第4層・火口の大型獣',ids:['ignaros'],detail:'火口付近を縄張りとし、熱を鎧へ変えて過酷な環境を占有する。'},
+      {role:'第4層・火口の大型種',ids:['ignaros','false_dragon_beta'],detail:'イグナロスは火口付近を縄張りとし、アシュレイアは上昇気流に乗って火口上空を巡る。'},
       {role:'第3層・岩場の捕食者',ids:['freiwolf'],detail:'火山斜面を巡回し、小型種の増えすぎを抑える。'},
       {role:'第2層・耐熱生物',ids:['freigal','tsubaki'],detail:'地熱や火の魔力を取り込み、溶岩から離れた岩場にも活動域を広げる。'},
       {role:'第1層・生産基盤',labels:['耐熱苔・地衣類','火山灰の鉱物','地熱と火の魔力'],detail:'わずかな植生と鉱物、地熱魔力が火山の生命を支える入口となる。'}
     ],
     cycles:[{role:'外部からの採集者',ids:['goblin'],detail:'火山灰の岩場へ入り、耐熱植物や鉱石を持ち帰る。'}]
    },
-   enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin','ignaros']},
+   enemyIds:['freigal','freigal','freiwolf','tsubaki','tsubaki','goblin','ignaros','false_dragon_beta']},
   {id:'lake', name:'湖', image:MAPIMG.lake, chapter:'序章', region:'中央水域', desc:'澄んだ水をたたえる静かな湖。水辺を好むモンスターが集まる。', ecosystem:'アクアロン系など水辺を好む種が主役。冷気を帯びた個体や陸から訪れる種も見られ、水際に生物が集まる。',
    ecosystemDiagram:{
     heading:'湖の生態系ピラミッド',
@@ -333,18 +333,17 @@ const MAPS = [
     ]
    },
    enemyIds:['elna_water','suiren','tienhairon'], rareOnly:true, appearRate:0.12},
-  {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。世界の危機の後に残る痕跡から、偽竜へと至る。', ecosystem:'世界の危機に介入する三体の偽竜が確認される、通常の地域生態系から隔絶された領域。無と光の性質を備えた機械竜は、地上の生物とは異なる法則の中に存在する。',
+  {id:'world_between', name:'世界の狭間', image:MAPIMG.world_between, chapter:'序章', region:'境界領域', desc:'世界と世界の境目に生じた裂け目。世界の危機の後に残る痕跡から、偽竜へと至る。', ecosystem:'世界の危機に介入する二体の偽竜が確認される、通常の地域生態系から隔絶された領域。無と光の性質を備えた機械竜は、地上の生物とは異なる法則の中に存在する。',
    ecosystemDiagram:{
     heading:'世界の狭間の存在構造図',
-    note:'自然の食物連鎖ではなく、境界エネルギーを利用する三体の偽竜の完成段階を示す。',
+    note:'自然の食物連鎖ではなく、境界エネルギーを利用する二体の偽竜の完成段階を示す。',
     layers:[
       {role:'第3段階・完成個体',ids:['false_dragon_gamma'],detail:'光と虚無を同時に操り、狭間へ最も強く適応した偽竜。'},
-      {role:'第2段階・拡張個体',ids:['false_dragon_beta'],detail:'装甲翼を広げ、境界空間を移動する能力を高めた個体。'},
       {role:'第1段階・基礎個体',ids:['false_dragon_alfa'],detail:'神に似せた構造を持ち、境界の力を取り込む偽竜の基礎形。'},
-      {role:'領域基盤',labels:['空間の裂け目','光と虚無の残響'],detail:'世界同士の境界から漏れる不安定な力が、三体の活動源となる。'}
+      {role:'領域基盤',labels:['空間の裂け目','光と虚無の残響'],detail:'世界同士の境界から漏れる不安定な力が、二体の活動源となる。'}
     ]
    },
-   enemyIds:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], bossOnly:true, appearRate:0.08},
+   enemyIds:['false_dragon_alfa','false_dragon_gamma'], bossOnly:true, appearRate:0.08},
   {id:'kaen_village', name:'華炎の里', image:MAPIMG.kaen_village, chapter:'序章', region:'南部火山帯', desc:'火の恵みとともに暮らす里。炎を操る戦士とモンスターが集う。', ecosystem:'炎の精霊ツバキが里の周辺に多く、華炎のエルナも現れる。火の力と共存する者だけでまとまった、火属性中心の環境。',
    ecosystemDiagram:{
     heading:'華炎の里の共生構造図',
@@ -568,9 +567,9 @@ const M = [
    hp:360,spd:82,catchRate:.05,bossClass:'超ボス級',
    desc:'神に似せて造られた銀色の偽竜。無機質な装甲と光の力を持つ、超ボス級モンスター。',
    moves:[["虚光砲",70,"light",null,null,null,null,null,"skill_false_dragon_alfa_01"],["偽神の爪",58,"normal",null,null,null,null,null,"skill_false_dragon_alfa_02"],["コード・アルファ",88,"light",null,null,null,null,null,"skill_false_dragon_alfa_03"]]},
-  {id:'false_dragon_beta',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_beta',no:30,name:'偽竜 code:beta',rarity:'★★★★★',types:['normal','light'],
-   hp:390,spd:88,catchRate:.04,bossClass:'超ボス級',
-   desc:'世界の狭間に現れる二体目の偽竜。白銀の装甲翼を広げ、空間を裂く光を放つ超ボス級モンスター。',
+  {id:'false_dragon_beta',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_beta',no:30,name:'アシュレイア',rarity:'★★★★',types:['fire'],huntLevels:{hard:92},
+   hp:390,spd:88,catchRate:.04,
+   desc:'火山の上昇気流に乗って飛ぶ大型の火炎鳥。赤黒い翼に炎をまとい、火口上空を縄張りとしている。',
    moves:[["断界光",76,"light",null,null,null,null,null,"skill_false_dragon_beta_01"],["偽竜の翼撃",62,"normal",null,null,null,null,null,"skill_false_dragon_beta_02"],["コード・ベータ",94,"light",null,null,null,null,null,"skill_false_dragon_beta_03"]]},
   {id:'false_dragon_gamma',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_gamma',no:31,name:'偽竜 code:gamma',rarity:'★★★★★',types:['normal','light'],
    hp:420,spd:94,catchRate:.035,bossClass:'超ボス級',
@@ -719,7 +718,8 @@ const UNIT_TAG_GROUPS = Object.freeze([
   Object.freeze({ids:['tsubaki'], tags:['anatomy:wing']}),
   Object.freeze({ids:['slime','slime_gold'], tags:['species:slime','anatomy:body','capability:charge']}),
   Object.freeze({ids:['goblin'], tags:['species:humanoid','weapon:club','weapon:dagger','capability:roar']}),
-  Object.freeze({ids:['false_dragon_alfa','false_dragon_beta','false_dragon_gamma'], tags:['species:dragon','origin:construct','anatomy:claw','anatomy:wing','capability:beam','capability:roar','capability:magic']}),
+  Object.freeze({ids:['false_dragon_alfa','false_dragon_gamma'], tags:['species:dragon','origin:construct','anatomy:claw','anatomy:wing','capability:beam','capability:roar','capability:magic']}),
+  Object.freeze({ids:['false_dragon_beta'], tags:['species:avian','anatomy:beak','anatomy:claw','anatomy:wing','capability:magic','capability:charge']}),
   Object.freeze({ids:['volmoog','gran_volmoog'], tags:['species:beast','anatomy:claw','armor:heavy','capability:roar','capability:charge']}),
   Object.freeze({ids:['orcana','orca_stream','orca_abyss'], tags:['species:aquatic','anatomy:fin','anatomy:tail','capability:magic','capability:charge']}),
   Object.freeze({ids:['alchemion'], tags:['origin:alchemy','species:construct','anatomy:body']}),
