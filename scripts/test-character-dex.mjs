@@ -24,16 +24,63 @@ assert.equal(records.find(record => record.id === 'elna_beginner').no, 21);
 assert.equal(records.find(record => record.id === 'elna_water').no, 25);
 assert.equal(records.find(record => record.id === 'elna_kaen').no, 46);
 assert.deepEqual(Array.from(records.filter(record => record.entityKind === 'monster').map(record => record.dexNo ?? record.no).sort((a,b)=>a-b)),Array.from({length:50},(_,index)=>index+1));
-assert.equal(records.find(record => record.id === 'sylphin').dexNo,21);
-assert.equal(records.find(record => record.id === 'tempestray').dexNo,23);
-assert.equal(records.find(record => record.id === 'nocle').dexNo,36);
-assert.equal(records.find(record => record.id === 'noxvelg').dexNo,38);
-assert.equal(records.find(record => record.id === 'luxseed').dexNo,39);
-assert.equal(records.find(record => record.id === 'lux_galdion').dexNo,41);
-assert.equal(records.find(record => record.id === 'astralepis').dexNo,16);
-assert.equal(records.find(record => record.id === 'galdra').dexNo,46);
-assert.equal(records.find(record => record.id === 'kimeragna_apex').dexNo,49);
-assert.equal(records.find(record => record.id === 'elixion').dexNo,50);
+const expectedMonsterDexOrder = [
+  'freigal',
+  'freiwolf',
+  'aquaron',
+  'highaquaron',
+  'shenhairon',
+  'tienhairon',
+  'grassbeat',
+  'thornbeat',
+  'granbeat',
+  'rikasheef',
+  'seralphia',
+  'volteck',
+  'spaquinn',
+  'voltax',
+  'sylphin',
+  'zephyray',
+  'tempestray',
+  'luxseed',
+  'luxiard',
+  'lux_galdion',
+  'nocle',
+  'noclaid',
+  'noxvelg',
+  'orcana',
+  'orca_stream',
+  'orca_abyss',
+  'volmoog',
+  'gran_volmoog',
+  'slime',
+  'slime_gold',
+  'goblin',
+  'ignaros',
+  'tsubaki',
+  'suiren',
+  'proto_icegolem',
+  'icegolem',
+  'nightmare',
+  'astralepis',
+  'false_dragon_beta',
+  'false_dragon_gamma',
+  'nemes',
+  'nemesia',
+  'nemesion',
+  'doom_nemesion',
+  'false_dragon_alfa',
+  'galdra',
+  'alchemion',
+  'kimeragna',
+  'kimeragna_apex',
+  'elixion'
+];
+const actualMonsterDexOrder = Array.from(
+  records.filter(record => record.entityKind === 'monster').sort((a,b)=>(a.dexNo??a.no)-(b.dexNo??b.no)),
+  record => record.id
+);
+assert.deepEqual(actualMonsterDexOrder, expectedMonsterDexOrder);
 assert(records.filter(record => record.id.startsWith('stella_') || record.id.startsWith('lumina_') || record.id.startsWith('elysia') || record.id === 'hikari').every(record => record.entityKind === 'character'));
 assert.match(dexSource, /M\.filter\(m=>!isCharacterUnit\(m\)\)/);
 assert.match(dexSource, /M\.filter\(isCharacterUnit\)/);
