@@ -16,9 +16,9 @@ const IMG={
   remnes_memory_star3_v1:'images/monsters/remnes_memory_star3_v1.webp',
   remnant_star4_v1:'images/monsters/remnant_star4_v1.webp',
 
-  orca_abyss:'images/monsters/orca_abyss.webp',
-  orca_stream:'images/monsters/orca_stream.webp',
-  orcana:'images/monsters/orcana.webp',
+  orca_abyss:'images/monsters/orca_abyss_20260920.webp',
+  orca_stream:'images/monsters/orca_stream_20260920.webp',
+  orcana:'images/monsters/orcana_20260920.webp',
   lumina_sorcerer:'images/monsters/lumina_sorcerer.webp',
   lumina_wizard:'images/monsters/lumina_wizard.webp',
   lumina_apprentice:'images/monsters/lumina_apprentice.webp',
