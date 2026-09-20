@@ -65,7 +65,7 @@ const IMG={
   elysia_prologue:"images/monsters/elysia_prologue_v1.webp",
   elysia_prayer:"images/monsters/elysia_prayer_v1.webp",
   elysia_goddess:"images/monsters/elysia_goddess_v1.webp",
-  galdra:"images/monsters/galdra_v1.webp",
+  galdra:"images/monsters/galdra_20260920.webp",
   tsubaki:'images/monsters/tsubaki_20260920.webp',
   elnaKaen:'images/monsters/elna_kaen.webp',
   alchemion:'images/monsters/alchemion.webp',
@@ -80,7 +80,7 @@ const IMG={
   luxseed:'images/monsters/luxseed.webp',
   luxiard:'images/monsters/luxiard.webp',
   lux_galdion:'images/monsters/lux_galdion.webp',
-  astralepis:'images/monsters/astralepis_20260920_v2.webp',
+  astralepis:'images/monsters/astralepis_20260920_v3.webp',
   kimeragna_apex:'images/monsters/kimeragna_apex.webp',
   elixion:'images/monsters/elixion.webp'
 };
