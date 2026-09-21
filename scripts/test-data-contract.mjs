@@ -125,3 +125,59 @@ assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cach
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
 
 console.log('Canonical data contract validation passed (64 entities, 50-number monster dex, 14-character dex, 200 fixed skills, eligibility separation, and legacy skill-ID migration).');
+
+// Replacement compatibility: retain ownership/cards, but apply current equip rules.
+const replacements = [
+  {id:'false_dragon_beta',name:'アシュレイア',no:30,dexNo:39,type:'fire',map:'volcano',level:92,powers:[76,62,94],forms:['beam','wing','beam']},
+  {id:'false_dragon_gamma',name:'モルグラム',no:31,dexNo:40,type:'grass',map:'forest',level:94,powers:[82,66,100],forms:['wing','roar','beam']}
+];
+for (const row of replacements) {
+  const mon = contract.monsters.find(value=>value.id===row.id);
+  assert.equal(mon.name,row.name);
+  assert.equal(mon.no,row.no);
+  assert.equal(mon.dexNo,row.dexNo);
+  assert.equal(mon.rarity,'★★★★');
+  assert.deepEqual([...mon.types],[row.type]);
+  assert.equal(mon.huntLevels.hard,row.level);
+  context.replacementRow=row;
+  assert.deepEqual(JSON.parse(vm.runInContext('JSON.stringify(MAPS.filter(map=>map.enemyIds?.includes(replacementRow.id)).map(map=>map.id))',context)),[row.map]);
+  const ids=mon.moves.map(move=>move[8]);
+  assert.deepEqual([...ids],[1,2,3].map(n=>`skill_${row.id}_0${n}`));
+  assert.deepEqual(mon.moves.map(move=>move[1]).join(','),row.powers.join(','));
+  assert.deepEqual(mon.moves.map(move=>move[2]).join(','),'light,normal,light');
+  context.replacementIds=ids;
+  const detail=JSON.parse(vm.runInContext(`JSON.stringify(replacementIds.map(id=>({
+    allowed:isEquippedSkillUsableForMonster(id,by(replacementRow.id)),
+    form:skillBattleMotionForMove(skillToMove(id)).form
+  })))`,context));
+  assert.deepEqual(detail.map(value=>value.allowed),[false,true,false]);
+  assert.deepEqual(detail.map(value=>value.form),row.forms);
+  const legacy=JSON.parse(vm.runInContext('JSON.stringify(by(replacementRow.id).moves.map(legacySkillIdFromMove))',context));
+  for (const useLegacy of [false,true]) {
+    const savedIds=useLegacy?legacy:[...ids];
+    const fixture={schemaVersion:4,saveMeta:{migrations:['equipped_skill_cards_v1']},
+      instances:[{uid:'replacement-owned',id:row.id,level:50,exp:123,locked:true}],
+      party:['replacement-owned'],caught:[row.id],levels:{[row.id]:50},exp:{[row.id]:123},
+      skillCards:Object.fromEntries(savedIds.map(id=>[id,3])),equippedSkills:{'replacement-owned':savedIds},coins:789};
+    context.replacementRaw=JSON.stringify(fixture);
+    vm.runInContext('save=parseAndPrepareSave(replacementRaw,[])',context);
+    // Save parsing itself retains all three slots; skills initialization applies rules.
+    assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(save.equippedSkills['replacement-owned'])",context)),[...ids]);
+    vm.runInContext('migrateSkillSystem()',context);
+    const actual=JSON.parse(vm.runInContext('JSON.stringify(save)',context));
+    assert.deepEqual(actual.instances[0],fixture.instances[0]);
+    assert.deepEqual(actual.party,fixture.party);
+    assert.ok(actual.caught.includes(row.id));
+    assert.equal(actual.coins,789);
+    assert.equal(actual.quarantine.unknownInstances.length,0);
+    assert.deepEqual(actual.equippedSkills['replacement-owned'],[ids[1]],'off-type light skills are unequipped, not deleted from inventory');
+    for (const id of ids) assert.equal(actual.skillCards[id],3);
+    vm.runInContext('save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem()',context);
+    const reloaded=JSON.parse(vm.runInContext('JSON.stringify(save)',context));
+    assert.deepEqual(reloaded.instances,actual.instances);
+    assert.deepEqual(reloaded.party,actual.party);
+    assert.deepEqual(reloaded.equippedSkills,actual.equippedSkills);
+    assert.deepEqual(reloaded.skillCards,actual.skillCards);
+  }
+}
+console.log('Beta/Gamma replacement passed: stable ownership/UID/no/dexNo, six fixed and legacy skill IDs, card inventory, equip boundary, save reload, habitats and motions.');
