@@ -36,6 +36,20 @@ const _skillSeen = new Set();
 const _skillIdByMove = new WeakMap();
 const LEGACY_SKILL_ID_ALIASES = Object.create(null);
 
+// User-approved replacement skills. Fixed IDs retain ownership; legacy names/types
+// remain readable. Presentation and anatomy are keyed by ID, not mutable names.
+const REPLACEMENT_SKILL_COMPAT = Object.freeze({
+  skill_false_dragon_beta_01: Object.freeze({legacyMove:['断界光',76,'light'],form:'beam',requiredAll:[]}),
+  skill_false_dragon_beta_02: Object.freeze({legacyMove:['偽竜の翼撃',62,'normal'],form:'wing',requiredAll:['anatomy:wing']}),
+  skill_false_dragon_beta_03: Object.freeze({legacyMove:['コード・ベータ',94,'light'],form:'beam',requiredAll:[]}),
+  skill_false_dragon_gamma_01: Object.freeze({legacyMove:['虚無光翼',82,'light'],form:'projectile',requiredAll:[]}),
+  skill_false_dragon_gamma_02: Object.freeze({legacyMove:['偽竜の咆哮',66,'normal'],form:'roar',requiredAll:['capability:roar']}),
+  skill_false_dragon_gamma_03: Object.freeze({legacyMove:['コード・ガンマ',100,'light'],form:'wave',requiredAll:[]})
+});
+Object.entries(REPLACEMENT_SKILL_COMPAT).forEach(([id,profile])=>{
+  LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(profile.legacyMove)]=id;
+});
+
 const SKILL_FORM_RULES = Object.freeze([
   Object.freeze({tag:'anatomy:fang', form:'fang', pattern:/牙/}),
   Object.freeze({tag:'anatomy:claw', form:'claw', pattern:/(爪|クロー|ひっかき)/}),
@@ -59,6 +73,8 @@ const SKILL_FORM_RULES = Object.freeze([
 ]);
 
 function skillFormFor(sourceUnit,mv){
+  const replacement=REPLACEMENT_SKILL_COMPAT[mv?.[8]];
+  if(replacement)return replacement.form;
   if (sourceUnit?.entityKind === 'character') {
     if ((sourceUnit.tags || []).includes('class:swordsman')) return 'sword';
     if ((sourceUnit.tags || []).includes('class:mage')) return 'magic';
@@ -67,6 +83,8 @@ function skillFormFor(sourceUnit,mv){
   return SKILL_FORM_RULES.find(rule => rule.pattern.test(name))?.form || 'generic';
 }
 function skillRequirementsFor(sourceUnit,mv,form){
+  const replacement=REPLACEMENT_SKILL_COMPAT[mv?.[8]];
+  if(replacement)return Object.freeze({entityKinds:Object.freeze(['monster']),requiredAll:Object.freeze([...replacement.requiredAll])});
   const requiredAll=[];
   if (sourceUnit?.entityKind === 'character') {
     if ((sourceUnit.tags || []).includes('class:swordsman')) requiredAll.push('class:swordsman','weapon:sword');
