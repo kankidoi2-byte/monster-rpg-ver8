@@ -10,6 +10,7 @@ const difficulties={easy:{id:'easy',label:'Easy',rewardText:'.7',danger:'easy'},
 const maps=ids.map(id=>({id,name:id,image:'test.webp',desc:'<safe>',region:'r',chapter:'序章',ecosystem:'eco',enemyIds:['m','excluded'],goldenLand:id==='golden_land'}));
 const list={classList:{add(){}},innerHTML:'',querySelector(selector){return selector==='[data-tutorial-golden-land]'&&this.innerHTML.includes('data-tutorial-golden-land')?{}:null;},contains(){return true;}};
 const context={
+  mapPortraitImage:map=>`new-${map.id}.webp`,
   MAPS:maps,HUNT_DIFFICULTIES:difficulties,Math,Map,Object,String,alert(){},setTimeout:fn=>{fn();return 1;},document:{getElementById(){return list;}},
   worldMapActiveEvents:()=>eventList,worldMapEntryAvailable:()=>available,
   worldMapAvailableDifficulties:()=>Object.values(difficulties),worldMapCandidates:()=>[{id:'m',name:'Enemy',rarity:'★'}],
@@ -26,6 +27,11 @@ const context={
 };
 vm.createContext(context);vm.runInContext(source,context);
 assert(context.renderWorldMap(list));
+for(const map of maps){
+  const html=context.worldMapDetailHTML(map);
+  assert.ok(html.includes(`src="new-${map.id}.webp"`),`${map.id}: detail must use shared artwork`);
+  assert.ok(!html.includes('src="test.webp"'),`${map.id}: old artwork must not render`);
+}
 for(const id of ids)assert(list.innerHTML.includes(`data-wm-place="${id}"`),id);
 assert.ok(list.innerHTML.includes('images/maps/world_map_prologue_v2.webp'),'the aligned prologue terrain must be rendered from its cache-safe filename');
 assert.equal(guideOffers,1,'an available Golden Land entry offers its guide after the target is rendered');

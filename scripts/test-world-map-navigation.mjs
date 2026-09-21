@@ -18,6 +18,7 @@ const list={
   contains(){return true;}
 };
 const context=vm.createContext({
+  mapPortraitImage:map=>`new-${map.id}.webp`,
   console,Date,JSON,Math,Map,Object,String,Number,Array,Set,
   MAX_LEVEL:100,clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
   M:[],MAPS:maps,HUNT_DIFFICULTIES:difficulties,

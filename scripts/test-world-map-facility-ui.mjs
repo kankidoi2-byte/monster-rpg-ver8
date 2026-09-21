@@ -10,6 +10,7 @@ const list={
   classList:{add(){}},innerHTML:'',contains(){return true;},querySelector(){return null;}
 };
 const context={
+  mapPortraitImage:map=>`new-${map.id}.webp`,
   MAPS:[map],HUNT_DIFFICULTIES:{easy:difficulty},Math,Map,Object,String,
   save:{worldMap:{}},document:{getElementById(){return list;}},setTimeout(){return 1;},alert(){},
   worldMapActiveEvents:()=>[],worldMapEntryAvailable:()=>true,
