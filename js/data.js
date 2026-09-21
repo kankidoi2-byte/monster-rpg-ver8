@@ -33,7 +33,7 @@ const IMG={
   false_dragon_gamma:"images/monsters/morgram_20260920.webp",
   false_dragon_beta:"images/monsters/ashleia_20260920.webp",
   false_dragon_alfa:"images/monsters/false_dragon_alfa_20260920.webp",
-  voltax:"images/monsters/voltax_20260920.webp",
+  voltax:"images/monsters/voltax_20260921_square.webp",
   spaquinn:"images/monsters/spaquinn_20260920.webp",
   goblin:"images/monsters/goblin_20260920.webp",
   slime_gold:"images/monsters/slime_gold_20260920.webp",
