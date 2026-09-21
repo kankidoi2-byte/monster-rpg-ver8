@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260921-voltax-square-art",date:"2026-09-21",category:"update",title:"ボルタックスのイラストを更新しました",body:"図鑑・編成・戦闘などで表示するボルタックスのイラストを、正方形の画像に更新しました。"}),
   Object.freeze({id:"20260921-map-artwork-consistency",date:"2026-09-21",category:"fix",title:"探索先の景観表示を統一しました",body:"世界地図の地点詳細と遭遇カードにも、戦闘・マップ図鑑と同じ新しい景観が表示されるようになりました。"}),
   Object.freeze({id:'20260920-monster-dex-reorder',date:'2026-09-20',category:'update',title:'モンスター図鑑の並び順を整理しました',body:'進化系統、単一モンスター、★5、錬成モンスターのまとまりが分かるよう、モンスター図鑑No.1〜50を再編しました。モンスターの内部ID、所持・育成状態、能力、技、出現場所、進化・錬成条件は変更しておらず、既存のセーブデータはそのまま利用できます。'}),
   Object.freeze({id:'20260920-map-art-renewal',date:'2026-09-20',category:'update',title:'全マップの景観イラストを刷新しました',body:'草原から黄金郷まで、現在登場する全19マップの景観イラストを新しくしました。戦闘画面、タイトル画面、マップ図鑑、モンスター図鑑の出現場所で各地の新しい景観を確認できます。マップ図鑑の詳細では景色の全体を表示し、画像を押すと全画面で鑑賞できます。マップの出現条件・敵・難易度・報酬に変更はありません。'}),

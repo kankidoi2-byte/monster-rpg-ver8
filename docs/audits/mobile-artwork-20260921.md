@@ -116,3 +116,9 @@ Map details and artwork dialog use contain; list thumbnails and battle backgroun
 | maps | world_between | 世界の狭間 | `images/maps/world_between_battle_v1.webp` | 864×1536 | 200 / match |
 | maps | kaen_village | 華炎の里 | `images/maps/kaen_village_battle_v1.webp` | 864×1536 | 200 / match |
 | maps | golden_land | 黄金郷 | `images/maps/golden_land_battle_v1.webp` | 864×1536 | 200 / match |
+
+## Follow-up: user-provided square Voltax artwork
+
+User supplied 1000010578.png (actual encoding JPEG), verified 1536×1536. Converted to WebP quality 90 without resizing or cropping, stored as voltax_20260921_square.webp. IMG.voltax now uses this new cache-safe path; original asset retained. Existing shared vis() references cover encyclopedia, party and battle. This supersedes the non-square Voltax findings above for this branch only. Public main still uses the previous image until merge.
+
+User Android screenshots show the old Voltax image letterboxed in the encyclopedia and the grassland artwork dialog in portrait and landscape without apparent distortion. This is screenshot evidence only; close/reload behavior, all other maps, corrected detail layout and the newly supplied Voltax artwork in-game remain unverified. No merge authorized by these screenshots.
