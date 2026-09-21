@@ -109,13 +109,14 @@ const genericDamageCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && card.tags.includes('form:generic'));
 const damageCards = motion.cards.filter(card => card.tags.includes('role:damage'));
 const supportCards = motion.cards.filter(card => card.tags.includes('role:support'));
-assert.equal(projectileCards.length, 9, 'the tagged catalog must include the expected breath and beam attack set');
+assert.equal(projectileCards.length, 8, 'the tagged catalog must include the expected breath and beam attack set');
 assert.equal(meleeCards.length, 29, 'the tagged catalog must include the expected sword, claw, and fang attack set');
 assert.equal(rangedCards.length, 42, 'the tagged catalog must include the expected magic and flying-blade attack set');
 assert.equal(impactCards.length, 20, 'the tagged catalog must include the expected charge, strike, and body attack set');
-assert.equal(anatomyCards.length, 22, 'the tagged catalog must include the expected anatomy and weapon attack set');
+assert.equal(anatomyCards.length, 21, 'the tagged catalog must include the expected anatomy and weapon attack set');
 assert.equal(roarCards.length, 3, 'the tagged catalog must include the expected damage roar set');
 assert.equal(genericDamageCards.length, 35, 'the catalog must retain the expected generic attack set without changing card taxonomy');
+assert.equal(motion.cards.filter(card=>['projectile','wave'].includes(card.form)).length,2,'Morgram has two ID-defined ranged motions');
 assert.equal(damageCards.length, 160, 'the catalog must retain the complete attack set');
 assert.equal(supportCards.length, 40, 'the catalog must retain the complete support set');
 const supportCounts=Object.create(null);

@@ -126,10 +126,10 @@ assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key mus
 
 console.log('Canonical data contract validation passed (64 entities, 50-number monster dex, 14-character dex, 200 fixed skills, eligibility separation, and legacy skill-ID migration).');
 
-// Replacement compatibility: retain ownership/cards, but apply current equip rules.
+// Replacement compatibility: retain ownership/cards, all six themed skills are usable by their source monsters.
 const replacements = [
-  {id:'false_dragon_beta',name:'アシュレイア',no:30,dexNo:39,type:'fire',map:'volcano',level:92,powers:[76,62,94],forms:['beam','wing','beam']},
-  {id:'false_dragon_gamma',name:'モルグラム',no:31,dexNo:40,type:'grass',map:'forest',level:94,powers:[82,66,100],forms:['wing','roar','beam']}
+  {id:'false_dragon_beta',name:'アシュレイア',no:30,dexNo:39,type:'fire',map:'volcano',level:92,powers:[76,62,94],types:['fire','fire','fire'],oldMoves:[['断界光',76,'light'],['偽竜の翼撃',62,'normal'],['コード・ベータ',94,'light']],forms:['beam','wing','beam']},
+  {id:'false_dragon_gamma',name:'モルグラム',no:31,dexNo:40,type:'grass',map:'forest',level:94,powers:[82,66,100],types:['grass','normal','grass'],oldMoves:[['虚無光翼',82,'light'],['偽竜の咆哮',66,'normal'],['コード・ガンマ',100,'light']],forms:['projectile','roar','wave']}
 ];
 for (const row of replacements) {
   const mon = contract.monsters.find(value=>value.id===row.id);
@@ -144,15 +144,15 @@ for (const row of replacements) {
   const ids=mon.moves.map(move=>move[8]);
   assert.deepEqual([...ids],[1,2,3].map(n=>`skill_${row.id}_0${n}`));
   assert.deepEqual(mon.moves.map(move=>move[1]).join(','),row.powers.join(','));
-  assert.deepEqual(mon.moves.map(move=>move[2]).join(','),'light,normal,light');
+  assert.deepEqual(mon.moves.map(move=>move[2]).join(','),row.types.join(','));
   context.replacementIds=ids;
   const detail=JSON.parse(vm.runInContext(`JSON.stringify(replacementIds.map(id=>({
     allowed:isEquippedSkillUsableForMonster(id,by(replacementRow.id)),
     form:skillBattleMotionForMove(skillToMove(id)).form
   })))`,context));
-  assert.deepEqual(detail.map(value=>value.allowed),[false,true,false]);
+  assert.deepEqual(detail.map(value=>value.allowed),[true,true,true]);
   assert.deepEqual(detail.map(value=>value.form),row.forms);
-  const legacy=JSON.parse(vm.runInContext('JSON.stringify(by(replacementRow.id).moves.map(legacySkillIdFromMove))',context));
+  const legacy=JSON.parse(vm.runInContext('JSON.stringify(replacementRow.oldMoves.map(legacySkillIdFromMove))',context));
   for (const useLegacy of [false,true]) {
     const savedIds=useLegacy?legacy:[...ids];
     const fixture={schemaVersion:4,saveMeta:{migrations:['equipped_skill_cards_v1']},
@@ -170,7 +170,7 @@ for (const row of replacements) {
     assert.ok(actual.caught.includes(row.id));
     assert.equal(actual.coins,789);
     assert.equal(actual.quarantine.unknownInstances.length,0);
-    assert.deepEqual(actual.equippedSkills['replacement-owned'],[ids[1]],'off-type light skills are unequipped, not deleted from inventory');
+    assert.deepEqual(actual.equippedSkills['replacement-owned'],[...ids],'all replacement skills remain equipped at a sufficient level');
     for (const id of ids) assert.equal(actual.skillCards[id],3);
     vm.runInContext('save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem()',context);
     const reloaded=JSON.parse(vm.runInContext('JSON.stringify(save)',context));
@@ -181,3 +181,30 @@ for (const row of replacements) {
   }
 }
 console.log('Beta/Gamma replacement passed: stable ownership/UID/no/dexNo, six fixed and legacy skill IDs, card inventory, equip boundary, save reload, habitats and motions.');
+
+// Replacements must not consume cards when another former light user loses access.
+context.otherOwnerRaw=JSON.stringify({schemaVersion:4,saveMeta:{migrations:['equipped_skill_cards_v1']},
+  instances:[{uid:'old-light-owner',id:'false_dragon_alfa',level:50,exp:12}],party:['old-light-owner'],
+  skillCards:{skill_false_dragon_beta_01:4,skill_false_dragon_gamma_01:2},
+  equippedSkills:{'old-light-owner':['skill_false_dragon_beta_01','skill_false_dragon_gamma_01']}});
+vm.runInContext('save=parseAndPrepareSave(otherOwnerRaw,[]);migrateSkillSystem()',context);
+assert.equal(vm.runInContext('save.skillCards.skill_false_dragon_beta_01',context),4);
+assert.equal(vm.runInContext('save.skillCards.skill_false_dragon_gamma_01',context),2);
+assert.equal(vm.runInContext("save.equippedSkills['old-light-owner'].includes('skill_false_dragon_beta_01')",context),false);
+for(const row of replacements){
+  context.replacementRow=row;
+  const profile=JSON.parse(vm.runInContext(`JSON.stringify({
+    defaults:defaultSkillIdsForMonster(by(replacementRow.id),{level:50}),
+    low:defaultSkillIdsForMonster(by(replacementRow.id),{level:1}),
+    moves:by(replacementRow.id).moves.map(mv=>({name:mv[0],desc:moveEffectText(mv),cost:skillCostFromMove(mv),
+      stableForm:skillFormFor(by(replacementRow.id),['表示名変更',...mv.slice(1)]),
+      effect:mv[3],chance:mv[4]}))
+  })`,context));
+  assert.equal(profile.defaults.length,3);
+  assert.ok(profile.low.length>=1,'low-level replacements always have a usable move');
+  assert.deepEqual(profile.moves.map(m=>m.cost),row.id.endsWith('beta')?[4,4,5]:[5,4,5]);
+  assert.deepEqual(profile.moves.map(m=>m.stableForm),row.forms,'ID-defined forms do not drift with display names');
+  assert.ok(profile.moves.every(m=>m.desc.length>15&&!/偽竜|コード・|光翼/.test(m.name)));
+  assert.ok(profile.moves.every(m=>m.effect===null&&m.chance===null),'no new status effect or chance is introduced');
+}
+console.log('Replacement skill update passed: all owner moves usable, old aliases retained, inventory preserved for former light users, stable forms and unchanged power/cost/effects.');
