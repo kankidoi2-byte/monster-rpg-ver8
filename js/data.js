@@ -55,7 +55,7 @@ const IMG={
   volteck:"images/monsters/volteck_20260920.webp",
   nightmare:"images/monsters/nightmare_20260920.webp",
   shenhairon:"images/monsters/shenhairon_20260919.webp",
-  tienhairon:"images/monsters/tienhairon_20260919.webp",
+  tienhairon:"images/monsters/tienhairon_20260923.webp",
   highaquaron:"images/monsters/highaquaron_20260919.webp",
   grassbeat:"images/monsters/grassbeat_20260919.webp",
   aquaron:"images/monsters/aquaron_20260919.webp",
