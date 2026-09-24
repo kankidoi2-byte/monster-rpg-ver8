@@ -45,7 +45,7 @@ const IMG={
   elnaAdvanced:"images/monsters/elna_advanced.webp",
   elnaMiddle:"images/monsters/elna_middle.webp",
   elna:"images/monsters/elna_beginner.webp",
-  doomNemesion:"images/monsters/doom_nemesion_20260920.webp",
+  doomNemesion:"images/monsters/doom_nemesion_20260924.webp",
   nemesion:"images/monsters/nemesion_20260920.webp",
   nemesia:"images/monsters/nemesia_v2.webp",
   nemes:"images/monsters/nemes_v2.webp",
