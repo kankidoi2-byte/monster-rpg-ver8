@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260924-doom-nemesion-art',date:'2026-09-24',category:'update',title:'滅亡の星 ネメシオンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示される滅亡の星 ネメシオンのイラストを更新しました。'}),
   Object.freeze({id:'20260923-tienhairon-art',date:'2026-09-23',category:'update',title:'ティエンハイロンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるティエンハイロンのイラストを更新しました。能力・技・出現場所に変更はありません。'}),
   Object.freeze({id:'20260921-replacement-skills',date:'2026-09-21',category:'update',title:'アシュレイアとモルグラムの技を更新しました',body:'アシュレイアの3技を火属性の技へ、モルグラムの3技を森属性の胞子弾・波動と無属性の咆哮へ更新しました。技名・説明・演出も新しい姿に合わせました。所持カードは新しい技へ引き継がれます。属性が変わった技をほかのモンスターに装備している場合、条件に合わない装備は外れますが、カードは残ります。技の威力・コストは変更していません。'}),
   Object.freeze({id:"20260921-voltax-square-art",date:"2026-09-21",category:"update",title:"ボルタックスのイラストを更新しました",body:"図鑑・編成・戦闘などで表示するボルタックスのイラストを、正方形の画像に更新しました。"}),
