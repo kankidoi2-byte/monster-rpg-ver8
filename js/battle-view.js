@@ -71,12 +71,13 @@ function renderBattleSwitchButton(){
   if(!button)return;
   const count=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates().length:0;
   button.disabled=count===0;
+  button.title=count===0?'交代できる仲間がいません':'仲間と交代（1行動）';
   button.innerHTML='<span aria-hidden="true">🔄</span><strong>交代</strong>';
 }
 function renderBattleItemButton(){
   const button=document.getElementById('battleItemButton');
   if(!button)return;
-  button.innerHTML='<span aria-hidden="true">🎒</span><strong>道具</strong>';
+  if(!document.getElementById('battleItemBadge'))button.innerHTML='<span aria-hidden="true">🎒</span><strong>道具</strong><small id="battleItemBadge" class="battle-command-badge hidden"></small>';
 }
 function openBattleSwitchPicker(){
   if(busy)return;
@@ -146,6 +147,7 @@ function battleMotionTiming(motion){
   return {duration,contact:Math.round(duration*(BATTLE_MOTION_CONTACT[motion.form]||.5))};
 }
 async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
+  if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
   const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;
   if(!motion?.animated)return false;
   const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -188,7 +190,8 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
   const castClass=lunge?'battle-charge-cast':'battle-skill-cast';
   source.classList.remove('battle-skill-cast','battle-charge-cast');
   if(lunge){
-    const travel=Math.min(42,rawDistance*.18);
+    const stageLimit=document.getElementById('battle')?.classList.contains('is-single-stage')?8:42;
+    const travel=Math.min(stageLimit,rawDistance*.18);
     source.style.setProperty('--battle-lunge-x',`${ux*travel}px`);
     source.style.setProperty('--battle-lunge-y',`${uy*travel}px`);
     source.style.setProperty('--battle-recoil-x',`${ux*travel*-.18}px`);
@@ -480,6 +483,7 @@ function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(link.tacticsAbility?.id==='free_switch'&&link.tacticsAbility.charges>0)beginKokoroLinkFreeSwitch();
 }
 function update() {
+  if(typeof syncSingleBattleStage==='function')syncSingleBattleStage();
   if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();
   if (multiBattle?.active) { updateMultiBattleView(); return; }
   if (!player || !enemy) return;

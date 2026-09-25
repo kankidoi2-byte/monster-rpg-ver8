@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:'20260925-normal-battle-stage',date:'2026-09-25',category:'update',title:'通常戦の画面を見直しました',body:'敵を奥、味方を手前に配置し、技・リンク・道具と交代・逃走を選びやすくしました。戦闘履歴はコマンドの下から確認できます。イラストは静止表示です。'}),
   Object.freeze({id:'20260924-doom-nemesion-art',date:'2026-09-24',category:'update',title:'滅亡の星 ネメシオンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示される滅亡の星 ネメシオンのイラストを更新しました。'}),
   Object.freeze({id:'20260923-tienhairon-art',date:'2026-09-23',category:'update',title:'ティエンハイロンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示されるティエンハイロンのイラストを更新しました。能力・技・出現場所に変更はありません。'}),
   Object.freeze({id:'20260921-replacement-skills',date:'2026-09-21',category:'update',title:'アシュレイアとモルグラムの技を更新しました',body:'アシュレイアの3技を火属性の技へ、モルグラムの3技を森属性の胞子弾・波動と無属性の咆哮へ更新しました。技名・説明・演出も新しい姿に合わせました。所持カードは新しい技へ引き継がれます。属性が変わった技をほかのモンスターに装備している場合、条件に合わない装備は外れますが、カードは残ります。技の威力・コストは変更していません。'}),

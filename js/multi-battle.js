@@ -15,6 +15,7 @@ function setMultiBattleLayout(active) {
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   const battleScreen = document.getElementById('battle');
   if (battleScreen) battleScreen.classList.toggle('is-multi-battle', !!active);
+  if(typeof syncSingleBattleStage==='function')syncSingleBattleStage();
 }
 
 function createMultiEnemy(mon, factionId) {

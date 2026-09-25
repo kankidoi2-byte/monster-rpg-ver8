@@ -48,6 +48,11 @@ function beginBattleAction(actor,move,isPlayer){
   battleHistoryEntry(battleFeedback.action,'action');
   renderBattleInputState();
 }
+function showSingleBattleActionTarget(targetId){
+  if(multiBattle?.active||!battleFeedback.action)return;
+  const target=battleCombatants().find(unit=>unit.vis===targetId);
+  if(target){battleFeedback.action=battleFeedback.action.split(' → ')[0]+` → ${target.name}`;renderBattleInputState();}
+}
 function renderBattleInputState(){
   const screen=document.getElementById('battle');if(!screen)return;
   const finished=battleFeedback.finished||screen.classList.contains('is-finished');
@@ -112,10 +117,11 @@ function renderBattleHpAtImpact(u,after){
 }
 function renderBattleHpResults(u,queue){
   const target=document.getElementById(u.vis);if(!target)return;
-  const host=target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
-  let result=host.querySelector('.battle-hp-result');
-  if(!result){result=document.createElement('div');result.className='battle-hp-result';host.appendChild(result);}
-  const text=queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
+  const single=document.getElementById('battle')?.classList.contains('is-single-stage');
+  const host=single?document.getElementById('battleStageResults'):target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
+  let result=host.querySelector(single?`[data-result-vis="${u.vis}"]`:'.battle-hp-result');
+  if(!result){result=document.createElement('div');result.className='battle-hp-result';result.dataset.resultVis=u.vis;host.appendChild(result);}
+  const text=(single?`${u.name}：`:'')+queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
 }
 function refreshBattleFeedback(message=''){
   for(const u of battleCombatants()){
