@@ -66,3 +66,12 @@ body:has(#battle.active.is-single-stage) .app-topbar{position:relative}
   #battle.is-single-stage .battle-stage-slot.is-ally{grid-column:1/-1;grid-row:3;width:76%;justify-self:start}
   #battle.is-single-stage #singlePlayerBox{grid-column:1/-1;grid-row:4}
 }
+/* The legacy center has a fixed 66px circle. Stretch its real hit area to the
+   new grid column, independently of the panel's generic 48px minimum. */
+#battle.is-single-stage .battle-command-pad .battle-pad-button{min-height:64px;border-color:#c9a862!important;background:#25496d!important;color:#f8f3de!important}
+#battle.is-single-stage .battle-command-pad .battle-pad-center{width:100%;height:auto;min-height:88px;justify-self:stretch;display:flex!important;flex-direction:column;gap:0;border-radius:40px!important;background:linear-gradient(#276ca2,#163960)!important}
+#battle.is-single-stage .battle-command-pad :is(.battle-pad-up,.battle-pad-down){min-height:48px}
+#battle.is-single-stage .battle-pad-center small{font-size:.75rem}
+
+#battle.is-single-stage .battle-command-pad :is(#kokoroLinkButton,#battleItemButton){min-height:64px}
+#battle.is-single-stage .battle-command-pad #battleSkillButton{min-height:88px}
