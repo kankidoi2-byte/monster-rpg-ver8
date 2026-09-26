@@ -178,7 +178,7 @@ function chooseMultiBattleTarget(moveIndex) {
   multiBattle.enemies.forEach(entry=>{entry.detailsOpen=false;});
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
-  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>敵A・敵Bの名前とHPを確認して選択</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.id==='enemy_a'?'敵A':'敵B'}：${entry.mon.name}（HP ${entry.hp} / ${entry.maxHp}）を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
   updateMultiBattleView();
 }

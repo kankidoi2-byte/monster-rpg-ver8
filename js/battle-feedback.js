@@ -32,6 +32,7 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
   battleFeedback.hp.clear();battleFeedback.states.clear();battleFeedback.results.clear();battleFeedback.sequence++;
@@ -41,6 +42,7 @@ function resetBattleFeedback(){
   document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
 }
 function beginBattleAction(actor,move,isPlayer){
+  if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.results.clear();document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
   const log=document.getElementById('log');if(log)log.innerHTML='';battleFeedback.lastLog='';
@@ -67,7 +69,8 @@ function renderBattleInputState(){
   const text=finished?'戦闘終了・履歴を確認できます':busy?(battleFeedback.action||'行動を処理しています'):target?'対象を選んでください':selecting?'技を選んでください':'コマンドを選んでください';
   if(title)title.textContent=text;
   const status=document.getElementById('battleActionStatus');if(status)status.textContent=text;
-  if(!busy)battleFeedback.action='';
+  if(!busy||finished){battleFeedback.action='';if(typeof clearBattleStageAction==='function')clearBattleStageAction();}
+  if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
 }
 function battleCombatants(){
   if(!player||!enemy)return [];
@@ -117,11 +120,11 @@ function renderBattleHpAtImpact(u,after){
 }
 function renderBattleHpResults(u,queue){
   const target=document.getElementById(u.vis);if(!target)return;
-  const single=document.getElementById('battle')?.classList.contains('is-single-stage');
+  const single=document.getElementById('battle')?.classList.contains('is-battle-stage');
   const host=single?document.getElementById('battleStageResults'):target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
   let result=host.querySelector(single?`[data-result-vis="${u.vis}"]`:'.battle-hp-result');
   if(!result){result=document.createElement('div');result.className='battle-hp-result';result.dataset.resultVis=u.vis;host.appendChild(result);}
-  const text=(single?`${u.name}：`:'')+queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
+  const text=(single?`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：`:'')+queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
 }
 function refreshBattleFeedback(message=''){
   for(const u of battleCombatants()){
@@ -155,6 +158,7 @@ function reconcileBattleNode(node,next){
   children.slice(incoming.length).forEach(child=>child.remove());
 }
 function renderMultiBattleCards(html){
+  if(typeof renderMultiBattleStageCards==='function'){renderMultiBattleStageCards(html);return;}
   const grid=document.getElementById('multiEnemyGrid');if(!grid)return;
   const template=document.createElement('div');template.innerHTML=html;
   for(const next of [...template.children]){

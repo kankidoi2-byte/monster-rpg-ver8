@@ -147,7 +147,8 @@ function battleMotionTiming(motion){
   return {duration,contact:Math.round(duration*(BATTLE_MOTION_CONTACT[motion.form]||.5))};
 }
 async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
-  if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
+  if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
+  else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
   const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;
   if(!motion?.animated)return false;
   const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -190,7 +191,7 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
   const castClass=lunge?'battle-charge-cast':'battle-skill-cast';
   source.classList.remove('battle-skill-cast','battle-charge-cast');
   if(lunge){
-    const stageLimit=document.getElementById('battle')?.classList.contains('is-single-stage')?8:42;
+    const stageLimit=document.getElementById('battle')?.classList.contains('is-battle-stage')?8:42;
     const travel=Math.min(stageLimit,rawDistance*.18);
     source.style.setProperty('--battle-lunge-x',`${ux*travel}px`);
     source.style.setProperty('--battle-lunge-y',`${uy*travel}px`);
@@ -439,7 +440,7 @@ function beginKokoroLinkStatusTargetSelection(sourceUid){
   const picker=document.getElementById('multiTargetSelect'),living=typeof aliveMultiEnemies==='function'?aliveMultiEnemies():[];
   if(!picker||!living.length)return;
   pendingKokoroLinkStatusSourceUid=sourceUid;
-  picker.innerHTML=`<p><b>リンク能力の対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="selectKokoroLinkStatusTarget('${entry.id}')">${entry.mon.name}へ発動</button>`).join('')}<button onclick="cancelKokoroLinkStatusTarget()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>リンク能力の対象を選択</b><span>敵A・敵Bの名前とHPを確認して選択</span></p>${living.map(entry=>`<button onclick="selectKokoroLinkStatusTarget('${entry.id}')">${entry.id==='enemy_a'?'敵A':'敵B'}：${entry.mon.name}（HP ${entry.hp} / ${entry.maxHp}）へ発動</button>`).join('')}<button onclick="cancelKokoroLinkStatusTarget()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');updateMultiBattleView();
 }
 function cancelKokoroLinkStatusTarget(){pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');if(multiBattle?.active)updateMultiBattleView();}

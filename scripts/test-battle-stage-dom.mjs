@@ -49,7 +49,7 @@ run('busy=false;runAway()');assert(!by('battleOutcome').classList.contains('hidd
 run('afterBattleNext()');assert(!by('battle').classList.contains('active'));
 setup();run('eHp=0;win()');assert(!by('battleOutcome').classList.contains('hidden'));run('afterBattleNext()');
 setup();run('ensureMultiBattleDom();multiBattle={active:true,enemies:[createMultiEnemy(by("slime"),"enemy_a"),createMultiEnemy(by("freigal"),"enemy_b")],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle()');
-assert(!by('battle').classList.contains('is-single-stage'));assert.equal(by('pVis').parentElement.id,'singlePlayerBox');assert.equal(d.querySelectorAll('.battle-stage-slot').length,0);assert(by('enemy_aVis'));checkIds();
+assert(!by('battle').classList.contains('is-single-stage'));assert.equal(by('pVis').parentElement.id,'pBattleSlot');assert.equal(d.querySelectorAll('.battle-stage-slot').length,3);assert(by('enemy_aVis'));checkIds();
 run('multiBattle=null;setMultiBattleLayout(false);setupBattle()');assert(by('battle').classList.contains('is-single-stage'));
 run("player=by('elna_beginner');setupBattle()");assert(by('pVis').querySelector('img'));checkIds();
 const img=by('pVis').querySelector('img');img.dispatchEvent(new w.Event('error'));assert(img.hidden);assert.match(by('pVis').textContent,/味方/);
@@ -57,4 +57,4 @@ setup();assert.equal(run('startTutorialRescueBattle()'),true);checkIds();assert(
 assert.equal(run('startTutorialStellaMockBattle()'),true);checkIds();assert(by('eVis').querySelector('img'));
 assert.equal(errors.length,0,errors.join('\n'));
 dom.window.close();
-console.log('PASS Phase3A DOM: stable media/HP, fixed IDs, five command entrypoints, busy, item return, replacement, retreat/victory/next, legacy multi return, character static/error fallback. Layout and real browser NOT tested.');
+console.log('PASS Phase3A DOM: stable media/HP, fixed IDs, five command entrypoints, busy, item return, replacement, retreat/victory/next, multi stage return, character static/error fallback. Layout and real browser NOT tested.');
