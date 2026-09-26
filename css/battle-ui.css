@@ -17,7 +17,8 @@
 #battle .battle-state-details p{margin:8px 0;overflow-wrap:anywhere}
 #battle .battle-status{gap:8px}
 #battle .battle-history{max-height:40dvh;overflow:auto;overscroll-behavior:contain}
-#battleItemSelect{max-width:600px;margin-inline:auto;overflow-wrap:anywhere;color:#f8f3de}
+#battleItemSelect{max-width:600px;margin-inline:auto;overflow-wrap:anywhere;color:#f8f3de;background:#102647;padding:16px;box-sizing:border-box}
+#battleItemSelect :is(h1,h2,p){color:#f8f3de}
 #battleItemSelect #battleItemList{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 #battleItemSelect .item-card{min-width:0;padding:12px;background:#102647;color:#f8f3de;border:1px solid #c9a862}
 #battleItemSelect h1,#battleItemSelect h2{font-size:1.125rem;line-height:1.5;overflow-wrap:anywhere}
