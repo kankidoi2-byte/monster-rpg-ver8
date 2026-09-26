@@ -50,6 +50,7 @@ function syncSingleBattleStage(){
     if(pad&&pad.firstElementChild?.id!==order[0])for(const id of order)pad.appendChild(document.getElementById(id));
   }
   if(dock)dock.dataset.stage=single?'single':'multi';
+  if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
 }
 
 // Each entry object is one combatant lifetime; no species-only cache and no save fields.

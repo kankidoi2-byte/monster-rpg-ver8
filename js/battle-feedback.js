@@ -32,6 +32,7 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof disposeBattleIdleMedia==='function')disposeBattleIdleMedia();
   if(typeof battleUiClear==='function')battleUiClear();
   if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
@@ -74,6 +75,7 @@ function renderBattleInputState(){
   if(!busy||finished){battleFeedback.action='';if(typeof clearBattleStageAction==='function')clearBattleStageAction();}
   if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
   if(typeof syncBattleUi==='function')syncBattleUi();
+  if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
 }
 function battleCombatants(){
   if(!player||!enemy)return [];

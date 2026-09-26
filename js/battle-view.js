@@ -1,4 +1,5 @@
 function setupBattle() {
+  if(typeof disposeBattleIdleMedia==='function')disposeBattleIdleMedia();
   clearBattleVisuals();
   pendingKokoroLinkStatusSourceUid=null;
   pendingKokoroLinkTacticsMode=null;

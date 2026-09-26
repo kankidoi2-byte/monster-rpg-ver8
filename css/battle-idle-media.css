@@ -1,0 +1,8 @@
+#battle.is-battle-stage .battle-static-media.has-idle-media{background:transparent;border-color:transparent;box-shadow:none;overflow:visible}
+#battle.is-battle-stage .has-idle-media::after{display:none}
+#battle.is-battle-stage .battle-idle-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;visibility:hidden;pointer-events:none}
+#battle.is-battle-stage .idle-playing .battle-idle-video{visibility:visible}
+#battle.is-battle-stage .battle-idle-details{font-size:.875rem;margin-top:8px}
+#battle.is-battle-stage .battle-idle-details summary,#battle.is-battle-stage .battle-idle-details button{min-height:48px;display:flex;align-items:center}
+#battle.is-battle-stage .battle-idle-details button[hidden]{display:none}
+#battle.is-battle-stage .battle-idle-details span{display:block}
