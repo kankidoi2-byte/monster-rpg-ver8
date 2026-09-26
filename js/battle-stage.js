@@ -110,7 +110,10 @@ function renderMultiBattleStageCards(html){
       // Keep details focus while updating numeric/status content.
       const oldControls=oldHud.querySelector('.battle-enemy-controls');
       const focused=document.activeElement;
+      const status=oldHud.querySelector('.battle-status'),incomingStatus=hud.querySelector('.battle-status');
+      const statesOpen=status?.querySelector('details')?.open||false;
       oldControls?.remove();hud.removeChild(controls);reconcileBattleNode(oldHud,hud);
+      if(status&&incomingStatus){const currentStatus=oldHud.querySelector('.battle-status');if(statesOpen&&currentStatus)currentStatus.dataset.statesOpen='true';if(status.contains(focused)&&currentStatus)currentStatus.dataset.statesFocus='true';}
       if(oldControls&&oldControls.children.length===controls.children.length){
         [...oldControls.children].forEach((button,index)=>{
           const nextButton=controls.children[index];
@@ -139,6 +142,7 @@ function showBattleStageAction(sourceId,targetId){
   // The skill renderer receives the resolved target, including enemy -> enemy.
   const move=battleFeedback.action.match(/「.*」/)?.[0]||'';
   battleFeedback.action=`${sourceName} ${move} → ${targetName}`;
+  if(!multiBattle?.active)battleHistoryEntry(battleFeedback.action,'target');
   for(const [id,kind,text] of [[sourceId,'actor','行動中'],[targetId,'target','対象']]){
     const visual=document.getElementById(id),slot=visual?.closest('.battle-stage-slot');
     if(slot){slot.classList.add(`is-stage-${kind}`);slot.dataset.stageAction=slot.dataset.stageAction?`${slot.dataset.stageAction}・${text}`:text;}

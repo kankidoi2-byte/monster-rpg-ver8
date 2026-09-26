@@ -178,7 +178,9 @@ function chooseMultiBattleTarget(moveIndex) {
   multiBattle.enemies.forEach(entry=>{entry.detailsOpen=false;});
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
-  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>敵A・敵Bの名前とHPを確認して選択</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.id==='enemy_a'?'敵A':'敵B'}：${entry.mon.name}（HP ${entry.hp} / ${entry.maxHp}）を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
+  const chosenMove=getEquippedMovesForInstance(activeInstance)[moveIndex]||['通常攻撃',24,'normal'];
+  const selectionText=typeof battleUiEscape==='function'?`選択中：${battleUiEscape(chosenMove[0])} / 効果の対象：${battleUiMoveTarget(chosenMove)}。${battleUiMoveTarget(chosenMove)==='自分'?'敵の選択にかかわらず自分へ発動します。':''}`:'';
+  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>${selectionText}</span><span>敵A・敵Bの名前とHPを確認して選択</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.id==='enemy_a'?'敵A':'敵B'}：${entry.mon.name}（HP ${entry.hp} / ${entry.maxHp}）を狙う</button>`).join('')}<button onclick="battleUiBack()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
   updateMultiBattleView();
 }
@@ -186,6 +188,9 @@ function cancelMultiBattleTarget(){ if(!multiBattle)return; multiBattle.pendingM
 
 function startMultiBattleTurn(targetId) {
   if (busy || multiBattle?.pendingMoveIndex===null || multiBattle?.pendingMoveIndex===undefined) return;
+  if(typeof battleUiCanAct==='function'&&!battleUiCanAct())return;
+  const selected=multiEnemy(targetId);
+  if(!selected?.alive||selected.hp<=0){chooseMultiBattleTarget(multiBattle.pendingMoveIndex);return;}
   const moveIndex=multiBattle.pendingMoveIndex; multiBattle.pendingMoveIndex=null;
   document.getElementById('multiTargetSelect').classList.add('hidden'); busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState(); startBattleTurn();
   const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);

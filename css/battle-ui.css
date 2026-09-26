@@ -1,0 +1,44 @@
+/* Phase3C: scoped, normal-flow panels. No full-screen modal or hidden controls. */
+#battle .battle-command-pad[hidden]{display:none!important}
+#battle #commands,#battle #multiTargetSelect,#battle #kokoroLinkPanel{position:static;display:flex;flex-direction:column;gap:8px;max-height:none;width:100%;min-width:0;box-sizing:border-box;padding:12px;background:#102647;color:#f8f3de;border:1px solid #c9a862;border-radius:14px;overflow:visible}
+#battle #commands.hidden,#battle #multiTargetSelect.hidden,#battle #kokoroLinkPanel.hidden{display:none!important}
+#battle #commands button,#battle #multiTargetSelect button,#battle #kokoroLinkPanel button,#battleItemSelect button{min-width:48px;min-height:48px;height:auto;max-width:100%;margin:0;white-space:normal;overflow-wrap:anywhere;font-size:1rem;line-height:1.5;box-sizing:border-box}
+#battle #commands button,#battle #multiTargetSelect button,#battle #kokoroLinkPanel .kokoro-link-source{width:100%;text-align:left;padding:12px}
+#battle .battle-choice-detail,#battle .battle-panel-note,#battle #kokoroLinkPanel small,#battle #multiTargetSelect span{font-size:.875rem;line-height:1.6;white-space:normal;overflow-wrap:anywhere}
+#battle #commands .skill-button{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+#battle #commands strong,#battle #kokoroLinkPanel strong{font-size:1rem;white-space:normal}
+#battle .kokoro-link-source-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0}
+#battle .battle-panel-back{background:#25496d;color:#fff;border:1px solid #c9a862}
+#battle #multiTargetSelect p{display:flex;flex-direction:column;gap:8px;margin:0}
+#battle button:disabled,#battleItemSelect button:disabled{opacity:.7;cursor:not-allowed;border-style:dashed}
+#battle button:focus-visible,#battle summary:focus-visible,#battleItemSelect button:focus-visible{outline:3px double #ffe19c;outline-offset:2px}
+#battle .battle-state-details{width:100%;min-width:0;font-size:.875rem}
+#battle .battle-state-details summary{min-height:48px;box-sizing:border-box;padding:12px;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+#battle .battle-state-details p{margin:8px 0;overflow-wrap:anywhere}
+#battle .battle-status{gap:8px}
+#battle .battle-history{max-height:40dvh;overflow:auto;overscroll-behavior:contain}
+#battleItemSelect{max-width:600px;margin-inline:auto;overflow-wrap:anywhere;color:#f8f3de}
+#battleItemSelect #battleItemList{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+#battleItemSelect .item-card{min-width:0;padding:12px;background:#102647;color:#f8f3de;border:1px solid #c9a862}
+#battleItemSelect h1,#battleItemSelect h2{font-size:1.125rem;line-height:1.5;overflow-wrap:anywhere}
+#battleItemSelect p,#battleItemSelect .small{font-size:1rem;line-height:1.6}
+#battleItemSelect button{width:100%;margin-top:8px}
+#battle .battle-command-pad small{font-size:.875rem;white-space:normal;overflow-wrap:anywhere}
+/* Help remains dismissible even on short screens and with enlarged text. */
+.tutorial-overlay.is-ui-guide-step .tutorial-pause{min-width:48px;min-height:48px;width:auto;height:auto;margin:0;font-size:1rem;padding:8px}
+.tutorial-overlay.is-ui-guide-step .tutorial-actions{display:flex;flex-wrap:wrap;gap:8px}
+.tutorial-overlay.is-ui-guide-step .tutorial-actions button{min-width:48px;min-height:48px;flex:1 1 100px;font-size:1rem;white-space:normal}
+.tutorial-overlay.is-ui-guide-step .tutorial-bubble{max-height:calc(100dvh - 16px);box-sizing:border-box}
+.tutorial-overlay.is-ui-guide-step .tutorial-bubble p{font-size:1rem}
+.tutorial-overlay.is-ui-guide-step .tutorial-bubble h2{font-size:1.125rem}
+/* Override legacy compact dock rules with the battle-stage scope. */
+#battle.is-battle-stage .battle-command-dock :is(#commands,#multiTargetSelect,#kokoroLinkPanel){max-height:none;overflow:visible;gap:8px}
+#battle.is-battle-stage .battle-command-dock #commands button{flex-shrink:0;min-height:48px;padding:12px;line-height:1.5}
+#battle.is-battle-stage .battle-command-dock #commands button>strong{font-size:1rem}
+#battle.is-battle-stage .battle-command-dock #commands button>span,#battle.is-battle-stage .battle-command-dock #commands button>small{font-size:.875rem}
+#battle.is-battle-stage #kokoroLinkPanel :is(h3,b,span){font-size:1rem;overflow-wrap:anywhere}
+#battle.is-battle-stage #kokoroLinkPanel :is(.kokoro-link-active,.kokoro-link-empty){background:#193553;color:#f8f3de;font-size:.875rem}
+#battle.is-battle-stage #kokoroLinkPanel :is(h3,b,.kokoro-link-panel-head small,.kokoro-link-active span){color:#f8f3de}
+.tutorial-overlay.is-ui-guide-step .tutorial-bubble-head{position:sticky;top:0;background:#f7fcff;z-index:1}
+#battle.is-battle-stage #multiTargetSelect :is(p,b,span){color:#f8f3de}
+#battle.is-battle-stage #multiTargetSelect button{background:#25496d;color:#f8f3de;border:1px solid #c9a862}

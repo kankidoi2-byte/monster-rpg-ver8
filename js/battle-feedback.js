@@ -32,6 +32,7 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof battleUiClear==='function')battleUiClear();
   if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
@@ -42,6 +43,7 @@ function resetBattleFeedback(){
   document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
 }
 function beginBattleAction(actor,move,isPlayer){
+  if(typeof battleUiClear==='function')battleUiClear();
   if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.results.clear();document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
@@ -71,6 +73,7 @@ function renderBattleInputState(){
   const status=document.getElementById('battleActionStatus');if(status)status.textContent=text;
   if(!busy||finished){battleFeedback.action='';if(typeof clearBattleStageAction==='function')clearBattleStageAction();}
   if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
+  if(typeof syncBattleUi==='function')syncBattleUi();
 }
 function battleCombatants(){
   if(!player||!enemy)return [];
@@ -100,7 +103,7 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const text=`${label} ${loss<0||/回復|吸収|再生/.test(label)?'+':'−'}${amount}${reduced?` / 軽減 ${reduced}`:''}${barrier?` / 障壁 ${barrier}`:''}${over?` / 超過 ${over}`:''}`;
   battleFeedback.hp.set(u.key,Math.max(0,after));
   renderBattleHpAtImpact(u,after);
-  battleHistoryEntry(`${u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
+  battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
   if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);
@@ -135,10 +138,11 @@ function refreshBattleFeedback(message=''){
     }else battleFeedback.hp.set(u.key,hp);
     const labels=battleStateLabels(u),state=labels.join('・');
     const prior=battleFeedback.states.get(u.key);
-    if(prior!==undefined&&prior!==state)battleHistoryEntry(`${u.name}：${state||'状態正常（効果解除）'}`,'status');
+    if(prior!==undefined&&prior!==state)battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');
     battleFeedback.states.set(u.key,state);
     const el=document.getElementById(u.statusId);
-    if(el){el.classList.toggle('is-normal',labels.length===0);el.replaceChildren();for(const label of labels.length?labels:['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.appendChild(chip);}}
+    if(el&&typeof renderBattleStateSummary==='function'){el.classList.toggle('is-normal',labels.length===0);renderBattleStateSummary(el,labels,u);}
+    else if(el){el.classList.toggle('is-normal',labels.length===0);el.replaceChildren();for(const label of labels.length?labels:['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.appendChild(chip);}}
     const queue=battleFeedback.results.get(u.key);if(queue)renderBattleHpResults(u,queue);
   }
   renderBattleInputState();

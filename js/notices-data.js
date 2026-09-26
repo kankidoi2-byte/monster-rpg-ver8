@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260927-phase3c-battle-ui",date:"2026-09-27",category:"update",title:"戦闘中の選択画面を整理しました",body:"技の効果と対象、道具の残数と使えない理由を確認しやすくしました。各選択画面から戻れるようにし、状態の詳細や同じ名前の敵の戦闘履歴も見分けやすくしました。"}),
   Object.freeze({id:'20260927-multi-battle-stage',date:'2026-09-27',category:'update',title:'三つ巴の戦闘画面を見直しました',body:'敵A・敵Bの名前とHP、行動中の相手と対象を見分けやすくしました。横画面や大きな文字でも、スクロールして情報とコマンドを確認できます。'}),
   Object.freeze({id:'20260925-normal-battle-stage',date:'2026-09-25',category:'update',title:'通常戦の画面を見直しました',body:'敵を奥、味方を手前に配置し、技・リンク・道具と交代・逃走を選びやすくしました。戦闘履歴はコマンドの下から確認できます。イラストは静止表示です。'}),
   Object.freeze({id:'20260924-doom-nemesion-art',date:'2026-09-24',category:'update',title:'滅亡の星 ネメシオンのイラストを更新しました',body:'図鑑・編成・戦闘などで表示される滅亡の星 ネメシオンのイラストを更新しました。'}),
