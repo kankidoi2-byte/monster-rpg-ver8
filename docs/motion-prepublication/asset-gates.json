@@ -1,0 +1,457 @@
+{
+  "scope": "preparation only; no additional asset registered",
+  "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
+  "androidGate": "pending",
+  "entries": [
+    {
+      "id": "freigal",
+      "dexNo": 1,
+      "name": "フレイガル",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "freiwolf",
+      "dexNo": 2,
+      "name": "フレイウルフ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "aquaron",
+      "dexNo": 3,
+      "name": "アクアロン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "highaquaron",
+      "dexNo": 4,
+      "name": "ハイアクアロン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "shenhairon",
+      "dexNo": 5,
+      "name": "シェンハイロン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "tienhairon",
+      "dexNo": 6,
+      "name": "ティエンハイロン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "grassbeat",
+      "dexNo": 7,
+      "name": "グラスビート",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "thornbeat",
+      "dexNo": 8,
+      "name": "ソーンビート",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "granbeat",
+      "dexNo": 9,
+      "name": "グランビート",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "rikasheef",
+      "dexNo": 10,
+      "name": "リカシーフ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "seralphia",
+      "dexNo": 11,
+      "name": "セラルフィア",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "nightmare",
+      "dexNo": 37,
+      "name": "ナイトメア",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "volteck",
+      "dexNo": 12,
+      "name": "ボルテック",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "spaquinn",
+      "dexNo": 13,
+      "name": "スパクイン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "voltax",
+      "dexNo": 14,
+      "name": "ボルタックス",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "icegolem",
+      "dexNo": 36,
+      "name": "アイスゴーレム",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "proto_icegolem",
+      "dexNo": 35,
+      "name": "ゴーレム",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "nemes",
+      "dexNo": 41,
+      "name": "ネメス",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "nemesia",
+      "dexNo": 42,
+      "name": "ネメシア",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "nemesion",
+      "dexNo": 43,
+      "name": "ネメシオン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "doom_nemesion",
+      "dexNo": 44,
+      "name": "滅亡の星 ネメシオン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "suiren",
+      "dexNo": 34,
+      "name": "水の精霊スイレン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "slime",
+      "dexNo": 29,
+      "name": "スライム",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "slime_gold",
+      "dexNo": 30,
+      "name": "スライムゴールド",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "goblin",
+      "dexNo": 31,
+      "name": "ゴブリン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "false_dragon_alfa",
+      "dexNo": 45,
+      "name": "偽竜 code:alfa",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "false_dragon_beta",
+      "dexNo": 39,
+      "name": "アシュレイア",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "false_dragon_gamma",
+      "dexNo": 40,
+      "name": "モルグラム",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "volmoog",
+      "dexNo": 27,
+      "name": "ボルモーグ",
+      "implementation": "one accepted v18 asset, evaluation branch",
+      "fullAssetAcceptance": "inherited Phase4A",
+      "android": "pending",
+      "next": "1 vs 3 same-asset device evaluation"
+    },
+    {
+      "id": "gran_volmoog",
+      "dexNo": 28,
+      "name": "グランボルモーグ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "orcana",
+      "dexNo": 24,
+      "name": "オルカーナ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "orca_stream",
+      "dexNo": 25,
+      "name": "オルカストリーム",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "orca_abyss",
+      "dexNo": 26,
+      "name": "オルカアビス",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "tsubaki",
+      "dexNo": 33,
+      "name": "炎の精霊ツバキ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "alchemion",
+      "dexNo": 47,
+      "name": "錬核獣アルケミオン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "kimeragna",
+      "dexNo": 48,
+      "name": "混成翼竜キメラグナ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "sylphin",
+      "dexNo": 15,
+      "name": "シルフィン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "zephyray",
+      "dexNo": 16,
+      "name": "ゼファーレイ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "tempestray",
+      "dexNo": 17,
+      "name": "テンペストレイ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "ignaros",
+      "dexNo": 32,
+      "name": "イグナロス",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "nocle",
+      "dexNo": 21,
+      "name": "ノクル",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "noclaid",
+      "dexNo": 22,
+      "name": "ノクレイド",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "noxvelg",
+      "dexNo": 23,
+      "name": "ノクスヴェルグ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "luxseed",
+      "dexNo": 18,
+      "name": "ルクシード",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "luxiard",
+      "dexNo": 19,
+      "name": "ルクシアード",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "lux_galdion",
+      "dexNo": 20,
+      "name": "ルクスガルディオン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "astralepis",
+      "dexNo": 38,
+      "name": "アストラレピス",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "galdra",
+      "dexNo": 46,
+      "name": "ガルドラ",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "kimeragna_apex",
+      "dexNo": 49,
+      "name": "キメラグナ・アペクス",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    },
+    {
+      "id": "elixion",
+      "dexNo": 50,
+      "name": "賢金神竜エリクシオン",
+      "implementation": "not registered",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+    }
+  ]
+}

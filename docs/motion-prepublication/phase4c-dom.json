@@ -7,7 +7,8 @@
     "three independent videos obey overlapping screen/hidden/reduced reasons",
     "one enemy knockout and ally switch dispose only affected lifetimes",
     "50 three-video battle/exit cycles release all owned resources",
-    "single→enemy_a ownership boundary removes old video before three-way playback"
+    "actual invasion keeps HP/status/attack/guard, removes old video, and does not start an extra turn",
+    "media knockout disposal preserves game object and contract/reward eligibility"
   ],
-  "pass": 7
+  "pass": 8
 }

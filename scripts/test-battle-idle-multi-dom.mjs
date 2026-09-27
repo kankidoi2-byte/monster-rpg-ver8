@@ -67,10 +67,15 @@ run('changeActivePartyMember(1)');assert.equal(records().length,1);
 pass('one enemy knockout and ally switch dispose only affected lifetimes');
 for(let i=0;i<50;i++){multi();await flush();const old=records();run("show('home')");assert.equal(records().length,0);assert.equal(d.querySelectorAll('video').length,0);assert(old.every(r=>r.disposed&&r.timer===null&&r.button.onclick===null&&r.video.paused&&!r.video.hasAttribute('src')));}
 pass('50 three-video battle/exit cycles release all owned resources');
-// Real game single→multi adapter must release obsolete eVis lifetime.
-setup();run("enemy=by('volmoog');setupBattle();update();setBattleIdleLimit(3)");const before=records(),single=before.find(r=>r.key.includes('single:'));
-assert(single);run("ensureMultiBattleDom();multiBattle={active:true,enemies:[createExistingMultiEnemy(),createMultiEnemy(by('volmoog'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle();");
+// Real invasion entry: transfer HP/status and remove eVis lifetime.
+setup();run("enemy=by('volmoog');setupBattle();update();setBattleIdleLimit(3);eHp=80;eStatus='poison';ePoisonTurns=2;eParalysisTurns=1;eGuard=true;eAtk=1.3;update()");
+const single=records().find(r=>r.key.includes('single:'));assert(single);
+run("activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionTurn=battleTurnCount;activeHuntRequest.invasionEnemyId='volmoog';triggerInvasionIfDue()");
 assert(single.disposed);assert(!single.video.isConnected);assert.equal(records().length,3);assert.equal(d.querySelectorAll('video').length,3);
-pass('single→enemy_a ownership boundary removes old video before three-way playback');
+assert.equal(run('multiBattle.enemies[0].hp'),80);assert.equal(run('multiBattle.enemies[0].poisonTurns'),2);assert.equal(run('multiBattle.enemies[0].paralysisTurns'),1);assert.equal(run('multiBattle.enemies[0].attack'),1.3);assert(run('multiBattle.enemies[0].guard'));assert.equal(run('battleTurnCount'),0);
+pass('actual invasion keeps HP/status/attack/guard, removes old video, and does not start an extra turn');
+const entry=run('multiBattle.enemies[0]');run('multiBattle.enemies[0].hp=0;multiBattle.enemies[0].alive=false;multiBattle.enemies[0].defeatedByPlayer=true;updateMultiBattleView()');
+assert.equal(records().length,2);assert.equal(run('multiBattle.enemies[0]'),entry);assert(entry.defeatedByPlayer&&!entry.rewardGranted);
+pass('media knockout disposal preserves game object and contract/reward eligibility');
 run("show('home')");checkIds();dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
 console.log(JSON.stringify({kind:'Media API mocked; not Android/decoder performance',checks,pass:checks.length},null,2));
