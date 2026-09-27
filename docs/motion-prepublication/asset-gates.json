@@ -116,27 +116,30 @@
       "dexNo": 12,
       "name": "ボルテック",
       "implementation": "not registered",
-      "fullAssetAcceptance": "pending",
+      "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
+      "evidence": "volteck-alpha.json"
     },
     {
       "id": "spaquinn",
       "dexNo": 13,
       "name": "スパクイン",
       "implementation": "not registered",
-      "fullAssetAcceptance": "pending",
+      "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
+      "evidence": "spaquinn-alpha.json"
     },
     {
       "id": "voltax",
       "dexNo": 14,
       "name": "ボルタックス",
       "implementation": "not registered",
-      "fullAssetAcceptance": "pending",
+      "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
+      "evidence": "voltax-alpha.json"
     },
     {
       "id": "icegolem",

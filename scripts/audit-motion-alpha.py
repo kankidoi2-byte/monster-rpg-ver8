@@ -4,6 +4,7 @@ Usage: python3 scripts/audit-motion-alpha.py VIDEO OUTPUT_JSON SAMPLE_DIR
 Requires ffmpeg, ffprobe, numpy, Pillow. Measurements are not visual acceptance.
 """
 import hashlib
+import io
 import json
 import pathlib
 import subprocess
@@ -49,7 +50,12 @@ while True:
         steps.append(float(np.abs(premult-previous).mean()))
     previous = premult
     if count in sample_indices:
-        Image.fromarray(frame).save(samples / f'frame-{count:03}.png')
+        encoded = io.BytesIO()
+        Image.fromarray(frame).save(encoded, format='PNG')
+        sample = samples / f'frame-{count:03}.png'
+        sample.write_bytes(encoded.getvalue())
+        with Image.open(sample) as check:
+            check.load()
     count += 1
 assert p.wait() == 0 and count > 1, 'Decoder failed'
 result = {
