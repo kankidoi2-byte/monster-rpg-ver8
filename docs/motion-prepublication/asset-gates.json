@@ -272,10 +272,46 @@
       "dexNo": 28,
       "name": "グランボルモーグ",
       "implementation": "not registered",
-      "fullAssetAcceptance": "blocked: 66 of 240 frames touch right canvas edge at alpha>8",
-      "android": "pending",
-      "next": "Resolve original canvas-edge clipping before runtime registration; no re-encoding or artwork changes performed",
-      "evidence": "gran-volmoog-alpha.json"
+      "fullAssetAcceptance": "pending: user visual acceptance received; battle placement, delivery and actual playback gates remain",
+      "android": "User reported v18 appearance without problems on Galaxy; exact model/browser/version and quantitative runtime acceptance remain unverified",
+      "next": "Verify full-loop footing, anchor, facing/reflection, battle occupancy (HUD >=8px; controls >=12px), then candidate delivery and actual playback before normal registration. Do not repeat accepted appearance review or alter adopted artwork.",
+      "evidence": [
+        "gran-volmoog-alpha.json",
+        "phase9-progress.md",
+        "gran-volmoog-registration-preflight.json"
+      ],
+      "decisionHistory": [
+        {
+          "status": "superseded",
+          "reason": "Updated by Phase9 user visual acceptance recorded on 2026-09-27; measurements remain valid.",
+          "previousFullAssetAcceptance": "blocked: 66 of 240 frames touch right canvas edge at alpha>8",
+          "previousAndroid": "pending",
+          "previousNext": "Resolve original canvas-edge clipping before runtime registration; no re-encoding or artwork changes performed"
+        }
+      ],
+      "currentDecision": {
+        "recordedDateJST": "2026-09-27",
+        "source": "phase9-progress.md — latest acceptance reconciliation section",
+        "visualAcceptance": "user-confirmed for the instructed v18 appearance scope; not a new device test",
+        "canvasEdge": {
+          "evidence": "gran-volmoog-alpha.json",
+          "frames": 240,
+          "rightEdgeContactFrames": 66,
+          "alphaThreshold": 8,
+          "interpretation": "Contact alone does not establish clipping. No claim of zero contact or technical resolution. Check unintended clipping in battle placement.",
+          "remeasured": false
+        },
+        "technicalPreflight": "PASS: candidate SHA256/size, current M/IMG identity and static route; gran-volmoog-registration-preflight.json",
+        "pendingReasons": [
+          "Full-loop footing and anchor values",
+          "Facing/reflection in actual battle placement",
+          "Battle occupancy across phone widths, landscape and text enlargement; HUD >=8px and controls >=12px",
+          "Registration/delivery route including HTTP MIME/Range and actual browser playback",
+          "Shared quantitative load/BFCache/offscreen policy gates where still unverified"
+        ],
+        "normalRuntimeRegistration": "not registered",
+        "publication": "forbidden"
+      }
     },
     {
       "id": "orcana",

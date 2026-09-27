@@ -6,7 +6,7 @@ body{margin:auto;padding:16px;max-width:850px;background:#111827;color:#f3f4f6;f
 </style>
 <h1>Phase9 素材確認</h1><a href="/">戦闘確認へ戻る</a>
 <p>未登録の候補です。再生して、透過・翼や腕の付け根・ループのつながりを確認してください。本編のセーブは使用しません。</p>
-<label>候補 <select id="asset"><option value="volteck">ボルテック v4</option><option value="gran_volmoog">グランボルモーグ v18（端の確認）</option></select></label>
+<label>候補 <select id="asset"><option value="volteck">ボルテック v4</option><option value="gran_volmoog">グランボルモーグ v18（技術条件待ち）</option></select></label>
 <label>背景 <select id="background"><option value="white">白</option><option value="black">黒</option><option value="green">緑</option><option value="grassland">草原</option><option value="volcano">火山</option><option value="lake">湖</option></select></label>
 <button id="play">再生／停止</button><button id="flip" aria-pressed="false">左右反転</button>
 <p id="status" role="status"></p><div class="stage" id="stage"><video id="video" muted playsinline loop preload="none" controls></video></div>
@@ -15,7 +15,7 @@ body{margin:auto;padding:16px;max-width:850px;background:#111827;color:#f3f4f6;f
 <a href="/game/index.html?case=multi-motion&amp;map=grassland">草原</a> · <a href="/game/index.html?case=multi-motion&amp;map=volcano">火山</a> · <a href="/game/index.html?case=multi-motion&amp;map=lake">湖</a>
 <script>
 const video=document.getElementById('video'),status=document.getElementById('status');
-const assets={volteck:{src:'/motion-review-assets/volteck_v4.webm',report:'/motion-review-assets/volteck-alpha.json',note:'全240フレームの透過・画面内収まりを計測済み。制作ZIPとの照合と端末での受入は未完了。'},gran_volmoog:{src:'/motion-review-assets/gran_volmoog_v18.webm',report:'/motion-review-assets/gran-volmoog-alpha.json',note:'登録保留：66フレームで右端に接触。右腕の外周を確認してください。原本は変更していません。'}};
+const assets={volteck:{src:'/motion-review-assets/volteck_v4.webm',report:'/motion-review-assets/volteck-alpha.json',note:'全240フレームの透過・画面内収まりを計測済み。制作ZIPとの照合と端末での受入は未完了。'},gran_volmoog:{src:'/motion-review-assets/gran_volmoog_v18.webm',report:'/motion-review-assets/gran-volmoog-alpha.json',note:'見た目は本人確認済み。66/240フレームの右端接触は測定事実ですが、切断の確定証拠ではありません。登録は足場・アンカー・反転・戦闘内占有範囲・配信と実再生の技術条件待ちです。原本は変更していません。'}};
 let generation=0;
 async function selectAsset(){const token=++generation,a=assets[document.getElementById('asset').value];video.pause();video.removeAttribute('src');video.load();video.src=a.src;status.textContent=a.note;document.getElementById('evidence').textContent='読み込み中';try{const response=await fetch(a.report);if(!response.ok)throw new Error('report');const report=await response.json();if(token===generation)document.getElementById('evidence').textContent=JSON.stringify(report,null,2);}catch{if(token===generation)document.getElementById('evidence').textContent='測定記録を読み込めませんでした';}}
 document.getElementById('asset').onchange=selectAsset;
