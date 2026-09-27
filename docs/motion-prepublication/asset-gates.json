@@ -269,9 +269,10 @@
       "dexNo": 28,
       "name": "グランボルモーグ",
       "implementation": "not registered",
-      "fullAssetAcceptance": "pending",
+      "fullAssetAcceptance": "blocked: 66 of 240 frames touch right canvas edge at alpha>8",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "Resolve original canvas-edge clipping before runtime registration; no re-encoding or artwork changes performed",
+      "evidence": "gran-volmoog-alpha.json"
     },
     {
       "id": "orcana",
