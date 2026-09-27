@@ -1,0 +1,13 @@
+{
+  "kind": "Media API mocked; not Android/decoder performance",
+  "checks": [
+    "three independent same-species records; HP/HUD updates retain all nodes and clocks",
+    "one enemy failure and manual retry leave other lifetimes intact; stale event ignored",
+    "stable budget 3→1→3, invalid upper bound rejected; dropped resources released",
+    "three independent videos obey overlapping screen/hidden/reduced reasons",
+    "one enemy knockout and ally switch dispose only affected lifetimes",
+    "50 three-video battle/exit cycles release all owned resources",
+    "single→enemy_a ownership boundary removes old video before three-way playback"
+  ],
+  "pass": 7
+}
