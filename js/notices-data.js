@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260927-motion-resume",date:"2026-09-27",category:"fix",title:"待機モーションの停止と復帰を調整しました",body:"道具画面や別のタブから戻った際の再生を調整しました。読み込めない場合も静止画で戦闘を続けられます。"}),
   Object.freeze({id:"20260927-volmoog-idle",date:"2026-09-27",category:"update",title:"ボルモーグの待機モーションを追加しました",body:"戦闘中にボルモーグが動くようになりました。再生できない環境や動きを減らす設定では静止画で表示します。能力や技の効果は変わりません。"}),
   Object.freeze({id:"20260927-phase3c-battle-ui",date:"2026-09-27",category:"update",title:"戦闘中の選択画面を整理しました",body:"技の効果と対象、道具の残数と使えない理由を確認しやすくしました。各選択画面から戻れるようにし、状態の詳細や同じ名前の敵の戦闘履歴も見分けやすくしました。"}),
   Object.freeze({id:'20260927-multi-battle-stage',date:'2026-09-27',category:'update',title:'三つ巴の戦闘画面を見直しました',body:'敵A・敵Bの名前とHP、行動中の相手と対象を見分けやすくしました。横画面や大きな文字でも、スクロールして情報とコマンドを確認できます。'}),
