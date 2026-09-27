@@ -45,3 +45,7 @@
 ## 保存済みレビューと最終検査
 本人限定レビュー更新成功（2026-09-27 11:03 JST）。source `dfda04b5bf5f9ba20b2f09fbb2ce96453f65275c`、version `appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_8ec831c2f3188191993f45a6c7e260b4`、deployment `appgdep_6ab87975c2388191987d120bc9282877`。owner1名/group0/external0、アクセス変更なし。更新成功は配信結果であり、新規実ブラウザ検査の代わりではない。
 `npm run check` とpostcheckはexit0。ログ中の過去Android証拠を今回の追加実測に数えない。新しいレビューDOM2検査は別にPASS。人物/ID/戦闘規則/セーブ/登録素材/ゲームindexに変更なし。
+
+## 11:19 JST 利用者追加確認と敵背景修正
+利用者からボルテック素材確認「問題なしかな」の報告。案内範囲の本人確認として受領し、ZIP照合や計測の合格へ拡張しない。Androidであることを再確認、製品名/ブラウザ実名は未確定。湖の画像では敵2体のクリーム色背景が残っている指摘。原因は透過videoの外側の`.multi-enemy-visual`へ旧UIのradial-gradient/borderが残ること。受入済み媒体を持つ親だけ透明化するCSSを追加。未登録の静止カードは対象外。CSSキャッシュ識別子更新、告知追加。
+検査：修正セレクターが敵A/Bへ一致、未登録へ不一致、宣言のCSS解析PASS。19マップDOM回帰PASS、notice134件PASS。最初のjsdom computed-gradient確認は値を取得できず失敗したため、実描画検証と称さず宣言/対象検査へ限定。実ブラウザ画像での修正確認は未実行。

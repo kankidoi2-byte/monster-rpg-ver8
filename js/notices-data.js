@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260927-enemy-motion-background",date:"2026-09-27",category:"fix",title:"敵の待機モーションの背景表示を修正しました",body:"三つ巴の戦闘で、透過モーションの後ろにイラスト用の背景枠が残る問題を修正しました。"}),
   Object.freeze({id:"20260927-motion-resume",date:"2026-09-27",category:"fix",title:"待機モーションの停止と復帰を調整しました",body:"道具画面や別のタブから戻った際の再生を調整しました。読み込めない場合も静止画で戦闘を続けられます。"}),
   Object.freeze({id:"20260927-volmoog-idle",date:"2026-09-27",category:"update",title:"ボルモーグの待機モーションを追加しました",body:"戦闘中にボルモーグが動くようになりました。再生できない環境や動きを減らす設定では静止画で表示します。能力や技の効果は変わりません。"}),
   Object.freeze({id:"20260927-phase3c-battle-ui",date:"2026-09-27",category:"update",title:"戦闘中の選択画面を整理しました",body:"技の効果と対象、道具の残数と使えない理由を確認しやすくしました。各選択画面から戻れるようにし、状態の詳細や同じ名前の敵の戦闘履歴も見分けやすくしました。"}),
