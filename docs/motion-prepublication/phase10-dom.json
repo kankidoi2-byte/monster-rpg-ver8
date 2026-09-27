@@ -1,0 +1,67 @@
+{
+  "scope": "19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending",
+  "results": [
+    {
+      "batch": 1,
+      "maps": [
+        "grassland",
+        "volcano",
+        "lake"
+      ],
+      "pass": true
+    },
+    {
+      "batch": 2,
+      "maps": [
+        "seikai_irie",
+        "kaiyu_kaiiki",
+        "deep_sea_end"
+      ],
+      "pass": true
+    },
+    {
+      "batch": 3,
+      "maps": [
+        "snow_mountain",
+        "forest",
+        "light_plain"
+      ],
+      "pass": true
+    },
+    {
+      "batch": 4,
+      "maps": [
+        "starry_plain",
+        "highland_ruins",
+        "arena"
+      ],
+      "pass": true
+    },
+    {
+      "batch": 5,
+      "maps": [
+        "magic_academy",
+        "ruined_village",
+        "starsea"
+      ],
+      "pass": true
+    },
+    {
+      "batch": 6,
+      "maps": [
+        "water_secret",
+        "world_between",
+        "kaen_village"
+      ],
+      "pass": true
+    },
+    {
+      "batch": 7,
+      "maps": [
+        "golden_land"
+      ],
+      "pass": true
+    }
+  ],
+  "passed": 19
+}

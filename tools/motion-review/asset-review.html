@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phase9 素材確認</title>
+<style>
+body{margin:auto;padding:16px;max-width:850px;background:#111827;color:#f3f4f6;font:16px/1.6 system-ui}button,select,a{font:inherit;min-height:48px}button,select{padding:8px;margin:4px}a{color:#9ddcff;display:inline-block}h1{font-size:1.5rem}.stage{background:#fff center/cover;max-width:640px;aspect-ratio:1;position:relative}video{width:100%;height:100%;object-fit:contain}.flip{transform:scaleX(-1)}pre{white-space:pre-wrap;overflow-wrap:anywhere}#status{padding:8px;border:1px solid #8292b0}
+</style>
+<h1>Phase9 素材確認</h1><a href="/">戦闘確認へ戻る</a>
+<p>未登録の候補です。再生して、透過・翼や腕の付け根・ループのつながりを確認してください。本編のセーブは使用しません。</p>
+<label>候補 <select id="asset"><option value="volteck">ボルテック v4</option><option value="gran_volmoog">グランボルモーグ v18（端の確認）</option></select></label>
+<label>背景 <select id="background"><option value="white">白</option><option value="black">黒</option><option value="green">緑</option><option value="grassland">草原</option><option value="volcano">火山</option><option value="lake">湖</option></select></label>
+<button id="play">再生／停止</button><button id="flip" aria-pressed="false">左右反転</button>
+<p id="status" role="status"></p><div class="stage" id="stage"><video id="video" muted playsinline loop preload="none" controls></video></div>
+<details><summary>測定記録</summary><pre id="evidence"></pre></details>
+<p>背景と操作欄の確認（受入済みボルモーグ3体）</p>
+<a href="/game/index.html?case=multi-motion&amp;map=grassland">草原</a> · <a href="/game/index.html?case=multi-motion&amp;map=volcano">火山</a> · <a href="/game/index.html?case=multi-motion&amp;map=lake">湖</a>
+<script>
+const video=document.getElementById('video'),status=document.getElementById('status');
+const assets={volteck:{src:'/motion-review-assets/volteck_v4.webm',report:'/motion-review-assets/volteck-alpha.json',note:'全240フレームの透過・画面内収まりを計測済み。制作ZIPとの照合と端末での受入は未完了。'},gran_volmoog:{src:'/motion-review-assets/gran_volmoog_v18.webm',report:'/motion-review-assets/gran-volmoog-alpha.json',note:'登録保留：66フレームで右端に接触。右腕の外周を確認してください。原本は変更していません。'}};
+let generation=0;
+async function selectAsset(){const token=++generation,a=assets[document.getElementById('asset').value];video.pause();video.removeAttribute('src');video.load();video.src=a.src;status.textContent=a.note;document.getElementById('evidence').textContent='読み込み中';try{const response=await fetch(a.report);if(!response.ok)throw new Error('report');const report=await response.json();if(token===generation)document.getElementById('evidence').textContent=JSON.stringify(report,null,2);}catch{if(token===generation)document.getElementById('evidence').textContent='測定記録を読み込めませんでした';}}
+document.getElementById('asset').onchange=selectAsset;
+document.getElementById('play').onclick=async()=>{if(!video.paused){video.pause();return;}try{await video.play();}catch{status.textContent='再生できませんでした。候補を選び直して再試行してください。';}};
+document.getElementById('flip').onclick=e=>{const flip=video.classList.toggle('flip');e.currentTarget.setAttribute('aria-pressed',String(flip));};
+document.getElementById('background').onchange=e=>{const b=e.target.value,s=document.getElementById('stage');s.style.backgroundImage=['white','black','green'].includes(b)?'none':`url(/game/images/maps/${b}_battle_v1.webp)`;s.style.backgroundColor=['white','black','green'].includes(b)?b:'black';};
+video.onerror=()=>{status.textContent='動画を読み込めませんでした。候補を選び直してください。';};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)video.pause();});
+window.addEventListener('pagehide',()=>{video.pause();video.removeAttribute('src');video.load();});
+window.addEventListener('pageshow',e=>{if(e.persisted)selectAsset();});
+selectAsset();
+</script></html>

@@ -1,16 +1,18 @@
 # Prepublication gates — 2026-09-27 JST
 
+Latest update: Android instructed same-asset 1/3 scenarios reported without problems by user. Browser supplied as placeholder "〇〇", model not supplied. See phase8-user-report.json and phase9-progress.md. This is scoped user evidence, not measured decoder performance.
+
 The user's current instruction permits continuing phases and updating the existing owner-only review. It forbids main merge, game publication, audience expansion. It does not turn unmet acceptance conditions into PASS.
 
 |Phase|Current status|Remaining acceptance|
 |---|---|---|
-|4C|Independent up-to-3 evaluation implemented; default1; 8 mocked groups pass|real 3-video playback/alpha/layout, delivery MIME/Range, 1→3 device load/recovery; offscreen hysteresis policy before default/broad expansion|
+|4C|Independent up-to-3 evaluation implemented; default1; 8 mocked groups pass|user reported instructed 1/3 playback/recovery without problems; detailed alpha/layout, delivery MIME/Range, quantified 1→3 load; offscreen hysteresis policy before default/broad expansion|
 |5|5 integrated HP/handler groups and existing impact regressions pass|visual timing on real video/device|
 |6|eligible-media operation regression and full existing suite pass|touch journey/special-link branches on real browser/device|
 |7|actual invasion state transfer/ownership and eligibility checks pass|visual poison/3-way/invasion plus device acceptance|
-|8|checklist and 1/3 review scenarios prepared|Android and real browser acceptance, device performance decision|
-|9|50 unique species gate ledger prepared; volmoog alone registered|Phase8 gate, then individual full acceptance in batches3–5 or large1–2; 49 more species not registered|
-|10|19 map file references exist; no missing assets|per-map horizon/anchor and animated full-body collision checks in batches3–5; depends on accepted body bounds|
+|8|User report: instructed Android 1/3 scenarios without problems; bounded candidate work proceeds, default1|Actual browser/model; unmeasured performance/delivery; special cases not explicitly covered|
+|9|4 candidates streamed through full240-frame preflight; gran blocked on edge contact; 3 birds have no edge contact; review tools implemented|Bird source ZIP identity blocked by access error; individual visual/runtime/device acceptance. No additional normal registrations|
+|10|19 map DOM bindings, node retention and release pass in batches≤3; 19 map file references exist; no missing assets|per-map horizon/anchor and animated full-body collision checks in batches3–5; depends on accepted body bounds|
 |11|current full check including postcheck PASS|final 50-species/19-map regressions and devices; current success is not final-content acceptance|
 |12|rollback/release checklist prepared only|all prior gates, current-main integration review/CI, explicit user publication instruction|
 

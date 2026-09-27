@@ -1,0 +1,46 @@
+// Actual game scripts + review adapter, mocked Media API. No layout/decode claim.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createRequire} from 'node:module';
+const {JSDOM,VirtualConsole}=createRequire(import.meta.url)('jsdom');
+const root=new URL('../',import.meta.url),html=fs.readFileSync(new URL('index.html',root),'utf8');
+const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+const dom=new JSDOM(html,{url:'http://motion.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
+const w=dom.window,d=w.document,context=dom.getInternalVMContext(),run=s=>vm.runInContext(s,context);
+w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){}});
+w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.HTMLMediaElement.prototype.canPlayType=()=> 'probably';
+Object.defineProperty(w.HTMLMediaElement.prototype,'paused',{get(){return this._paused!==false;}});
+w.HTMLMediaElement.prototype.pause=function(){this._paused=true;};
+w.HTMLMediaElement.prototype.load=function(){};
+w.HTMLMediaElement.prototype.play=function(){this._paused=false;this.dispatchEvent(new w.Event('playing'));return Promise.resolve();};
+for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
+run(`function qaReport(){} function qaSetup(){save=initSave();completeTutorial();save.instances=[];save.party=[];
+ for(const id of ['volmoog','aquaron']){const ins=addInstance(id,10);save.party.push(ins.uid);}
+ prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);show('battle');}`);
+run(fs.readFileSync(new URL('tools/motion-review/qa-map-motion.js',root),'utf8'));
+const maps=JSON.parse(fs.readFileSync(new URL('docs/motion-prepublication/map-audit.json',root))).maps;
+const results=[];
+for(let offset=0;offset<maps.length;offset+=3){
+ const batch=[];
+ for(const map of maps.slice(offset,offset+3)){
+  assert(run(`qaMapMotion(${JSON.stringify(map.id)},3)`));
+  await new Promise(r=>setTimeout(r,0));
+  assert.equal(run('selectedMap.id'),map.id);
+  assert(d.querySelector('.battle-arena').style.backgroundImage.includes(map.src));
+  assert.equal(d.querySelectorAll('video').length,3);
+  const videos=[...d.querySelectorAll('video')];
+  run('pHp--;multiBattle.enemies[0].hp--;updateMultiBattleView()');
+  assert.deepEqual([...d.querySelectorAll('video')],videos);
+  run("show('home')");assert.equal(d.querySelectorAll('video').length,0);
+  batch.push(map.id);
+ }
+ results.push({batch:results.length+1,maps:batch,pass:true});
+}
+assert.equal(run("qaMapMotion('not-a-map',3)"),false);
+assert.equal(run("qaMapMotion('grassland',2)"),false);
+assert(!html.includes('qa-map-motion'),'Review adapter must not enter production index');
+assert.deepEqual(Array.from(run('Object.keys(BATTLE_IDLE_MEDIA)')),['volmoog'],'Unaccepted candidates must remain unregistered');
+dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
+console.log(JSON.stringify({scope:'19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending',results,passed:maps.length},null,2));
