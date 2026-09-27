@@ -71,5 +71,12 @@ setup();await flush();r=rec();r.video.onerror();assert(r.failed);run('toggleBatt
 pass('simulated media error keeps battle commands usable');
 run("show('home')");reduced(true);setup();assert(!rec().video.hasAttribute('src'));reduced(false);await flush();assert.equal(rec().state,'playing');
 pass('initial reduced setting avoids fetching; change restores playback');
+
+setup();await flush();run("ensureMultiBattleDom();multiBattle={active:true,enemies:[createMultiEnemy(by('volmoog'),'enemy_a'),createMultiEnemy(by('volmoog'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle();");
+r=rec();v=r.video;for(let i=0;i<8;i++)run('updateMultiBattleView();renderBattleInputState()');assert.equal(rec(),r);assert.equal(rec().video,v);assert.equal(d.querySelectorAll('video').length,1);
+run('changeActivePartyMember(1)');await flush();r=rec();v=r.video;assert(r.key.includes('enemy_a'));run('multiBattle.enemies.reverse();updateMultiBattleView()');assert.equal(rec().video,v);assert.equal(d.querySelectorAll('video').length,1);
+pass('same-species candidates keep selected instance even after candidate order changes');
+defer=true;setup();r=rec();v=r.video;const loadError=v.onerror;run("show('home')");loadError();deferred.at(-1).reject(Error('late load abort'));await flush();assert.equal(rec(),null);assert(r.disposed&&r.timer===null);defer=false;
+pass('leave during loading ignores delayed error and play rejection');
 run("show('home')");checkIds();dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
 console.log(JSON.stringify({kind:'Media API and lifecycle events mocked; not real playback/BFCache',checks,pass:checks.length},null,2));
