@@ -1,0 +1,37 @@
+{
+  "recordedDateJST": "2026-09-29",
+  "candidate": "gran_volmoog v18",
+  "evidenceType": "user report plus separate media-mocked DOM test",
+  "device": "Galaxy Android; exact model/browser/version not confirmed",
+  "userReport": {
+    "at0711JST": "戦闘画面が表示され、一連のバトルができた",
+    "at0717JST": "問題なく動き、途中停止や表示との重なりはなかった",
+    "scope": "instructed single-monster review; exact selected mode/map/viewport/duration not independently observed",
+    "status": "pass within reported scope"
+  },
+  "automatedThisTurn": {
+    "script": "scripts/test-gran-volmoog-review-dom.mjs",
+    "exitCode": 0,
+    "enemyVideoCount": 1,
+    "sameSpeciesVideoCount": 3,
+    "checks": [
+      "HP updates retain nodes and playback position",
+      "item-screen pause/resume",
+      "exit cleanup and stale callbacks",
+      "error fallback and retry",
+      "party-switch disposal",
+      "19 map setup",
+      "original WebM hash",
+      "persistent storage unchanged"
+    ],
+    "limitation": "media mocked; no real decoder, layout or performance verification"
+  },
+  "pending": [
+    "enemy-only and three-monster actual playback/layout on Galaxy",
+    "measured HUD >=8px and controls >=12px across required widths/orientations/font sizes",
+    "full-loop footing/facing/anchor and technical delivery/runtime gates"
+  ],
+  "next": "Use existing 敵1体 then 同種3体 controls; observe at least two 8-second loops and operate battle. Do not repeat completed transfer or single-monster appearance review.",
+  "normalRuntimeRegistration": "not registered",
+  "mainPublication": "forbidden"
+}

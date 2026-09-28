@@ -272,15 +272,16 @@
       "dexNo": 28,
       "name": "グランボルモーグ",
       "implementation": "isolated actual-game QA integration; not registered in normal runtime",
-      "fullAssetAcceptance": "pending: user visual acceptance received; battle placement, delivery and actual playback gates remain",
-      "android": "User reported v18 appearance without problems on Galaxy; exact model/browser/version and quantitative runtime acceptance remain unverified",
-      "next": "Verify full-loop footing, anchor, facing/reflection, battle occupancy (HUD >=8px; controls >=12px), then candidate delivery and actual playback before normal registration. Do not repeat accepted appearance review or alter adopted artwork.",
+      "fullAssetAcceptance": "pending: user-confirmed single-monster Galaxy playback and battle operation; enemy/multi placement and quantitative technical gates remain",
+      "android": "2026-09-29 user confirms instructed single-monster review displays, animates without stopping/overlap and completes battle on Galaxy; exact mode/map/model/browser/version/duration not independently observed; enemy and three-monster actual checks pending",
+      "next": "Check existing enemy-only and three-monster review modes, two full loops and battle operation; retain quantitative placement, MIME/Range and shared runtime gates. Do not repeat accepted single-monster appearance/playback or resend adopted assets.",
       "evidence": [
         "gran-volmoog-alpha.json",
         "phase9-progress.md",
         "gran-volmoog-registration-preflight.json",
         "gran-volmoog-review-dom.json",
-        "gran-volmoog-implementation.md"
+        "gran-volmoog-implementation.md",
+        "gran-volmoog-device-acceptance.json"
       ],
       "decisionHistory": [
         {
@@ -292,7 +293,7 @@
         }
       ],
       "currentDecision": {
-        "recordedDateJST": "2026-09-27",
+        "recordedDateJST": "2026-09-29",
         "source": "phase9-progress.md — latest acceptance reconciliation section",
         "visualAcceptance": "user-confirmed for the instructed v18 appearance scope; not a new device test",
         "canvasEdge": {
@@ -308,11 +309,12 @@
           "Full-loop footing and anchor values",
           "Facing/reflection in actual battle placement",
           "Battle occupancy across phone widths, landscape and text enlargement; HUD >=8px and controls >=12px",
-          "Registration/delivery route including HTTP MIME/Range and actual browser playback",
+          "HTTP MIME/Range and actual enemy/multi browser playback; instructed single-monster playback user-confirmed",
           "Shared quantitative load/BFCache/offscreen policy gates where still unverified"
         ],
         "normalRuntimeRegistration": "not registered",
-        "publication": "forbidden"
+        "publication": "forbidden",
+        "singleMonsterDeviceAcceptance": "User report PASS within instructed single-monster scope: battle displays, playback continues without interruption or UI overlap, battle completes. Not an all-mode/all-viewport gate."
       }
     },
     {
