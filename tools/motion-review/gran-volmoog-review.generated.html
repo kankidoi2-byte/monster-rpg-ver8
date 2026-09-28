@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>グランボルモーグ戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>グランボルモーグ：戦闘接続の検証用。通常登録は保留。本編のセーブは使用しません。</p><iframe title="グランボルモーグ戦闘確認" sandbox="allow-scripts" srcdoc="&lt;!doctype html&gt;
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>グランボルモーグ戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>グランボルモーグ：戦闘接続の検証用。通常登録は保留。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="グランボルモーグ戦闘確認" sandbox="allow-scripts allow-same-origin" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;ja&quot;&gt;
 &lt;head&gt;&lt;base href=&quot;../../&quot;&gt;&lt;script&gt;for(const name of ['localStorage','sessionStorage']){
  const data=new Map();Object.defineProperty(window,name,{value:{
@@ -855,4 +855,19 @@ const granStyle=document.createElement('style');granStyle.textContent='#battle.i
 granReviewSetup();
 &lt;/script&gt;&lt;/body&gt;
 &lt;/html&gt;
-"></iframe></html>
+"></iframe><script>
+const frame=document.querySelector('iframe'),status=document.getElementById('loadStatus');
+let settled=false;
+function checkReview(){
+ if(settled)return;
+ try{
+  const doc=frame.contentDocument;
+  if(!doc||!doc.querySelector('#granReviewControls button')||[...doc.querySelectorAll('link[rel=stylesheet]')].some(link=>!link.sheet)||!doc.querySelector('#battle.active'))throw Error('resources');
+  settled=true;frame.style.visibility='visible';status.textContent='';frame.contentWindow.dispatchEvent(new Event('resize'));
+ }catch{
+  settled=true;status.textContent='戦闘画面の読み込みに失敗しました。ページを再読み込みしてください。改善しない場合は、この表示をお知らせください。';
+ }
+}
+frame.addEventListener('load',checkReview);
+setTimeout(()=>{if(!settled){status.textContent='読み込みが完了していません。通信状態を確認して再読み込みしてください。';}},20000);
+</script></html>
