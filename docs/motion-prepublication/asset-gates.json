@@ -272,9 +272,9 @@
       "dexNo": 28,
       "name": "グランボルモーグ",
       "implementation": "isolated actual-game QA integration; not registered in normal runtime",
-      "fullAssetAcceptance": "pending: user-confirmed single-monster Galaxy playback and battle operation; enemy/multi placement and quantitative technical gates remain",
-      "android": "2026-09-29 user confirms instructed single-monster review displays, animates without stopping/overlap and completes battle on Galaxy; exact mode/map/model/browser/version/duration not independently observed; enemy and three-monster actual checks pending",
-      "next": "Check existing enemy-only and three-monster review modes, two full loops and battle operation; retain quantitative placement, MIME/Range and shared runtime gates. Do not repeat accepted single-monster appearance/playback or resend adopted assets.",
+      "fullAssetAcceptance": "pending: all three instructed Galaxy playback/battle scenarios user-confirmed; measured placement, delivery and shared technical gates remain",
+      "android": "2026-09-29 user confirms single-monster, enemy-only and three-monster review without problems on Galaxy. Exact viewport, browser/version and quantitative performance not independently measured.",
+      "next": "Reconcile remaining measured placement (HUD >=8px, controls >=12px across required widths/orientation/font sizes), HTTP MIME/Range and shared runtime gates before normal registration. Reuse accepted single/enemy/three-monster reports; do not repeat them or resend artwork.",
       "evidence": [
         "gran-volmoog-alpha.json",
         "phase9-progress.md",
@@ -309,12 +309,13 @@
           "Full-loop footing and anchor values",
           "Facing/reflection in actual battle placement",
           "Battle occupancy across phone widths, landscape and text enlargement; HUD >=8px and controls >=12px",
-          "HTTP MIME/Range and actual enemy/multi browser playback; instructed single-monster playback user-confirmed",
+          "HTTP MIME/Range technical delivery checks; actual playback in all three instructed Galaxy scenarios user-confirmed",
           "Shared quantitative load/BFCache/offscreen policy gates where still unverified"
         ],
         "normalRuntimeRegistration": "not registered",
         "publication": "forbidden",
-        "singleMonsterDeviceAcceptance": "User report PASS within instructed single-monster scope: battle displays, playback continues without interruption or UI overlap, battle completes. Not an all-mode/all-viewport gate."
+        "singleMonsterDeviceAcceptance": "User report PASS within instructed single-monster scope: battle displays, playback continues without interruption or UI overlap, battle completes. Not an all-mode/all-viewport gate.",
+        "multiMonsterDeviceAcceptance": "07:25 JST user reports both instructed enemy-only and three-monster scenarios without problems."
       }
     },
     {

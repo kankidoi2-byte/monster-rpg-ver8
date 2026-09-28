@@ -6,10 +6,18 @@
   "userReport": {
     "at0711JST": "戦闘画面が表示され、一連のバトルができた",
     "at0717JST": "問題なく動き、途中停止や表示との重なりはなかった",
-    "scope": "instructed single-monster review; exact selected mode/map/viewport/duration not independently observed",
-    "status": "pass within reported scope"
+    "scope": "instructed single-monster, enemy-only and three-monster review scenarios on Galaxy; reported pass, not independent video/viewport/timing measurement",
+    "status": "pass for all three instructed device scenarios",
+    "at0725JST": "指示した敵1体・同種3体の確認について、どちらも問題なしと本人が報告"
   },
-  "automatedThisTurn": {
+  "pending": [
+    "measured HUD >=8px and controls >=12px across required widths/orientations/font sizes",
+    "full-loop footing/facing/anchor and technical delivery/runtime gates"
+  ],
+  "next": "Reconcile remaining measured placement, delivery and shared runtime gates before normal registry addition. Do not repeat accepted Galaxy scenarios or asset transmission.",
+  "normalRuntimeRegistration": "not registered",
+  "mainPublication": "forbidden",
+  "automatedEvidence": {
     "script": "scripts/test-gran-volmoog-review-dom.mjs",
     "exitCode": 0,
     "enemyVideoCount": 1,
@@ -24,14 +32,7 @@
       "original WebM hash",
       "persistent storage unchanged"
     ],
-    "limitation": "media mocked; no real decoder, layout or performance verification"
-  },
-  "pending": [
-    "enemy-only and three-monster actual playback/layout on Galaxy",
-    "measured HUD >=8px and controls >=12px across required widths/orientations/font sizes",
-    "full-loop footing/facing/anchor and technical delivery/runtime gates"
-  ],
-  "next": "Use existing 敵1体 then 同種3体 controls; observe at least two 8-second loops and operate battle. Do not repeat completed transfer or single-monster appearance review.",
-  "normalRuntimeRegistration": "not registered",
-  "mainPublication": "forbidden"
+    "limitation": "media mocked; no real decoder, layout or performance verification",
+    "executedDateJST": "2026-09-29 before 07:25 user report; reused unchanged, not rerun"
+  }
 }
