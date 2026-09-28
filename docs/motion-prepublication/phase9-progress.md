@@ -125,3 +125,14 @@ GitHub head decc0a5b1d9a68e8cb6f24ba052931932fcf2c62 を確認。昨夜の受入
 今回jsdom 26.1.0を作業用依存として導入し、test-gran-volmoog-review-dom.mjsを再実行してPASS。味方・敵・同種3体、19マップ、ノード保持、道具往復、離脱、失敗時静止と再試行、交代破棄、原本hash、通常登録不変を確認。Media APIはモックであり、実再生・レイアウト・性能の合格ではない。
 
 次は残りのテキスト11ファイルの保存照合と、既存の本人限定Sites確認画面への接続。中断時は最新branchとファイルhashを確認し、保存済みファイルを再送しない。通常登録・本編mainへのマージ・一般公開は未実施。受入条件とpendingは維持する。
+
+## 2026-09-29 06:54 JST 保存・本人限定確認画面の更新完了
+
+- GitHub: 537897ddb909bcd1a8b315bfdd2a108fc12a1766でテキスト11ファイル保存。先行の動画・posterを含む13ファイルすべてのGit blob hashが手元と一致。最新branch refも一致。通常Gitの認証不足を解消したわけではない。
+- 本人限定Sites: 既存appgprj_6ab633e827b88191a02afee54e11cbc7の現行ソースを取得し、既存比較画面を維持して「グランボルモーグ戦闘確認」リンク、隔離生成HTML、採用動画、posterのみ追加。参照JS/CSS44件は検査済みゲームソースとバイト一致。ビルド成功。
+- Sites source: 6e784e55a9a2c9b78083425cb518938cdb642929。deployment appgdep_6abae1d807008191aa47b958562a2714はsucceeded。URL: https://monster-phase3a-review.kanki-doi-2.chatgpt.site 。既存の本人限定範囲を維持。
+- 確認ページ: /game/tools/motion-review/gran-volmoog-review.generated.html。通常ページから上記リンクを開ける。味方1体・敵1体・同種3体、背景選択、200%文字、間隔測定、停止離脱を備える。
+- 実ブラウザQAは未実施。Sites managed-linuxガイドが要求するcontrol-browserスキルが利用できず別経路を禁止しているため。配信MIME/Range、実ループ、足元/向き/切断、画面寸法、Android性能は未合格。デプロイ成功を実再生成功と扱わない。
+- 本編mainへのマージ・一般公開・通常登録なし。受入条件/既存の見た目確認済みは変更なし。
+
+再開点：ファイル送信から繰り返さない。上記GitHub commitとSites deploymentを起点に、まず本人限定画面のグランボルモーグ味方1体・草原で実再生と配置を確認し、その後敵/3体/画面幅へ広げる。停止した場合は完了地点・具体的エラー・未完了項目を追記し、既存保存を照合してから未完了工程だけを再開する。
