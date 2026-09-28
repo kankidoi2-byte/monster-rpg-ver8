@@ -853,6 +853,70 @@ for(const [label,fn] of [['味方1体',()=&gt;granReviewSetup('ally',granMap.val
 }
 const granStyle=document.createElement('style');granStyle.textContent='#battle.is-battle-stage .has-idle-media img,#battle.is-battle-stage .battle-idle-video{object-position:center bottom!important}';document.head.append(granStyle);
 granReviewSetup();
+
+// Explicit, foreground-only diagnostic. Measurements are observations, not acceptance.
+let granMetricsRunning=false;
+async function granReviewCollect(){
+ if(granMetricsRunning)return;
+ granMetricsRunning=true;
+ const out=document.getElementById('granReviewResult');
+ const controls=[...document.querySelectorAll('#granReviewControls button,#granReviewControls select')];
+ controls.forEach(el=&gt;el.disabled=true);
+ let interrupted=document.hidden;
+ const markHidden=()=&gt;{if(document.hidden)interrupted=true;};
+ document.addEventListener('visibilitychange',markHidden);
+ const report={version:1,viewport:[innerWidth,innerHeight],map:granMap.value,delivery:null,samples:[],limitations:'現在の端末・画面幅の計測。横向き・他の幅・200%文字・発熱・BFCacheは別項目。自動合格判定ではありません。'};
+ const delay=ms=&gt;new Promise(resolve=&gt;setTimeout(resolve,ms));
+ const quality=v=&gt;{if(typeof v.getVideoPlaybackQuality!=='function')return null;const q=v.getVideoPlaybackQuality();return {total:q.totalVideoFrames,dropped:q.droppedVideoFrames};};
+ const round=v=&gt;Number.isFinite(v)?Math.round(v*10)/10:null;
+ try{
+  out.textContent='動画の配信を確認中…';
+  const controller=new AbortController(),timer=setTimeout(()=&gt;controller.abort(),10000);
+  try{
+   const response=await fetch(new URL(GRAN_REVIEW_MEDIA.gran_volmoog.src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
+   const bytes=(await response.arrayBuffer()).byteLength;
+   report.delivery={status:response.status,type:response.headers.get('content-type'),range:response.headers.get('content-range'),bytes};
+  }catch(error){report.delivery={error:error.name};}finally{clearTimeout(timer);}
+  for(const [mode,label] of [['ally','味方1体'],['enemy','敵1体'],['multi','同種3体']]){
+   if(interrupted)throw Error('計測中に画面が非表示になりました');
+   granReviewSetup(mode,granMap.value);
+   out.textContent=label+'を準備中…';await delay(1500);
+   const videos=[...document.querySelectorAll('video')];
+   const before=videos.map(quality),start=performance.now();
+   let raf=0,last=0,frames=0,maxGap=0;
+   const tick=t=&gt;{if(last){frames++;maxGap=Math.max(maxGap,t-last);}last=t;raf=requestAnimationFrame(tick);};
+   raf=requestAnimationFrame(tick);
+   out.textContent=label+'を16秒計測中…画面を開いたままお待ちください。';
+   try{await delay(16000);}finally{cancelAnimationFrame(raf);}
+   if(interrupted)throw Error('計測中に画面が非表示になりました');
+   const placement=granReviewMeasure();
+   report.samples.push({mode,label,elapsedMs:round(performance.now()-start),animationFrames:frames,maxFrameGapMs:round(maxGap),placement:placement.units.map(u=&gt;({side:u.side,hudGapPx:round(u.minHudGap),commandGapPx:round(u.commandGap)})),videos:videos.map((v,i)=&gt;{const after=quality(v),b=before[i];return {readyState:v.readyState,paused:v.paused,retained:v.isConnected,error:v.error?.code??null,totalFrames:b&amp;&amp;after?after.total-b.total:null,droppedFrames:b&amp;&amp;after?after.dropped-b.dropped:null};})});
+  }
+ }catch(error){report.error=error.message;}finally{
+  document.removeEventListener('visibilitychange',markHidden);
+  controls.forEach(el=&gt;el.disabled=false);granMetricsRunning=false;
+ }
+ const delivery=report.delivery;
+ const lines=['計測結果（この表示を送ってください）', '画面 '+report.viewport.join('×'),
+  '配信 '+(delivery?.error||`${delivery?.status} / ${delivery?.type} / ${delivery?.bytes} bytes`),
+  '範囲 '+(delivery?.range||'未取得')];
+ for(const sample of report.samples){
+  const gaps=sample.placement.map(u=&gt;`${u.side}: HP ${u.hudGapPx??'不明'} / 操作 ${u.commandGapPx??'不明'} px`).join('、');
+  lines.push(sample.label+'：コマ落ち '+sample.videos.map(v=&gt;`${v.droppedFrames??'不明'}/${v.totalFrames??'不明'}`).join('・'));
+  lines.push(gaps);
+  lines.push('描画最大間隔 '+sample.maxFrameGapMs+'ms / 再生中 '+sample.videos.filter(v=&gt;!v.paused&amp;&amp;!v.error&amp;&amp;v.readyState&gt;=2).length+'体');
+ }
+ if(report.error)lines.push('未完了：'+report.error);
+ lines.push('HP 8px以上・操作12px以上が配置条件。数値は判定前です。');
+ out.textContent=lines.join('\n');
+ let details=document.getElementById('granMetricsDetails');
+ if(!details){details=document.createElement('details');details.id='granMetricsDetails';granPanel.append(details);}
+ details.replaceChildren();const summary=document.createElement('summary');summary.textContent='詳細データ';details.append(summary);
+ const raw=document.createElement('pre');raw.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';raw.textContent=JSON.stringify(report,null,2);details.append(raw);
+ window.granReviewMetrics=report;
+ return report;
+}
+const metricsButton=document.createElement('button');metricsButton.type='button';metricsButton.textContent='まとめて計測（約1分）';metricsButton.style.cssText='min-height:48px;margin:4px';metricsButton.onclick=granReviewCollect;document.getElementById('granReviewControls').append(metricsButton);
 &lt;/script&gt;&lt;/body&gt;
 &lt;/html&gt;
 "></iframe><script>

@@ -52,6 +52,16 @@ assert.equal(run("granReviewSetup('invalid')"),false);
 assert.equal(run("granReviewSetup('ally','invalid')"),false);
 const maps=Array.from(run('MAPS.map(m=>m.id)'));
 for(const id of maps){assert(run(`granReviewSetup('ally',${JSON.stringify(id)})`));await tick();assert.equal(d.querySelectorAll('video').length,1);}
+// Exercise diagnostic orchestration with accelerated waits and a mocked Range response.
+const realTimeout=w.setTimeout.bind(w);w.setTimeout=(fn,ms,...args)=>realTimeout(fn,ms===16000||ms===1500?0:ms,...args);
+w.fetch=async(url,options)=>{assert.equal(options.headers.Range,'bytes=0-1023');assert(String(url).endsWith('gran_volmoog_v18_alpha.webm'));return {status:206,headers:new Map([['content-type','video/webm'],['content-range','bytes 0-1023/1758952']]),arrayBuffer:async()=>new ArrayBuffer(1024)};};
+const measurement=await run('granReviewCollect()');
+assert.equal(measurement.samples.length,3);assert.equal(measurement.delivery.status,206);assert.equal(measurement.delivery.bytes,1024);
+assert.deepEqual(Array.from(measurement.samples,s=>s.videos.length),[1,1,3]);
+assert([...d.querySelectorAll('#granReviewControls button')].every(b=>!b.disabled));
+assert(d.getElementById('granReviewResult').textContent.includes('計測結果'));
+assert(d.getElementById('granMetricsDetails'));
+w.setTimeout=realTimeout;
 run("show('home')");assert.equal(persistedLocal.getItem('mb_v95c'),'existing-save');assert.equal(persistedLocal.length,1);assert.equal(persistedSession.getItem('existing'),'keep');assert.equal(persistedSession.length,1);dom.window.close();assert.deepEqual(errors,[]);
 assert(!read('index.html').includes('gran-volmoog'),'Candidate must not enter normal index');
 assert(!read('js/battle-idle-media.js').includes('gran_volmoog'),'Candidate must not enter normal registry');
