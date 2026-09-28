@@ -105,3 +105,23 @@
 開始時GitHub head `99c728fabb73b7f51960eff04ebc4482b59d544b`、main `60e4e15171ff6fb2f98361e5c37aa2e4f0609b6a`、18 ahead / 0 behindをAPIで確認。既存ローカル作業には別コミット `3c0c3e30dcc2277552a516711b76abf747df8335` の隔離レビュー実装があったがGitHub未反映。今回はそれを上書き/追加pushせず、remote headから別worktreeで開始した。次回はその既存実装の内容・適用可否を確認して再利用し、同じ実装を作り直さない。
 
 通常登録追加0体、final50SpeciesGate=pending、publication=forbiddenを維持。本編mainへのマージ・一般公開・プレビュー更新なし。告知不要（検査/受入記録と独立確認ページの説明のみで、本編のプレイヤー挙動は不変）。
+
+## 2026-09-28 送信停止の切り分け・未送信QA実装の回収
+
+GitHub head decc0a5b1d9a68e8cb6f24ba052931932fcf2c62 を確認。昨夜の受入条件一本化は保存済みだが、3c0c3e3の単体QA実装は未送信だった。保存済み引き継ぎの直接の停止理由は送信の自動承認拒否であり、GitHub容量制限や障害の証拠はない。今回はユーザーが原因確認と未送信差分の送信を明示指示。
+
+既存単体QA実装11ファイルを回収（採用WebM、poster、生成HTML、ビルダー、候補設定、シナリオ、検査、過去の検査結果・実装説明）。生成HTML再生成後も元実装と11ファイルすべてバイト一致。asset-gatesの最新currentDecision/history/pendingを維持して、隔離QA実装と証拠参照のみ追加。通常登録はボルモーグ1種・上限1のまま。
+
+今回の静的preflight PASS：1758952 bytes、採用SHA256一致、現行ID/no/dexNo・Git tree参照・通常登録不変。DOM検査の再実行はjsdom未導入によりMODULE_NOT_FOUND。既存の合格ログは前回実行の証拠であり今回の再実行成功ではない。入力11ファイルの同一性を確認して以前の検査結果を継承する。実ブラウザ・端末の新規検証なし。
+
+次は隔離QAの実表示・配信・再生の受入。本人確認済みの見た目を再要求しない。通常登録・本編mainへのマージ・公開・プレビュー更新なし。告知不要（独立検査用の保存のみ）。
+
+送信経路の今回の実測：Git fetchは成功。通常git pushは `could not read Username for https://github.com: terminal prompts disabled` で失敗（認証情報なし）。GitHub容量拒否ではない。接続済みGitHub機能による保存へ切り替え、保存成功はブランチと全treeの照合後に報告する。sparse checkoutでは最初のgit addが2素材を対象外にしたため、--sparseで明示追加して別コミットに保存。送信対象の最終treeには動画・posterを含める。
+
+## 2026-09-28 続行チェックポイント
+
+採用WebMはa6222639ee3dbbc0f9671907265e527d7c0edda5でGitHub保存済み。公開rawから再取得し原本と全バイト一致を確認。静止posterもa48d7fd616abc5e0ff410e78b14231794cb093d1で保存済み。長いBase64は送信に使用せず、ブラウザのファイルアップロードを使用した。
+
+今回jsdom 26.1.0を作業用依存として導入し、test-gran-volmoog-review-dom.mjsを再実行してPASS。味方・敵・同種3体、19マップ、ノード保持、道具往復、離脱、失敗時静止と再試行、交代破棄、原本hash、通常登録不変を確認。Media APIはモックであり、実再生・レイアウト・性能の合格ではない。
+
+次は残りのテキスト11ファイルの保存照合と、既存の本人限定Sites確認画面への接続。中断時は最新branchとファイルhashを確認し、保存済みファイルを再送しない。通常登録・本編mainへのマージ・一般公開は未実施。受入条件とpendingは維持する。

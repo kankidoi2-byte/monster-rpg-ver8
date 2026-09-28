@@ -271,14 +271,16 @@
       "id": "gran_volmoog",
       "dexNo": 28,
       "name": "グランボルモーグ",
-      "implementation": "not registered",
+      "implementation": "isolated actual-game QA integration; not registered in normal runtime",
       "fullAssetAcceptance": "pending: user visual acceptance received; battle placement, delivery and actual playback gates remain",
       "android": "User reported v18 appearance without problems on Galaxy; exact model/browser/version and quantitative runtime acceptance remain unverified",
       "next": "Verify full-loop footing, anchor, facing/reflection, battle occupancy (HUD >=8px; controls >=12px), then candidate delivery and actual playback before normal registration. Do not repeat accepted appearance review or alter adopted artwork.",
       "evidence": [
         "gran-volmoog-alpha.json",
         "phase9-progress.md",
-        "gran-volmoog-registration-preflight.json"
+        "gran-volmoog-registration-preflight.json",
+        "gran-volmoog-review-dom.json",
+        "gran-volmoog-implementation.md"
       ],
       "decisionHistory": [
         {
