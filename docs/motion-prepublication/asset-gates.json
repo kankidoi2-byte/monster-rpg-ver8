@@ -1,7 +1,7 @@
 {
-  "scope": "preparation only; no additional asset registered",
+  "scope": "50-species implementation tracking; normal registry1, isolated battle-review1; Phase A reconciliation only",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
-  "androidGate": "User reported instructed Android 1/3 scenarios without problems on 2026-09-27; browser placeholder and model unknown. Bounded candidate work allowed; default1 retained.",
+  "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
     {
       "id": "freigal",
@@ -117,7 +117,7 @@
       "name": "ボルテック",
       "implementation": "not registered",
       "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
-      "android": "pending",
+      "android": "User accepted instructed asset appearance on 2026-09-27 per Phase4C handoff v4; not actual-battle quantitative acceptance.",
       "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
       "evidence": "volteck-alpha.json"
     },
@@ -272,9 +272,9 @@
       "dexNo": 28,
       "name": "グランボルモーグ",
       "implementation": "isolated actual-game QA integration; not registered in normal runtime",
-      "fullAssetAcceptance": "pending: Galaxy three-scenario playback, review MIME/Range and measured grassland placement at 384x621 accepted; remaining responsive and shared runtime gates retained",
-      "android": "2026-09-29 Galaxy user confirms all three scenarios; screenshot shows 384x621 grassland, video/webm HTTP206 Range1024, HUD minimum20.9px and controls minimum286.7px. Short frame measurements recorded, not universal performance acceptance.",
-      "next": "Verify landscape and 200% text using existing review controls, then remaining required widths/shared runtime gates. Reuse completed portrait normal-text measurement and MIME/Range acceptance; do not resend assets.",
+      "fullAssetAcceptance": "pending final anchor/facing, remaining specified widths/action occupancy and shared gates; reported portrait, landscape and text200 grassland placement accepted",
+      "android": "Galaxy instructed ally/enemy/multi reported without problems. Measured grassland portrait384x621, landscape751x224 and text200384x621 pass HUD8px/control12px conditions; short playback samples only.",
+      "next": "Phase B: reconcile full-loop anchor/facing and move accepted QA placement to normal registration; preserve passed three-condition evidence. Shared offscreen/load/BFCache gates tracked separately in phase-a-baseline.md.",
       "evidence": [
         "gran-volmoog-alpha.json",
         "phase9-progress.md",
@@ -282,7 +282,8 @@
         "gran-volmoog-review-dom.json",
         "gran-volmoog-implementation.md",
         "gran-volmoog-device-acceptance.json",
-        "gran-volmoog-galaxy-metrics-20260929.json"
+        "gran-volmoog-galaxy-metrics-20260929.json",
+        "gran-volmoog-galaxy-responsive-20260929.json"
       ],
       "decisionHistory": [
         {
@@ -307,16 +308,15 @@
         },
         "technicalPreflight": "PASS: candidate SHA256/size, current M/IMG identity and static route; gran-volmoog-registration-preflight.json",
         "pendingReasons": [
-          "Full-loop footing and anchor values",
-          "Facing/reflection in actual battle placement",
-          "Remaining battle occupancy across required widths, landscape and text enlargement; 384x621 grassland normal text passed (HUD >=8px, controls >=12px)",
-          "Shared quantitative load/BFCache/offscreen policy gates where still unverified"
+          "Final full-loop footing/anchor values and explicit facing/reflection configuration; do not reopen accepted artwork based solely on edge contact",
+          "Remaining specified widths 320/360/390/430 and action-displacement occupancy where unverified; three measured grassland conditions passed",
+          "Shared quantitative long-duration load/BFCache/offscreen policy gates where still unverified"
         ],
         "normalRuntimeRegistration": "not registered",
         "publication": "forbidden",
         "singleMonsterDeviceAcceptance": "User report PASS within instructed single-monster scope: battle displays, playback continues without interruption or UI overlap, battle completes. Not an all-mode/all-viewport gate.",
         "multiMonsterDeviceAcceptance": "07:25 JST user reports both instructed enemy-only and three-monster scenarios without problems.",
-        "measuredDeviceAcceptance": "gran-volmoog-galaxy-metrics-20260929.json: review HTTP MIME/Range and measured placement PASS at 384x621 grassland; short playback metrics observed, broader performance gate pending."
+        "measuredDeviceAcceptance": "Portrait measurement plus gran-volmoog-galaxy-responsive-20260929.json: all reported HUD/control thresholds pass. No all-width/all-background/long-duration claim."
       }
     },
     {

@@ -1,0 +1,928 @@
+{
+  "dateJST": "2026-09-29",
+  "sourceCommit": "15f634fde30e7974b106acbccb7b80a2b5504c11",
+  "inventorySource": "Phase1-motion-inventory.md v12 section14 (2026-09-25 baseline, not fresh Drive inspection)",
+  "scope": "全50体＋バトル画面改修。通常登録はfeature branch内。本編公開数ではない。",
+  "counts": {
+    "target": 50,
+    "adopted": 50,
+    "normalRegistered": 1,
+    "isolatedBattleReviewOnly": 1,
+    "remainingNormalRegistration": 49,
+    "historicalWebmLocations": 18,
+    "historicalWebmLocationUnconfirmed": 32
+  },
+  "entries": [
+    {
+      "dexNo": 1,
+      "id": "freigal",
+      "name": "フレイガル",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 2,
+      "id": "freiwolf",
+      "name": "フレイウルフ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 3,
+      "id": "aquaron",
+      "name": "アクアロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 4,
+      "id": "highaquaron",
+      "name": "ハイアクアロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 5,
+      "id": "shenhairon",
+      "name": "シェンハイロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 6,
+      "id": "tienhairon",
+      "name": "ティエンハイロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 7,
+      "id": "grassbeat",
+      "name": "グラスビート",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 8,
+      "id": "thornbeat",
+      "name": "ソーンビート",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 9,
+      "id": "granbeat",
+      "name": "グランビート",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 10,
+      "id": "rikasheef",
+      "name": "リカシーフ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 11,
+      "id": "seralphia",
+      "name": "セラルフィア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 12,
+      "id": "volteck",
+      "name": "ボルテック",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": "volteck-alpha.json",
+      "nextPhase": "C",
+      "status": "240フレームalpha/bbox検査済み／通常未登録",
+      "next": "制作ZIPの版・原本一致を解消後、個別配置・再生を受入。403は過去記録で今回は再試行していない。"
+    },
+    {
+      "dexNo": 13,
+      "id": "spaquinn",
+      "name": "スパクイン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": "spaquinn-alpha.json",
+      "nextPhase": "C",
+      "status": "240フレームalpha/bbox検査済み／通常未登録",
+      "next": "制作ZIPの版・原本一致を解消後、個別配置・再生を受入。403は過去記録で今回は再試行していない。"
+    },
+    {
+      "dexNo": 14,
+      "id": "voltax",
+      "name": "ボルタックス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": "voltax-alpha.json",
+      "nextPhase": "C",
+      "status": "240フレームalpha/bbox検査済み／通常未登録",
+      "next": "制作ZIPの版・原本一致を解消後、個別配置・再生を受入。403は過去記録で今回は再試行していない。"
+    },
+    {
+      "dexNo": 15,
+      "id": "sylphin",
+      "name": "シルフィン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 16,
+      "id": "zephyray",
+      "name": "ゼファーレイ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 17,
+      "id": "tempestray",
+      "name": "テンペストレイ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 18,
+      "id": "luxseed",
+      "name": "ルクシード",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 19,
+      "id": "luxiard",
+      "name": "ルクシアード",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 20,
+      "id": "lux_galdion",
+      "name": "ルクスガルディオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 21,
+      "id": "nocle",
+      "name": "ノクル",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 22,
+      "id": "noclaid",
+      "name": "ノクレイド",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 23,
+      "id": "noxvelg",
+      "name": "ノクスヴェルグ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 24,
+      "id": "orcana",
+      "name": "オルカーナ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 25,
+      "id": "orca_stream",
+      "name": "オルカストリーム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 26,
+      "id": "orca_abyss",
+      "name": "オルカアビス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 27,
+      "id": "volmoog",
+      "name": "ボルモーグ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "B/E",
+      "status": "通常登録済み（共通最終受入は別）",
+      "next": "既存受入を再利用。共通処理変更時に回帰確認。"
+    },
+    {
+      "dexNo": 28,
+      "id": "gran_volmoog",
+      "name": "グランボルモーグ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "gran-volmoog-alpha.json",
+        "phase9-progress.md",
+        "gran-volmoog-registration-preflight.json",
+        "gran-volmoog-review-dom.json",
+        "gran-volmoog-implementation.md",
+        "gran-volmoog-device-acceptance.json",
+        "gran-volmoog-galaxy-metrics-20260929.json"
+      ],
+      "nextPhase": "B",
+      "status": "実戦QA・3条件の実機計測済み／通常未登録",
+      "next": "実測した配置を通常経路へ移し、アンカー・反転の確定を記録。共通ゲートを別管理。"
+    },
+    {
+      "dexNo": 29,
+      "id": "slime",
+      "name": "スライム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
+    },
+    {
+      "dexNo": 30,
+      "id": "slime_gold",
+      "name": "スライムゴールド",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 31,
+      "id": "goblin",
+      "name": "ゴブリン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 32,
+      "id": "ignaros",
+      "name": "イグナロス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 33,
+      "id": "tsubaki",
+      "name": "炎の精霊ツバキ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 34,
+      "id": "suiren",
+      "name": "水の精霊スイレン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 35,
+      "id": "proto_icegolem",
+      "name": "ゴーレム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "部分",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 36,
+      "id": "icegolem",
+      "name": "アイスゴーレム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "部分",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 37,
+      "id": "nightmare",
+      "name": "ナイトメア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 38,
+      "id": "astralepis",
+      "name": "アストラレピス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 39,
+      "id": "false_dragon_beta",
+      "name": "アシュレイア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 40,
+      "id": "false_dragon_gamma",
+      "name": "モルグラム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 41,
+      "id": "nemes",
+      "name": "ネメス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 42,
+      "id": "nemesia",
+      "name": "ネメシア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 43,
+      "id": "nemesion",
+      "name": "ネメシオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 44,
+      "id": "doom_nemesion",
+      "name": "滅亡の星 ネメシオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 45,
+      "id": "false_dragon_alfa",
+      "name": "偽竜 code:alfa",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "独立WebM所在の記録あり／通常未登録",
+      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+    },
+    {
+      "dexNo": 46,
+      "id": "galdra",
+      "name": "ガルドラ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 47,
+      "id": "alchemion",
+      "name": "錬核獣アルケミオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 48,
+      "id": "kimeragna",
+      "name": "混成翼竜キメラグナ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
+    },
+    {
+      "dexNo": 49,
+      "id": "kimeragna_apex",
+      "name": "キメラグナ・アペクス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+    },
+    {
+      "dexNo": 50,
+      "id": "elixion",
+      "name": "賢金神竜エリクシオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "部分",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": false,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "C",
+      "status": "透過モーション所在の確認が残る／通常未登録",
+      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
+    }
+  ]
+}

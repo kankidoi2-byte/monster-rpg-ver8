@@ -11,10 +11,11 @@
     "at0725JST": "指示した敵1体・同種3体の確認について、どちらも問題なしと本人が報告"
   },
   "pending": [
-    "Remaining required widths, landscape and 200% text placement; 384x621 grassland normal text passed",
-    "Full-loop footing/facing/anchor and shared long-duration/load/BFCache/offscreen gates where unverified"
+    "Final full-loop footing/anchor values and explicit facing/reflection configuration; do not reopen accepted artwork based solely on edge contact",
+    "Remaining specified widths 320/360/390/430 and action-displacement occupancy where unverified; three measured grassland conditions passed",
+    "Shared quantitative long-duration load/BFCache/offscreen policy gates where still unverified"
   ],
-  "next": "Verify landscape and 200% text using existing review controls, then remaining required widths/shared runtime gates. Reuse completed portrait normal-text measurement and MIME/Range acceptance; do not resend assets.",
+  "next": "Phase B: reconcile full-loop anchor/facing and move accepted QA placement to normal registration; preserve passed three-condition evidence. Shared offscreen/load/BFCache gates tracked separately in phase-a-baseline.md.",
   "normalRuntimeRegistration": "not registered",
   "mainPublication": "forbidden",
   "automatedEvidence": {
@@ -35,5 +36,6 @@
     "limitation": "media mocked; no real decoder, layout or performance verification",
     "executedDateJST": "2026-09-29 before 07:25 user report; reused unchanged, not rerun"
   },
-  "measurementEvidence": "gran-volmoog-galaxy-metrics-20260929.json"
+  "measurementEvidence": "gran-volmoog-galaxy-metrics-20260929.json",
+  "responsiveMeasurementEvidence": "gran-volmoog-galaxy-responsive-20260929.json"
 }

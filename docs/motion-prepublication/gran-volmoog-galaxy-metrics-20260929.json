@@ -93,12 +93,11 @@
     "placement": "pass: all reported HUD gaps >=8px and command gaps >=12px at this viewport; derived from CSS rectangles and existing full-frame alpha bbox",
     "performance": "Short samples observed, drops 0–1.9%; no predefined universal performance threshold applied. Max rAF interval is not average FPS or continuous jank.",
     "pending": [
-      "landscape",
-      "200% text",
       "other required viewport widths",
       "long-duration thermal/load and shared lifecycle gates"
     ],
     "normalRuntimeRegistration": "pending",
-    "publication": "forbidden"
+    "publication": "forbidden",
+    "followupEvidence": "gran-volmoog-galaxy-responsive-20260929.json"
   }
 }

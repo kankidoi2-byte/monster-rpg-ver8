@@ -1,3 +1,15 @@
+# 最新判定：2026-09-29 Phase A
+
+全50体＋バトル画面改修がゴール。最新一覧は [phase-a-baseline.md](phase-a-baseline.md) と [phase-a-species-status.json](phase-a-species-status.json)。以下の2026-09-27表は履歴。
+
+- 通常登録1/50、グランは隔離QAのみ。3条件のGalaxy配置・レビューMIME/Rangeは記録済み。
+- グランの本人の見た目確認は完了。66フレームの右端接触だけを登録不可の理由にしない。アンカー/反転・未確認幅/行動占有・共通負荷/停止条件を保持。
+- ボルテックの案内した素材外観も本人確認済み。原本照合・通常登録とは区別。
+- 2026-09-27以降の本人明示許可によりfeature branchへの保存は許可・実施済み。末尾の「保存許可待ち」は当時の履歴で、再承認は不要。
+- 本編mainへのマージ・一般公開・閲覧範囲変更は禁止のまま。
+
+---
+
 # Prepublication gates — 2026-09-27 JST
 
 Latest update: Android instructed same-asset 1/3 scenarios reported without problems by user. Browser supplied as placeholder "〇〇", model not supplied. See phase8-user-report.json and phase9-progress.md. This is scoped user evidence, not measured decoder performance.
