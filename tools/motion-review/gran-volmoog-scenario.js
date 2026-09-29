@@ -1,5 +1,9 @@
 // Runs only in the generated sandbox. Storage was replaced before game boot.
 let granReviewSpecies='gran_volmoog';
+// Isolate the selected species in this QA document. As registration expands,
+// a supporting ally must not take the one decoder slot from the reviewed enemy.
+const granReviewAllCandidates=battleIdleCandidates;
+battleIdleCandidates=()=>granReviewAllCandidates().filter(u=>u.mon.id===granReviewSpecies);
 function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies){
  if(!Object.hasOwn(BATTLE_IDLE_MEDIA,species))return false;
  granReviewSpecies=species;

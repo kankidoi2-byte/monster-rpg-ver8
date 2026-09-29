@@ -6,8 +6,27 @@ const MOTION_CATALOG={
       "no": 1,
       "name": "フレイガル",
       "art": "images/monsters/freigal_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/freigal_v2_alpha.webm",
+        "poster": "images/monsters/motion/freigal_v2_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 181,
+          "y": 82,
+          "right": 873,
+          "bottom": 839
+        }
+      },
+      "fingerprint": "91583d6dc1ca1bde2cffa02694393235e7bfbb1d239d6ed68379fbd619630bd6",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -15,8 +34,27 @@ const MOTION_CATALOG={
       "no": 2,
       "name": "フレイウルフ",
       "art": "images/monsters/freiwolf_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/freiwolf_v2_alpha.webm",
+        "poster": "images/monsters/motion/freiwolf_v2_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 105,
+          "y": 104,
+          "right": 878,
+          "bottom": 850
+        }
+      },
+      "fingerprint": "9d592cbebcd29a4a3f6dc9e041a5dc8e64b2b99c8247a973841328102a2a8da9",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -24,8 +62,27 @@ const MOTION_CATALOG={
       "no": 3,
       "name": "アクアロン",
       "art": "images/monsters/aquaron_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/aquaron_v3_alpha.webm",
+        "poster": "images/monsters/motion/aquaron_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 36,
+          "y": 6,
+          "right": 941,
+          "bottom": 949
+        }
+      },
+      "fingerprint": "725a195a7c2d88b760590ebcbd324a4e6a7d89ca81573aeaa81656240b4e5cc1",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -33,8 +90,27 @@ const MOTION_CATALOG={
       "no": 4,
       "name": "ハイアクアロン",
       "art": "images/monsters/highaquaron_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/highaquaron_v3_alpha.webm",
+        "poster": "images/monsters/motion/highaquaron_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 8,
+          "y": 8,
+          "right": 941,
+          "bottom": 946
+        }
+      },
+      "fingerprint": "2518acf8a6caf7ffa82bdd1e826feeb890eeda5390dcc615a33c7b230973fb71",
       "sourceState": "透過動画の所在確認が残る"
     },
     {

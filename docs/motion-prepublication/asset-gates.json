@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 18 normal-route registrations of 50; final acceptance separate",
+  "scope": "Feature-branch evaluation: 22 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -7,37 +7,45 @@
       "id": "freigal",
       "dexNo": 1,
       "name": "フレイガル",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/freigal-alpha.json"
     },
     {
       "id": "freiwolf",
       "dexNo": 2,
       "name": "フレイウルフ",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/freiwolf-alpha.json"
     },
     {
       "id": "aquaron",
       "dexNo": 3,
       "name": "アクアロン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/aquaron-alpha.json"
     },
     {
       "id": "highaquaron",
       "dexNo": 4,
       "name": "ハイアクアロン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/highaquaron-alpha.json"
     },
     {
       "id": "shenhairon",
