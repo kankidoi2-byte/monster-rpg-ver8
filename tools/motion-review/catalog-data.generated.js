@@ -172,8 +172,27 @@ const MOTION_CATALOG={
       "no": 7,
       "name": "グラスビート",
       "art": "images/monsters/grassbeat_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/grassbeat_v1_alpha.webm",
+        "poster": "images/monsters/motion/grassbeat_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 103,
+          "y": 176,
+          "right": 867,
+          "bottom": 795
+        }
+      },
+      "fingerprint": "a8c3dba7dfc06d5ee125216235ba8710891e7797347d6796730cabb8430b9f65",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -181,8 +200,27 @@ const MOTION_CATALOG={
       "no": 8,
       "name": "ソーンビート",
       "art": "images/monsters/thornbeat_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/thornbeat_v1_alpha.webm",
+        "poster": "images/monsters/motion/thornbeat_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 87,
+          "y": 126,
+          "right": 877,
+          "bottom": 829
+        }
+      },
+      "fingerprint": "ed0cb884446118b9586211901c8fd0e00d0479c2017b8aaf12da3adc7bc5564b",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -190,8 +228,27 @@ const MOTION_CATALOG={
       "no": 9,
       "name": "グランビート",
       "art": "images/monsters/granbeat_20260919.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/granbeat_v4_alpha.webm",
+        "poster": "images/monsters/motion/granbeat_v4_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 121,
+          "y": 46,
+          "right": 877,
+          "bottom": 906
+        }
+      },
+      "fingerprint": "406cf595bdb62e801b487419294d1fb32b4076846355a9b876a17a4618f7357c",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -199,8 +256,27 @@ const MOTION_CATALOG={
       "no": 10,
       "name": "リカシーフ",
       "art": "images/monsters/rikasheef_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/rikasheef_v1_alpha.webm",
+        "poster": "images/monsters/motion/rikasheef_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 202,
+          "y": 91,
+          "right": 780,
+          "bottom": 852
+        }
+      },
+      "fingerprint": "9c5ec7e212d963d61cb99ef14c4ab97a187010dac13298dbccc6a4f3206f98ff",
       "sourceState": "透過動画の所在確認が残る"
     },
     {

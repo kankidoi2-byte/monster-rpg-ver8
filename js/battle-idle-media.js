@@ -131,6 +131,29 @@ highaquaron:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:8,y:8,right:941,bottom:946})
+}),grassbeat:Object.freeze({
+  src:'images/monsters/motion/grassbeat_v1_alpha.webm',poster:'images/monsters/motion/grassbeat_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:103,y:176,right:867,bottom:795})
+}),
+thornbeat:Object.freeze({
+  src:'images/monsters/motion/thornbeat_v1_alpha.webm',poster:'images/monsters/motion/thornbeat_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:87,y:126,right:877,bottom:829})
+}),
+granbeat:Object.freeze({
+  src:'images/monsters/motion/granbeat_v4_alpha.webm',poster:'images/monsters/motion/granbeat_v4_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:121,y:46,right:877,bottom:906})
+}),
+rikasheef:Object.freeze({
+  src:'images/monsters/motion/rikasheef_v1_alpha.webm',poster:'images/monsters/motion/rikasheef_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:202,y:91,right:780,bottom:852})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

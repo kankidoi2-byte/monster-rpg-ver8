@@ -2,7 +2,7 @@
 
 Usage: python3 export-approved-rgba.py SOURCE_DIR ADOPTED_MP4 OUTPUT_WEBM REPORT
 This does not edit source artwork, rig, motion, or renderer. Frames are streamed.
-Supported renderers: Freigal/Freiwolf v2 and Aquaron/High Aquaron v3.
+Supported renderers: inspected adopted sources listed by hash below.
 """
 import hashlib
 import importlib.util
@@ -15,6 +15,10 @@ from PIL import Image
 
 source, adopted, output, report = map(pathlib.Path, sys.argv[1:])
 inspected_renderers = {
+    'grassbeat-motion-v1': '0a19cff63de2e57df0018edf6ef4bc5acf582ab1797af56a3211f1eabaf0a7fb',
+    'thornbeat-motion-v1': '0a19cff63de2e57df0018edf6ef4bc5acf582ab1797af56a3211f1eabaf0a7fb',
+    'grandbeat-motion-v4': 'b158e0b99d10a8b507b022989a60f2ce61fefb6812f74be8cc6372085dc666ff',
+    'rikasheef-motion-v1': '0ecd0db017c60229ea98c0af19297dd6f7a8ac5794d5005e059bf3c2d3fba4bc',
     'freigal-motion-v2': '28b7ebeb7f4270ca4a92bfecdff1ed63e8311127b49ddf19a323a945478eba9b',
     'freiwolf-motion-v2': '0a8e1143edd6fe4632059a7c8704bf653117626c3a2e3c879795343b3974d4db',
     'aquaron-motion-v3': 'e6bb2d3ca486749b343fc7852ad378e5e411fee12e2a53c48830989c98b31d0b',
@@ -28,6 +32,9 @@ spec.loader.exec_module(module)
 if hasattr(module, 'Hover'):
     motion = json.loads((source / 'motion.json').read_text())
     renderer = module.Hover(rig, motion)
+    render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
+elif hasattr(module, 'Beetle') or hasattr(module, 'Grandbeat'):
+    renderer = (module.Beetle if hasattr(module, 'Beetle') else module.Grandbeat)()
     render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
 else:
     assert hasattr(module, 'WaterDragon')
