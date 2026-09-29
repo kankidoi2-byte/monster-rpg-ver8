@@ -1,5 +1,5 @@
 {
-  "scope": "50-species implementation tracking; normal registry1, isolated battle-review1; Phase A reconciliation only",
+  "scope": "Feature-branch evaluation: 2 normal-route registrations of 50; final acceptance is tracked separately",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -271,10 +271,10 @@
       "id": "gran_volmoog",
       "dexNo": 28,
       "name": "グランボルモーグ",
-      "implementation": "isolated actual-game QA integration; not registered in normal runtime",
+      "implementation": "registered in normal runtime of evaluation branch; final acceptance pending",
       "fullAssetAcceptance": "pending final anchor/facing, remaining specified widths/action occupancy and shared gates; reported portrait, landscape and text200 grassland placement accepted",
       "android": "Galaxy instructed ally/enemy/multi reported without problems. Measured grassland portrait384x621, landscape751x224 and text200384x621 pass HUD8px/control12px conditions; short playback samples only.",
-      "next": "Phase B: reconcile full-loop anchor/facing and move accepted QA placement to normal registration; preserve passed three-condition evidence. Shared offscreen/load/BFCache gates tracked separately in phase-a-baseline.md.",
+      "next": "Phase B acceptance: verify new offscreen/resume on device; retain default1 until quantified multi-video load gate. Phase C/D: individual body/anchor metadata and final placement.",
       "evidence": [
         "gran-volmoog-alpha.json",
         "phase9-progress.md",
@@ -283,7 +283,8 @@
         "gran-volmoog-implementation.md",
         "gran-volmoog-device-acceptance.json",
         "gran-volmoog-galaxy-metrics-20260929.json",
-        "gran-volmoog-galaxy-responsive-20260929.json"
+        "gran-volmoog-galaxy-responsive-20260929.json",
+        "phase-b/implementation.md"
       ],
       "decisionHistory": [
         {
@@ -308,15 +309,16 @@
         },
         "technicalPreflight": "PASS: candidate SHA256/size, current M/IMG identity and static route; gran-volmoog-registration-preflight.json",
         "pendingReasons": [
-          "Final full-loop footing/anchor values and explicit facing/reflection configuration; do not reopen accepted artwork based solely on edge contact",
-          "Remaining specified widths 320/360/390/430 and action-displacement occupancy where unverified; three measured grassland conditions passed",
-          "Shared quantitative long-duration load/BFCache/offscreen policy gates where still unverified"
+          "Explicit anatomical foot/floating anchor and full-body placement metadata for final spec; current canvas bottom alignment is retained from measured QA, not a measured foot point",
+          "Remaining widths/action/background occupancy and final reflection/footing acceptance where unverified",
+          "Real-device verification of new offscreen observer and shared long-duration/load/BFCache gates before normal multi-video expansion"
         ],
-        "normalRuntimeRegistration": "not registered",
+        "normalRuntimeRegistration": "registered for feature-branch evaluation; not final release acceptance",
         "publication": "forbidden",
         "singleMonsterDeviceAcceptance": "User report PASS within instructed single-monster scope: battle displays, playback continues without interruption or UI overlap, battle completes. Not an all-mode/all-viewport gate.",
         "multiMonsterDeviceAcceptance": "07:25 JST user reports both instructed enemy-only and three-monster scenarios without problems.",
-        "measuredDeviceAcceptance": "Portrait measurement plus gran-volmoog-galaxy-responsive-20260929.json: all reported HUD/control thresholds pass. No all-width/all-background/long-duration claim."
+        "measuredDeviceAcceptance": "Portrait measurement plus gran-volmoog-galaxy-responsive-20260929.json: all reported HUD/control thresholds pass. No all-width/all-background/long-duration claim.",
+        "registrationDecision": "Phase B user request: promote tested unmodified QA canvas placement into ordinary evaluation-branch code, retaining all unresolved final acceptance conditions and default budget1."
       }
     },
     {

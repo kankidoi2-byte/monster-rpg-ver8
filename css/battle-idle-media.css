@@ -8,3 +8,10 @@
 #battle.is-battle-stage .battle-idle-details summary,#battle.is-battle-stage .battle-idle-details button{min-height:48px;display:flex;align-items:center}
 #battle.is-battle-stage .battle-idle-details button[hidden]{display:none}
 #battle.is-battle-stage .battle-idle-details span{display:block}
+
+/* Canvas alignment is shared by video and static fallback; no crop/zoom. */
+#battle.is-battle-stage .has-idle-media img,
+#battle.is-battle-stage .has-idle-media .battle-idle-video{
+  object-position:var(--idle-position,50% 50%);
+  transform:scale(var(--idle-scale,1));transform-origin:var(--idle-position,50% 50%);
+}

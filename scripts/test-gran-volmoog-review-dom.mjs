@@ -33,7 +33,7 @@ const results=[];
 for(const mode of ['ally','enemy','multi']){
  assert(run(`granReviewSetup('${mode}')`));await tick();
  const videos=[...d.querySelectorAll('video')];assert.equal(videos.length,mode==='multi'?3:1);
- for(const video of videos){assert(video.src.endsWith('/tools/motion-review/assets/gran_volmoog_v18_alpha.webm'));assert(!video.paused);video.currentTime=3;}
+ for(const video of videos){assert(video.src.endsWith('/images/monsters/motion/gran_volmoog_v18_alpha.webm'));assert(!video.paused);video.currentTime=3;}
  assert.equal(d.querySelector('#pVis .battle-facing').style.transform,mode==='enemy'?'':'scaleX(-1)');
  run(mode==='multi'?'pHp--;multiBattle.enemies[0].hp--;updateMultiBattleView()':'pHp--;eHp--;update()');
  assert.deepEqual([...d.querySelectorAll('video')],videos);assert(videos.every(v=>v.currentTime===3));
@@ -64,8 +64,8 @@ assert(d.getElementById('granMetricsDetails'));
 w.setTimeout=realTimeout;
 run("show('home')");assert.equal(persistedLocal.getItem('mb_v95c'),'existing-save');assert.equal(persistedLocal.length,1);assert.equal(persistedSession.getItem('existing'),'keep');assert.equal(persistedSession.length,1);dom.window.close();assert.deepEqual(errors,[]);
 assert(!read('index.html').includes('gran-volmoog'),'Candidate must not enter normal index');
-assert(!read('js/battle-idle-media.js').includes('gran_volmoog'),'Candidate must not enter normal registry');
+assert(read('js/battle-idle-media.js').includes('gran_volmoog'),'Normal registry must include gran');
 const bytes=fs.readFileSync(new URL('tools/motion-review/assets/gran_volmoog_v18_alpha.webm',root));
 assert.equal(bytes.length,1758952);
 assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),'1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00');
-console.log(JSON.stringify({scope:'Gran Volmoog isolated actual-game DOM integration; media mocked; no browser layout or performance claim',results,maps:maps.length,errorFallback:true,retry:true,switchDisposal:true,sourceHash:true,normalRegistryUnchanged:true},null,2));
+console.log(JSON.stringify({scope:'Gran Volmoog isolated actual-game DOM integration; media mocked; no browser layout or performance claim',results,maps:maps.length,errorFallback:true,retry:true,switchDisposal:true,sourceHash:true,normalRegistryUsed:true},null,2));

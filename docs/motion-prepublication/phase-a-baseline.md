@@ -1,5 +1,7 @@
 # Phase A：全50体モーション＋バトル画面改修の現在地
 
+最新追記：Phase Bで通常登録経路は2/50へ更新。下の数値はPhase A時点のスナップショット。最新は phase-a-species-status.json と phase-b/implementation.md。
+
 2026-09-29 JST。Phase A完了（照合・計画・記録）。実装全体の完了ではない。
 
 ## ゴールと境界

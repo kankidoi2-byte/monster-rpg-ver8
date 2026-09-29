@@ -1,8 +1,15 @@
-/* Phase4C: independent display lifetimes. One accepted species; default budget 1. */
+/* Independent display lifetimes; bounded feature-branch registrations, default budget 1. */
 const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   src:'images/monsters/motion/volmoog_v18_alpha.webm',
   poster:'images/monsters/motion/volmoog_v18_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true
+}),gran_volmoog:Object.freeze({
+  src:'images/monsters/motion/gran_volmoog_v18_alpha.webm',
+  poster:'images/monsters/motion/gran_volmoog_v18_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,
+  // Preserve the measured QA canvas fit. This is not an anatomical foot anchor.
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:8,y:8,right:960,bottom:945})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
@@ -29,15 +36,54 @@ function battleIdleCurrent(r){
     !battleFeedback.finished&&!multiBattle?.finished&&battleIdleCandidates().some(u=>
       u.key===r.key&&document.getElementById(u.vis)?.querySelector('.battle-static-media')===r.media);
 }
-function battleIdleStops(){
+function battleIdleStops(r){
   const reasons=[];
   if(!document.getElementById('battle')?.classList.contains('active'))reasons.push('screen');
   if(document.hidden)reasons.push('hidden');
   if(battleIdlePageHidden)reasons.push('pagehide');
   if(battleIdleReduced?.matches)reasons.push('reduced');
+  if(r?.offscreen)reasons.push('offscreen');
   return reasons;
 }
-function battleIdleVisible(){return !battleIdleStops().length&&!battleFeedback.finished&&!multiBattle?.finished;}
+function battleIdleVisible(r){return !battleIdleStops(r).length&&!battleFeedback.finished&&!multiBattle?.finished;}
+// Layout values align the full canvas inside its contain box. Per-species values
+// never mutate the artwork or infer a foot point from the silhouette bounds.
+function applyBattleIdleLayout(r){
+  const v=r.config.layout;
+  if(!v)return;
+  const x=Number.isFinite(v.x)?Math.max(0,Math.min(1,v.x)):0.5;
+  const y=Number.isFinite(v.y)?Math.max(0,Math.min(1,v.y)):0.5;
+  const scale=Number.isFinite(v.scale)?Math.max(0.1,Math.min(1,v.scale)):1;
+  r.media.style.setProperty('--idle-position',`${x*100}% ${y*100}%`);
+  r.media.style.setProperty('--idle-scale',String(scale));
+}
+// One observer per owned record (max 3). Start static until the first visibility
+// report. Pause below 2% for 250ms; resume at 15%, avoiding boundary chatter.
+function watchBattleIdleViewport(r){
+  r.offscreen=typeof IntersectionObserver==='function';
+  r.viewportTimer=null;r.viewportToken=0;r.viewportObserver=null;
+  if(!r.offscreen)return; // Older engines still use document/screen visibility.
+  r.viewportObserver=new IntersectionObserver(entries=>{
+    if(!battleIdleOwned(r))return;
+    const entry=entries.find(e=>e.target===r.media);if(!entry)return;
+    const ratio=entry.isIntersecting?entry.intersectionRatio:0;
+    if(r.viewportTimer!==null){clearTimeout(r.viewportTimer);r.viewportTimer=null;}
+    const token=++r.viewportToken;
+    if(ratio>=0.15){r.offscreen=false;syncBattleIdleMedia();}
+    else if(ratio<=0.02&&!r.offscreen){
+      r.viewportTimer=setTimeout(()=>{
+        if(!battleIdleOwned(r)||token!==r.viewportToken)return;
+        r.viewportTimer=null;r.offscreen=true;syncBattleIdleMedia();
+      },250);
+    }
+  },{threshold:[0,0.02,0.15]});
+  r.viewportObserver.observe(r.media);
+}
+function unwatchBattleIdleViewport(r){
+  r.viewportToken++;
+  if(r.viewportTimer!==null)clearTimeout(r.viewportTimer);
+  r.viewportTimer=null;r.viewportObserver?.disconnect();r.viewportObserver=null;
+}
 function setBattleIdleStatus(r,text,retry=false){
   if(r.label.textContent!==text)r.label.textContent=text;
   r.button.hidden=!retry;
@@ -54,7 +100,7 @@ function startBattleIdleClock(r){
     // A queued callback may run after cancellation. Never touch a newer attempt.
     if(!battleIdleOwned(r)||r.attempt!==attempt||r.clockToken!==clockToken||r.timer===null)return;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length){syncBattleIdleMedia();return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
     r.timer=null;r.remaining=0;
     failBattleIdleMedia(r,'静止表示：読み込み待ちを終了しました');
   },r.remaining);
@@ -70,7 +116,8 @@ function releaseBattleIdleVideo(r){
 function disposeBattleIdleRecord(r){
   if(!battleIdleOwned(r))return;
   battleIdleRecords.delete(r.key);refreshBattleIdlePrimary();r.disposed=true;r.state='disposed';
-  releaseBattleIdleVideo(r);r.button.onclick=null;
+  unwatchBattleIdleViewport(r);releaseBattleIdleVideo(r);r.button.onclick=null;
+  r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
   r.img.style.removeProperty('visibility');r.media.classList.remove('has-idle-media','idle-playing');
   r.facing.style.removeProperty('transform');r.details.remove();
 }
@@ -84,19 +131,19 @@ function failBattleIdleMedia(r,text){
   setBattleIdleStatus(r,text,!r.retried);
 }
 function playBattleIdleMedia(r){
-  if(!battleIdleCurrent(r)||r.failed||r.pending||!battleIdleVisible())return;
+  if(!battleIdleCurrent(r)||r.failed||r.pending||!battleIdleVisible(r))return;
   const video=r.video,attempt=r.attempt,token=++r.playToken;
   r.pending=true;r.state='loading';startBattleIdleClock(r);
   const valid=()=>battleIdleOwned(r)&&r.video===video&&r.attempt===attempt&&r.playToken===token;
   const rejected=()=>{if(!valid())return;r.pending=false;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length){syncBattleIdleMedia();return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
     failBattleIdleMedia(r,'静止表示：再生できませんでした');
   };
   try{Promise.resolve(video.play()).then(()=>{
     if(!valid())return;r.pending=false;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length)syncBattleIdleMedia();
+    if(battleIdleStops(r).length)syncBattleIdleMedia();
   },rejected);}catch{rejected();}
 }
 function createBattleIdleVideo(r){
@@ -108,7 +155,7 @@ function createBattleIdleVideo(r){
   video.onplaying=()=>{
     if(!valid()||r.failed)return;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length){syncBattleIdleMedia();return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
     // Ignore an obsolete queued playing event when the element is now paused.
     if(video.paused)return;
     stopBattleIdleClock(r);r.remaining=BATTLE_IDLE_WAIT_MS;r.state='playing';
@@ -154,16 +201,16 @@ function syncBattleIdleCandidate(chosen){
       attempt:0,playToken:0,clockToken:0,timer:null,remaining:BATTLE_IDLE_WAIT_MS,waitStarted:0};
     battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');img.src=config.poster;
     if(chosen.vis==='pVis'&&config.allyFlip)r.facing.style.transform='scaleX(-1)';
-    createBattleIdleVideo(r);
+    applyBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
     button.onclick=()=>{
-      if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops().length)return;
+      if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops(r).length)return;
       // One manual attempt per display lifetime, latched before any async work.
       r.retried=true;r.failed=false;r.failureText='';releaseBattleIdleVideo(r);
       r.remaining=BATTLE_IDLE_WAIT_MS;createBattleIdleVideo(r);syncBattleIdleMedia();
     };
   }
   const r=battleIdleRecords.get(chosen.key);if(hud&&!hud.contains(r.details))hud.append(r.details);
-  r.reasons=battleIdleStops();
+  r.reasons=battleIdleStops(r);
   if(r.reasons.length){
     if(r.pending){r.playToken++;r.pending=false;}
     stopBattleIdleClock(r);if(!r.video.paused)r.video.pause();staticBattleIdle(r);
@@ -176,8 +223,8 @@ function syncBattleIdleCandidate(chosen){
     setBattleIdleStatus(r,'準備中');playBattleIdleMedia(r);
   }
 }
-// Fixed document listeners only; no per-frame polling, observers, object URLs,
-// requestVideoFrameCallback, or per-combatant global listeners are owned here.
+// Fixed global listeners and bounded, disposable viewport observers. No polling,
+// object URLs or per-combatant global listeners.
 document.addEventListener('visibilitychange',syncBattleIdleMedia);
 window.addEventListener('pagehide',()=>{battleIdlePageHidden=true;disposeBattleIdleMedia();});
 window.addEventListener('pageshow',()=>{battleIdlePageHidden=false;syncBattleIdleMedia();});

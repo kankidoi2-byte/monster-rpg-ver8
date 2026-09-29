@@ -11,12 +11,12 @@
     "at0725JST": "指示した敵1体・同種3体の確認について、どちらも問題なしと本人が報告"
   },
   "pending": [
-    "Final full-loop footing/anchor values and explicit facing/reflection configuration; do not reopen accepted artwork based solely on edge contact",
-    "Remaining specified widths 320/360/390/430 and action-displacement occupancy where unverified; three measured grassland conditions passed",
-    "Shared quantitative long-duration load/BFCache/offscreen policy gates where still unverified"
+    "Explicit anatomical foot/floating anchor and full-body placement metadata for final spec; current canvas bottom alignment is retained from measured QA, not a measured foot point",
+    "Remaining widths/action/background occupancy and final reflection/footing acceptance where unverified",
+    "Real-device verification of new offscreen observer and shared long-duration/load/BFCache gates before normal multi-video expansion"
   ],
-  "next": "Phase B: reconcile full-loop anchor/facing and move accepted QA placement to normal registration; preserve passed three-condition evidence. Shared offscreen/load/BFCache gates tracked separately in phase-a-baseline.md.",
-  "normalRuntimeRegistration": "not registered",
+  "next": "Phase B acceptance: verify new offscreen/resume on device; retain default1 until quantified multi-video load gate. Phase C/D: individual body/anchor metadata and final placement.",
+  "normalRuntimeRegistration": "registered on evaluation branch in Phase B; new offscreen behavior awaits device validation",
   "mainPublication": "forbidden",
   "automatedEvidence": {
     "script": "scripts/test-gran-volmoog-review-dom.mjs",

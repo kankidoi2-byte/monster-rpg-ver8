@@ -1,3 +1,5 @@
+最新：Phase Bで評価branchの通常経路登録2/50、通常予算1。最終受入は未完了。phase-b/implementation.mdを優先。
+
 # 最新判定：2026-09-29 Phase A
 
 全50体＋バトル画面改修がゴール。最新一覧は [phase-a-baseline.md](phase-a-baseline.md) と [phase-a-species-status.json](phase-a-species-status.json)。以下の2026-09-27表は履歴。

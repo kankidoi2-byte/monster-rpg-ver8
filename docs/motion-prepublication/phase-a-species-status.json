@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 1,
-    "isolatedBattleReviewOnly": 1,
-    "remainingNormalRegistration": 49,
+    "normalRegistered": 2,
+    "isolatedBattleReviewOnly": 0,
+    "remainingNormalRegistration": 48,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -510,7 +510,7 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "済"
       },
-      "normalRegistered": false,
+      "normalRegistered": true,
       "reviewIntegrated": true,
       "latestEvidence": [
         "gran-volmoog-alpha.json",
@@ -521,9 +521,9 @@
         "gran-volmoog-device-acceptance.json",
         "gran-volmoog-galaxy-metrics-20260929.json"
       ],
-      "nextPhase": "B",
-      "status": "実戦QA・3条件の実機計測済み／通常未登録",
-      "next": "実測した配置を通常経路へ移し、アンカー・反転の確定を記録。共通ゲートを別管理。"
+      "nextPhase": "B acceptance/C/D/E",
+      "status": "通常登録経路へ接続済み（評価branch、最終受入は保留）",
+      "next": "新規画面外停止の実機確認と共有負荷条件。全身/足元の最終仕様は未完了。"
     },
     {
       "dexNo": 29,
@@ -924,5 +924,6 @@
       "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
       "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
     }
-  ]
+  ],
+  "latestPhase": "B implementation (Phase A sourceCommit retained as baseline)"
 }

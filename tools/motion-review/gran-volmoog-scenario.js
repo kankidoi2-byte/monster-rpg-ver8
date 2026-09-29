@@ -44,7 +44,6 @@ document.getElementById('granReviewControls').append(granMap);
 for(const [label,fn] of [['味方1体',()=>granReviewSetup('ally',granMap.value)],['敵1体',()=>granReviewSetup('enemy',granMap.value)],['同種3体',()=>granReviewSetup('multi',granMap.value)],['間隔を計測',granReviewMeasure],['文字200%',()=>document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=>show('home')]]){
  const b=document.createElement('button');b.textContent=label;b.type='button';b.style.cssText='min-height:48px;margin:4px';b.onclick=fn;document.getElementById('granReviewControls').append(b);
 }
-const granStyle=document.createElement('style');granStyle.textContent='#battle.is-battle-stage .has-idle-media img,#battle.is-battle-stage .battle-idle-video{object-position:center bottom!important}';document.head.append(granStyle);
 granReviewSetup();
 
 // Explicit, foreground-only diagnostic. Measurements are observations, not acceptance.
@@ -66,7 +65,7 @@ async function granReviewCollect(){
   out.textContent='動画の配信を確認中…';
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
   try{
-   const response=await fetch(new URL(GRAN_REVIEW_MEDIA.gran_volmoog.src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
+   const response=await fetch(new URL(BATTLE_IDLE_MEDIA.gran_volmoog.src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
    const bytes=(await response.arrayBuffer()).byteLength;
    report.delivery={status:response.status,type:response.headers.get('content-type'),range:response.headers.get('content-range'),bytes};
   }catch(error){report.delivery={error:error.name};}finally{clearTimeout(timer);}

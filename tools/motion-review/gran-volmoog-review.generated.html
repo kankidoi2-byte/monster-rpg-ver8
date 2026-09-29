@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>グランボルモーグ戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>グランボルモーグ：戦闘接続の検証用。通常登録は保留。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="グランボルモーグ戦闘確認" sandbox="allow-scripts allow-same-origin" srcdoc="&lt;!doctype html&gt;
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>グランボルモーグ戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>グランボルモーグ：戦闘接続の検証用。通常登録経路の検証用。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="グランボルモーグ戦闘確認" sandbox="allow-scripts allow-same-origin" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;ja&quot;&gt;
 &lt;head&gt;&lt;base href=&quot;../../&quot;&gt;&lt;script&gt;for(const name of ['localStorage','sessionStorage']){
  const data=new Map();Object.defineProperty(window,name,{value:{
@@ -17,7 +17,7 @@
 &lt;link rel=&quot;stylesheet&quot; href=&quot;css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1-prologue-mobile-dex-elna-1-prologue-readable-panel-1-prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1-tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-dialogue-pages-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-galdra-motion-1&quot;&gt;
 &lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-stage.css?v=phase3b-1&quot;&gt;
 &lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-ui.css?v=phase3c-1&quot;&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-idle-media.css?v=phase9-transparency-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-idle-media.css?v=phase-b-1&quot;&gt;
 &lt;/head&gt;
 &lt;body class=&quot;title-mode&quot;&gt;
 &lt;div id=&quot;bossCautionOverlay&quot; aria-hidden=&quot;true&quot;&gt;
@@ -612,18 +612,18 @@
 &lt;script src=&quot;js/world-map-flow.js?v=world-map-2&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;js/world-map.js?v=world-map-3-consistency-map-artwork-20260921&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;js/battle-ui.js?v=phase3c-1&quot;&gt;&lt;/script&gt;
-&lt;script&gt;// QA-only candidate. The normal game never loads this file.
-const GRAN_REVIEW_MEDIA=Object.freeze({gran_volmoog:Object.freeze({
-  src:'tools/motion-review/assets/gran_volmoog_v18_alpha.webm',
-  poster:'tools/motion-review/assets/gran_volmoog_v18_static.webp',
-  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true
-})});
-
-/* Phase4C: independent display lifetimes. One accepted species; default budget 1. */
-const BATTLE_IDLE_MEDIA=Object.freeze({...GRAN_REVIEW_MEDIA,volmoog:Object.freeze({
+&lt;script&gt;/* Independent display lifetimes; bounded feature-branch registrations, default budget 1. */
+const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   src:'images/monsters/motion/volmoog_v18_alpha.webm',
   poster:'images/monsters/motion/volmoog_v18_static.webp',
   type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true
+}),gran_volmoog:Object.freeze({
+  src:'images/monsters/motion/gran_volmoog_v18_alpha.webm',
+  poster:'images/monsters/motion/gran_volmoog_v18_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,
+  // Preserve the measured QA canvas fit. This is not an anatomical foot anchor.
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:8,y:8,right:960,bottom:945})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
@@ -650,15 +650,54 @@ function battleIdleCurrent(r){
     !battleFeedback.finished&amp;&amp;!multiBattle?.finished&amp;&amp;battleIdleCandidates().some(u=&gt;
       u.key===r.key&amp;&amp;document.getElementById(u.vis)?.querySelector('.battle-static-media')===r.media);
 }
-function battleIdleStops(){
+function battleIdleStops(r){
   const reasons=[];
   if(!document.getElementById('battle')?.classList.contains('active'))reasons.push('screen');
   if(document.hidden)reasons.push('hidden');
   if(battleIdlePageHidden)reasons.push('pagehide');
   if(battleIdleReduced?.matches)reasons.push('reduced');
+  if(r?.offscreen)reasons.push('offscreen');
   return reasons;
 }
-function battleIdleVisible(){return !battleIdleStops().length&amp;&amp;!battleFeedback.finished&amp;&amp;!multiBattle?.finished;}
+function battleIdleVisible(r){return !battleIdleStops(r).length&amp;&amp;!battleFeedback.finished&amp;&amp;!multiBattle?.finished;}
+// Layout values align the full canvas inside its contain box. Per-species values
+// never mutate the artwork or infer a foot point from the silhouette bounds.
+function applyBattleIdleLayout(r){
+  const v=r.config.layout;
+  if(!v)return;
+  const x=Number.isFinite(v.x)?Math.max(0,Math.min(1,v.x)):0.5;
+  const y=Number.isFinite(v.y)?Math.max(0,Math.min(1,v.y)):0.5;
+  const scale=Number.isFinite(v.scale)?Math.max(0.1,Math.min(1,v.scale)):1;
+  r.media.style.setProperty('--idle-position',`${x*100}% ${y*100}%`);
+  r.media.style.setProperty('--idle-scale',String(scale));
+}
+// One observer per owned record (max 3). Start static until the first visibility
+// report. Pause below 2% for 250ms; resume at 15%, avoiding boundary chatter.
+function watchBattleIdleViewport(r){
+  r.offscreen=typeof IntersectionObserver==='function';
+  r.viewportTimer=null;r.viewportToken=0;r.viewportObserver=null;
+  if(!r.offscreen)return; // Older engines still use document/screen visibility.
+  r.viewportObserver=new IntersectionObserver(entries=&gt;{
+    if(!battleIdleOwned(r))return;
+    const entry=entries.find(e=&gt;e.target===r.media);if(!entry)return;
+    const ratio=entry.isIntersecting?entry.intersectionRatio:0;
+    if(r.viewportTimer!==null){clearTimeout(r.viewportTimer);r.viewportTimer=null;}
+    const token=++r.viewportToken;
+    if(ratio&gt;=0.15){r.offscreen=false;syncBattleIdleMedia();}
+    else if(ratio&lt;=0.02&amp;&amp;!r.offscreen){
+      r.viewportTimer=setTimeout(()=&gt;{
+        if(!battleIdleOwned(r)||token!==r.viewportToken)return;
+        r.viewportTimer=null;r.offscreen=true;syncBattleIdleMedia();
+      },250);
+    }
+  },{threshold:[0,0.02,0.15]});
+  r.viewportObserver.observe(r.media);
+}
+function unwatchBattleIdleViewport(r){
+  r.viewportToken++;
+  if(r.viewportTimer!==null)clearTimeout(r.viewportTimer);
+  r.viewportTimer=null;r.viewportObserver?.disconnect();r.viewportObserver=null;
+}
 function setBattleIdleStatus(r,text,retry=false){
   if(r.label.textContent!==text)r.label.textContent=text;
   r.button.hidden=!retry;
@@ -675,7 +714,7 @@ function startBattleIdleClock(r){
     // A queued callback may run after cancellation. Never touch a newer attempt.
     if(!battleIdleOwned(r)||r.attempt!==attempt||r.clockToken!==clockToken||r.timer===null)return;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length){syncBattleIdleMedia();return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
     r.timer=null;r.remaining=0;
     failBattleIdleMedia(r,'静止表示：読み込み待ちを終了しました');
   },r.remaining);
@@ -691,7 +730,8 @@ function releaseBattleIdleVideo(r){
 function disposeBattleIdleRecord(r){
   if(!battleIdleOwned(r))return;
   battleIdleRecords.delete(r.key);refreshBattleIdlePrimary();r.disposed=true;r.state='disposed';
-  releaseBattleIdleVideo(r);r.button.onclick=null;
+  unwatchBattleIdleViewport(r);releaseBattleIdleVideo(r);r.button.onclick=null;
+  r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
   r.img.style.removeProperty('visibility');r.media.classList.remove('has-idle-media','idle-playing');
   r.facing.style.removeProperty('transform');r.details.remove();
 }
@@ -705,19 +745,19 @@ function failBattleIdleMedia(r,text){
   setBattleIdleStatus(r,text,!r.retried);
 }
 function playBattleIdleMedia(r){
-  if(!battleIdleCurrent(r)||r.failed||r.pending||!battleIdleVisible())return;
+  if(!battleIdleCurrent(r)||r.failed||r.pending||!battleIdleVisible(r))return;
   const video=r.video,attempt=r.attempt,token=++r.playToken;
   r.pending=true;r.state='loading';startBattleIdleClock(r);
   const valid=()=&gt;battleIdleOwned(r)&amp;&amp;r.video===video&amp;&amp;r.attempt===attempt&amp;&amp;r.playToken===token;
   const rejected=()=&gt;{if(!valid())return;r.pending=false;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length){syncBattleIdleMedia();return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
     failBattleIdleMedia(r,'静止表示：再生できませんでした');
   };
   try{Promise.resolve(video.play()).then(()=&gt;{
     if(!valid())return;r.pending=false;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length)syncBattleIdleMedia();
+    if(battleIdleStops(r).length)syncBattleIdleMedia();
   },rejected);}catch{rejected();}
 }
 function createBattleIdleVideo(r){
@@ -729,7 +769,7 @@ function createBattleIdleVideo(r){
   video.onplaying=()=&gt;{
     if(!valid()||r.failed)return;
     if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
-    if(battleIdleStops().length){syncBattleIdleMedia();return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
     // Ignore an obsolete queued playing event when the element is now paused.
     if(video.paused)return;
     stopBattleIdleClock(r);r.remaining=BATTLE_IDLE_WAIT_MS;r.state='playing';
@@ -775,16 +815,16 @@ function syncBattleIdleCandidate(chosen){
       attempt:0,playToken:0,clockToken:0,timer:null,remaining:BATTLE_IDLE_WAIT_MS,waitStarted:0};
     battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');img.src=config.poster;
     if(chosen.vis==='pVis'&amp;&amp;config.allyFlip)r.facing.style.transform='scaleX(-1)';
-    createBattleIdleVideo(r);
+    applyBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
     button.onclick=()=&gt;{
-      if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops().length)return;
+      if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops(r).length)return;
       // One manual attempt per display lifetime, latched before any async work.
       r.retried=true;r.failed=false;r.failureText='';releaseBattleIdleVideo(r);
       r.remaining=BATTLE_IDLE_WAIT_MS;createBattleIdleVideo(r);syncBattleIdleMedia();
     };
   }
   const r=battleIdleRecords.get(chosen.key);if(hud&amp;&amp;!hud.contains(r.details))hud.append(r.details);
-  r.reasons=battleIdleStops();
+  r.reasons=battleIdleStops(r);
   if(r.reasons.length){
     if(r.pending){r.playToken++;r.pending=false;}
     stopBattleIdleClock(r);if(!r.video.paused)r.video.pause();staticBattleIdle(r);
@@ -797,8 +837,8 @@ function syncBattleIdleCandidate(chosen){
     setBattleIdleStatus(r,'準備中');playBattleIdleMedia(r);
   }
 }
-// Fixed document listeners only; no per-frame polling, observers, object URLs,
-// requestVideoFrameCallback, or per-combatant global listeners are owned here.
+// Fixed global listeners and bounded, disposable viewport observers. No polling,
+// object URLs or per-combatant global listeners.
 document.addEventListener('visibilitychange',syncBattleIdleMedia);
 window.addEventListener('pagehide',()=&gt;{battleIdlePageHidden=true;disposeBattleIdleMedia();});
 window.addEventListener('pageshow',()=&gt;{battleIdlePageHidden=false;syncBattleIdleMedia();});
@@ -851,7 +891,6 @@ document.getElementById('granReviewControls').append(granMap);
 for(const [label,fn] of [['味方1体',()=&gt;granReviewSetup('ally',granMap.value)],['敵1体',()=&gt;granReviewSetup('enemy',granMap.value)],['同種3体',()=&gt;granReviewSetup('multi',granMap.value)],['間隔を計測',granReviewMeasure],['文字200%',()=&gt;document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=&gt;show('home')]]){
  const b=document.createElement('button');b.textContent=label;b.type='button';b.style.cssText='min-height:48px;margin:4px';b.onclick=fn;document.getElementById('granReviewControls').append(b);
 }
-const granStyle=document.createElement('style');granStyle.textContent='#battle.is-battle-stage .has-idle-media img,#battle.is-battle-stage .battle-idle-video{object-position:center bottom!important}';document.head.append(granStyle);
 granReviewSetup();
 
 // Explicit, foreground-only diagnostic. Measurements are observations, not acceptance.
@@ -873,7 +912,7 @@ async function granReviewCollect(){
   out.textContent='動画の配信を確認中…';
   const controller=new AbortController(),timer=setTimeout(()=&gt;controller.abort(),10000);
   try{
-   const response=await fetch(new URL(GRAN_REVIEW_MEDIA.gran_volmoog.src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
+   const response=await fetch(new URL(BATTLE_IDLE_MEDIA.gran_volmoog.src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
    const bytes=(await response.arrayBuffer()).byteLength;
    report.delivery={status:response.status,type:response.headers.get('content-type'),range:response.headers.get('content-range'),bytes};
   }catch(error){report.delivery={error:error.name};}finally{clearTimeout(timer);}
