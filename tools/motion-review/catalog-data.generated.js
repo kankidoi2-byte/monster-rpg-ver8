@@ -141,8 +141,27 @@ const MOTION_CATALOG={
       "no": 12,
       "name": "ボルテック",
       "art": "images/monsters/volteck_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/volteck_v4_alpha.webm",
+        "poster": "images/monsters/motion/volteck_v4_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 62,
+          "y": 149,
+          "right": 901,
+          "bottom": 835
+        }
+      },
+      "fingerprint": "98dc1240a4d1f8d8d8b4d873e878b2fb67162cebbbfa2a6fce174f3bed505c30",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -150,8 +169,27 @@ const MOTION_CATALOG={
       "no": 13,
       "name": "スパクイン",
       "art": "images/monsters/spaquinn_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/spaquinn_v4_alpha.webm",
+        "poster": "images/monsters/motion/spaquinn_v4_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 56,
+          "y": 49,
+          "right": 908,
+          "bottom": 887
+        }
+      },
+      "fingerprint": "df12b064a6b925cdf803ba452dcd6b33b92bea5f304abacdb3a8025a55bddf3e",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -159,8 +197,27 @@ const MOTION_CATALOG={
       "no": 14,
       "name": "ボルタックス",
       "art": "images/monsters/voltax_20260921_square.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/voltax_v5_alpha.webm",
+        "poster": "images/monsters/motion/voltax_v5_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 64,
+          "y": 69,
+          "right": 900,
+          "bottom": 828
+        }
+      },
+      "fingerprint": "f21ca7748a80a337dd5dd166036998d6d3f0703cfaef8a3fc3c921d8fbcf5a0e",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -623,8 +680,27 @@ const MOTION_CATALOG={
       "no": 44,
       "name": "滅亡の星 ネメシオン",
       "art": "images/monsters/doom_nemesion_20260924.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/doom_nemesion_v5_alpha.webm",
+        "poster": "images/monsters/motion/doom_nemesion_v5_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 55,
+          "y": 122,
+          "right": 944,
+          "bottom": 822
+        }
+      },
+      "fingerprint": "1b6d0a23d67efa6ff8a62d308b66ab73f8dcb6a10dfd589ba97eb10bc10079c3",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -632,8 +708,27 @@ const MOTION_CATALOG={
       "no": 45,
       "name": "偽竜 code:alfa",
       "art": "images/monsters/false_dragon_alfa_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/false_dragon_alfa_v1_alpha.webm",
+        "poster": "images/monsters/motion/false_dragon_alfa_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 56,
+          "y": 58,
+          "right": 897,
+          "bottom": 882
+        }
+      },
+      "fingerprint": "bc0381141c46dba6312ea6503792170711d61065cac8d7d455857549788e9a8b",
       "sourceState": "透過動画の所在記録あり"
     },
     {

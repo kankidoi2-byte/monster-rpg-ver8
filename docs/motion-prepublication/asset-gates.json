@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 13 normal-route registrations of 50; final acceptance separate",
+  "scope": "Feature-branch evaluation: 18 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -119,31 +119,37 @@
       "id": "volteck",
       "dexNo": 12,
       "name": "ボルテック",
-      "implementation": "not registered",
-      "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
-      "android": "User accepted instructed asset appearance on 2026-09-27 per Phase4C handoff v4; not actual-battle quantitative acceptance.",
-      "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
-      "evidence": "volteck-alpha.json"
+      "implementation": "registered in feature branch for evaluation",
+      "fullAssetAcceptance": "pending",
+      "android": "pending",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "evidence": "volteck-alpha.json",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/volteck-alpha.json"
     },
     {
       "id": "spaquinn",
       "dexNo": 13,
       "name": "スパクイン",
-      "implementation": "not registered",
-      "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
+      "implementation": "registered in feature branch for evaluation",
+      "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
-      "evidence": "spaquinn-alpha.json"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "evidence": "spaquinn-alpha.json",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/spaquinn-alpha.json"
     },
     {
       "id": "voltax",
       "dexNo": 14,
       "name": "ボルタックス",
-      "implementation": "not registered",
-      "fullAssetAcceptance": "240-frame alpha/bbox measured with no edge contact; source ZIP match and runtime visual acceptance pending",
+      "implementation": "registered in feature branch for evaluation",
+      "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "Resolve production ZIP access for internal ID/version/source/hash; then individual runtime acceptance. No normal registry change.",
-      "evidence": "voltax-alpha.json"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "evidence": "voltax-alpha.json",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/voltax-alpha.json"
     },
     {
       "id": "icegolem",
@@ -200,10 +206,12 @@
       "id": "doom_nemesion",
       "dexNo": 44,
       "name": "滅亡の星 ネメシオン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/doom_nemesion-alpha.json"
     },
     {
       "id": "suiren",
@@ -247,10 +255,12 @@
       "id": "false_dragon_alfa",
       "dexNo": 45,
       "name": "偽竜 code:alfa",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/false_dragon_alfa-alpha.json"
     },
     {
       "id": "false_dragon_beta",

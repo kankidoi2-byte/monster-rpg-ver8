@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 13,
+    "normalRegistered": 18,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 37,
+    "remainingNormalRegistration": 32,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -232,12 +232,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "済"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": "volteck-alpha.json",
-      "nextPhase": "C",
-      "status": "240フレームalpha/bbox検査済み／通常未登録",
-      "next": "制作ZIPの版・原本一致を解消後、個別配置・再生を受入。403は過去記録で今回は再試行していない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/volteck-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/volteck-alpha.json"
     },
     {
       "dexNo": 13,
@@ -250,12 +255,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": "spaquinn-alpha.json",
-      "nextPhase": "C",
-      "status": "240フレームalpha/bbox検査済み／通常未登録",
-      "next": "制作ZIPの版・原本一致を解消後、個別配置・再生を受入。403は過去記録で今回は再試行していない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/spaquinn-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/spaquinn-alpha.json"
     },
     {
       "dexNo": 14,
@@ -268,12 +278,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": "voltax-alpha.json",
-      "nextPhase": "C",
-      "status": "240フレームalpha/bbox検査済み／通常未登録",
-      "next": "制作ZIPの版・原本一致を解消後、個別配置・再生を受入。403は過去記録で今回は再試行していない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/voltax-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/voltax-alpha.json"
     },
     {
       "dexNo": 15,
@@ -862,12 +877,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/doom_nemesion-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/doom_nemesion-alpha.json"
     },
     {
       "dexNo": 45,
@@ -880,12 +900,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/false_dragon_alfa-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/false_dragon_alfa-alpha.json"
     },
     {
       "dexNo": 46,

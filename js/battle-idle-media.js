@@ -79,6 +79,35 @@ nemesion:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:57,y:64,right:906,bottom:895})
+}),doom_nemesion:Object.freeze({
+  src:'images/monsters/motion/doom_nemesion_v5_alpha.webm',poster:'images/monsters/motion/doom_nemesion_v5_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:55,y:122,right:944,bottom:822})
+}),
+false_dragon_alfa:Object.freeze({
+  src:'images/monsters/motion/false_dragon_alfa_v1_alpha.webm',poster:'images/monsters/motion/false_dragon_alfa_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:56,y:58,right:897,bottom:882})
+}),
+volteck:Object.freeze({
+  src:'images/monsters/motion/volteck_v4_alpha.webm',poster:'images/monsters/motion/volteck_v4_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:62,y:149,right:901,bottom:835})
+}),
+spaquinn:Object.freeze({
+  src:'images/monsters/motion/spaquinn_v4_alpha.webm',poster:'images/monsters/motion/spaquinn_v4_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:56,y:49,right:908,bottom:887})
+}),
+voltax:Object.freeze({
+  src:'images/monsters/motion/voltax_v5_alpha.webm',poster:'images/monsters/motion/voltax_v5_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:64,y:69,right:900,bottom:828})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

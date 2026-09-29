@@ -1,0 +1,43 @@
+{
+  "dateJST": "2026-09-30",
+  "phase": "C",
+  "batch": 5,
+  "registered": 18,
+  "remaining": 32,
+  "species": [
+    "doom_nemesion",
+    "false_dragon_alfa",
+    "volteck",
+    "spaquinn",
+    "voltax"
+  ],
+  "github": {
+    "repository": "kankidoi2-byte/monster-rpg-ver8",
+    "branch": "feat/phase4c-prepublication",
+    "assetCommit": "821c57b2c417196e353d0403fb3f17b9bb4e7d0d",
+    "remoteAssetBytesVerified": true,
+    "mainMerged": false,
+    "assetCommits": [
+      "60efb7758a47022e3ccaa076c445f325020ee887",
+      "821c57b2c417196e353d0403fb3f17b9bb4e7d0d"
+    ]
+  },
+  "site": {
+    "projectId": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+    "sourceCommit": "48b0c0641597d9573a58eb02cf95369459de655d",
+    "deploymentId": "appgdep_6abc38bd8ec48191bcb1c7e07b812a84",
+    "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_885cee54265881919008741644cde6f9",
+    "status": "succeeded",
+    "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+    "audience": "owner-private",
+    "archiveIntegrityVerified": true
+  },
+  "checks": {
+    "npmCheck": "passed",
+    "alphaFramesPerSpecies": 240,
+    "sourceZipMatchesAdoptedWebm": true,
+    "realDeviceAcceptance": "pending",
+    "all50Acceptance": "pending"
+  },
+  "next": "Continue remaining Phase C registrations; Phase D battle placement and Phase E integrated device/load acceptance remain."
+}

@@ -1,0 +1,38 @@
+{
+  "dateJST": "2026-09-30",
+  "npmCheckExitCode": 0,
+  "catalog": {
+    "total": 50,
+    "registered": 18,
+    "noPrefetch": true,
+    "sourceRelease": true,
+    "saveUntouched": true
+  },
+  "battleDom": {
+    "newSpecies": [
+      "doom_nemesion",
+      "false_dragon_alfa",
+      "volteck",
+      "spaquinn",
+      "voltax"
+    ],
+    "sides": [
+      "ally",
+      "enemy",
+      "multi"
+    ],
+    "maps": 19,
+    "stopResume": true,
+    "errorFallback": true
+  },
+  "viewportDom": {
+    "checksPassed": 4,
+    "defaultLimit": 1
+  },
+  "resourceResolution": {
+    "loads": 44,
+    "missing": [],
+    "scriptErrors": []
+  },
+  "scope": "DOM/media mocked; alpha sequential decode separate; browser rendering and Galaxy acceptance pending"
+}
