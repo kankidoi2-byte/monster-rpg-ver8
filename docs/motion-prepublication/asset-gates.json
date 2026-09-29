@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 26 normal-route registrations of 50; final acceptance separate",
+  "scope": "Feature-branch evaluation: 30 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -117,10 +117,12 @@
       "id": "seralphia",
       "dexNo": 11,
       "name": "セラルフィア",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/seralphia-alpha.json"
     },
     {
       "id": "nightmare",
@@ -423,28 +425,34 @@
       "id": "sylphin",
       "dexNo": 15,
       "name": "シルフィン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/sylphin-alpha.json"
     },
     {
       "id": "zephyray",
       "dexNo": 16,
       "name": "ゼファーレイ",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/zephyray-alpha.json"
     },
     {
       "id": "tempestray",
       "dexNo": 17,
       "name": "テンペストレイ",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/tempestray-alpha.json"
     },
     {
       "id": "ignaros",

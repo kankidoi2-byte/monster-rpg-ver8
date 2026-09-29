@@ -284,8 +284,27 @@ const MOTION_CATALOG={
       "no": 11,
       "name": "セラルフィア",
       "art": "images/monsters/seralphia_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/seralphia_v1_alpha.webm",
+        "poster": "images/monsters/motion/seralphia_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 171,
+          "y": 110,
+          "right": 805,
+          "bottom": 824
+        }
+      },
+      "fingerprint": "9e24a9e97ed546d71b9ce5d41ba0f17075acaf1a20ad84a0902b3619a706036d",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -377,8 +396,27 @@ const MOTION_CATALOG={
       "no": 15,
       "name": "シルフィン",
       "art": "images/monsters/sylphin_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/sylphin_v1_alpha.webm",
+        "poster": "images/monsters/motion/sylphin_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 145,
+          "y": 161,
+          "right": 831,
+          "bottom": 808
+        }
+      },
+      "fingerprint": "2308ee7d740114d7b7582c5969ead7288497a9ee172b39580ccfc63e73d3be9b",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -386,8 +424,27 @@ const MOTION_CATALOG={
       "no": 16,
       "name": "ゼファーレイ",
       "art": "images/monsters/zephyray_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/zephyray_v1_alpha.webm",
+        "poster": "images/monsters/motion/zephyray_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 136,
+          "y": 176,
+          "right": 836,
+          "bottom": 803
+        }
+      },
+      "fingerprint": "9d18ccf012f4e6bd654fde38a349cebb3d7886390e883a015802d08ff0174059",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -395,8 +452,27 @@ const MOTION_CATALOG={
       "no": 17,
       "name": "テンペストレイ",
       "art": "images/monsters/tempestray_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/tempestray_v1_alpha.webm",
+        "poster": "images/monsters/motion/tempestray_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 149,
+          "y": 108,
+          "right": 822,
+          "bottom": 840
+        }
+      },
+      "fingerprint": "a62a0c0141e4a4ca10e78b8ddfad7a5f5ee8dab44cd76aec70a4f41c3eb596cb",
       "sourceState": "透過動画の所在確認が残る"
     },
     {

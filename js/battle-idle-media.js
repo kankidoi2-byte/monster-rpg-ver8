@@ -154,6 +154,29 @@ rikasheef:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:202,y:91,right:780,bottom:852})
+}),seralphia:Object.freeze({
+  src:'images/monsters/motion/seralphia_v1_alpha.webm',poster:'images/monsters/motion/seralphia_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:171,y:110,right:805,bottom:824})
+}),
+sylphin:Object.freeze({
+  src:'images/monsters/motion/sylphin_v1_alpha.webm',poster:'images/monsters/motion/sylphin_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:145,y:161,right:831,bottom:808})
+}),
+zephyray:Object.freeze({
+  src:'images/monsters/motion/zephyray_v1_alpha.webm',poster:'images/monsters/motion/zephyray_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:136,y:176,right:836,bottom:803})
+}),
+tempestray:Object.freeze({
+  src:'images/monsters/motion/tempestray_v1_alpha.webm',poster:'images/monsters/motion/tempestray_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:149,y:108,right:822,bottom:840})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

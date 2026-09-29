@@ -15,6 +15,10 @@ from PIL import Image
 
 source, adopted, output, report = map(pathlib.Path, sys.argv[1:])
 inspected_renderers = {
+    'seralphia-motion-v1': '7362ecc1ff6b006147da7b7469ffc9e1074a86718e738123ff2f08938d232995',
+    'sylphin-motion-v1': 'e14ac0021ec73e30f6b352dc2c0ffd5a89f924832db83489a9088f1a472a3fb6',
+    'zephyray-motion-v1': 'e14ac0021ec73e30f6b352dc2c0ffd5a89f924832db83489a9088f1a472a3fb6',
+    'tempestray-motion-v1': 'e14ac0021ec73e30f6b352dc2c0ffd5a89f924832db83489a9088f1a472a3fb6',
     'grassbeat-motion-v1': '0a19cff63de2e57df0018edf6ef4bc5acf582ab1797af56a3211f1eabaf0a7fb',
     'thornbeat-motion-v1': '0a19cff63de2e57df0018edf6ef4bc5acf582ab1797af56a3211f1eabaf0a7fb',
     'grandbeat-motion-v4': 'b158e0b99d10a8b507b022989a60f2ce61fefb6812f74be8cc6372085dc666ff',
@@ -32,6 +36,9 @@ spec.loader.exec_module(module)
 if hasattr(module, 'Hover'):
     motion = json.loads((source / 'motion.json').read_text())
     renderer = module.Hover(rig, motion)
+    render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
+elif hasattr(module, 'Ray'):
+    renderer = module.Ray()
     render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
 elif hasattr(module, 'Beetle') or hasattr(module, 'Grandbeat'):
     renderer = (module.Beetle if hasattr(module, 'Beetle') else module.Grandbeat)()

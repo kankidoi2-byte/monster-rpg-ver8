@@ -1,6 +1,6 @@
 # Phase A：全50体モーション＋バトル画面改修の現在地
 
-最新追記：Phase C第7便で通常登録経路は26/50（残り24体）へ更新。下の数値はPhase A時点のスナップショット。最新は phase-a-species-status.json と phase-c/implementation.md。
+最新追記：Phase C第8便で通常登録経路は30/50（残り20体）へ更新。下の数値はPhase A時点のスナップショット。最新は phase-a-species-status.json と phase-c/implementation.md。
 
 2026-09-29 JST。Phase A完了（照合・計画・記録）。実装全体の完了ではない。
 

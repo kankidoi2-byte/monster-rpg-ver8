@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 26,
+    "normalRegistered": 30,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 24,
+    "remainingNormalRegistration": 20,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -254,12 +254,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/seralphia-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/seralphia-alpha.json"
     },
     {
       "dexNo": 12,
@@ -341,12 +346,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/sylphin-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/sylphin-alpha.json"
     },
     {
       "dexNo": 16,
@@ -359,12 +369,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/zephyray-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/zephyray-alpha.json"
     },
     {
       "dexNo": 17,
@@ -377,12 +392,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/tempestray-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/tempestray-alpha.json"
     },
     {
       "dexNo": 18,
