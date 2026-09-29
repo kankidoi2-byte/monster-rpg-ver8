@@ -1,21 +1,24 @@
 // Runs only in the generated sandbox. Storage was replaced before game boot.
-function granReviewSetup(mode='ally',mapId='grassland'){
+let granReviewSpecies='gran_volmoog';
+function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies){
+ if(!['gran_volmoog','shenhairon','tienhairon'].includes(species)||!BATTLE_IDLE_MEDIA[species])return false;
+ granReviewSpecies=species;
  if(!['ally','enemy','multi'].includes(mode))return false;
  const map=MAPS.find(m=>m.id===mapId);if(!map)return false;
  disposeBattleIdleMedia();setBattleIdleLimit(1);
  save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};
  save.instances=[];save.party=[];
- for(const id of [mode==='ally'||mode==='multi'?'gran_volmoog':'aquaron','aquaron']){
+ for(const id of [mode==='ally'||mode==='multi'?species:'aquaron','aquaron']){
    const ins=addInstance(id,10);save.party.push(ins.uid);
  }
- prepareBattleParty();selectedMap=map;enemy=by(mode==='ally'?'slime':'gran_volmoog');
+ prepareBattleParty();selectedMap=map;enemy=by(mode==='ally'?'slime':species);
  activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';
  beginChosenBattle(map.id,enemy.id,'normal',activeHuntRequest);show('battle');
  if(mode==='multi'){
-   ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('gran_volmoog'),'enemy_a'),createMultiEnemy(by('gran_volmoog'),'enemy_b')],pendingMoveIndex:null};
+   ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(species),'enemy_a'),createMultiEnemy(by(species),'enemy_b')],pendingMoveIndex:null};
    setMultiBattleLayout(true);setupMultiBattle();setBattleIdleLimit(3);
  }
- document.getElementById('granReviewResult').textContent='表示確認待ち：'+mode+' / '+map.name;
+ document.getElementById('granReviewResult').textContent='表示確認待ち：'+by(species).name+' / '+mode+' / '+map.name;
  return true;
 }
 function granReviewMeasure(){
@@ -23,9 +26,12 @@ function granReviewMeasure(){
    const r=media.getBoundingClientRect(),side=media.closest('[id$="Vis"]')?.id;
    const size=Math.min(r.width,r.height),left=r.left+(r.width-size)/2,top=r.bottom-size;
    const flipped=media.parentElement.style.transform.includes('-1');
-   // Existing full-frame union alpha>8 bbox, inclusive endpoints converted to edges.
-   const body={left:left+size*(flipped?0:8)/960,right:left+size*(flipped?952:960)/960,
-     top:top+size*8/960,bottom:top+size*945/960};
+   const video=media.querySelector('video');
+   const config=Object.values(BATTLE_IDLE_MEDIA).find(c=>video?.getAttribute('src')===c.src);
+   const bounds=config?.sourceBounds||{width:960,height:960,x:0,y:0,right:960,bottom:960};
+   const body={left:left+size*(flipped?bounds.width-bounds.right:bounds.x)/bounds.width,
+     right:left+size*(flipped?bounds.width-bounds.x:bounds.right)/bounds.width,
+     top:top+size*bounds.y/bounds.height,bottom:top+size*bounds.bottom/bounds.height};
    const gap=el=>{const b=el.getBoundingClientRect();return Math.hypot(Math.max(b.left-body.right,body.left-b.right,0),Math.max(b.top-body.bottom,body.top-b.bottom,0));};
    const hud=[...document.querySelectorAll('#singlePlayerBox,#singleEnemyBox,.multi-enemy-copy')].filter(el=>el.getClientRects().length);
    const dock=document.querySelector('.battle-command-dock');
@@ -36,11 +42,16 @@ function granReviewMeasure(){
  document.getElementById('granReviewResult').textContent=JSON.stringify(report,null,2);return report;
 }
 const granPanel=document.createElement('section');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
-granPanel.innerHTML='<strong>グランボルモーグ戦闘確認</strong><p>各配置を2周再生し、足場・向き・切断・HPとの重なりを確認。3体は負荷確認用です。</p><div id="granReviewControls"></div><pre id="granReviewResult" style="white-space:pre-wrap"></pre>';
+granPanel.innerHTML='<strong>Phase C・モンスター戦闘確認</strong><p>各配置を2周再生し、足場・向き・切断・HPとの重なりを確認。3体は負荷確認用です。</p><div id="granReviewControls"></div><pre id="granReviewResult" style="white-space:pre-wrap"></pre>';
 document.body.prepend(granPanel);
 const granMap=document.createElement('select');granMap.setAttribute('aria-label','確認マップ');granMap.style.minHeight='48px';
 for(const map of MAPS){const opt=document.createElement('option');opt.value=map.id;opt.textContent=map.name;granMap.append(opt);}
 document.getElementById('granReviewControls').append(granMap);
+const granSpecies=document.createElement('select');granSpecies.setAttribute('aria-label','確認モンスター');granSpecies.style.minHeight='48px';
+for(const id of ['gran_volmoog','shenhairon','tienhairon']){const opt=document.createElement('option');opt.value=id;opt.textContent=by(id).name;granSpecies.append(opt);}
+granSpecies.onchange=()=>{document.getElementById('granMetricsDetails')?.remove();window.granReviewMetrics=null;granReviewSetup('ally',granMap.value,granSpecies.value);};
+document.getElementById('granReviewControls').prepend(granSpecies);
+
 for(const [label,fn] of [['味方1体',()=>granReviewSetup('ally',granMap.value)],['敵1体',()=>granReviewSetup('enemy',granMap.value)],['同種3体',()=>granReviewSetup('multi',granMap.value)],['間隔を計測',granReviewMeasure],['文字200%',()=>document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=>show('home')]]){
  const b=document.createElement('button');b.textContent=label;b.type='button';b.style.cssText='min-height:48px;margin:4px';b.onclick=fn;document.getElementById('granReviewControls').append(b);
 }
@@ -57,7 +68,7 @@ async function granReviewCollect(){
  let interrupted=document.hidden;
  const markHidden=()=>{if(document.hidden)interrupted=true;};
  document.addEventListener('visibilitychange',markHidden);
- const report={version:1,viewport:[innerWidth,innerHeight],map:granMap.value,delivery:null,samples:[],limitations:'現在の端末・画面幅の計測。横向き・他の幅・200%文字・発熱・BFCacheは別項目。自動合格判定ではありません。'};
+ const report={version:2,species:granReviewSpecies,viewport:[innerWidth,innerHeight],map:granMap.value,delivery:null,samples:[],limitations:'現在の端末・画面幅の計測。横向き・他の幅・200%文字・発熱・BFCacheは別項目。自動合格判定ではありません。'};
  const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  const quality=v=>{if(typeof v.getVideoPlaybackQuality!=='function')return null;const q=v.getVideoPlaybackQuality();return {total:q.totalVideoFrames,dropped:q.droppedVideoFrames};};
  const round=v=>Number.isFinite(v)?Math.round(v*10)/10:null;
@@ -65,7 +76,7 @@ async function granReviewCollect(){
   out.textContent='動画の配信を確認中…';
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
   try{
-   const response=await fetch(new URL(BATTLE_IDLE_MEDIA.gran_volmoog.src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
+   const response=await fetch(new URL(BATTLE_IDLE_MEDIA[granReviewSpecies].src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
    const bytes=(await response.arrayBuffer()).byteLength;
    report.delivery={status:response.status,type:response.headers.get('content-type'),range:response.headers.get('content-range'),bytes};
   }catch(error){report.delivery={error:error.name};}finally{clearTimeout(timer);}
@@ -89,7 +100,7 @@ async function granReviewCollect(){
   controls.forEach(el=>el.disabled=false);granMetricsRunning=false;
  }
  const delivery=report.delivery;
- const lines=['計測結果（この表示を送ってください）', '画面 '+report.viewport.join('×'),
+ const lines=['計測結果（この表示を送ってください）', '対象 '+by(report.species).name, '画面 '+report.viewport.join('×'),
   '配信 '+(delivery?.error||`${delivery?.status} / ${delivery?.type} / ${delivery?.bytes} bytes`),
   '範囲 '+(delivery?.range||'未取得')];
  for(const sample of report.samples){

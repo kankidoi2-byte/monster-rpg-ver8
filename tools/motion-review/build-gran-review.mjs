@@ -21,7 +21,7 @@ if([...html.matchAll(engineTag)].length!==1)throw Error('Expected one media scri
 html=html.replace(engineTag,()=>inline(runtime));
 html=html.replace('</body>',inline(read('tools/motion-review/gran-volmoog-scenario.js'))+'</body>');
 const esc=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-const wrapper=`<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>グランボルモーグ戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>グランボルモーグ：戦闘接続の検証用。通常登録経路の検証用。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="グランボルモーグ戦闘確認" sandbox="allow-scripts allow-same-origin" srcdoc="${esc(html)}"></iframe><script>
+const wrapper=`<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phase C・モンスター戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>追加モンスターの戦闘接続を検証しています。通常登録経路の検証用。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="Phase C・モンスター戦闘確認" sandbox="allow-scripts allow-same-origin" srcdoc="${esc(html)}"></iframe><script>
 const frame=document.querySelector('iframe'),status=document.getElementById('loadStatus');
 let settled=false;
 function checkReview(){

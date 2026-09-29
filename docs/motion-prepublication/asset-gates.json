@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 2 normal-route registrations of 50; final acceptance is tracked separately",
+  "scope": "Feature-branch evaluation: 4 normal-route registrations of 50; final acceptance is tracked separately",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -43,19 +43,23 @@
       "id": "shenhairon",
       "dexNo": 5,
       "name": "シェンハイロン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "実端末で味方・敵・3体のループ、端に触れる尾や足、サイズ、向き、HP重なりを確認。最終足場・負荷は別ゲート。",
+      "sourceEvidence": "phase-c/provenance.json",
+      "alphaEvidence": "phase-c/shenhairon-alpha.json"
     },
     {
       "id": "tienhairon",
       "dexNo": 6,
       "name": "ティエンハイロン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "実端末で味方・敵・3体のループ、端に触れる尾や足、サイズ、向き、HP重なりを確認。最終足場・負荷は別ゲート。",
+      "sourceEvidence": "phase-c/provenance.json",
+      "alphaEvidence": "phase-c/tienhairon-alpha.json"
     },
     {
       "id": "grassbeat",
@@ -503,5 +507,6 @@
       "android": "pending",
       "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
     }
-  ]
+  ],
+  "phaseCStatus": "in_progress; dragon pair evaluation registered; full 50 acceptance incomplete"
 }

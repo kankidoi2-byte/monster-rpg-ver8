@@ -80,4 +80,4 @@ run("show('home')");assert.equal(r.media.style.getPropertyValue('--idle-position
 for(let i=0;i<50;i++){setup();emit(rec(),1);run("show('home')");}
 assert(observers.every(o=>o.disconnected));assert.equal(records().length,0);
 checkIds();dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
-console.log(JSON.stringify({kind:'DOM + mocked media/IntersectionObserver; not real viewport or decoder',checks,pass:checks.length,normalRegistered:2,defaultLimit:1},null,2));
+console.log(JSON.stringify({kind:'DOM + mocked media/IntersectionObserver; not real viewport or decoder',checks,pass:checks.length,normalRegistered:run("Object.keys(BATTLE_IDLE_MEDIA).length"),defaultLimit:1},null,2));

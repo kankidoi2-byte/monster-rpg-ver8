@@ -45,3 +45,8 @@ Before any future merge: review diff against then-current main, preserve mb_v95c
 ## Save boundary
 
 GitHub push of the new feature branch was automatically rejected: external repository ownership/privacy and write authorization were considered insufficiently explicit in user-authored text. Do not retry through a connector or another route. Local commits and a base-relative recovery bundle preserve this task pending explicit approval to save to kankidoi2-byte/monster-rpg-ver8 feature branch. Owner-only Sites source save is separately explicitly authorized by the current user instruction.
+
+
+## 2026-09-29 Phase C 第1便
+
+シェンハイロン・ティエンハイロンv5の採用版一致、全240フレームalpha検査、GitHub実ファイル送信とバイト照合を完了。評価用通常登録4/50。残り46、最終受入未完了。詳細はphase-c/implementation.mdとprovenance.json。Phase D/E/Fや本編公開を完了扱いにしない。

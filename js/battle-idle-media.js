@@ -10,6 +10,20 @@ const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   // Preserve the measured QA canvas fit. This is not an anatomical foot anchor.
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:8,y:8,right:960,bottom:945})
+}), shenhairon:Object.freeze({
+  src:'images/monsters/motion/shenhairon_v5_alpha.webm',
+  poster:'images/monsters/motion/shenhairon_v5_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,
+  // Phase C evaluation: preserve adopted canvas; anatomical placement pending.
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:0,y:3,right:960,bottom:960})
+}), tienhairon:Object.freeze({
+  src:'images/monsters/motion/tienhairon_v5_alpha.webm',
+  poster:'images/monsters/motion/tienhairon_v5_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,
+  // Phase C evaluation: preserve adopted canvas; anatomical placement pending.
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:0,y:16,right:960,bottom:945})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

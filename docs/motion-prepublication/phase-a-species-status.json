@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 2,
+    "normalRegistered": 4,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 48,
+    "remainingNormalRegistration": 46,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -96,12 +96,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "済"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/provenance.json",
+        "phase-c/shenhairon-alpha.json"
+      ],
       "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用版一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "実端末で味方・敵・3体のループ、端に触れる尾や足、サイズ、向き、HP重なりを確認。最終足場・負荷は別ゲート。",
+      "sourceEvidence": "phase-c/provenance.json",
+      "alphaEvidence": "phase-c/shenhairon-alpha.json"
     },
     {
       "dexNo": 6,
@@ -114,12 +119,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "済"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/provenance.json",
+        "phase-c/tienhairon-alpha.json"
+      ],
       "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用版一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "実端末で味方・敵・3体のループ、端に触れる尾や足、サイズ、向き、HP重なりを確認。最終足場・負荷は別ゲート。",
+      "sourceEvidence": "phase-c/provenance.json",
+      "alphaEvidence": "phase-c/tienhairon-alpha.json"
     },
     {
       "dexNo": 7,
@@ -925,5 +935,6 @@
       "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
     }
   ],
-  "latestPhase": "B implementation (Phase A sourceCommit retained as baseline)"
+  "latestPhase": "B implementation (Phase A sourceCommit retained as baseline)",
+  "phaseCStatus": "in_progress; dragon pair evaluation registered; full 50 acceptance incomplete"
 }

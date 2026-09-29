@@ -52,6 +52,20 @@ assert.equal(run("granReviewSetup('invalid')"),false);
 assert.equal(run("granReviewSetup('ally','invalid')"),false);
 const maps=Array.from(run('MAPS.map(m=>m.id)'));
 for(const id of maps){assert(run(`granReviewSetup('ally',${JSON.stringify(id)})`));await tick();assert.equal(d.querySelectorAll('video').length,1);}
+// Phase C: switching species disposes old media and uses each adopted source.
+for(const id of ['shenhairon','tienhairon']){
+ const selector=d.querySelector('[aria-label="確認モンスター"]');
+ selector.value=id;const previous=[...d.querySelectorAll('video')];selector.dispatchEvent(new w.Event('change'));await tick();
+ assert(previous.every(v=>!v.isConnected));assert.equal(run('granReviewSpecies'),id);
+ for(const mode of ['ally','enemy','multi']){
+  run(`granReviewSetup('${mode}')`);await tick();
+  const vs=[...d.querySelectorAll('video')];assert.equal(vs.length,mode==='multi'?3:1);
+  assert(vs.every(v=>v.src.endsWith(`/images/monsters/motion/${id}_v5_alpha.webm`)));
+  run(mode==='multi'?'pHp--;updateMultiBattleView()':'pHp--;update()');assert.deepEqual([...d.querySelectorAll('video')],vs);
+ }
+}
+assert.equal(run("granReviewSetup('ally','grassland','invalid')"),false);
+run("granReviewSetup('ally','grassland','gran_volmoog')");
 // Exercise diagnostic orchestration with accelerated waits and a mocked Range response.
 const realTimeout=w.setTimeout.bind(w);w.setTimeout=(fn,ms,...args)=>realTimeout(fn,ms===16000||ms===1500?0:ms,...args);
 w.fetch=async(url,options)=>{assert.equal(options.headers.Range,'bytes=0-1023');assert(String(url).endsWith('gran_volmoog_v18_alpha.webm'));return {status:206,headers:new Map([['content-type','video/webm'],['content-range','bytes 0-1023/1758952']]),arrayBuffer:async()=>new ArrayBuffer(1024)};};

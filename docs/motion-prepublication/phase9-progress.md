@@ -191,3 +191,8 @@ DOM検査ではRange応答と待ち時間を模擬して3配置の集計と操�
 
 ## 2026-09-29 Phase B実装
 グランの無加工v18を評価branchの通常登録経路へ接続し2/50（残48）。canvas配置設定と画面外停止のヒステリシス/破棄を実装。通常上限1維持。全check/postcheckと関連DOM回帰成功。新規実機受入・長時間複数負荷・解剖学的アンカーは未完了。詳細 phase-b/implementation.md と validation.json。既存横/200%計測を再要求しない。mainマージ/一般公開は実行しない。
+
+
+## 2026-09-29 Phase C 第1便
+
+シェンハイロン・ティエンハイロンv5の採用版一致、全240フレームalpha検査、GitHub実ファイル送信とバイト照合を完了。評価用通常登録4/50。残り46、最終受入未完了。詳細はphase-c/implementation.mdとprovenance.json。Phase D/E/Fや本編公開を完了扱いにしない。
