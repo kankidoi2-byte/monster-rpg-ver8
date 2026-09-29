@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260930-phase-c-batch4",date:"2026-09-30",category:"update",title:"ネメスたちの待機モーションを追加しました",body:"ネメス、ネメシア、ネメシオンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch3",date:"2026-09-30",category:"update",title:"3体の待機モーションを追加しました",body:"ゴブリン、ナイトメア、アストラレピスが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:'20260929-phase-c-batch2',date:'2026-09-29',category:'update',title:'3体の待機モーションを追加しました',body:'スライムゴールド、アシュレイア、モルグラムが戦闘中に動くようになりました。再生できない場合は静止画で表示します。能力・技・育成状態は変わりません。'}),
   Object.freeze({id:'20260929-phase-c-dragon-motion',date:'2026-09-29',category:'update',title:'シェンハイロンたちの待機モーションを追加',body:'シェンハイロンとティエンハイロンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。能力・技・育成状態は変わりません。'}),

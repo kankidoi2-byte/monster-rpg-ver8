@@ -6,7 +6,7 @@ let playing=false,rejectPlay=false;w.HTMLMediaElement.prototype.load=function(){
 Object.defineProperty(d,'hidden',{configurable:true,value:false});w.localStorage.setItem('mb_v95c','unchanged');
 for(const p of ['tools/motion-review/catalog-data.generated.js','tools/motion-review/catalog.js'])run(fs.readFileSync(p,'utf8'));
 const $=id=>d.getElementById(id),change=id=>$(id).dispatchEvent(new w.Event('change'));
-assert.equal(run('catalogRows.length'),50);const count=run('catalogRows.filter(r=>r.motion).length');assert.equal(count,10);assert.equal(d.querySelectorAll('.card').length,count);assert.equal(d.querySelectorAll('video[src]').length,0);
+assert.equal(run('catalogRows.length'),50);const count=run('catalogRows.filter(r=>r.motion).length');assert.equal(count,13);assert.equal(d.querySelectorAll('.card').length,count);assert.equal(d.querySelectorAll('video[src]').length,0);
 $('filter').value='all';change('filter');assert.equal(d.querySelectorAll('.card').length,50);
 run("inspect('slime_gold')");assert.equal(d.querySelectorAll('video[src]').length,0);await run('playSelected()');assert(playing);assert($('motion').src.endsWith('slime_gold_v1_alpha.webm'));
 run("inspect('false_dragon_gamma')");assert(!playing);assert(!$('motion').hasAttribute('src'));assert.equal($('still').style.transform,'scaleX(-1)');$('side').click();assert.equal($('still').style.transform,'');

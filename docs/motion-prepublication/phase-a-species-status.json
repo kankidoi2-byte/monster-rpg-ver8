@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 10,
+    "normalRegistered": 13,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 40,
+    "remainingNormalRegistration": 37,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -595,8 +595,10 @@
         "phase-c/batch3/goblin-alpha.json"
       ],
       "nextPhase": "D",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch3/provenance.json",
+      "alphaEvidence": "phase-c/batch3/goblin-alpha.json"
     },
     {
       "dexNo": 32,
@@ -706,8 +708,10 @@
         "phase-c/batch3/nightmare-alpha.json"
       ],
       "nextPhase": "D",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch3/provenance.json",
+      "alphaEvidence": "phase-c/batch3/nightmare-alpha.json"
     },
     {
       "dexNo": 38,
@@ -727,8 +731,10 @@
         "phase-c/batch3/astralepis-alpha.json"
       ],
       "nextPhase": "D",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch3/provenance.json",
+      "alphaEvidence": "phase-c/batch3/astralepis-alpha.json"
     },
     {
       "dexNo": 39,
@@ -787,12 +793,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch4/provenance.json",
+        "phase-c/batch4/nemes-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch4/provenance.json",
+      "alphaEvidence": "phase-c/batch4/nemes-alpha.json"
     },
     {
       "dexNo": 42,
@@ -805,12 +816,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch4/provenance.json",
+        "phase-c/batch4/nemesia-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch4/provenance.json",
+      "alphaEvidence": "phase-c/batch4/nemesia-alpha.json"
     },
     {
       "dexNo": 43,
@@ -823,12 +839,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch4/provenance.json",
+        "phase-c/batch4/nemesion-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch4/provenance.json",
+      "alphaEvidence": "phase-c/batch4/nemesion-alpha.json"
     },
     {
       "dexNo": 44,

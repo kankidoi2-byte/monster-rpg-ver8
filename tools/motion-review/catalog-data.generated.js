@@ -539,8 +539,27 @@ const MOTION_CATALOG={
       "no": 41,
       "name": "ネメス",
       "art": "images/monsters/nemes_v2.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/nemes_v1_alpha.webm",
+        "poster": "images/monsters/motion/nemes_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 107,
+          "y": 81,
+          "right": 855,
+          "bottom": 863
+        }
+      },
+      "fingerprint": "7050c475e20d17ebc944a31657fe5fc04e0aaf418aec8d18ab6beb2889977307",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -548,8 +567,27 @@ const MOTION_CATALOG={
       "no": 42,
       "name": "ネメシア",
       "art": "images/monsters/nemesia_v2.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/nemesia_v1_alpha.webm",
+        "poster": "images/monsters/motion/nemesia_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 86,
+          "y": 122,
+          "right": 873,
+          "bottom": 830
+        }
+      },
+      "fingerprint": "1b634bb27a61d5d9df6f9a03a3c6a1b5b521400fbb958588b3e1a22f2017d7c6",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -557,8 +595,27 @@ const MOTION_CATALOG={
       "no": 43,
       "name": "ネメシオン",
       "art": "images/monsters/nemesion_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/nemesion_v1_alpha.webm",
+        "poster": "images/monsters/motion/nemesion_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 57,
+          "y": 64,
+          "right": 906,
+          "bottom": 895
+        }
+      },
+      "fingerprint": "0d548b4bbcf695976e6607b9d840f29e0062e1b592336625751a3704b5a4538b",
       "sourceState": "透過動画の所在記録あり"
     },
     {

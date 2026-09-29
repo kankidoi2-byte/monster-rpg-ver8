@@ -1,0 +1,37 @@
+{
+  "dateJST": "2026-09-30",
+  "phase": "C",
+  "batch": 4,
+  "registered": 13,
+  "remaining": 37,
+  "species": [
+    "nemes",
+    "nemesia",
+    "nemesion"
+  ],
+  "github": {
+    "repository": "kankidoi2-byte/monster-rpg-ver8",
+    "branch": "feat/phase4c-prepublication",
+    "assetCommit": "ead17043515733643bb6da258f26a163a52924d1",
+    "remoteAssetBytesVerified": true,
+    "mainMerged": false
+  },
+  "site": {
+    "projectId": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+    "sourceCommit": "61e56346fec6517c4b8584d4a69bffc6bf099462",
+    "deploymentId": "appgdep_6abc312e18708191af7135db2f4439fd",
+    "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_2c1d26a698888191835ae1b1990dfb72",
+    "status": "succeeded",
+    "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+    "audience": "owner-private",
+    "archiveIntegrityVerified": true
+  },
+  "checks": {
+    "npmCheck": "passed",
+    "alphaFramesPerSpecies": 240,
+    "sourceZipMatchesAdoptedWebm": true,
+    "realDeviceAcceptance": "pending",
+    "all50Acceptance": "pending"
+  },
+  "next": "Continue remaining Phase C registrations; Phase D battle placement and Phase E integrated device/load acceptance remain."
+}

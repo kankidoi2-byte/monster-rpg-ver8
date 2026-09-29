@@ -62,6 +62,23 @@ astralepis:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:122,y:61,right:871,bottom:894})
+}),nemes:Object.freeze({
+  src:'images/monsters/motion/nemes_v1_alpha.webm',poster:'images/monsters/motion/nemes_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:107,y:81,right:855,bottom:863})
+}),
+nemesia:Object.freeze({
+  src:'images/monsters/motion/nemesia_v1_alpha.webm',poster:'images/monsters/motion/nemesia_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:86,y:122,right:873,bottom:830})
+}),
+nemesion:Object.freeze({
+  src:'images/monsters/motion/nemesion_v1_alpha.webm',poster:'images/monsters/motion/nemesion_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:57,y:64,right:906,bottom:895})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
