@@ -272,16 +272,17 @@
       "dexNo": 28,
       "name": "グランボルモーグ",
       "implementation": "isolated actual-game QA integration; not registered in normal runtime",
-      "fullAssetAcceptance": "pending: all three instructed Galaxy playback/battle scenarios user-confirmed; measured placement, delivery and shared technical gates remain",
-      "android": "2026-09-29 user confirms single-monster, enemy-only and three-monster review without problems on Galaxy. Exact viewport, browser/version and quantitative performance not independently measured.",
-      "next": "Reconcile remaining measured placement (HUD >=8px, controls >=12px across required widths/orientation/font sizes), HTTP MIME/Range and shared runtime gates before normal registration. Reuse accepted single/enemy/three-monster reports; do not repeat them or resend artwork.",
+      "fullAssetAcceptance": "pending: Galaxy three-scenario playback, review MIME/Range and measured grassland placement at 384x621 accepted; remaining responsive and shared runtime gates retained",
+      "android": "2026-09-29 Galaxy user confirms all three scenarios; screenshot shows 384x621 grassland, video/webm HTTP206 Range1024, HUD minimum20.9px and controls minimum286.7px. Short frame measurements recorded, not universal performance acceptance.",
+      "next": "Verify landscape and 200% text using existing review controls, then remaining required widths/shared runtime gates. Reuse completed portrait normal-text measurement and MIME/Range acceptance; do not resend assets.",
       "evidence": [
         "gran-volmoog-alpha.json",
         "phase9-progress.md",
         "gran-volmoog-registration-preflight.json",
         "gran-volmoog-review-dom.json",
         "gran-volmoog-implementation.md",
-        "gran-volmoog-device-acceptance.json"
+        "gran-volmoog-device-acceptance.json",
+        "gran-volmoog-galaxy-metrics-20260929.json"
       ],
       "decisionHistory": [
         {
@@ -308,14 +309,14 @@
         "pendingReasons": [
           "Full-loop footing and anchor values",
           "Facing/reflection in actual battle placement",
-          "Battle occupancy across phone widths, landscape and text enlargement; HUD >=8px and controls >=12px",
-          "HTTP MIME/Range technical delivery checks; actual playback in all three instructed Galaxy scenarios user-confirmed",
+          "Remaining battle occupancy across required widths, landscape and text enlargement; 384x621 grassland normal text passed (HUD >=8px, controls >=12px)",
           "Shared quantitative load/BFCache/offscreen policy gates where still unverified"
         ],
         "normalRuntimeRegistration": "not registered",
         "publication": "forbidden",
         "singleMonsterDeviceAcceptance": "User report PASS within instructed single-monster scope: battle displays, playback continues without interruption or UI overlap, battle completes. Not an all-mode/all-viewport gate.",
-        "multiMonsterDeviceAcceptance": "07:25 JST user reports both instructed enemy-only and three-monster scenarios without problems."
+        "multiMonsterDeviceAcceptance": "07:25 JST user reports both instructed enemy-only and three-monster scenarios without problems.",
+        "measuredDeviceAcceptance": "gran-volmoog-galaxy-metrics-20260929.json: review HTTP MIME/Range and measured placement PASS at 384x621 grassland; short playback metrics observed, broader performance gate pending."
       }
     },
     {

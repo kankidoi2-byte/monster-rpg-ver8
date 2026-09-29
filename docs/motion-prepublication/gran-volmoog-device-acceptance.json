@@ -11,10 +11,10 @@
     "at0725JST": "指示した敵1体・同種3体の確認について、どちらも問題なしと本人が報告"
   },
   "pending": [
-    "measured HUD >=8px and controls >=12px across required widths/orientations/font sizes",
-    "full-loop footing/facing/anchor and technical delivery/runtime gates"
+    "Remaining required widths, landscape and 200% text placement; 384x621 grassland normal text passed",
+    "Full-loop footing/facing/anchor and shared long-duration/load/BFCache/offscreen gates where unverified"
   ],
-  "next": "Reconcile remaining measured placement, delivery and shared runtime gates before normal registry addition. Do not repeat accepted Galaxy scenarios or asset transmission.",
+  "next": "Verify landscape and 200% text using existing review controls, then remaining required widths/shared runtime gates. Reuse completed portrait normal-text measurement and MIME/Range acceptance; do not resend assets.",
   "normalRuntimeRegistration": "not registered",
   "mainPublication": "forbidden",
   "automatedEvidence": {
@@ -34,5 +34,6 @@
     ],
     "limitation": "media mocked; no real decoder, layout or performance verification",
     "executedDateJST": "2026-09-29 before 07:25 user report; reused unchanged, not rerun"
-  }
+  },
+  "measurementEvidence": "gran-volmoog-galaxy-metrics-20260929.json"
 }
