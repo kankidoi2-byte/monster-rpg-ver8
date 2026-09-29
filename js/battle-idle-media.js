@@ -24,6 +24,27 @@ const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   // Phase C evaluation: preserve adopted canvas; anatomical placement pending.
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:0,y:16,right:960,bottom:945})
+}),slime_gold:Object.freeze({
+
+  src:'images/monsters/motion/slime_gold_v1_alpha.webm',
+  poster:'images/monsters/motion/slime_gold_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:720,height:640,x:47,y:65,right:664,bottom:559})
+}),false_dragon_beta:Object.freeze({
+
+  src:'images/monsters/motion/false_dragon_beta_v2_alpha.webm',
+  poster:'images/monsters/motion/false_dragon_beta_v2_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:65,y:137,right:898,bottom:845})
+}),false_dragon_gamma:Object.freeze({
+
+  src:'images/monsters/motion/false_dragon_gamma_v1_alpha.webm',
+  poster:'images/monsters/motion/false_dragon_gamma_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:90,y:85,right:886,bottom:885})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
@@ -214,7 +235,7 @@ function syncBattleIdleCandidate(chosen){
       disposed:false,failed:false,pending:false,retried:false,state:'loading',reasons:[],
       attempt:0,playToken:0,clockToken:0,timer:null,remaining:BATTLE_IDLE_WAIT_MS,waitStarted:0};
     battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');img.src=config.poster;
-    if(chosen.vis==='pVis'&&config.allyFlip)r.facing.style.transform='scaleX(-1)';
+    if(chosen.vis==='pVis'?config.allyFlip:config.enemyFlip)r.facing.style.transform='scaleX(-1)';
     applyBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
     button.onclick=()=>{
       if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops(r).length)return;

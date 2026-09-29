@@ -53,17 +53,27 @@ assert.equal(run("granReviewSetup('ally','invalid')"),false);
 const maps=Array.from(run('MAPS.map(m=>m.id)'));
 for(const id of maps){assert(run(`granReviewSetup('ally',${JSON.stringify(id)})`));await tick();assert.equal(d.querySelectorAll('video').length,1);}
 // Phase C: switching species disposes old media and uses each adopted source.
-for(const id of ['shenhairon','tienhairon']){
+for(const id of ['shenhairon','tienhairon','slime_gold','false_dragon_beta','false_dragon_gamma']){
  const selector=d.querySelector('[aria-label="確認モンスター"]');
  selector.value=id;const previous=[...d.querySelectorAll('video')];selector.dispatchEvent(new w.Event('change'));await tick();
  assert(previous.every(v=>!v.isConnected));assert.equal(run('granReviewSpecies'),id);
  for(const mode of ['ally','enemy','multi']){
   run(`granReviewSetup('${mode}')`);await tick();
   const vs=[...d.querySelectorAll('video')];assert.equal(vs.length,mode==='multi'?3:1);
-  assert(vs.every(v=>v.src.endsWith(`/images/monsters/motion/${id}_v5_alpha.webm`)));
+  assert(vs.every(v=>v.src.endsWith('/'+run(`BATTLE_IDLE_MEDIA['${id}'].src`))));
+  const facing=mode==='enemy'?d.querySelector('#eVis .battle-facing'):d.querySelector('#pVis .battle-facing');
+  const flip=run(`BATTLE_IDLE_MEDIA['${id}'].${mode==='enemy'?'enemyFlip':'allyFlip'}`);
+  assert.equal(facing.style.transform,flip?'scaleX(-1)':'');
   run(mode==='multi'?'pHp--;updateMultiBattleView()':'pHp--;update()');assert.deepEqual([...d.querySelectorAll('video')],vs);
  }
 }
+// Non-square 720x640 source inside a 360x360, bottom-aligned media box.
+run("granReviewSetup('ally','grassland','slime_gold')");await tick();
+const squareMedia=d.querySelector('.battle-static-media.has-idle-media');
+squareMedia.getBoundingClientRect=()=>({left:10,top:20,width:360,height:360,right:370,bottom:380});
+const body=run('granReviewMeasure().units[0].body');
+assert.equal(body.left,33.5);assert.equal(body.right,342);
+assert.equal(body.top,92.5);assert.equal(body.bottom,339.5);
 assert.equal(run("granReviewSetup('ally','grassland','invalid')"),false);
 run("granReviewSetup('ally','grassland','gran_volmoog')");
 // Exercise diagnostic orchestration with accelerated waits and a mocked Range response.

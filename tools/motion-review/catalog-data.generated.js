@@ -1,0 +1,571 @@
+const MOTION_CATALOG={
+  "schema": 1,
+  "rows": [
+    {
+      "id": "freigal",
+      "no": 1,
+      "name": "フレイガル",
+      "art": "images/monsters/freigal_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "freiwolf",
+      "no": 2,
+      "name": "フレイウルフ",
+      "art": "images/monsters/freiwolf_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "aquaron",
+      "no": 3,
+      "name": "アクアロン",
+      "art": "images/monsters/aquaron_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "highaquaron",
+      "no": 4,
+      "name": "ハイアクアロン",
+      "art": "images/monsters/highaquaron_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "shenhairon",
+      "no": 5,
+      "name": "シェンハイロン",
+      "art": "images/monsters/shenhairon_20260919.webp",
+      "motion": {
+        "src": "images/monsters/motion/shenhairon_v5_alpha.webm",
+        "poster": "images/monsters/motion/shenhairon_v5_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 0,
+          "y": 3,
+          "right": 960,
+          "bottom": 960
+        }
+      },
+      "fingerprint": "9cf6f7fc8e6748e6c324bdceb26b379c06223dcd1facf96656babcba0b5df659",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "tienhairon",
+      "no": 6,
+      "name": "ティエンハイロン",
+      "art": "images/monsters/tienhairon_20260923.webp",
+      "motion": {
+        "src": "images/monsters/motion/tienhairon_v5_alpha.webm",
+        "poster": "images/monsters/motion/tienhairon_v5_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 0,
+          "y": 16,
+          "right": 960,
+          "bottom": 945
+        }
+      },
+      "fingerprint": "4e046fcc3d7c67c77ab0ff1fb5477cc09ceef696b56eaf2c6713729d1b5eb747",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "grassbeat",
+      "no": 7,
+      "name": "グラスビート",
+      "art": "images/monsters/grassbeat_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "thornbeat",
+      "no": 8,
+      "name": "ソーンビート",
+      "art": "images/monsters/thornbeat_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "granbeat",
+      "no": 9,
+      "name": "グランビート",
+      "art": "images/monsters/granbeat_20260919.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "rikasheef",
+      "no": 10,
+      "name": "リカシーフ",
+      "art": "images/monsters/rikasheef_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "seralphia",
+      "no": 11,
+      "name": "セラルフィア",
+      "art": "images/monsters/seralphia_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "volteck",
+      "no": 12,
+      "name": "ボルテック",
+      "art": "images/monsters/volteck_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "spaquinn",
+      "no": 13,
+      "name": "スパクイン",
+      "art": "images/monsters/spaquinn_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "voltax",
+      "no": 14,
+      "name": "ボルタックス",
+      "art": "images/monsters/voltax_20260921_square.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "sylphin",
+      "no": 15,
+      "name": "シルフィン",
+      "art": "images/monsters/sylphin_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "zephyray",
+      "no": 16,
+      "name": "ゼファーレイ",
+      "art": "images/monsters/zephyray_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "tempestray",
+      "no": 17,
+      "name": "テンペストレイ",
+      "art": "images/monsters/tempestray_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "luxseed",
+      "no": 18,
+      "name": "ルクシード",
+      "art": "images/monsters/luxseed_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "luxiard",
+      "no": 19,
+      "name": "ルクシアード",
+      "art": "images/monsters/luxiard_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "lux_galdion",
+      "no": 20,
+      "name": "ルクスガルディオン",
+      "art": "images/monsters/lux_galdion_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "nocle",
+      "no": 21,
+      "name": "ノクル",
+      "art": "images/monsters/nocle_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "noclaid",
+      "no": 22,
+      "name": "ノクレイド",
+      "art": "images/monsters/noclaid_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "noxvelg",
+      "no": 23,
+      "name": "ノクスヴェルグ",
+      "art": "images/monsters/noxvelg_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "orcana",
+      "no": 24,
+      "name": "オルカーナ",
+      "art": "images/monsters/orcana_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "orca_stream",
+      "no": 25,
+      "name": "オルカストリーム",
+      "art": "images/monsters/orca_stream_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "orca_abyss",
+      "no": 26,
+      "name": "オルカアビス",
+      "art": "images/monsters/orca_abyss_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "volmoog",
+      "no": 27,
+      "name": "ボルモーグ",
+      "art": "images/monsters/volmoog_20260920.webp",
+      "motion": {
+        "src": "images/monsters/motion/volmoog_v18_alpha.webm",
+        "poster": "images/monsters/motion/volmoog_v18_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true
+      },
+      "fingerprint": "d41b78045234b0b499aec61e644b4b44a269d30c71227e066fd57453993ffb4f",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "gran_volmoog",
+      "no": 28,
+      "name": "グランボルモーグ",
+      "art": "images/monsters/gran_volmoog_20260920.webp",
+      "motion": {
+        "src": "images/monsters/motion/gran_volmoog_v18_alpha.webm",
+        "poster": "images/monsters/motion/gran_volmoog_v18_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 8,
+          "y": 8,
+          "right": 960,
+          "bottom": 945
+        }
+      },
+      "fingerprint": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "slime",
+      "no": 29,
+      "name": "スライム",
+      "art": "images/monsters/slime_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "slime_gold",
+      "no": 30,
+      "name": "スライムゴールド",
+      "art": "images/monsters/slime_gold_20260920.webp",
+      "motion": {
+        "src": "images/monsters/motion/slime_gold_v1_alpha.webm",
+        "poster": "images/monsters/motion/slime_gold_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 720,
+          "height": 640,
+          "x": 47,
+          "y": 65,
+          "right": 664,
+          "bottom": 559
+        }
+      },
+      "fingerprint": "4d0c1b79281f690010190a1c4ffb7ab89b280e75d62a10ce513c658604024850",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "goblin",
+      "no": 31,
+      "name": "ゴブリン",
+      "art": "images/monsters/goblin_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "ignaros",
+      "no": 32,
+      "name": "イグナロス",
+      "art": "images/monsters/ignaros_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "tsubaki",
+      "no": 33,
+      "name": "炎の精霊ツバキ",
+      "art": "images/monsters/tsubaki_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "suiren",
+      "no": 34,
+      "name": "水の精霊スイレン",
+      "art": "images/monsters/suiren_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "proto_icegolem",
+      "no": 35,
+      "name": "ゴーレム",
+      "art": "images/monsters/golem_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "icegolem",
+      "no": 36,
+      "name": "アイスゴーレム",
+      "art": "images/monsters/icegolem_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "nightmare",
+      "no": 37,
+      "name": "ナイトメア",
+      "art": "images/monsters/nightmare_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "astralepis",
+      "no": 38,
+      "name": "アストラレピス",
+      "art": "images/monsters/astralepis_20260920_v3.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "false_dragon_beta",
+      "no": 39,
+      "name": "アシュレイア",
+      "art": "images/monsters/ashleia_20260920.webp",
+      "motion": {
+        "src": "images/monsters/motion/false_dragon_beta_v2_alpha.webm",
+        "poster": "images/monsters/motion/false_dragon_beta_v2_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 65,
+          "y": 137,
+          "right": 898,
+          "bottom": 845
+        }
+      },
+      "fingerprint": "e83837f58d9f70ec058d16d5f5286923c617362802e8e3b895e1fc660519c797",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "false_dragon_gamma",
+      "no": 40,
+      "name": "モルグラム",
+      "art": "images/monsters/morgram_20260920.webp",
+      "motion": {
+        "src": "images/monsters/motion/false_dragon_gamma_v1_alpha.webm",
+        "poster": "images/monsters/motion/false_dragon_gamma_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 90,
+          "y": 85,
+          "right": 886,
+          "bottom": 885
+        }
+      },
+      "fingerprint": "d07509725eac02f79bddfe90e011b427415896ddbb4f0d8a0ebaec466e842a27",
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "nemes",
+      "no": 41,
+      "name": "ネメス",
+      "art": "images/monsters/nemes_v2.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "nemesia",
+      "no": 42,
+      "name": "ネメシア",
+      "art": "images/monsters/nemesia_v2.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "nemesion",
+      "no": 43,
+      "name": "ネメシオン",
+      "art": "images/monsters/nemesion_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "doom_nemesion",
+      "no": 44,
+      "name": "滅亡の星 ネメシオン",
+      "art": "images/monsters/doom_nemesion_20260924.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "false_dragon_alfa",
+      "no": 45,
+      "name": "偽竜 code:alfa",
+      "art": "images/monsters/false_dragon_alfa_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在記録あり"
+    },
+    {
+      "id": "galdra",
+      "no": 46,
+      "name": "ガルドラ",
+      "art": "images/monsters/galdra_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "alchemion",
+      "no": 47,
+      "name": "錬核獣アルケミオン",
+      "art": "images/monsters/alchemion_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "kimeragna",
+      "no": 48,
+      "name": "混成翼竜キメラグナ",
+      "art": "images/monsters/kimeragna_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "kimeragna_apex",
+      "no": 49,
+      "name": "キメラグナ・アペクス",
+      "art": "images/monsters/kimeragna_apex_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    },
+    {
+      "id": "elixion",
+      "no": 50,
+      "name": "賢金神竜エリクシオン",
+      "art": "images/monsters/elixion_20260920.webp",
+      "motion": null,
+      "fingerprint": null,
+      "sourceState": "透過動画の所在確認が残る"
+    }
+  ]
+};

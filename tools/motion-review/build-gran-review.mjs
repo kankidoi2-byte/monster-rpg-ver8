@@ -29,6 +29,8 @@ function checkReview(){
  try{
   const doc=frame.contentDocument;
   if(!doc||!doc.querySelector('#granReviewControls button')||[...doc.querySelectorAll('link[rel=stylesheet]')].some(link=>!link.sheet)||!doc.querySelector('#battle.active'))throw Error('resources');
+  const species=new URLSearchParams(location.search).get('species');
+  if(species&&frame.contentWindow.granReviewSetup('ally','grassland',species)){doc.querySelector('[aria-label=\"確認モンスター\"]').value=species;}
   settled=true;frame.style.visibility='visible';status.textContent='';frame.contentWindow.dispatchEvent(new Event('resize'));
  }catch{
   settled=true;status.textContent='戦闘画面の読み込みに失敗しました。ページを再読み込みしてください。改善しない場合は、この表示をお知らせください。';

@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 4,
+    "normalRegistered": 7,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 46,
+    "remainingNormalRegistration": 43,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -565,12 +565,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch2/provenance.json",
+        "phase-c/batch2/slime_gold-alpha.json"
+      ],
       "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/slime_gold-alpha.json"
     },
     {
       "dexNo": 31,
@@ -727,12 +732,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch2/provenance.json",
+        "phase-c/batch2/false_dragon_beta-alpha.json"
+      ],
       "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/false_dragon_beta-alpha.json"
     },
     {
       "dexNo": 40,
@@ -745,12 +755,17 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch2/provenance.json",
+        "phase-c/batch2/false_dragon_gamma-alpha.json"
+      ],
       "nextPhase": "C",
-      "status": "独立WebM所在の記録あり／通常未登録",
-      "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/false_dragon_gamma-alpha.json"
     },
     {
       "dexNo": 41,
@@ -936,5 +951,5 @@
     }
   ],
   "latestPhase": "B implementation (Phase A sourceCommit retained as baseline)",
-  "phaseCStatus": "in_progress; dragon pair evaluation registered; full 50 acceptance incomplete"
+  "phaseCStatus": "in_progress; batch2 and consolidated50 catalog; final acceptance incomplete"
 }

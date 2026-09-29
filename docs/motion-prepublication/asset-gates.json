@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 4 normal-route registrations of 50; final acceptance is tracked separately",
+  "scope": "Feature-branch evaluation: 7 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -221,10 +221,12 @@
       "id": "slime_gold",
       "dexNo": 30,
       "name": "スライムゴールド",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/slime_gold-alpha.json"
     },
     {
       "id": "goblin",
@@ -248,19 +250,23 @@
       "id": "false_dragon_beta",
       "dexNo": 39,
       "name": "アシュレイア",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/false_dragon_beta-alpha.json"
     },
     {
       "id": "false_dragon_gamma",
       "dexNo": 40,
       "name": "モルグラム",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/false_dragon_gamma-alpha.json"
     },
     {
       "id": "volmoog",
@@ -508,5 +514,5 @@
       "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
     }
   ],
-  "phaseCStatus": "in_progress; dragon pair evaluation registered; full 50 acceptance incomplete"
+  "phaseCStatus": "in_progress; batch2 and consolidated50 catalog; final acceptance incomplete"
 }

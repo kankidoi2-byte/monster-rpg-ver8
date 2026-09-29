@@ -1,7 +1,7 @@
 // Runs only in the generated sandbox. Storage was replaced before game boot.
 let granReviewSpecies='gran_volmoog';
 function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies){
- if(!['gran_volmoog','shenhairon','tienhairon'].includes(species)||!BATTLE_IDLE_MEDIA[species])return false;
+ if(!Object.hasOwn(BATTLE_IDLE_MEDIA,species))return false;
  granReviewSpecies=species;
  if(!['ally','enemy','multi'].includes(mode))return false;
  const map=MAPS.find(m=>m.id===mapId);if(!map)return false;
@@ -24,14 +24,16 @@ function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies
 function granReviewMeasure(){
  const units=[...document.querySelectorAll('.battle-static-media.has-idle-media')].map(media=>{
    const r=media.getBoundingClientRect(),side=media.closest('[id$="Vis"]')?.id;
-   const size=Math.min(r.width,r.height),left=r.left+(r.width-size)/2,top=r.bottom-size;
    const flipped=media.parentElement.style.transform.includes('-1');
    const video=media.querySelector('video');
    const config=Object.values(BATTLE_IDLE_MEDIA).find(c=>video?.getAttribute('src')===c.src);
    const bounds=config?.sourceBounds||{width:960,height:960,x:0,y:0,right:960,bottom:960};
-   const body={left:left+size*(flipped?bounds.width-bounds.right:bounds.x)/bounds.width,
-     right:left+size*(flipped?bounds.width-bounds.x:bounds.right)/bounds.width,
-     top:top+size*bounds.y/bounds.height,bottom:top+size*bounds.bottom/bounds.height};
+   const fit=Math.min(r.width/bounds.width,r.height/bounds.height);
+   const width=bounds.width*fit,height=bounds.height*fit;
+   const left=r.left+(r.width-width)*(config?.layout?.x??0.5),top=r.top+(r.height-height)*(config?.layout?.y??0.5);
+   const body={left:left+(flipped?bounds.width-bounds.right:bounds.x)*fit,
+     right:left+(flipped?bounds.width-bounds.x:bounds.right)*fit,
+     top:top+bounds.y*fit,bottom:top+bounds.bottom*fit};
    const gap=el=>{const b=el.getBoundingClientRect();return Math.hypot(Math.max(b.left-body.right,body.left-b.right,0),Math.max(b.top-body.bottom,body.top-b.bottom,0));};
    const hud=[...document.querySelectorAll('#singlePlayerBox,#singleEnemyBox,.multi-enemy-copy')].filter(el=>el.getClientRects().length);
    const dock=document.querySelector('.battle-command-dock');
@@ -48,7 +50,7 @@ const granMap=document.createElement('select');granMap.setAttribute('aria-label'
 for(const map of MAPS){const opt=document.createElement('option');opt.value=map.id;opt.textContent=map.name;granMap.append(opt);}
 document.getElementById('granReviewControls').append(granMap);
 const granSpecies=document.createElement('select');granSpecies.setAttribute('aria-label','確認モンスター');granSpecies.style.minHeight='48px';
-for(const id of ['gran_volmoog','shenhairon','tienhairon']){const opt=document.createElement('option');opt.value=id;opt.textContent=by(id).name;granSpecies.append(opt);}
+for(const id of ['gran_volmoog',...Object.keys(BATTLE_IDLE_MEDIA).filter(id=>id!=='gran_volmoog')]){const opt=document.createElement('option');opt.value=id;opt.textContent=by(id).name;granSpecies.append(opt);}
 granSpecies.onchange=()=>{document.getElementById('granMetricsDetails')?.remove();window.granReviewMetrics=null;granReviewSetup('ally',granMap.value,granSpecies.value);};
 document.getElementById('granReviewControls').prepend(granSpecies);
 
