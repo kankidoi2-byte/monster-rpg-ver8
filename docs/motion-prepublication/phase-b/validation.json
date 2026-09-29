@@ -23,6 +23,7 @@
   "newDeviceTest": false,
   "newBrowserDecodeTest": false,
   "assetSha256": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
-  "acceptance": "implementation verified with mocks; Phase B full acceptance pending real device/offscreen + shared load/anchor conditions",
-  "publication": "main merge/public release forbidden"
+  "acceptance": "Bounded Phase B implementation and two instructed device checks accepted; Phase C may proceed with default1. Shared load, actual BFCache and final anchor conditions remain.",
+  "publication": "main merge/public release forbidden",
+  "deviceFollowup": "device-report.json: instructed offscreen/app-return user PASS; not agent-run device test"
 }
