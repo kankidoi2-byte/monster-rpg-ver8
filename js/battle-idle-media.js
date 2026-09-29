@@ -45,6 +45,23 @@ const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:90,y:85,right:886,bottom:885})
+}),goblin:Object.freeze({
+  src:'images/monsters/motion/goblin_v1_alpha.webm',poster:'images/monsters/motion/goblin_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:71,y:125,right:887,bottom:828})
+}),
+nightmare:Object.freeze({
+  src:'images/monsters/motion/nightmare_v1_alpha.webm',poster:'images/monsters/motion/nightmare_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:102,y:83,right:840,bottom:870})
+}),
+astralepis:Object.freeze({
+  src:'images/monsters/motion/astralepis_v1_alpha.webm',poster:'images/monsters/motion/astralepis_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:122,y:61,right:871,bottom:894})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

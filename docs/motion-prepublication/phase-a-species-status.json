@@ -1,14 +1,14 @@
 {
-  "dateJST": "2026-09-29",
+  "dateJST": "2026-09-30",
   "sourceCommit": "15f634fde30e7974b106acbccb7b80a2b5504c11",
   "inventorySource": "Phase1-motion-inventory.md v12 section14 (2026-09-25 baseline, not fresh Drive inspection)",
   "scope": "全50体＋バトル画面改修。通常登録はfeature branch内。本編公開数ではない。",
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 7,
+    "normalRegistered": 10,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 43,
+    "remainingNormalRegistration": 40,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -588,10 +588,13 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch3/provenance.json",
+        "phase-c/batch3/goblin-alpha.json"
+      ],
+      "nextPhase": "D",
       "status": "独立WebM所在の記録あり／通常未登録",
       "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
     },
@@ -696,10 +699,13 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch3/provenance.json",
+        "phase-c/batch3/nightmare-alpha.json"
+      ],
+      "nextPhase": "D",
       "status": "独立WebM所在の記録あり／通常未登録",
       "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
     },
@@ -714,10 +720,13 @@
         "webmLocation": "あり",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch3/provenance.json",
+        "phase-c/batch3/astralepis-alpha.json"
+      ],
+      "nextPhase": "D",
       "status": "独立WebM所在の記録あり／通常未登録",
       "next": "採用原本・制作物を照合し、全編alpha/bbox・足元・向き・ループを確認。"
     },

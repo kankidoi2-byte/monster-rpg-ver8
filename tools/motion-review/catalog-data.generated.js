@@ -354,8 +354,27 @@ const MOTION_CATALOG={
       "no": 31,
       "name": "ゴブリン",
       "art": "images/monsters/goblin_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/goblin_v1_alpha.webm",
+        "poster": "images/monsters/motion/goblin_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 71,
+          "y": 125,
+          "right": 887,
+          "bottom": 828
+        }
+      },
+      "fingerprint": "d1925050de300d2f5c677a853fb7b6e6fb40f8827052c18eb9cd6fc7d7b9914b",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -408,8 +427,27 @@ const MOTION_CATALOG={
       "no": 37,
       "name": "ナイトメア",
       "art": "images/monsters/nightmare_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/nightmare_v1_alpha.webm",
+        "poster": "images/monsters/motion/nightmare_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 102,
+          "y": 83,
+          "right": 840,
+          "bottom": 870
+        }
+      },
+      "fingerprint": "3297b2c39e3500a7a6d181282ec1050af47708e64a3aa9db95fafb5838f554b5",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -417,8 +455,27 @@ const MOTION_CATALOG={
       "no": 38,
       "name": "アストラレピス",
       "art": "images/monsters/astralepis_20260920_v3.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/astralepis_v1_alpha.webm",
+        "poster": "images/monsters/motion/astralepis_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 122,
+          "y": 61,
+          "right": 871,
+          "bottom": 894
+        }
+      },
+      "fingerprint": "4dff4652961eaaad89f2b8dc67d8d20800d465c8dfc6cf621222b53fa7fdd277",
       "sourceState": "透過動画の所在記録あり"
     },
     {
