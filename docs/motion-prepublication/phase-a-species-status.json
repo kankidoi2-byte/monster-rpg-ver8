@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 42,
+    "normalRegistered": 45,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 8,
+    "remainingNormalRegistration": 5,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -800,12 +800,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch13/provenance.json",
+        "phase-c/batch13/proto_icegolem-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/proto_icegolem-alpha.json"
     },
     {
       "dexNo": 36,
@@ -818,12 +823,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch13/provenance.json",
+        "phase-c/batch13/icegolem-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/icegolem-alpha.json"
     },
     {
       "dexNo": 37,
@@ -1043,12 +1053,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch13/provenance.json",
+        "phase-c/batch13/galdra-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/galdra-alpha.json"
     },
     {
       "dexNo": 47,
@@ -1125,6 +1140,6 @@
       "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
     }
   ],
-  "latestPhase": "C batch12",
-  "phaseCStatus": "in_progress; batch12 registered; final acceptance incomplete"
+  "latestPhase": "C batch13",
+  "phaseCStatus": "in_progress; batch13 registered; final acceptance incomplete"
 }

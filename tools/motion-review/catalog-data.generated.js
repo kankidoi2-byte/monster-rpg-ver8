@@ -922,8 +922,27 @@ const MOTION_CATALOG={
       "no": 35,
       "name": "ゴーレム",
       "art": "images/monsters/golem_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/proto_icegolem_v3_alpha.webm",
+        "poster": "images/monsters/motion/proto_icegolem_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 59,
+          "y": 29,
+          "right": 931,
+          "bottom": 923
+        }
+      },
+      "fingerprint": "bc3f5f50c97a65b59734170e884a77d1696dece76a9a9c68ea19d6738fae5043",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -931,8 +950,27 @@ const MOTION_CATALOG={
       "no": 36,
       "name": "アイスゴーレム",
       "art": "images/monsters/icegolem_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/icegolem_v3_alpha.webm",
+        "poster": "images/monsters/motion/icegolem_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 66,
+          "y": 57,
+          "right": 875,
+          "bottom": 905
+        }
+      },
+      "fingerprint": "da3d6a9ebc20ddf6e919a4324000ae0e54e0da8e75449c7864dc61739991f00d",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1192,8 +1230,27 @@ const MOTION_CATALOG={
       "no": 46,
       "name": "ガルドラ",
       "art": "images/monsters/galdra_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/galdra_v1_alpha.webm",
+        "poster": "images/monsters/motion/galdra_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 133,
+          "y": 65,
+          "right": 800,
+          "bottom": 900
+        }
+      },
+      "fingerprint": "1f22d3a83e6455754da40db0e377ba45349013b7925c58f4dffb1fb17dba3bea",
       "sourceState": "透過動画の所在確認が残る"
     },
     {

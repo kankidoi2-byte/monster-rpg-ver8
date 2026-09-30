@@ -249,6 +249,24 @@ suiren:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:160,y:108,right:818,bottom:831})
+}),
+proto_icegolem:Object.freeze({
+  src:'images/monsters/motion/proto_icegolem_v3_alpha.webm',poster:'images/monsters/motion/proto_icegolem_v3_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:59,y:29,right:931,bottom:923})
+}),
+icegolem:Object.freeze({
+  src:'images/monsters/motion/icegolem_v3_alpha.webm',poster:'images/monsters/motion/icegolem_v3_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:66,y:57,right:875,bottom:905})
+}),
+galdra:Object.freeze({
+  src:'images/monsters/motion/galdra_v1_alpha.webm',poster:'images/monsters/motion/galdra_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:133,y:65,right:800,bottom:900})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

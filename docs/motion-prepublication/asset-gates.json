@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 42 normal-route registrations of 50; final acceptance separate",
+  "scope": "Feature-branch evaluation: 45 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -173,19 +173,23 @@
       "id": "icegolem",
       "dexNo": 36,
       "name": "アイスゴーレム",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/icegolem-alpha.json"
     },
     {
       "id": "proto_icegolem",
       "dexNo": 35,
       "name": "ゴーレム",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/proto_icegolem-alpha.json"
     },
     {
       "id": "nemes",
@@ -554,10 +558,12 @@
       "id": "galdra",
       "dexNo": 46,
       "name": "ガルドラ",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/galdra-alpha.json"
     },
     {
       "id": "kimeragna_apex",

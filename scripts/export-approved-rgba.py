@@ -15,6 +15,9 @@ from PIL import Image
 
 source, adopted, output, report = map(pathlib.Path, sys.argv[1:])
 inspected_renderers = {
+    'golem-motion-v3': '51a62c7b92626e8a68a2bb312001ae5a1467ad4a98eeeddd2ac226ac437f5a9d',
+    'ice-golem-motion-v3': '51a62c7b92626e8a68a2bb312001ae5a1467ad4a98eeeddd2ac226ac437f5a9d',
+    'galdra-motion-v1': 'f04f7a12104bec375906e33cc34bd115782e453be207e67615c1c820a8f672c1',
     'ignaros-motion-v1': '1e0ca90042e7ee33a04d3cac88477d5689962a9ee28380c4bff002bbd4d65134',
     'tsubaki-motion-v1': '7b962564b8982cc9f2fa4d7ba14fdcd25bcc942e5d57f293519d75b05df8b13d',
     'suiren-motion-v2': 'b829a6f748d2ad347a756cda7abcc317c6df6cb4e7fd8b0ad7afa94de9e93e45',
@@ -52,8 +55,8 @@ if hasattr(module, 'Hover'):
 elif hasattr(module, 'Ray') or hasattr(module, 'Orca') or hasattr(module, 'Spirit'):
     renderer = (module.Ray if hasattr(module, 'Ray') else module.Orca if hasattr(module, 'Orca') else module.Spirit)()
     render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
-elif hasattr(module, 'Beetle') or hasattr(module, 'Grandbeat'):
-    renderer = (module.Beetle if hasattr(module, 'Beetle') else module.Grandbeat)()
+elif hasattr(module, 'Beetle') or hasattr(module, 'Grandbeat') or hasattr(module, 'Golem'):
+    renderer = (module.Beetle if hasattr(module, 'Beetle') else module.Grandbeat if hasattr(module, 'Grandbeat') else module.Golem)()
     render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
 else:
     assert hasattr(module, 'WaterDragon')
