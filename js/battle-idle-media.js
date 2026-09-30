@@ -177,6 +177,24 @@ tempestray:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:149,y:108,right:822,bottom:840})
+}),
+luxseed:Object.freeze({
+  src:'images/monsters/motion/luxseed_v1_alpha.webm',poster:'images/monsters/motion/luxseed_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:112,y:125,right:845,bottom:847})
+}),
+luxiard:Object.freeze({
+  src:'images/monsters/motion/luxiard_v1_alpha.webm',poster:'images/monsters/motion/luxiard_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:159,y:115,right:784,bottom:837})
+}),
+lux_galdion:Object.freeze({
+  src:'images/monsters/motion/lux_galdion_v1_alpha.webm',poster:'images/monsters/motion/lux_galdion_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:129,y:152,right:839,bottom:812})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260930-phase-c-batch9",date:"2026-09-30",category:"update",title:"光の竜たちの待機モーションを追加しました",body:"ルクシード、ルクシアード、ルクスガルディオンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch8",date:"2026-09-30",category:"update",title:"セラルフィアとエイたちの待機モーションを追加しました",body:"セラルフィア、シルフィン、ゼファーレイ、テンペストレイが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch7",date:"2026-09-30",category:"update",title:"甲虫たちとリカシーフの待機モーションを追加しました",body:"グラスビート、ソーンビート、グランビート、リカシーフが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch6",date:"2026-09-30",category:"update",title:"フレイガルと水龍たちの待機モーションを追加しました",body:"フレイガル、フレイウルフ、アクアロン、ハイアクアロンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),

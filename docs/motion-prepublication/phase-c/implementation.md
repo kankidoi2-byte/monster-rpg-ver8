@@ -66,3 +66,6 @@ Phase C全体は進行中。全50体のうち通常登録4体、残り46体。�
 
 ## 2026-09-30 JST — 配信容量対策
 登録30/50・残り20体を維持。本人限定Siteに採用WebMのR2保管配信を実装し、archiveを258,964,006から56,030,870 bytesへ縮小。画質・原本・既存URL・公開範囲を保持。通常ゲームのWebMはGitHubに保存したまま、Site内の同梱コピー30ファイルを固定コミット/サイズ/SHA-256付きmanifestへ移行。全30体の実Site保管・Range/全バイト一致・再利用・HEAD・静止画・未認証拒否を検査し合格。実Galaxy描画/負荷の最終受入はpending。次便はGitHub保存後にSiteのmanifestを更新し、動画本体を再同梱しない。詳細と再開手順は[capacity/README.md](capacity/README.md)。mainマージ・一般公開なし。
+
+## 2026-09-30 JST — Phase C第9便
+ルクシードv1・ルクシアードv1・ルクスガルディオンv1を評価用通常登録。33/50、残り17体。採用ZIP/MP4照合、既存透過描画からの派生書き出し、全240フレーム比較と透過検査を実施。原画・rig・motion・renderer無変更、端接触なし。実Galaxy・最終配置・負荷・受入はpending。再現と証跡は[batch9/README.md](batch9/README.md)。配信は既存R2方式を継続する。

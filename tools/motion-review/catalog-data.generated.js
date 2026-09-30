@@ -480,8 +480,27 @@ const MOTION_CATALOG={
       "no": 18,
       "name": "ルクシード",
       "art": "images/monsters/luxseed_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/luxseed_v1_alpha.webm",
+        "poster": "images/monsters/motion/luxseed_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 112,
+          "y": 125,
+          "right": 845,
+          "bottom": 847
+        }
+      },
+      "fingerprint": "d4b959149f01dfe3b83db0852168b725ba036648b536d742f57315a52e9409ca",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -489,8 +508,27 @@ const MOTION_CATALOG={
       "no": 19,
       "name": "ルクシアード",
       "art": "images/monsters/luxiard_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/luxiard_v1_alpha.webm",
+        "poster": "images/monsters/motion/luxiard_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 159,
+          "y": 115,
+          "right": 784,
+          "bottom": 837
+        }
+      },
+      "fingerprint": "8f7b167f18a8ee9d878f97d3bd1bafef2f7d6cd0c99d4efbef2a4abc5833ce2a",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -498,8 +536,27 @@ const MOTION_CATALOG={
       "no": 20,
       "name": "ルクスガルディオン",
       "art": "images/monsters/lux_galdion_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/lux_galdion_v1_alpha.webm",
+        "poster": "images/monsters/motion/lux_galdion_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 129,
+          "y": 152,
+          "right": 839,
+          "bottom": 812
+        }
+      },
+      "fingerprint": "89823e521b756c05d10120741e605197ad4bf2e705958839b4196e9cdc66b1c5",
       "sourceState": "透過動画の所在確認が残る"
     },
     {

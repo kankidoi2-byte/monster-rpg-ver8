@@ -15,6 +15,9 @@ from PIL import Image
 
 source, adopted, output, report = map(pathlib.Path, sys.argv[1:])
 inspected_renderers = {
+    'luxseed-motion-v1': 'db49efac28c0ece5b7cb88203ca166ec3c821866dea107f66d09f4997b904c69',
+    'luxiard-motion-v1': '7f2ed299a578a4192312e892018c6f38d61b32d06dbe8cda669d52453581ea68',
+    'lux_galdion-motion-v1': 'bf11447335d89a74cedb7501da479904ba9b989f2fe5b4ac236438bbb8a9274a',
     'seralphia-motion-v1': '7362ecc1ff6b006147da7b7469ffc9e1074a86718e738123ff2f08938d232995',
     'sylphin-motion-v1': 'e14ac0021ec73e30f6b352dc2c0ffd5a89f924832db83489a9088f1a472a3fb6',
     'zephyray-motion-v1': 'e14ac0021ec73e30f6b352dc2c0ffd5a89f924832db83489a9088f1a472a3fb6',

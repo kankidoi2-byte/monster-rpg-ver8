@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 30,
+    "normalRegistered": 33,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 20,
+    "remainingNormalRegistration": 17,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -415,12 +415,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch9/provenance.json",
+        "phase-c/batch9/luxseed-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch9/provenance.json",
+      "alphaEvidence": "phase-c/batch9/luxseed-alpha.json"
     },
     {
       "dexNo": 19,
@@ -433,12 +438,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch9/provenance.json",
+        "phase-c/batch9/luxiard-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch9/provenance.json",
+      "alphaEvidence": "phase-c/batch9/luxiard-alpha.json"
     },
     {
       "dexNo": 20,
@@ -451,12 +461,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch9/provenance.json",
+        "phase-c/batch9/lux_galdion-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch9/provenance.json",
+      "alphaEvidence": "phase-c/batch9/lux_galdion-alpha.json"
     },
     {
       "dexNo": 21,
