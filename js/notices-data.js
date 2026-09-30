@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260930-phase-c-batch12",date:"2026-09-30",category:"update",title:"イグナロスと精霊たちの待機モーションを追加しました",body:"イグナロス、炎の精霊ツバキ、水の精霊スイレンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch11",date:"2026-09-30",category:"update",title:"オルカたちの待機モーションを追加しました",body:"オルカーナ、オルカストリーム、オルカアビスが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch10",date:"2026-09-30",category:"update",title:"闇の竜たちの待機モーションを追加しました",body:"ノクル、ノクレイド、ノクスヴェルグが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch9",date:"2026-09-30",category:"update",title:"光の竜たちの待機モーションを追加しました",body:"ルクシード、ルクシアード、ルクスガルディオンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),

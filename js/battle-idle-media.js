@@ -231,6 +231,24 @@ orca_abyss:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:232,y:116,right:766,bottom:837})
+}),
+ignaros:Object.freeze({
+  src:'images/monsters/motion/ignaros_v1_alpha.webm',poster:'images/monsters/motion/ignaros_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:99,y:152,right:862,bottom:803})
+}),
+tsubaki:Object.freeze({
+  src:'images/monsters/motion/tsubaki_v1_alpha.webm',poster:'images/monsters/motion/tsubaki_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:174,y:100,right:787,bottom:783})
+}),
+suiren:Object.freeze({
+  src:'images/monsters/motion/suiren_v2_alpha.webm',poster:'images/monsters/motion/suiren_v2_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:160,y:108,right:818,bottom:831})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 39 normal-route registrations of 50; final acceptance separate",
+  "scope": "Feature-branch evaluation: 42 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -235,10 +235,12 @@
       "id": "suiren",
       "dexNo": 34,
       "name": "水の精霊スイレン",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch12/provenance.json",
+      "alphaEvidence": "phase-c/batch12/suiren-alpha.json"
     },
     {
       "id": "slime",
@@ -404,10 +406,12 @@
       "id": "tsubaki",
       "dexNo": 33,
       "name": "炎の精霊ツバキ",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch12/provenance.json",
+      "alphaEvidence": "phase-c/batch12/tsubaki-alpha.json"
     },
     {
       "id": "alchemion",
@@ -464,10 +468,12 @@
       "id": "ignaros",
       "dexNo": 32,
       "name": "イグナロス",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch12/provenance.json",
+      "alphaEvidence": "phase-c/batch12/ignaros-alpha.json"
     },
     {
       "id": "nocle",

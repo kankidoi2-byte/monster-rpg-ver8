@@ -838,8 +838,27 @@ const MOTION_CATALOG={
       "no": 32,
       "name": "イグナロス",
       "art": "images/monsters/ignaros_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/ignaros_v1_alpha.webm",
+        "poster": "images/monsters/motion/ignaros_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 99,
+          "y": 152,
+          "right": 862,
+          "bottom": 803
+        }
+      },
+      "fingerprint": "ccc7143795cd2be79e4359b4bed2bbfcc5cc8b31e206829c2114d00df8466694",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -847,8 +866,27 @@ const MOTION_CATALOG={
       "no": 33,
       "name": "炎の精霊ツバキ",
       "art": "images/monsters/tsubaki_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/tsubaki_v1_alpha.webm",
+        "poster": "images/monsters/motion/tsubaki_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 174,
+          "y": 100,
+          "right": 787,
+          "bottom": 783
+        }
+      },
+      "fingerprint": "2c2a648ddccca3dc4e7e31493cf5474f4660329791d063c8e4e1c16a8671ea8d",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -856,8 +894,27 @@ const MOTION_CATALOG={
       "no": 34,
       "name": "水の精霊スイレン",
       "art": "images/monsters/suiren_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/suiren_v2_alpha.webm",
+        "poster": "images/monsters/motion/suiren_v2_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 160,
+          "y": 108,
+          "right": 818,
+          "bottom": 831
+        }
+      },
+      "fingerprint": "7c80cc3a5c2b31ef02599baec18b54d68e0da9e2e3054c5dace5d79f1cb4b879",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
