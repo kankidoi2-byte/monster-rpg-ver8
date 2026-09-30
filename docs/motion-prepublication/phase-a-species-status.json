@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 45,
+    "normalRegistered": 50,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 5,
+    "remainingNormalRegistration": 0,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -666,13 +666,19 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
-      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/slime-alpha.json",
+        "phase-c/batch14/slime-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/slime-alpha.json"
     },
     {
       "dexNo": 30,
@@ -1076,12 +1082,18 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/alchemion-alpha.json",
+        "phase-c/batch14/alchemion-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/alchemion-alpha.json"
     },
     {
       "dexNo": 48,
@@ -1094,13 +1106,19 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
-      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/kimeragna-alpha.json",
+        "phase-c/batch14/kimeragna-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/kimeragna-alpha.json"
     },
     {
       "dexNo": 49,
@@ -1113,12 +1131,18 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/kimeragna_apex-alpha.json",
+        "phase-c/batch14/kimeragna_apex-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/kimeragna_apex-alpha.json"
     },
     {
       "dexNo": 50,
@@ -1131,15 +1155,21 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。",
-      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/elixion-alpha.json",
+        "phase-c/batch14/elixion-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/elixion-alpha.json"
     }
   ],
-  "latestPhase": "C batch13",
-  "phaseCStatus": "in_progress; batch13 registered; final acceptance incomplete"
+  "latestPhase": "C batch14",
+  "phaseCStatus": "all 50 registered for evaluation; final acceptance incomplete"
 }

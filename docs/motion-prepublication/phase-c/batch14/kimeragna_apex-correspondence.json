@@ -1,0 +1,51 @@
+{
+  "scope": "Recovered bytes vs adopted MP4, all 240 frames; optional six source samples; visual/device acceptance separate",
+  "videoSha256": "aad4ca52fbfe862f56a4b862ae3f2f1e63595f9f3fc2844dce440e9cea678311",
+  "adoptedMp4Sha256": "7f408e61bda526e0e9b524d16df5f8ffebf6f3dbe5e154929a40952398ead1dc",
+  "frames": 240,
+  "width": 960,
+  "height": 960,
+  "background": [
+    10,
+    17,
+    31
+  ],
+  "meanRgbDifference": 1.3735513885815938,
+  "maxFrameMeanRgbDifference": 1.756345510482788,
+  "maxForegroundMeanRgbDifference": 5.3770833015441895,
+  "sourceSamples": 6,
+  "sourceAlphaMeanDifferences": [
+    0.3101052517361111,
+    0.3498361545138889,
+    0.34908203125,
+    0.310185546875,
+    0.3763302951388889,
+    0.40639322916666665
+  ],
+  "sourcePremultipliedRgbMeanDifferences": [
+    0.7964692339022369,
+    0.9372381198544707,
+    0.940273565528321,
+    0.7966660499206416,
+    1.053711535020323,
+    1.1755447507173578
+  ],
+  "sourceRendererLoopExact": true,
+  "sourceInputHashes": {
+    "qa-3.png": "5d675e86cd6bc958008551233ae2acd99b4b550f8c7c9dede1234d50d5ea1d2f",
+    "qa-2.png": "b7cd50689706234270d7ab8f2cb888fb10326883748b6384e828dff85bf6bb0d",
+    "qa-0.png": "497fb4b72fa8904a5c3744d0cbd743f57802446cbab495615f8eb9d04ac0b7fd",
+    "shape-validation.json": "96f1d58ccf916e8e6876f91e98549b9035d0475e12b7da263fc3fc2b17cbb989",
+    "qa-1.png": "d87f77fb34cca0ab2aaff4aba5156bbef3495a2e9d930af3b1ffea2ee6282006",
+    "texture.png": "1b2aa3abfb99c34b968cfcd81e97bef5e8569a548838b885f123ca1387d99b23",
+    "render.py": "c57ff64e3e62f5e51d9f4c04b8e2e1cf6cca218933cabf9d13257b9cd483d44b",
+    "part-masks.png": "34616bae2598dec73a418dac590932f48c2f634d0080abaab4f008e8c6afa1fa",
+    "verify.py": "697437934453df5eadba811993140831b991e891a7801395e15bf33a9bcb7dca",
+    "rig.json": "8e6b9a6ace9f7f6a12693a62b1c07e683cb1fe8b666dcc8a310e9dad4e7e3b97",
+    "validation.json": "8fbb557a0fc953ae1b6a71e5db6cff4b5049cc578c59808ad5b566818a13e98b",
+    "motion.json": "9ac358ff1a76699de0fc721b3b2a5e540ce72cfd19ed1e5c249226aed3c93d4c"
+  },
+  "sourceRendererModified": false,
+  "reencoded": false,
+  "numericCorrespondence": true
+}

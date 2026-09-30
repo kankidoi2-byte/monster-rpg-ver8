@@ -1,0 +1,24 @@
+{
+  "scope": "Recovered bytes vs adopted MP4, all 240 frames; optional six source samples; visual/device acceptance separate",
+  "videoSha256": "6a8119f48c432aa5c875e48a2ac7fedd4a58a78182e3c5bdc578f96f9165737c",
+  "adoptedMp4Sha256": "57e102346b47c4645074d06eff9abfeafc2ebfcc9c51c99ac8e05c9e1c8967e7",
+  "frames": 240,
+  "width": 720,
+  "height": 640,
+  "background": [
+    15,
+    23,
+    41
+  ],
+  "meanRgbDifference": 1.2054765770832698,
+  "maxFrameMeanRgbDifference": 1.2977879047393799,
+  "maxForegroundMeanRgbDifference": 1.6461563110351562,
+  "sourceSamples": 0,
+  "sourceAlphaMeanDifferences": [],
+  "sourcePremultipliedRgbMeanDifferences": [],
+  "sourceRendererLoopExact": null,
+  "sourceInputHashes": {},
+  "sourceRendererModified": null,
+  "reencoded": false,
+  "numericCorrespondence": true
+}

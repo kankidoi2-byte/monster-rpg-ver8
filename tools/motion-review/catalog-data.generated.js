@@ -773,8 +773,27 @@ const MOTION_CATALOG={
       "no": 29,
       "name": "スライム",
       "art": "images/monsters/slime_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/slime_adopted_alpha.webm",
+        "poster": "images/monsters/motion/slime_adopted_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 720,
+          "height": 640,
+          "x": 45,
+          "y": 50,
+          "right": 669,
+          "bottom": 563
+        }
+      },
+      "fingerprint": "6a8119f48c432aa5c875e48a2ac7fedd4a58a78182e3c5bdc578f96f9165737c",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1258,8 +1277,27 @@ const MOTION_CATALOG={
       "no": 47,
       "name": "錬核獣アルケミオン",
       "art": "images/monsters/alchemion_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/alchemion_v1_alpha.webm",
+        "poster": "images/monsters/motion/alchemion_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 112,
+          "y": 101,
+          "right": 859,
+          "bottom": 845
+        }
+      },
+      "fingerprint": "d099dfc61f291a15277a5e271b7534b79b8403f9d5e3ee83dcfb2e97aca024bf",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1267,8 +1305,27 @@ const MOTION_CATALOG={
       "no": 48,
       "name": "混成翼竜キメラグナ",
       "art": "images/monsters/kimeragna_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/kimeragna_v7_alpha.webm",
+        "poster": "images/monsters/motion/kimeragna_v7_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 85,
+          "y": 78,
+          "right": 877,
+          "bottom": 863
+        }
+      },
+      "fingerprint": "558b9cf251f8adfc0299401680972679a5e804ad8836ab3c8483d1e4d0861015",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1276,8 +1333,27 @@ const MOTION_CATALOG={
       "no": 49,
       "name": "キメラグナ・アペクス",
       "art": "images/monsters/kimeragna_apex_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/kimeragna_apex_v2_alpha.webm",
+        "poster": "images/monsters/motion/kimeragna_apex_v2_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 121,
+          "y": 88,
+          "right": 869,
+          "bottom": 850
+        }
+      },
+      "fingerprint": "aad4ca52fbfe862f56a4b862ae3f2f1e63595f9f3fc2844dce440e9cea678311",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1285,8 +1361,27 @@ const MOTION_CATALOG={
       "no": 50,
       "name": "賢金神竜エリクシオン",
       "art": "images/monsters/elixion_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/elixion_arm_fixed_alpha.webm",
+        "poster": "images/monsters/motion/elixion_arm_fixed_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 110,
+          "y": 96,
+          "right": 876,
+          "bottom": 873
+        }
+      },
+      "fingerprint": "b504abbf99916a6c7aa9499815a71a9ce519be2a1b51d6e480776fe4fbabf5dc",
       "sourceState": "透過動画の所在確認が残る"
     }
   ]
