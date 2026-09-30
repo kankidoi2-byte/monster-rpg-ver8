@@ -6,9 +6,9 @@
   "counts": {
     "target": 50,
     "adopted": 50,
-    "normalRegistered": 33,
+    "normalRegistered": 36,
     "isolatedBattleReviewOnly": 0,
-    "remainingNormalRegistration": 17,
+    "remainingNormalRegistration": 14,
     "historicalWebmLocations": 18,
     "historicalWebmLocationUnconfirmed": 32
   },
@@ -484,12 +484,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch10/provenance.json",
+        "phase-c/batch10/nocle-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch10/provenance.json",
+      "alphaEvidence": "phase-c/batch10/nocle-alpha.json"
     },
     {
       "dexNo": 22,
@@ -502,12 +507,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch10/provenance.json",
+        "phase-c/batch10/noclaid-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch10/provenance.json",
+      "alphaEvidence": "phase-c/batch10/noclaid-alpha.json"
     },
     {
       "dexNo": 23,
@@ -520,12 +530,17 @@
         "webmLocation": "未",
         "firstFrameAlpha": "未"
       },
-      "normalRegistered": false,
-      "reviewIntegrated": false,
-      "latestEvidence": [],
-      "nextPhase": "C",
-      "status": "透過モーション所在の確認が残る／通常未登録",
-      "next": "台帳の採用先・ZIPを限定探索。不存在や再制作必須とは判断しない。"
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch10/provenance.json",
+        "phase-c/batch10/noxvelg-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch10/provenance.json",
+      "alphaEvidence": "phase-c/batch10/noxvelg-alpha.json"
     },
     {
       "dexNo": 24,
@@ -1080,6 +1095,6 @@
       "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。"
     }
   ],
-  "latestPhase": "B implementation (Phase A sourceCommit retained as baseline)",
-  "phaseCStatus": "in_progress; batch2 and consolidated50 catalog; final acceptance incomplete"
+  "latestPhase": "C batch10",
+  "phaseCStatus": "in_progress; batch10 registered; final acceptance incomplete"
 }

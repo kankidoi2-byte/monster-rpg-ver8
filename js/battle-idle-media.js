@@ -195,6 +195,24 @@ lux_galdion:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:129,y:152,right:839,bottom:812})
+}),
+nocle:Object.freeze({
+  src:'images/monsters/motion/nocle_v1_alpha.webm',poster:'images/monsters/motion/nocle_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:143,y:119,right:867,bottom:863})
+}),
+noclaid:Object.freeze({
+  src:'images/monsters/motion/noclaid_v1_alpha.webm',poster:'images/monsters/motion/noclaid_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:56,y:56,right:905,bottom:894})
+}),
+noxvelg:Object.freeze({
+  src:'images/monsters/motion/noxvelg_v1_alpha.webm',poster:'images/monsters/motion/noxvelg_v1_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:66,y:102,right:888,bottom:860})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

@@ -15,6 +15,9 @@ from PIL import Image
 
 source, adopted, output, report = map(pathlib.Path, sys.argv[1:])
 inspected_renderers = {
+    'nocle-motion-v1': '966340935931cdccb703960ead313575439ae39a467ad7c9a19934f0067330ae',
+    'noclaid-motion-v1': '6b6c79a56d143177f653e0adf8592318283a0f32edd75eecf84d897660ee58d0',
+    'noxvelg-motion-v1': '32d4611473a9613a0b2b88af75abd585c58a44e02d2116cfa4f1866b17232252',
     'luxseed-motion-v1': 'db49efac28c0ece5b7cb88203ca166ec3c821866dea107f66d09f4997b904c69',
     'luxiard-motion-v1': '7f2ed299a578a4192312e892018c6f38d61b32d06dbe8cda669d52453581ea68',
     'lux_galdion-motion-v1': 'bf11447335d89a74cedb7501da479904ba9b989f2fe5b4ac236438bbb8a9274a',

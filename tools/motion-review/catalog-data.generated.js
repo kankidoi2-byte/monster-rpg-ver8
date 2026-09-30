@@ -564,8 +564,27 @@ const MOTION_CATALOG={
       "no": 21,
       "name": "ノクル",
       "art": "images/monsters/nocle_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/nocle_v1_alpha.webm",
+        "poster": "images/monsters/motion/nocle_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 143,
+          "y": 119,
+          "right": 867,
+          "bottom": 863
+        }
+      },
+      "fingerprint": "ed2abae9c7c957bff474ca451cadd8aa88c1da708720bd35fcb49eeae6233743",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -573,8 +592,27 @@ const MOTION_CATALOG={
       "no": 22,
       "name": "ノクレイド",
       "art": "images/monsters/noclaid_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/noclaid_v1_alpha.webm",
+        "poster": "images/monsters/motion/noclaid_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 56,
+          "y": 56,
+          "right": 905,
+          "bottom": 894
+        }
+      },
+      "fingerprint": "54d454b31353f3a00c27a9e2e4e3365471e3eed134f50c914f2b854550d98f73",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -582,8 +620,27 @@ const MOTION_CATALOG={
       "no": 23,
       "name": "ノクスヴェルグ",
       "art": "images/monsters/noxvelg_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/noxvelg_v1_alpha.webm",
+        "poster": "images/monsters/motion/noxvelg_v1_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 66,
+          "y": 102,
+          "right": 888,
+          "bottom": 860
+        }
+      },
+      "fingerprint": "9ce2219c632d49fe7258f25e503f7fd5bc71b5a258fed8bd73400974358be9ed",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
