@@ -213,6 +213,24 @@ noxvelg:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:66,y:102,right:888,bottom:860})
+}),
+orcana:Object.freeze({
+  src:'images/monsters/motion/orcana_v3_alpha.webm',poster:'images/monsters/motion/orcana_v3_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:190,y:238,right:807,bottom:750})
+}),
+orca_stream:Object.freeze({
+  src:'images/monsters/motion/orca_stream_v3_alpha.webm',poster:'images/monsters/motion/orca_stream_v3_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:134,y:120,right:844,bottom:820})
+}),
+orca_abyss:Object.freeze({
+  src:'images/monsters/motion/orca_abyss_v3_alpha.webm',poster:'images/monsters/motion/orca_abyss_v3_static.webp',
+  type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:232,y:116,right:766,bottom:837})
 })});
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.

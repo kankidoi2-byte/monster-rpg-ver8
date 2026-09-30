@@ -1,5 +1,5 @@
 {
-  "scope": "Feature-branch evaluation: 36 normal-route registrations of 50; final acceptance separate",
+  "scope": "Feature-branch evaluation: 39 normal-route registrations of 50; final acceptance separate",
   "source": "Phase1-motion-inventory.md version12 section14; Phase4B current handoff",
   "androidGate": "Galaxy user reports and short measured three-condition gran evidence recorded; ordinary budget1 retained; broad load/offscreen/special-case gates remain.",
   "entries": [
@@ -371,28 +371,34 @@
       "id": "orcana",
       "dexNo": 24,
       "name": "オルカーナ",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch11/provenance.json",
+      "alphaEvidence": "phase-c/batch11/orcana-alpha.json"
     },
     {
       "id": "orca_stream",
       "dexNo": 25,
       "name": "オルカストリーム",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch11/provenance.json",
+      "alphaEvidence": "phase-c/batch11/orca_stream-alpha.json"
     },
     {
       "id": "orca_abyss",
       "dexNo": 26,
       "name": "オルカアビス",
-      "implementation": "not registered",
+      "implementation": "registered in feature branch for evaluation",
       "fullAssetAcceptance": "pending",
       "android": "pending",
-      "next": "individual source/version/alpha/loop/bbox acceptance after Phase8 gate"
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch11/provenance.json",
+      "alphaEvidence": "phase-c/batch11/orca_abyss-alpha.json"
     },
     {
       "id": "tsubaki",

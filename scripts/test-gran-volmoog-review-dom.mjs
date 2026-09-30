@@ -53,7 +53,7 @@ assert.equal(run("granReviewSetup('ally','invalid')"),false);
 const maps=Array.from(run('MAPS.map(m=>m.id)'));
 for(const id of maps){assert(run(`granReviewSetup('ally',${JSON.stringify(id)})`));await tick();assert.equal(d.querySelectorAll('video').length,1);}
 // Phase C: switching species disposes old media and uses each adopted source.
-for(const id of ['shenhairon','tienhairon','slime_gold','false_dragon_beta','false_dragon_gamma','goblin','nightmare','astralepis','nemes','nemesia','nemesion','doom_nemesion','false_dragon_alfa','volteck','spaquinn','voltax','freigal','freiwolf','aquaron','highaquaron','grassbeat','thornbeat','granbeat','rikasheef','seralphia','sylphin','zephyray','tempestray','luxseed','luxiard','lux_galdion','nocle','noclaid','noxvelg']){
+for(const id of ['shenhairon','tienhairon','slime_gold','false_dragon_beta','false_dragon_gamma','goblin','nightmare','astralepis','nemes','nemesia','nemesion','doom_nemesion','false_dragon_alfa','volteck','spaquinn','voltax','freigal','freiwolf','aquaron','highaquaron','grassbeat','thornbeat','granbeat','rikasheef','seralphia','sylphin','zephyray','tempestray','luxseed','luxiard','lux_galdion','nocle','noclaid','noxvelg','orcana','orca_stream','orca_abyss']){
  const selector=d.querySelector('[aria-label="確認モンスター"]');
  selector.value=id;const previous=[...d.querySelectorAll('video')];selector.dispatchEvent(new w.Event('change'));await tick();
  assert(previous.every(v=>!v.isConnected));assert.equal(run('granReviewSpecies'),id);

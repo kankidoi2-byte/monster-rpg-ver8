@@ -15,6 +15,9 @@ from PIL import Image
 
 source, adopted, output, report = map(pathlib.Path, sys.argv[1:])
 inspected_renderers = {
+    'orcana-motion-v3': '2858cba36925eb60fdd9496ae2092b719e74f6c123c11f7239b5b9554d679af2',
+    'orca_stream-motion-v3': '2858cba36925eb60fdd9496ae2092b719e74f6c123c11f7239b5b9554d679af2',
+    'orca_abyss-motion-v3': '2858cba36925eb60fdd9496ae2092b719e74f6c123c11f7239b5b9554d679af2',
     'nocle-motion-v1': '966340935931cdccb703960ead313575439ae39a467ad7c9a19934f0067330ae',
     'noclaid-motion-v1': '6b6c79a56d143177f653e0adf8592318283a0f32edd75eecf84d897660ee58d0',
     'noxvelg-motion-v1': '32d4611473a9613a0b2b88af75abd585c58a44e02d2116cfa4f1866b17232252',
@@ -43,8 +46,8 @@ if hasattr(module, 'Hover'):
     motion = json.loads((source / 'motion.json').read_text())
     renderer = module.Hover(rig, motion)
     render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
-elif hasattr(module, 'Ray'):
-    renderer = module.Ray()
+elif hasattr(module, 'Ray') or hasattr(module, 'Orca'):
+    renderer = (module.Ray if hasattr(module, 'Ray') else module.Orca)()
     render = lambda t, transparent: renderer.render(t, 960, transparent=transparent)
 elif hasattr(module, 'Beetle') or hasattr(module, 'Grandbeat'):
     renderer = (module.Beetle if hasattr(module, 'Beetle') else module.Grandbeat)()

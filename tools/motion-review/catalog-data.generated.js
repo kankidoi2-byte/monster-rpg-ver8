@@ -648,8 +648,27 @@ const MOTION_CATALOG={
       "no": 24,
       "name": "オルカーナ",
       "art": "images/monsters/orcana_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/orcana_v3_alpha.webm",
+        "poster": "images/monsters/motion/orcana_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 190,
+          "y": 238,
+          "right": 807,
+          "bottom": 750
+        }
+      },
+      "fingerprint": "6bb1df5ea0704413e8c7147742f02db1ece2b29efba5b1fb3cbb21f35e9afd4f",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -657,8 +676,27 @@ const MOTION_CATALOG={
       "no": 25,
       "name": "オルカストリーム",
       "art": "images/monsters/orca_stream_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/orca_stream_v3_alpha.webm",
+        "poster": "images/monsters/motion/orca_stream_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": true,
+        "enemyFlip": false,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 134,
+          "y": 120,
+          "right": 844,
+          "bottom": 820
+        }
+      },
+      "fingerprint": "750811efb1d6b5f587b887e616b0f0d729d047a031e22834466d190be3b24f0e",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -666,8 +704,27 @@ const MOTION_CATALOG={
       "no": 26,
       "name": "オルカアビス",
       "art": "images/monsters/orca_abyss_20260920.webp",
-      "motion": null,
-      "fingerprint": null,
+      "motion": {
+        "src": "images/monsters/motion/orca_abyss_v3_alpha.webm",
+        "poster": "images/monsters/motion/orca_abyss_v3_static.webp",
+        "type": "video/webm; codecs=\"vp9\"",
+        "allyFlip": false,
+        "enemyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 1
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 232,
+          "y": 116,
+          "right": 766,
+          "bottom": 837
+        }
+      },
+      "fingerprint": "49997b352ad528f7dd929fa756c4b0c975cc5ccc639137a623a821b3c776d663",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
