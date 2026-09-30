@@ -10,7 +10,7 @@
   "archiveFullReadVerified": true,
   "archiveFiles": 615,
   "bundledNormalRouteWebmCount": 0,
-  "legacyIsolatedReviewWebmCount": 1,
+  "legacyIsolatedReviewWebmCount": 3,
   "all42FullBytesSha256Verified": true,
   "range206": true,
   "head200": true,
@@ -19,5 +19,8 @@
   "realGalaxyAcceptance": "pending",
   "next": "Continue remaining 8 adopted assets; then Phase D battle screen redesign and E/F integration/acceptance",
   "mainMerged": false,
-  "generalRelease": false
+  "generalRelease": false,
+  "legacyGameReviewWebmCount": 1,
+  "legacyMotionReviewWebmCount": 2,
+  "legacyCountCorrection": "Batch13 re-read of the batch12 archive: previous count1 covered only game/tools/motion-review; total isolated review WebMs is3. Normal-route count0 unchanged."
 }
