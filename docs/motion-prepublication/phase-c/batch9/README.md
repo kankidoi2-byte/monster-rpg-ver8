@@ -16,3 +16,6 @@ SOURCE_DIRはluxseed-motion-v1、luxiard-motion-v1、lux_galdion-motion-v1。検
 3体とも右寄りの向きとして味方反転なし・敵反転あり。共通足場を使用し、最終配置・Galaxyでの描画・200%文字・負荷・受入はPhase D/Eで確認する。DOM/mediaの模擬検査と実端末の受入を区別する。
 
 動画原本は作業ブランチに保存。確認サイトでは固定コミット・サイズ・SHA-256付きmanifestによるR2保管配信を使い、動画をarchiveへ再同梱しない。mainマージ・一般公開は行わない。
+
+## 配信完了
+本人限定確認サイトへ反映成功。33体すべての実配信で206/1024 bytesのRange、全動画のサイズ/SHA-256一致、保管後の再利用、HEAD 200を確認。新3体の静止代替も全バイト一致。未認証アクセスは401。archiveは56,414,971 bytes、606ファイルを最後まで読み、採用WebMの同梱0件を確認。production-checks.jsonとdelivery.jsonに非公開の運用ID/URLを含めない形で記録。次は残り17体を同方式で追加し、Phase Dの戦闘画面改修へ進む。
