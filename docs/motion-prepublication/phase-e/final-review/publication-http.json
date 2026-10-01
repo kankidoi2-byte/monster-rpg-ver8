@@ -1,0 +1,1342 @@
+{
+  "mergeSha": "de0f1e324349d4f0abaacb772a92cf5b26da3ce3",
+  "origin": "https://kankidoi2-byte.github.io/monster-rpg-ver8/",
+  "utc": "2026-10-01T23:04:26Z",
+  "videoCount": 50,
+  "posterCount": 50,
+  "results": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "range": null,
+      "bytes": 49852,
+      "sha256": "ae7d09c4ccc8830698f2cc7fdd07858aa105abdfc6da3dbc5e2568e39d6da8c5",
+      "matchesSource": true
+    },
+    {
+      "path": "js/diagnostics.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 37104,
+      "sha256": "5603e3d750bcb6ddb09e8663992f3b9fcd40c72f2647f292d556ad1392e7b6e2",
+      "matchesSource": true
+    },
+    {
+      "path": "js/data.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 114871,
+      "sha256": "64d0d44ecfc5c1ddae54b0a649516170c8124a9c87d3f0cb4b309ff84326a0cb",
+      "matchesSource": true
+    },
+    {
+      "path": "js/bootstrap-guard.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 1017,
+      "sha256": "0bf458f934f619d79084d577661412222d4bd9b76bde72fbf023e6b15ac8a5f3",
+      "matchesSource": true
+    },
+    {
+      "path": "js/core.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 21063,
+      "sha256": "278f5ad2e0e064948b69dfa743f1e36a1e50ddd23b5a3b50c5a3b563ce0276bd",
+      "matchesSource": true
+    },
+    {
+      "path": "js/kokoro-link.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 33553,
+      "sha256": "100021f8dfc4d4bde522392348d6e0e922b96da0bfe5823cc8292bb962e4ac69",
+      "matchesSource": true
+    },
+    {
+      "path": "js/world-events.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 8055,
+      "sha256": "e207671a30103ee4fdea5ee12d80239a02b9b1d3126c15f2df8ced4981c53b31",
+      "matchesSource": true
+    },
+    {
+      "path": "js/state.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 12602,
+      "sha256": "7859cda8f35179884d51270e304c7627bcee43b95253607490ba9176b9635cc4",
+      "matchesSource": true
+    },
+    {
+      "path": "js/save.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 36742,
+      "sha256": "20440c78e15fc1b6f0ddc2061bafbc63837b01118872b87fb3f998667eaab4b4",
+      "matchesSource": true
+    },
+    {
+      "path": "js/contractor-rank.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 21043,
+      "sha256": "42efe65169028d1426aa2a64c7effb2027a26aec328c3f91e6a713e7a2d50953",
+      "matchesSource": true
+    },
+    {
+      "path": "js/ui.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 27980,
+      "sha256": "5ea541b8e270ab0f1814d038bd15f1253ef8a7ff03696b87ffa2e942f06acc00",
+      "matchesSource": true
+    },
+    {
+      "path": "js/tutorial.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 157898,
+      "sha256": "b9c53c5f1fe3e97ec0d4eb13539d1a4ebb3788d32dd5612cb57044038ac585c6",
+      "matchesSource": true
+    },
+    {
+      "path": "js/story.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 7526,
+      "sha256": "2398e804f85a43e7538e560abac138f4c8415d6b3a7e03a183cf9cd29d26b835",
+      "matchesSource": true
+    },
+    {
+      "path": "js/notices-data.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 66818,
+      "sha256": "19dbf645db932d1b2e6e62483006e8cdb9fb7746a22e6d6ea0dbbda700f49d6d",
+      "matchesSource": true
+    },
+    {
+      "path": "js/notices.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 2868,
+      "sha256": "955fad040635c4f6df74491da58ae45c6984df0ec6f8522a5a101aa175d0d7ab",
+      "matchesSource": true
+    },
+    {
+      "path": "js/skills.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 14895,
+      "sha256": "841551599749bdf3efc39ceaf851999d8a41922b6e6999be2a994d0c9a62ec77",
+      "matchesSource": true
+    },
+    {
+      "path": "js/character-gacha.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 3102,
+      "sha256": "3d1340e087a87b0b8e21f1a78e413bb97b95b65b30f3d4335a9078f5dd17729c",
+      "matchesSource": true
+    },
+    {
+      "path": "js/skill-gacha.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 14257,
+      "sha256": "cc61c42836d23d786e3adeb8f628e1cb06c246a81610c2d1fdbb554936c1de34",
+      "matchesSource": true
+    },
+    {
+      "path": "js/dex.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 22716,
+      "sha256": "bba8ac17e7dc7cfe54704fd84b7dd0decea0c77e0dc55a7f6ee02148c0cbf659",
+      "matchesSource": true
+    },
+    {
+      "path": "js/party.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 9930,
+      "sha256": "ab055176b9d52aa3056ba9d55e8beb8366062869c1a83a16b8b8fff9af506979",
+      "matchesSource": true
+    },
+    {
+      "path": "js/progression.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 7470,
+      "sha256": "8d1c0fb140c2a14c9b9652a350a81be317398d0262469a8ccf59660b5e2f860c",
+      "matchesSource": true
+    },
+    {
+      "path": "js/contract-animation.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 4049,
+      "sha256": "f2bf5aa5099f01a794f4167b3d1e86bf695eeea5f4a366f45b4b4e74d922b4ab",
+      "matchesSource": true
+    },
+    {
+      "path": "js/items.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 18595,
+      "sha256": "c12debbc95a9d3b8caaa347156aa0fedc6fa53bf279367294e2ee46c5ae768c5",
+      "matchesSource": true
+    },
+    {
+      "path": "js/alchemy.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 38827,
+      "sha256": "1357f384ea99011472ce36f422fe9d0f183cb54228bae231c5495be4a16d10b6",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-stage.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 11468,
+      "sha256": "59d04bc0fa5e2a74b914614cd7ab65634925e1522567c61c2076c56be5c50242",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-feedback.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 13578,
+      "sha256": "2772beb72cb3007f793c72d321182d2594e620448840cb9ade68b2fecd8434d0",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-view.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 37468,
+      "sha256": "ba477acdf7b73773ace3502644acee2ce206bd9c328c1cf7796ae5fc94f8276b",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-rules.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 34904,
+      "sha256": "1fa261a5847f3fcac79a93a715d900b896eac32e712911c1b43507ec627f76cc",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-flow.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 21950,
+      "sha256": "4e2dd13f53327555cba69d6adf0030d6a3a88972e86e7d956982f9892254608e",
+      "matchesSource": true
+    },
+    {
+      "path": "js/multi-battle.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 36911,
+      "sha256": "72c6eef93a56d2337bb5d833dae8e6c6346611910406a9959cec8c63977ad4d6",
+      "matchesSource": true
+    },
+    {
+      "path": "js/expedition.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 22200,
+      "sha256": "4e52b7a6c989d3ac5d3b777c07b4480bd0614e13bf5453b8f36899c6004c81d8",
+      "matchesSource": true
+    },
+    {
+      "path": "js/diagnostics-ui.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 10637,
+      "sha256": "f33f6b83769eeb63c153e462f675b7ad270f89a603b09dded8c18b3f1468881c",
+      "matchesSource": true
+    },
+    {
+      "path": "js/world-map-flow.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 7397,
+      "sha256": "9823c2f63bf274776ff8d74368e9859258842cc2cedb0d4e8bbedede20661059",
+      "matchesSource": true
+    },
+    {
+      "path": "js/world-map.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 21231,
+      "sha256": "11f8ae83108645afbb1e6fcf9053315864181f1f3a9fd1ee2e36ed79727f17c2",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-ui.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 6920,
+      "sha256": "20aa547e28b68fee5d9c769327549c18505cb87c745a0e4dc34100190718f773",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-idle-media.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 36209,
+      "sha256": "2e6cad94e7167c7d5fd92ff0669c387e4aa7795ac7ae5ea9719fc6bef89d4e95",
+      "matchesSource": true
+    },
+    {
+      "path": "js/battle-viewport.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 10822,
+      "sha256": "ccd78b7fd72772f57b2d0e810544107d3a6a1a097f19a13aea561a6b69b6ea79",
+      "matchesSource": true
+    },
+    {
+      "path": "js/init.js",
+      "status": 200,
+      "type": "application/javascript; charset=utf-8",
+      "range": null,
+      "bytes": 4572,
+      "sha256": "8f50ff36a8dea9968152e23058990bccc84a68c9d67674aaf2314ab8b571b45a",
+      "matchesSource": true
+    },
+    {
+      "path": "css/character-gacha.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 720,
+      "sha256": "23d12a9304f6eecef30eaf0f165d04862d0f26e2d2eb7c7fee4089c26ec4bd02",
+      "matchesSource": true
+    },
+    {
+      "path": "css/world-map.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 9366,
+      "sha256": "76f3979225bd63ea4cfdca17af73780f6b3bef6a0ec518aa38ce4377875734c5",
+      "matchesSource": true
+    },
+    {
+      "path": "css/style.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 27508,
+      "sha256": "b7d3ea4f2b4b44fd7c4eabd6033a05795256efdf1f5fcd299dd01c332155646f",
+      "matchesSource": true
+    },
+    {
+      "path": "css/ui-redesign.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 161843,
+      "sha256": "bce2b8bd637c180f5bc883274101b45154e6532a1e467bc350c0897af9495bd6",
+      "matchesSource": true
+    },
+    {
+      "path": "css/contract-animation.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 6319,
+      "sha256": "e39f27e764f16e4b4bacab49e5b548da59baa7b9f35c5e047a8e8ef2fd3285db",
+      "matchesSource": true
+    },
+    {
+      "path": "css/tutorial.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 9843,
+      "sha256": "00068dda11604b571c4135a5bd43f6a27ce761128b01bb43951a532b5435e91c",
+      "matchesSource": true
+    },
+    {
+      "path": "css/battle-stage.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 14506,
+      "sha256": "ac37e5d2ce09a6c5e5f0a47783e01bee2d60058988cb74093a1c6c5d75f2bfc0",
+      "matchesSource": true
+    },
+    {
+      "path": "css/battle-ui.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 4926,
+      "sha256": "ec3bf66112b1d62c71d5cb8647c2d99b449f5d44be452e3f06f72a2be33c748f",
+      "matchesSource": true
+    },
+    {
+      "path": "css/battle-idle-media.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 2556,
+      "sha256": "6954c786b33880aca7bd284ad16b9267a3fac44a1cda50017b02d1ffd8a39912",
+      "matchesSource": true
+    },
+    {
+      "path": "css/battle-viewport.css",
+      "status": 200,
+      "type": "text/css; charset=utf-8",
+      "range": null,
+      "bytes": 11096,
+      "sha256": "1d768f537c0f0500e7f57a7e7aa73ea75916f7778a82f426b1a0d88335d0fb48",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/volmoog_v18_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/1169237",
+      "bytes": 1024,
+      "sha256": "dc5b3384d1e5536a209045bc1f51ebc45ebc05be65f85ea655b9c11da8169568",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/gran_volmoog_v18_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/1758952",
+      "bytes": 1024,
+      "sha256": "19a9876101dec020bdce9363e6088c70b0417af9c2616b0a2972b813482f1c30",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/shenhairon_v5_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5075081",
+      "bytes": 1024,
+      "sha256": "243fa5229e76d9af2e1fa7cbfcd69fe6e493210351fe8cad7a3ed8a2aa9721cc",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/tienhairon_v5_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5418360",
+      "bytes": 1024,
+      "sha256": "4a1bc380f1f3543e31705fe1427231cf5fed9aa1c5be754da93b1d1c0fb5f10d",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/slime_gold_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/2194184",
+      "bytes": 1024,
+      "sha256": "eaace0b855ddca23fd2b6fd6e62aecc850955d1bbb88dd808343456cccdb9682",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/false_dragon_beta_v2_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5893596",
+      "bytes": 1024,
+      "sha256": "3a279099b730b34d618f37e540347a306ee9a4cb1ba0db524f933d74d1ad690d",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/false_dragon_gamma_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/2333820",
+      "bytes": 1024,
+      "sha256": "67ae457fa44b7525ec06d645e35f8e407224ffa2863cd01eb2e9588c8299563c",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/goblin_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5886783",
+      "bytes": 1024,
+      "sha256": "515aa55256463b709706bcaf7d6f17221d1e2fb2f60a4e30bf4ce7b2058a5308",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/nightmare_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/10500596",
+      "bytes": 1024,
+      "sha256": "7e3d879b3034b179fb15f2f5cf785c211528d8739cb318e0b31a59de85269e5e",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/astralepis_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/4328698",
+      "bytes": 1024,
+      "sha256": "8814958afcd765c8325cf05cb76504dbaeced54c71e550e2e647a32704f0ccc1",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/nemes_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/4470339",
+      "bytes": 1024,
+      "sha256": "c530230d67979affc5358a1bee9113c4177a3a38ac556b829045fc36d1c2a0b3",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/nemesia_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/4683643",
+      "bytes": 1024,
+      "sha256": "a435cb270eaf1c8f8b3c2cb1b2264df8562ecd2c45dbf6851b230c30677ee111",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/nemesion_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/8624763",
+      "bytes": 1024,
+      "sha256": "6c69deecc40023430c2b1f27595724fa38df06e4cb1b4e7235219e2c106e8c1c",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/doom_nemesion_v5_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/9985287",
+      "bytes": 1024,
+      "sha256": "29195eaa3ee970445fb1242356bbfe3ebe454a8503e1cf8eaa2eb6014e464cf7",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/false_dragon_alfa_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/7071949",
+      "bytes": 1024,
+      "sha256": "f9a9ac6ce602bfae4a9d418834ba93ef975e4368eca06d3f1b1c7d9c805687e6",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/volteck_v4_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5061379",
+      "bytes": 1024,
+      "sha256": "bb358ed93ed5a7e5ab161955bdf7f80a102c7ada0f436ea86806263643574514",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/spaquinn_v4_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/9571582",
+      "bytes": 1024,
+      "sha256": "e71c9098f12baaab5dea292a83c208bb0c483af18c096b7cedd522ed1b03885e",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/voltax_v5_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/11189835",
+      "bytes": 1024,
+      "sha256": "8d0307672b284889d4d401a35d75be756ecadc3d1fc924ef184d12526ba904f3",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/freigal_v2_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/7900012",
+      "bytes": 1024,
+      "sha256": "ae751ba296b3ddcfd242e6f59d25d75ee216302670b8af82ea60ba605f30704f",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/freiwolf_v2_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/10758146",
+      "bytes": 1024,
+      "sha256": "0e32e9b7fb37f28e26477524e12687060512382c19ceeb03c7b3f6a7949424b1",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/aquaron_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5534277",
+      "bytes": 1024,
+      "sha256": "824b472dec19cbe0059d04b7adcbdd6a24033411905f8cd7b1b32c5e15525599",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/highaquaron_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/1938893",
+      "bytes": 1024,
+      "sha256": "c55dfcdb02e7f33ee6d8d5307ff92a210a6a605b345e75d4b0bc4d553f70488c",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/grassbeat_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/6160557",
+      "bytes": 1024,
+      "sha256": "66c9187653240bf978baf2cb10bff0cf630414bf7ece8c7eac414a350dfb16ea",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/thornbeat_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/9926082",
+      "bytes": 1024,
+      "sha256": "08f7fc43e156b6cce011f88fa7bdb90d8c6a660b10a7d16c1f499827f0de8e02",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/granbeat_v4_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/9216589",
+      "bytes": 1024,
+      "sha256": "4e57692138b0de39bec53fcdd5be6a0e027c2815448df84e8466955dc3e10b0a",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/rikasheef_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/12314300",
+      "bytes": 1024,
+      "sha256": "7b10842a6b1d1a964e7359d56f83c0555e73b4e950d17edbe8bb90edc14722c9",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/seralphia_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/16976960",
+      "bytes": 1024,
+      "sha256": "17efef8fe2e3e51095eb34560d3c128eca320273c216b57882ad3a1c8c4afe18",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/sylphin_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5060728",
+      "bytes": 1024,
+      "sha256": "0e9f9a03734d295f059e28234127c14f9b2882e6d018a624a53ca94eb98ed78a",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/zephyray_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5564023",
+      "bytes": 1024,
+      "sha256": "0852453c57bb2ca8df7cece7290ff9d5c6c1cd0731cc70129213560ffd2735c4",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/tempestray_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/6338962",
+      "bytes": 1024,
+      "sha256": "ffdb8b95f4dd94220839bf64d9b8fb21cf34a9a9d3f240a3c7d5eda0022d787a",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/luxseed_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/6813586",
+      "bytes": 1024,
+      "sha256": "f793678cfd4a74bd6f481f85ed7b4cd4b1d4167cbceb27841a3d3ad64bf7b021",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/luxiard_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/8513164",
+      "bytes": 1024,
+      "sha256": "52c58bad6a5043afba4add1422b2da9498a84ad4be67db0a28c8b3c7a84d0b9b",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/lux_galdion_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/11763591",
+      "bytes": 1024,
+      "sha256": "4123273d1c5bda0920c09bf47ce518daac58db75c2b6b1c731c0295d612ee0ed",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/nocle_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/6019741",
+      "bytes": 1024,
+      "sha256": "0a8994c59fd5e764d8e0f776cf0e25227e06b103dff13e526272a8122aea0b33",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/noclaid_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/9749430",
+      "bytes": 1024,
+      "sha256": "e996f9179e71ecc0a80956cb1977ff5ec5859163c4f015d2c9c293dfddba5791",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/noxvelg_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/12915868",
+      "bytes": 1024,
+      "sha256": "03c78596130fee67c959e4ef7ef33055d468df4997cd7f4a806cfd0c24055831",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/orcana_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/5213336",
+      "bytes": 1024,
+      "sha256": "7a8f623b0b833cbd86cec02b9b9975a0af41d443d3cb207ee97ca81c065a0163",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/orca_stream_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/7938935",
+      "bytes": 1024,
+      "sha256": "69c88346b3f4c435385ce92f5efc821fa2deeed791a403d944055e8b84031095",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/orca_abyss_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/11085718",
+      "bytes": 1024,
+      "sha256": "85ff36e01669dd6632d8f984211ce3fcaf9473343c471f1b16508892325c9175",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/ignaros_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/4441515",
+      "bytes": 1024,
+      "sha256": "ce3b6ff6e79f42cd6239acd31c10d8c4ac6d57faacb981f6c671d98cff1e2f8d",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/tsubaki_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/12362645",
+      "bytes": 1024,
+      "sha256": "56ea707734a71698d2fef2b5b11281b4ee59407122201c356bb4103573de1f22",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/suiren_v2_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/12586441",
+      "bytes": 1024,
+      "sha256": "70c3e8187e5a7114c66b2b7a3d3495c18f84f56d80f8d6f6513b91fff920d164",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/proto_icegolem_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/3810159",
+      "bytes": 1024,
+      "sha256": "f644512f082e37310db1ff9b02616b70988a47ab1ef19074490c2fa459aef2d4",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/icegolem_v3_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/4194872",
+      "bytes": 1024,
+      "sha256": "2ae2ead46678d5ac55e4fb32bf67d134bbb85d206e237f979c0f18ba560cb7ef",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/galdra_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/6588052",
+      "bytes": 1024,
+      "sha256": "94ffc8517d7ed570d249591a1c8fee8127126898e21361d939139b40f585c725",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/slime_adopted_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/1488747",
+      "bytes": 1024,
+      "sha256": "e220c93e4defb04697bcf3163b12335f43e1e6a2b6628581dafbc8ac72439a4c",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/alchemion_v1_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/9307211",
+      "bytes": 1024,
+      "sha256": "84eee8e90ec14a5190cb5b52942ae4ec244b96845461fa933e052780af6fb5aa",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/elixion_arm_fixed_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/11695531",
+      "bytes": 1024,
+      "sha256": "7249ea24029dcb9ef8a8c0a533c4deb1b7138482d2cf5c25ecdd300a19910680",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/kimeragna_v7_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/20264000",
+      "bytes": 1024,
+      "sha256": "f4a6d997904a0237d4852c64eb0003296404035464c428e2b4d4debc6e301975",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/kimeragna_apex_v2_alpha.webm",
+      "status": 206,
+      "type": "video/webm",
+      "range": "bytes 0-1023/18407566",
+      "bytes": 1024,
+      "sha256": "23a2116ceb335c35cb66a1f7ce30588c59d78558e3bdf74ed67ebd98e382ab1b",
+      "validRange": true
+    },
+    {
+      "path": "images/monsters/motion/volmoog_v18_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 163604,
+      "sha256": "dce04ab535aab0364d438c7dc4dbc9c99c2f96380a8839165f65c1dfbf08daf0",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/gran_volmoog_v18_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 266332,
+      "sha256": "e455ce1a238b8348866ea88a8ec919234cebf11a55c35b0967d12ab6e55012cb",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/shenhairon_v5_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 207528,
+      "sha256": "afdef5ad9a0900cfa9ad48776b9a2bcd47d01ff862a06d2d0592b7b16e60f44b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/tienhairon_v5_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 196942,
+      "sha256": "551ef339f168c3ffbcbff9f56bfebe71cb67752bfa157038a6adf4e91ca1a31a",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/slime_gold_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 54646,
+      "sha256": "82dbec609ac670eacd5330ccf45d5ebafaec0079f6921af45cf5c1954ab5db4b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/false_dragon_beta_v2_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 181230,
+      "sha256": "53f57d09efcc304e3ee90b80adedf78d000e1592868d163eb54fa275b9802050",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/false_dragon_gamma_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 219510,
+      "sha256": "d28eef453564c9f835a3476d7db3b0f9c7334e2402296bdd82a8767d966abd5b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/goblin_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 148516,
+      "sha256": "c1f46d6a17d3358edb02406c5c611e19045716355469f6095459e0d5db2b79da",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/nightmare_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 213804,
+      "sha256": "bd35dceafde1920c7845d17a0d967a6e894962407f52e38bf4a12f46d9b8f003",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/astralepis_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 151140,
+      "sha256": "500006ae99188b8bae924b5bf32f2f936285d3abb04b0b545b017880725bb20d",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/nemes_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 163256,
+      "sha256": "449baaadc73a752d90743d41ddbafe9b63ff7b6afd9219fe701af554a30c4009",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/nemesia_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 239982,
+      "sha256": "ac10602c32f98cc8d113d931cf8413faac1ec8fe8bd4d37dcb444eb69e829c7a",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/nemesion_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 255540,
+      "sha256": "bdc1ec52c3a884994d122aecd13d3add852d35c799c16fe635342b165ce55a3b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/doom_nemesion_v5_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 169626,
+      "sha256": "47958b9f8a833dd2d2b61d2342cdd0f9fb6d429a44034c44b6435b70a034171c",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/false_dragon_alfa_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 185588,
+      "sha256": "cf5b2d827749a9f4e96eba1aad86df4719e36ec2b78672ad1f1aeb7dce2b25ea",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/volteck_v4_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 135110,
+      "sha256": "e392f82ff3f73740b1475e9ea5e11d11b4e263a639024a4d22f34490a4e91ec9",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/spaquinn_v4_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 176452,
+      "sha256": "1fb594a09397c044d4d7dbd7d474f78c1b8227785f7cd5b9ec4200b2c6ff04c4",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/voltax_v5_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 230552,
+      "sha256": "aa7d5dae67ce687e66b9c79428ee26da22bc0bbbb4c82d2d93822d05e9cf4d2c",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/freigal_v2_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 123914,
+      "sha256": "63223b15d17d30112112dd81c9c29d41b1aa56229d63241b738ede62cab0d3fe",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/freiwolf_v2_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 187180,
+      "sha256": "979a5c26b80c8f1b1e56d770828c3d4b5ef70f8089188f0eada6cd37e6acd0c1",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/aquaron_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 234564,
+      "sha256": "4dcae2a61facb32ec5a9364228647357bae29f83632409f1977a03c29852acb2",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/highaquaron_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 276650,
+      "sha256": "56e85b33853501775ffb7ff36b3ac0e320939600486318bf08266de0a0b5c33b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/grassbeat_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 112082,
+      "sha256": "ef565278d19dc27725da601a348bcb959d1e4f04dcb5aa46ed31eb599b23e18f",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/thornbeat_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 166752,
+      "sha256": "2a1c802561bc32d38f3164795b782392ace2fc4bac84ca7bd951dd012a34a5eb",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/granbeat_v4_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 248340,
+      "sha256": "93000891ad889bbc1239fda8d852ffcfcd31247640d66cf0cafd05fd18f0df20",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/rikasheef_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 158012,
+      "sha256": "6012205afd57c05bd3e431478ebfff799ce20cf980bddb6c9caa42f7a724cd3f",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/seralphia_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 161880,
+      "sha256": "9839abed071a0e4c2a233a46f41ad44020e6edf3c0ddde390c5a48b1085d977b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/sylphin_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 49834,
+      "sha256": "b36845a01db39c9a8c920af858ccf5beb501a7cd58f420dd711bdc6dd5a8ff48",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/zephyray_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 60906,
+      "sha256": "d3cc2fc751ce6ac78f48dd827b2d347a8fc245d39c027201d2874431cf5de375",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/tempestray_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 70472,
+      "sha256": "02fa46a93abe5b0df61db0e030505817bc9ff8ed74413baabd567685f7aca32b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/luxseed_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 119824,
+      "sha256": "b7de8cf13b420a39a26abcd26d6e73689ac4874457c96f90759f978ff46450de",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/luxiard_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 108522,
+      "sha256": "fcaa43a312088768298bd9a040482caca4834ba0170b9d1b42fdff3da2450905",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/lux_galdion_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 154482,
+      "sha256": "61c96c87a62e58a0c543af81c1e100fad33db74062f79fb9dd8b7805e74d0083",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/nocle_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 129058,
+      "sha256": "6369356513d4df66528bb83f0edb0069944f842d80179b3b9cf909df54e40bdd",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/noclaid_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 150178,
+      "sha256": "d0d43b9b7fb8ea2ec7986d274521986d3aafce1f3c779491dd93510f82afeebf",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/noxvelg_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 214018,
+      "sha256": "b7c17ddee6ec4042dce9d10118a9339ab5a6111b4dc0f6036aa5fa916277c87b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/orcana_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 71168,
+      "sha256": "67b60831dcffa25b9a96cae40a21f4e648d3b18666c36d9bba4f64e674640796",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/orca_stream_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 110050,
+      "sha256": "6021aa5982b21480b475f48bb851dba6e9f67240cc3fbd58370a94f1cce0073e",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/orca_abyss_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 127276,
+      "sha256": "8b3dacccc70bab82eb366f09516fa20c5b49d99ca11df475d45018fa5764601b",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/ignaros_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 139596,
+      "sha256": "60f4388fb42562d589aadeff1513d9eb4bdcf320e32897b49e9d03c81fa475f4",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/tsubaki_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 153500,
+      "sha256": "853af17adfa43287bb415b8c1608029dbd8a27d11c36dcd76f014499ec42ffe1",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/suiren_v2_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 153884,
+      "sha256": "6490463310d9c7e4a099ea020f11515b7b24f3308f0dd32fddb7e02e5d425685",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/proto_icegolem_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 209890,
+      "sha256": "11f803421dfca9f0bf8f972661d058db444c23d3e2fe0936374baa89bd1abea8",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/icegolem_v3_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 174748,
+      "sha256": "c04ac2a212d11f8ca35d0339a38d6cab6aadfa15ea627a229ac377c5f7070130",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/galdra_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 130390,
+      "sha256": "1d3826c1f6b58d062c52b35fdbd1b951af3162c8c470e95fab952e441c786d88",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/slime_adopted_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 152052,
+      "sha256": "0cf709bc307508e0fd162dc77ef70d99b140b128ebce9b016779f1964bf91c9e",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/alchemion_v1_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 491932,
+      "sha256": "e533691ab274043c2e84846cad06e78055db74e8afe1c2a31a1bcd61c5ccd0e6",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/elixion_arm_fixed_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 494612,
+      "sha256": "0cd89bfb36fe420825d22cf839957f38649152a7231ad26ffbd014dd8bd532ff",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/kimeragna_v7_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 584184,
+      "sha256": "867c6bba2732cc2fe1400a8f8388702411d266689fd98b7bb83f77c46ecd7c82",
+      "matchesSource": true
+    },
+    {
+      "path": "images/monsters/motion/kimeragna_apex_v2_static.webp",
+      "status": 200,
+      "type": "image/webp",
+      "range": null,
+      "bytes": 537914,
+      "sha256": "49f99742aaeeaee7ffc668b3841c6d3777badcb7082e62fa02281c2bf1929db5",
+      "matchesSource": true
+    }
+  ],
+  "limitations": "HTTP delivery/source checks only. Real browser playback and existing production user save not inspected."
+}

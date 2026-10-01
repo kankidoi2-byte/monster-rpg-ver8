@@ -1,3 +1,5 @@
+> 最新：2026-10-02 07:58 JSTの本人許可に基づきPR #220を本編へ反映し、GitHub Pages公開まで完了。merge `de0f1e324349d4f0abaacb772a92cf5b26da3ce3`、本編CI/Pages success、HTTP148件（動画50・静止画50を含む）の配信照合で問題なし。`publication-result.json` / `publication-http.json` を優先する。以下の「禁止・未マージ」は許可前の履歴。未網羅の素材・実機条件までPASSにするものではない。
+
 # 組み込み前の最終整理（最新の受入状況）
 
 2026-10-02 06:50 JSTの依頼に基づく。検査対象runtimeは `08d131fba02f4d584cf1df40e3d7812403128f93`。古いPhase D/E/11の「pending」は当時の履歴として残し、現在の判断は本書と `validation.json` を優先する。
