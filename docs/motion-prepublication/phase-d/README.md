@@ -36,3 +36,7 @@ https://monster-phase3a-review.kanki-doi-2.chatgpt.site/game/tools/motion-review
 3. 実機で見つかった問題だけを修正し、影響する検査を実施する。
 
 Phase Dの実装・自動検査は完了。Phase Dの視覚受入、E/F、全50体の最終受入は未完了。本編mainへのマージ・一般公開は行っていない。文書・検査結果のみの更新なのでプレイヤー向けnoticeの追加は不要。
+
+## 2026-10-01 19:22 JST 更新
+
+★1補正後のサイズは本人採用済み。最新コードの全体検査・モーション専用6検査PASS。現在の採用範囲と残項目は ../phase-e/README.md と ../phase-e/validation.json を優先する。上記の旧pendingは当時の記録であり、今回のサイズ採用を否定しない。全網羅実機受入・負荷・本編公開は引き続き保留。

@@ -1,3 +1,13 @@
+# 最新判定：2026-10-01 JST — Phase E 検査・サイズ採用
+
+最新ゲームcommit d3e671fba20bd385f32cd933459216ccf825fe4b。★1補正後のサイズは本人採用済み。npm run check はpostcheckを含めPASS、モーション専用6検査PASS。50体通常登録、19背景接続・混成表示、400包含例・7500組合せ例の自動検査結果を確認。
+
+本人の採用判断はサイズ設定に限定し、全50体・19背景・画面向き・文字拡大・実測負荷の全網羅合格とは扱わない。次は通常戦闘経路の実機確認と残る視覚・負荷項目。記録は [phase-e/README.md](phase-e/README.md)、[検査結果](phase-e/validation.json)、[サイズ採用](phase-e/size-owner-acceptance.md)。
+
+本編mainへのマージ・一般公開・閲覧範囲変更は禁止のまま。以下は過去時点の履歴として保持する。
+
+---
+
 最新：Phase Bで評価branchの通常経路登録2/50、通常予算1。最終受入は未完了。phase-b/implementation.mdを優先。
 
 # 最新判定：2026-09-29 Phase A
