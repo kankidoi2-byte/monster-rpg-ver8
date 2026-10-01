@@ -14,13 +14,25 @@ GitHub基点30c07b9、確認Site version29/source d129b1eから表示調整6フ�
 
 古い検査の「aquaron/slimeは未登録」「volmoogのみ登録」という前提を修正。ライフサイクルと複数体検査で非対応の交代要員が必要な箇所はelna_beginnerを使用し、ゲーム登録数を減らさず従来の後始末検査を維持。媒体DOM検査では交代後の旧video不在を確認し、新登録要員のvideo自体を禁止しない。map検査は50評価登録保持と混成表示を検査。
 
-npm run checkは実行したが、この復元checkoutに過去Git履歴がなく、test-world-map-downgrade-safety.mjsのgit show d31cfccdで終了1。全体PASSとはしない。以前の検査成功を今回の成功へ流用しない。mergeは行わない。
+npm run checkは保存済みゲーム変更30f10722e8c9ad0072fde3fd07704f90bca444b9に対して完走し、終了0。postcheckの診断エクスポート・包括診断もPASS。今回のfull-check.logを保存。欠けていた過去4コミットの必要なcommit/tree/blobをGitHub実データから復元し、各Git SHAを照合した。検査が読む過去文書も保存済みHEADと同一内容で補った。検査を緩めたり基準を置き換えたりしていない。完全な履歴cloneではない。既に成功した関連6検査はコード・環境が不変なので結果を再利用。
+
+## スマホでの確認
+
+本人限定Site version29の配信成功と、許可ユーザーがownerのみであることを再確認。表示処理JS・CSS・scenario・noticeはゲーム側の保存済み内容と完全一致。Site側indexのQA用スクリプトと、確認HTML外側のPhase D表題・説明だけが異なる。既存の動画配信を維持し、この確認で再配信は不要。
+
+https://monster-phase3a-review.kanki-doi-2.chatgpt.site/game/tools/motion-review/gran-volmoog-review.generated.html
+
+1. スマホでURLを開く。ログイン画面ならContinue with ChatGPTから所有者アカウントでログイン。
+2. Phase D・配置確認パネルの「大型・横長・小型」を押し、マップを切り替える。味方1体・敵1体・同種3体も確認。
+3. 縦向き・横向き・「文字200%」で、足元、翼・尾の切れ、HPや操作部との重なりを確認。「間隔を計測」は補助値であり視覚合格の自動判定ではない。
+4. 不自然な箇所があれば画面とマップ・モンスター・向きを記録する。
+
+本編セーブは使用しない確認画面。ブラウザでは本人ログイン入口まで確認し、ログイン後の描画とGalaxy実機の見た目検査は未実施。配信成功と自動検査成功を実機の視覚合格とは扱わない。
 
 ## 次の再開地点・残条件
 
-1. このfeature HEADとvalidation.jsonを読む。回収パッチの二重適用は不要。
-2. 完全なGitHub履歴のあるcheckoutでnpm run check（postcheck含む）を完走させる。
-3. 実ブラウザで19背景、代表の大型/横長/小型、味方/敵/3体、縦横画面・文字200%、静止画fallbackについて足元・切断・HP/操作部との間隔を検証する。DOM計測は実レイアウトの合格ではない。
-4. 本人限定Siteの保存済みversion29とゲーム側変更を照合し、必要な更新だけ反映してGalaxy代表配置の確認へ進む。
+1. feature HEADとvalidation.jsonを読む。表示調整の二重適用は不要。
+2. 実ブラウザ・Galaxyで19背景、代表の大型/横長/小型、味方/敵/3体、縦横画面・文字200%、静止画fallbackについて足元・切断・HP/操作部との間隔を確認。
+3. 実機で見つかった問題だけを修正し、影響する検査を実施する。
 
-Phase D全体、E/F、全50体の最終受入は未完了。本編mainへのマージ・一般公開は禁止を維持。このターンではSite更新もしない。
+Phase Dの実装・自動検査は完了。Phase Dの視覚受入、E/F、全50体の最終受入は未完了。本編mainへのマージ・一般公開は行っていない。文書・検査結果のみの更新なのでプレイヤー向けnoticeの追加は不要。
