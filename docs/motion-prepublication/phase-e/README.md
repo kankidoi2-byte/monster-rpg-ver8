@@ -23,3 +23,7 @@ The owner rejected the shared-row layout. [The near/far layout correction](depth
 ## Actor separation and poster size correction
 
 Owner feedback identified overlapping wings and oversized static enemies. [The spacing correction](spacing/README.md) supersedes the fixed near/far regions and records the CSS sizing fix. Device acceptance remains pending.
+
+## Skill and target selection sheet
+
+Owner confirmed separation and reported scrolling in the skill picker. [Floating skill and target choices](skill-sheet/README.md) preserve field size while selecting. Star1 values are unchanged; new device acceptance remains pending.

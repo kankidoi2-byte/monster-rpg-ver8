@@ -1,6 +1,21 @@
 /* Presentation only: reserve real HUD/command heights before sizing artwork.
    Expanded information and 200% text remain scrollable rather than clipped. */
 let battleViewportFrame=null;
+function prepareBattleFloatingPanel(panel){
+  panel.classList.add('battle-floating-panel');
+  if(panel.id!=='commands')return;
+  const descriptions=[...panel.querySelectorAll('.skill-button .battle-choice-detail')];
+  if(!descriptions.length)return;
+  let help=panel.querySelector('.battle-skill-help');
+  if(!help){help=document.createElement('details');help.className='battle-skill-help';const summary=document.createElement('summary');summary.textContent='技の効果・対象を確認';help.append(summary);panel.append(help);}
+  const note=panel.querySelector(':scope > .battle-panel-note');
+  if(note){help.append(note);const hint=document.createElement('p');hint.className='battle-sheet-hint';hint.textContent='技を選ぶと実行します。';panel.prepend(hint);}
+  for(const description of descriptions){
+    const row=document.createElement('div'),name=document.createElement('strong');
+    name.textContent=description.closest('button').querySelector('strong')?.textContent||'';
+    row.append(name,description);help.append(row);
+  }
+}
 function battleViewportBudget(viewportHeight,top,chrome,hud){
   if(![viewportHeight,top,chrome,hud].every(Number.isFinite)||viewportHeight<=0)return null;
   const available=Math.max(0,viewportHeight-top-chrome-8);
@@ -69,18 +84,24 @@ function updateBattleViewport(){
   if(!arena||!screen.classList.contains('active'))return;
   syncBattleViewportInfo();
   const viewport=window.visualViewport?.height||window.innerHeight;
+  const floating=screen.querySelector('.battle-floating-panel:not(.hidden)');
+  // Opening choices must not change the body-size unit or document height.
+  if(floating&&Number(arena.dataset.compactHeight)>0&&Number(arena.dataset.viewportWidth)===arena.clientWidth&&Number(arena.dataset.viewportHeight)===viewport)return;
   const top=Math.max(0,screen.getBoundingClientRect().top+window.scrollY);
   let chrome=0;
   for(const el of screen.children){
     if(el===arena||!el.getClientRects().length||getComputedStyle(el).position==='fixed')continue;
     const style=getComputedStyle(el);chrome+=el.getBoundingClientRect().height+(parseFloat(style.marginTop)||0)+(parseFloat(style.marginBottom)||0);
   }
+  if(floating&&Number.isFinite(Number(arena.dataset.restChrome)))chrome=Number(arena.dataset.restChrome);
+  else arena.dataset.restChrome=String(chrome);
   const hudHeight=el=>el?.getClientRects().length?el.getBoundingClientRect().height:0;
   const enemyHeight=multiBattle?.active?Math.max(...[...screen.querySelectorAll('.multi-enemy-copy')].map(hudHeight),0):hudHeight(document.getElementById('singleEnemyBox'));
   const budget=battleViewportBudget(viewport,top,chrome,Math.max(hudHeight(document.getElementById('singlePlayerBox')),enemyHeight));
   if(!budget||arena.clientWidth<=80)return; // No fake geometry for an unlaid-out DOM.
   screen.classList.add('is-viewport-battle');
   arena.dataset.compactHeight=String(budget.artwork);
+  arena.dataset.viewportWidth=String(arena.clientWidth);arena.dataset.viewportHeight=String(viewport);
   arena.dataset.enemyHud=String(enemyHeight);
   arena.dataset.enemyDepth='.85';
   arena.style.setProperty('--battle-enemy-hud',enemyHeight+'px');

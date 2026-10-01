@@ -3,7 +3,7 @@ const battleUi={panel:null,origin:'battleSkillButton',itemReturn:false,scrollY:0
 function battleUiEscape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function battleUiCanAct(){return !busy&&!battleFeedback.finished&&!multiBattle?.finished&&!document.getElementById('battle')?.classList.contains('is-finished');}
 function battleUiRemember(id){battleUi.origin=id;battleUi.scrollY=window.scrollY;}
-function battleUiFocus(node){if(!node||node.disabled)return;node.focus({preventScroll:true});node.scrollIntoView?.({block:'nearest',behavior:'instant'});}
+function battleUiFocus(node){if(!node||node.disabled)return;node.focus({preventScroll:true});if(!node.closest('.battle-floating-panel'))node.scrollIntoView?.({block:'nearest',behavior:'instant'});}
 function battleUiClear(){
   for(const id of ['commands','kokoroLinkPanel','multiTargetSelect']){
     const panel=document.getElementById(id);
@@ -40,6 +40,7 @@ function syncBattleUi(){
   document.getElementById('kokoroLinkButton')?.setAttribute('aria-expanded',String(panel?.id==='kokoroLinkPanel'));
   document.getElementById('battleSkillButton')?.setAttribute('aria-expanded',String(panel?.id==='commands'));
   if(panel){
+    if(typeof prepareBattleFloatingPanel==='function')prepareBattleFloatingPanel(panel);
     if(panel.id==='multiTargetSelect'){
       const note=panel.querySelector('p')?.textContent;
       if(note){document.getElementById('battleActionStatus').textContent=note;document.getElementById('battleInputLabel').textContent='対象を選択';}

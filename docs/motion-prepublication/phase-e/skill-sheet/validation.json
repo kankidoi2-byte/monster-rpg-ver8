@@ -1,0 +1,27 @@
+{
+  "baseCommit": "444cb9190b628dcab9bb0df91ca1b01b618f449a",
+  "siteCommit": "39315a1bc9dff3c9635da8d2f19255a3e39c3c75",
+  "deploymentId": "appgdep_6abe59570bac819190f1576b470eb422",
+  "deploymentStatus": "succeeded",
+  "sourceSHA256": {
+    "index.html": "f1d4d45fb1be24008eb7e7e4b326fcd44d8b6ae3fdf53478b309abfdb2385b3b",
+    "css/battle-viewport.css": "a21ea46224c1f17cb719c0dbb9e546e81e4d8274e2f66061d40f1f328a888742",
+    "js/battle-ui.js": "0f2babe8ea6de25b73eba44c6b626a46a4d1e02806987d82030021ff896d34c4",
+    "js/battle-viewport.js": "e979a3336e41e8b9c6510de967e1699b7b0f28fdae264d751b84d465e04c17e3",
+    "js/notices-data.js": "160d9bbe2d20cd94b97bb40633a3bc42c33023192d0d6c27844eb7fafa4454f5",
+    "scripts/test-battle-viewport-dom.mjs": "8a173cc6c067b3e06a838fff306f413ca1f7d70f2bb850132ea2aeb0119976c2",
+    "scripts/test-battle-ui-dom.mjs": "f372e360bb893f6491690019611340d1ed46db5b4ba78b06db033597603d1459"
+  },
+  "protectedFilesUnchanged": true,
+  "sizeRegistryUnchanged": true,
+  "checks": {
+    "fullCheckExit": 0,
+    "viewportGeometryAndFloatingFocusExit": 0
+  },
+  "manualEvidence": "Owner confirms actors no longer overlap; attached 16.67s screen recording shows scroll into old long skill/target panels. New physical-device panel acceptance pending.",
+  "limits": [
+    "DOM/media mocks, no new browser-pixel QA",
+    "Expanded descriptions, extreme short viewports or enlarged text may scroll within the panel"
+  ],
+  "mergeOrGeneralPublication": false
+}

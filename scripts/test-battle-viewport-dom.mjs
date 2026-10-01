@@ -105,11 +105,23 @@ for(const el of screen.children){const h=el.classList.contains('battle-command-d
 for(const id of ['singlePlayerBox','singleEnemyBox']){by(id).getClientRects=()=>[{}];by(id).getBoundingClientRect=()=>({height:64,top:0});}
 Object.defineProperty(w,'innerHeight',{configurable:true,value:736});
 run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),370);assert(Number(arena.dataset.sizeUnit)>0);assert.equal(arena.dataset.enemyDepth,'.85');
+// Opening a floating chooser keeps field height, unit and focus on-screen.
+let panelScrolls=0;w.HTMLElement.prototype.scrollIntoView=function(){if(this.closest('.battle-floating-panel'))panelScrolls++;};
+const restingHeight=arena.dataset.compactHeight,restingUnit=arena.dataset.sizeUnit;
+run('toggleBattleSkillPanel()');
+assert(by('commands').classList.contains('battle-floating-panel'));
+assert(by('commands').querySelector('.battle-skill-help .battle-choice-detail'));
+assert.equal(by('commands').querySelectorAll('.skill-button .battle-choice-detail').length,0);
+assert(by('commands').contains(d.activeElement));assert.equal(panelScrolls,0);
+run('updateBattleViewport()');assert.equal(arena.dataset.compactHeight,restingHeight);assert.equal(arena.dataset.sizeUnit,restingUnit);
+run('battleUiBack()');assert(by('commands').classList.contains('hidden'));assert.equal(d.activeElement,by('battleSkillButton'));
 const art=by('pVis').querySelector('img');Object.defineProperty(w,'innerHeight',{configurable:true,value:420});run('updateBattleViewport()');assert.equal(screen.dataset.viewportOverflow,'true');assert.equal(Number(arena.dataset.compactHeight),300);assert.equal(by('pVis').querySelector('img'),art);
 run(`ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('slime'),'enemy_a'),createMultiEnemy(by('freigal'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle();syncBattleViewportInfo()`);
 assert(by('battleCompactInfo').querySelector('[data-info-vis="eVis"]').hidden);checkIds();checkSizingCascade();
 const detail=by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .compact-enemy-detail');
 assert(detail);detail.click();assert(by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .multi-enemy-details'));checkIds();
+run('chooseMultiBattleTarget(0);renderBattleInputState()');
+assert(by('multiTargetSelect').classList.contains('battle-floating-panel'));assert.equal(panelScrolls,0);run('battleUiBack();battleUiBack()');
 const projected=run(`battleCompactSizePlan([BATTLE_IDLE_MEDIA.goblin,BATTLE_IDLE_MEDIA.slime],BATTLE_IDLE_MEDIA.elixion,393,488)`);
 assert(projected.unit*1.2>260,'foreground dragon remains prominent');
 assert(projected.unit*.3*.85>45,'background slime remains legible');
