@@ -132,5 +132,7 @@
     "reviewedHead": "08d131fba02f4d584cf1df40e3d7812403128f93",
     "observedRuns": 0,
     "requiredCI": "not observed; not a CI pass"
-  }
+  },
+  "historicalSnapshot": true,
+  "currentStatusReport": "post-publication-review.json"
 }

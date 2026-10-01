@@ -434,10 +434,10 @@ function startBattleIdleClock(r){
 function staticBattleIdle(r){
   r.media.classList.remove('idle-playing');r.img.style.visibility='visible';
 }
-function releaseBattleIdleVideo(r){
+function releaseBattleIdleVideo(r,detach=true){
   r.attempt++;r.playToken++;r.pending=false;stopBattleIdleClock(r);
   const v=r.video;v.onplaying=v.onerror=null;
-  v.pause();v.removeAttribute('src');v.load();v.remove();
+  v.pause();v.removeAttribute('src');v.load();if(detach)v.remove();
 }
 function disposeBattleIdleRecord(r){
   if(!battleIdleOwned(r))return;
@@ -454,7 +454,10 @@ function disposeBattleIdleMedia(){
 function failBattleIdleMedia(r,text){
   if(!battleIdleCurrent(r))return;
   r.failed=true;r.state='static';r.failureText=text;r.playToken++;r.pending=false;
-  stopBattleIdleClock(r);r.video.pause();staticBattleIdle(r);
+  // A paused preload=auto video can keep fetching after static fallback.
+  // Drop source/handlers now; retain the empty node for the current-display guard.
+  // The existing manual retry removes it and creates a fresh video.
+  releaseBattleIdleVideo(r,false);staticBattleIdle(r);
   setBattleIdleStatus(r,text,!r.retried);
 }
 function playBattleIdleMedia(r){

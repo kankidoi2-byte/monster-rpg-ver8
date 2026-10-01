@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261002-motion-static-release",date:"2026-10-02",category:"fix",title:"静止表示への切り替え後の読み込みを改善しました",body:"モンスター動画の読み込みに失敗したときや、待ち時間を過ぎて静止画に切り替わったときに、動画の読み込みを終了するようにしました。「再生を試す」からの再試行は引き続き利用できます。"}),
   Object.freeze({id:"20261002-battle-tutorial-ui",date:"2026-10-02",category:"update",title:"戦闘のチュートリアルを新しい画面に合わせました",body:"技を選ぶ操作欄、敵の画像やHP欄から対象を選ぶ方法、進化確認のタイミングを案内します。最初の戦闘では、相手の画像と操作ボタンに合わせて案内の枠を表示します。交代候補のボタンが隠れる問題も修正しました。"}),
   Object.freeze({id:"20261002-battle-result-order",date:"2026-10-02",category:"fix",title:"勝利後の契約を先に操作できるようにしました",body:"進化できる仲間がいても、勝利後の契約画面に進化の確認が割り込まないようにしました。進化の確認は「次へ」で結果画面を閉じた後に表示します。"}),
   Object.freeze({id:"20261001-battle-target-tidy",date:"2026-10-01",category:"update",title:"攻撃対象を選ぶ画面を整理しました",body:"対象選択の案内を短くまとめ、戻るボタンと技名を1行にしました。下の空白を減らして戦場に余裕を持たせ、設定と履歴の表示も短くしました。"}),

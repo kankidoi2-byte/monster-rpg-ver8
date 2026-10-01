@@ -604,6 +604,17 @@
     "ownerAcceptance": "accepted current size/UI, no particular issue in instructed normal journey, updated tutorial confirmed; limited to reported scope",
     "final50SpeciesGate": "pending remaining device/performance/anchor/source reproducibility conditions",
     "publication": "main merge and general publication forbidden",
-    "entryStatusInterpretation": "historical per-species asset gates remain; shared current UI/operation acceptance is in latestReview, not a blanket per-species final PASS"
+    "entryStatusInterpretation": "historical per-species asset gates remain; shared current UI/operation acceptance is in latestReview, not a blanket per-species final PASS",
+    "historicalSnapshot": true,
+    "supersededBy": "phase-e/final-review/post-publication-review.json"
+  },
+  "currentReview": {
+    "report": "phase-e/final-review/post-publication-review.json",
+    "publication": "published with owner authorization 2026-10-02 07:58 JST",
+    "firstMainMerge": "de0f1e324349d4f0abaacb772a92cf5b26da3ce3",
+    "registration": "50/50 registered in main",
+    "ownerAcceptance": "instructed UI/size/journey/tutorial/device review received; scope retained",
+    "final50SpeciesGate": "pending only non-exhaustive device/source reproducibility conditions; not a ban on the owner-authorized publication",
+    "entryStatusInterpretation": "per-species fields are historical snapshots; do not require duplicate acceptance of already accepted UI"
   }
 }
