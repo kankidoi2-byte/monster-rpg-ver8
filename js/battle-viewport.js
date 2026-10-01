@@ -6,9 +6,16 @@ function prepareBattleFloatingPanel(panel){
   panel.classList.remove('battle-floating-panel');panel.classList.add('battle-inline-panel');
   if(panel.id==='multiTargetSelect'){
     const notes=[...panel.querySelectorAll(':scope > p')];
-    const selected=notes.find(p=>p.textContent.includes('選択中：'));
-    if(selected){selected.className='battle-target-instruction';selected.textContent=selected.textContent.split(' / ')[0]+'：敵の画像かHP欄をタップ';}
-    notes.filter(p=>p!==selected).forEach(p=>p.hidden=true);
+    // Read the nested source span before removing explanatory prose. A later
+    // refresh reuses the saved skill name, never concatenates instructions.
+    const source=panel.querySelector(':scope > p > span');
+    const text=source?.textContent||notes.find(p=>p.textContent.includes('選択中：'))?.textContent||'';
+    const name=text.match(/選択中：\s*(.*?)\s*\//)?.[1];
+    if(name)panel.dataset.selectedSkill=name;
+    notes.forEach(p=>p.remove());
+    let label=panel.querySelector('.battle-target-skill');
+    if(!label){label=document.createElement('span');label.className='battle-target-skill';panel.append(label);}
+    label.textContent=panel.dataset.selectedSkill||'通常攻撃';label.title=label.textContent;
     panel.querySelectorAll(':scope > button:not([data-battle-panel-back])').forEach(button=>button.hidden=true);
     return;
   }
@@ -65,8 +72,14 @@ function syncBattleViewportInfo(){
   let tools=document.getElementById('battleCompactTools');
   if(!tools){tools=document.createElement('div');tools.id='battleCompactTools';screen.append(tools);}
   let info=document.getElementById('battleCompactInfo');
-  if(!info){info=document.createElement('details');info.id='battleCompactInfo';const summary=document.createElement('summary');summary.textContent='能力・表示設定';info.append(summary);tools.append(info);}
+  if(!info){info=document.createElement('details');info.id='battleCompactInfo';const summary=document.createElement('summary');summary.textContent='設定';info.append(summary);tools.append(info);}
   const history=screen.querySelector('.battle-log-panel');if(history&&history.parentElement!==tools)tools.append(history);
+  if(history){
+    const summary=history.querySelector('summary');
+    if(summary?.firstChild?.nodeType===Node.TEXT_NODE)summary.firstChild.textContent='履歴 ';
+    let note=history.querySelector('.battle-history-limit');
+    if(!note){note=document.createElement('p');note.className='battle-history-limit';note.textContent=`最新${BATTLE_HISTORY_LIMIT}件まで保存`;history.insertBefore(note,history.querySelector('ol'));}
+  }
   const units=[['pVis','singlePlayerBox','味方'],['eVis','singleEnemyBox','敵'],['enemy_aVis','enemy_aCard','敵A'],['enemy_bVis','enemy_bCard','敵B']];
   for(const [vis,id,label] of units){
     const hud=document.getElementById(id);let group=info.querySelector(`[data-info-vis="${vis}"]`);
@@ -98,7 +111,8 @@ function updateBattleViewport(){
   syncBattleViewportInfo();
   const viewport=window.visualViewport?.height||window.innerHeight;
   const floating=screen.querySelector('.battle-inline-panel:not(.hidden)');
-  // Opening choices must not change the body-size unit or document height.
+  // Choice changes keep the body-size unit. CSS transfers targeting
+  // command space into the field, without adding to the page height.
   if(floating&&Number(arena.dataset.compactHeight)>0&&Number(arena.dataset.viewportWidth)===arena.clientWidth&&Number(arena.dataset.viewportHeight)===viewport)return;
   const top=Math.max(0,screen.getBoundingClientRect().top+window.scrollY);
   let chrome=0;

@@ -130,6 +130,18 @@ assert(detail);detail.click();assert(by('battleCompactInfo').querySelector('[dat
 run('chooseMultiBattleTarget(0);renderBattleInputState()');
 assert(by('multiTargetSelect').classList.contains('battle-inline-panel'));assert.equal(panelScrolls,0);
 assert.equal(by('multiTargetSelect').querySelectorAll(':scope > button:not([hidden])').length,1);
+assert.equal(by('multiTargetSelect').querySelectorAll('p').length,0);
+const targetName=by('multiTargetSelect').querySelector('.battle-target-skill').textContent;
+assert(targetName&&!targetName.includes('選択中')&&!targetName.includes('タップ'));
+assert.equal(by('multiTargetSelect').querySelector('[data-battle-panel-back]').textContent,'← 技に戻る');
+run('syncBattleUi();syncBattleUi()');assert.equal(by('multiTargetSelect').querySelector('.battle-target-skill').textContent,targetName);
+assert.equal(by('battleActionStatus').textContent,'攻撃する敵をタップ');
+assert.equal(winningRule(screen.querySelector('.battle-command-dock'),'min-height').value,'64px');
+assert.match(winningRule(arena,'height').value,/120px/);
+assert.equal(by('battleCompactInfo').querySelector('summary').textContent,'設定');
+run("battleHistoryEntry('確認ログ')");assert.match(by('battleHistoryCount').textContent,/^\d+件$/);
+assert.match(screen.querySelector('.battle-log-panel>summary').textContent,/^履歴 /);
+assert.match(screen.querySelector('.battle-history-limit').textContent,/最新240件/);
 for(const id of ['enemy_aCard','enemy_bCard']){const card=by(id);for(const hit of card.querySelectorAll('.battle-target-hit')){assert.equal(hit.getAttribute('role'),'button');assert.equal(hit.tabIndex,0);assert.match(hit.getAttribute('aria-label'),/対象にする/);}}
 run('battleUiBack();battleUiBack()');
 for(const hit of d.querySelectorAll('.battle-target-hit'))assert(!hit.hasAttribute('role'));

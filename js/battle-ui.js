@@ -42,12 +42,11 @@ function syncBattleUi(){
   if(panel){
     if(typeof prepareBattleFloatingPanel==='function')prepareBattleFloatingPanel(panel);
     if(panel.id==='multiTargetSelect'){
-      const note=panel.querySelector('p')?.textContent;
-      if(note){document.getElementById('battleActionStatus').textContent='攻撃する敵の画像かHP欄をタップ';document.getElementById('battleInputLabel').textContent='対象を選択';}
+      document.getElementById('battleActionStatus').textContent='攻撃する敵をタップ';document.getElementById('battleInputLabel').textContent='対象を選択';
     }
     panel.setAttribute('role','region');
     if(!panel.querySelector('[data-battle-panel-back]')){
-      const back=document.createElement('button');back.type='button';back.dataset.battlePanelBack='';back.className='battle-panel-back';back.textContent='← 戻る';back.onclick=battleUiBack;panel.prepend(back);
+      const back=document.createElement('button');back.type='button';back.dataset.battlePanelBack='';back.className='battle-panel-back';back.textContent=panel.id==='multiTargetSelect'?'← 技に戻る':'← 戻る';back.onclick=battleUiBack;panel.prepend(back);
     }
   }
   const changed=battleUi.panel!==panel?.id;

@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261001-battle-target-tidy",date:"2026-10-01",category:"update",title:"攻撃対象を選ぶ画面を整理しました",body:"対象選択の案内を短くまとめ、戻るボタンと技名を1行にしました。下の空白を減らして戦場に余裕を持たせ、設定と履歴の表示も短くしました。"}),
   Object.freeze({id:"20261001-battle-inline-hud",date:"2026-10-01",category:"update",title:"モンスターを見ながら技と対象を選べるようにしました",body:"技選択を下の操作欄に収め、敵の画像やHP欄から攻撃対象を選べるようにしました。名前とHPの表示を小さくまとめ、状態の詳細はタップで確認できます。"}),
   Object.freeze({id:"20261001-battle-skill-sheet",date:"2026-10-01",category:"update",title:"技選択を画面下のパネルにまとめました",body:"技と攻撃対象を画面下のパネルから選べるようにしました。選択中も戦場の大きさを保ちます。技の詳しい効果はパネル内から確認できます。"}),
   Object.freeze({id:"20261001-battle-spacing-size",date:"2026-10-01",category:"fix",title:"モンスターの重なりと静止画サイズを修正しました",body:"敵と味方の全身が重ならないように表示範囲を調整しました。複数敵の静止画にも、設定した体格の倍率を正しく反映します。"}),

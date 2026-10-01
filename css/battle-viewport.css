@@ -80,3 +80,14 @@ body:has(#battle.active.is-battle-stage){padding-bottom:0}
 #battle.is-battle-stage .multi-enemy-card>.battle-stage-slot.battle-target-hit{min-height:48px}
 @media(prefers-reduced-motion:no-preference){#battle.is-battle-stage .battle-target-hit.is-targetable{transition:outline-color .15s}}
 #battle.is-battle-stage .battle-inline-panel [hidden]{display:none!important}
+
+/* Targeting: one short instruction and one row, without a blank command pad.
+   Return the removed 120px to the field; artwork scales stay on the resting
+   compactHeight reference rather than growing with this presentation space. */
+#battle.is-battle-stage:has(#multiTargetSelect:not(.hidden)) .battle-command-dock{min-height:64px}
+#battle.is-battle-stage:has(#multiTargetSelect:not(.hidden)) .battle-arena{height:calc(var(--battle-art-height,440px) + 120px)}
+#battle.is-battle-stage .battle-command-dock #multiTargetSelect.battle-inline-panel{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
+#battle.is-battle-stage .battle-command-dock #multiTargetSelect.battle-inline-panel .battle-panel-back{grid-column:1;grid-row:1;width:auto;min-height:48px;padding:4px 8px;white-space:nowrap;font-size:.875rem}
+#battle.is-battle-stage .battle-target-skill{grid-column:2;grid-row:1;min-width:0;font-size:.875rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+#battle.is-battle-stage #battleCompactTools>details>summary{white-space:nowrap;font-size:.8rem;min-height:40px;padding:4px 8px}
+#battle.is-battle-stage .battle-history-limit{margin:4px 8px;font-size:.8rem;color:#b9c9dc}

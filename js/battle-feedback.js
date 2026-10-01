@@ -16,7 +16,7 @@ function battleHistoryEntry(text,kind='result'){
     const row=document.createElement('li');row.textContent=`${turn?`T${turn}`:'開始'} · ${text}`;list.appendChild(row);
     while(list.children.length>BATTLE_HISTORY_LIMIT)list.firstElementChild.remove();
   }
-  const count=document.getElementById('battleHistoryCount');if(count)count.textContent=`${battleFeedback.history.length}件（最新${BATTLE_HISTORY_LIMIT}件まで）`;
+  const count=document.getElementById('battleHistoryCount');if(count)count.textContent=`${battleFeedback.history.length}件`;
 }
 function captureBattleLog(){
   const log=document.getElementById('log');if(!log)return;
