@@ -1,3 +1,9 @@
+# 最新状態（2026-10-02）
+
+[組み込み前の最終整理](final-review/README.md)と[最新検査記録](final-review/validation.json)を現在の判断に使う。採用サイズ・戦闘UI・通常ルート・更新チュートリアルの本人確認を記録した。以下は過去の作業履歴であり、以前のpendingを現行UIの確認待ちとして重複計上しない。全50体/19背景/実機負荷の最終受入は別途pending。本編マージ・一般公開は禁止のまま。
+
+---
+
 # Phase E：最新検査と次の確認
 
 2026-10-01。表示サイズは本人が採用済み。最新コード d3e671fba20bd385f32cd933459216ccf825fe4b の全体検査 npm run check はpostcheckを含め終了0。モーション専用6検査もすべてPASS。結果は validation.json / full-check.log / latest-motion-checks.json。

@@ -32,5 +32,7 @@
     "mixedSpeciesMaps": 19,
     "evidence": "latest-motion-checks.json",
     "limits": "DOM/media mocks; not real Galaxy decoding or browser pixel layout"
-  }
+  },
+  "historicalSnapshot": true,
+  "currentStatusReport": "final-review/validation.json"
 }

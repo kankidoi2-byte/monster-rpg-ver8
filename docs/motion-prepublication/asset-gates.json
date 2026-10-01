@@ -594,5 +594,16 @@
       "alphaEvidence": "phase-c/batch14/elixion-alpha.json"
     }
   ],
-  "phaseCStatus": "in_progress; batch2 and consolidated50 catalog; final acceptance incomplete"
+  "phaseCStatus": "in_progress; batch2 and consolidated50 catalog; final acceptance incomplete",
+  "latestReview": {
+    "dateJST": "2026-10-02",
+    "report": "phase-e/final-review/README.md",
+    "runtimeCommit": "08d131fba02f4d584cf1df40e3d7812403128f93",
+    "registration": "50/50 files and evidence reconciled",
+    "mapBindings": "19/19 DOM checks passed",
+    "ownerAcceptance": "accepted current size/UI, no particular issue in instructed normal journey, updated tutorial confirmed; limited to reported scope",
+    "final50SpeciesGate": "pending remaining device/performance/anchor/source reproducibility conditions",
+    "publication": "main merge and general publication forbidden",
+    "entryStatusInterpretation": "historical per-species asset gates remain; shared current UI/operation acceptance is in latestReview, not a blanket per-species final PASS"
+  }
 }

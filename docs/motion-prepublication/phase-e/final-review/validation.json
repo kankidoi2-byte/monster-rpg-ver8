@@ -1,0 +1,136 @@
+{
+  "dateJST": "2026-10-02",
+  "runtimeCommit": "08d131fba02f4d584cf1df40e3d7812403128f93",
+  "fullCheck": {
+    "exitCode": 0,
+    "evidence": "full-check.log",
+    "reusedFrom": "tutorial UI verification; identical runtime source",
+    "includesPostcheck": true
+  },
+  "motionChecks": [
+    {
+      "test": "test-battle-idle-media-dom.mjs",
+      "exitCode": 0,
+      "log": "test-battle-idle-media-dom.mjs.log",
+      "sha256": "6c27faa22e122c3ae1196ea397288f81f58455d0b1fd28da6bd89c98c7163405",
+      "scope": "DOM/media mocks"
+    },
+    {
+      "test": "test-battle-idle-lifecycle-dom.mjs",
+      "exitCode": 0,
+      "log": "test-battle-idle-lifecycle-dom.mjs.log",
+      "sha256": "a95ecca88c3a9773f286ab033bb57537cb7ac63ecaa658718807440e3345d4fd",
+      "scope": "DOM/media mocks"
+    },
+    {
+      "test": "test-battle-idle-multi-dom.mjs",
+      "exitCode": 0,
+      "log": "test-battle-idle-multi-dom.mjs.log",
+      "sha256": "70ee7516a7cd99acc04f64ae4716ed4194e7178ed6e63b78c5dac88e93882698",
+      "scope": "DOM/media mocks"
+    },
+    {
+      "test": "test-battle-idle-viewport-dom.mjs",
+      "exitCode": 0,
+      "log": "test-battle-idle-viewport-dom.mjs.log",
+      "sha256": "82c809b1ba54d5ae06a03cfc7c73b074db6d75e8c3701f6f112902345cbdd4e4",
+      "scope": "DOM/media mocks"
+    },
+    {
+      "test": "test-motion-map-review-dom.mjs",
+      "exitCode": 0,
+      "log": "test-motion-map-review-dom.mjs.log",
+      "sha256": "cc9ae1195f87fe3e0a5814537d9fd41b07225fe792771b5dbceb7b94433b32bb",
+      "scope": "DOM/media mocks"
+    },
+    {
+      "test": "test-motion-catalog-dom.mjs",
+      "exitCode": 0,
+      "log": "test-motion-catalog-dom.mjs.log",
+      "sha256": "b105ff291afea70b413bd44b685ce92bb4c9d9986f72f0a375b33db34c76a95e",
+      "scope": "DOM/media mocks"
+    }
+  ],
+  "runtimeSourceSha256": {
+    "index.html": "ae7d09c4ccc8830698f2cc7fdd07858aa105abdfc6da3dbc5e2568e39d6da8c5",
+    "js/dex.js": "bba8ac17e7dc7cfe54704fd84b7dd0decea0c77e0dc55a7f6ee02148c0cbf659",
+    "js/battle-flow.js": "4e2dd13f53327555cba69d6adf0030d6a3a88972e86e7d956982f9892254608e",
+    "js/bootstrap-guard.js": "0bf458f934f619d79084d577661412222d4bd9b76bde72fbf023e6b15ac8a5f3",
+    "js/world-events.js": "e207671a30103ee4fdea5ee12d80239a02b9b1d3126c15f2df8ced4981c53b31",
+    "js/tutorial.js": "b9c53c5f1fe3e97ec0d4eb13539d1a4ebb3788d32dd5612cb57044038ac585c6",
+    "js/init.js": "8f50ff36a8dea9968152e23058990bccc84a68c9d67674aaf2314ab8b571b45a",
+    "js/data.js": "64d0d44ecfc5c1ddae54b0a649516170c8124a9c87d3f0cb4b309ff84326a0cb",
+    "js/world-map-flow.js": "9823c2f63bf274776ff8d74368e9859258842cc2cedb0d4e8bbedede20661059",
+    "js/battle-viewport.js": "ccd78b7fd72772f57b2d0e810544107d3a6a1a097f19a13aea561a6b69b6ea79",
+    "js/core.js": "278f5ad2e0e064948b69dfa743f1e36a1e50ddd23b5a3b50c5a3b563ce0276bd",
+    "js/contract-animation.js": "f2bf5aa5099f01a794f4167b3d1e86bf695eeea5f4a366f45b4b4e74d922b4ab",
+    "js/multi-battle.js": "72c6eef93a56d2337bb5d833dae8e6c6346611910406a9959cec8c63977ad4d6",
+    "js/battle-idle-media.js": "2e6cad94e7167c7d5fd92ff0669c387e4aa7795ac7ae5ea9719fc6bef89d4e95",
+    "js/skill-gacha.js": "cc61c42836d23d786e3adeb8f628e1cb06c246a81610c2d1fdbb554936c1de34",
+    "js/diagnostics.js": "5603e3d750bcb6ddb09e8663992f3b9fcd40c72f2647f292d556ad1392e7b6e2",
+    "js/alchemy.js": "1357f384ea99011472ce36f422fe9d0f183cb54228bae231c5495be4a16d10b6",
+    "js/world-map.js": "11f8ae83108645afbb1e6fcf9053315864181f1f3a9fd1ee2e36ed79727f17c2",
+    "js/battle-ui.js": "20aa547e28b68fee5d9c769327549c18505cb87c745a0e4dc34100190718f773",
+    "js/diagnostics-ui.js": "f33f6b83769eeb63c153e462f675b7ad270f89a603b09dded8c18b3f1468881c",
+    "js/battle-feedback.js": "2772beb72cb3007f793c72d321182d2594e620448840cb9ade68b2fecd8434d0",
+    "js/ui.js": "5ea541b8e270ab0f1814d038bd15f1253ef8a7ff03696b87ffa2e942f06acc00",
+    "js/battle-stage.js": "59d04bc0fa5e2a74b914614cd7ab65634925e1522567c61c2076c56be5c50242",
+    "js/notices-data.js": "19dbf645db932d1b2e6e62483006e8cdb9fb7746a22e6d6ea0dbbda700f49d6d",
+    "js/notices.js": "955fad040635c4f6df74491da58ae45c6984df0ec6f8522a5a101aa175d0d7ab",
+    "js/skills.js": "841551599749bdf3efc39ceaf851999d8a41922b6e6999be2a994d0c9a62ec77",
+    "js/contractor-rank.js": "42efe65169028d1426aa2a64c7effb2027a26aec328c3f91e6a713e7a2d50953",
+    "js/story.js": "2398e804f85a43e7538e560abac138f4c8415d6b3a7e03a183cf9cd29d26b835",
+    "js/character-gacha.js": "3d1340e087a87b0b8e21f1a78e413bb97b95b65b30f3d4335a9078f5dd17729c",
+    "js/expedition.js": "4e52b7a6c989d3ac5d3b777c07b4480bd0614e13bf5453b8f36899c6004c81d8",
+    "js/battle-rules.js": "1fa261a5847f3fcac79a93a715d900b896eac32e712911c1b43507ec627f76cc",
+    "js/save.js": "20440c78e15fc1b6f0ddc2061bafbc63837b01118872b87fb3f998667eaab4b4",
+    "js/items.js": "c12debbc95a9d3b8caaa347156aa0fedc6fa53bf279367294e2ee46c5ae768c5",
+    "js/kokoro-link.js": "100021f8dfc4d4bde522392348d6e0e922b96da0bfe5823cc8292bb962e4ac69",
+    "js/progression.js": "8d1c0fb140c2a14c9b9652a350a81be317398d0262469a8ccf59660b5e2f860c",
+    "js/battle-view.js": "ba477acdf7b73773ace3502644acee2ce206bd9c328c1cf7796ae5fc94f8276b",
+    "js/party.js": "ab055176b9d52aa3056ba9d55e8beb8366062869c1a83a16b8b8fff9af506979",
+    "js/state.js": "7859cda8f35179884d51270e304c7627bcee43b95253607490ba9176b9635cc4",
+    "css/style.css": "b7d3ea4f2b4b44fd7c4eabd6033a05795256efdf1f5fcd299dd01c332155646f",
+    "css/battle-idle-media.css": "6954c786b33880aca7bd284ad16b9267a3fac44a1cda50017b02d1ffd8a39912",
+    "css/world-map.css": "76f3979225bd63ea4cfdca17af73780f6b3bef6a0ec518aa38ce4377875734c5",
+    "css/character-gacha.css": "23d12a9304f6eecef30eaf0f165d04862d0f26e2d2eb7c7fee4089c26ec4bd02",
+    "css/contract-animation.css": "e39f27e764f16e4b4bacab49e5b548da59baa7b9f35c5e047a8e8ef2fd3285db",
+    "css/ui-redesign.css": "bce2b8bd637c180f5bc883274101b45154e6532a1e467bc350c0897af9495bd6",
+    "css/tutorial.css": "00068dda11604b571c4135a5bd43f6a27ce761128b01bb43951a532b5435e91c",
+    "css/battle-stage.css": "ac37e5d2ce09a6c5e5f0a47783e01bee2d60058988cb74093a1c6c5d75f2bfc0",
+    "css/battle-ui.css": "ec3bf66112b1d62c71d5cb8647c2d99b449f5d44be452e3f06f72a2be33c748f",
+    "css/battle-viewport.css": "1d768f537c0f0500e7f57a7e7aa73ea75916f7778a82f426b1a0d88335d0fb48"
+  },
+  "registeredSpecies": 50,
+  "maps": 19,
+  "historicalAlphaEvidence": {
+    "jsonRecords": 49,
+    "phase4aProseRecords": 1,
+    "currentVideoHashesMatch": true,
+    "newDecodePerformed": false
+  },
+  "ownerAcceptance": {
+    "acceptedSizeSettings": true,
+    "acceptedBattleUI": true,
+    "normalJourney": "2026-10-02 06:18 JST owner reports no particular issue; do not infer all branches/conditions",
+    "tutorialUI": "2026-10-02 06:45 JST owner confirmed acceptable",
+    "scope": "supplied/current review screens and instructed use only"
+  },
+  "final50SpeciesGate": "pending scoped device/performance/source reproducibility gates",
+  "integrationReadiness": "source and checks prepared; release acceptance incomplete",
+  "mainMerge": false,
+  "generalPublication": false,
+  "notice": "not needed; documentation and verification only",
+  "remaining": [
+    "latest composition on all 19 backgrounds and representative widths/landscape/200% text",
+    "long-duration actual device decoder/memory/load, offscreen return/BFCache and failure/retry with current 50-species setup",
+    "anatomical footing/facing/full-loop clipping acceptance beyond mock geometry",
+    "slime version label and slime/kimeragna original reproducible alpha-export recipe remain unrecovered",
+    "observe required CI and obtain explicit main/publication approval before merge"
+  ],
+  "githubActions": {
+    "reviewedHead": "08d131fba02f4d584cf1df40e3d7812403128f93",
+    "observedRuns": 0,
+    "requiredCI": "not observed; not a CI pass"
+  }
+}

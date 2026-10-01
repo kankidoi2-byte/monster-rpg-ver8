@@ -10,5 +10,7 @@
   "newBrowserTest": false,
   "newAndroidEvidence": "user report only: phase8-user-report.json",
   "final50SpeciesGate": "pending",
-  "publication": "forbidden"
+  "publication": "forbidden",
+  "historicalSnapshot": true,
+  "currentStatusReport": "phase-e/final-review/validation.json"
 }
