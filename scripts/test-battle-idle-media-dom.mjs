@@ -14,6 +14,8 @@ const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
+const layoutObservers=[];
+w.ResizeObserver=class {constructor(callback){this.callback=callback;this.disconnected=false;layoutObservers.push(this);}observe(media){this.media=media;}disconnect(){this.disconnected=true;}};
 w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
@@ -31,11 +33,39 @@ function setup(){run(`save=initSave();completeTutorial();currentTutorialState().
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
   activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
+// Bounds containment is numeric/DOM evidence, not real browser layout or feet.
+const layoutCases=run(`Object.entries(BATTLE_IDLE_MEDIA).map(([id,c])=>({id,bounds:c.sourceBounds,layout:c.layout}))`);
+let layoutChecks=0;
+for(const c of layoutCases){
+ assert(c.bounds,c.id+' missing measured full-loop bounds');
+ for(const [width,height] of [[96,96],[160,160],[320,100],[100,320],[320,430],[430,320],[160,215],[215,160]]){
+  const fit=run(`battleIdleBoundsFit(${JSON.stringify(c.bounds)},${width},${height},${JSON.stringify(c.layout||{})})`);
+  assert(fit,c.id);const b=c.bounds,eps=1e-7;
+  assert(fit.left+b.x*fit.scale>=-eps,c.id+' left');
+  assert(fit.top+b.y*fit.scale>=-eps,c.id+' top');
+  assert(fit.left+b.right*fit.scale<=width+eps,c.id+' right');
+  assert(fit.top+b.bottom*fit.scale<=height+eps,c.id+' bottom');
+  assert(Math.abs(fit.width/b.width-fit.height/b.height)<eps,c.id+' aspect');layoutChecks++;
+ }
+}
+assert.equal(layoutCases.length,50);
+assert.equal(run('battleIdleBoundsFit(null,100,100)'),null);
+assert.equal(run('battleIdleBoundsFit({width:960,height:960,x:0,y:0,right:961,bottom:960},100,100)'),null);
 setup();await new Promise(r=>setTimeout(r,0));
+const fitRecord=run('battleIdleRecord');let mediaWidth=160,mediaHeight=120;
+Object.defineProperty(fitRecord.media,'clientWidth',{get:()=>mediaWidth});
+Object.defineProperty(fitRecord.media,'clientHeight',{get:()=>mediaHeight});
+fitRecord.layoutObserver.callback();assert.equal(fitRecord.media.dataset.idleFit,'bounds');
+const beforeWidth=fitRecord.media.style.getPropertyValue('--idle-canvas-width');
+mediaWidth=80;mediaHeight=60;fitRecord.layoutObserver.callback();
+assert.equal(parseFloat(fitRecord.media.style.getPropertyValue('--idle-canvas-width')),parseFloat(beforeWidth)/2);
+mediaWidth=0;fitRecord.layoutObserver.callback();assert(!fitRecord.media.dataset.idleFit);
+mediaWidth=160;mediaHeight=120;fitRecord.layoutObserver.callback();
+
 let video=by('pVis').querySelector('video');assert(video&&!video.paused);video.currentTime=3;
 run('pHp-=3;update();toggleBattleSkillPanel();battleUiBack()');assert.equal(by('pVis').querySelector('video'),video);assert.equal(video.currentTime,3);
 run('openBattleItemSelect()');assert(video.paused);run("show('battle');update()");await new Promise(r=>setTimeout(r,0));assert.equal(by('pVis').querySelector('video'),video);assert(!video.paused);
-const oldPlaying=video.onplaying;run('changeActivePartyMember(1)');assert(video.paused&&!video.isConnected);oldPlaying();assert(!d.querySelector('video'));
+const retiredLayout=fitRecord.layoutObserver;const oldPlaying=video.onplaying;run('changeActivePartyMember(1)');assert(video.paused&&!video.isConnected);oldPlaying();assert.notEqual(by('pVis').querySelector('video'),video);assert(retiredLayout.disconnected);retiredLayout.callback();assert(!fitRecord.media.dataset.idleFit);
 for(let i=0;i<5;i++){setup();run("show('home')");assert.equal(d.querySelectorAll('video').length,0);}
 refuse=true;setup();await new Promise(r=>setTimeout(r,0));assert(run('battleIdleRecord.failed'));assert.equal(by('pVis').querySelector('img').style.visibility,'visible');
 const calls=playCalls;run('update();update();update()');assert.equal(playCalls,calls);run('toggleBattleSkillPanel()');assert(!by('commands').classList.contains('hidden'));
@@ -43,3 +73,5 @@ refuse=false;run('battleIdleRecord.button.click()');await new Promise(r=>setTime
 run('eHp=0;win()');assert(!d.querySelector('video'));setup();assert.equal(d.querySelectorAll('video').length,1);
 run("show('home')");dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
 console.log('PASS Phase4A DOM: node/time retention; temporary pause/resume; switch disposal and stale callback; five exits; simulated rejection/no retry loop/user retry; victory/next. Media API mocked, real decode is browser evidence.');
+
+console.log('PASS Phase D bounds: '+layoutChecks+' numeric containment/aspect cases for 50 species; resize, zero-size fallback, observer disposal/stale callback. No physical foot or real browser/Galaxy layout acceptance.');

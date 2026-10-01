@@ -1,25 +1,26 @@
 // Runs only in the generated sandbox. Storage was replaced before game boot.
-let granReviewSpecies='gran_volmoog';
+let granReviewSpecies='gran_volmoog',granReviewMixed=false;
 // Isolate the selected species in this QA document. As registration expands,
 // a supporting ally must not take the one decoder slot from the reviewed enemy.
 const granReviewAllCandidates=battleIdleCandidates;
-battleIdleCandidates=()=>granReviewAllCandidates().filter(u=>u.mon.id===granReviewSpecies);
+battleIdleCandidates=()=>granReviewAllCandidates().filter(u=>granReviewMixed||u.mon.id===granReviewSpecies);
 function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies){
  if(!Object.hasOwn(BATTLE_IDLE_MEDIA,species))return false;
  granReviewSpecies=species;
- if(!['ally','enemy','multi'].includes(mode))return false;
+ if(!['ally','enemy','multi','mixed'].includes(mode))return false;
+ granReviewMixed=mode==='mixed';
  const map=MAPS.find(m=>m.id===mapId);if(!map)return false;
  disposeBattleIdleMedia();setBattleIdleLimit(1);
  save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};
  save.instances=[];save.party=[];
- for(const id of [mode==='ally'||mode==='multi'?species:'aquaron','aquaron']){
+ for(const id of [mode==='ally'||mode==='multi'||mode==='mixed'?species:'aquaron','aquaron']){
    const ins=addInstance(id,10);save.party.push(ins.uid);
  }
  prepareBattleParty();selectedMap=map;enemy=by(mode==='ally'?'slime':species);
  activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';
  beginChosenBattle(map.id,enemy.id,'normal',activeHuntRequest);show('battle');
- if(mode==='multi'){
-   ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(species),'enemy_a'),createMultiEnemy(by(species),'enemy_b')],pendingMoveIndex:null};
+ if(mode==='multi'||mode==='mixed'){
+   ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(mode==='mixed'?'orca_abyss':species),'enemy_a'),createMultiEnemy(by(mode==='mixed'?'slime':species),'enemy_b')],pendingMoveIndex:null};
    setMultiBattleLayout(true);setupMultiBattle();setBattleIdleLimit(3);
  }
  document.getElementById('granReviewResult').textContent='表示確認待ち：'+by(species).name+' / '+mode+' / '+map.name;
@@ -30,14 +31,20 @@ function granReviewMeasure(){
    const r=media.getBoundingClientRect(),side=media.closest('[id$="Vis"]')?.id;
    const flipped=media.parentElement.style.transform.includes('-1');
    const video=media.querySelector('video');
-   const config=Object.values(BATTLE_IDLE_MEDIA).find(c=>video?.getAttribute('src')===c.src);
+   const record=[...battleIdleRecords.values()].find(item=>item.media===media);
+   const config=record?.config;
    const bounds=config?.sourceBounds||{width:960,height:960,x:0,y:0,right:960,bottom:960};
-   const fit=Math.min(r.width/bounds.width,r.height/bounds.height);
+   const projected=battleIdleBoundsFit(bounds,media.clientWidth,media.clientHeight,config?.layout);
+   const fit=projected?.scale??Math.min(r.width/bounds.width,r.height/bounds.height);
    const width=bounds.width*fit,height=bounds.height*fit;
-   const left=r.left+(r.width-width)*(config?.layout?.x??0.5),top=r.top+(r.height-height)*(config?.layout?.y??0.5);
-   const body={left:left+(flipped?bounds.width-bounds.right:bounds.x)*fit,
-     right:left+(flipped?bounds.width-bounds.x:bounds.right)*fit,
-     top:top+bounds.y*fit,bottom:top+bounds.bottom*fit};
+   const left=projected?.left??((r.width-width)*(config?.layout?.x??0.5));
+   const top=projected?.top??((r.height-height)*(config?.layout?.y??0.5));
+   const visibleLeft=left+bounds.x*fit,visibleRight=left+bounds.right*fit;
+   const contentLeft=r.left+(projected?media.clientLeft:0),contentTop=r.top+(projected?media.clientTop:0);
+   const contentWidth=projected?media.clientWidth:r.width;
+   const body={left:contentLeft+(flipped?contentWidth-visibleRight:visibleLeft),
+     right:contentLeft+(flipped?contentWidth-visibleLeft:visibleRight),
+     top:contentTop+top+bounds.y*fit,bottom:contentTop+top+bounds.bottom*fit};
    const gap=el=>{const b=el.getBoundingClientRect();return Math.hypot(Math.max(b.left-body.right,body.left-b.right,0),Math.max(b.top-body.bottom,body.top-b.bottom,0));};
    const hud=[...document.querySelectorAll('#singlePlayerBox,#singleEnemyBox,.multi-enemy-copy')].filter(el=>el.getClientRects().length);
    const dock=document.querySelector('.battle-command-dock');
@@ -48,7 +55,7 @@ function granReviewMeasure(){
  document.getElementById('granReviewResult').textContent=JSON.stringify(report,null,2);return report;
 }
 const granPanel=document.createElement('section');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
-granPanel.innerHTML='<strong>Phase C・モンスター戦闘確認</strong><p>各配置を2周再生し、足場・向き・切断・HPとの重なりを確認。3体は負荷確認用です。</p><div id="granReviewControls"></div><pre id="granReviewResult" style="white-space:pre-wrap"></pre>';
+granPanel.innerHTML='<strong>Phase D・配置確認</strong><p>19背景で大型・横長・小型の組み合わせを確認できます。足場の自然さ、翼・尾とHPの間隔、横向き・文字拡大を確認してください。</p><div id="granReviewControls"></div><pre id="granReviewResult" style="white-space:pre-wrap"></pre>';
 document.body.prepend(granPanel);
 const granMap=document.createElement('select');granMap.setAttribute('aria-label','確認マップ');granMap.style.minHeight='48px';
 for(const map of MAPS){const opt=document.createElement('option');opt.value=map.id;opt.textContent=map.name;granMap.append(opt);}
@@ -58,7 +65,7 @@ for(const id of ['gran_volmoog',...Object.keys(BATTLE_IDLE_MEDIA).filter(id=>id!
 granSpecies.onchange=()=>{document.getElementById('granMetricsDetails')?.remove();window.granReviewMetrics=null;granReviewSetup('ally',granMap.value,granSpecies.value);};
 document.getElementById('granReviewControls').prepend(granSpecies);
 
-for(const [label,fn] of [['味方1体',()=>granReviewSetup('ally',granMap.value)],['敵1体',()=>granReviewSetup('enemy',granMap.value)],['同種3体',()=>granReviewSetup('multi',granMap.value)],['間隔を計測',granReviewMeasure],['文字200%',()=>document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=>show('home')]]){
+for(const [label,fn] of [['味方1体',()=>granReviewSetup('ally',granMap.value)],['敵1体',()=>granReviewSetup('enemy',granMap.value)],['同種3体',()=>granReviewSetup('multi',granMap.value)],['大型・横長・小型',()=>{granSpecies.value='elixion';granReviewSetup('mixed',granMap.value,'elixion');}],['間隔を計測',granReviewMeasure],['文字200%',()=>document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=>show('home')]]){
  const b=document.createElement('button');b.textContent=label;b.type='button';b.style.cssText='min-height:48px;margin:4px';b.onclick=fn;document.getElementById('granReviewControls').append(b);
 }
 granReviewSetup();

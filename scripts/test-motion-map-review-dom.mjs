@@ -41,6 +41,13 @@ for(let offset=0;offset<maps.length;offset+=3){
 assert.equal(run("qaMapMotion('not-a-map',3)"),false);
 assert.equal(run("qaMapMotion('grassland',2)"),false);
 assert(!html.includes('qa-map-motion'),'Review adapter must not enter production index');
-assert.deepEqual(Array.from(run('Object.keys(BATTLE_IDLE_MEDIA)')),['volmoog'],'Unaccepted candidates must remain unregistered');
+assert.equal(run('Object.keys(BATTLE_IDLE_MEDIA).length'),50,'All Phase C evaluation registrations retained');
+run(fs.readFileSync(new URL('tools/motion-review/gran-volmoog-scenario.js',root),'utf8'));
+for(const map of maps){
+ assert(run(`granReviewSetup('mixed',${JSON.stringify(map.id)},'elixion')`));
+ await new Promise(r=>setTimeout(r,0));
+ assert.deepEqual(Array.from(run('[...battleIdleRecords.values()].map(r=>Object.entries(BATTLE_IDLE_MEDIA).find(([,c])=>c===r.config)[0])')),['elixion','orca_abyss','slime']);
+ run("show('home')");assert.equal(d.querySelectorAll('video').length,0);
+}
 dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
-console.log(JSON.stringify({scope:'19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending',results,passed:maps.length},null,2));
+console.log(JSON.stringify({scope:'19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending',results,passed:maps.length,mixedSpeciesMaps:maps.length},null,2));

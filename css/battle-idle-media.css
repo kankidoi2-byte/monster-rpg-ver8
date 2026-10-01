@@ -15,3 +15,15 @@
   object-position:var(--idle-position,50% 50%);
   transform:scale(var(--idle-scale,1));transform-origin:var(--idle-position,50% 50%);
 }
+
+/* The complete source canvas can extend into transparent space; its measured
+   all-frame body stays inside the slot. Equal scaling preserves source aspect.
+   Poster and video use identical geometry, including failure/reduced motion. */
+#battle.is-battle-stage .has-idle-media[data-idle-fit="bounds"] img,
+#battle.is-battle-stage .has-idle-media[data-idle-fit="bounds"] .battle-idle-video{
+  inset:auto!important;
+  left:var(--idle-canvas-left)!important;top:var(--idle-canvas-top)!important;
+  width:var(--idle-canvas-width)!important;height:var(--idle-canvas-height)!important;
+  max-width:none!important;max-height:none!important;
+  transform:none;object-fit:contain!important;
+}

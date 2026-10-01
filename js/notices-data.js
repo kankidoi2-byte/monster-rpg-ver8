@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20260930-phase-d-fit",date:"2026-09-30",category:"update",title:"待機モンスターの表示サイズを調整しました",body:"検査済みの全身範囲に合わせて余白を調整し、翼や尾を含む姿が表示枠に収まるようにしました。動画と代わりの静止画を同じ位置で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch14",date:"2026-09-30",category:"update",title:"スライムと錬成モンスターの待機モーションを追加しました",body:"スライム、アルケミオン、キメラグナ、キメラグナ・アペクス、エリクシオンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch13",date:"2026-09-30",category:"update",title:"ゴーレムたちとガルドラの待機モーションを追加しました",body:"ゴーレム、アイスゴーレム、ガルドラが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch12",date:"2026-09-30",category:"update",title:"イグナロスと精霊たちの待機モーションを追加しました",body:"イグナロス、炎の精霊ツバキ、水の精霊スイレンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),

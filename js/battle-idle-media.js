@@ -2,7 +2,9 @@
 const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   src:'images/monsters/motion/volmoog_v18_alpha.webm',
   poster:'images/monsters/motion/volmoog_v18_static.webp',
-  type:'video/webm; codecs="vp9"',allyFlip:true
+  type:'video/webm; codecs="vp9"',allyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:16,y:12,right:958,bottom:952})
 }),gran_volmoog:Object.freeze({
   src:'images/monsters/motion/gran_volmoog_v18_alpha.webm',
   poster:'images/monsters/motion/gran_volmoog_v18_static.webp',
@@ -332,16 +334,43 @@ function battleIdleStops(r){
   return reasons;
 }
 function battleIdleVisible(r){return !battleIdleStops(r).length&&!battleFeedback.finished&&!multiBattle?.finished;}
-// Layout values align the full canvas inside its contain box. Per-species values
-// never mutate the artwork or infer a foot point from the silhouette bounds.
+// Project the measured full-loop alpha union into the existing media box.
+// This is geometric containment, NOT an inferred anatomical foot or ground point.
+function battleIdleBoundsFit(bounds,width,height,layout={}){
+  if(!bounds||![width,height,bounds.width,bounds.height,bounds.x,bounds.y,bounds.right,bounds.bottom].every(Number.isFinite)||
+    width<=0||height<=0||bounds.width<=0||bounds.height<=0||bounds.x<0||bounds.y<0||
+    bounds.right>bounds.width||bounds.bottom>bounds.height||bounds.right<=bounds.x||bounds.bottom<=bounds.y)return null;
+  const x=Number.isFinite(layout.x)?Math.max(0,Math.min(1,layout.x)):0.5;
+  const y=Number.isFinite(layout.y)?Math.max(0,Math.min(1,layout.y)):0.5;
+  const adjustment=Number.isFinite(layout.scale)?Math.max(0.1,Math.min(1,layout.scale)):1;
+  const scale=Math.min(width/(bounds.right-bounds.x),height/(bounds.bottom-bounds.y))*adjustment;
+  return {width:bounds.width*scale,height:bounds.height*scale,
+    left:(width-(bounds.right-bounds.x)*scale)*x-bounds.x*scale,
+    top:(height-(bounds.bottom-bounds.y)*scale)*y-bounds.y*scale,scale};
+}
+const BATTLE_IDLE_FIT_PROPERTIES=['--idle-canvas-width','--idle-canvas-height','--idle-canvas-left','--idle-canvas-top'];
+function clearBattleIdleBoundsFit(r){
+  delete r.media.dataset.idleFit;
+  for(const name of BATTLE_IDLE_FIT_PROPERTIES)r.media.style.removeProperty(name);
+}
 function applyBattleIdleLayout(r){
-  const v=r.config.layout;
-  if(!v)return;
+  const v=r.config.layout||{};
   const x=Number.isFinite(v.x)?Math.max(0,Math.min(1,v.x)):0.5;
   const y=Number.isFinite(v.y)?Math.max(0,Math.min(1,v.y)):0.5;
   const scale=Number.isFinite(v.scale)?Math.max(0.1,Math.min(1,v.scale)):1;
   r.media.style.setProperty('--idle-position',`${x*100}% ${y*100}%`);
   r.media.style.setProperty('--idle-scale',String(scale));
+  const fit=battleIdleBoundsFit(r.config.sourceBounds,r.media.clientWidth,r.media.clientHeight,v);
+  if(!fit){clearBattleIdleBoundsFit(r);return;}
+  for(const [name,value] of [['width',fit.width],['height',fit.height],['left',fit.left],['top',fit.top]])
+    r.media.style.setProperty(`--idle-canvas-${name}`,`${value}px`);
+  r.media.dataset.idleFit='bounds';
+}
+function watchBattleIdleLayout(r){
+  r.layoutObserver=null;
+  if(typeof ResizeObserver!=='function')return;
+  r.layoutObserver=new ResizeObserver(()=>{if(battleIdleOwned(r))applyBattleIdleLayout(r);});
+  r.layoutObserver.observe(r.media);
 }
 // One observer per owned record (max 3). Start static until the first visibility
 // report. Pause below 2% for 250ms; resume at 15%, avoiding boundary chatter.
@@ -402,7 +431,7 @@ function releaseBattleIdleVideo(r){
 function disposeBattleIdleRecord(r){
   if(!battleIdleOwned(r))return;
   battleIdleRecords.delete(r.key);refreshBattleIdlePrimary();r.disposed=true;r.state='disposed';
-  unwatchBattleIdleViewport(r);releaseBattleIdleVideo(r);r.button.onclick=null;
+  unwatchBattleIdleViewport(r);r.layoutObserver?.disconnect();clearBattleIdleBoundsFit(r);releaseBattleIdleVideo(r);r.button.onclick=null;
   r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
   r.img.style.removeProperty('visibility');r.media.classList.remove('has-idle-media','idle-playing');
   r.facing.style.removeProperty('transform');r.details.remove();
@@ -487,7 +516,7 @@ function syncBattleIdleCandidate(chosen){
       attempt:0,playToken:0,clockToken:0,timer:null,remaining:BATTLE_IDLE_WAIT_MS,waitStarted:0};
     battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');img.src=config.poster;
     if(chosen.vis==='pVis'?config.allyFlip:config.enemyFlip)r.facing.style.transform='scaleX(-1)';
-    applyBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
+    applyBattleIdleLayout(r);watchBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
     button.onclick=()=>{
       if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops(r).length)return;
       // One manual attempt per display lifetime, latched before any async work.
@@ -515,3 +544,13 @@ document.addEventListener('visibilitychange',syncBattleIdleMedia);
 window.addEventListener('pagehide',()=>{battleIdlePageHidden=true;disposeBattleIdleMedia();});
 window.addEventListener('pageshow',()=>{battleIdlePageHidden=false;syncBattleIdleMedia();});
 battleIdleReduced?.addEventListener?.('change',syncBattleIdleMedia);
+
+// One session-wide fallback; no polling, decoder reset or per-unit window listener.
+let battleIdleLayoutFrame=null;
+window.addEventListener('resize',()=>{
+  if(battleIdleLayoutFrame!==null)return;
+  battleIdleLayoutFrame=requestAnimationFrame(()=>{
+    battleIdleLayoutFrame=null;
+    for(const r of battleIdleRecords.values())applyBattleIdleLayout(r);
+  });
+});

@@ -1,0 +1,68 @@
+{
+  "dateJST": "2026-10-01",
+  "baseCommit": "30c07b9e5365307a9ca54513da36badd35ad9322",
+  "recoveredSiteSource": "d129b1edb768830938e461c7d72b5e482ce75026",
+  "stage": "implementation and DOM regression saved; visual acceptance pending",
+  "checks": [
+    {
+      "test": "test-battle-idle-media-dom.mjs",
+      "exitCode": 0
+    },
+    {
+      "test": "test-battle-idle-lifecycle-dom.mjs",
+      "exitCode": 0
+    },
+    {
+      "test": "test-battle-idle-multi-dom.mjs",
+      "exitCode": 0
+    },
+    {
+      "test": "test-battle-idle-viewport-dom.mjs",
+      "exitCode": 0
+    },
+    {
+      "test": "test-motion-map-review-dom.mjs",
+      "exitCode": 0
+    },
+    {
+      "test": "test-motion-catalog-dom.mjs",
+      "exitCode": 0
+    }
+  ],
+  "boundsCases": 400,
+  "registeredSpecies": 50,
+  "mapBindings": 19,
+  "mixedSpeciesMaps": 19,
+  "syntaxAndNotices": "PASS",
+  "fullCheck": {
+    "command": "npm run check",
+    "exitCode": 1,
+    "status": "blocked by missing historical Git commit in materialized checkout",
+    "failure": "scripts/test-world-map-downgrade-safety.mjs requires git show d31cfccd:js/tutorial.js",
+    "passed": false
+  },
+  "realBrowserLayout": "not performed",
+  "physicalFootAnchor": "pending",
+  "realGalaxy": "pending",
+  "mainMerge": false,
+  "publication": "forbidden",
+  "protectedFilesUnchanged": [
+    "js/data.js",
+    "js/save.js",
+    "js/battle-rules.js",
+    "js/battle-flow.js",
+    "js/multi-battle.js"
+  ],
+  "changedFileSha256": {
+    "css/battle-idle-media.css": "c5c6eff8ead5b4c70ddbc8763a21262817396c9555eaed80cfdffcc0eb3b3131",
+    "index.html": "21c0aba06c7d125a9a9f93b0608c742b1b8830886b32e2f1d8f95fd9f7aff1d1",
+    "js/battle-idle-media.js": "c52528dd5e4824f2d07372eb3a96544c0ae00851ed2ef43e3bf53a84f2c025ed",
+    "js/notices-data.js": "dce3d5c82903186018d3396f573ffba32f67e55c299e12764b13e41f7e6c37b3",
+    "tools/motion-review/gran-volmoog-scenario.js": "eefaf5269659758b62d3cb7ba390bb13094deaad77cdf9d634d042291cb35017",
+    "tools/motion-review/gran-volmoog-review.generated.html": "94cdb923414cec23fe4b1076566c2164acba6bc9bd6ac76fb862fdfe47047b47",
+    "scripts/test-battle-idle-media-dom.mjs": "dbe83cb7a4f988e0c267028aea0d11da6c76fb2ecac9e41a28c7c936b20208eb",
+    "scripts/test-battle-idle-lifecycle-dom.mjs": "952682584a3108e6780cd8141d898c209c66b1220e86ab92d28aeebb10dbe6d2",
+    "scripts/test-battle-idle-multi-dom.mjs": "5d7137a5dff65bda47c4116e790c1b53099496cddd4d0f2a76f464c1de63124c",
+    "scripts/test-motion-map-review-dom.mjs": "328131073010f013d0430ca1a6ad60583ffe46106738990d11ea74b4860bc983"
+  }
+}

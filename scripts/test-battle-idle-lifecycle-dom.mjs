@@ -27,10 +27,10 @@ w.HTMLMediaElement.prototype.play=function(){playCalls++;if(defer)return new Pro
 const fixed=[...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
 function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="${id}"]`).length,1,id);}
 function setup(){run(`save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};save.instances=[];save.party=[];
-  for(const id of ['volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
-  prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
+  for(const id of ['volmoog','elna_beginner','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
+  prepareBattleParty();selectedMap=MAPS[0];enemy=by('elna_beginner');
   activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
-  beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
+  beginChosenBattle('grassland','elna_beginner','easy',activeHuntRequest);show('battle');`);}
 
 const flush=()=>new Promise(r=>setTimeout(r,0));
 let clock=0,nextTimer=0;const timers=new Map();
