@@ -36,7 +36,10 @@ function granReviewMeasure(){
    const record=[...battleIdleRecords.values()].find(item=>item.media===media);
    const config=record?.config||[...battleIdleSizeDisplays.values()].find(item=>item.media===media)?.config;
    const bounds=config?.sourceBounds||{width:960,height:960,x:0,y:0,right:960,bottom:960};
-   const projected=battleIdleBoundsFit(bounds,media.clientWidth,media.clientHeight,config?.layout,Number(media.closest(".battle-arena")?.dataset.sizeUnit));
+   const arena=media.closest(".battle-arena");
+   // Match applyBattleIdleLayout: far-plane enemies use the 0.85 depth factor.
+   const perspective=media.closest("#pVis")?1:(Number(arena?.dataset.enemyDepth)||1);
+   const projected=battleIdleBoundsFit(bounds,media.clientWidth,media.clientHeight,config?.layout,Number(arena?.dataset.sizeUnit)*perspective);
    const fit=projected?.scale??Math.min(r.width/bounds.width,r.height/bounds.height);
    const width=bounds.width*fit,height=bounds.height*fit;
    const left=projected?.left??((r.width-width)*(config?.layout?.x??0.5));
@@ -50,10 +53,17 @@ function granReviewMeasure(){
    const gap=el=>{const b=el.getBoundingClientRect();return Math.hypot(Math.max(b.left-body.right,body.left-b.right,0),Math.max(b.top-body.bottom,body.top-b.bottom,0));};
    const hud=[...document.querySelectorAll('#singlePlayerBox,#singleEnemyBox,.multi-enemy-copy')].filter(el=>el.getClientRects().length);
    const dock=document.querySelector('.battle-command-dock');
-   return {side,flipped,body,minHudGap:hud.length?Math.min(...hud.map(gap)):null,commandGap:dock?.getClientRects().length?gap(dock):null,
+   const hudComparisons=hud.map(el=>{
+     const b=el.getBoundingClientRect();
+     return {id:el.id||el.closest('.multi-enemy-card')?.id||null,gapPx:gap(el),
+       rectangle:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},
+       overlapWidth:Math.max(0,Math.min(body.right,b.right)-Math.max(body.left,b.left)),
+       overlapHeight:Math.max(0,Math.min(body.bottom,b.bottom)-Math.max(body.top,b.top))};
+   });
+   return {side,flipped,body,hudComparisons,minHudGap:hud.length?Math.min(...hud.map(gap)):null,commandGap:dock?.getClientRects().length?gap(dock):null,
      readyState:media.querySelector('video')?.readyState,currentTime:media.querySelector('video')?.currentTime};
  });
- const report={viewport:[innerWidth,innerHeight],units,note:'現在の配置と既存全編bboxの計算。動画全編の目視、発熱、足場の自然さの合格ではない。'};
+ const report={viewport:[innerWidth,innerHeight],units,note:'全編の翼・尾を囲む四角い範囲で計算。HP間隔0pxは範囲の接触・重なりを示し、実際の不透明部分の重なりは未判定。動画全編の目視、発熱、足場の自然さの合格ではない。'};
  document.getElementById('granReviewResult').textContent=JSON.stringify(report,null,2);return report;
 }
 const granPanel=document.createElement('details');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
@@ -116,7 +126,7 @@ async function granReviewCollect(){
  let interrupted=document.hidden;
  const markHidden=()=>{if(document.hidden)interrupted=true;};
  document.addEventListener('visibilitychange',markHidden);
- const report={version:2,species:granReviewSpecies,viewport:[innerWidth,innerHeight],map:granMap.value,delivery:null,samples:[],limitations:'現在の端末・画面幅の計測。横向き・他の幅・200%文字・発熱・BFCacheは別項目。自動合格判定ではありません。'};
+ const report={version:3,species:granReviewSpecies,viewport:[innerWidth,innerHeight],map:granMap.value,delivery:null,samples:[],limitations:'現在の端末・画面幅の計測。横向き・他の幅・200%文字・発熱・BFCacheは別項目。自動合格判定ではありません。'};
  const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  const quality=v=>{if(typeof v.getVideoPlaybackQuality!=='function')return null;const q=v.getVideoPlaybackQuality();return {total:q.totalVideoFrames,dropped:q.droppedVideoFrames};};
  const round=v=>Number.isFinite(v)?Math.round(v*10)/10:null;
@@ -141,7 +151,7 @@ async function granReviewCollect(){
    try{await delay(16000);}finally{cancelAnimationFrame(raf);}
    if(interrupted)throw Error('計測中に画面が非表示になりました');
    const placement=granReviewMeasure();
-   report.samples.push({mode,label,elapsedMs:round(performance.now()-start),animationFrames:frames,maxFrameGapMs:round(maxGap),placement:placement.units.map(u=>({side:u.side,hudGapPx:round(u.minHudGap),commandGapPx:round(u.commandGap)})),videos:videos.map((v,i)=>{const after=quality(v),b=before[i];return {readyState:v.readyState,paused:v.paused,retained:v.isConnected,error:v.error?.code??null,totalFrames:b&&after?after.total-b.total:null,droppedFrames:b&&after?after.dropped-b.dropped:null};})});
+   report.samples.push({mode,label,elapsedMs:round(performance.now()-start),animationFrames:frames,maxFrameGapMs:round(maxGap),placement:placement.units.map(u=>({side:u.side,body:u.body,hudComparisons:u.hudComparisons,hudGapPx:round(u.minHudGap),commandGapPx:round(u.commandGap)})),videos:videos.map((v,i)=>{const after=quality(v),b=before[i];return {readyState:v.readyState,paused:v.paused,retained:v.isConnected,error:v.error?.code??null,totalFrames:b&&after?after.total-b.total:null,droppedFrames:b&&after?after.dropped-b.dropped:null};})});
   }
  }catch(error){report.error=error.message;}finally{
   document.removeEventListener('visibilitychange',markHidden);
@@ -158,7 +168,7 @@ async function granReviewCollect(){
   lines.push('描画最大間隔 '+sample.maxFrameGapMs+'ms / 再生中 '+sample.videos.filter(v=>!v.paused&&!v.error&&v.readyState>=2).length+'体');
  }
  if(report.error)lines.push('未完了：'+report.error);
- lines.push('HP 8px以上・操作12px以上が配置条件。数値は判定前です。');
+ lines.push('全編の四角い範囲の間隔：HP目安8px・操作12px。0pxは範囲の接触・重なりで、実際の描画部分の重なりは未判定です。');
  out.textContent=lines.join('\n');
  let details=document.getElementById('granMetricsDetails');
  if(!details){details=document.createElement('details');details.id='granMetricsDetails';granPanel.append(details);}

@@ -61,6 +61,22 @@ run('granReviewToggleSizeGallery()');assert.equal(d.querySelectorAll('[data-size
 d.querySelector('[data-size-species="elixion"]').click();assert.equal(run('granReviewSpecies'),'elixion');assert(d.getElementById('granReviewSizeGallery').hidden);
 assert(d.getElementById('granReviewProgress').textContent.includes('120%'));
 run("granMap.value='grassland';granMap.onchange()");assert.equal(run('selectedMap.id'),'grassland');assert.equal(run('granReviewMode'),'enemy');
+// Diagnostic projection must reuse enemy depth and preserve pair-level rectangles.
+run("granReviewSetup('mixed','grassland','elixion')");
+const arena=d.querySelector('.battle-arena');arena.dataset.sizeUnit='100';arena.dataset.enemyDepth='.85';
+const media=[...d.querySelectorAll('.battle-static-media.has-idle-size')];
+for(const el of media){
+ Object.defineProperty(el,'clientWidth',{configurable:true,value:200});
+ Object.defineProperty(el,'clientHeight',{configurable:true,value:200});
+ el.getBoundingClientRect=()=>({left:0,right:200,top:0,bottom:200,width:200,height:200});
+}
+const measured=run('granReviewMeasure()');
+for(const u of measured.units){
+ const config=run(`BATTLE_IDLE_MEDIA[${JSON.stringify(u.side==='pVis'?'elixion':u.side==='enemy_aVis'?'orca_abyss':'slime')}]`);
+ const expected=100*(u.side==='pVis'?1:.85)*config.layout.scale;
+ assert(Math.abs(Math.max(u.body.right-u.body.left,u.body.bottom-u.body.top)-expected)<.001,'projection must match runtime perspective');
+ assert(Array.isArray(u.hudComparisons),'diagnostics retain per-HUD evidence');
+}
 run("show('home')");assert.equal(d.querySelectorAll('video').length,0);
 dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
 console.log(JSON.stringify({scope:'19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending',results,passed:maps.length,mixedSpeciesMaps:maps.length,sizeReview:{speciesCycle:cycle.size,galleryCards:50,modeAndBackgroundPreserved:true,galleryAddsDecoders:false}},null,2));
