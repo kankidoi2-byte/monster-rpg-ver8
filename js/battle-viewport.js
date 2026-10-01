@@ -4,18 +4,26 @@ let battleViewportFrame=null;
 function battleViewportBudget(viewportHeight,top,chrome,hud){
   if(![viewportHeight,top,chrome,hud].every(Number.isFinite)||viewportHeight<=0)return null;
   const available=Math.max(0,viewportHeight-top-chrome-8);
-  const artwork=Math.max(64,available-hud-24);
-  return {arena:Math.ceil(hud+24+artwork),artwork,scroll:available<hud+88};
+  // HP panels live within the field, not in extra rows above and below it.
+  // Keep a usable field when text or expanded targeting needs natural scroll.
+  const artwork=Math.max(300,hud*2+120,available);
+  return {arena:Math.ceil(artwork),artwork,scroll:artwork>available};
 }
-function battleCompactSizePlan(enemies,ally,width,height){
+function battleCompactSizePlan(enemies,ally,width,height,enemyHud=64,tracks=enemies.length){
   if(!Number.isFinite(width)||width<=80||!Number.isFinite(height)||height<=0)return null;
   const bodyWidth=c=>{const b=c.sourceBounds;return (b.right-b.x)/Math.max(b.right-b.x,b.bottom-b.y)*c.layout.scale;};
-  const weights=enemies.map(c=>Math.max(.55,bodyWidth(c)));
-  const caps=[280,Math.max(1,height-16)/1.2];
-  if(ally)caps.push(Math.max(1,width*.4-24)/bodyWidth(ally));
+  const bodyHeight=c=>{const b=c.sourceBounds;return (b.bottom-b.y)/Math.max(b.right-b.x,b.bottom-b.y)*c.layout.scale;};
+  // Equal enemy tracks keep the two HP plates aligned. The far plane is 85%
+  // of the near plane; registry rarity/body scales remain unchanged.
+  const depth=.85,weights=enemies.map(()=>1);
+  const caps=[width*.85];
+  if(ally){caps.push(Math.max(1,width*.8-16)/bodyWidth(ally));caps.push(Math.max(1,height*.7-16)/bodyHeight(ally));}
   if(weights.length){
-    const total=weights.reduce((a,b)=>a+b,0),group=Math.max(1,width*.6-16-8*(weights.length-1));
-    enemies.forEach((config,i)=>caps.push(Math.max(1,group*weights[i]/total-16)/bodyWidth(config)));
+    const count=Math.max(1,tracks),group=Math.max(1,width*(count===1?.4:.84)-8*(count-1));
+    enemies.forEach(config=>{
+      caps.push(Math.max(1,group/count-16)/(bodyWidth(config)*depth));
+      caps.push(Math.max(1,height*.52-enemyHud-28)/(bodyHeight(config)*depth));
+    });
   }
   return {unit:Math.min(...caps),weights,rowHeight:height};
 }
@@ -34,6 +42,21 @@ function syncBattleViewportInfo(){
     if(!group){group=document.createElement('section');group.dataset.infoVis=vis;const heading=document.createElement('h3');group.append(heading);info.append(group);}
     group.hidden=false;group.firstElementChild.textContent=label+'：'+(hud.querySelector('h2')?.textContent||'');
     for(const detail of hud.querySelectorAll('.battle-detail,.battle-idle-details'))group.append(detail);
+    if(vis.startsWith('enemy_')){
+      // Keep the existing battle handler; its stable proxy lives outside the HP
+      // plate, so ordinary waiting only shows name, HP and active status.
+      const source=hud.querySelector('.battle-enemy-controls button[aria-expanded]');
+      let button=group.querySelector('.compact-enemy-detail');
+      if(source){
+        if(!button){button=document.createElement('button');button.type='button';button.className='compact-enemy-detail';group.append(button);}
+        button.textContent=source.getAttribute('aria-expanded')==='true'?'能力を閉じる':'能力を見る';
+        button.disabled=source.disabled;button.setAttribute('aria-expanded',source.getAttribute('aria-expanded'));
+        button.onclick=()=>hud.querySelector('.battle-enemy-controls button[aria-expanded]')?.click();
+      }
+      const stats=hud.querySelector('.multi-enemy-details'),old=group.querySelector('.multi-enemy-details');
+      if(stats){old?.remove();group.append(stats);}
+      else if(source?.getAttribute('aria-expanded')!=='true')old?.remove();
+    }
   }
 }
 function updateBattleViewport(){
@@ -49,10 +72,13 @@ function updateBattleViewport(){
   }
   const hudHeight=el=>el?.getClientRects().length?el.getBoundingClientRect().height:0;
   const enemyHeight=multiBattle?.active?Math.max(...[...screen.querySelectorAll('.multi-enemy-copy')].map(hudHeight),0):hudHeight(document.getElementById('singleEnemyBox'));
-  const budget=battleViewportBudget(viewport,top,chrome,hudHeight(document.getElementById('singlePlayerBox'))+enemyHeight);
+  const budget=battleViewportBudget(viewport,top,chrome,Math.max(hudHeight(document.getElementById('singlePlayerBox')),enemyHeight));
   if(!budget||arena.clientWidth<=80)return; // No fake geometry for an unlaid-out DOM.
   screen.classList.add('is-viewport-battle');
   arena.dataset.compactHeight=String(budget.artwork);
+  arena.dataset.enemyHud=String(enemyHeight);
+  arena.dataset.enemyDepth='.85';
+  arena.style.setProperty('--battle-enemy-hud',enemyHeight+'px');
   arena.style.setProperty('--battle-art-height',budget.artwork+'px');
   arena.style.setProperty('--battle-viewport-arena',budget.arena+'px');
   screen.dataset.viewportOverflow=String(budget.scroll);

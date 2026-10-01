@@ -15,3 +15,7 @@
 ## 後続更新：画面高さの調整
 
 本人の指摘を受け、共通画像行・折りたたみ情報・画面高さに基づく共通画像単位を実装した。採用済み各種倍率は維持。最新の変更と検査記録は [viewport/README.md](viewport/README.md) と [viewport/validation.json](viewport/validation.json) を優先する。配置変更後のGalaxy受入はpending。
+
+## Reference composition correction
+
+The owner rejected the shared-row layout. [The near/far layout correction](depth/README.md) replaces it and records current checks. Galaxy visual acceptance is pending.

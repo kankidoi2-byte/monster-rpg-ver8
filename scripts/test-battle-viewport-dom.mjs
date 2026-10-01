@@ -32,16 +32,16 @@ assert(d.getElementById('battleCompactInfo').contains(by('pInfo')));
 assert(d.getElementById('battleCompactInfo').contains(by('eInfo')));
 const p=by('pVis').querySelector('img');run('update();syncBattleViewportInfo()');assert.equal(by('pVis').querySelector('img'),p);checkIds();
 const info=by('battleCompactInfo');info.open=true;run('update();syncBattleViewportInfo()');assert(info.open);
-const normal=run('battleViewportBudget(736,58,260,150)');assert.equal(normal.scroll,false);assert(normal.arena+58+260+8<=736);
+const normal=run('battleViewportBudget(736,0,240,64)');assert.equal(normal.scroll,false);assert(normal.arena+240+8<=736);
 const enlarged=run('battleViewportBudget(500,80,300,220)');assert.equal(enlarged.scroll,true);assert(enlarged.artwork>=64);
 let count=0;
 const configs=run('Object.values(BATTLE_IDLE_MEDIA)');
-for(const width of [320,393,430,760])for(const height of [64,120,220])for(const ally of configs)for(const enemy of configs){
+for(const width of [320,393,430,760])for(const height of [300,440,600])for(const ally of configs)for(const enemy of configs){
  const enemies=[enemy,configs[0]], plan=run(`battleCompactSizePlan(${JSON.stringify(enemies)},${JSON.stringify(ally)},${width},${height})`);
- assert(plan.unit>0);const total=plan.weights.reduce((a,b)=>a+b,0),group=width*.6-24;
- for(const [c,space] of [[ally,width*.4-24],...enemies.map((c,i)=>[c,group*plan.weights[i]/total-16])]){
-  const b=c.sourceBounds,bw=b.right-b.x,bh=b.bottom-b.y,unit=plan.unit*c.layout.scale;
-  assert(bw/Math.max(bw,bh)*unit<=space+1e-7);assert(bh/Math.max(bw,bh)*unit<=height-16+1e-7);
+ assert(plan.unit>0);const total=plan.weights.reduce((a,b)=>a+b,0),group=width*.84-8;
+ for(const [c,space,depth,vertical] of [[ally,width*.8-16,1,height*.7-16],...enemies.map((c,i)=>[c,group*plan.weights[i]/total-16,.85,height*.52-64-28])]){
+  const b=c.sourceBounds,bw=b.right-b.x,bh=b.bottom-b.y,unit=plan.unit*c.layout.scale*depth;
+  assert(bw/Math.max(bw,bh)*unit<=space+1e-7);assert(bh/Math.max(bw,bh)*unit<=vertical+1e-7);
  }
  count++;
 }
@@ -53,10 +53,16 @@ const chromeSizes={battleMapBanner:48,battleActionStatus:44,battleCompactTools:4
 for(const el of screen.children){const h=el.classList.contains('battle-command-dock')?160:chromeSizes[el.id]||0;el.getClientRects=()=>h?[{}]:[];el.getBoundingClientRect=()=>({height:h,top:0});}
 for(const id of ['singlePlayerBox','singleEnemyBox']){by(id).getClientRects=()=>[{}];by(id).getBoundingClientRect=()=>({height:64,top:0});}
 Object.defineProperty(w,'innerHeight',{configurable:true,value:736});
-run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),218);assert(Number(arena.dataset.sizeUnit)>0);
-const art=by('pVis').querySelector('img');Object.defineProperty(w,'innerHeight',{configurable:true,value:420});run('updateBattleViewport()');assert.equal(screen.dataset.viewportOverflow,'true');assert.equal(Number(arena.dataset.compactHeight),64);assert.equal(by('pVis').querySelector('img'),art);
+run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),370);assert(Number(arena.dataset.sizeUnit)>0);assert.equal(arena.dataset.enemyDepth,'.85');
+const art=by('pVis').querySelector('img');Object.defineProperty(w,'innerHeight',{configurable:true,value:420});run('updateBattleViewport()');assert.equal(screen.dataset.viewportOverflow,'true');assert.equal(Number(arena.dataset.compactHeight),300);assert.equal(by('pVis').querySelector('img'),art);
 run(`ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('slime'),'enemy_a'),createMultiEnemy(by('freigal'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle();syncBattleViewportInfo()`);
 assert(by('battleCompactInfo').querySelector('[data-info-vis="eVis"]').hidden);checkIds();
+const detail=by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .compact-enemy-detail');
+assert(detail);detail.click();assert(by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .multi-enemy-details'));checkIds();
+const projected=run(`battleCompactSizePlan([BATTLE_IDLE_MEDIA.goblin,BATTLE_IDLE_MEDIA.slime],BATTLE_IDLE_MEDIA.elixion,393,488)`);
+assert(projected.unit*1.2>300,'foreground dragon remains prominent');
+assert(projected.unit*.3*.85>45,'background slime remains legible');
+
 run("show('home')");const before=by('pVis').querySelector('img');run('updateBattleViewport()');assert.equal(by('pVis').querySelector('img'),before);
 assert.equal(errors.length,0,errors.join('\n'));dom.window.close();
-console.log('PASS viewport budget, info retention/visibility, '+count+' compact ally/two-enemy containment cases; no browser pixel-layout assertion');
+console.log('PASS viewport budget, info retention/visibility, '+count+' near/far ally/two-enemy containment cases; no browser pixel-layout assertion');

@@ -368,7 +368,9 @@ function applyBattleIdleLayout(r){
   const scale=Number.isFinite(v.scale)?Math.max(0.1,Math.min(1.2,v.scale)):1;
   r.media.style.setProperty('--idle-position',`${x*100}% ${y*100}%`);
   r.media.style.setProperty('--idle-scale',String(scale));
-  const unit=Number(r.media.closest(".battle-arena")?.dataset.sizeUnit);
+  const arena=r.media.closest(".battle-arena");
+  const perspective=r.media.closest('#pVis')?1:(Number(arena?.dataset.enemyDepth)||1);
+  const unit=Number(arena?.dataset.sizeUnit)*perspective;
   const fit=battleIdleBoundsFit(r.config.sourceBounds,r.media.clientWidth,r.media.clientHeight,v,unit);
   if(!fit){clearBattleIdleBoundsFit(r);return;}
   for(const [name,value] of [['width',fit.width],['height',fit.height],['left',fit.left],['top',fit.top]])
@@ -524,7 +526,7 @@ function syncBattleIdleSizes(candidates){
   const ally=candidates.find(u=>u.vis==='pVis');
   const compactHeight=Number(arena?.dataset.compactHeight);
   const plan=compactHeight>0&&typeof battleCompactSizePlan==='function'
-    ?battleCompactSizePlan(enemyConfigs,ally&&BATTLE_IDLE_MEDIA[ally.mon.id],arena?.clientWidth,compactHeight)
+    ?battleCompactSizePlan(enemyConfigs,ally&&BATTLE_IDLE_MEDIA[ally.mon.id],arena?.clientWidth,compactHeight,Number(arena?.dataset.enemyHud)||64,multiBattle?.active?2:1)
     :battleIdleStageSizePlan(enemyConfigs,arena?.clientWidth);
   if(plan){arena.dataset.sizeUnit=String(plan.unit);arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
     const grid=document.getElementById('multiEnemyGrid');
