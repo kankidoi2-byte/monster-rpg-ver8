@@ -70,7 +70,7 @@ pass('exit disconnects observer and rejects queued timer/observer callbacks');
 // Normal game path, no review registry injection.
 run("save=initSave();completeTutorial();save.instances=[];save.party=[];for(const id of ['gran_volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('volmoog');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','volmoog','easy',activeHuntRequest);show('battle');");
 r=rec();assert.equal(run('battleIdleLimit'),1);assert(r.config.src.endsWith('/gran_volmoog_v18_alpha.webm'));
-assert.equal(r.media.style.getPropertyValue('--idle-position'),'50% 100%');assert.equal(r.media.style.getPropertyValue('--idle-scale'),'0.8');
+assert.equal(r.media.style.getPropertyValue('--idle-position'),'50% 100%');assert.equal(r.media.style.getPropertyValue('--idle-scale'),'0.75');
 assert.equal(r.facing.style.transform,'scaleX(-1)');emit(r,1);await flush();assert(!r.video.paused);
 run('setBattleIdleLimit(3)');let rs=records();assert.equal(rs.length,2);
 rs.forEach(q=>emit(q,1));await flush();const enemy=rs.find(q=>q!==r);emit(r,0);fire(r);assert(r.video.paused&&!enemy.video.paused);

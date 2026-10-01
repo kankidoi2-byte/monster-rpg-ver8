@@ -38,7 +38,7 @@ const layoutCases=run(`Object.entries(BATTLE_IDLE_MEDIA).map(([id,c])=>({id,boun
 let layoutChecks=0;
 for(const c of layoutCases){
  assert(c.bounds,c.id+' missing measured full-loop bounds');
- assert.equal(c.layout.scale,[0,.5,.65,.8,.9,1][c.rarity],c.id+' provisional rarity size');
+ assert.equal(c.layout.scale,[0,.3,.5,.75,1,1.2][c.rarity],c.id+' provisional rarity size');
  for(const [width,height] of [[96,96],[160,160],[320,100],[100,320],[320,430],[430,320],[160,215],[215,160]]){
   const fit=run(`battleIdleBoundsFit(${JSON.stringify(c.bounds)},${width},${height},${JSON.stringify(c.layout||{})})`);
   assert(fit,c.id);const b=c.bounds,eps=1e-7;
@@ -52,10 +52,33 @@ for(const c of layoutCases){
   assert(Math.abs(fit.top+b.bottom*fit.scale-height)<eps,c.id+' bottom alignment');layoutChecks++;
  }
 }
+// Same common stage unit for allies, enemies and decoder-free posters.
+let sharedCases=0;
+const configs=run('Object.values(BATTLE_IDLE_MEDIA)');
+for(const stageWidth of [320,430,760])for(const a of configs)for(const b of configs){
+ const plan=run(`battleIdleStageSizePlan(${JSON.stringify([a,b])},${stageWidth})`);
+ const sum=plan.weights.reduce((x,y)=>x+y,0);
+ for(const [index,config] of [a,b].entries()){
+  const slot=(stageWidth-64)*plan.weights[index]/sum;
+  const enemy=run(`battleIdleBoundsFit(${JSON.stringify(config.sourceBounds)},${slot},${plan.rowHeight},${JSON.stringify(config.layout)},${plan.unit})`);
+  const ally=run(`battleIdleBoundsFit(${JSON.stringify(config.sourceBounds)},${stageWidth-32},${plan.rowHeight},${JSON.stringify(config.layout)},${plan.unit})`);
+  assert(Math.abs(enemy.scale-ally.scale)<1e-7,'shared ally/enemy scale');
+  const bound=config.sourceBounds;
+  assert(enemy.left+bound.x*enemy.scale>=-1e-7);
+  assert(enemy.left+bound.right*enemy.scale<=slot+1e-7);
+ }
+ sharedCases++;
+}
+console.log('PASS shared size policy: '+sharedCases+' species-pair/viewport cases; equal ally/enemy geometry and contained enemy tracks');
 assert.equal(layoutCases.length,50);
 assert.equal(run('battleIdleBoundsFit(null,100,100)'),null);
 assert.equal(run('battleIdleBoundsFit({width:960,height:960,x:0,y:0,right:961,bottom:960},100,100)'),null);
 setup();await new Promise(r=>setTimeout(r,0));
+assert.equal(run('battleIdleRecords.size'),1);
+assert.equal(run('battleIdleSizeDisplays.size'),2);
+assert(d.querySelector('#eVis .has-idle-size'));
+assert.equal(d.querySelector('#eVis img').getAttribute('src'),run('BATTLE_IDLE_MEDIA.slime.poster'));
+assert(!d.querySelector('#eVis video'),'static size must not allocate a decoder');
 const fitRecord=run('battleIdleRecord');let mediaWidth=160,mediaHeight=120;
 Object.defineProperty(fitRecord.media,'clientWidth',{get:()=>mediaWidth});
 Object.defineProperty(fitRecord.media,'clientHeight',{get:()=>mediaHeight});

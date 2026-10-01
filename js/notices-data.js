@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261001-phase-d-size2",date:"2026-10-01",category:"update",title:"小型と大型の体格差を広げました",body:"戦闘中のモンスターの大きさを再調整しました。味方と敵で共通の大きさを基準にし、静止表示にも同じ設定を使います。"}),
   Object.freeze({id:"20261001-phase-d-size",date:"2026-10-01",category:"update",title:"モンスターの体格差を調整しました",body:"戦闘中のモンスターに、レアリティを目安とした表示サイズを設定しました。小型と大型の大きさの違いが分かるように、動画と静止画を同じ倍率で表示します。"}),
   Object.freeze({id:"20260930-phase-d-fit",date:"2026-09-30",category:"update",title:"待機モンスターの表示サイズを調整しました",body:"検査済みの全身範囲に合わせて余白を調整し、翼や尾を含む姿が表示枠に収まるようにしました。動画と代わりの静止画を同じ位置で表示します。"}),
   Object.freeze({id:"20260930-phase-c-batch14",date:"2026-09-30",category:"update",title:"スライムと錬成モンスターの待機モーションを追加しました",body:"スライム、アルケミオン、キメラグナ、キメラグナ・アペクス、エリクシオンが戦闘中に動くようになりました。再生できない場合は静止画で表示します。"}),

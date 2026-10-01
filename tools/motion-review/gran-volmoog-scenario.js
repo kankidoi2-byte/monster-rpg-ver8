@@ -27,14 +27,14 @@ function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies
  return true;
 }
 function granReviewMeasure(){
- const units=[...document.querySelectorAll('.battle-static-media.has-idle-media')].map(media=>{
+ const units=[...document.querySelectorAll('.battle-static-media.has-idle-size')].map(media=>{
    const r=media.getBoundingClientRect(),side=media.closest('[id$="Vis"]')?.id;
    const flipped=media.parentElement.style.transform.includes('-1');
    const video=media.querySelector('video');
    const record=[...battleIdleRecords.values()].find(item=>item.media===media);
-   const config=record?.config;
+   const config=record?.config||[...battleIdleSizeDisplays.values()].find(item=>item.media===media)?.config;
    const bounds=config?.sourceBounds||{width:960,height:960,x:0,y:0,right:960,bottom:960};
-   const projected=battleIdleBoundsFit(bounds,media.clientWidth,media.clientHeight,config?.layout);
+   const projected=battleIdleBoundsFit(bounds,media.clientWidth,media.clientHeight,config?.layout,Number(media.closest(".battle-arena")?.dataset.sizeUnit));
    const fit=projected?.scale??Math.min(r.width/bounds.width,r.height/bounds.height);
    const width=bounds.width*fit,height=bounds.height*fit;
    const left=projected?.left??((r.width-width)*(config?.layout?.x??0.5));
