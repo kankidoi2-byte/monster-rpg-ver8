@@ -1,0 +1,1175 @@
+{
+  "dateJST": "2026-09-30",
+  "sourceCommit": "15f634fde30e7974b106acbccb7b80a2b5504c11",
+  "inventorySource": "Phase1-motion-inventory.md v12 section14 (2026-09-25 baseline, not fresh Drive inspection)",
+  "scope": "全50体＋バトル画面改修。通常登録はfeature branch内。本編公開数ではない。",
+  "counts": {
+    "target": 50,
+    "adopted": 50,
+    "normalRegistered": 50,
+    "isolatedBattleReviewOnly": 0,
+    "remainingNormalRegistration": 0,
+    "historicalWebmLocations": 18,
+    "historicalWebmLocationUnconfirmed": 32
+  },
+  "entries": [
+    {
+      "dexNo": 1,
+      "id": "freigal",
+      "name": "フレイガル",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch6/provenance.json",
+        "phase-c/batch6/freigal-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/freigal-alpha.json"
+    },
+    {
+      "dexNo": 2,
+      "id": "freiwolf",
+      "name": "フレイウルフ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch6/provenance.json",
+        "phase-c/batch6/freiwolf-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/freiwolf-alpha.json"
+    },
+    {
+      "dexNo": 3,
+      "id": "aquaron",
+      "name": "アクアロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch6/provenance.json",
+        "phase-c/batch6/aquaron-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/aquaron-alpha.json"
+    },
+    {
+      "dexNo": 4,
+      "id": "highaquaron",
+      "name": "ハイアクアロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch6/provenance.json",
+        "phase-c/batch6/highaquaron-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch6/provenance.json",
+      "alphaEvidence": "phase-c/batch6/highaquaron-alpha.json"
+    },
+    {
+      "dexNo": 5,
+      "id": "shenhairon",
+      "name": "シェンハイロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/provenance.json",
+        "phase-c/shenhairon-alpha.json"
+      ],
+      "nextPhase": "C",
+      "status": "採用版一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "実端末で味方・敵・3体のループ、端に触れる尾や足、サイズ、向き、HP重なりを確認。最終足場・負荷は別ゲート。",
+      "sourceEvidence": "phase-c/provenance.json",
+      "alphaEvidence": "phase-c/shenhairon-alpha.json"
+    },
+    {
+      "dexNo": 6,
+      "id": "tienhairon",
+      "name": "ティエンハイロン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/provenance.json",
+        "phase-c/tienhairon-alpha.json"
+      ],
+      "nextPhase": "C",
+      "status": "採用版一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "実端末で味方・敵・3体のループ、端に触れる尾や足、サイズ、向き、HP重なりを確認。最終足場・負荷は別ゲート。",
+      "sourceEvidence": "phase-c/provenance.json",
+      "alphaEvidence": "phase-c/tienhairon-alpha.json"
+    },
+    {
+      "dexNo": 7,
+      "id": "grassbeat",
+      "name": "グラスビート",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch7/provenance.json",
+        "phase-c/batch7/grassbeat-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch7/provenance.json",
+      "alphaEvidence": "phase-c/batch7/grassbeat-alpha.json"
+    },
+    {
+      "dexNo": 8,
+      "id": "thornbeat",
+      "name": "ソーンビート",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch7/provenance.json",
+        "phase-c/batch7/thornbeat-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch7/provenance.json",
+      "alphaEvidence": "phase-c/batch7/thornbeat-alpha.json"
+    },
+    {
+      "dexNo": 9,
+      "id": "granbeat",
+      "name": "グランビート",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch7/provenance.json",
+        "phase-c/batch7/granbeat-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch7/provenance.json",
+      "alphaEvidence": "phase-c/batch7/granbeat-alpha.json"
+    },
+    {
+      "dexNo": 10,
+      "id": "rikasheef",
+      "name": "リカシーフ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch7/provenance.json",
+        "phase-c/batch7/rikasheef-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch7/provenance.json",
+      "alphaEvidence": "phase-c/batch7/rikasheef-alpha.json"
+    },
+    {
+      "dexNo": 11,
+      "id": "seralphia",
+      "name": "セラルフィア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/seralphia-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/seralphia-alpha.json"
+    },
+    {
+      "dexNo": 12,
+      "id": "volteck",
+      "name": "ボルテック",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/volteck-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/volteck-alpha.json"
+    },
+    {
+      "dexNo": 13,
+      "id": "spaquinn",
+      "name": "スパクイン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/spaquinn-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/spaquinn-alpha.json"
+    },
+    {
+      "dexNo": 14,
+      "id": "voltax",
+      "name": "ボルタックス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/voltax-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/voltax-alpha.json"
+    },
+    {
+      "dexNo": 15,
+      "id": "sylphin",
+      "name": "シルフィン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/sylphin-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/sylphin-alpha.json"
+    },
+    {
+      "dexNo": 16,
+      "id": "zephyray",
+      "name": "ゼファーレイ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/zephyray-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/zephyray-alpha.json"
+    },
+    {
+      "dexNo": 17,
+      "id": "tempestray",
+      "name": "テンペストレイ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch8/provenance.json",
+        "phase-c/batch8/tempestray-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch8/provenance.json",
+      "alphaEvidence": "phase-c/batch8/tempestray-alpha.json"
+    },
+    {
+      "dexNo": 18,
+      "id": "luxseed",
+      "name": "ルクシード",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch9/provenance.json",
+        "phase-c/batch9/luxseed-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch9/provenance.json",
+      "alphaEvidence": "phase-c/batch9/luxseed-alpha.json"
+    },
+    {
+      "dexNo": 19,
+      "id": "luxiard",
+      "name": "ルクシアード",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch9/provenance.json",
+        "phase-c/batch9/luxiard-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch9/provenance.json",
+      "alphaEvidence": "phase-c/batch9/luxiard-alpha.json"
+    },
+    {
+      "dexNo": 20,
+      "id": "lux_galdion",
+      "name": "ルクスガルディオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch9/provenance.json",
+        "phase-c/batch9/lux_galdion-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch9/provenance.json",
+      "alphaEvidence": "phase-c/batch9/lux_galdion-alpha.json"
+    },
+    {
+      "dexNo": 21,
+      "id": "nocle",
+      "name": "ノクル",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch10/provenance.json",
+        "phase-c/batch10/nocle-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch10/provenance.json",
+      "alphaEvidence": "phase-c/batch10/nocle-alpha.json"
+    },
+    {
+      "dexNo": 22,
+      "id": "noclaid",
+      "name": "ノクレイド",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch10/provenance.json",
+        "phase-c/batch10/noclaid-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch10/provenance.json",
+      "alphaEvidence": "phase-c/batch10/noclaid-alpha.json"
+    },
+    {
+      "dexNo": 23,
+      "id": "noxvelg",
+      "name": "ノクスヴェルグ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch10/provenance.json",
+        "phase-c/batch10/noxvelg-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧のまとめ確認とPhase D/Eの配置・負荷検査。",
+      "sourceEvidence": "phase-c/batch10/provenance.json",
+      "alphaEvidence": "phase-c/batch10/noxvelg-alpha.json"
+    },
+    {
+      "dexNo": 24,
+      "id": "orcana",
+      "name": "オルカーナ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch11/provenance.json",
+        "phase-c/batch11/orcana-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用v3制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch11/provenance.json",
+      "alphaEvidence": "phase-c/batch11/orcana-alpha.json"
+    },
+    {
+      "dexNo": 25,
+      "id": "orca_stream",
+      "name": "オルカストリーム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch11/provenance.json",
+        "phase-c/batch11/orca_stream-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用v3制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch11/provenance.json",
+      "alphaEvidence": "phase-c/batch11/orca_stream-alpha.json"
+    },
+    {
+      "dexNo": 26,
+      "id": "orca_abyss",
+      "name": "オルカアビス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch11/provenance.json",
+        "phase-c/batch11/orca_abyss-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用v3制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch11/provenance.json",
+      "alphaEvidence": "phase-c/batch11/orca_abyss-alpha.json"
+    },
+    {
+      "dexNo": 27,
+      "id": "volmoog",
+      "name": "ボルモーグ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": false,
+      "latestEvidence": [],
+      "nextPhase": "B/E",
+      "status": "通常登録済み（共通最終受入は別）",
+      "next": "既存受入を再利用。共通処理変更時に回帰確認。"
+    },
+    {
+      "dexNo": 28,
+      "id": "gran_volmoog",
+      "name": "グランボルモーグ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "済"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "gran-volmoog-alpha.json",
+        "phase9-progress.md",
+        "gran-volmoog-registration-preflight.json",
+        "gran-volmoog-review-dom.json",
+        "gran-volmoog-implementation.md",
+        "gran-volmoog-device-acceptance.json",
+        "gran-volmoog-galaxy-metrics-20260929.json"
+      ],
+      "nextPhase": "B acceptance/C/D/E",
+      "status": "通常登録経路へ接続済み（評価branch、最終受入は保留）",
+      "next": "新規画面外停止の実機確認と共有負荷条件。全身/足元の最終仕様は未完了。"
+    },
+    {
+      "dexNo": 29,
+      "id": "slime",
+      "name": "スライム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/slime-alpha.json",
+        "phase-c/batch14/slime-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/slime-alpha.json"
+    },
+    {
+      "dexNo": 30,
+      "id": "slime_gold",
+      "name": "スライムゴールド",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch2/provenance.json",
+        "phase-c/batch2/slime_gold-alpha.json"
+      ],
+      "nextPhase": "C",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/slime_gold-alpha.json"
+    },
+    {
+      "dexNo": 31,
+      "id": "goblin",
+      "name": "ゴブリン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch3/provenance.json",
+        "phase-c/batch3/goblin-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch3/provenance.json",
+      "alphaEvidence": "phase-c/batch3/goblin-alpha.json"
+    },
+    {
+      "dexNo": 32,
+      "id": "ignaros",
+      "name": "イグナロス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch12/provenance.json",
+        "phase-c/batch12/ignaros-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch12/provenance.json",
+      "alphaEvidence": "phase-c/batch12/ignaros-alpha.json"
+    },
+    {
+      "dexNo": 33,
+      "id": "tsubaki",
+      "name": "炎の精霊ツバキ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch12/provenance.json",
+        "phase-c/batch12/tsubaki-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch12/provenance.json",
+      "alphaEvidence": "phase-c/batch12/tsubaki-alpha.json"
+    },
+    {
+      "dexNo": 34,
+      "id": "suiren",
+      "name": "水の精霊スイレン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch12/provenance.json",
+        "phase-c/batch12/suiren-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用制作データから透過書き出し・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch12/provenance.json",
+      "alphaEvidence": "phase-c/batch12/suiren-alpha.json"
+    },
+    {
+      "dexNo": 35,
+      "id": "proto_icegolem",
+      "name": "ゴーレム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "部分",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch13/provenance.json",
+        "phase-c/batch13/proto_icegolem-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/proto_icegolem-alpha.json"
+    },
+    {
+      "dexNo": 36,
+      "id": "icegolem",
+      "name": "アイスゴーレム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "部分",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch13/provenance.json",
+        "phase-c/batch13/icegolem-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/icegolem-alpha.json"
+    },
+    {
+      "dexNo": 37,
+      "id": "nightmare",
+      "name": "ナイトメア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch3/provenance.json",
+        "phase-c/batch3/nightmare-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch3/provenance.json",
+      "alphaEvidence": "phase-c/batch3/nightmare-alpha.json"
+    },
+    {
+      "dexNo": 38,
+      "id": "astralepis",
+      "name": "アストラレピス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch3/provenance.json",
+        "phase-c/batch3/astralepis-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch3/provenance.json",
+      "alphaEvidence": "phase-c/batch3/astralepis-alpha.json"
+    },
+    {
+      "dexNo": 39,
+      "id": "false_dragon_beta",
+      "name": "アシュレイア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch2/provenance.json",
+        "phase-c/batch2/false_dragon_beta-alpha.json"
+      ],
+      "nextPhase": "C",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/false_dragon_beta-alpha.json"
+    },
+    {
+      "dexNo": 40,
+      "id": "false_dragon_gamma",
+      "name": "モルグラム",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch2/provenance.json",
+        "phase-c/batch2/false_dragon_gamma-alpha.json"
+      ],
+      "nextPhase": "C",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終受入は別途。",
+      "sourceEvidence": "phase-c/batch2/provenance.json",
+      "alphaEvidence": "phase-c/batch2/false_dragon_gamma-alpha.json"
+    },
+    {
+      "dexNo": 41,
+      "id": "nemes",
+      "name": "ネメス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch4/provenance.json",
+        "phase-c/batch4/nemes-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch4/provenance.json",
+      "alphaEvidence": "phase-c/batch4/nemes-alpha.json"
+    },
+    {
+      "dexNo": 42,
+      "id": "nemesia",
+      "name": "ネメシア",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch4/provenance.json",
+        "phase-c/batch4/nemesia-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch4/provenance.json",
+      "alphaEvidence": "phase-c/batch4/nemesia-alpha.json"
+    },
+    {
+      "dexNo": 43,
+      "id": "nemesion",
+      "name": "ネメシオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch4/provenance.json",
+        "phase-c/batch4/nemesion-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch4/provenance.json",
+      "alphaEvidence": "phase-c/batch4/nemesion-alpha.json"
+    },
+    {
+      "dexNo": 44,
+      "id": "doom_nemesion",
+      "name": "滅亡の星 ネメシオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/doom_nemesion-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/doom_nemesion-alpha.json"
+    },
+    {
+      "dexNo": 45,
+      "id": "false_dragon_alfa",
+      "name": "偽竜 code:alfa",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "あり",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch5/provenance.json",
+        "phase-c/batch5/false_dragon_alfa-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch5/provenance.json",
+      "alphaEvidence": "phase-c/batch5/false_dragon_alfa-alpha.json"
+    },
+    {
+      "dexNo": 46,
+      "id": "galdra",
+      "name": "ガルドラ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch13/provenance.json",
+        "phase-c/batch13/galdra-alpha.json"
+      ],
+      "nextPhase": "D",
+      "status": "採用一致・全240フレームalpha検査済／評価用通常登録／実端末未確認",
+      "next": "一覧で見た目をまとめて確認。問題個体・代表配置のみ戦闘検査。最終足場・負荷・受入は別途。",
+      "sourceEvidence": "phase-c/batch13/provenance.json",
+      "alphaEvidence": "phase-c/batch13/galdra-alpha.json"
+    },
+    {
+      "dexNo": 47,
+      "id": "alchemion",
+      "name": "錬核獣アルケミオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/alchemion-alpha.json",
+        "phase-c/batch14/alchemion-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/alchemion-alpha.json"
+    },
+    {
+      "dexNo": 48,
+      "id": "kimeragna",
+      "name": "混成翼竜キメラグナ",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "未",
+        "staticAlpha": "未",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/kimeragna-alpha.json",
+        "phase-c/batch14/kimeragna-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/kimeragna-alpha.json"
+    },
+    {
+      "dexNo": 49,
+      "id": "kimeragna_apex",
+      "name": "キメラグナ・アペクス",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "済",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/kimeragna_apex-alpha.json",
+        "phase-c/batch14/kimeragna_apex-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/kimeragna_apex-alpha.json"
+    },
+    {
+      "dexNo": 50,
+      "id": "elixion",
+      "name": "賢金神竜エリクシオン",
+      "adopted": true,
+      "phase1Baseline": {
+        "internalVersion": "済",
+        "staticAlpha": "部分",
+        "webmLocation": "未",
+        "firstFrameAlpha": "未"
+      },
+      "normalRegistered": true,
+      "reviewIntegrated": true,
+      "latestEvidence": [
+        "phase-c/batch14/provenance.json",
+        "phase-c/batch14/elixion-alpha.json",
+        "phase-c/batch14/elixion-correspondence.json"
+      ],
+      "nextPhase": "D",
+      "status": "保存済み透過素材を回収・全240フレームalpha/採用MP4数値対応検査済／評価登録／最終受入pending",
+      "next": "Phase D/E/Fで足場・反転・配置・負荷を確認。書き出し手順の未回収事項はprovenance参照。",
+      "sourceRisk": "台帳上は制作元または全身透過モーション供給が未解決。見た目を変える生成・変換は自動実施しない。",
+      "sourceEvidence": "phase-c/batch14/provenance.json",
+      "alphaEvidence": "phase-c/batch14/elixion-alpha.json"
+    }
+  ],
+  "latestPhase": "C batch14",
+  "phaseCStatus": "all 50 registered for evaluation; final acceptance incomplete"
+}

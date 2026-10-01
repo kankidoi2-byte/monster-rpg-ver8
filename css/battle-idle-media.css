@@ -1,0 +1,33 @@
+#battle.is-battle-stage .battle-static-media:is(.has-idle-media,.has-idle-size){background:transparent;border-color:transparent;box-shadow:none;overflow:visible}
+/* The legacy enemy visual also paints a card behind the transparent media. */
+#battle.is-battle-stage .multi-enemy-visual:has(:is(.has-idle-media,.has-idle-size)){background:transparent;border-color:transparent;box-shadow:none;overflow:visible}
+#battle.is-battle-stage :is(.has-idle-media,.has-idle-size)::after{display:none}
+#battle.is-battle-stage .battle-idle-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;visibility:hidden;pointer-events:none}
+#battle.is-battle-stage .idle-playing .battle-idle-video{visibility:visible}
+#battle.is-battle-stage .battle-idle-details{font-size:.875rem;margin-top:8px}
+#battle.is-battle-stage .battle-idle-details summary,#battle.is-battle-stage .battle-idle-details button{min-height:48px;display:flex;align-items:center}
+#battle.is-battle-stage .battle-idle-details button[hidden]{display:none}
+#battle.is-battle-stage .battle-idle-details span{display:block}
+
+/* Canvas alignment is shared by video and static fallback; no crop/zoom. */
+#battle.is-battle-stage :is(.has-idle-media,.has-idle-size) img,
+#battle.is-battle-stage :is(.has-idle-media,.has-idle-size) .battle-idle-video{
+  object-position:var(--idle-position,50% 50%);
+  transform:scale(var(--idle-scale,1));transform-origin:var(--idle-position,50% 50%);
+}
+
+/* The complete source canvas can extend into transparent space; its measured
+   all-frame body stays inside the slot. Equal scaling preserves source aspect.
+   Poster and video use identical geometry, including failure/reduced motion. */
+#battle.is-battle-stage .battle-arena :is(#pVis,#eVis,#enemy_aVis,#enemy_bVis) .battle-facing .battle-static-media:is(.has-idle-media,.has-idle-size)[data-idle-fit="bounds"] :is(img,.battle-idle-video){
+  inset:auto!important;
+  left:var(--idle-canvas-left)!important;top:var(--idle-canvas-top)!important;
+  width:var(--idle-canvas-width)!important;height:var(--idle-canvas-height)!important;
+  max-width:none!important;max-height:none!important;
+  transform:none;object-fit:contain!important;
+}
+
+/* Reserve artwork rows independently from HUDs. Single actors share full-width
+   slots; two enemy tracks follow planned widths without squeezing the artwork. */
+#battle.is-battle-stage :is(#pBattleSlot,#eBattleSlot){width:100%;min-height:var(--battle-size-row,200px)}
+#battle.is-battle-stage .multi-enemy-card>.battle-stage-slot{min-height:var(--battle-size-row,200px)}

@@ -1,0 +1,38 @@
+{
+  "dateJST": "2026-10-01",
+  "testedCommit": "d3e671fba20bd385f32cd933459216ccf825fe4b",
+  "checkout": "complete clone of feature branch with authentic history",
+  "fullCheck": {
+    "command": "npm run check",
+    "exitCode": 0,
+    "postcheck": [
+      "check:diagnostics-export",
+      "check:diagnostics-comprehensive"
+    ],
+    "logSha256": "ea144f013880a29252b998c7699419581296b308502988bd63305b16dff99e89"
+  },
+  "ownerSizeDecision": "accepted after star1 corrections",
+  "acceptanceRecord": "size-owner-acceptance.md",
+  "mainMerge": false,
+  "generalPublication": false,
+  "siteUpdate": "not needed; documentation and checks only",
+  "remaining": [
+    "normal battle phone journey: switching, invasion, victory/defeat, next battle, leaving and returning",
+    "background/landscape/200%-text visual coverage not explicitly completed",
+    "quantified decoder load and failure/retry device coverage"
+  ],
+  "notice": "not needed for documentation/test evidence only",
+  "motionChecks": {
+    "command": "six motion DOM/media mock scripts",
+    "passed": 6,
+    "registeredSpecies": 50,
+    "boundsAspectCases": 400,
+    "speciesPairViewportCases": 7500,
+    "mapBindings": 19,
+    "mixedSpeciesMaps": 19,
+    "evidence": "latest-motion-checks.json",
+    "limits": "DOM/media mocks; not real Galaxy decoding or browser pixel layout"
+  },
+  "historicalSnapshot": true,
+  "currentStatusReport": "final-review/validation.json"
+}

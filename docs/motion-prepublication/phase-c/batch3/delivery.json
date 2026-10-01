@@ -1,0 +1,36 @@
+{
+  "phase": "C",
+  "batch": 3,
+  "registered": 10,
+  "remaining": 40,
+  "species": [
+    "goblin",
+    "nightmare",
+    "astralepis"
+  ],
+  "github": {
+    "repository": "kankidoi2-byte/monster-rpg-ver8",
+    "branch": "feat/phase4c-prepublication",
+    "assetCommit": "68f85e409ddd7311068d6b7d284ca31f9749a296",
+    "implementationCommit": "e3ac356ff0c191cfaedcbf0ed12e216a15e40d31",
+    "remoteAssetBytesVerified": true,
+    "mainMerged": false
+  },
+  "site": {
+    "projectId": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+    "sourceCommit": "627c2bfa1f2cd80f68a5d0c870daf08b2bf278b8",
+    "deploymentId": "appgdep_6abc2c0264588191b5d45e364af8c288",
+    "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_bf8c556849588191b3886d76e9ed629d",
+    "status": "succeeded",
+    "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+    "audience": "owner-private",
+    "archiveIntegrityVerified": true
+  },
+  "checks": {
+    "npmCheck": "passed",
+    "alphaFramesPerSpecies": 240,
+    "sourceZipMatchesAdoptedWebm": true,
+    "realDeviceAcceptance": "pending",
+    "all50Acceptance": "pending"
+  }
+}

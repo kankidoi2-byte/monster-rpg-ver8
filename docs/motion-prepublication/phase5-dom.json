@@ -1,0 +1,11 @@
+{
+  "kind": "Real DOM and game handlers; media mocked; not visual timing/Android",
+  "checks": [
+    "normal real handler updates HP at each result and preserves media nodes",
+    "repeat real handler updates HP at each result and preserves media nodes",
+    "heal real handler updates HP at each result and preserves media nodes",
+    "recoil real handler updates HP at each result and preserves media nodes",
+    "knockout/result disposes; next battle starts unlocked"
+  ],
+  "pass": 5
+}

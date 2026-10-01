@@ -1,0 +1,35 @@
+{
+  "scope": "Full sequential alpha/bbox and numeric endpoint audit; visual/runtime gates separate",
+  "sha256": "1b6d0a23d67efa6ff8a62d308b66ab73f8dcb6a10dfd589ba97eb10bc10079c3",
+  "bytes": 9985287,
+  "codec": "vp9",
+  "width": 960,
+  "height": 960,
+  "fps": "30/1",
+  "duration": 8.0,
+  "frames": 240,
+  "audioStreams": 0,
+  "allFramesHaveTransparentAndOpaquePixels": true,
+  "alphaThreshold": 8,
+  "unionBBoxInclusive": [
+    55,
+    122,
+    943,
+    821
+  ],
+  "edgeTouchFrames": [],
+  "premultipliedRgbMeanAbsoluteStep": {
+    "max": 1.5794059322803193,
+    "mean": 1.0466551031919529,
+    "lastToFirst": 1.4425590306145606
+  },
+  "samples": [
+    0,
+    30,
+    60,
+    120,
+    180,
+    239
+  ],
+  "peakRetainedFrames": "current + previous + first; no full-frame sequence stored"
+}

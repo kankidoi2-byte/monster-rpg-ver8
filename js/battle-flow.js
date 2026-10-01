@@ -211,6 +211,9 @@ function afterBattleNext() {
   endPartyRecovery();
   hideBattleOutcome();
   showBattleChoices();
+  // Result actions, including contract animation, finish before evolution.
+  if(typeof tutorialUiState!=='undefined'&&tutorialUiState.active)return;
+  if(typeof processNextEvolution==='function')processNextEvolution();
 }
 function livingPartySwitchCandidates(entries=partyBattle, currentIndex=activePartyIdx) {
   return (entries || []).map((entry,index) => ({entry,index}))
@@ -402,5 +405,5 @@ function win() {
   renderParty();
   // The prologue resumes its next guide immediately after a tutorial battle.
   // Do not let an automatic evolution screen replace that resumed guide.
-  if(!tutorialOutcomeHandled)setTimeout(processNextEvolution, 300);
+  // afterBattleNext opens queued evolution after the result/contract actions.
 }

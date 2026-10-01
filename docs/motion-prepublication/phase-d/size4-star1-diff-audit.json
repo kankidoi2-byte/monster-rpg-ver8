@@ -1,0 +1,51 @@
+{
+  "changed": [
+    {
+      "id": "freigal",
+      "from": 0.3,
+      "to": 0.4
+    },
+    {
+      "id": "aquaron",
+      "from": 0.3,
+      "to": 0.45
+    },
+    {
+      "id": "grassbeat",
+      "from": 0.3,
+      "to": 0.35
+    },
+    {
+      "id": "rikasheef",
+      "from": 0.3,
+      "to": 0.4
+    },
+    {
+      "id": "volteck",
+      "from": 0.3,
+      "to": 0.35
+    },
+    {
+      "id": "goblin",
+      "from": 0.3,
+      "to": 0.4
+    },
+    {
+      "id": "sylphin",
+      "from": 0.3,
+      "to": 0.45
+    },
+    {
+      "id": "nocle",
+      "from": 0.3,
+      "to": 0.45
+    },
+    {
+      "id": "luxseed",
+      "from": 0.3,
+      "to": 0.45
+    }
+  ],
+  "unchanged": 41,
+  "assetsAndBoundsUnchanged": true
+}

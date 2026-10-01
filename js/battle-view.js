@@ -1,4 +1,5 @@
 function setupBattle() {
+  if(typeof disposeBattleIdleMedia==='function')disposeBattleIdleMedia();
   clearBattleVisuals();
   pendingKokoroLinkStatusSourceUid=null;
   pendingKokoroLinkTacticsMode=null;
@@ -49,7 +50,8 @@ function closeBattleSkillPanel(){
   if(title)title.textContent='コマンドを選ぶ';
 }
 function toggleBattleSkillPanel(){
-  if(busy)return;
+  if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
+  if(typeof battleUiRemember==='function')battleUiRemember('battleSkillButton');
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
   if(multiBattle?.pendingMoveIndex!==null&&multiBattle?.pendingMoveIndex!==undefined)cancelMultiBattleTarget();
@@ -71,15 +73,17 @@ function renderBattleSwitchButton(){
   if(!button)return;
   const count=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates().length:0;
   button.disabled=count===0;
-  button.innerHTML='<span aria-hidden="true">🔄</span><strong>交代</strong>';
+  button.title=count===0?'交代できる仲間がいません':'仲間と交代（1行動）';
+  button.innerHTML='<span aria-hidden="true">🔄</span><strong>交代</strong>'+(count===0?'<small>交代できる仲間なし</small>':'');
 }
 function renderBattleItemButton(){
   const button=document.getElementById('battleItemButton');
   if(!button)return;
-  button.innerHTML='<span aria-hidden="true">🎒</span><strong>道具</strong>';
+  if(!document.getElementById('battleItemBadge'))button.innerHTML='<span aria-hidden="true">🎒</span><strong>道具</strong><small id="battleItemBadge" class="battle-command-badge hidden"></small>';
 }
 function openBattleSwitchPicker(){
-  if(busy)return;
+  if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
+  if(typeof battleUiRemember==='function')battleUiRemember('battleSwitchButton');
   closeBattleSkillPanel();
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
@@ -90,6 +94,7 @@ function openBattleSwitchPicker(){
   if(!picker||!candidates.length)return;
   picker.innerHTML=`<p><b>交代する仲間を選択</b><span>交代すると、このターンの行動を消費します</span></p>${candidates.map(({entry,index})=>`<button data-tutorial-actor-select onclick="selectBattleSwitchTarget(${index})">${entry.mon.name}（HP ${entry.hp} / ${instanceMaxHp(entry.inst)}）</button>`).join('')}<button onclick="cancelBattleSwitchPicker()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
+  if(typeof syncBattleUi==='function')syncBattleUi();
   if(typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('actor_picker_opened');
 }
 function cancelBattleSwitchPicker(){
@@ -97,6 +102,7 @@ function cancelBattleSwitchPicker(){
   picker?.classList.add('hidden');
   if(picker)picker.innerHTML='';
   if(multiBattle?.active)updateMultiBattleView();
+  if(typeof syncBattleUi==='function')syncBattleUi();
 }
 function selectBattleSwitchTarget(nextIndex){
   cancelBattleSwitchPicker();
@@ -146,6 +152,8 @@ function battleMotionTiming(motion){
   return {duration,contact:Math.round(duration*(BATTLE_MOTION_CONTACT[motion.form]||.5))};
 }
 async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
+  if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
+  else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
   const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;
   if(!motion?.animated)return false;
   const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -188,7 +196,8 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
   const castClass=lunge?'battle-charge-cast':'battle-skill-cast';
   source.classList.remove('battle-skill-cast','battle-charge-cast');
   if(lunge){
-    const travel=Math.min(42,rawDistance*.18);
+    const stageLimit=document.getElementById('battle')?.classList.contains('is-battle-stage')?8:42;
+    const travel=Math.min(stageLimit,rawDistance*.18);
     source.style.setProperty('--battle-lunge-x',`${ux*travel}px`);
     source.style.setProperty('--battle-lunge-y',`${uy*travel}px`);
     source.style.setProperty('--battle-recoil-x',`${ux*travel*-.18}px`);
@@ -391,7 +400,7 @@ function renderKokoroLinkPanel(){
   const targetEligible=player?.entityKind==='monster';
   const available=sources.filter(source=>source.available).length;
   button.disabled=!targetEligible||(!current&&available===0);
-  button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}`;
+  button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}${!targetEligible?'<small>対象外</small>':available===0?'<small>利用可能な控えなし</small>':''}`;
   syncKokoroLinkAura();
   const tacticsActionHtml=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved?'<button onclick="beginKokoroLinkOriginChoice()">原初選択を決める</button>':current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0?'<button onclick="beginKokoroLinkFreeSwitch()">無消費交代を使う</button>':'';
   const activeHtml=current
@@ -416,12 +425,13 @@ function renderKokoroLinkPanel(){
       `${preview.powerAbility?`<small>★1リンク能力：${preview.powerAbility.label}（${preview.powerAbility.summary}）</small>`:''}`+
       `${preview.statusAbility?`<small>★2リンク能力：${preview.statusAbility.label}（${preview.statusAbility.summary}）</small>`:''}`+
       `${preview.tacticsAbility?`<small>★3リンク能力：${preview.tacticsAbility.label}（${preview.tacticsAbility.summary}）</small>`:''}`+
-      `<small>${source.used?'この戦闘で使用済み':'行動を消費せず発動'}</small></button>`;
+      `<small>${source.used?'使用不可：この戦闘で使用済み':current?'使用不可：前衛へのリンクは発動済み':!targetEligible?'使用不可：前衛は対象外':`対象：${player.name} / 行動を消費せず発動`}</small></button>`;
   }).join('');
-  panel.innerHTML=`<div class="kokoro-link-panel-head"><div><small>KOKORO LINK</small><h3>控えの力を借りる</h3></div><button onclick="toggleKokoroLinkPanel()" aria-label="閉じる">×</button></div>${activeHtml}${message}<div class="kokoro-link-source-grid">${cards}</div>`;
+  panel.innerHTML=`<div class="kokoro-link-panel-head"><div><small>KOKORO LINK</small><h3>控えの力を借りる</h3></div><button onclick="toggleKokoroLinkPanel()" aria-label="閉じる">閉じる</button></div>${activeHtml}${message}<div class="kokoro-link-source-grid">${cards}</div>`;
 }
 function toggleKokoroLinkPanel(){
-  if(busy)return;
+  if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
+  if(typeof battleUiRemember==='function')battleUiRemember('kokoroLinkButton');
   closeBattleSkillPanel();
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   if(pendingKokoroLinkTacticsMode)cancelKokoroLinkTacticsPicker();
@@ -430,39 +440,43 @@ function toggleKokoroLinkPanel(){
   if(!panel)return;
   renderKokoroLinkPanel();
   panel.classList.toggle('hidden');
+  if(typeof syncBattleUi==='function')syncBattleUi();
   if(!panel.classList.contains('hidden')&&typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('kokoroLink',TUTORIAL_KOKORO_LINK_FLOW_ID);
 }
 function beginKokoroLinkStatusTargetSelection(sourceUid){
   const picker=document.getElementById('multiTargetSelect'),living=typeof aliveMultiEnemies==='function'?aliveMultiEnemies():[];
   if(!picker||!living.length)return;
   pendingKokoroLinkStatusSourceUid=sourceUid;
-  picker.innerHTML=`<p><b>リンク能力の対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="selectKokoroLinkStatusTarget('${entry.id}')">${entry.mon.name}へ発動</button>`).join('')}<button onclick="cancelKokoroLinkStatusTarget()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>リンク能力の対象を選択</b><span>敵A・敵Bの名前とHPを確認して選択</span></p>${living.map(entry=>`<button onclick="selectKokoroLinkStatusTarget('${entry.id}')">${entry.id==='enemy_a'?'敵A':'敵B'}：${entry.mon.name}（HP ${entry.hp} / ${entry.maxHp}）へ発動</button>`).join('')}<button onclick="battleUiBack()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');updateMultiBattleView();
 }
-function cancelKokoroLinkStatusTarget(){pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');if(multiBattle?.active)updateMultiBattleView();}
-function selectKokoroLinkStatusTarget(targetId){const sourceUid=pendingKokoroLinkStatusSourceUid;if(!sourceUid)return;pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');activateKokoroLinkFromBattle(sourceUid,targetId);}
+function cancelKokoroLinkStatusTarget(){pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');if(multiBattle?.active)updateMultiBattleView();if(typeof syncBattleUi==='function')syncBattleUi();}
+function selectKokoroLinkStatusTarget(targetId){if(busy)return;const selected=multiEnemy(targetId);if(!selected?.alive||selected.hp<=0){if(pendingKokoroLinkStatusSourceUid)beginKokoroLinkStatusTargetSelection(pendingKokoroLinkStatusSourceUid);return;}const sourceUid=pendingKokoroLinkStatusSourceUid;if(!sourceUid)return;pendingKokoroLinkStatusSourceUid=null;document.getElementById('multiTargetSelect')?.classList.add('hidden');activateKokoroLinkFromBattle(sourceUid,targetId);}
 function kokoroLinkSourceNeedsEnemyTarget(source){return source?.profile?.rarity===2||source?.profile?.rarity===3&&['dark','star'].includes(source.profile.primaryType);}
 function beginKokoroLinkOriginChoice(){
   const picker=document.getElementById('multiTargetSelect');if(!picker)return;pendingKokoroLinkTacticsMode='origin-choice';
-  picker.innerHTML='<p><b>原初選択</b><span>発動する支援効果を選択</span></p><button onclick="selectKokoroLinkOriginChoice(\'small_heal\')">🌿 小回復：最大HP10%</button><button onclick="selectKokoroLinkOriginChoice(\'cleanse\')">✨ 浄化：状態異常を解除</button><button disabled>💧 技コスト軽減：保留中</button><button onclick="cancelKokoroLinkTacticsPicker()" class="secondary-button">あとで選ぶ</button>';
+  picker.innerHTML='<p><b>原初選択</b><span>発動する支援効果を選択</span></p><button onclick="selectKokoroLinkOriginChoice(\'small_heal\')">🌿 小回復：最大HP10%</button><button onclick="selectKokoroLinkOriginChoice(\'cleanse\')">✨ 浄化：状態異常を解除</button><button disabled>💧 技コスト軽減：保留中</button><button onclick="battleUiBack()" class="secondary-button">あとで選ぶ</button>';
   picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
+  if(typeof syncBattleUi==='function')syncBattleUi();
 }
 function selectKokoroLinkOriginChoice(optionId){
+  if(busy)return;
   if(pendingKokoroLinkTacticsMode!=='origin-choice')return;const msg=applyKokoroLinkOriginChoiceForBattle(optionId),log=document.getElementById('log');if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+msg;if(typeof captureBattleLog==='function')captureBattleLog();cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
 }
 function beginKokoroLinkFreeSwitch(){
   const picker=document.getElementById('multiTargetSelect'),candidates=partyBattle.map((entry,index)=>({entry,index})).filter(item=>item.index!==activePartyIdx&&!item.entry.fainted&&item.entry.hp>0);if(!picker||!candidates.length)return;
-  pendingKokoroLinkTacticsMode='free-switch';picker.innerHTML=`<p><b>風渡り交代</b><span>行動を消費せず交代する仲間を選択</span></p>${candidates.map(({entry,index})=>`<button onclick="selectKokoroLinkFreeSwitch(${index})">${entry.mon.name}（HP ${entry.hp}）</button>`).join('')}<button onclick="cancelKokoroLinkTacticsPicker()" class="secondary-button">あとで使う</button>`;
+  pendingKokoroLinkTacticsMode='free-switch';picker.innerHTML=`<p><b>風渡り交代</b><span>行動を消費せず交代する仲間を選択</span></p>${candidates.map(({entry,index})=>`<button onclick="selectKokoroLinkFreeSwitch(${index})">${entry.mon.name}（HP ${entry.hp}）</button>`).join('')}<button onclick="battleUiBack()" class="secondary-button">あとで使う</button>`;
   picker.classList.remove('hidden');document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
+  if(typeof syncBattleUi==='function')syncBattleUi();
 }
 function selectKokoroLinkFreeSwitch(nextIndex){
   if(pendingKokoroLinkTacticsMode!=='free-switch'||busy)return;const next=partyBattle[nextIndex];if(!next||nextIndex===activePartyIdx||next.fainted||next.hp<=0||!consumeKokoroLinkFreeSwitch(activeInstance))return;
   const previous=player.name;changeActivePartyMember(nextIndex,{message:`🌪️ 風渡り交代で${previous}から<b>${next.mon.name}</b>へ交代した！`});
   cancelKokoroLinkTacticsPicker();renderKokoroLinkPanel();update();
 }
-function cancelKokoroLinkTacticsPicker(){pendingKokoroLinkTacticsMode=null;const picker=document.getElementById('multiTargetSelect');picker?.classList.add('hidden');if(picker)picker.innerHTML='';if(multiBattle?.active)updateMultiBattleView();}
+function cancelKokoroLinkTacticsPicker(){pendingKokoroLinkTacticsMode=null;const picker=document.getElementById('multiTargetSelect');picker?.classList.add('hidden');if(picker)picker.innerHTML='';if(multiBattle?.active)updateMultiBattleView();if(typeof syncBattleUi==='function')syncBattleUi();}
 function activateKokoroLinkFromBattle(sourceUid,targetId=null){
-  if(busy)return;
+  if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
   const source=typeof currentKokoroLinkSources==='function'?currentKokoroLinkSources({includeUsed:true}).find(candidate=>candidate.uid===sourceUid):null;
   if(!targetId&&multiBattle?.active&&kokoroLinkSourceNeedsEnemyTarget(source)){beginKokoroLinkStatusTargetSelection(sourceUid);return;}
   const result=activateCurrentKokoroLink(sourceUid,kokoroLinkTargetStats());
@@ -480,6 +494,7 @@ function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(link.tacticsAbility?.id==='free_switch'&&link.tacticsAbility.charges>0)beginKokoroLinkFreeSwitch();
 }
 function update() {
+  if(typeof syncSingleBattleStage==='function')syncSingleBattleStage();
   if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();
   if (multiBattle?.active) { updateMultiBattleView(); return; }
   if (!player || !enemy) return;

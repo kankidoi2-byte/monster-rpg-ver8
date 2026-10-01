@@ -1,0 +1,119 @@
+{
+  "scope": "asset existence only, no visual horizon or animated body collision acceptance",
+  "maps": [
+    {
+      "id": "grassland",
+      "name": "草原",
+      "src": "images/maps/grassland_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "volcano",
+      "name": "火山",
+      "src": "images/maps/volcano_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "lake",
+      "name": "湖",
+      "src": "images/maps/lake_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "seikai_irie",
+      "name": "蒼海の入り江",
+      "src": "images/maps/seikai_irie_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "kaiyu_kaiiki",
+      "name": "回遊海域",
+      "src": "images/maps/kaiyu_kaiiki_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "deep_sea_end",
+      "name": "深き海の果て",
+      "src": "images/maps/deep_sea_end_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "snow_mountain",
+      "name": "雪山",
+      "src": "images/maps/snow_mountain_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "forest",
+      "name": "森林",
+      "src": "images/maps/forest_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "light_plain",
+      "name": "光の平原",
+      "src": "images/maps/light_plain_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "starry_plain",
+      "name": "星空の平原",
+      "src": "images/maps/starry_plain_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "highland_ruins",
+      "name": "高原遺跡",
+      "src": "images/maps/highland_ruins_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "arena",
+      "name": "闘技場",
+      "src": "images/maps/arena_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "magic_academy",
+      "name": "魔導学園",
+      "src": "images/maps/magic_academy_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "ruined_village",
+      "name": "廃村跡",
+      "src": "images/maps/ruined_village_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "starsea",
+      "name": "遥かなる星の海",
+      "src": "images/maps/starsea_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "water_secret",
+      "name": "流水の秘境",
+      "src": "images/maps/water_secret_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "world_between",
+      "name": "世界の狭間",
+      "src": "images/maps/world_between_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "kaen_village",
+      "name": "華炎の里",
+      "src": "images/maps/kaen_village_battle_v1.webp",
+      "exists": true
+    },
+    {
+      "id": "golden_land",
+      "name": "黄金郷",
+      "src": "images/maps/golden_land_battle_v1.webp",
+      "exists": true
+    }
+  ]
+}

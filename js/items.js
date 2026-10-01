@@ -162,6 +162,8 @@ function useExpItemOnInstance(itemId, uidValue){
   if(pendingEvolutions.length) processNextEvolution();
 }
 function openBattleItemSelect() {
+  if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
+  if(typeof battleUiRemember==='function')battleUiRemember('battleItemButton');
   if(typeof closeBattleSkillPanel==='function')closeBattleSkillPanel();
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   updateItems();
@@ -171,14 +173,21 @@ function renderBattleItemSelect(){
   ensureContractScrollItem();
   const list=document.getElementById('battleItemList');
   if(!list)return;
-  list.innerHTML = SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
+  list.innerHTML = `<p>対象：${typeof battleUiEscape==='function'?battleUiEscape(player?.name||'前衛'):player?.name||'前衛'} / HP ${pHp} / ${playerMaxHp()}。道具は行動を消費しません。</p>` + SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
     <div class="item-card">
       <h2>${itemInlineVisual(it)} ${it.name} ×${save.items[it.id]||0}</h2>
       <p>${it.battleDesc || it.desc}</p>
-      <button onclick="${it.contract ? `askUseContractScroll('${it.id}')` : `useBattleItemFromMenu('${it.id}')`}">使う</button>
+      <p>${battleItemUnavailableReason(it.id)||'使用可能・前衛に使用'}</p>
+      <button ${battleItemUnavailableReason(it.id)?'disabled':''} onclick="${it.contract ? `askUseContractScroll('${it.id}')` : `useBattleItemFromMenu('${it.id}')`}">使う</button>
     </div>`).join('');
 }
+function battleItemUnavailableReason(id){
+  if((save.items[id]||0)<=0)return '使用不可：残数がありません';
+  if(['potion','upper_potion'].includes(id)&&pHp>=playerMaxHp())return '使用不可：HPは満タンです';
+  return '';
+}
 function useBattleItemFromMenu(id){
+  if(!document.getElementById('battleItemSelect')?.classList.contains('active')||battleItemUnavailableReason(id))return;
   useBattleItem(id);
 }
 function useBattleItem(id) {

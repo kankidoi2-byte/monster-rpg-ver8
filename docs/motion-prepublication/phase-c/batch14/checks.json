@@ -1,0 +1,77 @@
+{
+  "catalog": {
+    "total": 50,
+    "registered": 50,
+    "noVideoPrefetch": true,
+    "singlePlayer": true,
+    "sourceRelease": true,
+    "hiddenPause": true,
+    "errorFallback": true,
+    "reviewPersistence": true,
+    "assetVersionInvalidatesMark": true,
+    "unregisteredNotAccepted": true,
+    "saveUntouched": true,
+    "scope": "DOM and mocked media; real device appearance/decoder not tested"
+  },
+  "battleDom": {
+    "scope": "Gran Volmoog isolated actual-game DOM integration; media mocked; no browser layout or performance claim",
+    "results": [
+      {
+        "mode": "ally",
+        "nodeRetention": true,
+        "itemPauseResume": true,
+        "exitAndStaleCallback": true
+      },
+      {
+        "mode": "enemy",
+        "nodeRetention": true,
+        "itemPauseResume": true,
+        "exitAndStaleCallback": true
+      },
+      {
+        "mode": "multi",
+        "nodeRetention": true,
+        "itemPauseResume": true,
+        "exitAndStaleCallback": true
+      }
+    ],
+    "maps": 19,
+    "errorFallback": true,
+    "retry": true,
+    "switchDisposal": true,
+    "sourceHash": true,
+    "normalRegistryUsed": true
+  },
+  "viewportDom": {
+    "kind": "DOM + mocked media/IntersectionObserver; not real viewport or decoder",
+    "checks": [
+      "initial offscreen avoids source; hysteresis cancels stale timeout; same video resumes",
+      "intersection cannot override hidden or reduced-motion reasons",
+      "exit disconnects observer and rejects queued timer/observer callbacks",
+      "ordinary gran registration, shared layout, mixed species independently stop and retain HP nodes"
+    ],
+    "pass": 4,
+    "normalRegistered": 50,
+    "defaultLimit": 1
+  },
+  "resourceResolution": {
+    "loadGuardSuccessAndFailure": true,
+    "resourceLoads": 44,
+    "missing": [],
+    "scriptErrors": [],
+    "battleActive": true,
+    "controls": 7,
+    "stylesheets": 9,
+    "scope": "local file resource resolution and execution; not hosted authentication or actual video decode"
+  },
+  "scope": "DOM/media mocked; alpha/source comparisons separate; real Galaxy rendering/load/final acceptance pending",
+  "dateJST": "2026-09-30",
+  "unchangedContracts": {
+    "js/data.js": "64d0d44ecfc5c1ddae54b0a649516170c8124a9c87d3f0cb4b309ff84326a0cb",
+    "js/save.js": "20440c78e15fc1b6f0ddc2061bafbc63837b01118872b87fb3f998667eaab4b4",
+    "js/battle-rules.js": "1fa261a5847f3fcac79a93a715d900b896eac32e712911c1b43507ec627f76cc",
+    "js/battle-flow.js": "e4c4043197198354b5bfce7ee943a560a764130809fc171e299df255f37d4320",
+    "js/multi-battle.js": "d0b1effd034ed6e60ded6b05fd9499b8cf30bcb0b5e60739b67d81aaccbcfcae"
+  },
+  "npmCheckExitCode": 0
+}

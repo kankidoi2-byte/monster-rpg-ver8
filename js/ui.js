@@ -62,6 +62,8 @@ function show(id) {
   if (id === 'moreMenu' && typeof updateTutorialMenuSummary === 'function') updateTutorialMenuSummary();
   if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(id);
   scheduleContractorRankUpPresentation();
+  if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
+  if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
 }
 function openBattleHub(){
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];

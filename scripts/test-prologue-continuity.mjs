@@ -38,7 +38,7 @@ assert.match(tutorial,/setTimeout\(resume,0\)/,
 
 assert.match(battleFlow,/const tutorialOutcomeHandled=[^\n]+handleTutorialBattleOutcome\('victory'/,
   'battle victory must report to the tutorial before post-battle UI');
-assert.ok(battleFlow.includes('if(!tutorialOutcomeHandled)setTimeout(processNextEvolution, 300);'),
+assert.ok(!battleFlow.slice(battleFlow.indexOf('function win(')).includes('setTimeout(processNextEvolution') && battleFlow.includes("if(typeof tutorialUiState!=='undefined'&&tutorialUiState.active)return;"),
   'automatic evolution must not replace the guide resumed after a tutorial battle');
 
 assert.ok(index.includes('prologue-continuity-1'),'changed runtime files must bypass stale mobile caches');

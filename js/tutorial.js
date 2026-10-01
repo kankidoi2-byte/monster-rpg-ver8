@@ -1794,15 +1794,15 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'rescue_world_map_grassland',screenId:'battleChoices',target:'[data-wm-place="grassland"]',advanceOnTarget:true,persistAs:'elna_guest_join',disableBack:true,title:'草原を選ぼう',text:'世界地図では行き先を選べる。中央の「草原」を押して、出現する相手と難易度を確認しよう！',progressLabel:'WORLD MAP'},
   {id:'rescue_world_map_depart',screenId:'battleChoices',target:'[data-wm-depart]',externalAdvance:true,transition:'start_elna_rescue',nextStepId:'battle_enemy',persistAs:'elna_guest_join',disableBack:true,title:'草原へ出発',text:'最初はEasyで進もう。「この場所を探索する」を押したら、エルナの救援戦が始まるぞ！',progressLabel:'WORLD MAP'},
   {id:'elna_rescue_start',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',transition:'start_elna_rescue',nextStepId:'battle_enemy',title:'救援戦を始めよう！',text:'君とボク、それにあの子の3人で行くぞ！ 呼び出した契約体の力で、彼女を助けよう！',progressLabel:'RESCUE',nextLabel:'助けに入る'},
-  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'上が敵、下が味方だ。HPを0にすると倒せる。コマンドを1つ選べば、君が呼び出した力が指示どおりに動いて1ターン進むぞ！',progressLabel:'BATTLE'},
+  {id:'battle_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'elna_rescue_start',title:'敵・味方・HP',text:'奥が敵、手前が味方だ。名前の横が残りHPで、緑のバーが減って0になると倒れるぞ。状態の印を押すと詳しく確認できる。技と通常の交代で1ターン進み、リンクと道具はターンを消費しない！',progressLabel:'BATTLE'},
   {id:'battle_actor_open',screenId:'battle',target:'#battleSwitchButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'行動者を選ぼう',text:'ここを押すと、戦う仲間を選べるぞ！',progressLabel:'BATTLE'},
   {id:'battle_actor_select',screenId:'battle',target:'[data-tutorial-actor-select]',externalAdvance:true,persistAs:'elna_rescue_start',title:'仲間を交代',text:'交代する仲間を1人選んでみよう！',progressLabel:'BATTLE'},
-  {id:'battle_target',screenId:'battle',target:'#singleEnemyBox',advanceOnTarget:true,persistAs:'elna_rescue_start',title:'対象を選ぼう',text:'このスライムを押して、攻撃対象に決めよう！',progressLabel:'BATTLE'},
-  {id:'battle_attack_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'攻撃を開こう',text:'ここを押すと、使える攻撃を選べるぞ！',progressLabel:'BATTLE'},
+  {id:'battle_target',screenId:'battle',target:'#eVis',advanceOnTarget:true,persistAs:'elna_rescue_start',title:'対象を選ぼう',text:'このスライムをタップして、相手を確認しよう！ 敵が1体の戦闘では、攻撃技はこの相手に向かうぞ。',progressLabel:'BATTLE'},
+  {id:'battle_attack_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'攻撃を開こう',text:'下の「技」を押すと、この操作欄に攻撃が並ぶぞ。戦場を見ながら選べる！',progressLabel:'BATTLE'},
   {id:'battle_normal_attack',screenId:'battle',target:'[data-tutorial-normal-attack]',externalAdvance:true,persistAs:'elna_rescue_start',title:'通常攻撃',text:'まずはCOST 0の通常攻撃を押してみよう！',progressLabel:'BATTLE'},
-  {id:'battle_skill',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を開こう',text:'もう一度ここを押して、今度は技を選ぶぞ！',progressLabel:'BATTLE'},
-  {id:'battle_choose_skill',screenId:'battle',target:'[data-tutorial-skill]',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を使おう',text:'COSTは装備に必要な値だ。好きな技を1つ押して、実際に使ってみよう！',progressLabel:'BATTLE'},
-  {id:'battle_free',screenId:'battle',target:'.battle-command-dock',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
+  {id:'battle_skill',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を開こう',text:'もう一度「技」を押して、下の操作欄から技を選ぶぞ！',progressLabel:'BATTLE'},
+  {id:'battle_choose_skill',screenId:'battle',target:'[data-tutorial-skill]',externalAdvance:true,persistAs:'elna_rescue_start',title:'技を使おう',text:'COSTは装備に必要な値だ。好きな技を1つ押して、実際に使ってみよう！ 詳しい効果は「技の効果・対象・装備コスト」から見られるぞ。',progressLabel:'BATTLE'},
+  {id:'battle_free',screenId:'battle',target:'.battle-command-pad',persistAs:'elna_rescue_start',waitForEvent:'battle_outcome',title:'ここからは自由戦闘',text:'よし！ 交代や技を使って、残りのスライムを倒そう！',progressLabel:'BATTLE',nextLabel:'戦闘を続ける'},
   {id:'elna_rescue_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'elna_rescue_start',persistAs:'elna_rescue_start',title:'エルナを助けに戻ろう',text:'進行は失われていません。「依頼を選び直す」を押して、救援戦をもう一度始めよう。',progressLabel:'RETRY'},
   {id:'elna_rescue_complete',screenId:'battle',speaker:'エルナ',portrait:'images/tutorial/characters/elna_beginner.png?v=2',scene:'grassland',persistAs:'elna_rescue_complete',nextStepId:'elna_contract_intro',disableBack:true,title:'救援成功',text:'ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！\n\n\nあ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！',dialogue:[{"text": "ふぅ……。ありがとう！ あなたたちが来てくれなかったら危なかった！"}, {"text": "あ、そうだ。私の名前はエルナ。大きな借りが出来ちゃったね。いつか恩返ししないと。困ったことがあったら、何でも言ってね。力になるから！"}],progressLabel:'RESCUE',nextLabel:'エルナと話す'},
   {id:'elna_contract_intro',screenId:'battle',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'grassland',disableBack:true,title:'エルナの力を借りよう！',text:'え、だったら、契約！ {{playerName}}とエルナで契約をして！',progressLabel:'CONTRACT'},
@@ -1846,9 +1846,9 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪がある。矢印の向きを見れば有利属性が分かるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'あの魔法使いと戦おう',text:'装備できたな！ そしたらさっそくあの魔法使いと戦うぞ！',progressLabel:'STELLA',nextLabel:'戦闘へ'},
   {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'魔法使いとの対決',text:'準備はできた？ 私の魔法でコテンパンにしてあげる！',progressLabel:'BATTLE'},
-  {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'仲間の技を選ぼう',text:'攻撃を開くと、今戦っている仲間の技を選べるぞ！',progressLabel:'BATTLE'},
+  {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'仲間の技を選ぼう',text:'下の「技」を押すと、今戦っている仲間の技が操作欄に並ぶぞ！',progressLabel:'BATTLE'},
   {id:'stella_mock_advantage',screenId:'battle',target:'[data-tutorial-stella-advantage]',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'使う技を決めよう',text:'使いたい技を選んで、あの魔法使いを攻撃しよう！',progressLabel:'BATTLE'},
-  {id:'stella_mock_free',screenId:'battle',target:'#battleCommandPad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'仲間の力で戦おう',text:'よし、その調子だ！ 仲間の交代や技を使いながら、あの魔法使いに立ち向かうぞ！',progressLabel:'BATTLE'},
+  {id:'stella_mock_free',screenId:'battle',target:'.battle-command-pad',persistAs:'stella_mock_battle',waitForEvent:'battle_outcome',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'仲間の力で戦おう',text:'よし、その調子だ！ 仲間の交代や技を使いながら、あの魔法使いに立ち向かうぞ！',progressLabel:'BATTLE'},
   {id:'stella_mock_victory',screenId:'battle',persistAs:'stella_mock_victory',nextStepId:'lumina_intro',chapterBreak:true,disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'魔法使いに勝利！',text:'よし、勝ったぞ！ やったな、{{playerName}}！',progressLabel:'STELLA',nextLabel:'第4話を終える'},
   {id:'stella_mock_retry',screenId:'battle',target:'#next',advanceOnTarget:true,nextStepId:'stella_mock_battle',persistAs:'stella_mock_battle',disableBack:true,title:'魔法使いに再挑戦',text:'進行は失われていないぞ！ 仲間の編成や技を確認して、もう一度あの魔法使いに挑もう！',progressLabel:'RETRY'},
   {id:'lumina_intro',screenId:'home',persistAs:'lumina_intro',nextStepId:'lumina_world_map_open',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',scene:'capital',title:'逃げた魔法使いを追おう',dialogue:[{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"capital","text":"いったーい！少しは手加減しなさいよ！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"capital","text":"ふふん！見たか！これがボク達の力だ！"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"capital","text":"ぐぬぬ…！この借りはいつか返すんだから！覚えてなさいよぉー！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"capital","text":"あ！待て！\n{{playerName}}！逃げたあの魔法使いを追いかけよう！"}],progressLabel:'PROLOGUE',nextLabel:'世界地図へ'},
@@ -1887,7 +1887,7 @@ registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
 ]);
 registerTutorialFlow(TUTORIAL_THREE_WAY_FLOW_ID,[
   {id:'three_way_intro',screenId:'battle',target:'#multiEnemyGrid',title:'三つ巴バトル',text:'敵が2体いる特殊戦です。敵Aと敵Bは、契約者だけでなく敵同士も攻撃します。',progressLabel:'THREE-WAY'},
-  {id:'three_way_target',screenId:'battle',target:'#battleSkillButton',title:'技のあとに対象を選択',text:'技を選んだあと、光っている敵カードをタップして攻撃対象を決めます。倒れた敵は選べません。',progressLabel:'THREE-WAY'},
+  {id:'three_way_target',screenId:'battle',target:'#battleSkillButton',title:'技のあとに対象を選択',text:'攻撃技を選ぶと、敵の画像とHP欄が光ります。攻撃したい敵の画像かHP欄をタップしてください。名前を覚えていなくても姿で選べます。「技に戻る」で選び直せます。倒れた敵は選べません。',progressLabel:'THREE-WAY'},
   {id:'three_way_contract',screenId:'battle',target:'#multiEnemyGrid',title:'契約候補に注意',text:'契約候補になるのは、契約者側が倒した相手だけです。もう一方の敵に倒された相手とは契約できません。',progressLabel:'THREE-WAY',nextLabel:'戦闘へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_INVASION_FLOW_ID,[
@@ -1913,7 +1913,7 @@ registerTutorialFlow(TUTORIAL_FUSION_FLOW_ID,[
   {id:'fusion_cost',screenId:'fusion',target:'#fusionItemText',title:'素材と対象個体を消費・変化',text:'合成すると指定アイテムを消費し、選んだ個体が進化先へ変わります。遠征中の個体は選べません。',progressLabel:'EVOLUTION',nextLabel:'合成へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_EVOLUTION_FLOW_ID,[
-  {id:'evolution_intro',screenId:'evolution',target:'#evoVisual',title:'レベル条件を満たして進化',text:'必要レベルに達した仲間は、勝利後に進化できます。分岐がある場合は、進化先をここで選びます。',progressLabel:'EVOLUTION'},
+  {id:'evolution_intro',screenId:'evolution',target:'#evoVisual',title:'レベル条件を満たして進化',text:'必要レベルに達した仲間は、勝利後の契約などを終え、「次へ」で結果画面を閉じると進化を確認できます。分岐がある場合は、進化先をここで選びます。',progressLabel:'EVOLUTION'},
   {id:'evolution_choice',screenId:'evolution',target:'#evoChoices',title:'今は進化しない選択もできます',text:'進化後は姿と能力が変わり、初期技のカードを獲得します。特殊進化は育成メニューの合成から行います。',progressLabel:'EVOLUTION',nextLabel:'進化を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_SKILL_CARDS_FLOW_ID,[
@@ -1937,7 +1937,7 @@ registerTutorialFlow(TUTORIAL_SHOP_ITEMS_FLOW_ID,[
   {id:'shop_use',screenId:'shop',target:'#shopList',title:'アイテムごとに使う場所が違います',text:'回復・強化薬は戦闘中、契約書は勝利後、進化素材は合成で使います。入手した道具はアイテム図鑑にも記録されます。',progressLabel:'SHOP & ITEMS',nextLabel:'ショップへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_BATTLE_ITEMS_FLOW_ID,[
-  {id:'battle_items_use',screenId:'battleItemSelect',target:'#battleItemList',title:'戦闘中に使うアイテム',text:'回復薬や強化薬を選ぶと、そのターンの行動として消費します。所持数と効果を確認してください。',progressLabel:'SHOP & ITEMS'},
+  {id:'battle_items_use',screenId:'battleItemSelect',target:'#battleItemList',title:'戦闘中に使うアイテム',text:'回復薬や強化薬は、使うと所持数が1個減ります。道具の使用では行動を消費しません。所持数と効果を確認してください。',progressLabel:'SHOP & ITEMS'},
   {id:'battle_items_shop',screenId:'battleItemSelect',target:'#battleItemList',title:'道具はショップなどで入手',text:'ショップではコインで道具や契約書を購入できます。契約書はこの画面ではなく、勝利後の契約で使います。',progressLabel:'SHOP & ITEMS',nextLabel:'道具を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_CONTRACTOR_RANK_FLOW_ID,[

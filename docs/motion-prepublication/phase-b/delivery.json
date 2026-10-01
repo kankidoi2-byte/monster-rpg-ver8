@@ -1,0 +1,12 @@
+{
+  "githubImplementationCommit": "4e04d75aaa405f0c3b68e1b185b58220552ce89b",
+  "siteSourceCommit": "c256666d51f9cad75e21c651ca1064b342055ca2",
+  "deploymentId": "appgdep_6abbb26e84dc819184153ab5f5aaf738",
+  "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_4abad7c296fc8191bab8d232b9f9fb74",
+  "status": "succeeded",
+  "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+  "audience": "existing owner-only; unchanged",
+  "mainMerge": false,
+  "publicGamePublication": false,
+  "newDeviceAcceptance": false
+}

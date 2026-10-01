@@ -1,0 +1,16 @@
+{
+  "dateJST": "2026-09-30",
+  "npmCheck": "pass",
+  "alphaFrames": {
+    "goblin": 240,
+    "nightmare": 240,
+    "astralepis": 240
+  },
+  "sourceZipAndApprovedHash": "pass",
+  "catalogDom": "50 total / 10 registered; no video prefetch; disposal, notes, export, save untouched",
+  "battleDom": "new species ally/enemy/multi + existing lifecycle pass; mocked media",
+  "viewportDom": "4 checks passed; default limit 1; 10 registered",
+  "resourceDom": "44 resources, 9 stylesheets, no missing or script errors",
+  "realDevice": "pending",
+  "scope": "Automated numeric/DOM checks, not actual browser decode/layout/performance acceptance"
+}

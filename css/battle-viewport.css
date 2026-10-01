@@ -1,0 +1,93 @@
+/* Near/far battle composition: a broad field, floating HP, commands below. */
+body:has(#battle.active.is-battle-stage) .app-topbar{display:none}
+body:has(#battle.active.is-battle-stage){padding-bottom:0}
+#battle.is-battle-stage.active{padding:0 0 env(safe-area-inset-bottom);margin:0 auto}
+#battle.is-battle-stage #battleMapBanner>.panel{min-height:36px;padding:0 8px}
+#battle.is-battle-stage #battleMapBanner .battle-hunt-conditions summary{min-height:36px}
+#battle.is-battle-stage .battle-arena{display:block;position:relative;min-height:300px;height:var(--battle-art-height,440px);padding:0;box-sizing:border-box;background-position:center center;background-size:100% 100%}
+#battle.is-battle-stage :is(.battle-combatant,.multi-enemy-copy){padding:6px 8px;line-height:1.25;border:1px solid #dfc98f;border-radius:3px;background:linear-gradient(135deg,#132f52,#07172e);box-shadow:0 2px 8px #0006,inset 0 0 0 2px #102647}
+#battle.is-battle-stage .battle-nameplate h2,#battle.is-battle-stage .multi-enemy-heading h2{font-size:.875rem;line-height:1.25;text-align:center}
+#battle.is-battle-stage .battle-side-label{display:none}
+#battle.is-battle-stage #singleEnemyBox{position:absolute;top:12px;right:8%;width:40%;z-index:50}
+#battle.is-battle-stage #singlePlayerBox{position:absolute;right:2%;bottom:12px;width:46%;min-height:0;z-index:50}
+#battle.is-battle-stage #pBattleSlot{position:absolute;left:0;bottom:8px;width:80%;min-height:0;height:var(--battle-ally-height,220px);padding:8px;box-sizing:border-box;z-index:30}
+#battle.is-battle-stage #eBattleSlot{position:absolute;right:8%;top:calc(var(--battle-enemy-hud,64px) + 20px);width:40%;min-height:0;height:var(--battle-enemy-height,100px);padding:8px;box-sizing:border-box;z-index:20}
+#battle.is-battle-stage #multiEnemyGrid:not(.hidden){position:absolute;left:8%;top:12px;width:84%;height:calc(var(--battle-enemy-hud,64px) + 8px + var(--battle-enemy-height,100px));display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px;min-height:0;margin:0;z-index:auto}
+#battle.is-battle-stage .multi-enemy-card>.battle-stage-slot{min-height:0;height:100%;padding:8px;box-sizing:border-box}
+#battle.is-battle-stage .multi-enemy-copy{align-self:start;z-index:50}
+#battle.is-battle-stage .multi-enemy-visual{min-height:0}
+#battle.is-battle-stage :is(.battle-combatant,.multi-enemy-hp) .bar{height:8px;margin:4px 0;border:1px solid #fff3b9;box-sizing:content-box;background:#192e30}
+#battle.is-battle-stage .multi-enemy-hp{margin:4px 0}
+#battle.is-battle-stage .battle-enemy-controls{flex-direction:row;flex-wrap:wrap;gap:4px;margin-top:4px}
+#battle.is-battle-stage .battle-enemy-controls button{min-height:48px;font-size:.875rem;padding:4px}
+#battle.is-battle-stage .battle-enemy-controls button[aria-expanded]{display:none}
+#battle.is-battle-stage .battle-enemy-controls:not(:has(button:not([aria-expanded]))){display:none}
+#battle.is-battle-stage .compact-enemy-detail{min-height:48px;font-size:1rem}
+#battle.is-battle-stage #battleCompactTools{display:grid;grid-template-columns:1fr 1fr;align-items:start;background:#07172e;border-top:1px solid #9c804b}
+#battle.is-battle-stage #battleCompactTools>details{min-width:0;margin:0;border:0;color:#f8f3de}
+#battle.is-battle-stage #battleCompactTools>details>summary{min-height:44px;padding:6px 8px;display:flex;align-items:center;font-size:.875rem;box-sizing:border-box;cursor:pointer}
+#battle.is-battle-stage #battleCompactTools>details[open]{grid-column:1/-1}
+#battle.is-battle-stage #battleCompactInfo>section{padding:8px;border-top:1px solid #637e99}
+#battle.is-battle-stage #battleCompactInfo>section[hidden]{display:none}
+#battle.is-battle-stage #battleCompactInfo h3{font-size:1rem;margin:0 0 4px;color:#f8f3de}
+#battle.is-battle-stage #battleCompactInfo :is(.battle-detail,.battle-idle-details){margin:0}
+/* One instruction bar. Inventory stays available through the existing item UI. */
+#battle.is-battle-stage .battle-command-title,#battle.is-battle-stage #itemText{display:none}
+#battle.is-battle-stage .battle-command-dock{padding:8px;background:linear-gradient(#102647,#07172e);border-top:0}
+#battle.is-battle-stage .battle-command-pad{grid-template-rows:minmax(88px,auto) minmax(48px,auto);gap:6px}
+#battle.is-battle-stage .battle-command-pad .battle-pad-button{border:2px solid #c9a862!important;border-radius:10px;background:linear-gradient(#d7edff,#adcbe8)!important;color:#102647!important;box-shadow:0 3px 6px #0005}
+#battle.is-battle-stage .battle-command-pad #kokoroLinkButton{background:linear-gradient(#ffe0f2,#ebadd6)!important}
+#battle.is-battle-stage .battle-command-pad #battleItemButton{background:linear-gradient(#e2fbe3,#a9dfbc)!important}
+#battle.is-battle-stage .battle-command-pad .battle-pad-center,#battle.is-battle-stage .battle-command-pad #battleSkillButton{min-height:88px;width:88px;max-width:100%;height:88px;justify-self:center;border-radius:50%!important;color:#fff3b9!important;background:radial-gradient(circle at 35% 20%,#22b8ed,#0861a1 55%,#082d62)!important;border:3px solid #dfc98f!important;box-shadow:0 3px 8px #0008,inset 0 0 0 2px #ffffff45}
+#battle.is-battle-stage .battle-pad-center small{display:none}
+#battle.is-battle-stage .battle-action-status{min-height:36px;padding:6px 8px;line-height:1.3;background:#07172e;border-top:1px solid #c9a862}
+#battle.is-battle-stage #battleStageResults:empty{display:none}
+/* Expanded information/targeting and enlarged text can scroll without clipping. */
+@media(min-width:600px) and (orientation:landscape){
+  #battle.is-battle-stage.active{display:block;width:min(100%,760px)}
+}
+/* A constant command region, with inline skill and targeting choices. */
+#battle.is-battle-stage .battle-command-dock{min-height:184px;box-sizing:border-box}
+#battle.is-battle-stage .battle-command-dock :is(#commands,#multiTargetSelect,#kokoroLinkPanel).battle-inline-panel{position:static;inset:auto;transform:none;width:100%;margin:0;max-height:none;overflow:visible;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;gap:6px}
+#battle.is-battle-stage .battle-command-dock #commands.battle-inline-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
+#battle.is-battle-stage .battle-command-dock #commands.battle-inline-panel .skill-button{min-height:54px;padding:4px 6px;gap:1px;line-height:1.15;display:grid;grid-template-columns:1fr auto;align-items:center}
+#battle.is-battle-stage .battle-command-dock #commands.battle-inline-panel .skill-button>strong{grid-column:1/-1;font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#battle.is-battle-stage .battle-command-dock #commands.battle-inline-panel .skill-button>:is(span,small){font-size:.7rem;line-height:1.2}
+#battle.is-battle-stage .battle-command-dock .battle-inline-panel .battle-panel-back{grid-column:1/-1;min-height:48px;padding:4px 8px;line-height:1.2}
+#battle.is-battle-stage .battle-target-instruction{font-size:.875rem;margin:8px 0;line-height:1.4}
+#battle.is-battle-stage .battle-skill-help{margin:8px 0}
+#battle.is-battle-stage .battle-skill-help>summary{min-height:48px;display:flex;align-items:center;cursor:pointer}
+#battle.is-battle-stage .battle-skill-help>div{padding:8px 0;border-top:1px solid #637e99}
+#battle.is-battle-stage .battle-skill-help :is(small,.battle-choice-detail){display:block}
+/* Name and current/max HP share a single row, followed by a thin bar. */
+#battle.is-battle-stage :is(.battle-combatant,.multi-enemy-copy){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 4px;padding:4px 6px;min-height:48px;box-sizing:border-box;position:relative}
+#battle.is-battle-stage :is(.battle-vitals,.multi-enemy-hp,.multi-enemy-heading,.multi-enemy-heading>div){display:contents}
+#battle.is-battle-stage :is(.battle-nameplate,.multi-enemy-heading h2){grid-row:1;grid-column:1;min-width:0}
+#battle.is-battle-stage :is(.battle-nameplate h2,.multi-enemy-heading h2){font-size:.75rem;line-height:1.4;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#battle.is-battle-stage .battle-hp-line{grid-row:1;grid-column:2;font-size:.7rem;white-space:nowrap;display:flex;flex-wrap:nowrap;line-height:1.5;margin:0}
+#battle.is-battle-stage .battle-hp-line strong{display:none}
+#battle.is-battle-stage :is(.battle-combatant,.multi-enemy-hp) .bar{grid-row:2;grid-column:1/-1;height:5px;margin:3px 0 0}
+#battle.is-battle-stage .battle-status{grid-row:3;grid-column:1/-1;margin:2px 0 0;font-size:.7rem;line-height:1.3}
+#battle.is-battle-stage .battle-status:empty{display:none}
+#battle.is-battle-stage .battle-status .battle-state-details{margin:0;width:100%}
+#battle.is-battle-stage .battle-status .battle-state-details>summary{min-height:24px;padding:0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#battle.is-battle-stage .battle-status .battle-state-details>div{position:absolute;top:100%;left:0;right:0;z-index:60;background:#102647;border:1px solid #c9a862;padding:6px;max-height:100px;overflow:auto;box-shadow:0 4px 8px #0008}
+#battle.is-battle-stage .battle-state-details p{margin:3px 0}
+#battle.is-battle-stage .multi-target-cue,#battle.is-battle-stage .battle-enemy-controls{display:none}
+#battle.is-battle-stage .battle-target-hit{cursor:pointer;touch-action:manipulation}
+#battle.is-battle-stage .battle-target-hit.is-targetable{outline:2px solid #ffdf7b;outline-offset:2px;filter:drop-shadow(0 0 3px #ffdf7b)}
+#battle.is-battle-stage .battle-target-hit:focus-visible{outline:3px solid #fff}
+#battle.is-battle-stage .multi-enemy-card>.battle-stage-slot.battle-target-hit{min-height:48px}
+@media(prefers-reduced-motion:no-preference){#battle.is-battle-stage .battle-target-hit.is-targetable{transition:outline-color .15s}}
+#battle.is-battle-stage .battle-inline-panel [hidden]{display:none!important}
+
+/* Targeting: one short instruction and one row, without a blank command pad.
+   Return the removed 120px to the field; artwork scales stay on the resting
+   compactHeight reference rather than growing with this presentation space. */
+#battle.is-battle-stage:has(#multiTargetSelect.is-enemy-target:not(.hidden)) .battle-command-dock{min-height:64px}
+#battle.is-battle-stage:has(#multiTargetSelect.is-enemy-target:not(.hidden)) .battle-arena{height:calc(var(--battle-art-height,440px) + 120px)}
+#battle.is-battle-stage .battle-command-dock #multiTargetSelect.battle-inline-panel.is-enemy-target{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
+#battle.is-battle-stage .battle-command-dock #multiTargetSelect.battle-inline-panel.is-enemy-target .battle-panel-back{grid-column:1;grid-row:1;width:auto;min-height:48px;padding:4px 8px;white-space:nowrap;font-size:.875rem}
+#battle.is-battle-stage .battle-target-skill{grid-column:2;grid-row:1;min-width:0;font-size:.875rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+#battle.is-battle-stage #battleCompactTools>details>summary{white-space:nowrap;font-size:.8rem;min-height:40px;padding:4px 8px}
+#battle.is-battle-stage .battle-history-limit{margin:4px 8px;font-size:.8rem;color:#b9c9dc}

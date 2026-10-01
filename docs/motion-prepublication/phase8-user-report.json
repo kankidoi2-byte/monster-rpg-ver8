@@ -1,0 +1,11 @@
+{
+  "reportedAt": "2026-09-27T10:44:31+09:00",
+  "source": "user report in current conversation",
+  "scope": "Previously instructed Android 1-versus-3 same volmoog v18 scenarios",
+  "result": "No particular problems reported",
+  "browserRaw": "〇〇",
+  "browser": null,
+  "deviceModel": null,
+  "metrics": null,
+  "decision": "Proceed with bounded candidate acceptance; retain default limit 1. Not universal performance or all-species acceptance."
+}

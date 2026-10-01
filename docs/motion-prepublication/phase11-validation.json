@@ -1,0 +1,16 @@
+{
+  "command": "npm run check (including postcheck)",
+  "exitCode": 0,
+  "logSha256": "bffd85fd37dd2b38c45011113284f10dfafd771dda2d8763ab8b48b727eae7b7",
+  "reviewTests": [
+    "test-motion-asset-review-dom.mjs: PASS",
+    "test-motion-map-review-dom.mjs: 19 maps PASS"
+  ],
+  "gameRuntimeChanged": false,
+  "newBrowserTest": false,
+  "newAndroidEvidence": "user report only: phase8-user-report.json",
+  "final50SpeciesGate": "pending",
+  "publication": "forbidden",
+  "historicalSnapshot": true,
+  "currentStatusReport": "phase-e/final-review/validation.json"
+}

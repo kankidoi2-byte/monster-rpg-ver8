@@ -15,6 +15,7 @@ function setMultiBattleLayout(active) {
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   const battleScreen = document.getElementById('battle');
   if (battleScreen) battleScreen.classList.toggle('is-multi-battle', !!active);
+  if(typeof syncSingleBattleStage==='function')syncSingleBattleStage();
 }
 
 function createMultiEnemy(mon, factionId) {
@@ -177,7 +178,9 @@ function chooseMultiBattleTarget(moveIndex) {
   multiBattle.enemies.forEach(entry=>{entry.detailsOpen=false;});
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
-  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>光っている敵の画像をタップ</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.mon.name}を狙う</button>`).join('')}<button onclick="cancelMultiBattleTarget()" class="secondary-button">やめる</button>`;
+  const chosenMove=getEquippedMovesForInstance(activeInstance)[moveIndex]||['通常攻撃',24,'normal'];
+  const selectionText=typeof battleUiEscape==='function'?`選択中：${battleUiEscape(chosenMove[0])} / 効果の対象：${battleUiMoveTarget(chosenMove)}。${battleUiMoveTarget(chosenMove)==='自分'?'敵の選択にかかわらず自分へ発動します。':''}`:'';
+  picker.innerHTML=`<p><b>攻撃対象を選択</b><span>${selectionText}</span><span>敵A・敵Bの名前とHPを確認して選択</span></p>${living.map(entry=>`<button onclick="startMultiBattleTurn('${entry.id}')">${entry.id==='enemy_a'?'敵A':'敵B'}：${entry.mon.name}（HP ${entry.hp} / ${entry.maxHp}）を狙う</button>`).join('')}<button onclick="battleUiBack()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
   updateMultiBattleView();
 }
@@ -185,6 +188,9 @@ function cancelMultiBattleTarget(){ if(!multiBattle)return; multiBattle.pendingM
 
 function startMultiBattleTurn(targetId) {
   if (busy || multiBattle?.pendingMoveIndex===null || multiBattle?.pendingMoveIndex===undefined) return;
+  if(typeof battleUiCanAct==='function'&&!battleUiCanAct())return;
+  const selected=multiEnemy(targetId);
+  if(!selected?.alive||selected.hp<=0){chooseMultiBattleTarget(multiBattle.pendingMoveIndex);return;}
   const moveIndex=multiBattle.pendingMoveIndex; multiBattle.pendingMoveIndex=null;
   document.getElementById('multiTargetSelect').classList.add('hidden'); busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState(); startBattleTurn();
   const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);
@@ -358,7 +364,7 @@ function winMultiBattle(){
   msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',multi:true,enemies:multiBattle.enemies.map(entry=>entry.mon)});if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();if(typeof recordWorldMapVictory==='function')recordWorldMapVictory();saveGame();
   document.getElementById('log').innerHTML=msg;
   showBattleOutcome({kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`});
-  renderMultiContractPanel();renderParty();setTimeout(processNextEvolution,300);
+  renderMultiContractPanel();renderParty(); // Queued evolution opens afterBattleNext.
 }
 
 function renderMultiContractPanel(){

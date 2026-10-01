@@ -1,0 +1,1447 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phase D・50体の体格確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif;height:100dvh;display:flex;flex-direction:column}p{padding:8px;margin:0;flex:none}#loadStatus:empty{display:none}iframe{width:100%;height:100%;min-height:0;flex:1;border:0}</style><p>採用サイズ：★1 35〜45%（スライム30%）・★2 50%・★3 75%・★4 100%・★5 120%。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="Phase D・50体の体格確認" sandbox="allow-scripts allow-same-origin" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;ja&quot;&gt;
+&lt;head&gt;&lt;base href=&quot;../../&quot;&gt;&lt;script&gt;for(const name of ['localStorage','sessionStorage']){
+ const data=new Map();Object.defineProperty(window,name,{value:{
+ getItem:k=&gt;data.get(String(k))??null,setItem:(k,v)=&gt;data.set(String(k),String(v)),
+ removeItem:k=&gt;data.delete(String(k)),clear:()=&gt;data.clear(),key:i=&gt;[...data.keys()][i]??null,
+ get length(){return data.size;}}});}&lt;/script&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;モンスターバトル Ver8.0&lt;/title&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;data:,&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/character-gacha.css?v=character-gacha-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/world-map.css?v=world-map-3-consistency&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/style.css?v=mobile-load-phase2-1-lumina-alchemy-wait-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/ui-redesign.css?v=kokoro-link-scaling-1-unified-gacha-navigation-1-kokoro-link-animation-3-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-request-layout-1-dev-tools-phase9-grassland-pyramid-1-skill-gacha-presentation-2-prologue-story-mode-1-story-hub-2-chapter-banner-1-favorite-home-1-favorite-frame-1-ornate-portrait-1-immersive-home-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-battle-readability-1-skill-loadout-status-1-map-dex-full-art-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/contract-animation.css?v=contract-animation-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/tutorial.css?v=prologue-stella-intro-1-prologue-lumina-alchemy-1-prologue-comprehensive-1-prologue-mobile-dex-elna-1-prologue-readable-panel-1-prologue-ui-guide-portrait-1-prologue-mobile-clarity-1-prologue-stella-skill-action-1-tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-dialogue-pages-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-galdra-motion-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-stage.css?v=phase3b-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-ui.css?v=phase3c-1&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-idle-media.css?v=phase-b-1-phase-d-fit-1-phase-d-size-2-battle-tidy-7&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/battle-viewport.css?v=battle-tidy-7-battle-tutorial-ui-1&quot;&gt;
+&lt;/head&gt;
+&lt;body class=&quot;title-mode&quot;&gt;
+&lt;div id=&quot;bossCautionOverlay&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div class=&quot;caution-frame&quot;&gt;
+    &lt;div class=&quot;caution-main&quot;&gt;CAUTION!&lt;/div&gt;
+    &lt;div class=&quot;caution-sub&quot;&gt;DANGEROUS ENEMY DETECTED&lt;/div&gt;
+    &lt;div id=&quot;cautionEnemyName&quot; class=&quot;caution-enemy&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;cautionBossClass&quot; class=&quot;caution-class&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;!-- Ver8.0 完成版 専用タイトル画面（Ver7.6構造維持） --&gt;
+&lt;!--
+  タイトルロゴとTouch to Startは、初期読み込みを軽くするためWebP画像として外部化しています。
+--&gt;
+
+&lt;div id=&quot;titleScreen&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-label=&quot;ゲームを開始&quot;&gt;
+  &lt;div id=&quot;titleBg&quot; class=&quot;title-bg&quot;&gt;&lt;/div&gt;
+  &lt;img id=&quot;titleMonster&quot; class=&quot;title-monster&quot; alt=&quot;&quot; hidden&gt;
+  &lt;div class=&quot;title-vignette&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;title-content&quot;&gt;
+    &lt;img class=&quot;title-logo&quot; src=&quot;images/ui/title_logo_mobile_v1.webp&quot; alt=&quot;モンスターバトル&quot; width=&quot;1024&quot; height=&quot;683&quot; fetchpriority=&quot;high&quot; decoding=&quot;async&quot;&gt;
+    &lt;div class=&quot;title-spacer&quot;&gt;&lt;/div&gt;
+    &lt;img class=&quot;title-touch&quot; src=&quot;images/ui/touch_to_start_mobile_v1.webp&quot; alt=&quot;Touch to Start&quot; width=&quot;768&quot; height=&quot;273&quot; fetchpriority=&quot;high&quot; decoding=&quot;async&quot;&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;titleSceneName&quot; class=&quot;title-scene-name&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;title-version&quot;&gt;Ver8.0&lt;/div&gt;
+  &lt;div class=&quot;title-skip-hint&quot;&gt;画面をタップ&lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;header class=&quot;app-topbar&quot;&gt;
+  &lt;button type=&quot;button&quot; class=&quot;contractor-rank&quot; onclick=&quot;showContractorRank()&quot; aria-label=&quot;契約者Rankの詳細を開く&quot;&gt;&lt;span&gt;契約者ランク&lt;/span&gt;&lt;strong id=&quot;contractorRankView&quot;&gt;Rank 1&lt;/strong&gt;&lt;/button&gt;
+  &lt;div class=&quot;app-brand&quot;&gt;MONSTER BATTLE&lt;/div&gt;
+  &lt;div class=&quot;app-resource&quot; aria-label=&quot;所持コイン&quot;&gt;&lt;span&gt;●&lt;/span&gt;&lt;strong id=&quot;appCoinView&quot;&gt;0&lt;/strong&gt;&lt;/div&gt;
+&lt;/header&gt;
+
+&lt;!-- ホーム --&gt;
+&lt;section id=&quot;home&quot; class=&quot;screen active&quot;&gt;
+  &lt;div class=&quot;home-welcome&quot;&gt;
+    &lt;p class=&quot;ui-eyebrow&quot;&gt;MY HOME&lt;/p&gt;
+    &lt;h1&gt;冒険の拠点&lt;/h1&gt;
+&lt;section id=&quot;homeNoticePreview&quot; class=&quot;home-notice-preview&quot; aria-label=&quot;最新のお知らせ&quot;&gt;&lt;/section&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;homeFavoriteStage&quot; class=&quot;home-favorite-stage&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;home-story-row&quot;&gt;
+  &lt;button id=&quot;homeAdventureButton&quot; class=&quot;home-adventure&quot; onclick=&quot;openHomeAdventure()&quot;&gt;
+    &lt;span class=&quot;home-story-symbol&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;svg viewBox=&quot;0 0 64 52&quot; fill=&quot;none&quot;&gt;&lt;path d=&quot;M32 12C23 6 13 6 4 9v34c10-3 19-2 28 4 9-6 18-7 28-4V9c-9-3-19-3-28 3Z&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;3&quot; stroke-linejoin=&quot;round&quot;/&gt;&lt;path d=&quot;M32 12v35M12 18c5-1 9 0 13 2m-13 7c5-1 9 0 13 2m14-9c4-2 8-3 13-2m-13 11c4-2 8-3 13-2&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/svg&gt;
+    &lt;/span&gt;
+    &lt;span class=&quot;home-adventure-shade&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;home-adventure-copy&quot;&gt;
+      &lt;small id=&quot;homeAdventureKicker&quot;&gt;メインストーリー&lt;/small&gt;
+      &lt;strong id=&quot;homeAdventureTitle&quot;&gt;ストーリー&lt;/strong&gt;
+      &lt;span id=&quot;homeAdventureSummary&quot;&gt;グノーシスの声をたどり、物語を始める&lt;/span&gt;
+    &lt;/span&gt;
+    &lt;span id=&quot;homeAdventureAction&quot; class=&quot;home-adventure-action&quot;&gt;物語を進める ›&lt;/span&gt;
+  &lt;/button&gt;
+  &lt;section id=&quot;homeExpeditionPreview&quot; class=&quot;home-expedition-card&quot;&gt;&lt;/section&gt;
+  &lt;/div&gt;
+  &lt;section class=&quot;home-block&quot; aria-labelledby=&quot;homePartyTitle&quot;&gt;
+    &lt;div class=&quot;ui-section-heading&quot;&gt;
+      &lt;div&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;CURRENT PARTY&lt;/span&gt;&lt;h2 id=&quot;homePartyTitle&quot;&gt;現在のパーティー&lt;/h2&gt;&lt;/div&gt;
+      &lt;button id=&quot;homePartyEditButton&quot; class=&quot;ui-text-button&quot; onclick=&quot;show('partySet')&quot;&gt;編成&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;homePartyPreview&quot; class=&quot;home-party-preview&quot;&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+&lt;/section&gt;
+
+&lt;section id=&quot;homeFavoriteSelect&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('home')&quot;&gt;‹ ホーム&lt;/button&gt;&lt;h1&gt;お気に入りを選ぶ&lt;/h1&gt;&lt;p&gt;ホームに飾る仲間を選んでください。パーティーの編成は変わりません。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;homeFavoriteOptions&quot; class=&quot;home-favorite-options&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- ストーリーモード --&gt;
+&lt;section id=&quot;storyMode&quot; class=&quot;screen story-mode-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading story-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('home')&quot;&gt;‹ ホーム&lt;/button&gt;&lt;h1&gt;ストーリー&lt;/h1&gt;&lt;p&gt;読みたい物語を選んでください。&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;story-category-tabs&quot; role=&quot;group&quot; aria-label=&quot;物語の種類&quot;&gt;
+    &lt;button id=&quot;storyCategory-main&quot; type=&quot;button&quot; aria-pressed=&quot;true&quot; aria-controls=&quot;storyPanel-main&quot; onclick=&quot;selectStoryCategory('main')&quot;&gt;メイン&lt;/button&gt;
+    &lt;button id=&quot;storyCategory-character&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; aria-controls=&quot;storyPanel-character&quot; onclick=&quot;selectStoryCategory('character')&quot;&gt;キャラクター&lt;/button&gt;
+    &lt;button id=&quot;storyCategory-side&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; aria-controls=&quot;storyPanel-side&quot; onclick=&quot;selectStoryCategory('side')&quot;&gt;サイド&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;section id=&quot;storyPanel-main&quot; aria-label=&quot;メインストーリー&quot;&gt;
+    &lt;details id=&quot;storyPrologueChapter&quot; class=&quot;story-chapter&quot;&gt;
+      &lt;summary class=&quot;story-chapter-banner&quot;&gt;
+        &lt;span class=&quot;story-chapter-copy&quot;&gt;&lt;small&gt;MAIN STORY&lt;/small&gt;&lt;strong&gt;序章&lt;/strong&gt;&lt;span id=&quot;storyChapterProgress&quot;&gt;&lt;/span&gt;&lt;/span&gt;
+        &lt;span class=&quot;story-chapter-toggle&quot; aria-hidden=&quot;true&quot;&gt;&lt;span class=&quot;chapter-open-label&quot;&gt;各話を見る&lt;/span&gt;&lt;span class=&quot;chapter-close-label&quot;&gt;閉じる&lt;/span&gt;⌄&lt;/span&gt;
+      &lt;/summary&gt;
+      &lt;div class=&quot;story-chapter-episodes&quot;&gt;
+    &lt;section id=&quot;storyContinueCard&quot; class=&quot;story-continue-card&quot; aria-live=&quot;polite&quot;&gt;&lt;/section&gt;
+    &lt;div id=&quot;storyEpisodeList&quot; class=&quot;story-episode-list&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+    &lt;article class=&quot;story-coming-soon&quot; aria-label=&quot;第1章は準備中です&quot;&gt;&lt;span&gt;準備中&lt;/span&gt;&lt;div&gt;&lt;small&gt;メインストーリー&lt;/small&gt;&lt;h2&gt;第1章&lt;/h2&gt;&lt;p&gt;序章クリア後の物語は、今後追加されます。&lt;/p&gt;&lt;/div&gt;&lt;/article&gt;
+  &lt;/section&gt;
+  &lt;section id=&quot;storyPanel-character&quot; class=&quot;story-empty-state&quot; aria-label=&quot;キャラクターストーリー&quot; hidden&gt;&lt;span aria-hidden=&quot;true&quot;&gt;♙&lt;/span&gt;&lt;h2&gt;キャラクターストーリー&lt;/h2&gt;&lt;p&gt;仲間たちの過去や想いをたどる物語。&lt;/p&gt;&lt;small&gt;物語は今後追加されます。&lt;/small&gt;&lt;/section&gt;
+  &lt;section id=&quot;storyPanel-side&quot; class=&quot;story-empty-state&quot; aria-label=&quot;サイドストーリー&quot; hidden&gt;&lt;span aria-hidden=&quot;true&quot;&gt;✧&lt;/span&gt;&lt;h2&gt;サイドストーリー&lt;/h2&gt;&lt;p&gt;世界の背景や、旅のかたわらに紡がれる物語。&lt;/p&gt;&lt;small&gt;物語は今後追加されます。&lt;/small&gt;&lt;/section&gt;
+&lt;/section&gt;
+
+&lt;!-- 育成ハブ --&gt;
+&lt;section id=&quot;growthHub&quot; class=&quot;screen ui-hub-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;YOUR MONSTERS&lt;/span&gt;&lt;h1&gt;モンスター&lt;/h1&gt;&lt;p&gt;モンスターを強くする方法を選んでください。&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;monster-section-tabs&quot; role=&quot;group&quot; aria-label=&quot;モンスター管理&quot;&gt;&lt;button type=&quot;button&quot; aria-pressed=&quot;false&quot; onclick=&quot;show('party')&quot;&gt;一覧・編成&lt;/button&gt;&lt;button type=&quot;button&quot; aria-pressed=&quot;true&quot; onclick=&quot;show('growthHub')&quot;&gt;育成&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;ui-hub-grid&quot;&gt;
+    &lt;button id=&quot;growthMonsterButton&quot; onclick=&quot;show('party')&quot;&gt;&lt;span&gt;♙&lt;/span&gt;&lt;strong&gt;モンスター育成&lt;/strong&gt;&lt;small&gt;経験値・技・個体詳細&lt;/small&gt;&lt;/button&gt;
+    &lt;button id=&quot;growthEvolutionButton&quot; onclick=&quot;showFusion()&quot;&gt;&lt;span&gt;✦&lt;/span&gt;&lt;strong&gt;合成・特殊進化&lt;/strong&gt;&lt;small&gt;条件を満たして進化&lt;/small&gt;&lt;/button&gt;
+    &lt;button onclick=&quot;showAlchemy()&quot; aria-label=&quot;錬成を開く&quot;&gt;&lt;span&gt;⚗&lt;/span&gt;&lt;strong&gt;錬核錬成&lt;/strong&gt;&lt;small&gt;素材から新たな個体を生む&lt;/small&gt;&lt;/button&gt;
+    &lt;button id=&quot;growthPartyEditButton&quot; onclick=&quot;show('partySet')&quot;&gt;&lt;span&gt;♜&lt;/span&gt;&lt;strong&gt;パーティー編成&lt;/strong&gt;&lt;small&gt;最大3体を編成&lt;/small&gt;&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- ガチャハブ --&gt;
+&lt;section id=&quot;gachaHub&quot; class=&quot;screen ui-hub-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;GACHA&lt;/span&gt;&lt;h1&gt;ガチャ&lt;/h1&gt;&lt;p&gt;仲間・技・冒険のアイテムを手に入れよう。&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;ui-menu-list gacha-hub-list&quot;&gt;
+    &lt;button onclick=&quot;showItemGacha()&quot;&gt;&lt;span&gt;🎰&lt;/span&gt;&lt;div&gt;&lt;strong&gt;アイテムガチャ&lt;/strong&gt;&lt;small&gt;コインで報酬を抽選&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button onclick=&quot;showCharacterGacha()&quot;&gt;&lt;span&gt;✨&lt;/span&gt;&lt;div&gt;&lt;strong&gt;キャラクターガチャ&lt;/strong&gt;&lt;small&gt;キャラクターを仲間にする&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button onclick=&quot;showSkillGacha()&quot;&gt;&lt;span&gt;🃏&lt;/span&gt;&lt;div&gt;&lt;strong&gt;技ガチャ&lt;/strong&gt;&lt;small&gt;コインで技カードを獲得&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- その他メニュー --&gt;
+&lt;section id=&quot;moreMenu&quot; class=&quot;screen ui-hub-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;MENU&lt;/span&gt;&lt;h1&gt;メニュー&lt;/h1&gt;&lt;p&gt;冒険を支える機能と記録を確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;ui-menu-list&quot;&gt;
+    &lt;button onclick=&quot;showContractorRank()&quot;&gt;&lt;span&gt;🏅&lt;/span&gt;&lt;div&gt;&lt;strong&gt;契約者Rank&lt;/strong&gt;&lt;small id=&quot;contractorRankMenuSummary&quot;&gt;Rankと成長記録を確認&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button onclick=&quot;showContractorTitles()&quot;&gt;&lt;span&gt;🎖️&lt;/span&gt;&lt;div&gt;&lt;strong&gt;称号&lt;/strong&gt;&lt;small id=&quot;contractorTitleMenuSummary&quot;&gt;獲得した称号を装備&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button onclick=&quot;showNotices()&quot;&gt;&lt;span&gt;📢&lt;/span&gt;&lt;div&gt;&lt;strong&gt;お知らせ &lt;i class=&quot;notice-menu-dot&quot; data-notice-unread aria-label=&quot;未読あり&quot;&gt;&lt;/i&gt;&lt;/strong&gt;&lt;small&gt;更新情報と重要なお知らせ&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button type=&quot;button&quot; id=&quot;englishStudyMenuButton&quot; onclick=&quot;location.href='english/'&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;🔤&lt;/span&gt;&lt;div&gt;&lt;strong&gt;英語学習&lt;/strong&gt;&lt;small&gt;毎日の3単語・確認問題・復習&lt;/small&gt;&lt;/div&gt;&lt;b aria-hidden=&quot;true&quot;&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button id=&quot;expeditionNav&quot; onclick=&quot;showExpedition()&quot;&gt;&lt;span&gt;🧭&lt;/span&gt;&lt;div&gt;&lt;strong&gt;遠征&lt;/strong&gt;&lt;small&gt;控えのモンスターを派遣&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button onclick=&quot;showShop()&quot;&gt;&lt;span&gt;🛒&lt;/span&gt;&lt;div&gt;&lt;strong&gt;ショップ&lt;/strong&gt;&lt;small&gt;アイテムを購入&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button id=&quot;homeDexButton&quot; onclick=&quot;show('dexHub')&quot;&gt;&lt;span&gt;📚&lt;/span&gt;&lt;div&gt;&lt;strong&gt;図鑑&lt;/strong&gt;&lt;small&gt;モンスター・人物・マップ・アイテムの記録&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button id=&quot;typeChartButton&quot; onclick=&quot;showTypeChart()&quot;&gt;&lt;span&gt;🌐&lt;/span&gt;&lt;div&gt;&lt;strong&gt;属性相性&lt;/strong&gt;&lt;small&gt;有利・不利を確認&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button id=&quot;tutorialMenuButton&quot; onclick=&quot;openTutorialFromMenu()&quot; hidden&gt;&lt;span&gt;?&lt;/span&gt;&lt;div&gt;&lt;strong&gt;チュートリアルを続ける&lt;/strong&gt;&lt;small id=&quot;tutorialMenuSummary&quot;&gt;中断したところから再開&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+    &lt;button id=&quot;diagnosticsMenuButton&quot; onclick=&quot;showDiagnosticsScreen()&quot;&gt;&lt;span&gt;🩺&lt;/span&gt;&lt;div&gt;&lt;strong&gt;診断&lt;/strong&gt;&lt;small&gt;ゲームと端末の状態を確認&lt;/small&gt;&lt;/div&gt;&lt;b&gt;›&lt;/b&gt;&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;button class=&quot;ui-danger-button&quot; onclick=&quot;resetSave()&quot;&gt;セーブデータをリセット&lt;/button&gt;
+&lt;/section&gt;
+
+&lt;!-- 契約者Rank --&gt;
+&lt;section id=&quot;contractorRank&quot; class=&quot;screen contractor-rank-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('moreMenu')&quot;&gt;‹ メニュー&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;CONTRACTOR RANK&lt;/span&gt;&lt;h1&gt;契約者Rank&lt;/h1&gt;&lt;p&gt;冒険全体の歩みを示す記録です。機能制限や能力補正はありません。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;contractorRankContent&quot; class=&quot;contractor-rank-content&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 契約者Rank報酬 --&gt;
+&lt;section id=&quot;contractorRankRewards&quot; class=&quot;screen contractor-reward-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;showContractorRank()&quot;&gt;‹ 契約者Rank&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;RANK REWARDS&lt;/span&gt;&lt;h1&gt;Rank報酬&lt;/h1&gt;&lt;p&gt;到達したRankの報酬を一度だけ受け取れます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;contractorRewardContent&quot; class=&quot;contractor-reward-content&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 称号 --&gt;
+&lt;section id=&quot;contractorTitles&quot; class=&quot;screen contractor-title-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('moreMenu')&quot;&gt;‹ メニュー&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;TITLES&lt;/span&gt;&lt;h1&gt;称号&lt;/h1&gt;&lt;p&gt;獲得した称号から1つを選んで装備できます。称号による能力補正はありません。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;contractorTitleContent&quot; class=&quot;contractor-title-content&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- お知らせ --&gt;
+&lt;section id=&quot;notices&quot; class=&quot;screen notice-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;NEWS&lt;/span&gt;&lt;h1&gt;お知らせ&lt;/h1&gt;&lt;p&gt;ゲームの主な更新内容と重要な情報を確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;noticeList&quot; class=&quot;notice-list&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;diagnosticsScreen&quot; class=&quot;screen diagnostics-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('moreMenu')&quot;&gt;‹ メニュー&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;DIAGNOSTICS&lt;/span&gt;&lt;h1&gt;診断&lt;/h1&gt;&lt;p&gt;ゲーム、端末、セーブ、各機能の現在状態を安全な要約で確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;diagnostics-toolbar&quot; role=&quot;group&quot; aria-label=&quot;診断の操作&quot;&gt;&lt;button type=&quot;button&quot; onclick=&quot;refreshDiagnosticsScreen()&quot;&gt;最新の状態へ更新&lt;/button&gt;&lt;button type=&quot;button&quot; onclick=&quot;copyDiagnosticSummary()&quot;&gt;要約をコピー&lt;/button&gt;&lt;button type=&quot;button&quot; onclick=&quot;saveDiagnosticJson()&quot;&gt;JSONを保存&lt;/button&gt;&lt;button id=&quot;diagnosticsShareButton&quot; type=&quot;button&quot; onclick=&quot;shareDiagnosticSummary()&quot;&gt;共有&lt;/button&gt;&lt;/div&gt;\n  &lt;p class=&quot;diagnostics-export-note&quot;&gt;操作したときだけコピー・保存・OSの共有画面を開きます。共有先への送信は自動では行いません。&lt;/p&gt;\n  &lt;p id=&quot;diagnosticsActionStatus&quot; class=&quot;diagnostics-action-status&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+  &lt;div id=&quot;diagnosticsContent&quot; class=&quot;diagnostics-content&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 遠征 --&gt;
+&lt;section id=&quot;expedition&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;EXPEDITION&lt;/span&gt;&lt;h1&gt;遠征&lt;/h1&gt;&lt;p&gt;待機中のモンスターを派遣し、バトル勝利で探索を進めます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;expeditionContent&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 進化画面 --&gt;
+&lt;section id=&quot;evolution&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel&quot;&gt;
+    &lt;h1&gt;✨ 進化の予感……！&lt;/h1&gt;
+    &lt;div id=&quot;evoVisual&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+    &lt;h2 id=&quot;evoQuestion&quot;&gt;&lt;/h2&gt;
+    &lt;div id=&quot;evoChoices&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- パーティー設定 --&gt;
+&lt;section id=&quot;partySet&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;PARTY EDIT&lt;/span&gt;&lt;h1&gt;パーティー編成&lt;/h1&gt;&lt;p&gt;最大3体。画像を見ながら冒険へ連れていく仲間を選べます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;partyCurrentCard&quot; class=&quot;party-current-card&quot;&gt;
+    &lt;h2&gt;現在のパーティー&lt;/h2&gt;
+    &lt;div id=&quot;currentPartyView&quot;&gt;&lt;/div&gt;
+    &lt;button id=&quot;partySetupSaveButton&quot; onclick=&quot;savePartySetup()&quot;&gt;この編成を保存&lt;/button&gt;
+    &lt;button onclick=&quot;startBattleFromParty()&quot;&gt;このパーティーでバトルへ ›&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;partySelectList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 敵選択 --&gt;
+&lt;section id=&quot;battleChoices&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading hunt-choice-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;WORLD MAP&lt;/span&gt;&lt;h1&gt;世界を探索する&lt;/h1&gt;&lt;p&gt;場所を選び、次の冒険へ出発しよう。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;battleChoiceList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 序章依頼・報酬受領 --&gt;
+&lt;section id=&quot;tutorialRequestReport&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;QUEST REPORT&lt;/span&gt;&lt;h1&gt;依頼の報告&lt;/h1&gt;&lt;p&gt;達成した依頼を報告し、報酬を受け取ります。&lt;/p&gt;&lt;/div&gt;
+  &lt;article id=&quot;tutorialRequestReportCard&quot; class=&quot;panel&quot;&gt;
+    &lt;h2&gt;エルナ救援の報告&lt;/h2&gt;
+    &lt;p&gt;草原でスライムに囲まれていたエルナを救援した。&lt;/p&gt;
+    &lt;div id=&quot;tutorialRequestRewardList&quot; class=&quot;battle-outcome-rewards&quot; aria-label=&quot;依頼報酬&quot;&gt;&lt;/div&gt;
+    &lt;p id=&quot;tutorialRequestRewardStatus&quot; class=&quot;small&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+    &lt;button id=&quot;tutorialRequestClaimButton&quot; onclick=&quot;claimTutorialAlchemySupplyReward()&quot;&gt;報酬を受け取る&lt;/button&gt;
+  &lt;/article&gt;
+&lt;/section&gt;
+
+&lt;!-- ステラから受け取る序章技カード --&gt;
+&lt;section id=&quot;tutorialStellaCard&quot; class=&quot;screen tutorial-stella-card-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;SKILL CARD GIFT&lt;/span&gt;&lt;h1&gt;ステラからの技カード&lt;/h1&gt;&lt;p&gt;受け取ったカードを確認して、エルナの契約体へ装備します。&lt;/p&gt;&lt;/div&gt;
+  &lt;article class=&quot;panel tutorial-stella-card-panel&quot;&gt;
+    &lt;div id=&quot;tutorialStellaSkillCardVisual&quot; aria-label=&quot;受け取った技カード&quot;&gt;&lt;/div&gt;
+    &lt;p id=&quot;tutorialStellaSkillCardStatus&quot; class=&quot;small&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+    &lt;button id=&quot;tutorialStellaSkillEditButton&quot; onclick=&quot;openTutorialStellaSkillEdit()&quot;&gt;エルナの技編集を開く&lt;/button&gt;
+  &lt;/article&gt;
+&lt;/section&gt;
+
+&lt;!-- アイテム選択 --&gt;
+&lt;section id=&quot;battleItemSelect&quot; class=&quot;screen&quot;&gt;
+  &lt;h1&gt;🎒 アイテム選択&lt;/h1&gt;
+  &lt;p class=&quot;small&quot;&gt;回復薬や強化薬など、戦闘中に使う道具を選んでください。契約書は勝利後に使用できます。&lt;/p&gt;
+  &lt;div id=&quot;battleItemList&quot;&gt;&lt;/div&gt;
+  &lt;button id=&quot;battleItemBack&quot; onclick=&quot;show('battle')&quot; style=&quot;margin-top:12px;background:linear-gradient(135deg,#374151,#4b5563)&quot;&gt;← 戻る&lt;/button&gt;
+&lt;/section&gt;
+
+&lt;!-- バトル --&gt;
+
+&lt;section id=&quot;contractConfirm&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel&quot;&gt;
+    &lt;h1&gt;📜 契約書&lt;/h1&gt;
+    &lt;p id=&quot;contractConfirmText&quot;&gt;契約書を使用しますか？&lt;/p&gt;
+    &lt;button id=&quot;contractConfirmAcceptButton&quot; onclick=&quot;useContractScrollConfirmed()&quot;&gt;はい&lt;/button&gt;
+    &lt;button onclick=&quot;show('battle')&quot; style=&quot;background:linear-gradient(135deg,#374151,#4b5563)&quot;&gt;いいえ&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;section id=&quot;battle&quot; class=&quot;screen battle-screen&quot;&gt;
+  &lt;div id=&quot;battleMapBanner&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;arena battle-arena&quot;&gt;
+    &lt;div class=&quot;box battle-combatant battle-player&quot; id=&quot;singlePlayerBox&quot;&gt;
+      &lt;div class=&quot;battle-nameplate&quot;&gt;&lt;span class=&quot;battle-side-label&quot;&gt;YOUR MONSTER&lt;/span&gt;&lt;h2 id=&quot;pName&quot;&gt;&lt;/h2&gt;&lt;/div&gt;
+      &lt;div id=&quot;pVis&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;battle-vitals&quot;&gt;
+        &lt;div class=&quot;battle-hp-line&quot;&gt;&lt;strong&gt;HP&lt;/strong&gt;&lt;span id=&quot;pHpText&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;bar&quot;&gt;&lt;div id=&quot;pHpTrail&quot; class=&quot;hp-trail&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;&lt;div id=&quot;pHpBar&quot; class=&quot;hp&quot; role=&quot;progressbar&quot; aria-label=&quot;味方のHP&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div id=&quot;pBattleStatus&quot; class=&quot;battle-status&quot; aria-label=&quot;味方の有効状態&quot;&gt;&lt;/div&gt;&lt;details class=&quot;battle-detail&quot;&gt;&lt;summary&gt;能力・成長&lt;/summary&gt;&lt;p id=&quot;pInfo&quot; class=&quot;small&quot;&gt;&lt;/p&gt;&lt;div class=&quot;bar battle-exp&quot;&gt;&lt;div id=&quot;pExpBar&quot; class=&quot;exp&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;p id=&quot;pExpText&quot; class=&quot;small&quot;&gt;&lt;/p&gt;&lt;/details&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;battle-versus&quot; aria-hidden=&quot;true&quot;&gt;VS&lt;/div&gt;
+    &lt;div class=&quot;box battle-combatant battle-enemy&quot; id=&quot;singleEnemyBox&quot;&gt;
+      &lt;div class=&quot;battle-nameplate&quot;&gt;&lt;span class=&quot;battle-side-label&quot;&gt;ENEMY&lt;/span&gt;&lt;h2 id=&quot;eName&quot;&gt;&lt;/h2&gt;&lt;/div&gt;
+      &lt;div id=&quot;eVis&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;battle-vitals&quot;&gt;
+        &lt;div class=&quot;battle-hp-line&quot;&gt;&lt;strong&gt;HP&lt;/strong&gt;&lt;span id=&quot;eHpText&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;bar&quot;&gt;&lt;div id=&quot;eHpTrail&quot; class=&quot;hp-trail&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;&lt;div id=&quot;eHpBar&quot; class=&quot;hp&quot; role=&quot;progressbar&quot; aria-label=&quot;敵のHP&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div id=&quot;eBattleStatus&quot; class=&quot;battle-status&quot; aria-label=&quot;敵の有効状態&quot;&gt;&lt;/div&gt;&lt;details class=&quot;battle-detail&quot;&gt;&lt;summary&gt;能力を見る&lt;/summary&gt;&lt;p id=&quot;eInfo&quot; class=&quot;small&quot;&gt;&lt;/p&gt;&lt;/details&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;battleActionStatus&quot; class=&quot;battle-action-status&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;技を選んでください&lt;/div&gt;
+  &lt;div id=&quot;battleStageResults&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+  &lt;details class=&quot;battle-log-panel&quot;&gt;&lt;summary&gt;戦闘履歴 &lt;span id=&quot;battleHistoryCount&quot;&gt;0件&lt;/span&gt;&lt;/summary&gt;&lt;ol id=&quot;battleHistory&quot; class=&quot;battle-history&quot;&gt;&lt;/ol&gt;&lt;/details&gt;
+  &lt;div id=&quot;log&quot; class=&quot;log hidden&quot;&gt;&lt;/div&gt;
+  &lt;section id=&quot;battleOutcome&quot; class=&quot;battle-outcome hidden&quot; aria-live=&quot;assertive&quot; aria-labelledby=&quot;battleOutcomeTitle&quot;&gt;
+    &lt;div id=&quot;battleOutcomeIcon&quot; class=&quot;battle-outcome-icon&quot; aria-hidden=&quot;true&quot;&gt;★&lt;/div&gt;
+    &lt;div class=&quot;battle-outcome-copy&quot;&gt;
+      &lt;span id=&quot;battleOutcomeEyebrow&quot;&gt;BATTLE CLEAR&lt;/span&gt;
+      &lt;h2 id=&quot;battleOutcomeTitle&quot;&gt;討伐成功！&lt;/h2&gt;
+      &lt;div id=&quot;battleOutcomeRewards&quot; class=&quot;battle-outcome-rewards&quot;&gt;&lt;/div&gt;
+      &lt;p id=&quot;battleOutcomeNote&quot;&gt;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;battleOutcomeActions&quot; class=&quot;battle-outcome-actions&quot;&gt;&lt;/div&gt;
+    &lt;button id=&quot;next&quot; class=&quot;hidden battle-next-button&quot; onclick=&quot;afterBattleNext()&quot;&gt;次の冒険へ ›&lt;/button&gt;
+  &lt;/section&gt;
+  &lt;div class=&quot;cmd battle-command-dock&quot;&gt;
+    &lt;div class=&quot;battle-command-title&quot;&gt;&lt;span id=&quot;battleInputLabel&quot;&gt;操作可能&lt;/span&gt;&lt;h2 id=&quot;battleCommandTitle&quot;&gt;コマンドを選ぶ&lt;/h2&gt;&lt;/div&gt;
+    &lt;div id=&quot;commands&quot; class=&quot;battle-skill-panel hidden&quot; aria-label=&quot;装備中の技&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;multiTargetSelect&quot; class=&quot;multi-target-select hidden&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;battle-command-pad&quot; aria-label=&quot;バトルコマンド&quot;&gt;
+      &lt;button id=&quot;battleSwitchButton&quot; class=&quot;battle-pad-button battle-pad-up&quot; onclick=&quot;openBattleSwitchPicker()&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;🔄&lt;/span&gt;&lt;strong&gt;交代&lt;/strong&gt;&lt;/button&gt;
+      &lt;button id=&quot;kokoroLinkButton&quot; class=&quot;battle-pad-button battle-pad-left&quot; onclick=&quot;toggleKokoroLinkPanel()&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;💞&lt;/span&gt;&lt;strong&gt;リンク&lt;/strong&gt;&lt;/button&gt;
+      &lt;button id=&quot;battleSkillButton&quot; class=&quot;battle-pad-button battle-pad-center&quot; onclick=&quot;toggleBattleSkillPanel()&quot; aria-expanded=&quot;false&quot; aria-controls=&quot;commands&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;✨&lt;/span&gt;&lt;strong&gt;技&lt;/strong&gt;&lt;small&gt;決定&lt;/small&gt;&lt;/button&gt;
+      &lt;button id=&quot;battleItemButton&quot; class=&quot;battle-pad-button battle-pad-right&quot; onclick=&quot;openBattleItemSelect()&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;🎒&lt;/span&gt;&lt;strong&gt;道具&lt;/strong&gt;&lt;small id=&quot;battleItemBadge&quot; class=&quot;battle-command-badge hidden&quot;&gt;契約可&lt;/small&gt;&lt;/button&gt;
+      &lt;button id=&quot;battleEscapeButton&quot; class=&quot;battle-pad-button battle-pad-down&quot; onclick=&quot;runAway()&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;🏃&lt;/span&gt;&lt;strong&gt;逃走&lt;/strong&gt;&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;kokoroLinkPanel&quot; class=&quot;kokoro-link-panel hidden&quot; role=&quot;dialog&quot; aria-label=&quot;ココロリンク候補&quot;&gt;&lt;/div&gt;
+    &lt;p id=&quot;itemText&quot; class=&quot;small&quot;&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 合成所 --&gt;
+&lt;section id=&quot;fusion&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel ui-feature-panel&quot;&gt;
+    &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;FUSION&lt;/span&gt;&lt;h1&gt;合成所&lt;/h1&gt;&lt;p&gt;モンスターとアイテムを組み合わせて特殊進化させます。&lt;/p&gt;&lt;/div&gt;
+    &lt;p id=&quot;fusionItemText&quot; style=&quot;color:#a78bfa&quot;&gt;&lt;/p&gt;
+    &lt;div id=&quot;fusionList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;fusionLog&quot; class=&quot;log&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 錬成 --&gt;
+&lt;section id=&quot;alchemy&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel alchemy-panel ui-feature-panel&quot;&gt;
+    &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;ALCHEMY&lt;/span&gt;&lt;h1&gt;錬核錬成&lt;/h1&gt;&lt;p&gt;モンスター1体、4種類の素材、コインから新たな個体を生み出します。&lt;/p&gt;&lt;/div&gt;
+    &lt;button onclick=&quot;show('home')&quot; class=&quot;secondary-button alchemy-home-button&quot;&gt;← ホームへ戻る&lt;/button&gt;
+    &lt;div id=&quot;alchemyForm&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;alchemyConfirm&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel alchemy-panel&quot;&gt;
+    &lt;h1&gt;⚠️ 錬成内容の最終確認&lt;/h1&gt;
+    &lt;div id=&quot;alchemyConfirmContent&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;alchemyResult&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel alchemy-panel&quot;&gt;
+    &lt;div id=&quot;alchemyResultContent&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- ショップ --&gt;
+&lt;section id=&quot;shop&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;ITEM SHOP&lt;/span&gt;&lt;h1&gt;アイテムショップ&lt;/h1&gt;&lt;p&gt;冒険と育成に必要なアイテムを購入できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;p class=&quot;ui-coin-balance&quot;&gt;所持コイン &lt;strong id=&quot;coinView&quot;&gt;&lt;/strong&gt;枚&lt;/p&gt;
+  &lt;div id=&quot;shopList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- アイテムガチャ --&gt;
+&lt;section id=&quot;itemGacha&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel ui-feature-panel&quot;&gt;
+    &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('gachaHub')&quot;&gt;‹ ガチャ一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;ITEM DRAW&lt;/span&gt;&lt;h1&gt;アイテムガチャ&lt;/h1&gt;&lt;p&gt;コイン100枚で、回復薬や契約書、育成アイテムを獲得できます。&lt;/p&gt;&lt;/div&gt;
+    &lt;p&gt;所持コイン：&lt;span id=&quot;gachaCoinView&quot;&gt;&lt;/span&gt;枚&lt;/p&gt;
+    &lt;button onclick=&quot;rollItemGacha()&quot; style=&quot;font-size:16px;padding:14px 32px&quot;&gt;🎰 100コインで回す&lt;/button&gt;
+    &lt;div id=&quot;gachaResult&quot; class=&quot;log&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;gachaRateList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;characterGacha&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel ui-feature-panel&quot;&gt;
+    &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('gachaHub')&quot;&gt;‹ ガチャ一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;CHARACTER DRAW&lt;/span&gt;&lt;h1&gt;キャラクターガチャ&lt;/h1&gt;&lt;p&gt;冒険を共にする仲間を召喚しよう。&lt;/p&gt;&lt;/div&gt;
+    &lt;p class=&quot;ui-coin-balance&quot;&gt;所持コイン &lt;strong id=&quot;characterGachaCoinView&quot;&gt;0&lt;/strong&gt;枚&lt;/p&gt;
+    &lt;div class=&quot;skill-gacha-actions&quot;&gt;
+      &lt;button data-character-gacha-count=&quot;1&quot; onclick=&quot;rollCharacterGacha(1)&quot;&gt;1回召喚&lt;br&gt;&lt;small&gt;100コイン&lt;/small&gt;&lt;/button&gt;
+      &lt;button data-character-gacha-count=&quot;10&quot; onclick=&quot;rollCharacterGacha(10)&quot;&gt;10連召喚&lt;br&gt;&lt;small&gt;900コイン&lt;/small&gt;&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;p class=&quot;small&quot;&gt;Lv.1で加入。初入手の形態は自動ロック。同じ形態も別個体で残り、錬成や経験値アイテム＋コインへの変換に使えます。10連のレアリティ保証はありません。&lt;/p&gt;
+    &lt;div id=&quot;characterGachaResult&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+    &lt;details&gt;&lt;summary&gt;排出キャラクター・確率&lt;/summary&gt;&lt;p id=&quot;characterGachaPoolSummary&quot;&gt;&lt;/p&gt;&lt;div id=&quot;characterGachaRateList&quot; class=&quot;character-gacha-grid&quot;&gt;&lt;/div&gt;&lt;/details&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 技ガチャ --&gt;
+&lt;section id=&quot;skillGacha&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel ui-feature-panel skill-gacha-panel&quot;&gt;
+    &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('gachaHub')&quot;&gt;‹ ガチャ一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;SKILL DRAW&lt;/span&gt;&lt;h1&gt;技ガチャ&lt;/h1&gt;&lt;p&gt;技コストがレアリティ。モンスター技とキャラクター技を選んで獲得できます。&lt;/p&gt;&lt;/div&gt;
+    &lt;p class=&quot;ui-coin-balance&quot;&gt;所持コイン &lt;strong id=&quot;skillGachaCoinView&quot;&gt;0&lt;/strong&gt;枚&lt;/p&gt;
+    &lt;div class=&quot;skill-gacha-speed&quot; role=&quot;group&quot; aria-label=&quot;技ガチャの演出速度&quot;&gt;&lt;span&gt;演出速度&lt;/span&gt;&lt;button type=&quot;button&quot; data-skill-gacha-speed=&quot;standard&quot; aria-pressed=&quot;true&quot; onclick=&quot;setSkillGachaPresentationSpeed('standard')&quot;&gt;標準&lt;/button&gt;&lt;button type=&quot;button&quot; data-skill-gacha-speed=&quot;quick&quot; aria-pressed=&quot;false&quot; onclick=&quot;setSkillGachaPresentationSpeed('quick')&quot;&gt;高速&lt;/button&gt;&lt;/div&gt;
+    &lt;div id=&quot;skillGachaRateList&quot; class=&quot;skill-gacha-pools&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;skillGachaPresentation&quot; class=&quot;skill-gacha-presentation&quot; data-tier=&quot;basic&quot; hidden aria-hidden=&quot;true&quot;&gt;
+    &lt;div class=&quot;skill-gacha-presentation-shell&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot; aria-labelledby=&quot;skillGachaPresentationTitle&quot; aria-describedby=&quot;skillGachaPresentationStatus&quot;&gt;
+      &lt;button id=&quot;skillGachaSkipButton&quot; class=&quot;skill-gacha-skip&quot; type=&quot;button&quot; onclick=&quot;skipSkillGachaPresentation()&quot;&gt;スキップ&lt;/button&gt;
+      &lt;div class=&quot;skill-gacha-summon-seal&quot; aria-hidden=&quot;true&quot;&gt;&lt;span&gt;✦&lt;/span&gt;&lt;small&gt;技紋&lt;/small&gt;&lt;/div&gt;
+      &lt;p id=&quot;skillGachaPresentationKind&quot; class=&quot;skill-gacha-presentation-kind&quot;&gt;技カード召喚&lt;/p&gt;
+      &lt;h2 id=&quot;skillGachaPresentationTitle&quot;&gt;技紋の召喚&lt;/h2&gt;
+      &lt;p id=&quot;skillGachaPresentationProphecy&quot; class=&quot;skill-gacha-prophecy&quot;&gt;技紋が空のカードへ宿っていく&lt;/p&gt;
+      &lt;p id=&quot;skillGachaPresentationStatus&quot; class=&quot;skill-gacha-presentation-status&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+      &lt;div id=&quot;skillGachaPresentationCards&quot; class=&quot;skill-gacha-presentation-cards&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;skillGachaCardDetail&quot; class=&quot;skill-gacha-card-detail&quot; role=&quot;region&quot; aria-label=&quot;選択した技の詳細&quot; hidden&gt;&lt;/div&gt;
+      &lt;div id=&quot;skillGachaPresentationActions&quot; class=&quot;skill-gacha-presentation-actions&quot; hidden&gt;
+        &lt;button type=&quot;button&quot; onclick=&quot;openSkillInventoryFromGacha()&quot;&gt;仲間の技を変更&lt;/button&gt;
+        &lt;button id=&quot;skillGachaRepeatButton&quot; type=&quot;button&quot; onclick=&quot;repeatSkillGachaPresentation()&quot;&gt;もう一度&lt;/button&gt;
+        &lt;button type=&quot;button&quot; onclick=&quot;closeSkillGachaPresentation()&quot;&gt;結果を閉じる&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 手持ち --&gt;
+&lt;section id=&quot;party&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;YOUR MONSTERS&lt;/span&gt;&lt;h1&gt;モンスター&lt;/h1&gt;&lt;p&gt;育てる仲間を選び、技や個体情報を確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;monster-section-tabs&quot; role=&quot;group&quot; aria-label=&quot;モンスター管理&quot;&gt;&lt;button type=&quot;button&quot; aria-pressed=&quot;true&quot; onclick=&quot;show('party')&quot;&gt;一覧・編成&lt;/button&gt;&lt;button type=&quot;button&quot; data-nav=&quot;growth&quot; aria-pressed=&quot;false&quot; onclick=&quot;show('growthHub')&quot;&gt;育成&lt;/button&gt;&lt;/div&gt;
+  &lt;button class=&quot;monster-party-button&quot; onclick=&quot;show('partySet')&quot;&gt;パーティーを編成する ›&lt;/button&gt;
+  &lt;div id=&quot;partyList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+
+&lt;/section&gt;
+
+&lt;!-- 技変更 --&gt;
+&lt;section id=&quot;skillEdit&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;panel ui-feature-panel skill-edit-panel&quot;&gt;
+    &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;SKILL DECK&lt;/span&gt;&lt;h1&gt;技カード変更&lt;/h1&gt;&lt;p&gt;コスト上限内で最大3枚。戦い方を短く組み替えられます。&lt;/p&gt;&lt;/div&gt;
+    &lt;div id=&quot;skillEditTarget&quot; aria-label=&quot;編成対象と技の使用状況&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;skillEditCurrent&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+    &lt;h2&gt;所持技カード&lt;/h2&gt;
+    &lt;details class=&quot;skill-filter-panel&quot;&gt;&lt;summary&gt;検索・絞り込み&lt;/summary&gt;
+      &lt;input id=&quot;skillSearchInput&quot; type=&quot;search&quot; placeholder=&quot;技名で検索&quot; oninput=&quot;renderSkillEdit()&quot;&gt;
+      &lt;div class=&quot;skill-filter-controls&quot;&gt;
+        &lt;label class=&quot;small&quot;&gt;属性
+          &lt;select id=&quot;skillTypeFilter&quot; onchange=&quot;renderSkillEdit()&quot; style=&quot;padding:8px;border-radius:10px;border:1px solid #3b4a78;background:#0d1428;color:#e8eaf6&quot;&gt;
+            &lt;option value=&quot;all&quot;&gt;全て&lt;/option&gt;
+            &lt;option value=&quot;fire&quot;&gt;火&lt;/option&gt;
+            &lt;option value=&quot;water&quot;&gt;水&lt;/option&gt;
+            &lt;option value=&quot;thunder&quot;&gt;雷&lt;/option&gt;
+            &lt;option value=&quot;wind&quot;&gt;風&lt;/option&gt;
+            &lt;option value=&quot;grass&quot;&gt;森&lt;/option&gt;
+            &lt;option value=&quot;light&quot;&gt;光&lt;/option&gt;
+            &lt;option value=&quot;dark&quot;&gt;闇&lt;/option&gt;
+            &lt;option value=&quot;star&quot;&gt;星&lt;/option&gt;
+            &lt;option value=&quot;dragon&quot;&gt;竜&lt;/option&gt;
+            &lt;option value=&quot;normal&quot;&gt;無&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/label&gt;
+        &lt;label class=&quot;small&quot;&gt;コスト
+          &lt;select id=&quot;skillCostFilter&quot; onchange=&quot;renderSkillEdit()&quot; style=&quot;padding:8px;border-radius:10px;border:1px solid #3b4a78;background:#0d1428;color:#e8eaf6&quot;&gt;
+            &lt;option value=&quot;all&quot;&gt;全て&lt;/option&gt;
+            &lt;option value=&quot;1&quot;&gt;1&lt;/option&gt;
+            &lt;option value=&quot;2&quot;&gt;2&lt;/option&gt;
+            &lt;option value=&quot;3&quot;&gt;3&lt;/option&gt;
+            &lt;option value=&quot;4&quot;&gt;4&lt;/option&gt;
+            &lt;option value=&quot;5plus&quot;&gt;5以上&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/label&gt;
+        &lt;label class=&quot;small&quot; style=&quot;display:flex;gap:6px;align-items:center&quot;&gt;
+          &lt;input id=&quot;skillEquipableOnly&quot; type=&quot;checkbox&quot; onchange=&quot;renderSkillEdit()&quot;&gt;装備可能のみ
+        &lt;/label&gt;
+        &lt;button onclick=&quot;resetSkillFilters()&quot; style=&quot;background:linear-gradient(135deg,#374151,#4b5563)&quot;&gt;条件リセット&lt;/button&gt;
+      &lt;/div&gt;&lt;/details&gt;
+    &lt;div id=&quot;skillCardList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+    &lt;button onclick=&quot;show('party')&quot; style=&quot;margin-top:12px;background:linear-gradient(135deg,#374151,#4b5563)&quot;&gt;← 手持ちに戻る&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 属性相性 --&gt;
+&lt;section id=&quot;typeChart&quot; class=&quot;screen&quot;&gt;
+  &lt;h1&gt;🌐 属性相性表&lt;/h1&gt;
+  &lt;p class=&quot;small&quot;&gt;水色 = 有利（×1.5）　赤 = 不利（×0.7）　竜は竜同士で×1.2&lt;/p&gt;
+  &lt;div id=&quot;typeChartList&quot; class=&quot;type-chart-section&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- 図鑑 --&gt;
+&lt;section id=&quot;dexHub&quot; class=&quot;screen ui-hub-screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;COLLECTION&lt;/span&gt;&lt;h1&gt;図鑑&lt;/h1&gt;&lt;p&gt;冒険で集めた記録を選んで閲覧できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;dexHubGrid&quot; class=&quot;ui-hub-grid dex-hub-grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;dex&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('dexHub')&quot;&gt;‹ 図鑑一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;MONSTER DEX&lt;/span&gt;&lt;h1&gt;モンスター図鑑&lt;/h1&gt;&lt;p&gt;カードをタップすると出現マップと入手方法を確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;dexDetail&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;dexList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;characterDex&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button id=&quot;characterDexBackButton&quot; class=&quot;ui-back-link&quot; onclick=&quot;show('dexHub')&quot;&gt;‹ 図鑑一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;CHARACTER DEX&lt;/span&gt;&lt;h1&gt;キャラクター図鑑&lt;/h1&gt;&lt;p&gt;仲間となる人物と、その成長形態を確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;characterDexDetail&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;characterDexList&quot; class=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;mapDex&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('dexHub')&quot;&gt;‹ 図鑑一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;MAP DEX&lt;/span&gt;&lt;h1&gt;マップ図鑑&lt;/h1&gt;&lt;p&gt;発見した土地の環境、出現モンスター、特殊な出来事を確認できます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;mapDexDetail&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;mapDexList&quot; class=&quot;map-dex-grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id=&quot;itemDex&quot; class=&quot;screen&quot;&gt;
+  &lt;div class=&quot;ui-page-heading&quot;&gt;&lt;button class=&quot;ui-back-link&quot; onclick=&quot;show('dexHub')&quot;&gt;‹ 図鑑一覧&lt;/button&gt;&lt;span class=&quot;ui-eyebrow&quot;&gt;ITEM DEX&lt;/span&gt;&lt;h1&gt;アイテム図鑑&lt;/h1&gt;&lt;p&gt;入手したアイテムは、使い切った後も記録されます。&lt;/p&gt;&lt;/div&gt;
+  &lt;div id=&quot;itemDexDetail&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;itemDexList&quot; class=&quot;item-dex-grid&quot;&gt;&lt;/div&gt;
+&lt;/section&gt;
+
+&lt;nav class=&quot;app-bottom-nav&quot; aria-label=&quot;主要メニュー&quot;&gt;
+  &lt;button type=&quot;button&quot; data-nav=&quot;home&quot; onclick=&quot;show('home')&quot;&gt;&lt;span&gt;⌂&lt;/span&gt;&lt;small&gt;ホーム&lt;/small&gt;&lt;/button&gt;
+  &lt;button type=&quot;button&quot; data-nav=&quot;monsters&quot; onclick=&quot;show('party')&quot;&gt;&lt;span&gt;♙&lt;/span&gt;&lt;small&gt;モンスター&lt;/small&gt;&lt;/button&gt;
+  &lt;button type=&quot;button&quot; data-nav=&quot;battle&quot; class=&quot;app-battle-nav&quot; onclick=&quot;openBattleHub()&quot;&gt;&lt;span&gt;⚔&lt;/span&gt;&lt;small&gt;バトル&lt;/small&gt;&lt;/button&gt;
+  &lt;button type=&quot;button&quot; data-nav=&quot;gacha&quot; onclick=&quot;show('gachaHub')&quot;&gt;&lt;span&gt;✦&lt;/span&gt;&lt;small&gt;ガチャ&lt;/small&gt;&lt;/button&gt;
+  &lt;button type=&quot;button&quot; data-nav=&quot;more&quot; onclick=&quot;show('moreMenu')&quot;&gt;&lt;span&gt;≡&lt;/span&gt;&lt;small&gt;メニュー&lt;/small&gt;&lt;/button&gt;
+&lt;/nav&gt;
+
+&lt;div id=&quot;tutorialOverlay&quot; class=&quot;tutorial-overlay hidden&quot; aria-hidden=&quot;true&quot;&gt;
+  &lt;div id=&quot;tutorialStoryBackdrop&quot; class=&quot;tutorial-story-backdrop&quot; data-scene=&quot;&quot; aria-hidden=&quot;true&quot; hidden&gt;&lt;/div&gt;
+  &lt;div class=&quot;tutorial-shade tutorial-shade-top&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;tutorial-shade tutorial-shade-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;tutorial-shade tutorial-shade-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;tutorial-shade tutorial-shade-bottom&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;tutorialSpotlight&quot; class=&quot;tutorial-spotlight&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;tutorialArrow&quot; class=&quot;tutorial-arrow&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;tutorialCharacterLayer&quot; class=&quot;tutorial-character-layer&quot; aria-hidden=&quot;true&quot; hidden&gt;
+    &lt;img id=&quot;tutorialCharacterPortrait&quot; src=&quot;&quot; alt=&quot;&quot; decoding=&quot;async&quot; hidden&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;tutorialStoryEffectLayer&quot; class=&quot;tutorial-story-effect-layer&quot; aria-hidden=&quot;true&quot; hidden&gt;
+    &lt;img id=&quot;tutorialStoryEffect&quot; src=&quot;&quot; alt=&quot;&quot; decoding=&quot;async&quot; hidden&gt;
+  &lt;/div&gt;
+  &lt;section id=&quot;tutorialBubble&quot; class=&quot;tutorial-bubble&quot; role=&quot;dialog&quot; aria-modal=&quot;false&quot; aria-labelledby=&quot;tutorialTitle&quot; aria-describedby=&quot;tutorialText&quot; tabindex=&quot;-1&quot;&gt;
+    &lt;div class=&quot;tutorial-bubble-head&quot;&gt;
+      &lt;div&gt;&lt;span id=&quot;tutorialProgressLabel&quot;&gt;GUIDE&lt;/span&gt;&lt;/div&gt;
+      &lt;button type=&quot;button&quot; class=&quot;tutorial-pause&quot; onclick=&quot;pauseTutorial()&quot; aria-label=&quot;閉じて後で再開&quot;&gt;×&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;tutorial-progress&quot; aria-hidden=&quot;true&quot;&gt;&lt;span id=&quot;tutorialProgressBar&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;h2 id=&quot;tutorialTitle&quot;&gt;チュートリアル&lt;/h2&gt;
+    &lt;p id=&quot;tutorialText&quot;&gt;画面上で操作を確認できます。&lt;/p&gt;
+    &lt;div id=&quot;tutorialDialogueChoices&quot; class=&quot;tutorial-dialogue-choices&quot; role=&quot;group&quot; aria-label=&quot;返答を選択&quot; hidden&gt;&lt;/div&gt;
+    &lt;form id=&quot;tutorialNameForm&quot; class=&quot;tutorial-name-form&quot; onsubmit=&quot;return confirmTutorialPlayerName(event)&quot; hidden&gt;
+      &lt;label for=&quot;tutorialPlayerNameInput&quot;&gt;あなたの名前&lt;/label&gt;
+      &lt;input id=&quot;tutorialPlayerNameInput&quot; name=&quot;playerName&quot; type=&quot;text&quot; maxlength=&quot;20&quot; autocomplete=&quot;nickname&quot; enterkeyhint=&quot;done&quot; required&gt;
+      &lt;button type=&quot;submit&quot;&gt;この名前にする&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;div class=&quot;tutorial-actions&quot;&gt;
+      &lt;button id=&quot;tutorialBackButton&quot; type=&quot;button&quot; class=&quot;tutorial-back&quot; onclick=&quot;tutorialPrevious()&quot;&gt;戻る&lt;/button&gt;
+      &lt;button id=&quot;tutorialDialogueSkipButton&quot; type=&quot;button&quot; class=&quot;tutorial-dialogue-skip&quot; onclick=&quot;skipTutorialDialogue()&quot;&gt;会話スキップ&lt;/button&gt;
+      &lt;button id=&quot;tutorialSkipButton&quot; type=&quot;button&quot; class=&quot;tutorial-skip&quot; onclick=&quot;requestTutorialSkip()&quot;&gt;全体スキップ&lt;/button&gt;
+      &lt;button id=&quot;tutorialNextButton&quot; type=&quot;button&quot; class=&quot;tutorial-next&quot; onclick=&quot;tutorialNext()&quot;&gt;次へ&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;contractAnimation&quot; class=&quot;contract-animation hidden&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot; aria-labelledby=&quot;contractAnimationMessage&quot;&gt;
+  &lt;div class=&quot;contract-animation-stage&quot;&gt;
+    &lt;div id=&quot;contractPaper&quot; class=&quot;contract-paper&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;contract-paper-content&quot;&gt;
+        &lt;span class=&quot;contract-paper-kicker&quot;&gt;MONSTER CONTRACT&lt;/span&gt;
+        &lt;strong&gt;契 約 書&lt;/strong&gt;
+        &lt;div class=&quot;contract-paper-rule&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;contract-paper-lines&quot;&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+        &lt;span class=&quot;contract-paper-sign&quot;&gt;契約印&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;svg class=&quot;contract-paw&quot; viewBox=&quot;0 0 160 150&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;ellipse cx=&quot;30&quot; cy=&quot;39&quot; rx=&quot;17&quot; ry=&quot;24&quot; transform=&quot;rotate(-24 30 39)&quot;&gt;&lt;/ellipse&gt;
+        &lt;ellipse cx=&quot;65&quot; cy=&quot;25&quot; rx=&quot;17&quot; ry=&quot;25&quot; transform=&quot;rotate(-8 65 25)&quot;&gt;&lt;/ellipse&gt;
+        &lt;ellipse cx=&quot;101&quot; cy=&quot;27&quot; rx=&quot;17&quot; ry=&quot;25&quot; transform=&quot;rotate(9 101 27)&quot;&gt;&lt;/ellipse&gt;
+        &lt;ellipse cx=&quot;132&quot; cy=&quot;45&quot; rx=&quot;16&quot; ry=&quot;23&quot; transform=&quot;rotate(25 132 45)&quot;&gt;&lt;/ellipse&gt;
+        &lt;path d=&quot;M35 113c0-27 18-54 45-54s48 28 48 55c0 22-18 29-47 29-28 0-46-8-46-30Z&quot;&gt;&lt;/path&gt;
+      &lt;/svg&gt;
+      &lt;span class=&quot;contract-pop&quot; aria-hidden=&quot;true&quot;&gt;ポンッ！&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;p id=&quot;contractAnimationMessage&quot; class=&quot;contract-animation-message&quot;&gt;契約を試みている……&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;contractorRankUpOverlay&quot; class=&quot;contractor-rank-up-overlay hidden&quot; role=&quot;dialog&quot; aria-modal=&quot;true&quot; aria-labelledby=&quot;contractorRankUpTitle&quot;&gt;
+  &lt;div class=&quot;contractor-rank-up-card&quot;&gt;
+    &lt;span class=&quot;contractor-rank-up-kicker&quot;&gt;CONTRACTOR RANK UP&lt;/span&gt;
+    &lt;div class=&quot;contractor-rank-up-emblem&quot; aria-hidden=&quot;true&quot;&gt;✦&lt;/div&gt;
+    &lt;h2 id=&quot;contractorRankUpTitle&quot;&gt;契約者Rankアップ！&lt;/h2&gt;
+    &lt;strong id=&quot;contractorRankUpValue&quot;&gt;Rank 1 → Rank 2&lt;/strong&gt;
+    &lt;div id=&quot;contractorRankUpTitles&quot; class=&quot;contractor-rank-up-titles&quot;&gt;&lt;/div&gt;
+    &lt;button type=&quot;button&quot; onclick=&quot;closeContractorRankUp()&quot;&gt;冒険を続ける&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;js/diagnostics.js?v=dev-tools-phase8&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/data.js?v=skill-taxonomy-1-fixed-hunt-1-elixion-neutral-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-prologue-final-scope-1-map-ecosystem-copy-1-grassland-pyramid-1-all-map-ecosystem-diagrams-1-character-recycle-1-world-map-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-voltax-square-20260921-replacement-skills-20260921&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/bootstrap-guard.js?v=golden-land-release-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/core.js?v=kokoro-link-phase4-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-elixion-neutral-1-replacement-skills-20260921&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/kokoro-link.js?v=kokoro-link-phase5-1-balance-audit-20260908&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/world-events.js?v=world-map-2&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/state.js?v=tutorial-phase1-1-fixed-hunt-1-post-battle-contract-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/save.js?v=skill-inventory-1-fixed-hunt-1-contractor-rank-ui-1-tutorial-phase3b-1-prologue-v2-save-1-prologue-lumina-alchemy-1-dev-tools-phase8-tutorial-replay-retired-1-prologue-story-mode-1-character-recycle-1-world-map-2-favorite-home-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/contractor-rank.js?v=contractor-rank-ui-1-contractor-reward-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/ui.js?v=skill-gacha-1-unified-gacha-navigation-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-stella-intro-1-prologue-expedition-finale-1-prologue-final-scope-1-prologue-story-mode-1-character-gacha-1-favorite-home-1-ornate-portrait-1-immersive-home-1-phase3c-1-phase4a-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/tutorial.js?v=prologue-rescue-stability-1-prologue-elna-contract-1-prologue-home-front-1-prologue-home-back-1-prologue-stella-intro-1-unified-gacha-navigation-1-prologue-stella-mock-1-prologue-lumina-alchemy-1-prologue-expedition-finale-1-prologue-comprehensive-1-prologue-final-scope-1-prologue-evolved-starters-1-prologue-mobile-dex-elna-1-prologue-request-panel-fix-1-prologue-expedition-target-portrait-policy-1-prologue-continuity-1-prologue-mobile-clarity-1-prologue-step-reduction-1-prologue-progress-order-1-prologue-progress-counterless-1-prologue-stella-skill-action-1-prologue-completed-alchemy-recap-1-prologue-existing-expedition-fix-1-dev-tools-phase8-prologue-tutorial-galdra-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1-world-map-2-prologue-world-map-facilities-1-first-play-audit-1-dialogue-pages-1-opening-rescue-1-contract-reward-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-galdra-motion-1-freigal-expedition-1-phase11-compatibility-1-battle-readability-1-skill-loadout-status-1-map-artwork-20260921-phase3c-1-battle-tutorial-ui-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/story.js?v=prologue-story-mode-1-story-hub-2-chapter-banner-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/notices-data.js?v=story-hub-2-world-map-2-character-recycle-1-unified-gacha-navigation-1-character-gacha-1-lumina-alchemy-wait-1-kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-contractor-rank-ui-1-contractor-title-ui-1-contractor-reward-ui-1-prologue-dex-elysia-galdra-1-post-battle-contract-1-tutorial-action-guidance-1-prologue-existing-expedition-fix-1-all-map-ecosystem-diagrams-1-skill-gacha-compact-result-1-diagnostics-screen-1-tutorial-replay-battle-fix-1-tutorial-growth-guidance-1-tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1-chapter-banner-1-favorite-home-1-favorite-frame-1-ornate-portrait-1-immersive-home-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-first-play-audit-1-world-map-consistency-1-balance-audit-20260908-opening-rescue-1-contract-reward-1-capital-story-1-stella-battle-1-workshop-story-1-first-alchemy-1-freigal-expedition-1-phase11-compatibility-1-battle-readability-1-multi-review-1-skill-loadout-status-1-map-dex-full-art-1-map-artwork-20260921-voltax-square-20260921-replacement-skills-20260921-phase3b-1-phase3c-1-phase-c-dragons-1-batch2-1-batch3-1-batch4-1-batch5-1-batch6-1-batch7-1-batch8-1-batch9-1-batch10-1-batch11-1-batch12-1-batch13-1-batch14-1-phase-d-fit-1-phase-d-size-2-battle-tidy-7-battle-result-order-1-battle-tutorial-ui-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/notices.js?v=notice-center-1-chapter-banner-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/skills.js?v=evolution-skill-cards-1-prologue-battle-basics-1-prologue-stella-intro-1-prologue-stella-mock-1-stella-battle-1-skill-loadout-status-1-phase3c-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/character-gacha.js?v=character-gacha-1-first-play-audit-1-character-recycle-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/skill-gacha.js?v=skill-gacha-1-presentation-2&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/dex.js?v=monster-obtain-2-prologue-home-front-1-map-ecosystem-1-grassland-pyramid-1-character-gacha-1-world-map-1-character-dex-slots-1-remnes-art-1-bordo-art-1-safira-art-1-brigitte-art-1-map-dex-full-art-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/party.js?v=golden-land-release-1-fixed-hunt-1-tutorial-phase4c-1-prologue-home-front-1-character-recycle-1-first-play-audit-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/progression.js?v=evolution-skill-cards-1-fixed-hunt-1-battle-result-order-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/contract-animation.js?v=contract-animation-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/items.js?v=elna-character-dex-1-battle-command-pad-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase4c-1-battle-readability-1-phase3c-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/alchemy.js?v=phase3-prologue-1-elixion-neutral-1-prologue-lumina-alchemy-1-dev-tools-phase8-lumina-alchemy-wait-1-character-recycle-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/battle-stage.js?v=phase3b-1-phase3c-1-phase4a-1-battle-tidy-7&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/battle-feedback.js?v=battle-readability-1-multi-review-1-phase3b-1-phase3c-1-phase4a-1-battle-tidy-7&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/battle-view.js?v=battle-switch-1-kokoro-link-animation-3-battle-command-pad-1-battle-skill-motion-1-battle-melee-motion-1-battle-ranged-motion-1-battle-impact-motion-1-battle-anatomy-motion-1-battle-roar-motion-1-battle-generic-motion-1-battle-support-motion-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase5a-1-prologue-battle-basics-1-first-play-audit-1-battle-readability-1-phase3b-1-phase3c-1-phase4a-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/battle-rules.js?v=kokoro-link-phase5-1-battle-command-pad-1-battle-skill-motion-1-tutorial-phase4b-1-prologue-battle-basics-1-prologue-stella-mock-1-world-map-1-battle-readability-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/battle-flow.js?v=battle-switch-1-battle-skill-motion-1-fixed-hunt-1-post-battle-contract-1-tutorial-phase4b-1-tutorial-phase5b-1-prologue-elna-rescue-1-prologue-rescue-stability-1-prologue-stella-mock-1-prologue-continuity-1-world-map-1-battle-readability-1-map-artwork-20260921-battle-result-order-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/multi-battle.js?v=kokoro-link-phase5-1-battle-skill-motion-1-fixed-hunt-1-tutorial-phase5a-1-world-map-1-balance-audit-20260908-battle-readability-1-multi-review-1-phase3b-1-phase3c-1-battle-result-order-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/expedition.js?v=golden-land-release-1-fixed-hunt-1-prologue-expedition-finale-1-legacy-save-fix-1-dev-tools-phase8-first-play-audit-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/diagnostics-ui.js?v=dev-tools-phase9&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/world-map-flow.js?v=world-map-2&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/world-map.js?v=world-map-3-consistency-map-artwork-20260921&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/battle-ui.js?v=phase3c-1-battle-tidy-7-battle-tutorial-ui-1&quot;&gt;&lt;/script&gt;
+&lt;script&gt;/* Provisional visual sizes: ★1=.35–.45 (slime=.30), ★2=.50, ★3=.75, ★4=1.00, ★5=1.20.
+ * Ratios apply to contained full-loop bounds; gameplay rarity and saves are unchanged. */
+/* Independent display lifetimes; bounded feature-branch registrations, default budget 1. */
+const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
+  src:'images/monsters/motion/volmoog_v18_alpha.webm',
+  poster:'images/monsters/motion/volmoog_v18_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:16,y:12,right:958,bottom:952})
+}),gran_volmoog:Object.freeze({
+  src:'images/monsters/motion/gran_volmoog_v18_alpha.webm',
+  poster:'images/monsters/motion/gran_volmoog_v18_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,
+  // Preserve the measured full-loop bounds; provisional size follows rarity.
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:8,y:8,right:960,bottom:945})
+}), shenhairon:Object.freeze({
+  src:'images/monsters/motion/shenhairon_v5_alpha.webm',
+  poster:'images/monsters/motion/shenhairon_v5_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,
+  // Phase C evaluation: preserve adopted canvas; anatomical placement pending.
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:0,y:3,right:960,bottom:960})
+}), tienhairon:Object.freeze({
+  src:'images/monsters/motion/tienhairon_v5_alpha.webm',
+  poster:'images/monsters/motion/tienhairon_v5_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,
+  // Phase C evaluation: preserve adopted canvas; anatomical placement pending.
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:0,y:16,right:960,bottom:945})
+}),slime_gold:Object.freeze({
+
+  src:'images/monsters/motion/slime_gold_v1_alpha.webm',
+  poster:'images/monsters/motion/slime_gold_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:720,height:640,x:47,y:65,right:664,bottom:559})
+}),false_dragon_beta:Object.freeze({
+
+  src:'images/monsters/motion/false_dragon_beta_v2_alpha.webm',
+  poster:'images/monsters/motion/false_dragon_beta_v2_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:65,y:137,right:898,bottom:845})
+}),false_dragon_gamma:Object.freeze({
+
+  src:'images/monsters/motion/false_dragon_gamma_v1_alpha.webm',
+  poster:'images/monsters/motion/false_dragon_gamma_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:90,y:85,right:886,bottom:885})
+}),goblin:Object.freeze({
+  src:'images/monsters/motion/goblin_v1_alpha.webm',poster:'images/monsters/motion/goblin_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.4}),
+  sourceBounds:Object.freeze({width:960,height:960,x:71,y:125,right:887,bottom:828})
+}),
+nightmare:Object.freeze({
+  src:'images/monsters/motion/nightmare_v1_alpha.webm',poster:'images/monsters/motion/nightmare_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:102,y:83,right:840,bottom:870})
+}),
+astralepis:Object.freeze({
+  src:'images/monsters/motion/astralepis_v1_alpha.webm',poster:'images/monsters/motion/astralepis_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:122,y:61,right:871,bottom:894})
+}),nemes:Object.freeze({
+  src:'images/monsters/motion/nemes_v1_alpha.webm',poster:'images/monsters/motion/nemes_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:107,y:81,right:855,bottom:863})
+}),
+nemesia:Object.freeze({
+  src:'images/monsters/motion/nemesia_v1_alpha.webm',poster:'images/monsters/motion/nemesia_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:86,y:122,right:873,bottom:830})
+}),
+nemesion:Object.freeze({
+  src:'images/monsters/motion/nemesion_v1_alpha.webm',poster:'images/monsters/motion/nemesion_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:57,y:64,right:906,bottom:895})
+}),doom_nemesion:Object.freeze({
+  src:'images/monsters/motion/doom_nemesion_v5_alpha.webm',poster:'images/monsters/motion/doom_nemesion_v5_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1.2}),
+  sourceBounds:Object.freeze({width:960,height:960,x:55,y:122,right:944,bottom:822})
+}),
+false_dragon_alfa:Object.freeze({
+  src:'images/monsters/motion/false_dragon_alfa_v1_alpha.webm',poster:'images/monsters/motion/false_dragon_alfa_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1.2}),
+  sourceBounds:Object.freeze({width:960,height:960,x:56,y:58,right:897,bottom:882})
+}),
+volteck:Object.freeze({
+  src:'images/monsters/motion/volteck_v4_alpha.webm',poster:'images/monsters/motion/volteck_v4_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.35}),
+  sourceBounds:Object.freeze({width:960,height:960,x:62,y:149,right:901,bottom:835})
+}),
+spaquinn:Object.freeze({
+  src:'images/monsters/motion/spaquinn_v4_alpha.webm',poster:'images/monsters/motion/spaquinn_v4_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:56,y:49,right:908,bottom:887})
+}),
+voltax:Object.freeze({
+  src:'images/monsters/motion/voltax_v5_alpha.webm',poster:'images/monsters/motion/voltax_v5_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:64,y:69,right:900,bottom:828})
+}),freigal:Object.freeze({
+  src:'images/monsters/motion/freigal_v2_alpha.webm',poster:'images/monsters/motion/freigal_v2_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.4}),
+  sourceBounds:Object.freeze({width:960,height:960,x:181,y:82,right:873,bottom:839})
+}),
+freiwolf:Object.freeze({
+  src:'images/monsters/motion/freiwolf_v2_alpha.webm',poster:'images/monsters/motion/freiwolf_v2_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:105,y:104,right:878,bottom:850})
+}),
+aquaron:Object.freeze({
+  src:'images/monsters/motion/aquaron_v3_alpha.webm',poster:'images/monsters/motion/aquaron_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
+  sourceBounds:Object.freeze({width:960,height:960,x:36,y:6,right:941,bottom:949})
+}),
+highaquaron:Object.freeze({
+  src:'images/monsters/motion/highaquaron_v3_alpha.webm',poster:'images/monsters/motion/highaquaron_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:8,y:8,right:941,bottom:946})
+}),grassbeat:Object.freeze({
+  src:'images/monsters/motion/grassbeat_v1_alpha.webm',poster:'images/monsters/motion/grassbeat_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.35}),
+  sourceBounds:Object.freeze({width:960,height:960,x:103,y:176,right:867,bottom:795})
+}),
+thornbeat:Object.freeze({
+  src:'images/monsters/motion/thornbeat_v1_alpha.webm',poster:'images/monsters/motion/thornbeat_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:87,y:126,right:877,bottom:829})
+}),
+granbeat:Object.freeze({
+  src:'images/monsters/motion/granbeat_v4_alpha.webm',poster:'images/monsters/motion/granbeat_v4_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:121,y:46,right:877,bottom:906})
+}),
+rikasheef:Object.freeze({
+  src:'images/monsters/motion/rikasheef_v1_alpha.webm',poster:'images/monsters/motion/rikasheef_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.4}),
+  sourceBounds:Object.freeze({width:960,height:960,x:202,y:91,right:780,bottom:852})
+}),seralphia:Object.freeze({
+  src:'images/monsters/motion/seralphia_v1_alpha.webm',poster:'images/monsters/motion/seralphia_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:171,y:110,right:805,bottom:824})
+}),
+sylphin:Object.freeze({
+  src:'images/monsters/motion/sylphin_v1_alpha.webm',poster:'images/monsters/motion/sylphin_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
+  sourceBounds:Object.freeze({width:960,height:960,x:145,y:161,right:831,bottom:808})
+}),
+zephyray:Object.freeze({
+  src:'images/monsters/motion/zephyray_v1_alpha.webm',poster:'images/monsters/motion/zephyray_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:136,y:176,right:836,bottom:803})
+}),
+tempestray:Object.freeze({
+  src:'images/monsters/motion/tempestray_v1_alpha.webm',poster:'images/monsters/motion/tempestray_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:149,y:108,right:822,bottom:840})
+}),
+luxseed:Object.freeze({
+  src:'images/monsters/motion/luxseed_v1_alpha.webm',poster:'images/monsters/motion/luxseed_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
+  sourceBounds:Object.freeze({width:960,height:960,x:112,y:125,right:845,bottom:847})
+}),
+luxiard:Object.freeze({
+  src:'images/monsters/motion/luxiard_v1_alpha.webm',poster:'images/monsters/motion/luxiard_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:159,y:115,right:784,bottom:837})
+}),
+lux_galdion:Object.freeze({
+  src:'images/monsters/motion/lux_galdion_v1_alpha.webm',poster:'images/monsters/motion/lux_galdion_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:129,y:152,right:839,bottom:812})
+}),
+nocle:Object.freeze({
+  src:'images/monsters/motion/nocle_v1_alpha.webm',poster:'images/monsters/motion/nocle_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
+  sourceBounds:Object.freeze({width:960,height:960,x:143,y:119,right:867,bottom:863})
+}),
+noclaid:Object.freeze({
+  src:'images/monsters/motion/noclaid_v1_alpha.webm',poster:'images/monsters/motion/noclaid_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:56,y:56,right:905,bottom:894})
+}),
+noxvelg:Object.freeze({
+  src:'images/monsters/motion/noxvelg_v1_alpha.webm',poster:'images/monsters/motion/noxvelg_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:66,y:102,right:888,bottom:860})
+}),
+orcana:Object.freeze({
+  src:'images/monsters/motion/orcana_v3_alpha.webm',poster:'images/monsters/motion/orcana_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:190,y:238,right:807,bottom:750})
+}),
+orca_stream:Object.freeze({
+  src:'images/monsters/motion/orca_stream_v3_alpha.webm',poster:'images/monsters/motion/orca_stream_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:134,y:120,right:844,bottom:820})
+}),
+orca_abyss:Object.freeze({
+  src:'images/monsters/motion/orca_abyss_v3_alpha.webm',poster:'images/monsters/motion/orca_abyss_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:232,y:116,right:766,bottom:837})
+}),
+ignaros:Object.freeze({
+  src:'images/monsters/motion/ignaros_v1_alpha.webm',poster:'images/monsters/motion/ignaros_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:99,y:152,right:862,bottom:803})
+}),
+tsubaki:Object.freeze({
+  src:'images/monsters/motion/tsubaki_v1_alpha.webm',poster:'images/monsters/motion/tsubaki_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:174,y:100,right:787,bottom:783})
+}),
+suiren:Object.freeze({
+  src:'images/monsters/motion/suiren_v2_alpha.webm',poster:'images/monsters/motion/suiren_v2_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:160,y:108,right:818,bottom:831})
+}),
+proto_icegolem:Object.freeze({
+  src:'images/monsters/motion/proto_icegolem_v3_alpha.webm',poster:'images/monsters/motion/proto_icegolem_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:true,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:59,y:29,right:931,bottom:923})
+}),
+icegolem:Object.freeze({
+  src:'images/monsters/motion/icegolem_v3_alpha.webm',poster:'images/monsters/motion/icegolem_v3_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:66,y:57,right:875,bottom:905})
+}),
+galdra:Object.freeze({
+  src:'images/monsters/motion/galdra_v1_alpha.webm',poster:'images/monsters/motion/galdra_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
+  sourceBounds:Object.freeze({width:960,height:960,x:133,y:65,right:800,bottom:900})
+}),slime:Object.freeze({
+  src:'images/monsters/motion/slime_adopted_alpha.webm',poster:'images/monsters/motion/slime_adopted_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:false,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  sourceBounds:Object.freeze({width:720,height:640,x:45,y:50,right:669,bottom:563})
+}),
+alchemion:Object.freeze({
+  src:'images/monsters/motion/alchemion_v1_alpha.webm',poster:'images/monsters/motion/alchemion_v1_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:112,y:101,right:859,bottom:845})
+}),
+elixion:Object.freeze({
+  src:'images/monsters/motion/elixion_arm_fixed_alpha.webm',poster:'images/monsters/motion/elixion_arm_fixed_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1.2}),
+  sourceBounds:Object.freeze({width:960,height:960,x:110,y:96,right:876,bottom:873})
+}),
+kimeragna:Object.freeze({
+  src:'images/monsters/motion/kimeragna_v7_alpha.webm',poster:'images/monsters/motion/kimeragna_v7_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width:960,height:960,x:85,y:78,right:877,bottom:863})
+}),
+kimeragna_apex:Object.freeze({
+  src:'images/monsters/motion/kimeragna_apex_v2_alpha.webm',poster:'images/monsters/motion/kimeragna_apex_v2_static.webp',
+  type:'video/webm; codecs=&quot;vp9&quot;',allyFlip:true,enemyFlip:false,
+  layout:Object.freeze({x:0.5,y:1,scale:1}),
+  sourceBounds:Object.freeze({width:960,height:960,x:121,y:88,right:869,bottom:850})
+})});
+// 5s of eligible foreground waiting, not wall time spent on another screen.
+// Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
+const BATTLE_IDLE_WAIT_MS=5000;
+const battleIdleRecords=new Map();
+let battleIdleRecord=null,battleIdlePageHidden=false,battleIdleLimit=1;
+// Session-only evaluation limit. No save writes; Android gate precedes raising default.
+function setBattleIdleLimit(value){
+  if(!Number.isInteger(value)||value&lt;1||value&gt;3)return false;
+  battleIdleLimit=value;syncBattleIdleMedia();return true;
+}
+function battleIdleOwned(r){return !r.disposed&amp;&amp;battleIdleRecords.get(r.key)===r;}
+function refreshBattleIdlePrimary(){battleIdleRecord=battleIdleRecords.values().next().value||null;}
+const battleIdleReduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+function battleIdleCandidates(){
+  return battleCombatants().map(u=&gt;{
+    const entry=multiBattle?.active?multiBattle.enemies.find(e=&gt;`${e.id}Vis`===u.vis):null;
+    const mon=u.vis==='pVis'?player:entry?.mon||enemy;
+    return {...u,mon,key:`${battleFeedback.sequence}:${u.key}:${entry?battleStageKey(entry):mon.id}`};
+  }).filter(u=&gt;u.hp&gt;0&amp;&amp;BATTLE_IDLE_MEDIA[u.mon.id]);
+}
+function battleIdleCurrent(r){
+  return battleIdleOwned(r)&amp;&amp;r.media.isConnected&amp;&amp;r.video.isConnected&amp;&amp;
+    !battleFeedback.finished&amp;&amp;!multiBattle?.finished&amp;&amp;battleIdleCandidates().some(u=&gt;
+      u.key===r.key&amp;&amp;document.getElementById(u.vis)?.querySelector('.battle-static-media')===r.media);
+}
+function battleIdleStops(r){
+  const reasons=[];
+  if(!document.getElementById('battle')?.classList.contains('active'))reasons.push('screen');
+  if(document.hidden)reasons.push('hidden');
+  if(battleIdlePageHidden)reasons.push('pagehide');
+  if(battleIdleReduced?.matches)reasons.push('reduced');
+  if(r?.offscreen)reasons.push('offscreen');
+  return reasons;
+}
+function battleIdleVisible(r){return !battleIdleStops(r).length&amp;&amp;!battleFeedback.finished&amp;&amp;!multiBattle?.finished;}
+// Project the measured full-loop alpha union into the existing media box.
+// This is geometric containment, NOT an inferred anatomical foot or ground point.
+function battleIdleBoundsFit(bounds,width,height,layout={},referenceSize=null){
+  if(!bounds||![width,height,bounds.width,bounds.height,bounds.x,bounds.y,bounds.right,bounds.bottom].every(Number.isFinite)||
+    width&lt;=0||height&lt;=0||bounds.width&lt;=0||bounds.height&lt;=0||bounds.x&lt;0||bounds.y&lt;0||
+    bounds.right&gt;bounds.width||bounds.bottom&gt;bounds.height||bounds.right&lt;=bounds.x||bounds.bottom&lt;=bounds.y)return null;
+  const x=Number.isFinite(layout.x)?Math.max(0,Math.min(1,layout.x)):0.5;
+  const y=Number.isFinite(layout.y)?Math.max(0,Math.min(1,layout.y)):0.5;
+  const adjustment=Number.isFinite(layout.scale)?Math.max(0.1,Math.min(1.2,layout.scale)):1;
+  const bodyWidth=bounds.right-bounds.x,bodyHeight=bounds.bottom-bounds.y;
+  const capacity=Math.min(width/bodyWidth,height/bodyHeight);
+  // A shared stage unit replaces per-slot normalization. Zero-layout fallback
+  // reserves 120% headroom; the final cap protects against transient resize.
+  const unit=Number.isFinite(referenceSize)&amp;&amp;referenceSize&gt;0
+    ?referenceSize/Math.max(bodyWidth,bodyHeight):capacity/1.2;
+  const scale=Math.min(capacity,unit*adjustment);
+  return {width:bounds.width*scale,height:bounds.height*scale,
+    left:(width-(bounds.right-bounds.x)*scale)*x-bounds.x*scale,
+    top:(height-(bounds.bottom-bounds.y)*scale)*y-bounds.y*scale,scale};
+}
+const BATTLE_IDLE_FIT_PROPERTIES=['--idle-canvas-width','--idle-canvas-height','--idle-canvas-left','--idle-canvas-top'];
+function clearBattleIdleBoundsFit(r){
+  delete r.media.dataset.idleFit;
+  for(const name of BATTLE_IDLE_FIT_PROPERTIES)r.media.style.removeProperty(name);
+}
+function applyBattleIdleLayout(r){
+  const v=r.config.layout||{};
+  const x=Number.isFinite(v.x)?Math.max(0,Math.min(1,v.x)):0.5;
+  const y=Number.isFinite(v.y)?Math.max(0,Math.min(1,v.y)):0.5;
+  const scale=Number.isFinite(v.scale)?Math.max(0.1,Math.min(1.2,v.scale)):1;
+  r.media.style.setProperty('--idle-position',`${x*100}% ${y*100}%`);
+  r.media.style.setProperty('--idle-scale',String(scale));
+  const arena=r.media.closest(&quot;.battle-arena&quot;);
+  const perspective=r.media.closest('#pVis')?1:(Number(arena?.dataset.enemyDepth)||1);
+  const unit=Number(arena?.dataset.sizeUnit)*perspective;
+  const fit=battleIdleBoundsFit(r.config.sourceBounds,r.media.clientWidth,r.media.clientHeight,v,unit);
+  if(!fit){clearBattleIdleBoundsFit(r);return;}
+  for(const [name,value] of [['width',fit.width],['height',fit.height],['left',fit.left],['top',fit.top]])
+    r.media.style.setProperty(`--idle-canvas-${name}`,`${value}px`);
+  r.media.dataset.idleFit='bounds';
+}
+function watchBattleIdleLayout(r){
+  r.layoutObserver=null;
+  if(typeof ResizeObserver!=='function')return;
+  r.layoutObserver=new ResizeObserver(()=&gt;{if(battleIdleOwned(r))applyBattleIdleLayout(r);});
+  r.layoutObserver.observe(r.media);
+}
+// One observer per owned record (max 3). Start static until the first visibility
+// report. Pause below 2% for 250ms; resume at 15%, avoiding boundary chatter.
+function watchBattleIdleViewport(r){
+  r.offscreen=typeof IntersectionObserver==='function';
+  r.viewportTimer=null;r.viewportToken=0;r.viewportObserver=null;
+  if(!r.offscreen)return; // Older engines still use document/screen visibility.
+  r.viewportObserver=new IntersectionObserver(entries=&gt;{
+    if(!battleIdleOwned(r))return;
+    const entry=entries.find(e=&gt;e.target===r.media);if(!entry)return;
+    const ratio=entry.isIntersecting?entry.intersectionRatio:0;
+    if(r.viewportTimer!==null){clearTimeout(r.viewportTimer);r.viewportTimer=null;}
+    const token=++r.viewportToken;
+    if(ratio&gt;=0.15){r.offscreen=false;syncBattleIdleMedia();}
+    else if(ratio&lt;=0.02&amp;&amp;!r.offscreen){
+      r.viewportTimer=setTimeout(()=&gt;{
+        if(!battleIdleOwned(r)||token!==r.viewportToken)return;
+        r.viewportTimer=null;r.offscreen=true;syncBattleIdleMedia();
+      },250);
+    }
+  },{threshold:[0,0.02,0.15]});
+  r.viewportObserver.observe(r.media);
+}
+function unwatchBattleIdleViewport(r){
+  r.viewportToken++;
+  if(r.viewportTimer!==null)clearTimeout(r.viewportTimer);
+  r.viewportTimer=null;r.viewportObserver?.disconnect();r.viewportObserver=null;
+}
+function setBattleIdleStatus(r,text,retry=false){
+  if(r.label.textContent!==text)r.label.textContent=text;
+  r.button.hidden=!retry;
+}
+function stopBattleIdleClock(r){
+  if(r.timer!==null){clearTimeout(r.timer);r.timer=null;r.clockToken++;
+    r.remaining=Math.max(0,r.remaining-(performance.now()-r.waitStarted));}
+}
+function startBattleIdleClock(r){
+  if(r.timer!==null)return;
+  const attempt=r.attempt,clockToken=++r.clockToken;
+  r.waitStarted=performance.now();
+  r.timer=setTimeout(()=&gt;{
+    // A queued callback may run after cancellation. Never touch a newer attempt.
+    if(!battleIdleOwned(r)||r.attempt!==attempt||r.clockToken!==clockToken||r.timer===null)return;
+    if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
+    r.timer=null;r.remaining=0;
+    failBattleIdleMedia(r,'静止表示：読み込み待ちを終了しました');
+  },r.remaining);
+}
+function staticBattleIdle(r){
+  r.media.classList.remove('idle-playing');r.img.style.visibility='visible';
+}
+function releaseBattleIdleVideo(r){
+  r.attempt++;r.playToken++;r.pending=false;stopBattleIdleClock(r);
+  const v=r.video;v.onplaying=v.onerror=null;
+  v.pause();v.removeAttribute('src');v.load();v.remove();
+}
+function disposeBattleIdleRecord(r){
+  if(!battleIdleOwned(r))return;
+  battleIdleRecords.delete(r.key);refreshBattleIdlePrimary();r.disposed=true;r.state='disposed';
+  unwatchBattleIdleViewport(r);r.layoutObserver?.disconnect();clearBattleIdleBoundsFit(r);releaseBattleIdleVideo(r);r.button.onclick=null;
+  r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
+  r.img.style.removeProperty('visibility');r.media.classList.remove('has-idle-media','idle-playing');
+  r.facing.style.removeProperty('transform');r.details.remove();
+}
+function disposeBattleIdleMedia(){
+  for(const r of [...battleIdleRecords.values()])disposeBattleIdleRecord(r);
+  clearBattleIdleSizes();
+}
+function failBattleIdleMedia(r,text){
+  if(!battleIdleCurrent(r))return;
+  r.failed=true;r.state='static';r.failureText=text;r.playToken++;r.pending=false;
+  stopBattleIdleClock(r);r.video.pause();staticBattleIdle(r);
+  setBattleIdleStatus(r,text,!r.retried);
+}
+function playBattleIdleMedia(r){
+  if(!battleIdleCurrent(r)||r.failed||r.pending||!battleIdleVisible(r))return;
+  const video=r.video,attempt=r.attempt,token=++r.playToken;
+  r.pending=true;r.state='loading';startBattleIdleClock(r);
+  const valid=()=&gt;battleIdleOwned(r)&amp;&amp;r.video===video&amp;&amp;r.attempt===attempt&amp;&amp;r.playToken===token;
+  const rejected=()=&gt;{if(!valid())return;r.pending=false;
+    if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
+    failBattleIdleMedia(r,'静止表示：再生できませんでした');
+  };
+  try{Promise.resolve(video.play()).then(()=&gt;{
+    if(!valid())return;r.pending=false;
+    if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
+    if(battleIdleStops(r).length)syncBattleIdleMedia();
+  },rejected);}catch{rejected();}
+}
+function createBattleIdleVideo(r){
+  const video=document.createElement('video');r.video=video;
+  const attempt=++r.attempt;
+  video.className='battle-idle-video';video.muted=true;video.defaultMuted=true;
+  video.loop=true;video.playsInline=true;video.preload='auto';video.setAttribute('aria-hidden','true');
+  const valid=()=&gt;battleIdleOwned(r)&amp;&amp;r.video===video&amp;&amp;r.attempt===attempt;
+  video.onplaying=()=&gt;{
+    if(!valid()||r.failed)return;
+    if(!battleIdleCurrent(r)){disposeBattleIdleRecord(r);return;}
+    if(battleIdleStops(r).length){syncBattleIdleMedia();return;}
+    // Ignore an obsolete queued playing event when the element is now paused.
+    if(video.paused)return;
+    stopBattleIdleClock(r);r.remaining=BATTLE_IDLE_WAIT_MS;r.state='playing';
+    r.media.classList.add('idle-playing');r.img.style.visibility='hidden';
+    setBattleIdleStatus(r,'待機モーション');
+  };
+  video.onerror=()=&gt;{if(valid())failBattleIdleMedia(r,'静止表示：動画を読み込めません');};
+  r.media.append(video);
+  if(!video.canPlayType(r.config.type)){
+    r.failed=true;r.state='static';r.failureText='この環境では静止表示';r.retried=true;
+    setBattleIdleStatus(r,r.failureText);
+  }
+}
+// Display geometry is independent of the decoder budget (at most 3 units).
+// A non-playing registered species uses its transparent poster and same scale.
+const battleIdleSizeDisplays=new Map();
+function battleIdleStageSizePlan(configs,stageWidth){
+  if(!Number.isFinite(stageWidth)||stageWidth&lt;=64)return null;
+  const weights=configs.map(c=&gt;{
+    const b=c.sourceBounds,w=b.right-b.x,h=b.bottom-b.y;
+    return Math.max(.55,w/Math.max(w,h)*c.layout.scale);
+  });
+  const unit=Math.min(280,stageWidth*.6,weights.length&gt;1?(stageWidth-64)/weights.reduce((a,b)=&gt;a+b,0):Infinity);
+  return {unit,weights,rowHeight:Math.ceil(unit*1.2+16)};
+}
+function clearBattleIdleSizes(){
+  for(const r of battleIdleSizeDisplays.values()){
+    clearBattleIdleBoundsFit(r);r.media.classList.remove('has-idle-size');
+    r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
+    r.img.setAttribute('src',r.originalSrc);r.facing.style.removeProperty('transform');
+  }
+  battleIdleSizeDisplays.clear();
+  const arena=document.querySelector('#battle .battle-arena');
+  if(arena){delete arena.dataset.sizeUnit;arena.style.removeProperty('--battle-size-row');}
+  document.getElementById('multiEnemyGrid')?.style.removeProperty('grid-template-columns');
+}
+function syncBattleIdleSizes(candidates){
+  const arena=document.querySelector('#battle .battle-arena');
+  const enemies=candidates.filter(u=&gt;u.vis!=='pVis');
+  const enemyConfigs=enemies.map(u=&gt;BATTLE_IDLE_MEDIA[u.mon.id]);
+  const ally=candidates.find(u=&gt;u.vis==='pVis');
+  const compactHeight=Number(arena?.dataset.compactHeight);
+  const plan=compactHeight&gt;0&amp;&amp;typeof battleCompactSizePlan==='function'
+    ?battleCompactSizePlan(enemyConfigs,ally&amp;&amp;BATTLE_IDLE_MEDIA[ally.mon.id],arena?.clientWidth,compactHeight,Number(arena?.dataset.enemyHud)||64,multiBattle?.active?2:1)
+    :battleIdleStageSizePlan(enemyConfigs,arena?.clientWidth);
+  if(plan){arena.dataset.sizeUnit=String(plan.unit);arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
+    if(plan.allyHeight&amp;&amp;plan.enemyHeight){
+      arena.style.setProperty('--battle-ally-height',plan.allyHeight+'px');
+      arena.style.setProperty('--battle-enemy-height',plan.enemyHeight+'px');
+    }
+    const grid=document.getElementById('multiEnemyGrid');
+    if(multiBattle?.active&amp;&amp;plan.weights.length===2)grid?.style.setProperty('grid-template-columns',plan.weights.map(w=&gt;`minmax(0,${w}fr)`).join(' '));
+    else grid?.style.removeProperty('grid-template-columns');
+  }
+  for(const [key,r] of battleIdleSizeDisplays){
+    if(!candidates.some(u=&gt;u.key===key&amp;&amp;document.getElementById(u.vis)?.querySelector('.battle-static-media')===r.media)){
+      clearBattleIdleBoundsFit(r);r.media.classList.remove('has-idle-size');r.facing.style.removeProperty('transform');
+      r.img.setAttribute('src',r.originalSrc);battleIdleSizeDisplays.delete(key);
+    }
+  }
+  for(const u of candidates){
+    const media=document.getElementById(u.vis)?.querySelector('.battle-static-media'),img=media?.querySelector('img');
+    if(!img)continue;
+    let r=battleIdleSizeDisplays.get(u.key);
+    if(!r){r={key:u.key,media,img,config:BATTLE_IDLE_MEDIA[u.mon.id],facing:media.parentElement,originalSrc:img.getAttribute('src')||''};battleIdleSizeDisplays.set(u.key,r);}
+    media.classList.add('has-idle-size');img.src=r.config.poster;
+    r.facing.style.transform=(u.vis==='pVis'?r.config.allyFlip:r.config.enemyFlip)?'scaleX(-1)':'';
+    applyBattleIdleLayout(r);
+  }
+}
+
+function syncBattleIdleMedia(){
+  const screen=document.getElementById('battle');
+  const temporary=document.getElementById('battleItemSelect')?.classList.contains('active');
+  if((!screen?.classList.contains('active')&amp;&amp;!temporary)||battleFeedback.finished||multiBattle?.finished){disposeBattleIdleMedia();return;}
+  // pagehide disposes; updates while hidden must not recreate a decoder.
+  if(battleIdlePageHidden){disposeBattleIdleMedia();return;}
+  const candidates=battleIdleCandidates();
+  // Stable incumbents first; new slots follow battleCombatants (ally, enemy A, B).
+  const ordered=[...candidates.filter(u=&gt;battleIdleRecords.has(u.key)),
+    ...candidates.filter(u=&gt;!battleIdleRecords.has(u.key))];
+  const selected=ordered.slice(0,battleIdleLimit);
+  for(const r of [...battleIdleRecords.values()]){
+    const u=selected.find(u=&gt;u.key===r.key);
+    if(!u||document.getElementById(u.vis)?.querySelector('.battle-static-media')!==r.media)disposeBattleIdleRecord(r);
+  }
+  syncBattleIdleSizes(candidates);
+  for(const chosen of selected)syncBattleIdleCandidate(chosen);
+  refreshBattleIdlePrimary();
+  if(typeof syncBattleViewport==='function')syncBattleViewport();
+}
+function syncBattleIdleCandidate(chosen){
+  const media=document.getElementById(chosen.vis)?.querySelector('.battle-static-media');
+  if(!media)return;
+  const hud=chosen.vis==='pVis'?document.getElementById('singlePlayerBox'):chosen.vis==='eVis'?document.getElementById('singleEnemyBox'):document.getElementById(chosen.vis)?.closest('.multi-enemy-card')?.querySelector('.multi-enemy-copy');
+  if(!battleIdleRecords.has(chosen.key)){
+    const img=media.querySelector('img');if(!img)return;
+    const config=BATTLE_IDLE_MEDIA[chosen.mon.id];
+    const details=document.createElement('details'),summary=document.createElement('summary'),label=document.createElement('span'),button=document.createElement('button');
+    details.className='battle-idle-details';summary.textContent='表示設定';button.type='button';button.textContent='再生を試す';button.hidden=true;details.append(summary,label,button);
+    const r={key:chosen.key,config,media,img,details,label,button,facing:media.parentElement,
+      disposed:false,failed:false,pending:false,retried:false,state:'loading',reasons:[],
+      attempt:0,playToken:0,clockToken:0,timer:null,remaining:BATTLE_IDLE_WAIT_MS,waitStarted:0};
+    battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');img.src=config.poster;
+    if(chosen.vis==='pVis'?config.allyFlip:config.enemyFlip)r.facing.style.transform='scaleX(-1)';
+    applyBattleIdleLayout(r);watchBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
+    button.onclick=()=&gt;{
+      if(!battleIdleCurrent(r)||!r.failed||r.retried||battleIdleStops(r).length)return;
+      // One manual attempt per display lifetime, latched before any async work.
+      r.retried=true;r.failed=false;r.failureText='';releaseBattleIdleVideo(r);
+      r.remaining=BATTLE_IDLE_WAIT_MS;createBattleIdleVideo(r);syncBattleIdleMedia();
+    };
+  }
+  const r=battleIdleRecords.get(chosen.key);if(hud&amp;&amp;!hud.contains(r.details)&amp;&amp;!r.details.closest('#battleCompactInfo'))hud.append(r.details);
+  r.reasons=battleIdleStops(r);
+  if(r.reasons.length){
+    if(r.pending){r.playToken++;r.pending=false;}
+    stopBattleIdleClock(r);if(!r.video.paused)r.video.pause();staticBattleIdle(r);
+    r.state=r.failed?'static':'paused';
+    setBattleIdleStatus(r,r.reasons.includes('reduced')?'モーション控えめ':'一時停止');return;
+  }
+  if(r.failed){setBattleIdleStatus(r,r.failureText,!r.retried);return;}
+  if(!r.video.getAttribute('src'))r.video.src=r.config.src;
+  if(r.video.paused||r.state==='paused'){
+    setBattleIdleStatus(r,'準備中');playBattleIdleMedia(r);
+  }
+}
+// Fixed global listeners and bounded, disposable viewport observers. No polling,
+// object URLs or per-combatant global listeners.
+document.addEventListener('visibilitychange',syncBattleIdleMedia);
+window.addEventListener('pagehide',()=&gt;{battleIdlePageHidden=true;disposeBattleIdleMedia();});
+window.addEventListener('pageshow',()=&gt;{battleIdlePageHidden=false;syncBattleIdleMedia();});
+battleIdleReduced?.addEventListener?.('change',syncBattleIdleMedia);
+
+// One session-wide fallback; no polling, decoder reset or per-unit window listener.
+let battleIdleLayoutFrame=null;
+window.addEventListener('resize',()=&gt;{
+  if(battleIdleLayoutFrame!==null)return;
+  battleIdleLayoutFrame=requestAnimationFrame(()=&gt;{
+    battleIdleLayoutFrame=null;
+    syncBattleIdleSizes(battleIdleCandidates());
+    for(const r of battleIdleRecords.values())applyBattleIdleLayout(r);
+  });
+});
+&lt;/script&gt;
+&lt;script src=&quot;js/battle-viewport.js?v=battle-tidy-7-battle-tutorial-ui-1&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/init.js?v=golden-land-release-1&quot;&gt;&lt;/script&gt;
+&lt;script&gt;// Runs only in the generated sandbox. Storage was replaced before game boot.
+let granReviewSpecies='gran_volmoog',granReviewMixed=false,granReviewMode='ally';
+// Isolate the selected species in this QA document. As registration expands,
+// a supporting ally must not take the one decoder slot from the reviewed enemy.
+const granReviewAllCandidates=battleIdleCandidates;
+battleIdleCandidates=()=&gt;granReviewAllCandidates().filter(u=&gt;granReviewMixed||u.mon.id===granReviewSpecies);
+function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies){
+ if(!Object.hasOwn(BATTLE_IDLE_MEDIA,species))return false;
+ granReviewSpecies=species;
+ if(!['ally','enemy','multi','mixed'].includes(mode))return false;
+ granReviewMixed=mode==='mixed';granReviewMode=mode;
+ const map=MAPS.find(m=&gt;m.id===mapId);if(!map)return false;
+ granMap.value=mapId;granSpecies.value=species;
+ disposeBattleIdleMedia();setBattleIdleLimit(1);
+ save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};
+ save.instances=[];save.party=[];
+ for(const id of [mode==='ally'||mode==='multi'||mode==='mixed'?species:'aquaron','aquaron']){
+   const ins=addInstance(id,10);save.party.push(ins.uid);
+ }
+ prepareBattleParty();selectedMap=map;enemy=by(mode==='ally'?'slime':species);
+ activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';
+ beginChosenBattle(map.id,enemy.id,'normal',activeHuntRequest);show('battle');
+ if(mode==='multi'||mode==='mixed'){
+   ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(mode==='mixed'?'orca_abyss':species),'enemy_a'),createMultiEnemy(by(mode==='mixed'?'slime':species),'enemy_b')],pendingMoveIndex:null};
+   setMultiBattleLayout(true);setupMultiBattle();setBattleIdleLimit(3);
+ }
+ granReviewUpdateProgress();
+ document.getElementById('granReviewResult').textContent='表示確認待ち：'+by(species).name+' / '+mode+' / '+map.name;
+ return true;
+}
+function granReviewMeasure(){
+ const units=[...document.querySelectorAll('.battle-static-media.has-idle-size')].map(media=&gt;{
+   const r=media.getBoundingClientRect(),side=media.closest('[id$=&quot;Vis&quot;]')?.id;
+   const flipped=media.parentElement.style.transform.includes('-1');
+   const video=media.querySelector('video');
+   const record=[...battleIdleRecords.values()].find(item=&gt;item.media===media);
+   const config=record?.config||[...battleIdleSizeDisplays.values()].find(item=&gt;item.media===media)?.config;
+   const bounds=config?.sourceBounds||{width:960,height:960,x:0,y:0,right:960,bottom:960};
+   const arena=media.closest(&quot;.battle-arena&quot;);
+   // Match applyBattleIdleLayout: far-plane enemies use the 0.85 depth factor.
+   const perspective=media.closest(&quot;#pVis&quot;)?1:(Number(arena?.dataset.enemyDepth)||1);
+   const projected=battleIdleBoundsFit(bounds,media.clientWidth,media.clientHeight,config?.layout,Number(arena?.dataset.sizeUnit)*perspective);
+   const fit=projected?.scale??Math.min(r.width/bounds.width,r.height/bounds.height);
+   const width=bounds.width*fit,height=bounds.height*fit;
+   const left=projected?.left??((r.width-width)*(config?.layout?.x??0.5));
+   const top=projected?.top??((r.height-height)*(config?.layout?.y??0.5));
+   const visibleLeft=left+bounds.x*fit,visibleRight=left+bounds.right*fit;
+   const contentLeft=r.left+(projected?media.clientLeft:0),contentTop=r.top+(projected?media.clientTop:0);
+   const contentWidth=projected?media.clientWidth:r.width;
+   const body={left:contentLeft+(flipped?contentWidth-visibleRight:visibleLeft),
+     right:contentLeft+(flipped?contentWidth-visibleLeft:visibleRight),
+     top:contentTop+top+bounds.y*fit,bottom:contentTop+top+bounds.bottom*fit};
+   const gap=el=&gt;{const b=el.getBoundingClientRect();return Math.hypot(Math.max(b.left-body.right,body.left-b.right,0),Math.max(b.top-body.bottom,body.top-b.bottom,0));};
+   const hud=[...document.querySelectorAll('#singlePlayerBox,#singleEnemyBox,.multi-enemy-copy')].filter(el=&gt;el.getClientRects().length);
+   const dock=document.querySelector('.battle-command-dock');
+   const hudComparisons=hud.map(el=&gt;{
+     const b=el.getBoundingClientRect();
+     return {id:el.id||el.closest('.multi-enemy-card')?.id||null,gapPx:gap(el),
+       rectangle:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},
+       overlapWidth:Math.max(0,Math.min(body.right,b.right)-Math.max(body.left,b.left)),
+       overlapHeight:Math.max(0,Math.min(body.bottom,b.bottom)-Math.max(body.top,b.top))};
+   });
+   return {side,flipped,body,hudComparisons,minHudGap:hud.length?Math.min(...hud.map(gap)):null,commandGap:dock?.getClientRects().length?gap(dock):null,
+     readyState:media.querySelector('video')?.readyState,currentTime:media.querySelector('video')?.currentTime};
+ });
+ const report={viewport:[innerWidth,innerHeight],units,note:'全編の翼・尾を囲む四角い範囲で計算。HP間隔0pxは範囲の接触・重なりを示し、実際の不透明部分の重なりは未判定。動画全編の目視、発熱、足場の自然さの合格ではない。'};
+ document.getElementById('granReviewResult').textContent=JSON.stringify(report,null,2);return report;
+}
+const granPanel=document.createElement('details');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
+granPanel.innerHTML='&lt;strong&gt;Phase D・配置確認&lt;/strong&gt;&lt;p&gt;採用した体格差で50体を順に確認できます。前／次で種類を切り替え、一覧で大きさを比較できます。足場の自然さ、翼・尾とHPの間隔、横向き・文字拡大を確認してください。&lt;/p&gt;&lt;div id=&quot;granReviewControls&quot;&gt;&lt;/div&gt;&lt;pre id=&quot;granReviewResult&quot; style=&quot;white-space:pre-wrap&quot;&gt;&lt;/pre&gt;';
+document.body.prepend(granPanel);
+const granPanelSummary=document.createElement('summary');granPanelSummary.textContent='モンスター・背景の確認設定';granPanelSummary.style.cssText='min-height:48px;display:flex;align-items:center;cursor:pointer';granPanel.prepend(granPanelSummary);
+const granMap=document.createElement('select');granMap.setAttribute('aria-label','確認マップ');granMap.style.minHeight='48px';
+for(const map of MAPS){const opt=document.createElement('option');opt.value=map.id;opt.textContent=map.name;granMap.append(opt);}
+document.getElementById('granReviewControls').append(granMap);
+const granSpecies=document.createElement('select');granSpecies.setAttribute('aria-label','確認モンスター');granSpecies.style.minHeight='48px';
+const granReviewOrder=Object.keys(BATTLE_IDLE_MEDIA).sort((a,b)=&gt;by(a).rarity.length-by(b).rarity.length||(by(a).dexNo||by(a).no)-(by(b).dexNo||by(b).no));
+for(const id of granReviewOrder){const opt=document.createElement('option');opt.value=id;opt.textContent=by(id).rarity+' '+Math.round(BATTLE_IDLE_MEDIA[id].layout.scale*100)+'% · '+by(id).name;granSpecies.append(opt);}
+granSpecies.value=granReviewSpecies;
+function granReviewSelectSpecies(id){
+ document.getElementById('granMetricsDetails')?.remove();window.granReviewMetrics=null;
+ granSpecies.value=id;return granReviewSetup(granReviewMode,granMap.value,id);
+}
+granSpecies.onchange=()=&gt;granReviewSelectSpecies(granSpecies.value);
+granMap.onchange=()=&gt;granReviewSetup(granReviewMode,granMap.value,granSpecies.value);
+document.getElementById('granReviewControls').prepend(granSpecies);
+const granReviewProgress=document.createElement('p');granReviewProgress.id='granReviewProgress';granReviewProgress.setAttribute('aria-live','polite');granPanel.insertBefore(granReviewProgress,document.getElementById('granReviewControls'));
+function granReviewUpdateProgress(){
+ const index=granReviewOrder.indexOf(granReviewSpecies),mon=by(granReviewSpecies);
+ granReviewProgress.textContent=(index+1)+' / '+granReviewOrder.length+' · '+mon.rarity+' · '+mon.name+' · '+Math.round(BATTLE_IDLE_MEDIA[mon.id].layout.scale*100)+'%';
+}
+function granReviewStep(delta){
+ const index=granReviewOrder.indexOf(granReviewSpecies);
+ return granReviewSelectSpecies(granReviewOrder[(index+delta+granReviewOrder.length)%granReviewOrder.length]);
+}
+function granReviewToggleSizeGallery(){
+ let gallery=document.getElementById('granReviewSizeGallery');
+ if(gallery){gallery.hidden=!gallery.hidden;return;}
+ gallery=document.createElement('section');gallery.id='granReviewSizeGallery';
+ const heading=document.createElement('h2');heading.textContent='50体の体格一覧';gallery.append(heading);
+ const note=document.createElement('p');note.textContent='同じ基準で静止素材を比較します。種類を押すと戦闘配置へ戻ります。背景や動きの確認は戦闘画面で行ってください。';gallery.append(note);
+ const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px';
+ for(const id of granReviewOrder){
+  const config=BATTLE_IDLE_MEDIA[id],mon=by(id),card=document.createElement('button');card.type='button';card.dataset.sizeSpecies=id;card.style.cssText='margin:0;padding:4px;min-height:180px;width:100%;background:#183653;color:white;border:1px solid #c9a862;border-radius:8px;white-space:normal';
+  const box=document.createElement('span');box.style.cssText='position:relative;display:block;width:136px;height:136px;margin:auto;overflow:hidden';
+  const fit=battleIdleBoundsFit(config.sourceBounds,136,136,config.layout,100),img=document.createElement('img');img.src=config.poster;img.alt=mon.name;img.loading='lazy';img.style.cssText='position:absolute;max-width:none!important;max-height:none!important;width:'+fit.width+'px!important;height:'+fit.height+'px!important;left:'+fit.left+'px;top:'+fit.top+'px;object-fit:contain';box.append(img);
+  const label=document.createElement('span');label.style.display='block';label.textContent=mon.rarity+' '+Math.round(config.layout.scale*100)+'% · '+mon.name;
+  card.append(box,label);card.onclick=()=&gt;{gallery.hidden=true;granReviewSelectSpecies(id);granPanel.scrollIntoView({block:'start'});};grid.append(card);
+ }
+ gallery.append(grid);granPanel.append(gallery);
+}
+
+for(const [label,fn] of [['前の種類',()=&gt;granReviewStep(-1)],['次の種類',()=&gt;granReviewStep(1)],['50体一覧',granReviewToggleSizeGallery],['味方1体',()=&gt;granReviewSetup('ally',granMap.value)],['敵1体',()=&gt;granReviewSetup('enemy',granMap.value)],['同種3体',()=&gt;granReviewSetup('multi',granMap.value)],['大型・横長・小型',()=&gt;{granSpecies.value='elixion';granReviewSetup('mixed',granMap.value,'elixion');}],['間隔を計測',granReviewMeasure],['文字200%',()=&gt;document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=&gt;show('home')]]){
+ const b=document.createElement('button');b.textContent=label;b.type='button';b.style.cssText='min-height:48px;margin:4px';b.onclick=fn;document.getElementById('granReviewControls').append(b);
+}
+granReviewSetup();
+
+// Explicit, foreground-only diagnostic. Measurements are observations, not acceptance.
+let granMetricsRunning=false;
+async function granReviewCollect(){
+ if(granMetricsRunning)return;
+ granMetricsRunning=true;
+ const out=document.getElementById('granReviewResult');
+ const controls=[...document.querySelectorAll('#granReviewControls button,#granReviewControls select')];
+ controls.forEach(el=&gt;el.disabled=true);
+ let interrupted=document.hidden;
+ const markHidden=()=&gt;{if(document.hidden)interrupted=true;};
+ document.addEventListener('visibilitychange',markHidden);
+ const report={version:3,species:granReviewSpecies,viewport:[innerWidth,innerHeight],map:granMap.value,delivery:null,samples:[],limitations:'現在の端末・画面幅の計測。横向き・他の幅・200%文字・発熱・BFCacheは別項目。自動合格判定ではありません。'};
+ const delay=ms=&gt;new Promise(resolve=&gt;setTimeout(resolve,ms));
+ const quality=v=&gt;{if(typeof v.getVideoPlaybackQuality!=='function')return null;const q=v.getVideoPlaybackQuality();return {total:q.totalVideoFrames,dropped:q.droppedVideoFrames};};
+ const round=v=&gt;Number.isFinite(v)?Math.round(v*10)/10:null;
+ try{
+  out.textContent='動画の配信を確認中…';
+  const controller=new AbortController(),timer=setTimeout(()=&gt;controller.abort(),10000);
+  try{
+   const response=await fetch(new URL(BATTLE_IDLE_MEDIA[granReviewSpecies].src,document.baseURI),{headers:{Range:'bytes=0-1023'},signal:controller.signal});
+   const bytes=(await response.arrayBuffer()).byteLength;
+   report.delivery={status:response.status,type:response.headers.get('content-type'),range:response.headers.get('content-range'),bytes};
+  }catch(error){report.delivery={error:error.name};}finally{clearTimeout(timer);}
+  for(const [mode,label] of [['ally','味方1体'],['enemy','敵1体'],['multi','同種3体']]){
+   if(interrupted)throw Error('計測中に画面が非表示になりました');
+   granReviewSetup(mode,granMap.value);
+   out.textContent=label+'を準備中…';await delay(1500);
+   const videos=[...document.querySelectorAll('video')];
+   const before=videos.map(quality),start=performance.now();
+   let raf=0,last=0,frames=0,maxGap=0;
+   const tick=t=&gt;{if(last){frames++;maxGap=Math.max(maxGap,t-last);}last=t;raf=requestAnimationFrame(tick);};
+   raf=requestAnimationFrame(tick);
+   out.textContent=label+'を16秒計測中…画面を開いたままお待ちください。';
+   try{await delay(16000);}finally{cancelAnimationFrame(raf);}
+   if(interrupted)throw Error('計測中に画面が非表示になりました');
+   const placement=granReviewMeasure();
+   report.samples.push({mode,label,elapsedMs:round(performance.now()-start),animationFrames:frames,maxFrameGapMs:round(maxGap),placement:placement.units.map(u=&gt;({side:u.side,body:u.body,hudComparisons:u.hudComparisons,hudGapPx:round(u.minHudGap),commandGapPx:round(u.commandGap)})),videos:videos.map((v,i)=&gt;{const after=quality(v),b=before[i];return {readyState:v.readyState,paused:v.paused,retained:v.isConnected,error:v.error?.code??null,totalFrames:b&amp;&amp;after?after.total-b.total:null,droppedFrames:b&amp;&amp;after?after.dropped-b.dropped:null};})});
+  }
+ }catch(error){report.error=error.message;}finally{
+  document.removeEventListener('visibilitychange',markHidden);
+  controls.forEach(el=&gt;el.disabled=false);granMetricsRunning=false;
+ }
+ const delivery=report.delivery;
+ const lines=['計測結果（この表示を送ってください）', '対象 '+by(report.species).name, '画面 '+report.viewport.join('×'),
+  '配信 '+(delivery?.error||`${delivery?.status} / ${delivery?.type} / ${delivery?.bytes} bytes`),
+  '範囲 '+(delivery?.range||'未取得')];
+ for(const sample of report.samples){
+  const gaps=sample.placement.map(u=&gt;`${u.side}: HP ${u.hudGapPx??'不明'} / 操作 ${u.commandGapPx??'不明'} px`).join('、');
+  lines.push(sample.label+'：コマ落ち '+sample.videos.map(v=&gt;`${v.droppedFrames??'不明'}/${v.totalFrames??'不明'}`).join('・'));
+  lines.push(gaps);
+  lines.push('描画最大間隔 '+sample.maxFrameGapMs+'ms / 再生中 '+sample.videos.filter(v=&gt;!v.paused&amp;&amp;!v.error&amp;&amp;v.readyState&gt;=2).length+'体');
+ }
+ if(report.error)lines.push('未完了：'+report.error);
+ lines.push('全編の四角い範囲の間隔：HP目安8px・操作12px。0pxは範囲の接触・重なりで、実際の描画部分の重なりは未判定です。');
+ out.textContent=lines.join('\n');
+ let details=document.getElementById('granMetricsDetails');
+ if(!details){details=document.createElement('details');details.id='granMetricsDetails';granPanel.append(details);}
+ details.replaceChildren();const summary=document.createElement('summary');summary.textContent='詳細データ';details.append(summary);
+ const raw=document.createElement('pre');raw.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';raw.textContent=JSON.stringify(report,null,2);details.append(raw);
+ window.granReviewMetrics=report;
+ return report;
+}
+const metricsButton=document.createElement('button');metricsButton.type='button';metricsButton.textContent='まとめて計測（約1分）';metricsButton.style.cssText='min-height:48px;margin:4px';metricsButton.onclick=granReviewCollect;document.getElementById('granReviewControls').append(metricsButton);
+&lt;/script&gt;&lt;/body&gt;
+&lt;/html&gt;
+"></iframe><script>
+const frame=document.querySelector('iframe'),status=document.getElementById('loadStatus');
+let settled=false;
+function checkReview(){
+ if(settled)return;
+ try{
+  const doc=frame.contentDocument;
+  if(!doc||!doc.querySelector('#granReviewControls button')||[...doc.querySelectorAll('link[rel=stylesheet]')].some(link=>!link.sheet)||!doc.querySelector('#battle.active'))throw Error('resources');
+  const species=new URLSearchParams(location.search).get('species');
+  if(species&&frame.contentWindow.granReviewSetup('ally','grassland',species)){doc.querySelector('[aria-label="確認モンスター"]').value=species;}
+  settled=true;frame.style.visibility='visible';status.textContent='';frame.contentWindow.dispatchEvent(new Event('resize'));
+ }catch{
+  settled=true;status.textContent='戦闘画面の読み込みに失敗しました。ページを再読み込みしてください。改善しない場合は、この表示をお知らせください。';
+ }
+}
+frame.addEventListener('load',checkReview);
+setTimeout(()=>{if(!settled){status.textContent='読み込みが完了していません。通信状態を確認して再読み込みしてください。';}},20000);
+</script></html>

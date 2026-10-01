@@ -16,7 +16,7 @@ function battleHistoryEntry(text,kind='result'){
     const row=document.createElement('li');row.textContent=`${turn?`T${turn}`:'開始'} · ${text}`;list.appendChild(row);
     while(list.children.length>BATTLE_HISTORY_LIMIT)list.firstElementChild.remove();
   }
-  const count=document.getElementById('battleHistoryCount');if(count)count.textContent=`${battleFeedback.history.length}件（最新${BATTLE_HISTORY_LIMIT}件まで）`;
+  const count=document.getElementById('battleHistoryCount');if(count)count.textContent=`${battleFeedback.history.length}件`;
 }
 function captureBattleLog(){
   const log=document.getElementById('log');if(!log)return;
@@ -32,6 +32,9 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof disposeBattleIdleMedia==='function')disposeBattleIdleMedia();
+  if(typeof battleUiClear==='function')battleUiClear();
+  if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
   battleFeedback.hp.clear();battleFeedback.states.clear();battleFeedback.results.clear();battleFeedback.sequence++;
@@ -41,12 +44,19 @@ function resetBattleFeedback(){
   document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
 }
 function beginBattleAction(actor,move,isPlayer){
+  if(typeof battleUiClear==='function')battleUiClear();
+  if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.results.clear();document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
   const log=document.getElementById('log');if(log)log.innerHTML='';battleFeedback.lastLog='';
   battleFeedback.action=`${isPlayer?'味方':'敵'}・${actor.name}の「${move[0]}」`;
   battleHistoryEntry(battleFeedback.action,'action');
   renderBattleInputState();
+}
+function showSingleBattleActionTarget(targetId){
+  if(multiBattle?.active||!battleFeedback.action)return;
+  const target=battleCombatants().find(unit=>unit.vis===targetId);
+  if(target){battleFeedback.action=battleFeedback.action.split(' → ')[0]+` → ${target.name}`;renderBattleInputState();}
 }
 function renderBattleInputState(){
   const screen=document.getElementById('battle');if(!screen)return;
@@ -62,7 +72,10 @@ function renderBattleInputState(){
   const text=finished?'戦闘終了・履歴を確認できます':busy?(battleFeedback.action||'行動を処理しています'):target?'対象を選んでください':selecting?'技を選んでください':'コマンドを選んでください';
   if(title)title.textContent=text;
   const status=document.getElementById('battleActionStatus');if(status)status.textContent=text;
-  if(!busy)battleFeedback.action='';
+  if(!busy||finished){battleFeedback.action='';if(typeof clearBattleStageAction==='function')clearBattleStageAction();}
+  if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
+  if(typeof syncBattleUi==='function')syncBattleUi();
+  if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
 }
 function battleCombatants(){
   if(!player||!enemy)return [];
@@ -92,7 +105,7 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const text=`${label} ${loss<0||/回復|吸収|再生/.test(label)?'+':'−'}${amount}${reduced?` / 軽減 ${reduced}`:''}${barrier?` / 障壁 ${barrier}`:''}${over?` / 超過 ${over}`:''}`;
   battleFeedback.hp.set(u.key,Math.max(0,after));
   renderBattleHpAtImpact(u,after);
-  battleHistoryEntry(`${u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
+  battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
   if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);
@@ -112,10 +125,11 @@ function renderBattleHpAtImpact(u,after){
 }
 function renderBattleHpResults(u,queue){
   const target=document.getElementById(u.vis);if(!target)return;
-  const host=target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
-  let result=host.querySelector('.battle-hp-result');
-  if(!result){result=document.createElement('div');result.className='battle-hp-result';host.appendChild(result);}
-  const text=queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
+  const single=document.getElementById('battle')?.classList.contains('is-battle-stage');
+  const host=single?document.getElementById('battleStageResults'):target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
+  let result=host.querySelector(single?`[data-result-vis="${u.vis}"]`:'.battle-hp-result');
+  if(!result){result=document.createElement('div');result.className='battle-hp-result';result.dataset.resultVis=u.vis;host.appendChild(result);}
+  const text=(single?`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：`:'')+queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
 }
 function refreshBattleFeedback(message=''){
   for(const u of battleCombatants()){
@@ -126,10 +140,11 @@ function refreshBattleFeedback(message=''){
     }else battleFeedback.hp.set(u.key,hp);
     const labels=battleStateLabels(u),state=labels.join('・');
     const prior=battleFeedback.states.get(u.key);
-    if(prior!==undefined&&prior!==state)battleHistoryEntry(`${u.name}：${state||'状態正常（効果解除）'}`,'status');
+    if(prior!==undefined&&prior!==state)battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');
     battleFeedback.states.set(u.key,state);
     const el=document.getElementById(u.statusId);
-    if(el){el.classList.toggle('is-normal',labels.length===0);el.replaceChildren();for(const label of labels.length?labels:['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.appendChild(chip);}}
+    if(el&&typeof renderBattleStateSummary==='function'){el.classList.toggle('is-normal',labels.length===0);renderBattleStateSummary(el,labels,u);}
+    else if(el){el.classList.toggle('is-normal',labels.length===0);el.replaceChildren();for(const label of labels.length?labels:['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.appendChild(chip);}}
     const queue=battleFeedback.results.get(u.key);if(queue)renderBattleHpResults(u,queue);
   }
   renderBattleInputState();
@@ -149,6 +164,7 @@ function reconcileBattleNode(node,next){
   children.slice(incoming.length).forEach(child=>child.remove());
 }
 function renderMultiBattleCards(html){
+  if(typeof renderMultiBattleStageCards==='function'){renderMultiBattleStageCards(html);return;}
   const grid=document.getElementById('multiEnemyGrid');if(!grid)return;
   const template=document.createElement('div');template.innerHTML=html;
   for(const next of [...template.children]){
