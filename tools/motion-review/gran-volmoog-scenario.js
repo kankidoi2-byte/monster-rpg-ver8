@@ -56,9 +56,10 @@ function granReviewMeasure(){
  const report={viewport:[innerWidth,innerHeight],units,note:'現在の配置と既存全編bboxの計算。動画全編の目視、発熱、足場の自然さの合格ではない。'};
  document.getElementById('granReviewResult').textContent=JSON.stringify(report,null,2);return report;
 }
-const granPanel=document.createElement('section');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
+const granPanel=document.createElement('details');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
 granPanel.innerHTML='<strong>Phase D・配置確認</strong><p>採用した体格差で50体を順に確認できます。前／次で種類を切り替え、一覧で大きさを比較できます。足場の自然さ、翼・尾とHPの間隔、横向き・文字拡大を確認してください。</p><div id="granReviewControls"></div><pre id="granReviewResult" style="white-space:pre-wrap"></pre>';
 document.body.prepend(granPanel);
+const granPanelSummary=document.createElement('summary');granPanelSummary.textContent='モンスター・背景の確認設定';granPanelSummary.style.cssText='min-height:48px;display:flex;align-items:center;cursor:pointer';granPanel.prepend(granPanelSummary);
 const granMap=document.createElement('select');granMap.setAttribute('aria-label','確認マップ');granMap.style.minHeight='48px';
 for(const map of MAPS){const opt=document.createElement('option');opt.value=map.id;opt.textContent=map.name;granMap.append(opt);}
 document.getElementById('granReviewControls').append(granMap);

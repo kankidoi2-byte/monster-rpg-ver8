@@ -1,0 +1,35 @@
+/* Shared artwork row: enemy tracks on the right, ally on the left. */
+#battle.is-battle-stage .battle-arena{grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto var(--battle-art-height,160px) auto;gap:8px;min-height:0;height:auto;padding:8px;box-sizing:border-box}
+#battle.is-battle-stage #singleEnemyBox{grid-column:2;grid-row:1;width:100%}
+#battle.is-battle-stage #singlePlayerBox{grid-column:1/-1;grid-row:3;width:100%;min-height:0}
+#battle.is-battle-stage #pBattleSlot{grid-column:1;grid-row:2;width:100%;min-height:0;height:var(--battle-art-height,160px);padding:8px}
+#battle.is-battle-stage #eBattleSlot{grid-column:2;grid-row:2;width:100%;min-height:0;height:var(--battle-art-height,160px);padding:8px}
+#battle.is-battle-stage #multiEnemyGrid:not(.hidden){grid-column:2;grid-row:1/3;grid-template-rows:auto var(--battle-art-height,160px);gap:8px;width:100%;min-height:0;align-self:stretch}
+#battle.is-battle-stage .multi-enemy-card>.battle-stage-slot{min-height:0;height:var(--battle-art-height,160px);padding:8px}
+#battle.is-battle-stage .multi-enemy-visual{min-height:0}
+#battle.is-battle-stage :is(.battle-combatant,.multi-enemy-copy){padding:6px;line-height:1.25}
+#battle.is-battle-stage .battle-nameplate h2,#battle.is-battle-stage .multi-enemy-heading h2{font-size:.875rem;line-height:1.25}
+#battle.is-battle-stage .battle-side-label{display:none}
+#battle.is-battle-stage .multi-enemy-hp{margin:4px 0}
+#battle.is-battle-stage .battle-enemy-controls{flex-direction:row;flex-wrap:wrap;gap:4px;margin-top:4px}
+#battle.is-battle-stage .battle-enemy-controls button{min-height:48px;font-size:.875rem;padding:4px}
+#battle.is-battle-stage #battleCompactTools{display:grid;grid-template-columns:1fr 1fr;align-items:start;background:#102647}
+#battle.is-battle-stage #battleCompactTools>details{min-width:0;margin:0;border:0;color:#f8f3de}
+#battle.is-battle-stage #battleCompactTools>details>summary{min-height:48px;padding:8px;display:flex;align-items:center;font-size:.875rem;box-sizing:border-box;cursor:pointer}
+#battle.is-battle-stage #battleCompactTools>details[open]{grid-column:1/-1}
+#battle.is-battle-stage #battleCompactInfo>section{padding:8px;border-top:1px solid #637e99}
+#battle.is-battle-stage #battleCompactInfo>section[hidden]{display:none}
+#battle.is-battle-stage #battleCompactInfo h3{font-size:1rem;margin:0 0 4px;color:#f8f3de}
+#battle.is-battle-stage #battleCompactInfo :is(.battle-detail,.battle-idle-details){margin:0}
+#battle.is-battle-stage .battle-command-title{margin:0 0 4px}
+#battle.is-battle-stage .battle-command-pad{grid-template-rows:minmax(64px,auto) minmax(48px,auto);gap:4px}
+#battle.is-battle-stage .battle-command-pad .battle-pad-center,#battle.is-battle-stage .battle-command-pad #battleSkillButton{min-height:64px;border-radius:24px!important}
+#battle.is-battle-stage .battle-command-dock{padding:6px}
+#battle.is-battle-stage #itemText:empty{display:none}
+#battle.is-battle-stage .battle-action-status{min-height:44px;padding:6px 8px;line-height:1.3}
+#battle.is-battle-stage #battleStageResults:empty{display:none}
+/* Larger text, opened information, targeting and results may scroll naturally.
+   No overflow:hidden on the screen and no fixed overlay covers controls. */
+@media(min-width:600px) and (orientation:landscape){
+  #battle.is-battle-stage.active{display:block;width:min(100%,760px)}
+}

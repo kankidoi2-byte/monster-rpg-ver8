@@ -520,7 +520,12 @@ function clearBattleIdleSizes(){
 function syncBattleIdleSizes(candidates){
   const arena=document.querySelector('#battle .battle-arena');
   const enemies=candidates.filter(u=>u.vis!=='pVis');
-  const plan=battleIdleStageSizePlan(enemies.map(u=>BATTLE_IDLE_MEDIA[u.mon.id]),arena?.clientWidth);
+  const enemyConfigs=enemies.map(u=>BATTLE_IDLE_MEDIA[u.mon.id]);
+  const ally=candidates.find(u=>u.vis==='pVis');
+  const compactHeight=Number(arena?.dataset.compactHeight);
+  const plan=compactHeight>0&&typeof battleCompactSizePlan==='function'
+    ?battleCompactSizePlan(enemyConfigs,ally&&BATTLE_IDLE_MEDIA[ally.mon.id],arena?.clientWidth,compactHeight)
+    :battleIdleStageSizePlan(enemyConfigs,arena?.clientWidth);
   if(plan){arena.dataset.sizeUnit=String(plan.unit);arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
     const grid=document.getElementById('multiEnemyGrid');
     if(multiBattle?.active&&plan.weights.length===2)grid?.style.setProperty('grid-template-columns',plan.weights.map(w=>`minmax(0,${w}fr)`).join(' '));
@@ -561,6 +566,7 @@ function syncBattleIdleMedia(){
   syncBattleIdleSizes(candidates);
   for(const chosen of selected)syncBattleIdleCandidate(chosen);
   refreshBattleIdlePrimary();
+  if(typeof syncBattleViewport==='function')syncBattleViewport();
 }
 function syncBattleIdleCandidate(chosen){
   const media=document.getElementById(chosen.vis)?.querySelector('.battle-static-media');
@@ -584,7 +590,7 @@ function syncBattleIdleCandidate(chosen){
       r.remaining=BATTLE_IDLE_WAIT_MS;createBattleIdleVideo(r);syncBattleIdleMedia();
     };
   }
-  const r=battleIdleRecords.get(chosen.key);if(hud&&!hud.contains(r.details))hud.append(r.details);
+  const r=battleIdleRecords.get(chosen.key);if(hud&&!hud.contains(r.details)&&!r.details.closest('#battleCompactInfo'))hud.append(r.details);
   r.reasons=battleIdleStops(r);
   if(r.reasons.length){
     if(r.pending){r.playToken++;r.pending=false;}

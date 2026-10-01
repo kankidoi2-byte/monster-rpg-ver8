@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261001-battle-viewport",date:"2026-10-01",category:"update",title:"戦闘画面の縦配置を調整しました",body:"モンスターの体格差を保ちながら、画面の高さに合わせて表示領域を調整しました。能力と表示設定は画面下の項目から確認できます。"}),
   Object.freeze({id:"20261001-phase-d-star1-body-size",date:"2026-10-01",category:"update",title:"星1モンスターの体格を調整しました",body:"スライムの小ささを保ち、ほかの星1モンスターは体形に合わせて少し大きく表示するようにしました。星2以上の表示サイズはそのままです。"}),
   Object.freeze({id:"20261001-phase-d-size2",date:"2026-10-01",category:"update",title:"小型と大型の体格差を広げました",body:"戦闘中のモンスターの大きさを再調整しました。味方と敵で共通の大きさを基準にし、静止表示にも同じ設定を使います。"}),
   Object.freeze({id:"20261001-phase-d-size",date:"2026-10-01",category:"update",title:"モンスターの体格差を調整しました",body:"戦闘中のモンスターに、レアリティを目安とした表示サイズを設定しました。小型と大型の大きさの違いが分かるように、動画と静止画を同じ倍率で表示します。"}),

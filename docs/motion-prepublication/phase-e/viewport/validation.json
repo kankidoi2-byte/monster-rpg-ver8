@@ -1,0 +1,36 @@
+{
+  "dateJST": "2026-10-01",
+  "baseCommit": "b16014d6d3829b7be35426d07fc33d279543c97a",
+  "changes": "compact battle presentation; accepted species layout scales unchanged",
+  "sourceSha256": {
+    "index.html": "c025e6a76b833b2695f103bcaaddb42c461ec945ac4963886f8cff4eb38c2a82",
+    "js/battle-stage.js": "d21b90b6a4911c8e11162f1cf3097b98d496c5f3363fba35f3e9f2f8b2d8b961",
+    "js/battle-idle-media.js": "2e15e0c30cef588bd34ac935c356651b2c05bc16ffd50d11ea82c93b50837165",
+    "js/battle-viewport.js": "756d2dcf43409f8bd4021839fb3d587b8324f2c48b38f38fd33c8f9ae65badfb",
+    "css/battle-viewport.css": "0e7f4acc3f3bc685f43f3799e11a3e317d6decd7157304ca1dd9984efa5fb1d8",
+    "js/notices-data.js": "22c84f1b79ca4ca5d48437cf2f340874cf9666cb05f1b8ca7923afd2c006fe9a",
+    "tools/motion-review/gran-volmoog-scenario.js": "e640da6e36abfb87b651e5a7245d119a7f47443249d403126f47275f8b54284b",
+    "tools/motion-review/build-gran-review.mjs": "f6cd187db894f791a81d4e09f20a3ad854e9ef2e87f95b8086049d0e823f1a31",
+    "tools/motion-review/gran-volmoog-review.generated.html": "958147263b02b472a54c49fc51dd9fe509d62dd709f0bd2b263445fdff5ce13a"
+  },
+  "fullCheck": {
+    "command": "npm run check",
+    "exitCode": 0,
+    "includingPostcheck": true
+  },
+  "relatedDomChecks": {
+    "passed": 8,
+    "geometryCases": 30000,
+    "budgetApplication": "synthetic measured DOM rectangles; standard fits budget and short viewport scroll fallback"
+  },
+  "realBrowserLayout": "not performed: supported browser QA skill unavailable; no alternative browser path used",
+  "realGalaxy": "pending for this changed layout",
+  "mainMerge": false,
+  "generalPublication": false,
+  "site": {
+    "sourceCommit": "17cdc85768adcf9a50c06da54e93e68cef38bc1a",
+    "deployment": "appgdep_6abe4566ddf88191b0a60416d90f9f56",
+    "status": "succeeded",
+    "ownerOnly": true
+  }
+}

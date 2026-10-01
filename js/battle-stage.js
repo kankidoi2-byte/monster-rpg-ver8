@@ -45,12 +45,13 @@ function syncSingleBattleStage(){
   const history=screen.querySelector('.battle-log-panel'),dock=screen.querySelector('.battle-command-dock');
   const pad=screen.querySelector('.battle-command-pad');
   {
-    if(history&&screen.lastElementChild!==history)screen.appendChild(history);
+    if(history&&screen.lastElementChild!==history&&!history.closest('#battleCompactTools'))screen.appendChild(history);
     const order=['kokoroLinkButton','battleSkillButton','battleItemButton','battleSwitchButton','battleEscapeButton'];
     if(pad&&pad.firstElementChild?.id!==order[0])for(const id of order)pad.appendChild(document.getElementById(id));
   }
   if(dock)dock.dataset.stage=single?'single':'multi';
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
+  if(typeof syncBattleViewport==='function')syncBattleViewport();
 }
 
 // Each entry object is one combatant lifetime; no species-only cache and no save fields.
