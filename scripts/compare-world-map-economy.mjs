@@ -98,7 +98,15 @@ function functionSource(source,name){
   assert.fail(`function ${name} is not balanced`);
 }
 
-function normalizedRuleSource(source){
+function normalizedRuleSource(source,name){
+  // Presentation-only evolution scheduling moved from win to afterBattleNext.
+  // Exclude exactly that audited tail, preserving every reward/contract statement.
+  if(name==='win')source=source
+    .replace(/if\(!tutorialOutcomeHandled\)setTimeout\(processNextEvolution,\s*300\);/g,'')
+    .replace(/^[ \t]*\/\/ afterBattleNext opens queued evolution after the result\/contract actions\.[ \t]*$/gm,'');
+  if(name==='winMultiBattle')source=source
+    .replace(/setTimeout\(processNextEvolution,\s*300\);/g,'')
+    .replace(/\/\/ Queued evolution opens afterBattleNext\./g,'');
   return source
     .replace(/if\(typeof recordWorldMapVictory==='function'\)\s*recordWorldMapVictory\(\);?/g,'')
     .replace(/\s+/g,'');
@@ -282,8 +290,8 @@ for(const [file,name] of [
   ['js/expedition.js','progressActiveExpeditions'],['js/expedition.js','expeditionRewardPlan']
 ]){
   assert.equal(
-    normalizedRuleSource(functionSource(current.source[file],name)),
-    normalizedRuleSource(functionSource(baseline.source[file],name)),
+    normalizedRuleSource(functionSource(current.source[file],name),name),
+    normalizedRuleSource(functionSource(baseline.source[file],name),name),
     `${file}:${name} reward rule diverged`
   );
 }

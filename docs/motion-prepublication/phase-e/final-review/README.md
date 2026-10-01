@@ -53,3 +53,13 @@ Site source `6068c4b78cca111b1af38c59e8caa30099c39bce`、deployment `appgdep_6ab
 ## 07:26 JSTの実機報告・計測更新
 
 本人から今回の確認範囲で問題報告なし。エリクシオン1体・3体の配信/再生計測を受領。HP0pxの長方形判定と、敵0.85倍の診断補正漏れを切り分けた。詳細と未確認範囲は `device-review-20261002.md`。採用配置は維持し、診断のみ修正。最終50体ゲートと本編公開禁止は維持する。
+
+## 07:42 JST依頼の組み込み前検査
+
+最新main `60e4e15171ff6fb2f98361e5c37aa2e4f0609b6a` との比較は99 ahead / 0 behind（検査開始head `873867a682599958df5e353434b5ed677ed7f326`）、差分424ファイル、diff --check PASS。既存セーブ・ゲームデータ・戦闘ルール・CI設定の差分なし。`npm run check`はpostcheckを含めPASS（`integration-full-check.log`）。
+
+CIの追加検査 `check:world-map-economy` は進化表示タイミングの移動を報酬差分として検出して失敗した。確認済みの進化タイマー/説明コメントだけを比較から除外し、報酬関数本文・契約・報酬データと固定乱数20勝比較は維持。修正後PASS（`integration-economy-check.log`）。ゲーム挙動の変更なし、告知不要。
+
+検査開始headのGitHub Actions/check-runs/statusesは全て0件。CI設定はpull_requestまたはmain pushだけで実行され、作業ブランチ保存のみでは起動しない。CIを実測するためDraft PRを作成する。PR作成は本編マージではなく、main・本編公開禁止は維持する。CIの実行結果はPRの最新headに対して確認し、0件を成功扱いしない。
+
+修正版の実機再計測は `device-review-20261002.md`。短時間再生は良好だが、味方HP0pxの実alpha交差・詳細座標、長時間/発熱/実BFCache、全19背景×全50体の網羅確認、素材原本再現性は未完。組み込み候補は用意できたが、全条件受入済み・公開可能とは判定しない。
