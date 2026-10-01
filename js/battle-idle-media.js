@@ -1,4 +1,4 @@
-/* Provisional visual sizes: ★1=.30, ★2=.50, ★3=.75, ★4=1.00, ★5=1.20.
+/* Provisional visual sizes: ★1=.35–.45 (slime=.30), ★2=.50, ★3=.75, ★4=1.00, ★5=1.20.
  * Ratios apply to contained full-loop bounds; gameplay rarity and saves are unchanged. */
 /* Independent display lifetimes; bounded feature-branch registrations, default budget 1. */
 const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
@@ -52,7 +52,7 @@ const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
 }),goblin:Object.freeze({
   src:'images/monsters/motion/goblin_v1_alpha.webm',poster:'images/monsters/motion/goblin_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.4}),
   sourceBounds:Object.freeze({width:960,height:960,x:71,y:125,right:887,bottom:828})
 }),
 nightmare:Object.freeze({
@@ -98,7 +98,7 @@ false_dragon_alfa:Object.freeze({
 volteck:Object.freeze({
   src:'images/monsters/motion/volteck_v4_alpha.webm',poster:'images/monsters/motion/volteck_v4_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.35}),
   sourceBounds:Object.freeze({width:960,height:960,x:62,y:149,right:901,bottom:835})
 }),
 spaquinn:Object.freeze({
@@ -115,7 +115,7 @@ voltax:Object.freeze({
 }),freigal:Object.freeze({
   src:'images/monsters/motion/freigal_v2_alpha.webm',poster:'images/monsters/motion/freigal_v2_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.4}),
   sourceBounds:Object.freeze({width:960,height:960,x:181,y:82,right:873,bottom:839})
 }),
 freiwolf:Object.freeze({
@@ -127,7 +127,7 @@ freiwolf:Object.freeze({
 aquaron:Object.freeze({
   src:'images/monsters/motion/aquaron_v3_alpha.webm',poster:'images/monsters/motion/aquaron_v3_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
   sourceBounds:Object.freeze({width:960,height:960,x:36,y:6,right:941,bottom:949})
 }),
 highaquaron:Object.freeze({
@@ -138,7 +138,7 @@ highaquaron:Object.freeze({
 }),grassbeat:Object.freeze({
   src:'images/monsters/motion/grassbeat_v1_alpha.webm',poster:'images/monsters/motion/grassbeat_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.35}),
   sourceBounds:Object.freeze({width:960,height:960,x:103,y:176,right:867,bottom:795})
 }),
 thornbeat:Object.freeze({
@@ -156,7 +156,7 @@ granbeat:Object.freeze({
 rikasheef:Object.freeze({
   src:'images/monsters/motion/rikasheef_v1_alpha.webm',poster:'images/monsters/motion/rikasheef_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.4}),
   sourceBounds:Object.freeze({width:960,height:960,x:202,y:91,right:780,bottom:852})
 }),seralphia:Object.freeze({
   src:'images/monsters/motion/seralphia_v1_alpha.webm',poster:'images/monsters/motion/seralphia_v1_static.webp',
@@ -167,7 +167,7 @@ rikasheef:Object.freeze({
 sylphin:Object.freeze({
   src:'images/monsters/motion/sylphin_v1_alpha.webm',poster:'images/monsters/motion/sylphin_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
   sourceBounds:Object.freeze({width:960,height:960,x:145,y:161,right:831,bottom:808})
 }),
 zephyray:Object.freeze({
@@ -185,7 +185,7 @@ tempestray:Object.freeze({
 luxseed:Object.freeze({
   src:'images/monsters/motion/luxseed_v1_alpha.webm',poster:'images/monsters/motion/luxseed_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
   sourceBounds:Object.freeze({width:960,height:960,x:112,y:125,right:845,bottom:847})
 }),
 luxiard:Object.freeze({
@@ -203,7 +203,7 @@ lux_galdion:Object.freeze({
 nocle:Object.freeze({
   src:'images/monsters/motion/nocle_v1_alpha.webm',poster:'images/monsters/motion/nocle_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  layout:Object.freeze({x:0.5,y:1,scale:0.45}),
   sourceBounds:Object.freeze({width:960,height:960,x:143,y:119,right:867,bottom:863})
 }),
 noclaid:Object.freeze({

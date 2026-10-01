@@ -38,7 +38,7 @@ const layoutCases=run(`Object.entries(BATTLE_IDLE_MEDIA).map(([id,c])=>({id,boun
 let layoutChecks=0;
 for(const c of layoutCases){
  assert(c.bounds,c.id+' missing measured full-loop bounds');
- assert.equal(c.layout.scale,[0,.3,.5,.75,1,1.2][c.rarity],c.id+' provisional rarity size');
+ assert.equal(c.layout.scale,({freigal:.4,aquaron:.45,grassbeat:.35,rikasheef:.4,volteck:.35,goblin:.4,sylphin:.45,nocle:.45,luxseed:.45})[c.id]??[0,.3,.5,.75,1,1.2][c.rarity],c.id+' rarity size with star1 body correction');
  for(const [width,height] of [[96,96],[160,160],[320,100],[100,320],[320,430],[430,320],[160,215],[215,160]]){
   const fit=run(`battleIdleBoundsFit(${JSON.stringify(c.bounds)},${width},${height},${JSON.stringify(c.layout||{})})`);
   assert(fit,c.id);const b=c.bounds,eps=1e-7;
