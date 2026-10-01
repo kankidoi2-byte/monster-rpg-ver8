@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phase C・モンスター戦闘確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>追加モンスターの戦闘接続を検証しています。通常登録経路の検証用。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="Phase C・モンスター戦闘確認" sandbox="allow-scripts allow-same-origin" srcdoc="&lt;!doctype html&gt;
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phase D・50体の体格確認</title><style>body{margin:0;background:#102647;color:white;font:16px sans-serif}p{padding:8px;margin:0}iframe{width:100%;height:calc(100dvh - 74px);border:0}</style><p>採用サイズ：★1 30%・★2 50%・★3 75%・★4 100%・★5 120%。本編のセーブは使用しません。</p><p id="loadStatus" role="status">戦闘画面を読み込んでいます…</p><iframe style="visibility:hidden" title="Phase D・50体の体格確認" sandbox="allow-scripts allow-same-origin" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;ja&quot;&gt;
 &lt;head&gt;&lt;base href=&quot;../../&quot;&gt;&lt;script&gt;for(const name of ['localStorage','sessionStorage']){
  const data=new Map();Object.defineProperty(window,name,{value:{
@@ -1232,7 +1232,7 @@ window.addEventListener('resize',()=&gt;{
 &lt;/script&gt;
 &lt;script src=&quot;js/init.js?v=golden-land-release-1&quot;&gt;&lt;/script&gt;
 &lt;script&gt;// Runs only in the generated sandbox. Storage was replaced before game boot.
-let granReviewSpecies='gran_volmoog',granReviewMixed=false;
+let granReviewSpecies='gran_volmoog',granReviewMixed=false,granReviewMode='ally';
 // Isolate the selected species in this QA document. As registration expands,
 // a supporting ally must not take the one decoder slot from the reviewed enemy.
 const granReviewAllCandidates=battleIdleCandidates;
@@ -1241,8 +1241,9 @@ function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies
  if(!Object.hasOwn(BATTLE_IDLE_MEDIA,species))return false;
  granReviewSpecies=species;
  if(!['ally','enemy','multi','mixed'].includes(mode))return false;
- granReviewMixed=mode==='mixed';
+ granReviewMixed=mode==='mixed';granReviewMode=mode;
  const map=MAPS.find(m=&gt;m.id===mapId);if(!map)return false;
+ granMap.value=mapId;granSpecies.value=species;
  disposeBattleIdleMedia();setBattleIdleLimit(1);
  save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};
  save.instances=[];save.party=[];
@@ -1256,6 +1257,7 @@ function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies
    ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(mode==='mixed'?'orca_abyss':species),'enemy_a'),createMultiEnemy(by(mode==='mixed'?'slime':species),'enemy_b')],pendingMoveIndex:null};
    setMultiBattleLayout(true);setupMultiBattle();setBattleIdleLimit(3);
  }
+ granReviewUpdateProgress();
  document.getElementById('granReviewResult').textContent='表示確認待ち：'+by(species).name+' / '+mode+' / '+map.name;
  return true;
 }
@@ -1288,17 +1290,49 @@ function granReviewMeasure(){
  document.getElementById('granReviewResult').textContent=JSON.stringify(report,null,2);return report;
 }
 const granPanel=document.createElement('section');granPanel.style.cssText='padding:8px;background:#102647;color:white;position:relative;z-index:1000';
-granPanel.innerHTML='&lt;strong&gt;Phase D・配置確認&lt;/strong&gt;&lt;p&gt;19背景で大型・横長・小型の組み合わせを確認できます。足場の自然さ、翼・尾とHPの間隔、横向き・文字拡大を確認してください。&lt;/p&gt;&lt;div id=&quot;granReviewControls&quot;&gt;&lt;/div&gt;&lt;pre id=&quot;granReviewResult&quot; style=&quot;white-space:pre-wrap&quot;&gt;&lt;/pre&gt;';
+granPanel.innerHTML='&lt;strong&gt;Phase D・配置確認&lt;/strong&gt;&lt;p&gt;採用した体格差で50体を順に確認できます。前／次で種類を切り替え、一覧で大きさを比較できます。足場の自然さ、翼・尾とHPの間隔、横向き・文字拡大を確認してください。&lt;/p&gt;&lt;div id=&quot;granReviewControls&quot;&gt;&lt;/div&gt;&lt;pre id=&quot;granReviewResult&quot; style=&quot;white-space:pre-wrap&quot;&gt;&lt;/pre&gt;';
 document.body.prepend(granPanel);
 const granMap=document.createElement('select');granMap.setAttribute('aria-label','確認マップ');granMap.style.minHeight='48px';
 for(const map of MAPS){const opt=document.createElement('option');opt.value=map.id;opt.textContent=map.name;granMap.append(opt);}
 document.getElementById('granReviewControls').append(granMap);
 const granSpecies=document.createElement('select');granSpecies.setAttribute('aria-label','確認モンスター');granSpecies.style.minHeight='48px';
-for(const id of ['gran_volmoog',...Object.keys(BATTLE_IDLE_MEDIA).filter(id=&gt;id!=='gran_volmoog')]){const opt=document.createElement('option');opt.value=id;opt.textContent=by(id).name;granSpecies.append(opt);}
-granSpecies.onchange=()=&gt;{document.getElementById('granMetricsDetails')?.remove();window.granReviewMetrics=null;granReviewSetup('ally',granMap.value,granSpecies.value);};
+const granReviewOrder=Object.keys(BATTLE_IDLE_MEDIA).sort((a,b)=&gt;by(a).rarity.length-by(b).rarity.length||(by(a).dexNo||by(a).no)-(by(b).dexNo||by(b).no));
+for(const id of granReviewOrder){const opt=document.createElement('option');opt.value=id;opt.textContent=by(id).rarity+' '+Math.round(BATTLE_IDLE_MEDIA[id].layout.scale*100)+'% · '+by(id).name;granSpecies.append(opt);}
+granSpecies.value=granReviewSpecies;
+function granReviewSelectSpecies(id){
+ document.getElementById('granMetricsDetails')?.remove();window.granReviewMetrics=null;
+ granSpecies.value=id;return granReviewSetup(granReviewMode,granMap.value,id);
+}
+granSpecies.onchange=()=&gt;granReviewSelectSpecies(granSpecies.value);
+granMap.onchange=()=&gt;granReviewSetup(granReviewMode,granMap.value,granSpecies.value);
 document.getElementById('granReviewControls').prepend(granSpecies);
+const granReviewProgress=document.createElement('p');granReviewProgress.id='granReviewProgress';granReviewProgress.setAttribute('aria-live','polite');granPanel.insertBefore(granReviewProgress,document.getElementById('granReviewControls'));
+function granReviewUpdateProgress(){
+ const index=granReviewOrder.indexOf(granReviewSpecies),mon=by(granReviewSpecies);
+ granReviewProgress.textContent=(index+1)+' / '+granReviewOrder.length+' · '+mon.rarity+' · '+mon.name+' · '+Math.round(BATTLE_IDLE_MEDIA[mon.id].layout.scale*100)+'%';
+}
+function granReviewStep(delta){
+ const index=granReviewOrder.indexOf(granReviewSpecies);
+ return granReviewSelectSpecies(granReviewOrder[(index+delta+granReviewOrder.length)%granReviewOrder.length]);
+}
+function granReviewToggleSizeGallery(){
+ let gallery=document.getElementById('granReviewSizeGallery');
+ if(gallery){gallery.hidden=!gallery.hidden;return;}
+ gallery=document.createElement('section');gallery.id='granReviewSizeGallery';
+ const heading=document.createElement('h2');heading.textContent='50体の体格一覧';gallery.append(heading);
+ const note=document.createElement('p');note.textContent='同じ基準で静止素材を比較します。種類を押すと戦闘配置へ戻ります。背景や動きの確認は戦闘画面で行ってください。';gallery.append(note);
+ const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px';
+ for(const id of granReviewOrder){
+  const config=BATTLE_IDLE_MEDIA[id],mon=by(id),card=document.createElement('button');card.type='button';card.dataset.sizeSpecies=id;card.style.cssText='margin:0;padding:4px;min-height:180px;width:100%;background:#183653;color:white;border:1px solid #c9a862;border-radius:8px;white-space:normal';
+  const box=document.createElement('span');box.style.cssText='position:relative;display:block;width:136px;height:136px;margin:auto;overflow:hidden';
+  const fit=battleIdleBoundsFit(config.sourceBounds,136,136,config.layout,100),img=document.createElement('img');img.src=config.poster;img.alt=mon.name;img.loading='lazy';img.style.cssText='position:absolute;max-width:none!important;max-height:none!important;width:'+fit.width+'px!important;height:'+fit.height+'px!important;left:'+fit.left+'px;top:'+fit.top+'px;object-fit:contain';box.append(img);
+  const label=document.createElement('span');label.style.display='block';label.textContent=mon.rarity+' '+Math.round(config.layout.scale*100)+'% · '+mon.name;
+  card.append(box,label);card.onclick=()=&gt;{gallery.hidden=true;granReviewSelectSpecies(id);granPanel.scrollIntoView({block:'start'});};grid.append(card);
+ }
+ gallery.append(grid);granPanel.append(gallery);
+}
 
-for(const [label,fn] of [['味方1体',()=&gt;granReviewSetup('ally',granMap.value)],['敵1体',()=&gt;granReviewSetup('enemy',granMap.value)],['同種3体',()=&gt;granReviewSetup('multi',granMap.value)],['大型・横長・小型',()=&gt;{granSpecies.value='elixion';granReviewSetup('mixed',granMap.value,'elixion');}],['間隔を計測',granReviewMeasure],['文字200%',()=&gt;document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=&gt;show('home')]]){
+for(const [label,fn] of [['前の種類',()=&gt;granReviewStep(-1)],['次の種類',()=&gt;granReviewStep(1)],['50体一覧',granReviewToggleSizeGallery],['味方1体',()=&gt;granReviewSetup('ally',granMap.value)],['敵1体',()=&gt;granReviewSetup('enemy',granMap.value)],['同種3体',()=&gt;granReviewSetup('multi',granMap.value)],['大型・横長・小型',()=&gt;{granSpecies.value='elixion';granReviewSetup('mixed',granMap.value,'elixion');}],['間隔を計測',granReviewMeasure],['文字200%',()=&gt;document.documentElement.style.fontSize=document.documentElement.style.fontSize?'':'200%'],['停止・離脱',()=&gt;show('home')]]){
  const b=document.createElement('button');b.textContent=label;b.type='button';b.style.cssText='min-height:48px;margin:4px';b.onclick=fn;document.getElementById('granReviewControls').append(b);
 }
 granReviewSetup();

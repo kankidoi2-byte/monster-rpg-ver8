@@ -49,5 +49,18 @@ for(const map of maps){
  assert.deepEqual(Array.from(run('[...battleIdleRecords.values()].map(r=>Object.entries(BATTLE_IDLE_MEDIA).find(([,c])=>c===r.config)[0])')),['elixion','orca_abyss','slime']);
  run("show('home')");assert.equal(d.querySelectorAll('video').length,0);
 }
+run("granReviewSetup('enemy','forest','slime')");
+assert.equal(run('granReviewMode'),'enemy');
+const cycle=new Set();
+for(let i=0;i<50;i++){cycle.add(run('granReviewSpecies'));assert(run('granReviewStep(1)'));assert.equal(run('granReviewMode'),'enemy');assert.equal(run('granMap.value'),'forest');}
+assert.equal(cycle.size,50,'next traverses each registered species once');
+assert.equal(run('granReviewSpecies'),'slime','cycle wraps without omission');
+const before=run('granReviewSpecies');run('granReviewStep(-1);granReviewStep(1)');assert.equal(run('granReviewSpecies'),before);
+const videoCount=d.querySelectorAll('video').length;
+run('granReviewToggleSizeGallery()');assert.equal(d.querySelectorAll('[data-size-species]').length,50);assert.equal(d.querySelectorAll('video').length,videoCount,'gallery allocates no decoders');
+d.querySelector('[data-size-species="elixion"]').click();assert.equal(run('granReviewSpecies'),'elixion');assert(d.getElementById('granReviewSizeGallery').hidden);
+assert(d.getElementById('granReviewProgress').textContent.includes('120%'));
+run("granMap.value='grassland';granMap.onchange()");assert.equal(run('selectedMap.id'),'grassland');assert.equal(run('granReviewMode'),'enemy');
+run("show('home')");assert.equal(d.querySelectorAll('video').length,0);
 dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
-console.log(JSON.stringify({scope:'19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending',results,passed:maps.length,mixedSpeciesMaps:maps.length},null,2));
+console.log(JSON.stringify({scope:'19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending',results,passed:maps.length,mixedSpeciesMaps:maps.length,sizeReview:{speciesCycle:cycle.size,galleryCards:50,modeAndBackgroundPreserved:true,galleryAddsDecoders:false}},null,2));
