@@ -34,10 +34,11 @@ function setup(){run(`save=initSave();completeTutorial();currentTutorialState().
   activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
 // Bounds containment is numeric/DOM evidence, not real browser layout or feet.
-const layoutCases=run(`Object.entries(BATTLE_IDLE_MEDIA).map(([id,c])=>({id,bounds:c.sourceBounds,layout:c.layout}))`);
+const layoutCases=run(`Object.entries(BATTLE_IDLE_MEDIA).map(([id,c])=>({id,bounds:c.sourceBounds,layout:c.layout,rarity:by(id).rarity.length}))`);
 let layoutChecks=0;
 for(const c of layoutCases){
  assert(c.bounds,c.id+' missing measured full-loop bounds');
+ assert.equal(c.layout.scale,[0,.5,.65,.8,.9,1][c.rarity],c.id+' provisional rarity size');
  for(const [width,height] of [[96,96],[160,160],[320,100],[100,320],[320,430],[430,320],[160,215],[215,160]]){
   const fit=run(`battleIdleBoundsFit(${JSON.stringify(c.bounds)},${width},${height},${JSON.stringify(c.layout||{})})`);
   assert(fit,c.id);const b=c.bounds,eps=1e-7;
@@ -45,7 +46,10 @@ for(const c of layoutCases){
   assert(fit.top+b.y*fit.scale>=-eps,c.id+' top');
   assert(fit.left+b.right*fit.scale<=width+eps,c.id+' right');
   assert(fit.top+b.bottom*fit.scale<=height+eps,c.id+' bottom');
-  assert(Math.abs(fit.width/b.width-fit.height/b.height)<eps,c.id+' aspect');layoutChecks++;
+  assert(Math.abs(fit.width/b.width-fit.height/b.height)<eps,c.id+' aspect');
+  const full=run(`battleIdleBoundsFit(${JSON.stringify(c.bounds)},${width},${height},{x:0.5,y:1,scale:1})`);
+  assert(Math.abs(fit.scale/full.scale-c.layout.scale)<eps,c.id+' linear size ratio');
+  assert(Math.abs(fit.top+b.bottom*fit.scale-height)<eps,c.id+' bottom alignment');layoutChecks++;
  }
 }
 assert.equal(layoutCases.length,50);
