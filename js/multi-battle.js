@@ -364,7 +364,7 @@ function winMultiBattle(){
   msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',multi:true,enemies:multiBattle.enemies.map(entry=>entry.mon)});if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();if(typeof recordWorldMapVictory==='function')recordWorldMapVictory();saveGame();
   document.getElementById('log').innerHTML=msg;
   showBattleOutcome({kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`});
-  renderMultiContractPanel();renderParty();setTimeout(processNextEvolution,300);
+  renderMultiContractPanel();renderParty(); // Queued evolution opens afterBattleNext.
 }
 
 function renderMultiContractPanel(){

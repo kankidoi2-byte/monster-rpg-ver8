@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261002-battle-result-order",date:"2026-10-02",category:"fix",title:"勝利後の契約を先に操作できるようにしました",body:"進化できる仲間がいても、勝利後の契約画面に進化の確認が割り込まないようにしました。進化の確認は「次へ」で結果画面を閉じた後に表示します。"}),
   Object.freeze({id:"20261001-battle-target-tidy",date:"2026-10-01",category:"update",title:"攻撃対象を選ぶ画面を整理しました",body:"対象選択の案内を短くまとめ、戻るボタンと技名を1行にしました。下の空白を減らして戦場に余裕を持たせ、設定と履歴の表示も短くしました。"}),
   Object.freeze({id:"20261001-battle-inline-hud",date:"2026-10-01",category:"update",title:"モンスターを見ながら技と対象を選べるようにしました",body:"技選択を下の操作欄に収め、敵の画像やHP欄から攻撃対象を選べるようにしました。名前とHPの表示を小さくまとめ、状態の詳細はタップで確認できます。"}),
   Object.freeze({id:"20261001-battle-skill-sheet",date:"2026-10-01",category:"update",title:"技選択を画面下のパネルにまとめました",body:"技と攻撃対象を画面下のパネルから選べるようにしました。選択中も戦場の大きさを保ちます。技の詳しい効果はパネル内から確認できます。"}),

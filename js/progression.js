@@ -100,6 +100,9 @@ function checkEvolution(ins) {
   }
 }
 function processNextEvolution() {
+  // Never replace an unresolved battle result or its contract animation.
+  const outcome=document.getElementById('battleOutcome');
+  if(typeof battleFeedback!=='undefined'&&battleFeedback.finished&&outcome&&!outcome.classList.contains('hidden'))return;
   if (!pendingEvolutions.length) return;
   currentEvolution = pendingEvolutions.shift();
   const ins = getInstance(currentEvolution.uid);
