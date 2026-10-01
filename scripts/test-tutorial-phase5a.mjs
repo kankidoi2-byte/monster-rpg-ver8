@@ -29,7 +29,7 @@ assert.equal(stepCount(invasionFlow),2,'the invasion guide must remain within 1�
 assert.equal(stepCount(kokoroFlow),2,'the Kokoro Link guide must remain within 1–3 screens');
 
 assert.ok(threeWayFlow.includes('敵同士も攻撃します'),'the three-way guide must explain enemy-versus-enemy attacks');
-assert.ok(threeWayFlow.includes('技を選んだあと')&&threeWayFlow.includes('攻撃対象を決めます'),'the three-way guide must explain target selection after choosing a move');
+assert.ok(threeWayFlow.includes('攻撃技を選ぶと')&&threeWayFlow.includes('攻撃したい敵の画像かHP欄をタップ'),'the three-way guide must explain target selection after choosing a move');
 assert.ok(threeWayFlow.includes('もう一方の敵に倒された相手とは契約できません'),'the three-way guide must explain the contract-candidate exclusion');
 assert.ok(invasionFlow.includes('2〜4ターン目')&&invasionFlow.includes('このターンは行動しません'),'the invasion guide must explain timing and its no-action arrival turn');
 assert.ok(kokoroFlow.includes('控えモンスター1体')&&kokoroFlow.includes('ターンは消費しません'),'the Kokoro Link guide must explain its source and free activation');

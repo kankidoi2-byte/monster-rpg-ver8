@@ -41,13 +41,16 @@ function syncBattleUi(){
   document.getElementById('battleSkillButton')?.setAttribute('aria-expanded',String(panel?.id==='commands'));
   if(panel){
     if(typeof prepareBattleFloatingPanel==='function')prepareBattleFloatingPanel(panel);
-    if(panel.id==='multiTargetSelect'){
+    const enemyTarget=panel.classList.contains('is-enemy-target');
+    if(enemyTarget){
       document.getElementById('battleActionStatus').textContent='攻撃する敵をタップ';document.getElementById('battleInputLabel').textContent='対象を選択';
     }
     panel.setAttribute('role','region');
     if(!panel.querySelector('[data-battle-panel-back]')){
-      const back=document.createElement('button');back.type='button';back.dataset.battlePanelBack='';back.className='battle-panel-back';back.textContent=panel.id==='multiTargetSelect'?'← 技に戻る':'← 戻る';back.onclick=battleUiBack;panel.prepend(back);
+      const back=document.createElement('button');back.type='button';back.dataset.battlePanelBack='';back.className='battle-panel-back';back.textContent=enemyTarget?'← 技に戻る':'← 戻る';back.onclick=battleUiBack;panel.prepend(back);
     }
+    const back=panel.querySelector('[data-battle-panel-back]');if(back)back.textContent=enemyTarget?'← 技に戻る':'← 戻る';
+    if(panel.querySelector('[data-tutorial-actor-select]')){document.getElementById('battleActionStatus').textContent='交代する仲間を選択';document.getElementById('battleInputLabel').textContent='交代';}
   }
   const changed=battleUi.panel!==panel?.id;
   if(active&&processing&&battleUi.awaitingReturn){const status=document.getElementById('battleActionStatus');status?.setAttribute('tabindex','-1');status?.focus({preventScroll:true});}

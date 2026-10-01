@@ -4,7 +4,10 @@ let battleViewportFrame=null;
 function prepareBattleFloatingPanel(panel){
   // Choices occupy the normal command area; never cover the battlefield.
   panel.classList.remove('battle-floating-panel');panel.classList.add('battle-inline-panel');
-  if(panel.id==='multiTargetSelect'){
+  const enemyTarget=panel.id==='multiTargetSelect'&&multiBattle?.active&&multiBattle.pendingMoveIndex!==null&&multiBattle.pendingMoveIndex!==undefined;
+  panel.classList.toggle('is-enemy-target',!!enemyTarget);
+  if(panel.id==='multiTargetSelect'&&!enemyTarget){panel.querySelector('.battle-target-skill')?.remove();return;}
+  if(enemyTarget){
     const notes=[...panel.querySelectorAll(':scope > p')];
     // Read the nested source span before removing explanatory prose. A later
     // refresh reuses the saved skill name, never concatenates instructions.
