@@ -19,8 +19,7 @@
 /* The complete source canvas can extend into transparent space; its measured
    all-frame body stays inside the slot. Equal scaling preserves source aspect.
    Poster and video use identical geometry, including failure/reduced motion. */
-#battle.is-battle-stage :is(.has-idle-media,.has-idle-size)[data-idle-fit="bounds"] img,
-#battle.is-battle-stage :is(.has-idle-media,.has-idle-size)[data-idle-fit="bounds"] .battle-idle-video{
+#battle.is-battle-stage .battle-arena :is(#pVis,#eVis,#enemy_aVis,#enemy_bVis) .battle-facing .battle-static-media:is(.has-idle-media,.has-idle-size)[data-idle-fit="bounds"] :is(img,.battle-idle-video){
   inset:auto!important;
   left:var(--idle-canvas-left)!important;top:var(--idle-canvas-top)!important;
   width:var(--idle-canvas-width)!important;height:var(--idle-canvas-height)!important;

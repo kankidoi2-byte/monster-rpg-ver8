@@ -19,3 +19,7 @@
 ## Reference composition correction
 
 The owner rejected the shared-row layout. [The near/far layout correction](depth/README.md) replaces it and records current checks. Galaxy visual acceptance is pending.
+
+## Actor separation and poster size correction
+
+Owner feedback identified overlapping wings and oversized static enemies. [The spacing correction](spacing/README.md) supersedes the fixed near/far regions and records the CSS sizing fix. Device acceptance remains pending.

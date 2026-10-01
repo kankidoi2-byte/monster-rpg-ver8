@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261001-battle-spacing-size",date:"2026-10-01",category:"fix",title:"モンスターの重なりと静止画サイズを修正しました",body:"敵と味方の全身が重ならないように表示範囲を調整しました。複数敵の静止画にも、設定した体格の倍率を正しく反映します。"}),
   Object.freeze({id:"20261001-battle-depth",date:"2026-10-01",category:"update",title:"戦場を広く見せる配置にしました",body:"敵を奥、味方を手前に配置し、HPをモンスターの近くに表示します。道具の所持数は道具選択から確認できます。"}),
   Object.freeze({id:"20261001-battle-viewport",date:"2026-10-01",category:"update",title:"戦闘画面の縦配置を調整しました",body:"モンスターの体格差を保ちながら、画面の高さに合わせて表示領域を調整しました。能力と表示設定は画面下の項目から確認できます。"}),
   Object.freeze({id:"20261001-phase-d-star1-body-size",date:"2026-10-01",category:"update",title:"星1モンスターの体格を調整しました",body:"スライムの小ささを保ち、ほかの星1モンスターは体形に合わせて少し大きく表示するようにしました。星2以上の表示サイズはそのままです。"}),

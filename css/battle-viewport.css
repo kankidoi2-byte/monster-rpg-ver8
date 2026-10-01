@@ -10,9 +10,9 @@ body:has(#battle.active.is-battle-stage){padding-bottom:0}
 #battle.is-battle-stage .battle-side-label{display:none}
 #battle.is-battle-stage #singleEnemyBox{position:absolute;top:12px;right:8%;width:40%;z-index:50}
 #battle.is-battle-stage #singlePlayerBox{position:absolute;right:2%;bottom:12px;width:46%;min-height:0;z-index:50}
-#battle.is-battle-stage #pBattleSlot{position:absolute;left:0;bottom:8px;width:80%;min-height:0;height:70%;padding:8px;box-sizing:border-box;z-index:30}
-#battle.is-battle-stage #eBattleSlot{position:absolute;right:8%;top:calc(var(--battle-enemy-hud,64px) + 20px);width:40%;min-height:0;height:calc(52% - var(--battle-enemy-hud,64px) - 20px);padding:8px;box-sizing:border-box;z-index:20}
-#battle.is-battle-stage #multiEnemyGrid:not(.hidden){position:absolute;left:8%;top:12px;width:84%;height:52%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px;min-height:0;margin:0;z-index:auto}
+#battle.is-battle-stage #pBattleSlot{position:absolute;left:0;bottom:8px;width:80%;min-height:0;height:var(--battle-ally-height,220px);padding:8px;box-sizing:border-box;z-index:30}
+#battle.is-battle-stage #eBattleSlot{position:absolute;right:8%;top:calc(var(--battle-enemy-hud,64px) + 20px);width:40%;min-height:0;height:var(--battle-enemy-height,100px);padding:8px;box-sizing:border-box;z-index:20}
+#battle.is-battle-stage #multiEnemyGrid:not(.hidden){position:absolute;left:8%;top:12px;width:84%;height:calc(var(--battle-enemy-hud,64px) + 8px + var(--battle-enemy-height,100px));display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px;min-height:0;margin:0;z-index:auto}
 #battle.is-battle-stage .multi-enemy-card>.battle-stage-slot{min-height:0;height:100%;padding:8px;box-sizing:border-box}
 #battle.is-battle-stage .multi-enemy-copy{align-self:start;z-index:50}
 #battle.is-battle-stage .multi-enemy-visual{min-height:0}

@@ -529,6 +529,10 @@ function syncBattleIdleSizes(candidates){
     ?battleCompactSizePlan(enemyConfigs,ally&&BATTLE_IDLE_MEDIA[ally.mon.id],arena?.clientWidth,compactHeight,Number(arena?.dataset.enemyHud)||64,multiBattle?.active?2:1)
     :battleIdleStageSizePlan(enemyConfigs,arena?.clientWidth);
   if(plan){arena.dataset.sizeUnit=String(plan.unit);arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
+    if(plan.allyHeight&&plan.enemyHeight){
+      arena.style.setProperty('--battle-ally-height',plan.allyHeight+'px');
+      arena.style.setProperty('--battle-enemy-height',plan.enemyHeight+'px');
+    }
     const grid=document.getElementById('multiEnemyGrid');
     if(multiBattle?.active&&plan.weights.length===2)grid?.style.setProperty('grid-template-columns',plan.weights.map(w=>`minmax(0,${w}fr)`).join(' '));
     else grid?.style.removeProperty('grid-template-columns');

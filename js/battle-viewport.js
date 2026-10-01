@@ -16,16 +16,21 @@ function battleCompactSizePlan(enemies,ally,width,height,enemyHud=64,tracks=enem
   // Equal enemy tracks keep the two HP plates aligned. The far plane is 85%
   // of the near plane; registry rarity/body scales remain unchanged.
   const depth=.85,weights=enemies.map(()=>1);
+  const allyBody=ally?bodyHeight(ally):.75;
+  const enemyBody=depth*Math.max(...enemies.map(bodyHeight),enemies.length?0:.75);
   const caps=[width*.85];
-  if(ally){caps.push(Math.max(1,width*.8-16)/bodyWidth(ally));caps.push(Math.max(1,height*.7-16)/bodyHeight(ally));}
+  // Separate full-loop body bands. Their combined height and a 16px gap
+  // must fit below the measured enemy HP plates, even for wide-winged allies.
+  caps.push(Math.max(1,height-enemyHud-60)/(allyBody+enemyBody));
+  if(ally)caps.push(Math.max(1,width*.8-16)/bodyWidth(ally));
   if(weights.length){
     const count=Math.max(1,tracks),group=Math.max(1,width*(count===1?.4:.84)-8*(count-1));
     enemies.forEach(config=>{
       caps.push(Math.max(1,group/count-16)/(bodyWidth(config)*depth));
-      caps.push(Math.max(1,height*.52-enemyHud-28)/(bodyHeight(config)*depth));
     });
   }
-  return {unit:Math.min(...caps),weights,rowHeight:height};
+  const unit=Math.min(...caps);
+  return {unit,weights,rowHeight:height,allyHeight:allyBody*unit+16,enemyHeight:enemyBody*unit+16};
 }
 function syncBattleViewportInfo(){
   const screen=document.getElementById('battle');if(!screen)return;
