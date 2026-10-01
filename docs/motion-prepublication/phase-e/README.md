@@ -27,3 +27,5 @@ Owner feedback identified overlapping wings and oversized static enemies. [The s
 ## Skill and target selection sheet
 
 Owner confirmed separation and reported scrolling in the skill picker. [Floating skill and target choices](skill-sheet/README.md) preserve field size while selecting. Star1 values are unchanged; new device acceptance remains pending.
+
+Latest UI: [Inline commands and compact HP plates](inline-command-hud/README.md). This supersedes the previous floating skill sheet; Android acceptance is pending.

@@ -16,6 +16,7 @@ function syncSingleBattleStage(){
   for(const [prefix,boxId] of [['e','singleEnemyBox'],['p','singlePlayerBox']]){
     const box=document.getElementById(boxId),visual=document.getElementById(`${prefix}Vis`);
     if(!box||!visual)return;
+    const name=box.querySelector('h2');if(name)name.title=name.textContent;
     let slot=document.getElementById(`${prefix}BattleSlot`);
     if(!single&&prefix==='e'){
       if(visual.parentElement!==box)box.insertBefore(visual,box.querySelector('.battle-vitals'));
@@ -126,6 +127,18 @@ function renderMultiBattleStageCards(html){
         if(oldControls.contains(focused)&&!focused.disabled)focused.focus({preventScroll:true});
       }else oldHud.append(controls);
     }else card.prepend(hud);
+    const liveHud=card.querySelector('.multi-enemy-copy');
+    // Separate focusable hit areas avoid nested buttons and retain the existing
+    // validated target handler. Media nodes are never replaced for targeting.
+    for(const hit of [slot,liveHud]){
+      hit.classList.add('battle-target-hit');hit.classList.toggle('is-targetable',selecting&&entry.alive&&entry.hp>0);
+      if(selecting&&entry.alive&&entry.hp>0){
+        hit.setAttribute('role','button');hit.tabIndex=0;hit.setAttribute('aria-label',`${label}：${entry.mon.name}を対象にする`);
+        hit.onclick=event=>{if(event.target.closest('button,details,summary'))return;handleMultiEnemyCard(entry.id);};
+        hit.onkeydown=event=>{if(event.target!==hit)return;if(event.key==='Enter'||event.key===' '){event.preventDefault();handleMultiEnemyCard(entry.id);}};
+      }else{hit.removeAttribute('role');hit.removeAttribute('tabindex');hit.removeAttribute('aria-label');hit.onclick=null;hit.onkeydown=null;}
+    }
+    liveHud.querySelector('h2')?.setAttribute('title',entry.mon.name);
     const hp=card.querySelector('.hp');hp?.setAttribute('role','progressbar');hp?.setAttribute('aria-label',`${label}のHP`);
     hp?.setAttribute('aria-valuemin','0');hp?.setAttribute('aria-valuemax',String(entry.maxHp));hp?.setAttribute('aria-valuenow',String(Math.max(0,entry.hp)));
   }

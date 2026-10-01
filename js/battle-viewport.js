@@ -2,18 +2,31 @@
    Expanded information and 200% text remain scrollable rather than clipped. */
 let battleViewportFrame=null;
 function prepareBattleFloatingPanel(panel){
-  panel.classList.add('battle-floating-panel');
+  // Choices occupy the normal command area; never cover the battlefield.
+  panel.classList.remove('battle-floating-panel');panel.classList.add('battle-inline-panel');
+  if(panel.id==='multiTargetSelect'){
+    const notes=[...panel.querySelectorAll(':scope > p')];
+    const selected=notes.find(p=>p.textContent.includes('選択中：'));
+    if(selected){selected.className='battle-target-instruction';selected.textContent=selected.textContent.split(' / ')[0]+'：敵の画像かHP欄をタップ';}
+    notes.filter(p=>p!==selected).forEach(p=>p.hidden=true);
+    panel.querySelectorAll(':scope > button:not([data-battle-panel-back])').forEach(button=>button.hidden=true);
+    return;
+  }
   if(panel.id!=='commands')return;
-  const descriptions=[...panel.querySelectorAll('.skill-button .battle-choice-detail')];
-  if(!descriptions.length)return;
-  let help=panel.querySelector('.battle-skill-help');
-  if(!help){help=document.createElement('details');help.className='battle-skill-help';const summary=document.createElement('summary');summary.textContent='技の効果・対象を確認';help.append(summary);panel.append(help);}
-  const note=panel.querySelector(':scope > .battle-panel-note');
-  if(note){help.append(note);const hint=document.createElement('p');hint.className='battle-sheet-hint';hint.textContent='技を選ぶと実行します。';panel.prepend(hint);}
-  for(const description of descriptions){
-    const row=document.createElement('div'),name=document.createElement('strong');
-    name.textContent=description.closest('button').querySelector('strong')?.textContent||'';
-    row.append(name,description);help.append(row);
+  syncBattleViewportInfo();
+  const info=document.getElementById('battleCompactInfo');
+  let help=info.querySelector('.battle-skill-help');
+  if(!help){help=document.createElement('details');help.className='battle-skill-help';info.append(help);}
+  if(panel.querySelector('.battle-panel-note')){
+    help.replaceChildren();const summary=document.createElement('summary');summary.textContent='技の効果・対象・装備コスト';help.append(summary);
+    help.append(panel.querySelector('.battle-panel-note'));
+    for(const button of panel.querySelectorAll('.skill-button')){
+      const row=document.createElement('div'),name=document.createElement('strong');
+      name.textContent=button.querySelector('strong')?.textContent||'';row.append(name);
+      const stats=button.querySelector('small');if(stats){row.append(stats.cloneNode(true));stats.textContent=stats.textContent.split(' / ')[0];}
+      const description=button.querySelector('.battle-choice-detail');if(description)row.append(description);
+      help.append(row);
+    }
   }
 }
 function battleViewportBudget(viewportHeight,top,chrome,hud){
@@ -84,7 +97,7 @@ function updateBattleViewport(){
   if(!arena||!screen.classList.contains('active'))return;
   syncBattleViewportInfo();
   const viewport=window.visualViewport?.height||window.innerHeight;
-  const floating=screen.querySelector('.battle-floating-panel:not(.hidden)');
+  const floating=screen.querySelector('.battle-inline-panel:not(.hidden)');
   // Opening choices must not change the body-size unit or document height.
   if(floating&&Number(arena.dataset.compactHeight)>0&&Number(arena.dataset.viewportWidth)===arena.clientWidth&&Number(arena.dataset.viewportHeight)===viewport)return;
   const top=Math.max(0,screen.getBoundingClientRect().top+window.scrollY);

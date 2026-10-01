@@ -35,7 +35,7 @@ const before=snapshot(),p=by('pVis').querySelector('img');
 for(const expression of ['toggleBattleSkillPanel();battleUiBack()','openBattleSwitchPicker();battleUiBack()','toggleKokoroLinkPanel();battleUiBack()','openBattleItemSelect();show("battle")']){
  run(expression);assert.equal(snapshot(),before,expression);assert.equal(run('window.qaRolls'),0);assert.equal(by('pVis').querySelector('img'),p);
 }
-run('Math.random=window.qaRandom;toggleBattleSkillPanel()');assert.match(by('commands').textContent,/COST.*装備/);assert.match(by('commands').textContent,/対象：/);
+run('Math.random=window.qaRandom;toggleBattleSkillPanel()');assert.match(by('battleCompactInfo').textContent,/COST.*装備/);assert.match(by('battleCompactInfo').textContent,/対象：/);
 assert(d.querySelector('.battle-command-pad').hidden);run('battleUiBack()');assert.equal(d.activeElement.id,'battleSkillButton');
 // Item denial, success, stale double submission and exact persistence.
 run('openBattleItemSelect()');assert.match(by('battleItemList').textContent,/HPは満タン/);let n=run('save.items.potion');run('useBattleItemFromMenu("potion")');assert.equal(run('save.items.potion'),n);
@@ -46,7 +46,7 @@ assert.equal(run('loadSave().items.potion'),n-1);assert.equal(by('pVis').querySe
 run('save.items.potion=0;openBattleItemSelect()');assert.match(by('battleItemList').textContent,/残数がありません/);run('show("battle")');
 // Summarize all conditions, retain media and disclosure state.
 run("pStatus='poison';pPoisonTurns=2;pParalysisTurns=2;pSleepTurns=1;pConfusionTurns=3;pGuard=true;update()");
-assert.equal(by('pBattleStatus').querySelectorAll(':scope > span').length,2);assert.match(by('pBattleStatus').textContent,/他3件/);const states=by('pBattleStatus').querySelector('details');states.open=true;run('update()');assert(by('pBattleStatus').querySelector('details').open);assert.equal(by('pVis').querySelector('img'),p);
+assert.equal(by('pBattleStatus').querySelectorAll('details>div>p').length,5);assert.match(by('pBattleStatus').querySelector('summary').textContent,/＋3/);const states=by('pBattleStatus').querySelector('details');states.open=true;run('update()');assert(by('pBattleStatus').querySelector('details').open);assert.equal(by('pVis').querySelector('img'),p);
 // Link uses a source only once, does not consume a turn.
 setup();const linkTurn=run('battleTurnCount');run('toggleKokoroLinkPanel();window.qaSource=currentKokoroLinkSources()[0].uid;activateKokoroLinkFromBattle(window.qaSource);activateKokoroLinkFromBattle(window.qaSource)');
 assert.equal(run('battleTurnCount'),linkTurn);assert(run('!!kokoroLinkEffectForInstance(activeInstance)'));assert.equal(run('currentKokoroLinkSources({includeUsed:true}).filter(s=>s.used).length'),1);
@@ -55,12 +55,13 @@ setup();run("window.qaMoves=getEquippedMovesForInstance;getEquippedMovesForInsta
 run("getEquippedMovesForInstance=()=>Array.from({length:12},()=>['長い技名'.repeat(12),24,'normal',null,null,1,'説明'.repeat(150)]);renderSkillButtons()");assert.equal(by('commands').querySelectorAll('.skill-button').length,12);run('getEquippedMovesForInstance=window.qaMoves');
 // Same species target, self target description, cancellation, invalidated target.
 multi();run("Object.assign(multiBattle.enemies[0],{poisonTurns:2,status:'poison',paralysisTurns:2,sleepTurns:1,guard:true});update()");const enemyMedia=by('enemy_aVis').querySelector('img');by('enemy_aStatus').querySelector('details').open=true;run('update()');assert(by('enemy_aStatus').querySelector('details').open);assert.equal(by('enemy_aVis').querySelector('img'),enemyMedia);
-multi();const mBefore=snapshot();run('toggleBattleSkillPanel();turn(0)');assert.match(by('multiTargetSelect').textContent,/選択中：/);assert.match(by('multiTargetSelect').textContent,/敵A：スライム/);assert.match(by('multiTargetSelect').textContent,/敵B：スライム/);run('battleUiBack()');assert(!by('commands').classList.contains('hidden'));assert.equal(snapshot(),mBefore);
+multi();const mBefore=snapshot();run('toggleBattleSkillPanel();turn(0)');assert.match(by('multiTargetSelect').textContent,/選択中：/);assert.match(by('enemy_aCard').querySelector('.battle-target-hit').getAttribute('aria-label'),/敵A：スライム/);assert.match(by('enemy_bCard').querySelector('.battle-target-hit').getAttribute('aria-label'),/敵B：スライム/);run('battleUiBack()');assert(!by('commands').classList.contains('hidden'));assert.equal(snapshot(),mBefore);
 run("chooseMultiBattleTarget(0);multiBattle.enemies[1].alive=false;multiBattle.enemies[1].hp=0;startMultiBattleTurn('enemy_b')");assert.equal(run('busy'),false);assert.equal(run('battleTurnCount'),0);assert(!by('multiTargetSelect').textContent.includes('敵B：スライム'));
 run('battleUiBack();battleUiBack();');assert.equal(d.activeElement.id,'battleSkillButton');
 assert.equal(run("battleUiMoveTarget(['防御',0,'normal','guard'])"),'自分');
 // Actual multi attack and one turn despite rapid duplicate execution.
-multi();run('chooseMultiBattleTarget(0);startMultiBattleTurn("enemy_b");startMultiBattleTurn("enemy_b")');
+multi();run('chooseMultiBattleTarget(0);renderBattleInputState()');
+const targetImage=by('enemy_bCard').querySelector('.battle-stage-slot'),targetHp=by('enemy_bCard').querySelector('.multi-enemy-copy');targetImage.click();targetHp.click();
 const wait=async()=>{for(let i=0;i<100&&run('busy');i++)await new Promise(r=>setTimeout(r,50));assert(!run('busy'),'action unlock');};await wait();assert.equal(run('battleTurnCount'),1);assert(run('battleFeedback.history.some(h=>h.kind==="hp"&&h.text.includes("敵B：スライム"))'));
 // Manual swap consumes one action; repeated submission while busy is ignored.
 setup();run('openBattleSwitchPicker();selectBattleSwitchTarget(1);selectBattleSwitchTarget(2)');await wait();assert.equal(run('activePartyIdx'),1);assert.equal(run('battleTurnCount'),1);assert(!d.querySelector('.battle-command-pad').hidden);

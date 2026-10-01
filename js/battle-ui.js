@@ -3,7 +3,7 @@ const battleUi={panel:null,origin:'battleSkillButton',itemReturn:false,scrollY:0
 function battleUiEscape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function battleUiCanAct(){return !busy&&!battleFeedback.finished&&!multiBattle?.finished&&!document.getElementById('battle')?.classList.contains('is-finished');}
 function battleUiRemember(id){battleUi.origin=id;battleUi.scrollY=window.scrollY;}
-function battleUiFocus(node){if(!node||node.disabled)return;node.focus({preventScroll:true});if(!node.closest('.battle-floating-panel'))node.scrollIntoView?.({block:'nearest',behavior:'instant'});}
+function battleUiFocus(node){if(!node||node.disabled)return;node.focus({preventScroll:true});if(!node.closest('#battle.is-battle-stage'))node.scrollIntoView?.({block:'nearest',behavior:'instant'});}
 function battleUiClear(){
   for(const id of ['commands','kokoroLinkPanel','multiTargetSelect']){
     const panel=document.getElementById(id);
@@ -43,7 +43,7 @@ function syncBattleUi(){
     if(typeof prepareBattleFloatingPanel==='function')prepareBattleFloatingPanel(panel);
     if(panel.id==='multiTargetSelect'){
       const note=panel.querySelector('p')?.textContent;
-      if(note){document.getElementById('battleActionStatus').textContent=note;document.getElementById('battleInputLabel').textContent='対象を選択';}
+      if(note){document.getElementById('battleActionStatus').textContent='攻撃する敵の画像かHP欄をタップ';document.getElementById('battleInputLabel').textContent='対象を選択';}
     }
     panel.setAttribute('role','region');
     if(!panel.querySelector('[data-battle-panel-back]')){
@@ -74,16 +74,16 @@ function renderBattleStateSummary(el,labels,u){
   const hadFocus=el.contains(document.activeElement)||el.dataset.statesFocus==='true';
   delete el.dataset.statesFocus;
   el.replaceChildren();
-  for(const label of labels.length?labels.slice(0,2):['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.append(chip);}
-  if(labels.length>2){
-    const details=document.createElement('details'),summary=document.createElement('summary'),list=document.createElement('div');
-    details.className='battle-state-details';details.open=open;
-    summary.textContent=`他${labels.length-2}件・全状態を見る`;
-    list.setAttribute('aria-label',`${battleStageName(u.vis)}の全状態`);
-    for(const label of labels){const row=document.createElement('p');row.textContent=label;list.append(row);}
-    details.append(summary,list);el.append(details);
-    if(hadFocus)summary.focus({preventScroll:true});
-  }
+  if(!labels.length)return;
+  const details=document.createElement('details'),summary=document.createElement('summary'),list=document.createElement('div');
+  details.className='battle-state-details';details.open=open;
+  const short=label=>label.replace(/次の被弾/g,'次回').replace(/防御/g,'防').replace(/攻撃/g,'攻').replace(/素早さ/g,'速');
+  summary.textContent=labels.slice(0,2).map(short).join('・')+(labels.length>2?` ＋${labels.length-2}`:'');
+  summary.setAttribute('aria-label',`${battleStageName(u.vis)}の状態の詳細`);
+  list.setAttribute('aria-label',`${battleStageName(u.vis)}の全状態`);
+  for(const label of labels){const row=document.createElement('p');row.textContent=label;list.append(row);}
+  details.append(summary,list);el.append(details);
+  if(hadFocus)summary.focus({preventScroll:true});
 }
 document.addEventListener('keydown',event=>{
   if(event.key!=='Escape'||!battleUiCanAct())return;

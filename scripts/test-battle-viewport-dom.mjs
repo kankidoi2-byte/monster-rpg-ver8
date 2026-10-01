@@ -44,7 +44,7 @@ for(const link of d.querySelectorAll('link[rel="stylesheet"]')){
  if(!path.startsWith('css/'))continue;
  css.walk(css.parse(fs.readFileSync(new URL(path,root),'utf8')),{visit:'Rule',enter(rule){
   if(rule.prelude?.type!=='SelectorList')return;
-  const declarations=[...rule.block.children].filter(n=>n.type==='Declaration'&&['width','height'].includes(n.property));
+  const declarations=[...rule.block.children].filter(n=>n.type==='Declaration'&&['width','height','position','min-height','display'].includes(n.property));
   for(const sel of rule.prelude.children)for(const decl of declarations)sizingRules.push({selector:css.generate(sel),spec:specificity(sel),important:!!decl.important,property:decl.property,value:css.generate(decl.value)});
  }});
 }
@@ -101,18 +101,25 @@ const screen=by('battle'),arena=screen.querySelector('.battle-arena');
 Object.defineProperty(arena,'clientWidth',{configurable:true,value:393});
 screen.getBoundingClientRect=()=>({top:58,height:0});
 const chromeSizes={battleMapBanner:48,battleActionStatus:44,battleCompactTools:48};
-for(const el of screen.children){const h=el.classList.contains('battle-command-dock')?160:chromeSizes[el.id]||0;el.getClientRects=()=>h?[{}]:[];el.getBoundingClientRect=()=>({height:h,top:0});}
+for(const el of screen.children){const h=el.classList.contains('battle-command-dock')?184:chromeSizes[el.id]||0;el.getClientRects=()=>h?[{}]:[];el.getBoundingClientRect=()=>({height:h,top:0});}
 for(const id of ['singlePlayerBox','singleEnemyBox']){by(id).getClientRects=()=>[{}];by(id).getBoundingClientRect=()=>({height:64,top:0});}
 Object.defineProperty(w,'innerHeight',{configurable:true,value:736});
-run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),370);assert(Number(arena.dataset.sizeUnit)>0);assert.equal(arena.dataset.enemyDepth,'.85');
-// Opening a floating chooser keeps field height, unit and focus on-screen.
-let panelScrolls=0;w.HTMLElement.prototype.scrollIntoView=function(){if(this.closest('.battle-floating-panel'))panelScrolls++;};
+run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),346);assert(Number(arena.dataset.sizeUnit)>0);assert.equal(arena.dataset.enemyDepth,'.85');
+// Opening a inline chooser keeps field height, unit and focus on-screen.
+let panelScrolls=0;w.HTMLElement.prototype.scrollIntoView=function(){if(this.closest('.battle-inline-panel'))panelScrolls++;};
 const restingHeight=arena.dataset.compactHeight,restingUnit=arena.dataset.sizeUnit;
 run('toggleBattleSkillPanel()');
-assert(by('commands').classList.contains('battle-floating-panel'));
-assert(by('commands').querySelector('.battle-skill-help .battle-choice-detail'));
+assert(by('commands').classList.contains('battle-inline-panel'));
+assert(by('battleCompactInfo').querySelector('.battle-skill-help .battle-choice-detail'));
 assert.equal(by('commands').querySelectorAll('.skill-button .battle-choice-detail').length,0);
 assert(by('commands').contains(d.activeElement));assert.equal(panelScrolls,0);
+const winningRule=(node,property)=>sizingRules.filter(rule=>rule.property===property&&node.matches(rule.selector)).reduce((winner,rule)=>!winner||Number(rule.important)>Number(winner.important)||(rule.important===winner.important&&compare(rule.spec,winner.spec)>=0)?rule:winner,null);
+assert.equal(winningRule(by('commands'),'position').value,'static');
+assert.equal(winningRule(by('commands').querySelector('.skill-button'),'min-height').value,'54px');
+assert.equal(winningRule(screen.querySelector('.battle-command-dock'),'min-height').value,'184px');
+assert.equal(winningRule(by('singlePlayerBox').querySelector('.battle-vitals'),'display').value,'contents');
+assert.equal(winningRule(by('singlePlayerBox'),'position').value,'absolute');
+assert.equal(winningRule(by('singlePlayerBox').querySelector('.bar'),'height').value,'5px');
 run('updateBattleViewport()');assert.equal(arena.dataset.compactHeight,restingHeight);assert.equal(arena.dataset.sizeUnit,restingUnit);
 run('battleUiBack()');assert(by('commands').classList.contains('hidden'));assert.equal(d.activeElement,by('battleSkillButton'));
 const art=by('pVis').querySelector('img');Object.defineProperty(w,'innerHeight',{configurable:true,value:420});run('updateBattleViewport()');assert.equal(screen.dataset.viewportOverflow,'true');assert.equal(Number(arena.dataset.compactHeight),300);assert.equal(by('pVis').querySelector('img'),art);
@@ -121,7 +128,19 @@ assert(by('battleCompactInfo').querySelector('[data-info-vis="eVis"]').hidden);c
 const detail=by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .compact-enemy-detail');
 assert(detail);detail.click();assert(by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .multi-enemy-details'));checkIds();
 run('chooseMultiBattleTarget(0);renderBattleInputState()');
-assert(by('multiTargetSelect').classList.contains('battle-floating-panel'));assert.equal(panelScrolls,0);run('battleUiBack();battleUiBack()');
+assert(by('multiTargetSelect').classList.contains('battle-inline-panel'));assert.equal(panelScrolls,0);
+assert.equal(by('multiTargetSelect').querySelectorAll(':scope > button:not([hidden])').length,1);
+for(const id of ['enemy_aCard','enemy_bCard']){const card=by(id);for(const hit of card.querySelectorAll('.battle-target-hit')){assert.equal(hit.getAttribute('role'),'button');assert.equal(hit.tabIndex,0);assert.match(hit.getAttribute('aria-label'),/対象にする/);}}
+run('battleUiBack();battleUiBack()');
+for(const hit of d.querySelectorAll('.battle-target-hit'))assert(!hit.hasAttribute('role'));
+// Opening status details retains a compact summary and the full condition list.
+run("pStatus='poison';pPoisonTurns=2;pGuard=true;update()");
+assert.match(by('pBattleStatus').querySelector('summary').textContent,/毒/);assert.match(by('pBattleStatus').querySelector('details>div').textContent,/次の被弾/);
+// A selected enemy's image uses the same guarded handler as its HP plate.
+run('chooseMultiBattleTarget(0);renderBattleInputState();window.qaTargetCalls=[];window.qaOriginalTarget=handleMultiEnemyCard;handleMultiEnemyCard=id=>window.qaTargetCalls.push(id)');
+by('enemy_aCard').querySelector('.battle-stage-slot').click();by('enemy_bCard').querySelector('.multi-enemy-copy').click();
+assert.deepEqual([...w.qaTargetCalls],['enemy_a','enemy_b']);
+run('handleMultiEnemyCard=window.qaOriginalTarget;battleUiBack();battleUiBack()');
 const projected=run(`battleCompactSizePlan([BATTLE_IDLE_MEDIA.goblin,BATTLE_IDLE_MEDIA.slime],BATTLE_IDLE_MEDIA.elixion,393,488)`);
 assert(projected.unit*1.2>260,'foreground dragon remains prominent');
 assert(projected.unit*.3*.85>45,'background slime remains legible');
