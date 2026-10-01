@@ -1,0 +1,17 @@
+{
+  "kind": "Media API and lifecycle events mocked; not real playback/BFCache",
+  "checks": [
+    "foreground budget excludes 60 seconds offscreen; overlapping reasons; obsolete timer ignored",
+    "timeout keeps commands usable; 20 retry clicks create one attempt; stale media events ignored",
+    "switch during retry disposes source, handlers, timer and ignores delayed Promise",
+    "HP/status/panel and temporary screen keep video and position",
+    "simulated persisted pagehide disposes; pageshow reconciles current state once (not real BFCache)",
+    "five battle-operation-exit-next cycles release owned resources",
+    "play refusal static fallback, no auto retry, one successful manual retry",
+    "simulated media error keeps battle commands usable",
+    "initial reduced setting avoids fetching; change restores playback",
+    "same-species candidates keep selected instance even after candidate order changes",
+    "leave during loading ignores delayed error and play rejection"
+  ],
+  "pass": 11
+}

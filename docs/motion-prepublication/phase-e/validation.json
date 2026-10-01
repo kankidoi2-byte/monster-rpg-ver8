@@ -34,5 +34,5 @@
     "limits": "DOM/media mocks; not real Galaxy decoding or browser pixel layout"
   },
   "historicalSnapshot": true,
-  "currentStatusReport": "final-review/validation.json"
+  "currentStatusReport": "final-review/post-publication-review.json"
 }

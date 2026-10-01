@@ -49,6 +49,8 @@ pass('foreground budget excludes 60 seconds offscreen; overlapping reasons; obso
 const stale=deferred[0];stale.reject(Error('old interrupted play'));await flush();assert(!r.failed&&r.pending);
 const stalePlaying=v.onplaying,staleError=v.onerror;
 timers.get(r.timer).fn();assert(r.failed&&r.state==='static');assert.equal(r.img.style.visibility,'visible');
+assert(v.isConnected&&!v.hasAttribute('src'),'timeout must release the source before manual retry');
+assert.equal(v.onplaying,null);assert.equal(v.onerror,null);
 run('toggleBattleSkillPanel();battleUiBack()');assert(!run('busy'));
 const before=playCalls;for(let i=0;i<20;i++)r.button.click();assert.equal(playCalls,before+1);assert.equal(d.querySelectorAll('video').length,1);assert(!v.isConnected&&v.paused&&!v.hasAttribute('src'));assert.equal(v.onplaying,null);assert.equal(v.onerror,null);
 stalePlaying();staleError();assert(!r.failed);assert.notEqual(r.video,v);assert(r.retried);
@@ -67,7 +69,7 @@ for(let i=0;i<5;i++){setup();await flush();const q=rec(),el=q.video;run('toggleB
 pass('five battle-operation-exit-next cycles release owned resources');
 refuse=true;setup();await flush();assert(rec().failed);const n=playCalls;run('update();update()');assert.equal(playCalls,n);refuse=false;rec().button.click();await flush();assert.equal(rec().state,'playing');
 pass('play refusal static fallback, no auto retry, one successful manual retry');
-setup();await flush();r=rec();r.video.onerror();assert(r.failed);run('toggleBattleSkillPanel();battleUiBack()');assert(!run('busy'));
+setup();await flush();r=rec();v=r.video;r.video.onerror();assert(r.failed);assert(v.isConnected&&!v.hasAttribute('src'),'media failure must stop fetching');run('toggleBattleSkillPanel();battleUiBack()');assert(!run('busy'));
 pass('simulated media error keeps battle commands usable');
 run("show('home')");reduced(true);setup();assert(!rec().video.hasAttribute('src'));reduced(false);await flush();assert.equal(rec().state,'playing');
 pass('initial reduced setting avoids fetching; change restores playback');
