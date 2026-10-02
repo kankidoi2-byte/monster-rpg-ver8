@@ -21,6 +21,20 @@ for(const old of baseline.units){
 const added=current.filter(u=>u.characterNo>=15);
 assert.equal(added.length,36);
 assert(added.every(u=>u.artworkPending && !u.imgKey && u.icon));
+// Every exclusive card is usable only by its own form and later forms of the same character.
+const families=added.filter(u=>!u.evolutionOnly).map(base=>{
+ const middle=current.find(u=>u.id===base.evolution);
+ return [base,middle,current.find(u=>u.id===middle.evolution)];
+});
+for(const family of families)for(const [sourceStage,source] of family.entries()){
+ for(const move of source.moves)for(const target of current){
+  const targetStage=family.findIndex(u=>u.id===target.id);
+  r.context.cardUnderTest=move[8];r.context.unitUnderTest=target.id;
+  assert.equal(run('isSkillAllowedForMonster(cardUnderTest,by(unitUnderTest))'),
+    targetStage>=sourceStage,`${move[8]} -> ${target.id}: forward inheritance only`);
+ }
+}
+
 vm.runInContext(fs.readFileSync('js/ui.js','utf8').split('function replayUiMotion')[0],r.context);
 for(const u of added){
  r.context.testId=u.id;
@@ -49,8 +63,30 @@ for(const u of added){
 for(const u of added.filter(u=>!u.evolutionOnly)){
  r.context.testId=u.id;
  run('save=initSave();save.instances=[];save.party=[];var chain=addInstance(testId,3);save.party=[chain.uid];');
- for(let stage=0;stage<2;stage++)run('currentEvolution={uid:chain.uid,from:chain.id,choices:getEvoCandidates(chain)};confirmEvolution(currentEvolution.choices[0]);');
+ const beforeEquipment=[...run('getEquippedSkillIds(chain)')];
+ const oldInventory=JSON.parse(run('JSON.stringify(save.skillCards)'));
+ for(let stage=0;stage<2;stage++){
+  run('currentEvolution={uid:chain.uid,from:chain.id,choices:getEvoCandidates(chain)};confirmEvolution(currentEvolution.choices[0]);');
+  assert.deepEqual([...run('getEquippedSkillIds(chain)')],beforeEquipment,'evolution retains earlier equipped moves');
+  assert(run('defaultSkillIdsForMonster(by(chain.id),chain).every(id=>save.skillCards[id]>=1)'),'new form cards are granted alongside retained equipment');
+ }
+ for(const [id,count] of Object.entries(oldInventory)){
+  r.context.oldCard=id;assert.equal(run('save.skillCards[oldCard]'),count,'old card ownership is retained');
+ }
+ const savedUid=run('chain.uid');
+ run('save= parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();chain=getInstance(save.party[0]);');
+ assert.equal(run('chain.uid'),savedUid);
+ assert.deepEqual([...run('getEquippedSkillIds(chain)')],beforeEquipment,'inherited equipment survives reload');
+ const reloaded=run('JSON.stringify(save.skillCards)');
+ run('migrateSkillSystem()');
+ assert.equal(run('JSON.stringify(save.skillCards)'),reloaded,'reload must not duplicate skill cards');
+ // Exercise inherited attack through actual battle processing after both evolutions.
+ run("prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','easy',activeHuntRequest);");
+ const hpBefore=run('eHp');
+ await run('doAttack(player,enemy,getEquippedMovesForInstance(activeInstance)[0],true)');
+ assert(run('eHp')<hpBefore,'inherited attack deals damage in battle');
+
  assert.equal(run('by(chain.id).rarity'),'★★★★');
  assert.equal(run('chain.uid'),run('save.party[0]'));
 }
-console.log('PASS: original records preserved except additive Golem attack fix; all 36 names render, attack/support handlers, save/reload; 12 complete evolution chains.');
+console.log('PASS: original records preserved except additive Golem attack fix; all 36 names render, attack/support handlers, save/reload; 12 complete evolution chains; exclusive skill inheritance, ownership, reload and battle.');
