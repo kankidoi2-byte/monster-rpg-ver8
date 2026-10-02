@@ -532,7 +532,7 @@ const M = [
    hp:180,spd:18,catchRate:.16,
    desc:'古代の技術で造られた石造のゴーレム。胸部の魔力核を動力とし、重い拳で敵を打ち砕く。',
    // Normal attacks lead the default loadout; retain the old water skill IDs for saved cards.
-   moves:[["石造拳",44,"normal",null,null,2,null,null,"skill_proto_icegolem_04"],["重装防御",0,"normal","guard",null,null,null,null,"skill_proto_icegolem_02"],["巨岩クラッシュ",70,"normal",null,null,4,null,null,"skill_proto_icegolem_05"],["氷塊拳",44,"water",null,null,null,null,null,"skill_proto_icegolem_01"],["大氷河クラッシュ",70,"water",null,null,null,null,null,"skill_proto_icegolem_03"]]},
+   moves:[["石造拳",44,"normal",null,null,2,null,"proto_icegolem","skill_proto_icegolem_04"],["重装防御",0,"normal","guard",null,null,null,null,"skill_proto_icegolem_02"],["巨岩クラッシュ",70,"normal",null,null,4,null,"proto_icegolem","skill_proto_icegolem_05"],["氷塊拳",44,"water",null,null,null,null,null,"skill_proto_icegolem_01"],["大氷河クラッシュ",70,"water",null,null,null,null,null,"skill_proto_icegolem_03"]]},
   {id:'elysia',entityKind:'character',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'elysia_prologue',no:62,name:'エリシア',rarity:'★★',types:['light'],unitType:'character',characterNo:12,contractable:false,
    hp:120,spd:82,catchRate:0,evolution:'elysia_prayer',evolutionLevel:2,
    desc:'古代文明で暮らす、明るく心優しい少女。自らに宿る大きな光の力には、まだ気づいていない。',
