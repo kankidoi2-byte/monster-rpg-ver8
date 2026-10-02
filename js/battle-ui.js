@@ -27,7 +27,14 @@ function battleUiBack(){
 }
 function battleUiMoveTarget(move){
   // Matches the support branches in doAttack / performMultiAttack.
-  return ['guard','heal','buff','aqua_shield'].includes(move?.[3])?'自分':multiBattle?.active?'選択した敵1体':'敵1体';
+  const enemyLabel=multiBattle?.active?'選択した敵1体':'敵1体';
+  if(move?.[3]==='tactical'){
+    const profile=tacticalSkillProfile(move)||{};
+    const self=profile.heal||profile.cleanse?.length||profile.buff||profile.guard||profile.charge||profile.drain;
+    const opponent=Number(move[1])>0||profile.debuff||profile.dispel||profile.status;
+    return self?(opponent?`自分と${enemyLabel}`:'自分'):enemyLabel;
+  }
+  return ['guard','heal','buff','aqua_shield'].includes(move?.[3])?'自分':enemyLabel;
 }
 function battleUiSkillInfo(move){return `<small class="battle-choice-detail">対象：${battleUiMoveTarget(move)}<br>${battleUiEscape(moveEffectText(move))}</small>`;}
 function syncBattleUi(){
