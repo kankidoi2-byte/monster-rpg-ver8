@@ -28,7 +28,7 @@ assert.equal(taxonomy.units.length,100);
 assert(taxonomy.units.every(unit => Array.isArray(unit.tags) && unit.tags.includes(`entity:${unit.entityKind}`)));
 assert(taxonomy.units.every(unit => unit.types.every(type => unit.tags.includes(`element:${type}`))));
 
-assert.equal(taxonomy.cards.length,310,'fixed skill IDs must remain available for save compatibility');
+assert.equal(taxonomy.cards.length,316,'fixed skill IDs must remain available for save compatibility');
 assert(taxonomy.cards.every(card => card.sourceUnitId && card.sourceEntityKind));
 assert(taxonomy.cards.every(card => Array.isArray(card.tags) && card.tags.length >= 3));
 assert(taxonomy.cards.every(card => Array.isArray(card.requirements?.entityKinds)));
@@ -171,4 +171,4 @@ assert.equal(JSON.stringify(context.save),repairedSave,'save and reload must not
 const progressionSource=read('js/progression.js');
 assert.equal((progressionSource.match(/grantDefaultSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant default skill cards');
 
-console.log(`Skill taxonomy validation passed (100 tagged units, 310 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
+console.log(`Skill taxonomy validation passed (100 tagged units, 316 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
