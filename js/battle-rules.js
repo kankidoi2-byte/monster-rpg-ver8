@@ -335,12 +335,137 @@ async function turn(i) {
     finishTurnWithPoison();
   }
 }
+// The same accessors and effect resolver serve single battles and every three-way
+// direction. Tactical skills use existing battle state; nothing is added to saves.
+function tacticalCombatant(isPlayer, entry=null){
+  return {
+    isPlayer, entry,
+    get name(){ return isPlayer ? player.name : entry?.mon?.name || enemy.name; },
+    get visualId(){ return isPlayer ? 'pVis' : entry ? `${entry.id}Vis` : 'eVis'; },
+    get maxHp(){ return isPlayer ? playerMaxHp() : entry ? entry.maxHp : enemyMaxHp(); },
+    get level(){ return isPlayer ? activeInstance?.level || 1 : entry?.level || activeHuntRequest?.enemyLevel || entry?.mon?.level || enemy?.level || 1; },
+    get hp(){ return isPlayer ? pHp : entry ? entry.hp : eHp; },
+    set hp(value){
+      const hp=Math.max(0,Math.min(this.maxHp,value));
+      if(isPlayer){pHp=hp;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=hp;}
+      else if(entry)entry.hp=hp;else eHp=hp;
+    },
+    get attack(){return isPlayer?pAtk:entry?entry.attack:eAtk;},
+    set attack(v){if(isPlayer)pAtk=v;else if(entry)entry.attack=v;else eAtk=v;},
+    get guard(){return isPlayer?pGuard:entry?entry.guard:eGuard;},
+    set guard(v){if(isPlayer)pGuard=v;else if(entry)entry.guard=v;else eGuard=v;},
+    get shield(){return isPlayer?pAquaShield:entry?entry.aquaShield:eAquaShield;},
+    set shield(v){if(isPlayer)pAquaShield=v;else if(entry)entry.aquaShield=v;else eAquaShield=v;},
+    get charge(){return isPlayer?pFlareCharge:entry?entry.flareCharge:eFlareCharge;},
+    set charge(v){if(isPlayer)pFlareCharge=v;else if(entry)entry.flareCharge=v;else eFlareCharge=v;},
+    get status(){return isPlayer?pStatus:entry?entry.status:eStatus;},
+    set status(v){if(isPlayer)pStatus=v;else if(entry)entry.status=v;else eStatus=v;},
+    get poison(){return isPlayer?pPoisonTurns:entry?entry.poisonTurns:ePoisonTurns;},
+    set poison(v){if(isPlayer)pPoisonTurns=v;else if(entry)entry.poisonTurns=v;else ePoisonTurns=v;},
+    get paralysis(){return isPlayer?pParalysisTurns:entry?entry.paralysisTurns:eParalysisTurns;},
+    set paralysis(v){if(isPlayer)pParalysisTurns=v;else if(entry)entry.paralysisTurns=v;else eParalysisTurns=v;},
+    get confusion(){return isPlayer?pConfusionTurns:entry?entry.confusionTurns:eConfusionTurns;},
+    set confusion(v){if(isPlayer)pConfusionTurns=v;else if(entry)entry.confusionTurns=v;else eConfusionTurns=v;},
+    get sleep(){return isPlayer?pSleepTurns:entry?entry.sleepTurns:eSleepTurns;},
+    set sleep(v){if(isPlayer)pSleepTurns=v;else if(entry)entry.sleepTurns=v;else eSleepTurns=v;}
+  };
+}
+function tacticalCombatants(actorIsPlayer,actorEntry=null,targetEntry=null){
+  return {
+    actor:tacticalCombatant(actorIsPlayer,actorIsPlayer?null:actorEntry),
+    target:tacticalCombatant(targetEntry?targetEntry.kind==='player':!actorIsPlayer,
+      targetEntry?.kind==='player'?null:targetEntry)
+  };
+}
+function tacticalSkillPower(move,actorIsPlayer,actorEntry=null,targetEntry=null){
+  const base=Number(move?.[1])||0,bonus=tacticalSkillProfile(move)?.bonus;
+  if(!bonus||base<=0)return base;
+  const {actor,target}=tacticalCombatants(actorIsPlayer,actorEntry,targetEntry);
+  const threshold=Number.isFinite(bonus.threshold)?bonus.threshold:.5;
+  const linkedPoison=!target.isPlayer&&typeof kokoroLinkEnemyEffectsFor==='function'&&
+    kokoroLinkEnemyEffectsFor(target.entry?.id||singleEnemyKokoroLinkKey()).some(effect=>effect.category==='poison'&&effect.remainingTurns>0);
+  const matches=bonus.condition==='target_hurt'?target.hp<=target.maxHp*threshold:
+    bonus.condition==='self_hurt'?actor.hp<=actor.maxHp*threshold:
+    bonus.condition==='target_poisoned'?(target.status==='poison'&&target.poison>0)||linkedPoison:
+    bonus.condition==='target_guarded'?target.guard||target.shield:false;
+  return matches?Math.floor(base*bonus.multiplier):base;
+}
+function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEntry=null,actualDamage=0){
+  const config=tacticalSkillProfile(move);
+  if(!config)return '';
+  const {actor,target}=tacticalCombatants(actorIsPlayer,actorEntry,targetEntry),messages=[];
+  const heal=(amount,label)=>{
+    const before=actor.hp;
+    actor.hp+=adjustedBattleHealing(Math.max(0,Math.floor(amount)));
+    if(typeof battleHpResult==='function')battleHpResult(actor.visualId,before,actor.hp,{label});
+    messages.push(`💚 ${actor.name}はHPを${actor.hp-before}${label}した！`);
+  };
+  if(config.heal)heal(config.heal.flat+actor.level*config.heal.perLevel,'回復');
+  if(config.drain&&actualDamage>0)heal(actualDamage*config.drain,'吸収');
+  if(config.cleanse?.length){
+    const labels={poison:'毒',paralysis:'麻痺',confusion:'こんらん',sleep:'ねむり'},cleared=[];
+    for(const status of config.cleanse){
+      if(actor[status]>0||(status==='poison'&&actor.status==='poison'))cleared.push(labels[status]);
+      actor[status]=0;
+      if(status==='poison'){
+        if(actor.status==='poison')actor.status=null;
+        if(actor.entry)actor.entry.poisonSourceIsPlayer=false;
+        if(!actorIsPlayer&&typeof removeKokoroLinkEnemyEffectCategory==='function')
+          removeKokoroLinkEnemyEffectCategory(actor.entry?.id||singleEnemyKokoroLinkKey(),'poison');
+      }
+    }
+    if(cleared.length)messages.push(`✨ ${actor.name}の${cleared.join('・')}を解除！`);
+  }
+  if(config.buff){actor.attack=Math.min(1.6,actor.attack+config.buff);messages.push(`⬆️ ${actor.name}の攻撃力が上がった！`);}
+  if(config.guard){actor.guard=true;messages.push(`🛡️ ${actor.name}は次の攻撃に備えた！`);}
+  if(config.charge){actor.charge=true;messages.push(`🔥 ${actor.name}の次の攻撃は威力20%アップ！`);}
+  if(target.hp>0){
+    if(config.dispel){
+      if(target.attack>1)target.attack=1;
+      target.guard=false;target.shield=false;target.charge=false;
+      messages.push(`✨ ${target.name}の攻撃強化・防御・溜めを解除！`);
+    }
+    if(config.debuff){target.attack=Math.max(.65,target.attack-config.debuff);messages.push(`⬇️ ${target.name}の攻撃力が下がった！`);}
+    if(config.status){
+      const {kind,chance:baseChance}=config.status;
+      const chance=actorIsPlayer?playerKokoroLinkChance(baseChance):{chance:baseChance,boosted:false};
+      if(chance.boosted)messages.push('⭐ 星運上昇で成功率アップ！');
+      if(Math.random()<chance.chance){
+        if(kind==='poison'){
+          target.status='poison';target.poison=BATTLE_STATUS_EFFECTS.poison.duration;
+          if(target.entry)target.entry.poisonSourceIsPlayer=actorIsPlayer;
+          if(!target.isPlayer&&typeof removeKokoroLinkEnemyEffectCategory==='function')
+            removeKokoroLinkEnemyEffectCategory(target.entry?.id||singleEnemyKokoroLinkKey(),'poison');
+          messages.push(`☠️ ${target.name}は毒状態になった！`);
+        }else if(kind==='paralysis'){target.paralysis=3;messages.push(`⚡ ${target.name}は麻痺状態になった！`);}
+        else if(kind==='confusion'){target.confusion=2;messages.push(`🌀 ${target.name}はこんらんした！`);}
+      }
+    }
+  }
+  if(config.recoil){
+    const guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
+    if(guarded)messages.push('🔥 炎身不動が反動ダメージを無効化！');
+    else{
+      const damage=Math.max(1,Math.floor(actor.maxHp*config.recoil)),before=actor.hp;
+      actor.hp-=damage;
+      if(typeof battleHpResult==='function')battleHpResult(actor.visualId,before,actor.hp,{label:'反動',damage});
+      messages.push(`💥 ${actor.name}は反動で${damage}ダメージ！`);
+    }
+  }
+  return messages.join('<br>');
+}
 async function doAttack(attacker, defender, mv, isPlayer) {
   const [name, power, type, effect, effectChance] = mv;
   const logEl = document.getElementById('log');
   const sourceId=isPlayer?'pVis':'eVis',targetId=isPlayer?'eVis':'pVis';
-  const supportTargetId=['sleep','debuff'].includes(effect)?targetId:sourceId;
+  const tactical=tacticalSkillProfile(mv);
+  const supportTargetId=['sleep','debuff'].includes(effect)||(effect==='tactical'&&(tactical?.debuff||tactical?.dispel))?targetId:sourceId;
   const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,mv,{untilImpact:true}):false;
+  if(effect==='tactical'&&power<=0){
+    logEl.innerHTML=`✨ ${attacker.name}の「${name}」！<br>${resolveTacticalSkillEffects(mv,isPlayer)}`;
+    if(typeof captureBattleLog==='function')captureBattleLog();update();
+    return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
+  }
   // 補助技
   if (effect === 'guard') {
     isPlayer ? pGuard=true : eGuard=true;
@@ -392,9 +517,10 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const atk = baseAtk * (hasFlareCharge ? 1.20 : 1);
   const difficultyAttackMultiplier = isPlayer ? 1 : enemyDifficultyAttackMultiplier();
   const mapAttackMultiplier = power > 0 ? huntMapAttackMultiplier(moveTypes(mv)) : 1;
-  const powerBoost=isPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
+  const resolvedPower=tacticalSkillPower(mv,isPlayer);
+  const powerBoost=isPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,resolvedPower):{multiplier:1,boosted:false};
   const penetration=isPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
-  const effectivePower=power*powerBoost.multiplier;
+  const effectivePower=resolvedPower*powerBoost.multiplier;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=g?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.50,penetration.rate):1;
@@ -440,6 +566,10 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     msg += `<br>🌱 HPを${healed}吸収した！`;
   }
   if(isPlayer){const linkHeal=applyPlayerKokoroLinkLifeSteal(actualDamage);if(linkHeal)msg+=`<br>${linkHeal}`;}
+  if(effect==='tactical'){
+    const tacticalMessage=resolveTacticalSkillEffects(mv,isPlayer,null,null,actualDamage);
+    if(tacticalMessage)msg+=`<br>${tacticalMessage}`;
+  }
   if (effect === 'recoil') {
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
     if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp -= 8; else eHp -= 8;if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:8});msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}

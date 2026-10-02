@@ -35,6 +35,11 @@ const MOVE_CARDS = [];
 const _skillSeen = new Set();
 const _skillIdByMove = new WeakMap();
 const LEGACY_SKILL_ID_ALIASES = Object.create(null);
+if (typeof CHARACTER_SKILL_LEGACY_MOVES !== 'undefined') {
+  Object.entries(CHARACTER_SKILL_LEGACY_MOVES).forEach(([id,move]) => {
+    LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(move)] = id;
+  });
+}
 
 // User-approved replacement skills. Fixed IDs retain ownership; legacy names/types
 // remain readable. Presentation and anatomy are keyed by ID, not mutable names.
@@ -112,7 +117,11 @@ function skillTagsFor(sourceUnit,mv,form){
   ])]);
 }
 
-M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
+const skillSources = [...M];
+if (typeof CHARACTER_COMMON_MOVES !== 'undefined') {
+  skillSources.push({id:'character_common',entityKind:'character',tags:[],moves:CHARACTER_COMMON_MOVES});
+}
+skillSources.forEach(mon => (mon.moves || []).forEach((mv,index) => {
   const id = mv?.[8];
   if (typeof id !== 'string' || !id) throw new Error(`固定skillIdがありません: ${mon.id} moves[${index}]`);
   _skillIdByMove.set(mv,id);
@@ -127,6 +136,7 @@ M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
     chance:Number.isFinite(mv[4]) ? Number(mv[4]) : null, cost:skillCostFromMove(mv), customDesc:mv[6] || '',
     exclusiveMonsterId:mv[7] || null, desc:moveEffectText ? moveEffectText(mv) : '',
     sourceUnitId:mon.id, sourceEntityKind:mon.entityKind, form,
+    tactical:mv[9] || null, commonCharacterSkill:mon.id === 'character_common',
     tags:skillTagsFor(mon,mv,form), requirements:skillRequirementsFor(mon,mv,form)
   });
 }));
@@ -141,6 +151,7 @@ function skillPowerBand(power){
   return 'signature';
 }
 function skillConsolidationKey(sk){
+  if (sk.tactical || sk.commonCharacterSkill) return `keep:${sk.id}`;
   const source=by(sk.sourceUnitId);
   const consolidatableEffect=!sk.effect || ['guard','heal','buff','debuff'].includes(sk.effect);
   if (!consolidatableEffect || sk.exclusiveMonsterId || source?.bossClass || source?.alchemyExclusive || sk.types.length !== 1 || sk.power > 80) return `keep:${sk.id}`;
@@ -222,7 +233,10 @@ function skillBattleMotionForMove(mv){
   const damageForm=catalogForm === 'generic' ? genericBattleMotionForm(skill,mv) : catalogForm;
   const role=roleTag?.slice(5) || ((Number(mv?.[1]) || 0) > 0 ? 'damage' : 'support');
   const effect=skill?.effect || mv?.[3] || null;
-  const supportForm={guard:'guard',heal:'heal',buff:'buff',debuff:'debuff',aqua_shield:'shield',sleep:'sleep'}[effect] || null;
+  const tactical=skill?.tactical || mv?.[9];
+  const tacticalSupport=tactical?.debuff||tactical?.dispel?'debuff':tactical?.heal?'heal':
+    tactical?.guard?'guard':tactical?.buff||tactical?.charge?'buff':tactical?.cleanse?.length?'heal':null;
+  const supportForm={guard:'guard',heal:'heal',buff:'buff',debuff:'debuff',aqua_shield:'shield',sleep:'sleep'}[effect] || (effect==='tactical'?tacticalSupport:null);
   const form=role === 'support' && supportForm ? supportForm : damageForm;
   return Object.freeze({
     skillId:skill?.id || null,
@@ -236,8 +250,11 @@ function skillBattleMotionForMove(mv){
 function skillToMove(skillId){
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return ['通常攻撃',24,'normal'];
-  return [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId, sk.id];
+  const move = [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId, sk.id];
+  if (sk.tactical) move.push(sk.tactical);
+  return move;
 }
+function tacticalSkillProfile(move){ return move?.[9] || SKILL_BY_ID[move?.[8]]?.tactical || null; }
 function rarityCount(m){ return (m?.rarity || '★').length || 1; }
 function skillCostLimitFor(mon, ins){
   const base = {1:4,2:5,3:6,4:8,5:10}[rarityCount(mon)] || 4;

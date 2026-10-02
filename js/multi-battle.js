@@ -248,13 +248,21 @@ async function performMultiAttack(actor,target,move) {
   }
   if(typeof battleFeedback!=='undefined'){
     const label=entry=>entry.kind==='player'?`味方・${player.name}`:`敵${multiBattle.enemies.indexOf(entry)===0?'A':'B'}・${entry.mon.name}`;
-    const selfEffect=['guard','heal','buff','aqua_shield'].includes(effect);
+    const tactical=tacticalSkillProfile(move);
+    const selfEffect=['guard','heal','buff','aqua_shield'].includes(effect)||
+      (effect==='tactical'&&power<=0&&!tactical?.debuff&&!tactical?.dispel);
     battleFeedback.action=`${label(actor)} → ${label(selfEffect?actor:target)}：「${name}」`;
     battleHistoryEntry(battleFeedback.action,'target');renderBattleInputState();
   }
   const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
-  const supportTargetId=['sleep','debuff'].includes(effect)?impactTargetId:sourceId;
+  const tactical=tacticalSkillProfile(move);
+  const supportTargetId=['sleep','debuff'].includes(effect)||(effect==='tactical'&&(tactical?.debuff||tactical?.dispel))?impactTargetId:sourceId;
   const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,move,{untilImpact:true}):false;
+  if(effect==='tactical'&&power<=0){
+    appendMultiLog(`✨ ${a.name}の「${name}」！<br>${resolveTacticalSkillEffects(move,actorIsPlayer,actorIsPlayer?null:actor,target)}`);
+    updateMultiBattleView();
+    return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
+  }
   if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated}; }
   if(effect==='heal'){
     const amount=adjustedBattleHealing(24+(actorIsPlayer?(activeInstance?.level||1):1)*3);
@@ -277,9 +285,10 @@ async function performMultiAttack(actor,target,move) {
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true}):false;
   if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(animated):{animated};}
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
-  const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,power):{multiplier:1,boosted:false};
+  const resolvedPower=tacticalSkillPower(move,actorIsPlayer,actorIsPlayer?null:actor,target);
+  const powerBoost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,resolvedPower):{multiplier:1,boosted:false};
   const penetration=actorIsPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
-  const effectivePower=power*powerBoost.multiplier;
+  const effectivePower=resolvedPower*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
   const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=guard?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.5,penetration.rate):1;
@@ -318,6 +327,10 @@ async function performMultiAttack(actor,target,move) {
     if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=actorIsPlayer?pHp:actor.hp;if(actorIsPlayer)pHp=Math.max(0,pHp-recoil);else actor.hp=Math.max(0,actor.hp-recoil);if(typeof battleHpResult==='function')battleHpResult(sourceId,before,actorIsPlayer?pHp:actor.hp,{label:'反動',damage:recoil});msg+=`<br>💥 ${a.name}は反動で${recoil}ダメージ！`;}
   }
   if(effect==='flare_charge'){if(actorIsPlayer)pFlareCharge=true;else actor.flareCharge=true;}else if(power>0){if(actorIsPlayer)pFlareCharge=false;else actor.flareCharge=false;}
+  if(effect==='tactical'){
+    const tacticalMessage=resolveTacticalSkillEffects(move,actorIsPlayer,actorIsPlayer?null:actor,target,Math.min(damage,Math.max(0,defenderHpBefore)));
+    if(tacticalMessage)msg+=`<br>${tacticalMessage}`;
+  }
   if((defenderIsPlayer?pHp:targetEntry.hp)>0){
     if(effect==='poison'){
       const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.5):{chance:effectChance??.5,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(Math.random()<chance.chance){

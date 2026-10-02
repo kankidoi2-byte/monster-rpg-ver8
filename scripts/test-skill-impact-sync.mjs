@@ -10,8 +10,13 @@ const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstan
 const multiSetup=setup+`activeHuntRequest.battleMode='three_way';activeHuntRequest.secondEnemyId='goblin';beginThreeWayBattle();multiBattle.enemies.forEach(e=>{e.hp=60;e.guard=true;e.aquaShield=true;});`;
 const moves=after.run('MOVE_CARDS.map(s=>skillToMove(s.id))');
 moves.push(['通常攻撃',24,'normal'],['弱体化',0,'dark','debuff'],['追加攻撃確定',24,'thunder','repeat_attack',1]);
+// The historical engine predates the user-approved tactical effects. Keep its
+// outcome/RNG contract for all legacy effect paths; the new effects are covered
+// by test-character-tactical-skills. Every card still runs the timing checks below.
+const comparisonMoves=moves.filter(move=>move[3]!=='tactical');
+assert(moves.filter(move=>move[3]==='tactical').every(move=>/^skill_character_/.test(move[8])&&move[9]));
 let cases=0;
-for(const direction of ['single-player','single-enemy','player-enemy','enemy-player','enemy-enemy'])for(const move of moves){
+for(const direction of ['single-player','single-enemy','player-enemy','enemy-player','enemy-enemy'])for(const move of comparisonMoves){
  const states=[],draws=[];
  for(const r of [before,after]){
   r.context.Math.random=()=>.99;
@@ -23,7 +28,7 @@ for(const direction of ['single-player','single-enemy','player-enemy','enemy-pla
  }
  assert.equal(states[0],states[1],`${direction}/${move[0]} outcomes`);assert.equal(draws[0],draws[1],`${direction}/${move[0]} RNG`);cases++;
 }
-console.log(`PASS ${cases} real-handler outcomes and RNG counts match main (${moves.length} moves × 5 directions)`);
+console.log(`PASS ${cases} legacy-effect outcomes and RNG counts match the historical engine (${comparisonMoves.length} moves × 5 directions)`);
 // Real renderer, deterministic clock: ensure contact precedes cleanup and cleanup owns its nodes.
 let now=0,id=0;const timers=new Map(),nodes=new Map();
 function node(name,left=0,top=0){return {name,removed:false,children:[],style:{setProperty(k,v){this[k]=v;},removeProperty(k){delete this[k];}},classList:{v:new Set(),add(...v){v.forEach(x=>this.v.add(x));},remove(...v){v.forEach(x=>this.v.delete(x));},contains(v){return this.v.has(v);}},setAttribute(){},getBoundingClientRect:()=>({left,top,width:120,height:120}),appendChild(n){this.children.push(n);},remove(){this.removed=true;},querySelector(){return null;}};}
