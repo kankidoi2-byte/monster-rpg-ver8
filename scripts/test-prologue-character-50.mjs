@@ -9,7 +9,15 @@ const current=run('M');
 const baseline={};vm.createContext(baseline);
 vm.runInContext(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'})+';globalThis.units=M;',baseline);
 assert.equal(current.length,100);
-for(const old of baseline.units)assert.equal(JSON.stringify(current.find(u=>u.id===old.id)),JSON.stringify(old),`preserve ${old.id}`);
+for(const old of baseline.units){
+ const unit=current.find(u=>u.id===old.id);
+ if(old.id==='proto_icegolem'){
+  // The subsequent Golem fix adds two normal attacks but retains all original fields and cards.
+  assert.equal(unit.moves.length,old.moves.length+2);
+  const legacyMoves=old.moves.map(move=>unit.moves.find(candidate=>candidate[8]===move[8]));
+  assert.equal(JSON.stringify({...unit,moves:legacyMoves}),JSON.stringify(old),'preserve Golem legacy cards and non-move data');
+ }else assert.equal(JSON.stringify(unit),JSON.stringify(old),`preserve ${old.id}`);
+}
 const added=current.filter(u=>u.characterNo>=15);
 assert.equal(added.length,36);
 assert(added.every(u=>u.artworkPending && !u.imgKey && u.icon));
@@ -45,4 +53,4 @@ for(const u of added.filter(u=>!u.evolutionOnly)){
  assert.equal(run('by(chain.id).rarity'),'★★★★');
  assert.equal(run('chain.uid'),run('save.party[0]'));
 }
-console.log('PASS: original 64 records unchanged; all 36 names render, attack/support handlers, save/reload; 12 complete evolution chains.');
+console.log('PASS: original records preserved except additive Golem attack fix; all 36 names render, attack/support handlers, save/reload; 12 complete evolution chains.');
