@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261002-character-skill-inheritance",date:"2026-10-02",category:"fix",title:"進化前のキャラクター専用技を引き継げます",body:"ボルドなど追加12系統のキャラクターは、進化後も同じ系統の進化前の技を装備できます。進化時の装備を維持し、新しい形態の初期技カードも獲得します。上位形態や別のキャラクターの専用技は装備できません。"}),
   Object.freeze({id:"20261002-golem-initial-attacks",date:"2026-10-02",category:"fix",title:"ゴーレムが初期装備で攻撃できるようになりました",body:"無属性の攻撃技「石造拳」「巨岩クラッシュ」を追加しました。防御技だけになっていた仲間のゴーレムも、レベルに合う攻撃技を含む初期装備に補修します。"}),
   Object.freeze({id:"20261002-prologue-character-50",date:"2026-10-02",category:"update",title:"序章のキャラクター36形態を追加しました",body:"12人の基本形がキャラクターガチャに登場し、育成で各2段階進化します。序章のキャラクターは全50形態になりました。追加キャラクターの画像は後日追加予定で、現在は名前とアイコンで表示します。"}),
   Object.freeze({id:"20261002-single-defeated-artwork",date:"2026-10-02",category:"fix",title:"通常戦で倒した敵の表示を統一しました",body:"1対1の戦闘でも、倒した敵の画像を非表示にしました。三つ巴バトルと同じく名前とHP欄を残し、勝利後の契約は引き続き行えます。"}),
