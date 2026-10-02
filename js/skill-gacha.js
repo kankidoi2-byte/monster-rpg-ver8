@@ -39,15 +39,35 @@ function pickSkillGachaCard(kind,minCost=1,randomFn=Math.random){
   const cardRoll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0));
   return selected.cards[Math.floor(cardRoll*selected.cards.length)] || selected.cards[0] || null;
 }
+function skillGachaCommonGuaranteePool(inventory={}){
+  const commonCards=skillGachaPool('character').filter(card=>card.commonCharacterSkill);
+  if(!commonCards.length) return [];
+  const countFor=card=>Math.max(0,Math.floor(Number(inventory[card.id])||0));
+  const minimum=Math.min(...commonCards.map(countFor));
+  return commonCards.filter(card=>countFor(card)===minimum);
+}
+function pickSkillGachaCommonGuarantee(inventory,randomFn=Math.random){
+  const pool=skillGachaCommonGuaranteePool(inventory);
+  const roll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0));
+  return pool[Math.floor(roll*pool.length)] || null;
+}
 function performSkillGacha(kind,count,randomFn=Math.random){
   const normalizedKind=skillGachaKind(kind);
   const drawCount=count===10 ? 10 : count===1 ? 1 : 0;
   const coinCost=drawCount===10 ? SKILL_GACHA_TEN_COST : drawCount===1 ? SKILL_GACHA_SINGLE_COST : 0;
   if(!normalizedKind || !drawCount) return {ok:false,error:'ガチャの種類または回数が正しくありません。',cards:[]};
   if((save.coins||0)<coinCost) return {ok:false,error:`コインが${coinCost-(save.coins||0)}枚足りません。`,cards:[]};
-  const cards=Array.from({length:drawCount},()=>pickSkillGachaCard(normalizedKind,1,randomFn)).filter(Boolean);
-  if(cards.length!==drawCount) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
-  if(drawCount===10 && !cards.some(card=>card.cost>=2)) cards[cards.length-1]=pickSkillGachaCard(normalizedKind,2,randomFn);
+  const commonGuarantee=normalizedKind==='character' && drawCount===10;
+  const cards=Array.from({length:commonGuarantee ? 9 : drawCount},()=>pickSkillGachaCard(normalizedKind,1,randomFn));
+  if(cards.some(card=>!card)) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
+  if(commonGuarantee){
+    const provisionalInventory={...(save.skillCards||{})};
+    cards.forEach(card=>{provisionalInventory[card.id]=Math.max(0,Math.floor(Number(provisionalInventory[card.id])||0))+1;});
+    cards.push(pickSkillGachaCommonGuarantee(provisionalInventory,randomFn));
+  }else if(drawCount===10 && !cards.some(card=>card.cost>=2)){
+    cards[cards.length-1]=pickSkillGachaCard(normalizedKind,2,randomFn);
+  }
+  if(cards.length!==drawCount || cards.some(card=>!card)) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
   if(!save.skillCards || typeof save.skillCards!=='object') save.skillCards={};
   save.coins-=coinCost;
   cards.forEach(card=>{save.skillCards[card.id]=Math.max(0,Math.floor(Number(save.skillCards[card.id])||0))+1;});
@@ -89,7 +109,9 @@ function renderSkillGacha(){
   if(!rates) return;
   rates.innerHTML=Object.entries(SKILL_GACHA_KINDS).map(([kind,config])=>{
     const rows=skillGachaRates(kind).map(entry=>`<li><b>COST ${entry.cost}</b><span>${(entry.rate*100).toFixed(1)}%</span><small>${entry.cards.length}種類・1枚あたり約${(entry.rate/entry.cards.length*100).toFixed(2)}%</small></li>`).join('');
-    return `<article class="skill-gacha-pool"><h2>${kind==='monster'?'🐾':'⚔️'} ${config.label}ガチャ</h2><p>${config.pool.length}種類から抽選</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('${kind}',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('${kind}',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・COST 2以上1枚保証</small></button></div><ul>${rows}</ul></article>`;
+    const guarantee=kind==='character'?'共通技1枚保証・未所持優先':'COST 2以上1枚保証';
+    const rateDescription=kind==='character'?'<p class="small">以下は1回抽選・10連の1〜9枚目の確率です。10枚目は共通技6種類のうち所持数が最も少ない種類から均等に抽選します（未所持優先）。1〜9枚目の獲得分も所持数に含めるため、保証枠の確率は抽選ごとに変わります。</p>':'';
+    return `<article class="skill-gacha-pool"><h2>${kind==='monster'?'🐾':'⚔️'} ${config.label}ガチャ</h2><p>${config.pool.length}種類から抽選</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('${kind}',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('${kind}',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・${guarantee}</small></button></div>${rateDescription}<ul>${rows}</ul></article>`;
   }).join('');
 }
 function closeSkillGachaCardDetail(){
@@ -223,11 +245,23 @@ function openSkillInventoryFromGacha(){
   if(typeof showUiNotice==='function') showUiNotice('仲間を選び「技変更」から装備できます。');
 }
 function rollSkillGacha(kind,count){
+  const beforeCoins=save.coins;
+  const hadInventory=Object.prototype.hasOwnProperty.call(save,'skillCards');
   const beforeInventory={...(save.skillCards||{})};
+  const hadMeta=Object.prototype.hasOwnProperty.call(save,'saveMeta');
+  const beforeMeta=save.saveMeta ? {...save.saveMeta} : save.saveMeta;
   const result=performSkillGacha(kind,count);
   if(!result.ok){alert(result.error);return;}
   const entries=skillGachaInventorySnapshots(result.cards,beforeInventory);
-  saveGame();
+  if(saveGame()===false){
+    save.coins=beforeCoins;
+    if(hadInventory)save.skillCards=beforeInventory;else delete save.skillCards;
+    if(hadMeta)save.saveMeta=beforeMeta;else delete save.saveMeta;
+    renderSkillGacha();
+    if(typeof updateAppResourceBar==='function') updateAppResourceBar();
+    alert('技ガチャの結果を保存できなかったため、抽選を取り消しました。コインと技カードは抽選前の状態です。');
+    return;
+  }
   renderSkillGacha();
   if(typeof updateAppResourceBar==='function') updateAppResourceBar();
   presentSkillGachaResult(result,entries);
