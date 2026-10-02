@@ -6,6 +6,7 @@ function vis(m, imageAttributes = '') {
     const attributes = imageAttributes ? ` ${imageAttributes}` : '';
     return `<img${attributes} src="${IMG[m.imgKey]}" alt="${m.name}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
   }
+  if (m.artworkPending && isCharacterUnit(m)) return `<div class="character-artwork-pending" role="img" aria-label="${m.name}"><div class="emoji" aria-hidden="true">${m.icon || '❓'}</div><small>${m.name}</small></div>`;
   return `<div class="emoji">${m.icon || '❓'}</div>`;
 }
 function replayUiMotion(element, className, duration=700) {

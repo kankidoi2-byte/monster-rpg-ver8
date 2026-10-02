@@ -1,6 +1,6 @@
 const CHARACTER_GACHA_SINGLE_COST = 100;
 const CHARACTER_GACHA_TEN_COST = 900;
-const CHARACTER_GACHA_IDS = Object.freeze(['elna_beginner','stella_apprentice','lumina_apprentice']);
+const CHARACTER_GACHA_IDS = Object.freeze(['elna_beginner','stella_apprentice','lumina_apprentice', ...M.filter(unit=>unit.entityKind==='character' && unit.characterNo>=15 && !unit.evolutionOnly).map(unit=>unit.id)]);
 function characterGachaPool(){ return CHARACTER_GACHA_IDS.map(id=>M.find(unit=>unit.id===id)).filter(isCharacterUnit); }
 function performCharacterGacha(count,randomFn=Math.random){
   if(count!==1 && count!==10) return {ok:false,error:'回数が正しくありません。'};

@@ -14,7 +14,7 @@ const motion = vm.runInContext(`({
   skillToMove,
   skillBattleMotionForMove,
   by,
-  cards:MOVE_CARDS
+  cards:MOVE_CARDS.filter(card=>!card.sourceUnitId.startsWith('character_'))
 })`, context);
 
 const breathMove = motion.skillToMove('skill_nemes_03');
