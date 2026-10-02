@@ -280,7 +280,15 @@ assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,
 const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
   ['false_dragon_beta','false_dragon_gamma'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
 );
-assert.deepEqual(currentSnapshot.monsters,expectedMonsterEconomy,'monster reward/contract/drop data diverged');
+// New prologue allies are deliberately additive and never enter map enemy pools.
+// Preserve parity for every legacy record and validate exactly the approved additions.
+const addedCharacterIds=['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille','noam'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`));
+const addedIds=new Set(addedCharacterIds);
+assert.deepEqual(currentSnapshot.monsters.filter(mon=>!addedIds.has(mon.id)),expectedMonsterEconomy,'legacy reward/contract/drop data diverged');
+const addedEconomy=currentSnapshot.monsters.filter(mon=>addedIds.has(mon.id));
+assert.deepEqual(addedEconomy.map(mon=>mon.id).sort(),[...addedCharacterIds].sort());
+assert(addedEconomy.every(mon=>!mon.contractable && mon.catchRate===0 && !mon.expBonus && !mon.coinBonus && !mon.dropItem));
+assert(currentSnapshot.maps.every(map=>map.enemyIds.every(id=>!addedIds.has(id))),'new allies must not alter encounter/reward pools');
 assert.match(baseline.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'baseline contract formula not recognized');
 assert.match(current.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'current contract formula diverged');
 assert.match(current.source['js/world-map.js'],/if \(eventKey\) \{ request\.battleMode='single';request\.secondEnemyId=null;request\.invasionEnemyId=null;request\.invasionTurn=null; \}/,'special world-map event single-battle policy diverged');
