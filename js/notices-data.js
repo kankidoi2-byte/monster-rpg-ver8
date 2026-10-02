@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261002-golem-initial-attacks",date:"2026-10-02",category:"fix",title:"ゴーレムが初期装備で攻撃できるようになりました",body:"無属性の攻撃技「石造拳」「巨岩クラッシュ」を追加しました。防御技だけになっていた仲間のゴーレムも、レベルに合う攻撃技を含む初期装備に補修します。"}),
   Object.freeze({id:"20261002-prologue-character-50",date:"2026-10-02",category:"update",title:"序章のキャラクター36形態を追加しました",body:"12人の基本形がキャラクターガチャに登場し、育成で各2段階進化します。序章のキャラクターは全50形態になりました。追加キャラクターの画像は後日追加予定で、現在は名前とアイコンで表示します。"}),
   Object.freeze({id:"20261002-single-defeated-artwork",date:"2026-10-02",category:"fix",title:"通常戦で倒した敵の表示を統一しました",body:"1対1の戦闘でも、倒した敵の画像を非表示にしました。三つ巴バトルと同じく名前とHP欄を残し、勝利後の契約は引き続き行えます。"}),
   Object.freeze({id:"20261002-motion-static-release",date:"2026-10-02",category:"fix",title:"静止表示への切り替え後の読み込みを改善しました",body:"モンスター動画の読み込みに失敗したときや、待ち時間を過ぎて静止画に切り替わったときに、動画の読み込みを終了するようにしました。「再生を試す」からの再試行は引き続き利用できます。"}),

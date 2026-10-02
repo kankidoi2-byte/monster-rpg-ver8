@@ -66,7 +66,18 @@ function ensureInstanceSkills(ins){
     const c = SKILL_BY_ID[id].cost;
     if (total + c <= limit) { kept.push(id); total += c; }
   });
-  save.equippedSkills[ins.uid] = kept.length ? kept : defaultSkillIdsForMonster(mon, ins);
+  // Repair only the former guard-only Golem default; preserve other custom loadouts.
+  const oldGolemDefault = mon.id === 'proto_icegolem' && arr.length === 1 &&
+    canonicalSkillId(arr[0]) === canonicalSkillId('skill_proto_icegolem_02');
+  save.equippedSkills[ins.uid] = oldGolemDefault ? defaultSkillIdsForMonster(mon, ins) :
+    (kept.length ? kept : defaultSkillIdsForMonster(mon, ins));
+  if (oldGolemDefault) {
+    if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
+    const equippedCounts = equippedSkillCardCounts();
+    save.equippedSkills[ins.uid].forEach(id => {
+      save.skillCards[id] = Math.max(Number(save.skillCards[id]) || 0, equippedCounts[id] || 0);
+    });
+  }
 }
 function getEquippedSkillIds(ins){
   ensureInstanceSkills(ins);
