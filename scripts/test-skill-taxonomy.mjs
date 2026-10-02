@@ -28,7 +28,7 @@ assert.equal(taxonomy.units.length,100);
 assert(taxonomy.units.every(unit => Array.isArray(unit.tags) && unit.tags.includes(`entity:${unit.entityKind}`)));
 assert(taxonomy.units.every(unit => unit.types.every(type => unit.tags.includes(`element:${type}`))));
 
-assert.equal(taxonomy.cards.length,308,'fixed skill IDs must remain available for save compatibility');
+assert.equal(taxonomy.cards.length,310,'fixed skill IDs must remain available for save compatibility');
 assert(taxonomy.cards.every(card => card.sourceUnitId && card.sourceEntityKind));
 assert(taxonomy.cards.every(card => Array.isArray(card.tags) && card.tags.length >= 3));
 assert(taxonomy.cards.every(card => Array.isArray(card.requirements?.entityKinds)));
@@ -76,6 +76,19 @@ for (const unit of taxonomy.units) {
   assert(cost <= taxonomy.skillCostLimitFor(unit,instance),`${unit.id} defaults must fit the skill cost limit`);
 }
 
+// Golem defaults must attack at every tested level without changing legacy water cards.
+const golem = taxonomy.by('proto_icegolem');
+assert.deepEqual([...golem.types],['normal']);
+for (const level of [1,3,30,100]) {
+  const ids = taxonomy.defaultSkillIdsForMonster(golem,{level});
+  assert(ids.some(id => taxonomy.cards.find(card => card.id === id).power > 0),`Golem Lv${level} must start with an attack`);
+  assert(ids.every(id => taxonomy.isSkillAllowedForMonster(id,golem)));
+}
+assert(taxonomy.defaultSkillIdsForMonster(golem,{level:30}).includes('skill_proto_icegolem_05'));
+for (const id of ['skill_proto_icegolem_01','skill_proto_icegolem_03']) {
+  assert(taxonomy.cards.find(card => card.id === id).types.includes('water'),'legacy water cards must retain their attribute');
+}
+
 context.save = {
   saveMeta:{migrations:[]},
   instances:[
@@ -120,7 +133,42 @@ assert.deepEqual([...grantedEvolutionCards],[...expectedEvolutionCards],'evoluti
 assert.deepEqual([...context.save.equippedSkills[evolving.uid]],equippedBeforeEvolution,'granting evolution cards must not change the equipped loadout');
 for (const id of expectedEvolutionCards) assert.equal(context.save.skillCards[id],countsBeforeEvolution[id]+1,`evolution must grant one ${id} card`);
 
+// Existing guard-only defaults are repaired once, including two copies sharing cards.
+const legacyGuard=taxonomy.canonicalSkillId('skill_proto_icegolem_02');
+context.save={saveMeta:{migrations:['equipped_skill_cards_v1']},instances:[
+  {uid:'golem-low',id:'proto_icegolem',level:1},
+  {uid:'golem-high',id:'proto_icegolem',level:30},
+  {uid:'golem-custom',id:'proto_icegolem',level:30}
+],skillCards:{[legacyGuard]:2,skill_proto_icegolem_01:7},equippedSkills:{
+  'golem-low':[legacyGuard],'golem-high':['skill_proto_icegolem_02'],
+  'golem-custom':['skill_proto_icegolem_04']
+}};
+vm.runInContext('migrateSkillSystem()',context);
+for (const uid of ['golem-low','golem-high']) {
+  const instance=context.save.instances.find(ins=>ins.uid===uid);
+  assert.deepEqual([...context.save.equippedSkills[uid]],[...taxonomy.defaultSkillIdsForMonster(golem,instance)]);
+}
+assert.deepEqual([...context.save.equippedSkills['golem-custom']],['skill_proto_icegolem_04'],'custom attacking loadout must remain unchanged');
+assert.equal(context.save.skillCards.skill_proto_icegolem_01,7,'legacy inventory must survive repair');
+assert.equal(context.save.skillCards.skill_proto_icegolem_04,3,'each repaired or custom slot must own a card');
+// Repair must not discard any unequipped or unrelated inventory in migrated saves.
+context.save.skillCards.skill_freigal_01=99;
+const inventoryBefore={...context.save.skillCards};
+vm.runInContext('migrateSkillSystem()',context);
+for(const [id,count] of Object.entries(inventoryBefore)) {
+ assert.equal(context.save.skillCards[id],count,`Golem repair must preserve all inventory: ${id}`);
+}
+for(const unit of taxonomy.units.filter(unit=>unit.id!=='proto_icegolem')) {
+ for(const id of ['skill_proto_icegolem_04','skill_proto_icegolem_05']) {
+  assert.equal(taxonomy.isSkillAllowedForMonster(id,unit),false,'new Golem attacks must be exclusive');
+ }
+}
+const repairedSave=JSON.stringify(context.save);
+context.save=JSON.parse(repairedSave);
+vm.runInContext('migrateSkillSystem()',context);
+assert.equal(JSON.stringify(context.save),repairedSave,'save and reload must not duplicate repair cards');
+
 const progressionSource=read('js/progression.js');
 assert.equal((progressionSource.match(/grantDefaultSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant default skill cards');
 
-console.log(`Skill taxonomy validation passed (100 tagged units, 308 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
+console.log(`Skill taxonomy validation passed (100 tagged units, 310 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
