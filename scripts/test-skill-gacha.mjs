@@ -13,7 +13,7 @@ const contract=vm.runInContext(`({
   monsterPool:skillGachaPool('monster'),characterPool:skillGachaPool('character'),
   monsterRates:skillGachaRates('monster'),characterRates:skillGachaRates('character')
 })`,context);
-assert.equal(contract.monsterPool.length,136,'monster gacha must contain every consolidated monster skill');
+assert.equal(contract.monsterPool.length,138,'monster gacha must contain every consolidated monster skill');
 assert.equal(contract.characterPool.length,138,'character gacha must contain every consolidated character skill');
 assert(contract.monsterPool.every(card=>card.sourceEntityKind==='monster'&&!card.deprecated));
 assert(contract.characterPool.every(card=>card.sourceEntityKind==='character'&&!card.deprecated));
