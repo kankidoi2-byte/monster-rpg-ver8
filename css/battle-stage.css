@@ -97,7 +97,8 @@ body:has(#battle.active.is-battle-stage) .app-topbar{position:relative}
 #battle.is-battle-stage .battle-enemy-controls{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 #battle.is-battle-stage .battle-enemy-controls button{min-width:48px;min-height:48px;height:auto;padding:8px;white-space:normal;font-size:1rem;color:#f8f3de;background:#25496d;border:1px solid #c9a862;overflow-wrap:anywhere}
 #battle.is-battle-stage .is-targetable>.multi-enemy-copy{border:3px solid #fff3b9}
-#battle.is-battle-stage .is-defeated>.battle-stage-slot{visibility:hidden}
+#battle.is-battle-stage .is-defeated>.battle-stage-slot,
+#battle.is-battle-stage #eBattleSlot.is-defeated{visibility:hidden}
 #battle.is-battle-stage .is-defeated>.multi-enemy-copy{border-style:dashed}
 #battle.is-battle-stage .is-stage-actor{outline:4px double #fff3b9;outline-offset:-4px}
 #battle.is-battle-stage .is-stage-target{border:3px dashed #fff3b9}
