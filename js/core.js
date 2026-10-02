@@ -244,12 +244,30 @@ function skillCostLimitFor(mon, ins){
   const lvBonus = Math.max(0, Math.floor(((ins?.level || 1) - 1) / 3));
   return base + lvBonus;
 }
+function isLaterCharacterForm(sourceId, targetId){
+  const source = by(sourceId), target = by(targetId);
+  if (source?.entityKind !== 'character' || target?.entityKind !== 'character') return false;
+  const visited = new Set([sourceId]), pending = [source];
+  while (pending.length) {
+    const form = pending.pop();
+    const nextIds = [form.evolution, ...(form.evolutions || []).map(evolution => evolution.to)];
+    for (const id of nextIds) {
+      const next = by(id);
+      if (!next || next.entityKind !== 'character' || visited.has(id)) continue;
+      if (id === targetId) return true;
+      visited.add(id);
+      pending.push(next);
+    }
+  }
+  return false;
+}
 function isSkillAllowedForMonster(skillId, mon, options={}){
   const sk = SKILL_BY_ID[skillId];
   if (!sk || !mon) return false;
   if (sk.deprecated && !options.allowDeprecated) return false;
   if (sk.sourceEntityKind && sk.sourceEntityKind !== mon.entityKind) return false;
-  if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id) return false;
+  if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id &&
+      !isLaterCharacterForm(sk.exclusiveMonsterId, mon.id)) return false;
   const unitTags=new Set(mon.tags || []);
   if ((sk.requirements?.entityKinds || []).length && !sk.requirements.entityKinds.includes(mon.entityKind)) return false;
   if ((sk.requirements?.requiredAll || []).some(tag => !unitTags.has(tag))) return false;
