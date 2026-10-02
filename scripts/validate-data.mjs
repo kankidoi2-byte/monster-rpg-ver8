@@ -98,7 +98,9 @@ if (data) {
     if (monster.entityKind === 'monster' && !Number.isInteger(monster.dexNo ?? monster.no)) {
       fail(`Monster ${monster.id} requires an integer encyclopedia number`);
     }
-    if (!monster.imgKey || !data.IMG[monster.imgKey]) {
+    if (monster.entityKind === 'character' && monster.artworkPending === true && !monster.imgKey && typeof monster.icon === 'string' && monster.icon) {
+      notes.push(`Character ${monster.id}: artwork pending, named icon fallback`);
+    } else if (!monster.imgKey || !data.IMG[monster.imgKey]) {
       fail(`Monster ${monster.id} has an unknown imgKey: ${monster.imgKey}`);
     } else {
       checkAsset(`Monster ${monster.id}`, data.IMG[monster.imgKey]);
@@ -164,6 +166,7 @@ if (data) {
   }
 
   const expectedCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari'];
+  expectedCharacters.push(...['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille','noam'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`)));
   const actualCharacterIds = characterRecords.map(character => character.id);
   if (actualCharacterIds.length !== expectedCharacters.length || expectedCharacters.some(id => !actualCharacterIds.includes(id))) {
     fail(`Character dex mismatch: ${actualCharacterIds.join(', ')}`);
