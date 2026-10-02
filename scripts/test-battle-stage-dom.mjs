@@ -48,7 +48,12 @@ run('changeActivePartyMember(1)');assert.notEqual(by('pVis').querySelector('img'
 run("busy=true;beginBattleAction(player,['回復'],true);showSingleBattleActionTarget('pVis')");assert.match(by('battleActionStatus').textContent,/→ アクアロン/);
 run('busy=false;runAway()');assert(!by('battleOutcome').classList.contains('hidden'));assert(!by('next').classList.contains('hidden'));
 run('afterBattleNext()');assert(!by('battle').classList.contains('active'));
-setup();run('eHp=0;win()');assert(!by('battleOutcome').classList.contains('hidden'));run('afterBattleNext()');
+setup();assert(!by('eBattleSlot').classList.contains('is-defeated'));
+run('eHp=0;update()');assert(by('eBattleSlot').classList.contains('is-defeated'));
+assert(!by('singleEnemyBox').classList.contains('hidden'));assert.match(by('eHpText').textContent,/^0 \/ /);
+run('win()');assert(by('eBattleSlot').classList.contains('is-defeated'));
+assert(!by('battleOutcome').classList.contains('hidden'));assert.match(by('battleOutcomeActions').textContent,/契約候補/);
+run('afterBattleNext()');setup();assert(!by('eBattleSlot').classList.contains('is-defeated'));
 setup();run('ensureMultiBattleDom();multiBattle={active:true,enemies:[createMultiEnemy(by("slime"),"enemy_a"),createMultiEnemy(by("freigal"),"enemy_b")],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle()');
 assert(!by('battle').classList.contains('is-single-stage'));assert.equal(by('pVis').parentElement.id,'pBattleSlot');assert.equal(d.querySelectorAll('.battle-stage-slot').length,3);assert(by('enemy_aVis'));checkIds();
 run('multiBattle=null;setMultiBattleLayout(false);setupBattle()');assert(by('battle').classList.contains('is-single-stage'));

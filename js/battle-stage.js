@@ -27,6 +27,8 @@ function syncSingleBattleStage(){
     }
     if(!slot){slot=document.createElement('div');slot.id=`${prefix}BattleSlot`;slot.className=`battle-stage-slot ${prefix==='p'?'is-ally':'is-enemy'}`;arena.appendChild(slot);}
     if(visual.parentElement!==slot)slot.appendChild(visual);
+    // Match multi-battle: defeated enemies leave their HUD, without artwork.
+    slot.classList.toggle('is-defeated',prefix==='e'&&eHp<=0);
     // Existing impact/cast code owns pVis/eVis. Facing and media are inside it;
     // HUD boxes remain siblings, outside all action transforms.
     if(!visual.querySelector('.battle-facing')){
