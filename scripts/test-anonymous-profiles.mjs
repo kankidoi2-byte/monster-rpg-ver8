@@ -15,4 +15,5 @@ const oldId=separate.p.current().id;const reload=tab(storage,slot1session);asser
 vm.runInContext('busy=true',two.ctx);assert.equal(two.p.switchTo(1),false,'block switching during an active operation');
 const broken=tab(new Map([['mb_profiles_v1','{bad'],['mb_v95c','valuable']]));assert.equal(broken.p.available(),false);assert.equal(broken.p.beforeSave(),false);
 const quotaStorage=new Map([['mb_v95c','valuable']]);const quota=tab(quotaStorage,new Map(),true);assert.equal(quota.p.available(),false);assert.equal(quotaStorage.get('mb_v95c'),'valuable');
+assert(two.p.consent(false));const optedOut=tab(storage,two.session);assert.equal(optedOut.p.current().consent,false,'existing OFF must survive reload');
 console.log('Anonymous profiles: preservation, separation, reload, conflicts, busy guard, corrupt metadata, quota PASS');

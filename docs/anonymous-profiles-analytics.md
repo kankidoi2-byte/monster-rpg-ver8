@@ -12,11 +12,11 @@ Implementation branch: `feat/anonymous-profiles-analytics`, based on main `6327d
 - Save import/export and reset operate only on the selected slot. Browser data deletion loses the local profiles and saves. Cloud save or cross-device transfer is not part of this change; export each slot separately.
 - Invalid profile metadata or inaccessible storage stops saving instead of replacing player data.
 
-## Optional reporting
+## Reporting with an off switch
 
-Reporting is disabled initially. The profile panel explains and enables/disables uploads. Reported fields are profile ID/name, session IDs, approximate active seconds, current tutorial progress, current rank/owned-count/wins, screens used and battle outcomes with equipped party/skills. Raw saves, email and administrator credentials are never sent. Names are rendered as text.
+Reporting is disabled initially. The profile panel explains uploads and provides an ON/OFF switch. Existing OFF preferences are preserved. Reported fields are profile ID/name, session IDs, approximate active seconds, current tutorial progress, current rank/owned-count/wins, screens used and battle outcomes with equipped party/skills. Raw saves, email and administrator credentials are never sent. Names are rendered as text.
 
-Retries use persistent temporary queues (100 events per profile) and immutable event UUIDs; server inserts deduplicate retries. Network failure does not block gameplay. Disabling reporting clears pending events. Already accepted records are retained. A new opt-in starts recording from then onward; previous play cannot be reconstructed.
+Retries use persistent temporary queues (100 events per profile) and immutable event UUIDs; server inserts deduplicate retries. Network failure does not block gameplay. Disabling reporting clears pending events. Already accepted records are retained. Enabling reporting starts recording from then onward; previous play cannot be reconstructed.
 
 ## Separate sites
 
