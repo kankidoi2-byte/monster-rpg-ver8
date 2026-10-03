@@ -18,6 +18,8 @@ function initSaveManagementUi(){
   resetButton.before(panel);
 }
 initSaveManagementUi();
+if(typeof MonsterProfiles!=='undefined')MonsterProfiles.mount();
+if(typeof MonsterAnalytics!=='undefined')MonsterAnalytics.start();
 initStarters();
 migrateSkillSystem();
 saveGame();
