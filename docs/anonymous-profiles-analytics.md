@@ -7,6 +7,7 @@ Implementation branch: `feat/anonymous-profiles-analytics`, based on main `6327d
 - Two device-local profiles with independent names, random UUIDs and independent saves/backups/quarantined corrupt data.
 - Slot 1 retains `mb_v95c` unchanged. Slot 2 uses additive `mb_v95c_profile2` storage keys. Save schema and existing IDs are unchanged.
 - No password, email or external identity for players. The internal random profile token authorizes event uploads only; it is never used to download other players' data.
+- Account switching, names and reporting settings are inside Menu → Save management. Home retains its original layout.
 - Switches save first and reload. Active battles/operations block switches. Each tab retains its selected slot, and stale same-profile writes are stopped.
 - Save import/export and reset operate only on the selected slot. Browser data deletion loses the local profiles and saves. Cloud save or cross-device transfer is not part of this change; export each slot separately.
 - Invalid profile metadata or inaccessible storage stops saving instead of replacing player data.
