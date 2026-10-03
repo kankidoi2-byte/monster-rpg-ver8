@@ -35,3 +35,7 @@ The receiver uses D1, validates bounded allowlisted event fields, rejects other 
 - Android manual verification and current-head CI must complete before merging the game PR. Do not merge merely because the two services are published.
 
 Manual acceptance: preserve an existing save in slot 1; switch to a fresh slot 2 and play the opening; switch back and verify monsters/coins/progress; reload each; export/import/reset only the test slot; play on a test profile and confirm automatic records in the private dashboard; designate it as test and confirm normal totals exclude it. Check title, home, party selection, hunt and battle, including 200% text and landscape if available.
+
+## Device information
+
+At the owner's request, the receiver records coarse OS/device family and exposed Android model per profile and event. Compatible browsers read only the model via User-Agent Client Hints; unsupported/denied requests do not delay startup. The receiver falls back to its User-Agent header and never persists the full header. Reduced Android model K is unknown; iPhone model numbers are not inferred. Device fields are browser-reported and can be missing or spoofed. Past records remain unknown. No save schema or profile ID changes.

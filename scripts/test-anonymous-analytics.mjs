@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {webcrypto} from 'node:crypto';
 const store=new Map(),requests=[],callbacks={};let tick;
 const p={id:webcrypto.randomUUID(),token:'private-profile-token',name:'テスト',consent:false};
-const ctx=vm.createContext({crypto:webcrypto,console,Date,MonsterProfiles:{current:()=>p},save:{party:['unit'],instances:[{uid:'unit',id:'freigal',level:5}],equippedSkills:{unit:['skill_test']},history:{wins:3},progress:{tutorial:{stepId:'first_step',completed:false}}},selectedMap:{id:'grassland'},activeHuntRequest:{difficultyId:'normal'},battleTurnCount:4,multiBattle:null,enemy:{id:'slime'},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},document:{visibilityState:'visible',getElementById:()=>null,addEventListener:(k,v)=>callbacks[k]=v},addEventListener:(k,v)=>callbacks[k]=v,setInterval:f=>{tick=f;return 1;},show:()=>{},showBattleOutcome:()=>{},fetch:async(url,options)=>{requests.push({url,options});return {ok:true};}});
+const ctx=vm.createContext({crypto:webcrypto,console,Date,navigator:{userAgentData:{getHighEntropyValues:async keys=>{assert.deepEqual(Array.from(keys),['model']);return {model:'SCG30'};}}},MonsterProfiles:{current:()=>p},save:{party:['unit'],instances:[{uid:'unit',id:'freigal',level:5}],equippedSkills:{unit:['skill_test']},history:{wins:3},progress:{tutorial:{stepId:'first_step',completed:false}}},selectedMap:{id:'grassland'},activeHuntRequest:{difficultyId:'normal'},battleTurnCount:4,multiBattle:null,enemy:{id:'slime'},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},document:{visibilityState:'visible',getElementById:()=>null,addEventListener:(k,v)=>callbacks[k]=v},addEventListener:(k,v)=>callbacks[k]=v,setInterval:f=>{tick=f;return 1;},show:()=>{},showBattleOutcome:()=>{},fetch:async(url,options)=>{requests.push({url,options});return {ok:true};}});
 vm.runInContext(fs.readFileSync(new URL('../js/analytics.js',import.meta.url),'utf8'),ctx);
 ctx.MonsterAnalytics.start();await new Promise(r=>setImmediate(r));
 assert.equal(requests.length,1,'startup reports even with legacy consent=false');
@@ -13,7 +13,7 @@ assert.equal(typeof ctx.MonsterAnalytics.consentChanged,'undefined','no reportin
 ctx.show('home');ctx.showBattleOutcome({kind:'victory'});await new Promise(r=>setImmediate(r));
 const batch=JSON.parse(requests.at(-1).options.body);
 const battle=batch.events.find(e=>e.type==='battle_result');
-assert.equal(battle.data.party[0].skills[0],'skill_test');assert.equal(battle.data.map,'grassland');
+assert.equal(battle.data.party[0].skills[0],'skill_test');assert.equal(battle.data.map,'grassland');assert.equal(batch.device.model,'SCG30');
 assert(!('save' in batch));assert.equal(requests[0].options.credentials,'omit');
 assert(!requests.some(r=>r.options.body.includes('RECORDS_READ_KEY')));
 assert.equal(requests[0].url,'https://monster-battle-records.kanki-doi-2.chatgpt.site/api/events');
