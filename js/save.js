@@ -126,9 +126,9 @@ function initSave() {
 }
 function normalizeAlchemyResonance(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;}
 function isSaveObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
-function safeStorageGet(key){try{return localStorage.getItem(key);}catch(error){lastSaveError=error;return null;}}
-function safeStorageSet(key,value){try{localStorage.setItem(key,value);lastSaveError=null;return true;}catch(error){lastSaveError=error;return false;}}
-function safeStorageRemove(key){try{localStorage.removeItem(key);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageGet(key){try{return localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);}catch(error){lastSaveError=error;return null;}}
+function safeStorageSet(key,value){try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageRemove(key){try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
 function saveHash(payload){
   const copy=JSON.parse(JSON.stringify(payload));
   if(copy.saveMeta)copy.saveMeta.integrityHash=null;
@@ -385,6 +385,7 @@ function registerMapDex(mapId){
 }
 
 function saveGame() {
+  if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
   save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance);
@@ -401,6 +402,7 @@ function saveGame() {
     return false;
   }
   if(!previous)safeStorageSet(SAVE_BACKUP_KEY,raw);
+  if(typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(raw);
   return true;
 }
 

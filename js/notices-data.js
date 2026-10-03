@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261003-anonymous-profiles",date:"2026-10-03",category:"update",title:"2つのプロフィールを切り替えて遊べます",body:"メニューのプロフィールから名前と独立した2つのセーブを切り替えられます。今までのセーブは枠1に引き継ぎます。匿名プレイ記録の送信は任意で、同じ場所から有効・無効を選べます。セーブは引き続き端末内に保存されます。"}),
   Object.freeze({"id":"20261002-character-tactical-skills","date":"2026-10-02","category":"update","title":"キャラクターの技と技ガチャを更新しました","body":"追加12系統の108技を固有名と異なる性能に変更し、共通技6種類を追加しました。キャラクター技ガチャ10連の最後は共通技を保証し、未所持・所持数の少ない種類を優先します。進化前の技も引き続き使えます。COST調整で上限を超える装備は外れますが、カードの所持数は減りません。"}),
   Object.freeze({id:"20261002-character-skill-inheritance",date:"2026-10-02",category:"fix",title:"進化前のキャラクター専用技を引き継げます",body:"ボルドなど追加12系統のキャラクターは、進化後も同じ系統の進化前の技を装備できます。進化時の装備を維持し、新しい形態の初期技カードも獲得します。上位形態や別のキャラクターの専用技は装備できません。"}),
   Object.freeze({id:"20261002-golem-initial-attacks",date:"2026-10-02",category:"fix",title:"ゴーレムが初期装備で攻撃できるようになりました",body:"無属性の攻撃技「石造拳」「巨岩クラッシュ」を追加しました。防御技だけになっていた仲間のゴーレムも、レベルに合う攻撃技を含む初期装備に補修します。"}),
