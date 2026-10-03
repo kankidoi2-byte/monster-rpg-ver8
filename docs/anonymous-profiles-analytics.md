@@ -7,16 +7,16 @@ Implementation branch: `feat/anonymous-profiles-analytics`, based on main `6327d
 - Two device-local profiles with independent names, random UUIDs and independent saves/backups/quarantined corrupt data.
 - Slot 1 retains `mb_v95c` unchanged. Slot 2 uses additive `mb_v95c_profile2` storage keys. Save schema and existing IDs are unchanged.
 - No password, email or external identity for players. The internal random profile token authorizes event uploads only; it is never used to download other players' data.
-- Account switching, names and reporting settings are inside Menu → Save management. Home retains its original layout.
+- Account switching and names are inside Menu → Save management. Home retains its original layout.
 - Switches save first and reload. Active battles/operations block switches. Each tab retains its selected slot, and stale same-profile writes are stopped.
 - Save import/export and reset operate only on the selected slot. Browser data deletion loses the local profiles and saves. Cloud save or cross-device transfer is not part of this change; export each slot separately.
 - Invalid profile metadata or inaccessible storage stops saving instead of replacing player data.
 
-## Reporting with an off switch
+## Automatic reporting
 
-Reporting is disabled initially. The profile panel explains uploads and provides an ON/OFF switch. Existing OFF preferences are preserved. Reported fields are profile ID/name, session IDs, approximate active seconds, current tutorial progress, current rank/owned-count/wins, screens used and battle outcomes with equipped party/skills. Raw saves, email and administrator credentials are never sent. Names are rendered as text.
+Reporting starts automatically for every valid profile, including existing profiles with a legacy OFF preference. There is no reporting toggle, status or upload notice in the game. The owner explicitly approved the payload and receiver on 2026-10-03. Reported fields are profile ID/name, session IDs, approximate active seconds, current tutorial progress, current rank/owned-count/wins, screens used and battle outcomes with equipped party/skills. Raw saves, email and administrator credentials are never sent. Names are rendered as text.
 
-Retries use persistent temporary queues (100 events per profile) and immutable event UUIDs; server inserts deduplicate retries. Network failure does not block gameplay. Disabling reporting clears pending events. Already accepted records are retained. Enabling reporting starts recording from then onward; previous play cannot be reconstructed.
+Retries use persistent temporary queues (100 events per profile) and immutable event UUIDs; server inserts deduplicate retries. Network failure does not block gameplay. Already accepted records are retained. Recording starts when this version is loaded; previous play cannot be reconstructed.
 
 ## Separate sites
 
@@ -29,9 +29,9 @@ The receiver uses D1, validates bounded allowlisted event fields, rejects other 
 
 ## Validation and publication gate
 
-- `npm run check:anonymous-profiles`: legacy key preservation, slot separation, reload, stale writes, busy-switch guard, corrupted metadata, unavailable storage, opt-in/out, and equipped-skill payload checks.
+- `npm run check:anonymous-profiles`: legacy key preservation, slot separation, reload, stale writes, busy-switch guard, corrupted metadata, unavailable storage, automatic startup, legacy OFF metadata, retry queues, and equipped-skill payload checks.
 - `npm run check`: all repository checks including save migration, tutorial progression and battle/UI tests passed locally.
 - Receiver validation and actual SQLite route tests: origin/token authorization, protected reads, retry deduplication, summary counts and test exclusions passed. Both Sites production builds passed and published successfully.
 - Android manual verification and current-head CI must complete before merging the game PR. Do not merge merely because the two services are published.
 
-Manual acceptance: preserve an existing save in slot 1; switch to a fresh slot 2 and play the opening; switch back and verify monsters/coins/progress; reload each; export/import/reset only the test slot; opt in on a test profile and confirm records in the private dashboard; designate it as test and confirm normal totals exclude it. Check title, home, party selection, hunt and battle, including 200% text and landscape if available.
+Manual acceptance: preserve an existing save in slot 1; switch to a fresh slot 2 and play the opening; switch back and verify monsters/coins/progress; reload each; export/import/reset only the test slot; play on a test profile and confirm automatic records in the private dashboard; designate it as test and confirm normal totals exclude it. Check title, home, party selection, hunt and battle, including 200% text and landscape if available.
