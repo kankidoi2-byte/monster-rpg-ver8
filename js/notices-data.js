@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-prologue-vera",date:"2026-10-04",category:"update",title:"序章にヴェーラが登場",body:"人間兵器ヴェーラが2%でキャラクターガチャに登場します。Lv10で黒炎戦姫、Lv25で終焉の殲滅姫へ進化。ノアムは第1章向けに移し、新規排出を終了します。すでに仲間にしたノアムと技はそのまま使用・進化できます。"}),
   Object.freeze({id:"20261004-lize-artwork",date:"2026-10-04",category:"update",title:"リゼのイラストを追加しました",body:"札売り娘リゼ・影札師リゼ・千契の奇術頭リゼの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-selene-artwork",date:"2026-10-04",category:"update",title:"セレネのイラストを追加しました",body:"巡回水医セレネ・水脈医セレネ・命泉の医導師セレネの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-roden-artwork",date:"2026-10-04",category:"update",title:"ローデンのイラストを追加しました",body:"流炉職人ローデン・戦炉術師ローデン・百錬の炉匠ローデンの3形態にイラストを追加しました。基本形の表示名を「流炉職人ローデン」に揃えました。能力や技、進化条件はそのままです。"}),

@@ -167,6 +167,10 @@ if (data) {
 
   const expectedCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari'];
   expectedCharacters.push(...['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille','noam'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`)));
+  expectedCharacters.push(...[3,4,5].map(stage=>`character_vera_${stage}`));
+  const prologueCharacters=characterRecords.filter(unit=>(unit.chapter||'序章')==='序章');
+  const prologueNumbers=prologueCharacters.map(unit=>unit.prologueCharacterNo??unit.characterNo).sort((a,b)=>a-b);
+  if(JSON.stringify(prologueNumbers)!==JSON.stringify(Array.from({length:50},(_,i)=>i+1))) fail('Prologue character display slots must be unique and continuous C-001–050');
   const actualCharacterIds = characterRecords.map(character => character.id);
   if (actualCharacterIds.length !== expectedCharacters.length || expectedCharacters.some(id => !actualCharacterIds.includes(id))) {
     fail(`Character dex mismatch: ${actualCharacterIds.join(', ')}`);

@@ -98,7 +98,7 @@
     "postcheck": "npm run check:diagnostics-export && npm run check:diagnostics-comprehensive",
     "check:diagnostics-export": "node scripts/test-diagnostics-export.mjs",
     "check:diagnostics-comprehensive": "node scripts/test-diagnostics-comprehensive.mjs",
-    "check:character-gacha": "node scripts/test-character-gacha.mjs && node scripts/test-prologue-character-50.mjs && node scripts/test-character-tactical-skills.mjs",
+    "check:character-gacha": "node scripts/test-character-gacha.mjs && node scripts/test-prologue-character-50.mjs && node scripts/test-character-tactical-skills.mjs && node scripts/test-prologue-vera.mjs",
     "check:character-recycle": "node scripts/test-character-recycle.mjs",
     "check:balance-audit": "node tools/balance-audit/test-regressions.mjs && node tools/balance-audit/test-link-invasion.mjs && node tools/balance-audit/test-integration.mjs && node tools/balance-audit/verify-reproduction.mjs",
     "analyze:balance": "node tools/balance-audit/run.mjs && node tools/balance-audit/compare.mjs && node tools/balance-audit/economy.mjs && node tools/balance-audit/mechanics.mjs && node tools/balance-audit/acquisition-candidates.mjs && python3 tools/balance-audit/report.py && node tools/balance-audit/verify-reproduction.mjs --generated && node tools/balance-audit/compact-results.mjs",

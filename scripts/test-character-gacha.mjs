@@ -13,7 +13,8 @@ assert.deepEqual(Array.from(run('characterGachaPool().map(unit=>unit.id)')).slic
 assert(run('characterGachaPool().every(unit=>!unit.evolutionOnly && unit.characterNo!==12)'));
 const initial=run('save.instances.length');
 for(let i=0;i<15;i++){
- context.rollValue=(i+.5)/15;
+ const rates=run('characterGachaRates()');
+ context.rollValue=rates.slice(0,i).reduce((sum,row)=>sum+row.rate,0)+rates[i].rate/2;
  const result=run('performCharacterGacha(1,()=>rollValue)');
  assert(result.ok);
  assert.equal(result.entries[0].unit.id,run(`characterGachaPool()[${i}].id`));

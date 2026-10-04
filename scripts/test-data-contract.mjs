@@ -44,13 +44,13 @@ const contract = vm.runInContext(`({
   contractItems:SHOP_ITEMS.filter(item=>item.contract)
 })`, context);
 
-assert.equal(contract.monsters.length,100);
+assert.equal(contract.monsters.length,103);
 assert.deepEqual([...contract.initialPartyIds],['elna_beginner','freigal','aquaron']);
-assert.equal(contract.characterCount,50);
+assert.equal(contract.characterCount,53);
 assert.equal(contract.monsterDexNumbers.length,50);
 assert.deepEqual([...contract.monsterDexNumbers].sort((a,b)=>a-b),Array.from({length:50},(_,index)=>index+1));
-assert.equal(contract.cards.length,316);
-assert.equal(new Set(contract.cards.map(card => card.id)).size,316);
+assert.equal(contract.cards.length,325);
+assert.equal(new Set(contract.cards.map(card => card.id)).size,325);
 assert(contract.monsters.every(monster => monster.moves.every(move => typeof move[8] === 'string')));
 assert(contract.monsters.every(monster => ['monster','character'].includes(monster.entityKind)));
 assert(contract.contractItems.length>0&&contract.contractItems.every(item=>item.usableInBattle===false),'contract scrolls must only be usable after battle victory');
@@ -124,7 +124,7 @@ assert(htmlSource.includes('css/ui-redesign.css?v=kokoro-link-scaling-1'),'UI st
 assert(htmlSource.includes('js/alchemy.js?v=phase3-prologue-1'),'alchemy.js cache key must remain aligned with Phase 3');
 assert(htmlSource.includes('js/dex.js?v=monster-obtain-2'),'dex.js cache key must be updated for the monster acquisition display');
 
-console.log('Canonical data contract validation passed (100 entities, 50-number monster dex, 50-character dex, 316 fixed skills, eligibility separation, and legacy skill-ID migration).');
+console.log('Canonical data contract validation passed (103 entities, 50-number monster dex, 53-character registry, 325 fixed skills, eligibility separation, and legacy skill-ID migration).');
 
 // Replacement compatibility: retain ownership/cards, all six themed skills are usable by their source monsters.
 const replacements = [

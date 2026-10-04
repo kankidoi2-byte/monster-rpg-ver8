@@ -1,14 +1,27 @@
 const CHARACTER_GACHA_SINGLE_COST = 100;
 const CHARACTER_GACHA_TEN_COST = 900;
-const CHARACTER_GACHA_IDS = Object.freeze(['elna_beginner','stella_apprentice','lumina_apprentice', ...M.filter(unit=>unit.entityKind==='character' && unit.characterNo>=15 && !unit.evolutionOnly).map(unit=>unit.id)]);
+const CHARACTER_GACHA_IDS = Object.freeze(['elna_beginner','stella_apprentice','lumina_apprentice', ...M.filter(unit=>unit.entityKind==='character' && unit.characterNo>=15 && unit.chapter==='序章' && !unit.evolutionOnly).map(unit=>unit.id)]);
 function characterGachaPool(){ return CHARACTER_GACHA_IDS.map(id=>M.find(unit=>unit.id===id)).filter(isCharacterUnit); }
+function characterGachaRates(){
+  const pool=characterGachaPool();
+  const weights=pool.map(unit=>({unit,weight:Number.isFinite(unit.gachaWeight)&&unit.gachaWeight>0?unit.gachaWeight:7}));
+  const total=weights.reduce((sum,row)=>sum+row.weight,0);
+  return weights.map(row=>({...row,rate:row.weight/total}));
+}
+function pickCharacterGachaUnit(randomFn=Math.random){
+  const rates=characterGachaRates();
+  if(!rates.length)return null;
+  let roll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0));
+  for(const row of rates){roll-=row.rate;if(roll<0)return row.unit;}
+  return rates.at(-1).unit;
+}
 function performCharacterGacha(count,randomFn=Math.random){
   if(count!==1 && count!==10) return {ok:false,error:'回数が正しくありません。'};
   const pool=characterGachaPool();
   const cost=count===10?CHARACTER_GACHA_TEN_COST:CHARACTER_GACHA_SINGLE_COST;
   if(!pool.length) return {ok:false,error:'排出できるキャラクターがありません。'};
   if((save.coins||0)<cost) return {ok:false,error:`コインが${cost-(save.coins||0)}枚足りません。`};
-  const units=Array.from({length:count},()=>pool[Math.floor(Math.max(0,Math.min(0.999999999999,Number(randomFn())||0))*pool.length)]);
+  const units=Array.from({length:count},()=>pickCharacterGachaUnit(randomFn));
   save.coins-=cost;
   const entries=units.map(unit=>{
     const isNew=!caughtHas(unit.id);
@@ -21,8 +34,8 @@ function showCharacterGacha(){ show('characterGacha'); }
 function renderCharacterGacha(){
   const pool=characterGachaPool();
   document.getElementById('characterGachaCoinView').textContent=save.coins||0;
-  document.getElementById('characterGachaPoolSummary').textContent=`全${pool.length}形態・各形態均等（1回あたり約${pool.length?(100/pool.length).toFixed(2):'0'}%）。10連も同じ確率で抽選します。`;
-  document.getElementById('characterGachaRateList').innerHTML=pool.map(unit=>`<article class="character-gacha-card">${vis(unit,'loading="lazy" decoding="async"')}<strong>${unit.name}</strong><small>${unit.rarity}</small></article>`).join('');
+  document.getElementById('characterGachaPoolSummary').textContent=`全${pool.length}形態・個別の排出率は下記のとおりです。10連も1回ごとに同じ確率で抽選します。`;
+  document.getElementById('characterGachaRateList').innerHTML=characterGachaRates().map(({unit,rate})=>`<article class="character-gacha-card">${vis(unit,'loading="lazy" decoding="async"')}<strong>${unit.name}</strong><small>${unit.rarity} / ${(rate*100).toFixed(2)}%</small></article>`).join('');
   document.querySelectorAll('[data-character-gacha-count]').forEach(button=>{
     const cost=Number(button.dataset.characterGachaCount)===10?CHARACTER_GACHA_TEN_COST:CHARACTER_GACHA_SINGLE_COST;
     button.disabled=!pool.length||(save.coins||0)<cost;

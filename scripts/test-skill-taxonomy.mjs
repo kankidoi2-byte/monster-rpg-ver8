@@ -24,17 +24,17 @@ const taxonomy = vm.runInContext(`({
   skillCostLimitFor
 })`, context);
 
-assert.equal(taxonomy.units.length,100);
+assert.equal(taxonomy.units.length,103);
 assert(taxonomy.units.every(unit => Array.isArray(unit.tags) && unit.tags.includes(`entity:${unit.entityKind}`)));
 assert(taxonomy.units.every(unit => unit.types.every(type => unit.tags.includes(`element:${type}`))));
 
-assert.equal(taxonomy.cards.length,316,'fixed skill IDs must remain available for save compatibility');
+assert.equal(taxonomy.cards.length,325,'fixed skill IDs must remain available for save compatibility');
 assert(taxonomy.cards.every(card => card.sourceUnitId && card.sourceEntityKind));
 assert(taxonomy.cards.every(card => Array.isArray(card.tags) && card.tags.length >= 3));
 assert(taxonomy.cards.every(card => Array.isArray(card.requirements?.entityKinds)));
 assert(taxonomy.cards.every(card => Array.isArray(card.requirements?.requiredAll)));
 assert(taxonomy.equippable.length < taxonomy.cards.length,'duplicate skills must be removed from new equipment choices');
-assert.equal(taxonomy.monsterPool.length + taxonomy.characterPool.length,taxonomy.equippable.length);
+assert.equal(taxonomy.monsterPool.length + taxonomy.characterPool.length,taxonomy.equippable.length-9);
 assert(taxonomy.monsterPool.every(card => card.sourceEntityKind === 'monster'));
 assert(taxonomy.characterPool.every(card => card.sourceEntityKind === 'character'));
 
@@ -171,4 +171,4 @@ assert.equal(JSON.stringify(context.save),repairedSave,'save and reload must not
 const progressionSource=read('js/progression.js');
 assert.equal((progressionSource.match(/grantDefaultSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant default skill cards');
 
-console.log(`Skill taxonomy validation passed (100 tagged units, 316 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
+console.log(`Skill taxonomy validation passed (103 tagged units, 325 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
