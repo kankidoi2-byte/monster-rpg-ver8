@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-lize-artwork",date:"2026-10-04",category:"update",title:"リゼのイラストを追加しました",body:"札売り娘リゼ・影札師リゼ・千契の奇術頭リゼの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-selene-artwork",date:"2026-10-04",category:"update",title:"セレネのイラストを追加しました",body:"巡回水医セレネ・水脈医セレネ・命泉の医導師セレネの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-roden-artwork",date:"2026-10-04",category:"update",title:"ローデンのイラストを追加しました",body:"流炉職人ローデン・戦炉術師ローデン・百錬の炉匠ローデンの3形態にイラストを追加しました。基本形の表示名を「流炉職人ローデン」に揃えました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-tobia-artwork",date:"2026-10-04",category:"update",title:"トビアのイラストを追加しました",body:"風便見習いトビア・峡谷便使いトビア・天路伝令長トビアの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
