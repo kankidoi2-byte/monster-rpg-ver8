@@ -47,7 +47,7 @@ vm.runInContext(fs.readFileSync('js/ui.js','utf8').split('function replayUiMotio
 for(const u of added){
  r.context.testId=u.id;
  assert(run('vis(by(testId)).includes(by(testId).name)'));
- if(u.id.startsWith('character_remnes_') || u.id.startsWith('character_bordo_') || u.id.startsWith('character_safira_') || u.id.startsWith('character_brigitte_') || u.id.startsWith('character_tobia_') || u.id.startsWith('character_roden_') || u.id.startsWith('character_selene_') || u.id.startsWith('character_lize_') || u.id.startsWith('character_regus_') || u.id.startsWith('character_mireille_')){
+ if(u.id.startsWith('character_remnes_') || u.id.startsWith('character_bordo_') || u.id.startsWith('character_safira_') || u.id.startsWith('character_brigitte_') || u.id.startsWith('character_tobia_') || u.id.startsWith('character_roden_') || u.id.startsWith('character_selene_') || u.id.startsWith('character_lize_') || u.id.startsWith('character_regus_') || u.id.startsWith('character_mireille_') || u.id.startsWith('character_nico_')){
   const html=run('vis(by(testId))');
   assert.equal(u.artworkPending,false);
   assert(html.startsWith('<img') && html.includes(run('IMG[by(testId).imgKey]')),'Released character renders artwork');

@@ -45,9 +45,9 @@ Driveの「序章ガチャキャラクター制作状況」と「人気ゲーム
 | C-039 | レムネス | character_remnes_2 | 160 | 58 | 2 |
 | C-040 | 記憶騎装レムネス | character_remnes_3 | 200 | 68 | 3 |
 | C-041 | 星鎧のレムナント | character_remnes_4 | 250 | 78 | — |
-| C-042 | 工房小僧ニコ | character_nico_2 | 115 | 102 | 2 |
-| C-043 | 雷機巧師ニコ | character_nico_3 | 155 | 112 | 3 |
-| C-044 | 蒼電の発明長ニコ | character_nico_4 | 205 | 122 | — |
+| C-042 | もの作り少年ニコ | character_nico_2 | 115 | 102 | 2 |
+| C-043 | 蒼電機巧師ニコ | character_nico_3 | 155 | 112 | 3 |
+| C-044 | 蒼雷の発明王ニコ | character_nico_4 | 205 | 122 | — |
 | C-045 | 流れ芸人ミレーユ | character_mireille_2 | 118 | 94 | 2 |
 | C-046 | 幻術師ミレーユ | character_mireille_3 | 158 | 104 | 3 |
 | C-047 | 幻惑の女王ミレーユ | character_mireille_4 | 208 | 114 | — |

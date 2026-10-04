@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-nico-artwork",date:"2026-10-04",category:"update",title:"ニコのイラストを追加しました",body:"もの作り少年ニコ・蒼電機巧師ニコ・蒼雷の発明王ニコの3形態にイラストを追加し、表示名を揃えました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-mireille-artwork",date:"2026-10-04",category:"update",title:"ミレーユのイラストを追加しました",body:"流れ芸人ミレーユ・幻術師ミレーユ・幻惑の女王ミレーユの3形態にイラストを追加し、表示名を揃えました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-pactforge-url",date:"2026-10-04",category:"important",title:"ゲームの公開URLが変わりました",body:"新しい公開先はpactforge-studio.github.ioです。旧URLからも新しい画面を開けます。初回のセーブ引き継ぎでボタンが表示された場合はタップしてください。引き継ぎ後は旧URLから自動で新画面へ移動します。旧セーブは端末に残り、新URLの既存セーブは自動で上書きしません。"}),
   Object.freeze({id:"20261004-regus-artwork",date:"2026-10-04",category:"update",title:"レグスのイラストを追加しました",body:"傷負いの剣士レグス・呪鉄剣士レグス・断呪の紫刃レグスの3形態にイラストを追加し、表示名を揃えました。能力や技、進化条件はそのままです。"}),
