@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-elna-artwork",date:"2026-10-04",category:"update",title:"エルナのイラストを更新しました",body:"初級・中級・上級・流水・華炎の剣士エルナの5形態を、新しいイラストに変更しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261003-anonymous-profiles",date:"2026-10-03",category:"update",title:"2つのプロフィールを切り替えて遊べます",body:"メニューの「セーブ管理」内にある「アカウント切替」から、名前と独立した2つのセーブを切り替えられます。今までのセーブは枠1に引き継ぎます。セーブは引き続き端末内に保存されます。"}),
   Object.freeze({"id":"20261002-character-tactical-skills","date":"2026-10-02","category":"update","title":"キャラクターの技と技ガチャを更新しました","body":"追加12系統の108技を固有名と異なる性能に変更し、共通技6種類を追加しました。キャラクター技ガチャ10連の最後は共通技を保証し、未所持・所持数の少ない種類を優先します。進化前の技も引き続き使えます。COST調整で上限を超える装備は外れますが、カードの所持数は減りません。"}),
   Object.freeze({id:"20261002-character-skill-inheritance",date:"2026-10-02",category:"fix",title:"進化前のキャラクター専用技を引き継げます",body:"ボルドなど追加12系統のキャラクターは、進化後も同じ系統の進化前の技を装備できます。進化時の装備を維持し、新しい形態の初期技カードも獲得します。上位形態や別のキャラクターの専用技は装備できません。"}),
