@@ -39,9 +39,9 @@ Driveの「序章ガチャキャラクター制作状況」と「人気ゲーム
 | C-033 | 札売り娘リゼ | character_lize_2 | 112 | 98 | 2 |
 | C-034 | 影札師リゼ | character_lize_3 | 152 | 108 | 3 |
 | C-035 | 千契の奇術頭リゼ | character_lize_4 | 202 | 118 | — |
-| C-036 | 傷負い剣士レグス | character_regus_2 | 130 | 80 | 2 |
-| C-037 | 呪鉄剣客レグス | character_regus_3 | 170 | 90 | 3 |
-| C-038 | 断呪の黒刃レグス | character_regus_4 | 220 | 100 | — |
+| C-036 | 傷負いの剣士レグス | character_regus_2 | 130 | 80 | 2 |
+| C-037 | 呪鉄剣士レグス | character_regus_3 | 170 | 90 | 3 |
+| C-038 | 断呪の紫刃レグス | character_regus_4 | 220 | 100 | — |
 | C-039 | レムネス | character_remnes_2 | 160 | 58 | 2 |
 | C-040 | 記憶騎装レムネス | character_remnes_3 | 200 | 68 | 3 |
 | C-041 | 星鎧のレムナント | character_remnes_4 | 250 | 78 | — |
