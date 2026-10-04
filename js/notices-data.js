@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-bordo-artwork",date:"2026-10-04",category:"update",title:"ボルドのイラストを追加しました",body:"新入りのボルド・熟練のボルド・司厨長ボルドの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-remnes-artwork",date:"2026-10-04",category:"update",title:"レムネスたちのイラストを追加しました",body:"レムネス・記憶騎装レムネス・星鎧のレムナントの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-elysia-artwork",date:"2026-10-04",category:"update",title:"エリシアのイラストを更新しました",body:"エリシア・光祈の巫女エリシア・光の女神エリシアの3形態を、新しいイラストに変更しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-stella-artwork",date:"2026-10-04",category:"update",title:"ステラのイラストを更新しました",body:"見習い魔法使い・魔法使い・魔導師ステラの3形態を、新しいイラストに変更しました。能力や技、進化条件はそのままです。"}),
