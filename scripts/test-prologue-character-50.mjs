@@ -47,7 +47,7 @@ vm.runInContext(fs.readFileSync('js/ui.js','utf8').split('function replayUiMotio
 for(const u of added){
  r.context.testId=u.id;
  assert(run('vis(by(testId)).includes(by(testId).name)'));
- if(u.id.startsWith('character_remnes_') || u.id.startsWith('character_bordo_') || u.id.startsWith('character_safira_') || u.id.startsWith('character_brigitte_')){
+ if(u.id.startsWith('character_remnes_') || u.id.startsWith('character_bordo_') || u.id.startsWith('character_safira_') || u.id.startsWith('character_brigitte_') || u.id.startsWith('character_tobia_')){
   const html=run('vis(by(testId))');
   assert.equal(u.artworkPending,false);
   assert(html.startsWith('<img') && html.includes(run('IMG[by(testId).imgKey]')),'Released character renders artwork');
