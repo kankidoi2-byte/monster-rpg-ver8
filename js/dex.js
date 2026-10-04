@@ -58,7 +58,7 @@ function renderDexHub(){
   syncItemDexFromInventory();
   const grid=document.getElementById('dexHubGrid');if(!grid)return;
   const monsters=M.filter(unit=>!isCharacterUnit(unit));
-  const characters=M.filter(isCharacterUnit);
+  const characters=M.filter(unit=>isCharacterUnit(unit) && (unit.chapter||'序章')==='序章');
   const itemCount=ITEM_DEX_ITEMS.filter(item=>save.itemDex.includes(item.id)).length;
   const mapCount=MAPS.filter(map=>save.mapDex?.includes(map.id)).length;
   const cards=[
@@ -119,14 +119,16 @@ function renderUnitDexDetail(id, targetId, numberLabel, detailSection=renderUnit
   </div>`;
   detail.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function characterDexSlotNo(m){return m.prologueCharacterNo ?? m.characterNo;}
 function characterDexNumber(m) {
-  return `C-${String(m.characterNo).padStart(3,'0')}`;
+  if(m.chapter==='第1章')return '第1章・図鑑番号未定';
+  return `C-${String(characterDexSlotNo(m)).padStart(3,'0')}`;
 }
 function characterDexEntries() {
-  const characters=M.filter(isCharacterUnit);
+  const characters=M.filter(unit=>isCharacterUnit(unit) && (unit.chapter||'序章')==='序章');
   const assigned=new Set(characters.map(unit=>unit.characterNo));
   return [...characters,...CHARACTER_DEX_RESERVED_SLOTS.filter(slot=>!assigned.has(slot.characterNo))]
-    .sort((a,b)=>a.characterNo-b.characterNo);
+    .sort((a,b)=>characterDexSlotNo(a)-characterDexSlotNo(b));
 }
 function characterDexSlotVisual(slot, lazy=false) {
   if(slot.imgKey && IMG[slot.imgKey]) return `<img class="character-dex-slot-image" src="${IMG[slot.imgKey]}" alt="${slot.name}"${lazy?' loading="lazy"':''} decoding="async">`;
@@ -139,8 +141,8 @@ function showCharacterDexSlot(slotId) {
   detail.innerHTML=`<div class="dex-detail ui-dex-detail">
     ${characterDexSlotVisual(slot)}<h2>${slot.name}</h2>
     <p>${characterDexNumber(slot)} / <span class="rarity">${slot.rarity}</span> ${typesHtml(slot.types)}</p>
-    <p><b>登場予定</b> · 序章</p>
-    <p>${slot.rarity.length===2?'キャラクターガチャで加入する基本形です。':'育成で解放する進化形です。'}</p>
+    <p><b>登場予定</b> · ${slot.chapter}</p>
+    <p>${(slot.baseForm ?? slot.rarity.length===2)?'キャラクターガチャで加入する基本形です。':'育成で解放する進化形です。'}</p>
     <p>今後の登場に向けて図鑑の枠を用意しています。現在は入手・対戦できません。</p>
   </div>`;
   detail.scrollIntoView({behavior:'smooth',block:'start'});

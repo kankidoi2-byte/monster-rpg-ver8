@@ -14,7 +14,7 @@ const contract=vm.runInContext(`({
   monsterRates:skillGachaRates('monster'),characterRates:skillGachaRates('character')
 })`,context);
 assert.equal(contract.monsterPool.length,138,'monster gacha must contain every consolidated monster skill');
-assert.equal(contract.characterPool.length,144,'character gacha must include all 138 character skills and six common additions');
+assert.equal(contract.characterPool.length,144,'character gacha must include all 138 prologue character skills and six common additions; chapter-one cards remain equipable');
 assert(contract.monsterPool.every(card=>card.sourceEntityKind==='monster'&&!card.deprecated));
 assert(contract.characterPool.every(card=>card.sourceEntityKind==='character'&&!card.deprecated));
 assert(Math.abs(contract.monsterRates.reduce((sum,row)=>sum+row.rate,0)-1)<1e-9);

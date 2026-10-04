@@ -195,7 +195,7 @@ MOVE_CARDS.forEach(card => {
 Object.freeze(SKILL_CANONICAL_BY_ID);
 const EQUIPPABLE_MOVE_CARDS = Object.freeze(MOVE_CARDS.filter(card => !card.deprecated));
 const MONSTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'monster'));
-const CHARACTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'character'));
+const CHARACTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'character' && (card.commonCharacterSkill || (by(card.sourceUnitId)?.chapter || '序章') === '序章')));
 const SKILL_BY_ID = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id, sk]));
 function skillIdFromMove(mv){
   return (typeof mv?.[8] === 'string' && mv[8]) || _skillIdByMove.get(mv) || legacySkillIdFromMove(mv);

@@ -6,7 +6,7 @@ import {runtime} from '../tools/balance-audit/runtime.mjs';
 const r=runtime(), run=r.run;
 const plain=value=>JSON.parse(JSON.stringify(value));
 const units=plain(run('M'));
-const revised=units.filter(unit=>unit.entityKind==='character'&&unit.characterNo>=15);
+const revised=units.filter(unit=>unit.entityKind==='character'&&unit.characterNo>=15&&!unit.id.startsWith('character_vera_'));
 const exclusive=revised.flatMap(unit=>unit.moves);
 const commons=plain(run('CHARACTER_COMMON_MOVES'));
 const cards=plain(run('MOVE_CARDS'));
@@ -59,7 +59,7 @@ for(const [id,move] of Object.entries(legacy)){
 for(const move of commons){
  r.context.testId=move[8];
  assert(run('SKILL_BY_ID[testId].commonCharacterSkill'));
- assert.equal(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).length'),50);
+ assert.equal(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).length'),53);
  assert(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).every(isCharacterUnit)'));
  assert(move[5]>=2,'10-pull common guarantee also meets the previous COST 2 minimum');
 }
@@ -298,4 +298,4 @@ setup();await attack(['従来回復',0,'normal','heal']);assert.equal(b('pHp'),M
 setup();await attack(['従来強化',0,'normal','buff']);assert.equal(b('pAtk'),1.25);
 setup();await attack(['従来反動',20,'normal','recoil']);assert.equal(b('pHp'),292);assert.equal(b('eHp'),280);
 
-console.log('PASS: 108 revised cards + 6 common cards, unique names, metadata round trip, 50-character compatibility, initial equipment, old aliases/inventory/UIDs, evolution, effect limits, conditional attacks, single/multi parity, enemy targeting, and legacy behavior.');
+console.log('PASS: 108 revised cards + 6 common cards, unique names, metadata round trip, 53-character common-card compatibility, initial equipment, old aliases/inventory/UIDs, evolution, effect limits, conditional attacks, single/multi parity, enemy targeting, and legacy behavior.');

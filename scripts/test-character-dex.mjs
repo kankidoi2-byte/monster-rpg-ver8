@@ -17,7 +17,7 @@ const characters = records.filter(record => record.entityKind === 'character').s
 const characterIds = Array.from(characters, record => record.id);
 
 assert.deepEqual(characterIds.slice(0,14), ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari']);
-assert.deepEqual(Array.from(characters, record => record.characterNo), Array.from({length:50},(_,i)=>i+1));
+assert.deepEqual(Array.from(characters, record => record.characterNo), Array.from({length:53},(_,i)=>i+1));
 assert(records.filter(record => record.entityKind === 'character').every(record => record.contractable === false));
 assert(records.filter(record => record.entityKind === 'character').every(record => Object.entries(record.eligibility).every(([key,value]) => value === (key === 'alchemyCatalyst'))));
 assert.equal(records.find(record => record.id === 'elna_beginner').no, 21);
@@ -83,7 +83,7 @@ const actualMonsterDexOrder = Array.from(
 assert.deepEqual(actualMonsterDexOrder, expectedMonsterDexOrder);
 assert(records.filter(record => record.id.startsWith('stella_') || record.id.startsWith('lumina_') || record.id.startsWith('elysia') || record.id === 'hikari').every(record => record.entityKind === 'character'));
 assert.match(dexSource, /M\.filter\(m=>!isCharacterUnit\(m\)\)/);
-assert.match(dexSource, /M\.filter\(isCharacterUnit\)/);
+assert.match(dexSource, /isCharacterUnit\(unit\)/);
 assert.match(dexSource, /function monsterDexNumber/);
 assert.match(coreSource, /function isContractableUnit/);
 assert.match(itemsSource, /!isContractableUnit\(enemy\)/);
@@ -107,12 +107,12 @@ Object.assign(context,{
 vm.runInContext(dexSource,context);
 const entries=vm.runInContext('characterDexEntries()',context);
 assert.equal(entries.length,50);
-assert.deepEqual(Array.from(entries,e=>e.characterNo),Array.from({length:50},(_,i)=>i+1));
+assert.deepEqual(Array.from(entries,e=>e.prologueCharacterNo??e.characterNo),Array.from({length:50},(_,i)=>i+1));
 assert.equal(entries.filter(e=>e.planned).length,0);
 assert.equal(entries[14].name,'接雷の従士ブリジット');
-assert.equal(entries.at(-1).name,'地脈の導標師ノアム');
+assert.equal(entries.at(-1).name,'終焉の殲滅姫ヴェーラ');
 vm.runInContext('renderCharacterDex();renderDexHub()',context);
 assert.equal((elements.characterDexList.innerHTML.match(/<button /g)||[]).length,50);
 assert.equal((elements.characterDexList.innerHTML.match(/character-dex-planned/g)||[]).length,0);
 assert.match(elements.dexHubGrid.innerHTML,/1 \/ 50/);
-console.log('Character dex validation passed: 50 playable forms; existing IDs and monster numbers preserved.');
+console.log('Character dex validation passed: 50 prologue display forms + 3 retained chapter-one forms; existing IDs and monster numbers preserved.');
