@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-stella-artwork",date:"2026-10-04",category:"update",title:"ステラのイラストを更新しました",body:"見習い魔法使い・魔法使い・魔導師ステラの3形態を、新しいイラストに変更しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-lumina-artwork",date:"2026-10-04",category:"update",title:"ルミナのイラストを更新しました",body:"見習い魔法使い・魔法使い・魔導師ルミナの3形態を、新しいイラストに変更しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-elna-artwork",date:"2026-10-04",category:"update",title:"エルナのイラストを更新しました",body:"初級・中級・上級・流水・華炎の剣士エルナの5形態を、新しいイラストに変更しました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261003-anonymous-profiles",date:"2026-10-03",category:"update",title:"2つのプロフィールを切り替えて遊べます",body:"メニューの「セーブ管理」内にある「アカウント切替」から、名前と独立した2つのセーブを切り替えられます。今までのセーブは枠1に引き継ぎます。セーブは引き続き端末内に保存されます。"}),
