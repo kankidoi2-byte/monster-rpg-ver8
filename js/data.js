@@ -53,7 +53,7 @@ const IMG={
   lumina_sorcerer:'images/monsters/lumina_sorcerer_20261004.webp',
   lumina_wizard:'images/monsters/lumina_wizard_20261004.webp',
   lumina_apprentice:'images/monsters/lumina_apprentice_20261004.webp',
-  stella_sorcerer:'images/monsters/stella_sorcerer_20261004.webp',
+  stella_sorcerer:'images/monsters/stella_sorcerer_20261004_v2.webp',
   stella_wizard:'images/monsters/stella_wizard_20261004.webp',
   stella_apprentice:'images/monsters/stella_apprentice_20261004.webp',
   gran_volmoog:'images/monsters/gran_volmoog_20260920.webp',
