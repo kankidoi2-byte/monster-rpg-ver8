@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261004-pactforge-url",date:"2026-10-04",category:"important",title:"ゲームの公開URLが変わりました",body:"新しい公開先はpactforge-studio.github.ioです。旧URLからも新しい画面を開けます。初回のセーブ引き継ぎでボタンが表示された場合はタップしてください。旧セーブは端末に残り、新URLの既存セーブは自動で上書きしません。"}),
   Object.freeze({id:"20261004-regus-artwork",date:"2026-10-04",category:"update",title:"レグスのイラストを追加しました",body:"傷負いの剣士レグス・呪鉄剣士レグス・断呪の紫刃レグスの3形態にイラストを追加し、表示名を揃えました。能力や技、進化条件はそのままです。"}),
   Object.freeze({id:"20261004-prologue-vera",date:"2026-10-04",category:"update",title:"序章にヴェーラが登場",body:"人間兵器ヴェーラが2%でキャラクターガチャに登場します。Lv10で黒炎戦姫、Lv25で終焉の殲滅姫へ進化。ノアムは第1章向けに移し、新規排出を終了します。すでに仲間にしたノアムと技はそのまま使用・進化できます。"}),
   Object.freeze({id:"20261004-lize-artwork",date:"2026-10-04",category:"update",title:"リゼのイラストを追加しました",body:"札売り娘リゼ・影札師リゼ・千契の奇術頭リゼの3形態にイラストを追加しました。能力や技、進化条件はそのままです。"}),
