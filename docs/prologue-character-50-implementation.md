@@ -49,8 +49,8 @@ Driveの「序章ガチャキャラクター制作状況」と「人気ゲーム
 | C-043 | 雷機巧師ニコ | character_nico_3 | 155 | 112 | 3 |
 | C-044 | 蒼電の発明長ニコ | character_nico_4 | 205 | 122 | — |
 | C-045 | 流れ芸人ミレーユ | character_mireille_2 | 118 | 94 | 2 |
-| C-046 | 星幕幻術師ミレーユ | character_mireille_3 | 158 | 104 | 3 |
-| C-047 | 万客の夢座長ミレーユ | character_mireille_4 | 208 | 114 | — |
+| C-046 | 幻術師ミレーユ | character_mireille_3 | 158 | 104 | 3 |
+| C-047 | 幻惑の女王ミレーユ | character_mireille_4 | 208 | 114 | — |
 | C-048 | 人間兵器ヴェーラ | character_vera_3 | 160 | 100 | 10 |
 | C-049 | 黒炎戦姫ヴェーラ | character_vera_4 | 200 | 112 | 25 |
 | C-050 | 終焉の殲滅姫ヴェーラ | character_vera_5 | 270 | 124 | — |
