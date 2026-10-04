@@ -14,6 +14,15 @@
 - Item assets live in `images/items/`.
 - Map assets live in `images/maps/`.
 
+## Public hosting after the URL migration
+
+- Public game: https://pactforge-studio.github.io/monster-rpg-ver8/
+- This repository remains the game development source. The old Pages URL is a transfer entry point; `?legacy=1` keeps its recovery game accessible.
+- The deployment repository is `pactforge-studio/monster-rpg-ver8`. Its `source-ref.txt` pins a source commit, and its Actions workflow validates and publishes runtime files with the save-transfer overlay.
+- A player-facing source update is not fully published until the new host has been updated. After the source PR merges, create a feature branch and PR in the deployment repository updating `source-ref.txt` to the merged source SHA. Observe the current-head validation, merge under the existing approval contract, wait for successful Pages deployment, and verify the new public URL. Documentation-only changes do not require a new runtime deployment.
+- Preserve the old redirect and transfer files. Never replace newer saves with an old bookmark's data. Existing destination saves must remain protected.
+- The new URL removes the personal account name from the game address; public source history and the redirect still connect the two sites. Do not describe this setup as anonymous.
+
 ## Hard compatibility rules
 
 - Never change the save key `mb_v95c`.
