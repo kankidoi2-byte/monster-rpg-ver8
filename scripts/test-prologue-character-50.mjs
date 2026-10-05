@@ -8,7 +8,7 @@ const run=r.run;
 const current=run('M');
 const baseline={};vm.createContext(baseline);
 vm.runInContext(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'})+';globalThis.units=M;',baseline);
-assert.equal(current.length,103);
+assert.equal(current.length,100);
 for(const old of baseline.units){
  const unit=current.find(u=>u.id===old.id);
  if(old.id==='proto_icegolem'){
@@ -24,7 +24,7 @@ for(const old of baseline.units){
  }else assert.equal(JSON.stringify(unit),JSON.stringify(old),`preserve ${old.id}`);
 }
 const added=current.filter(u=>u.characterNo>=15);
-assert.equal(added.length,39);
+assert.equal(added.length,36);
 for(const u of added){
  assert(u.icon);
  if(u.artworkPending) assert(!u.imgKey,`${u.id}: pending artwork has no active image`);
@@ -108,4 +108,4 @@ for(const u of added.filter(u=>!u.evolutionOnly)){
  assert.equal(run('by(chain.id).rarity'),'★'.repeat(u.rarity.length+2));
  assert.equal(run('chain.uid'),run('save.party[0]'));
 }
-console.log('PASS: original records preserved except additive Golem attack fix; all 39 added names render, attack/support handlers, save/reload; 13 complete evolution chains; exclusive skill inheritance, ownership, reload and battle.');
+console.log('PASS: original records preserved except additive Golem attack fix; all 36 added names render, attack/support handlers, save/reload; 12 complete evolution chains; exclusive skill inheritance, ownership, reload and battle.');
