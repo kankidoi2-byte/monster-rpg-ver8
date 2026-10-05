@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261005-morglum-spore-cost",date:"2026-10-05",category:"update",title:"胞子弾のCOSTを4に調整しました",body:"モルグラムの「胞子弾」のCOSTを5から4にしました。Lv1から「胞子弾・守りを固める・癒しの芽吹き」を合計COST8で装備できます。威力・属性・追加効果・装備条件は変わりません。新しく仲間にした際の初期技と技ガチャの排出率はCOSTに応じて変わります。既存の装備に技を自動追加することはありません。"}),
   Object.freeze({id:"20261005-ashleia-fire-wing-cost",date:"2026-10-05",category:"update",title:"火翼撃のCOSTを3に調整しました",body:"アシュレイアの「火翼撃」のCOSTを4から3にしました。Lv4では「灼熱光砲・火翼撃・フレアチャージ」を合計COST9で装備できます。威力や属性、追加効果、装備条件は変わりません。"}),
   Object.freeze({id:"20261005-skill-card-display-fix",date:"2026-10-05",category:"fix",title:"技カードを読みやすくしました",body:"技装備・図鑑などで属性と威力が重複していた表示を整理しました。補助技は「補助技」と表示し、追加効果・条件・反動を確認しやすくしました。技の性能や装備条件は変わりません。"}),
   Object.freeze({id:"20261005-alchemion-recoil-fix",date:"2026-10-05",category:"fix",title:"錬核崩砕の反動と説明を修正しました",body:"複数体戦の錬核崩砕で、相手の残りHPを超えたダメージが反動に含まれる問題を修正しました。技説明の重複も解消しました。"}),

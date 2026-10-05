@@ -635,7 +635,7 @@ const M = [
   {id:'false_dragon_gamma',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_gamma',no:31,dexNo:40,name:'モルグラム',rarity:'★★★★',types:['grass'],huntLevels:{hard:94},
    hp:420,spd:94,catchRate:.035,
    desc:'古木と巨大な菌類が一体化した森林の守護巨体。苔むした木の身体で森の深部を巡回し、大地を揺らす。',
-   moves:[["胞子弾",82,"grass",null,null,null,"巨大な菌傘から森の力を宿した胞子の塊を放つ。",null,"skill_false_dragon_gamma_01"],["古森の咆哮",66,"normal",null,null,null,"古木の身体を震わせ、重い咆哮を響かせる。",null,"skill_false_dragon_gamma_02"],["古森の波動",100,"grass",null,null,null,"根と菌糸に蓄えた森の力を大きな波動として放つ。",null,"skill_false_dragon_gamma_03"]]},
+   moves:[["胞子弾",82,"grass",null,null,4,"巨大な菌傘から森の力を宿した胞子の塊を放つ。",null,"skill_false_dragon_gamma_01"],["古森の咆哮",66,"normal",null,null,null,"古木の身体を震わせ、重い咆哮を響かせる。",null,"skill_false_dragon_gamma_02"],["古森の波動",100,"grass",null,null,null,"根と菌糸に蓄えた森の力を大きな波動として放つ。",null,"skill_false_dragon_gamma_03"]]},
   {id:'volmoog',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'volmoog',no:34,dexNo:27,name:'ボルモーグ',rarity:'★★',types:['thunder'],huntLevels:{normal:23,hard:51},
    hp:155,spd:72,catchRate:.20,evolution:'gran_volmoog',evolutionLevel:2,
    desc:'雷をまとった獣型モンスター。巨大な爪で大地を砕き、帯電した岩片を巻き上げて襲いかかる。',
