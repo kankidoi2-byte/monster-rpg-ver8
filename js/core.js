@@ -40,6 +40,8 @@ const MOVE_CARDS = [];
 const _skillSeen = new Set();
 const _skillIdByMove = new WeakMap();
 const LEGACY_SKILL_ID_ALIASES = Object.create(null);
+// Preserve ownership and equipment from the pre-drain, name-derived skill ID.
+LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(["セラフィックリーフ",68,"grass"])] = "skill_seralphia_03";
 if (typeof CHARACTER_SKILL_LEGACY_MOVES !== 'undefined') {
   Object.entries(CHARACTER_SKILL_LEGACY_MOVES).forEach(([id,move]) => {
     LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(move)] = id;

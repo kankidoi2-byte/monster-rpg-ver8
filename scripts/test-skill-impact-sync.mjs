@@ -22,9 +22,10 @@ const moves=after.run('MOVE_CARDS.map(s=>skillToMove(s.id))');
 moves.push(['通常攻撃',24,'normal'],['弱体化',0,'dark','debuff'],['追加攻撃確定',24,'thunder','repeat_attack',1]);
 // The historical engine predates the user-approved tactical effects. Keep its
 // outcome/RNG contract for all legacy effect paths; the new effects are covered
-// by test-character-tactical-skills. Every card still runs the timing checks below.
+// by test-character-tactical-skills and test-seraphic-leaf-drain.
+// Every card still runs the timing checks below.
 const comparisonMoves=moves.filter(move=>move[3]!=='tactical');
-assert(moves.filter(move=>move[3]==='tactical').every(move=>/^skill_character_/.test(move[8])&&move[9]));
+assert(moves.filter(move=>move[3]==='tactical').every(move=>(/^skill_character_/.test(move[8])||move[8]==='skill_seralphia_03')&&move[9]));
 let cases=0;
 for(const direction of ['single-player','single-enemy','player-enemy','enemy-player','enemy-enemy'])for(const move of comparisonMoves){
  const states=[],draws=[];
