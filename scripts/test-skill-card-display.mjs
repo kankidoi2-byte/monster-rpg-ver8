@@ -5,7 +5,10 @@ import {execFileSync} from 'node:child_process';
 import {runtime} from '../tools/balance-audit/runtime.mjs';
 const base='2f9e81d2dbffc2b02f25648c5bdd5ee3ba9812a0';
 const read=name=>fs.readFileSync(new URL('../js/'+name+'.js',import.meta.url),'utf8');
-const old=runtime({core:()=>execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'})});
+// Apply the separately tested taxonomy fix to the display baseline as well:
+// this test isolates card presentation from the four corrected requirements.
+const old=runtime({core:()=>execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'})
+ .replace('ダイブ|ラッシュ|ランページ','ダイブ|(?<!ク)ラッシュ|ランページ')});
 const r=runtime();
 vm.runInContext(read('dex'),r.context);
 const strip=html=>html.replace(/<[^>]+>/g,'');

@@ -77,7 +77,9 @@ const SKILL_FORM_RULES = Object.freeze([
   Object.freeze({tag:'weapon:club', form:'club', pattern:/棍棒/}),
   Object.freeze({tag:'weapon:dagger', form:'dagger', pattern:/短剣/}),
   Object.freeze({tag:null, form:'strike', pattern:/(クラッシュ|崩し|崩砕|砕き|一撃)/}),
-  Object.freeze({tag:'capability:charge', form:'charge', pattern:/(突進|急降下|ダイブ|ラッシュ|ランページ|チャージ)/}),
+  // 「クラッシュ」内の「ラッシュ」は突進能力の根拠にしない。
+  // 他の突進語や、同じ名前に別途含まれる「ラッシュ」は判定を維持する。
+  Object.freeze({tag:'capability:charge', form:'charge', pattern:/(突進|急降下|ダイブ|(?<!ク)ラッシュ|ランページ|チャージ)/}),
   Object.freeze({tag:'anatomy:body', form:'body', pattern:/(たいあたり|アタック)/}),
   Object.freeze({tag:null, form:'blade', pattern:/(水刃|風刃)/}),
   Object.freeze({tag:'capability:beam', form:'beam', pattern:/(光砲|断界光|コード・)/}),

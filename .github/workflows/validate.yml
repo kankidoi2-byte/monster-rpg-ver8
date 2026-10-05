@@ -43,6 +43,7 @@ jobs:
         run: |
           node scripts/test-morglum-browser.mjs
           node scripts/test-seraphic-leaf-browser.mjs
+          node scripts/test-crash-rush-browser.mjs
 
       - name: Upload skill-card layout evidence
         if: always()
