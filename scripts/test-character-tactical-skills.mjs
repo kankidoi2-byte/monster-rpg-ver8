@@ -10,8 +10,8 @@ const revised=units.filter(unit=>unit.entityKind==='character'&&unit.characterNo
 const exclusive=revised.flatMap(unit=>unit.moves);
 const commons=plain(run('CHARACTER_COMMON_MOVES'));
 const cards=plain(run('MOVE_CARDS'));
-assert.equal(revised.length,36);
-assert.equal(exclusive.length,108);
+assert.equal(revised.length,33);
+assert.equal(exclusive.length,99);
 assert.equal(commons.length,6);
 assert.deepEqual(commons.map(move=>move[8]).sort(),[
  'skill_character_common_buff','skill_character_common_debuff','skill_character_common_guard',
@@ -20,7 +20,7 @@ assert.deepEqual(commons.map(move=>move[8]).sort(),[
 
 // Fixed IDs preserve ownership while every rewritten card has its own name and mechanics.
 const revisedIds=exclusive.map(move=>move[8]);
-assert.equal(new Set(revisedIds).size,108);
+assert.equal(new Set(revisedIds).size,99);
 const legacy=plain(run('CHARACTER_SKILL_LEGACY_MOVES'));
 assert.deepEqual(Object.keys(legacy).sort(),[...revisedIds].sort());
 for(const move of [...exclusive,...commons]){
@@ -59,7 +59,7 @@ for(const [id,move] of Object.entries(legacy)){
 for(const move of commons){
  r.context.testId=move[8];
  assert(run('SKILL_BY_ID[testId].commonCharacterSkill'));
- assert.equal(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).length'),53);
+ assert.equal(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).length'),50);
  assert(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).every(isCharacterUnit)'));
  assert(move[5]>=2,'10-pull common guarantee also meets the previous COST 2 minimum');
 }
@@ -75,7 +75,7 @@ for(const unit of units){
  }
 }
 
-// Read an old save using all old name-derived IDs; preserve the exact 108-card inventory,
+// Read an old save using all old name-derived IDs; preserve the exact 99-card inventory,
 // all UIDs and inherited equipment. Run migration twice to catch duplicate grants.
 run(`save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
  save.coins=4321;save.instances=[];save.party=[];save.skillCards={};save.equippedSkills={};`);
@@ -298,4 +298,4 @@ setup();await attack(['従来回復',0,'normal','heal']);assert.equal(b('pHp'),M
 setup();await attack(['従来強化',0,'normal','buff']);assert.equal(b('pAtk'),1.25);
 setup();await attack(['従来反動',20,'normal','recoil']);assert.equal(b('pHp'),292);assert.equal(b('eHp'),280);
 
-console.log('PASS: 108 revised cards + 6 common cards, unique names, metadata round trip, 53-character common-card compatibility, initial equipment, old aliases/inventory/UIDs, evolution, effect limits, conditional attacks, single/multi parity, enemy targeting, and legacy behavior.');
+console.log('PASS: 99 revised cards + 6 common cards, unique names, metadata round trip, 50-character common-card compatibility, initial equipment, old aliases/inventory/UIDs, evolution, effect limits, conditional attacks, single/multi parity, enemy targeting, and legacy behavior.');

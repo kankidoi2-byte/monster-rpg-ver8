@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261005-noam-removal",date:"2026-10-05",category:"update",title:"キャラクターデータを整理しました",body:"ノアム3形態と専用技をゲームデータから削除しました。第1章のキャラクター登録は空にし、序章の50枠は維持しています。旧セーブのノアムは編成・使用できなくなりますが、個体データは隔離保存されます。"}),
   Object.freeze({id:"20261004-stella-sorcerer-artwork-v2",date:"2026-10-04",category:"update",title:"魔導師ステラのイラストを更新しました",body:"魔導師ステラのイラストを新しい画像に変更しました。"}),
   Object.freeze({id:"20261004-vera-artwork",date:"2026-10-04",category:"update",title:"ヴェーラのイラストを追加しました",body:"人間兵器ヴェーラ・黒炎戦姫ヴェーラ・終焉の殲滅姫ヴェーラの3形態にイラストを追加しました。"}),
   Object.freeze({id:"20261004-nico-artwork",date:"2026-10-04",category:"update",title:"ニコのイラストを追加しました",body:"もの作り少年ニコ・蒼電機巧師ニコ・蒼雷の発明王ニコの3形態にイラストを追加し、表示名を揃えました。能力や技、進化条件はそのままです。"}),

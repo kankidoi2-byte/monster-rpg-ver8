@@ -7,16 +7,17 @@ const baselineRef='ecc9d97621fb405d341071b75938e03db43c76df';
 const old=vm.createContext({});vm.runInContext(execFileSync('git',['show',`${baselineRef}:js/data.js`],{encoding:'utf8'})+';globalThis.oldUnits=M;',old);
 const r=runtime(),run=r.run,plain=x=>JSON.parse(JSON.stringify(x));
 const noamIds=[2,3,4].map(n=>`character_noam_${n}`),veraIds=[3,4,5].map(n=>`character_vera_${n}`);
-for(const id of noamIds){
- const before=plain(old.oldUnits.find(u=>u.id===id)),after=plain(run(`by('${id}')`));
- assert.deepEqual(after,{...before,chapter:'第1章'},'only Noam chapter metadata changes');
-}
+for(const id of noamIds)assert.equal(run(`by('${id}')`),undefined,'Noam must not be registered');
+assert.equal(run("M.filter(u=>u.chapter==='第1章').length"),0,'Chapter 1 has no registrations');
+assert.equal(run('M.length'),100);
+assert.equal(run('MOVE_CARDS.length'),316);
+assert(!run("MOVE_CARDS.some(c=>c.id.startsWith('skill_character_noam_'))"));
+assert(!run("Object.keys(CHARACTER_SKILL_LEGACY_MOVES).some(id=>id.startsWith('skill_character_noam_'))"));
 run(fs.readFileSync('js/dex.js','utf8'));
 const slots=plain(run('characterDexEntries()'));
 assert.equal(slots.length,50);assert.deepEqual(slots.slice(-3).map(u=>u.id),veraIds);
 assert.deepEqual(slots.slice(-3).map(u=>u.prologueCharacterNo),[48,49,50]);
 for(const [i,id] of veraIds.entries())assert.equal(run(`characterDexNumber(by('${id}'))`),`C-0${48+i}`);
-for(const id of noamIds)assert.equal(run(`characterDexNumber(by('${id}'))`),'第1章・図鑑番号未定');
 const rates=plain(run('characterGachaRates()'));
 assert.equal(rates.length,15);assert.equal(rates.find(x=>x.unit.id===veraIds[0]).rate,.02);
 assert.equal(rates.filter(x=>x.unit.id!==veraIds[0]).length,14);
@@ -59,23 +60,39 @@ for(const [level,from,to] of [[10,veraIds[0],veraIds[1]],[25,veraIds[1],veraIds[
 assert.equal(run('getEvoCandidates(v).length'),0);
 run('save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();');
 assert.equal(run('getInstance(save.party[0]).id'),veraIds[2]);
-// Old Noam saves: use production repair, preserved custom state, all cards, UIDs, party, favorite and expedition.
+// Build an actual historical Noam save without reintroducing playable records.
 run("save=initSave();save.instances=[];save.party=[];save.caught=[];save.skillCards={};save.equippedSkills={};save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.coins=4321;");
 for(const [i,id] of noamIds.entries()){
- run(`var n=addInstance('${id}',30);n.uid='noam-old-${i}';save.equippedSkills[n.uid]=by(n.id).moves.map(m=>m[8]);n.locked=${i===0};`);
+ const oldUnit=old.oldUnits.find(u=>u.id===id);
+ r.context.savedNoam={id,uid:`noam-old-${i}`,level:30,exp:17,locked:i===0,customField:'preserve'};
+ r.context.oldCards=oldUnit.moves.map(m=>m[8]);
+ run("save.instances.push(savedNoam);save.caught.push(savedNoam.id);save.equippedSkills[savedNoam.uid]=oldCards;oldCards.forEach(id=>save.skillCards[id]=11);");
 }
-run("save.party=save.instances.map(i=>i.uid);save.homeFavoriteId='character_noam_3';save.expeditions.active=[{id:'old-exp',mapId:'grassland',distanceId:'short',memberUids:['noam-old-2'],progress:0}];save.customField={keep:true};save.instances.forEach(i=>by(i.id).moves.forEach(m=>{save.skillCards[m[8]]=11}));var before=JSON.stringify(save);save=parseAndPrepareSave(before,[]);migrateSkillSystem();");
-assert.equal(run('save.instances.length'),3);assert.deepEqual(plain(run('save.party')),['noam-old-0','noam-old-1','noam-old-2']);
-assert.equal(run('save.homeFavoriteId'),'character_noam_3');assert(run('save.customField.keep && save.coins===4321'));
-assert.deepEqual(plain(run('save.expeditions.active[0].memberUids')),['noam-old-2']);
-assert.equal(run('save.quarantine.unknownInstances.length'),0);
-assert(run("save.instances.every(i=>by(i.id).moves.every(m=>save.skillCards[m[8]]===11&&isEquippedSkillUsableForMonster(m[8],by(i.id))))"));
-const once=run('JSON.stringify(save)');run('migrateSkillSystem()');assert.equal(run('JSON.stringify(save)'),once);
-assert(!run("save.instances.some(i=>i.id.startsWith('character_vera_'))"));
-// A previously owned base Noam still evolves even after retirement from new acquisition.
-run("var n=getInstance('noam-old-0');currentEvolution={uid:n.uid,from:n.id,choices:getEvoCandidates(n)};confirmEvolution(currentEvolution.choices[0]);");
-assert.equal(run('n.id'),noamIds[1]);assert.equal(run('n.uid'),'noam-old-0');
+run("var survivor=addInstance('freigal',10);save.party=[...save.instances.map(i=>i.uid)];save.homeFavoriteId='character_noam_3';save.expeditions.active=[{id:'old-exp',mapId:'grassland',distanceId:'short',memberUids:['noam-old-2'],progress:0}];save.customField={keep:true};var oldNoam=JSON.stringify(save.instances.slice(0,3));save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();");
+assert.equal(run('save.instances.length'),1);
+assert.equal(run('save.instances[0].id'),'freigal');
+assert.deepEqual(plain(run('save.party')),[run('survivor.uid')]);
+assert.equal(run('save.homeFavoriteId'),null);
+assert(run('save.customField.keep && save.coins===4321'));
+assert.equal(run('save.expeditions.active.length'),0);
+assert.equal(run('save.quarantine.invalidExpeditions.length'),1);
+assert.equal(run('save.quarantine.unknownInstances.length'),3);
+assert.equal(run('JSON.stringify(save.quarantine.unknownInstances)'),run('oldNoam'));
+assert.deepEqual(plain(run('save.quarantine.unknownCaughtIds')),noamIds);
+assert(run("Object.entries(save.skillCards).filter(([id])=>id.startsWith('skill_character_noam_')).length===9"));
+assert(run("Object.entries(save.skillCards).filter(([id])=>id.startsWith('skill_character_noam_')).every(([,count])=>count===11)"));
+assert(!run("Object.keys(save.equippedSkills).some(uid=>uid.startsWith('noam-old-'))"));
+assert(!run("save.instances.some(i=>i.id.startsWith('character_vera_'))"),'no implicit replacement grant');
+const once=run('JSON.stringify(save)');
+run('save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();');
+assert.equal(run('JSON.stringify(save)'),once,'retired save repair is idempotent');
+// A save containing only Noam must remain readable, with all old units quarantined.
+run("save.instances=save.quarantine.unknownInstances;save.party=save.instances.map(i=>i.uid);save.quarantine.unknownInstances=[];save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();");
+assert.equal(run('save.instances.length'),0);
+assert.equal(run('save.party.length'),0);
+assert.equal(run('save.quarantine.unknownInstances.length'),3);
+assert.deepEqual(plain(run("getEvoCandidates({id:'character_noam_2',level:100})")),[]);
 // Current game has no implicit Vera/Noam enemy, drop, starter or alchemy-result additions.
 assert(run("MAPS.every(m=>m.enemyIds.every(id=>!id.startsWith('character_vera_')&&!id.startsWith('character_noam_')))"));
 assert(run("M.filter(u=>u.id.startsWith('character_vera_')).every(u=>!isAlchemyResultEligible(u,'success')&&!isAlchemyResultEligible(u,'failure'))"));
-console.log('PASS: Vera C-048–050, weighted 2%/7% draws, nine skills, Lv10/25 chain, exclusive inheritance, old Noam identities/cards/UIDs/party/favorite/expedition, idempotent reload, no automatic grant.');
+console.log('PASS: Vera C-048–050, weighted 2%/7% draws, nine skills, Lv10/25 chain, exclusive inheritance, Noam deletion and old-save quarantine, safe party/favorite/expedition cleanup, idempotent reload, no automatic grant.');

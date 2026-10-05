@@ -282,7 +282,7 @@ const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
 );
 // New prologue allies are deliberately additive and never enter map enemy pools.
 // Preserve parity for every legacy record and validate exactly the approved additions.
-const addedCharacterIds=['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille','noam'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`));
+const addedCharacterIds=['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`));
 addedCharacterIds.push(...[3,4,5].map(stage=>`character_vera_${stage}`));
 const addedIds=new Set(addedCharacterIds);
 assert.deepEqual(currentSnapshot.monsters.filter(mon=>!addedIds.has(mon.id)),expectedMonsterEconomy,'legacy reward/contract/drop data diverged');
