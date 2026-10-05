@@ -202,9 +202,9 @@ for(const row of replacements){
   })`,context));
   assert.equal(profile.defaults.length,3);
   assert.ok(profile.low.length>=1,'low-level replacements always have a usable move');
-  assert.deepEqual(profile.moves.map(m=>m.cost),row.id.endsWith('beta')?[4,4,5]:[5,4,5]);
+  assert.deepEqual(profile.moves.map(m=>m.cost),row.id.endsWith('beta')?[4,3,5]:[5,4,5]);
   assert.deepEqual(profile.moves.map(m=>m.stableForm),row.forms,'ID-defined forms do not drift with display names');
   assert.ok(profile.moves.every(m=>m.desc.length>15&&!/偽竜|コード・|光翼/.test(m.name)));
   assert.ok(profile.moves.every(m=>m.effect===null&&m.chance===null),'no new status effect or chance is introduced');
 }
-console.log('Replacement skill update passed: all owner moves usable, old aliases retained, inventory preserved for former light users, stable forms and unchanged power/cost/effects.');
+console.log('Replacement skill update passed: all owner moves usable, old aliases retained, inventory preserved for former light users, stable forms, approved Ashleia COST3, unchanged power/effects.');
