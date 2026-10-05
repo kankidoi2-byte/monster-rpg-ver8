@@ -16,6 +16,11 @@ for(const old of baseline.units){
   assert.equal(unit.moves.length,old.moves.length+2);
   const legacyMoves=old.moves.map(move=>unit.moves.find(candidate=>candidate[8]===move[8]));
   assert.equal(JSON.stringify({...unit,moves:legacyMoves}),JSON.stringify(old),'preserve Golem legacy cards and non-move data');
+ }else if(old.id==='alchemion'){
+  // Remove only the redundant custom description; generated effect copy is
+  // checked by test-alchemion-recoil. Preserve every other legacy field.
+  const expectedMoves=old.moves.map(move=>{const expected=[...move];expected[6]=null;return expected;});
+  assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Alchemion except duplicate copy');
  }else assert.equal(JSON.stringify(unit),JSON.stringify(old),`preserve ${old.id}`);
 }
 const added=current.filter(u=>u.characterNo>=15);
