@@ -68,7 +68,7 @@ try{
  await page.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();
  await page.evaluate(()=>{
-  clearTutorialUi();save=initSave();save.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
+  clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
   const ins=addInstance('false_dragon_beta',4);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=['skill_false_dragon_beta_01'];show('home');
  });
