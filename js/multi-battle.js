@@ -323,7 +323,7 @@ async function performMultiAttack(actor,target,move) {
     }
   }
   if(effect==='recoil'||effect==='alchemy_recoil'){
-    const recoil=effect==='recoil'?8:alchemyRecoilDamage(damage),guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
+    const recoil=effect==='recoil'?8:alchemyRecoilDamage(Math.min(damage,Math.max(0,defenderHpBefore))),guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
     if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=actorIsPlayer?pHp:actor.hp;if(actorIsPlayer)pHp=Math.max(0,pHp-recoil);else actor.hp=Math.max(0,actor.hp-recoil);if(typeof battleHpResult==='function')battleHpResult(sourceId,before,actorIsPlayer?pHp:actor.hp,{label:'反動',damage:recoil});msg+=`<br>💥 ${a.name}は反動で${recoil}ダメージ！`;}
   }
   if(effect==='flare_charge'){if(actorIsPlayer)pFlareCharge=true;else actor.flareCharge=true;}else if(power>0){if(actorIsPlayer)pFlareCharge=false;else actor.flareCharge=false;}
