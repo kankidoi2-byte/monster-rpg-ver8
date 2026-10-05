@@ -13,7 +13,7 @@ try{
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
-  save.tutorial=tutorialSaveDefaults({legacy:true});save.tutorial.guides.skillCards=true;
+  save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.progress.tutorial.guides.skillCards=true;
   save.instances=[];save.party=[];
   const ins=addInstance('aquaron',30);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));
@@ -21,6 +21,8 @@ try{
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
  assert(await page.locator('#partySet').isVisible());await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
+ assert.equal(await page.evaluate(()=>currentTutorialState().guides.skillCards),true);
+ await page.locator('#tutorialOverlay').waitFor({state:'hidden'});
  for(const id of ['skill_icegolem_03','skill_proto_icegolem_03']){
   const card=page.locator(`[data-skill-card-id="${id}"]`);
   assert(!((await card.textContent()).includes('タグ条件に合いません')));
