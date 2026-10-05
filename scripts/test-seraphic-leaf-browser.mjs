@@ -14,7 +14,7 @@ try{
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
-  const ins=addInstance('seralphia',1);save.party=[ins.uid];
+  const ins=addInstance('seralphia',7);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=['skill_seralphia_03'];show('home');
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
@@ -61,7 +61,7 @@ try{
  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})),legacySaved);
  assert.equal(errors.length,0,errors.join('\n'));
- results.push({scenario:'Seralphia Lv1 COST8: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
+ results.push({scenario:'Seralphia Lv7 COST8: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
  await page.close();
  console.log(JSON.stringify(results,null,2));
 }finally{if(browser)await browser.close();server.kill();}
