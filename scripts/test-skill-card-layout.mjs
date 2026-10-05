@@ -10,7 +10,7 @@ const out='artifacts/skill-card-layout';fs.mkdirSync(out,{recursive:true});
 const results=[];
 try{
  for(const [width,height] of [[320,568],[360,640],[390,844],[412,915],[430,932],[844,390]]){
-  const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
+  const page=await browser.newPage({viewport:{width:width+32,height:height+250},reducedMotion:'reduce'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   // Fixture loads the real entry's scripts/CSS and replaces only init with isolated memory setup.
   await page.goto('http://127.0.0.1:4175/scripts/skill-loadout-browser.html');
@@ -25,6 +25,8 @@ try{
    clearTutorialUi();save.tutorial=tutorialSaveDefaults({legacy:true});
    const ins=save.instances[0];editingSkillUid=ins.uid;show('skillEdit');renderSkillEdit();
   });
+  assert.equal(await frame.evaluate(()=>innerWidth),width,'fixture uses the exact requested viewport');
+  assert.equal(await frame.evaluate(()=>innerHeight),height,'fixture uses the exact requested height');
   const inspect=async selector=>frame.locator(selector).evaluateAll(elements=>elements.map(el=>{
    const head=el.querySelector('.skill-card-head'),title=el.querySelector('.skill-card-title'),cost=el.querySelector('.skill-cost-badge');
    const rect=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};};
