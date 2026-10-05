@@ -13,7 +13,8 @@ try{
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
-  save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
+  save.tutorial=tutorialSaveDefaults({legacy:true});save.tutorial.guides.skillCards=true;
+  save.instances=[];save.party=[];
   const ins=addInstance('aquaron',30);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));
   save.equippedSkills[ins.uid]=['skill_aquaron_01'];show('home');
@@ -23,11 +24,14 @@ try{
  for(const id of ['skill_icegolem_03','skill_proto_icegolem_03']){
   const card=page.locator(`[data-skill-card-id="${id}"]`);
   assert(!((await card.textContent()).includes('タグ条件に合いません')));
-  assert(await card.locator('button').isEnabled());await card.locator('button').click();
+  const button=card.locator('button');assert(await button.isEnabled());
+  await button.evaluate(el=>el.scrollIntoView({block:'center'}));await button.click();
  }
  const rush=page.locator('[data-skill-card-id="skill_granbeat_03"]');
  assert((await rush.textContent()).includes('タグ条件に合いません'));
  assert(await rush.locator('button').isDisabled());
+ assert.deepEqual(await page.evaluate(()=>save.equippedSkills[save.instances[0].uid]),
+  ['skill_aquaron_01','skill_icegolem_03','skill_proto_icegolem_03']);
  const saved=await page.evaluate(()=>{
   if(!saveGame())throw Error('save failed');
   return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills});
