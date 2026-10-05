@@ -538,7 +538,7 @@ const M = [
   {id:'seralphia',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'seralphia',no:33,dexNo:11,name:'セラルフィア',rarity:'★★★',types:['grass'],huntLevels:{normal:46,hard:76},
    hp:225,spd:92,catchRate:.10,
    desc:'リカシーフが進化した神秘の森鹿。花咲く角と翠の翼で森に清浄な風を巡らせる。',
-   moves:[["翠翼の突風",42,"grass",null,null,null,null,null,"skill_seralphia_01"],["森精の祝福",0,"grass","heal",null,null,null,null,"skill_seralphia_02"],["セラフィックリーフ",68,"grass",null,null,null,null,null,"skill_seralphia_03"]]},
+   moves:[["翠翼の突風",42,"grass",null,null,null,null,null,"skill_seralphia_01"],["森精の祝福",0,"grass","heal",null,null,null,null,"skill_seralphia_02"],["セラフィックリーフ",68,"grass","tactical",null,4,"実際に減らした相手のHPの20%を吸収する。",null,"skill_seralphia_03",{"drain":0.2}]]},
   {id:'nightmare',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'nightmare',no:10,dexNo:37,name:'ナイトメア',rarity:'★★',types:['dark'],huntLevels:{normal:28,hard:58},
    hp:105,spd:88,catchRate:.24,
    desc:'暗闇から現れる影の魔物。',

@@ -39,8 +39,10 @@ jobs:
       - name: Verify mobile skill-card layout and interactions
         run: node scripts/test-skill-card-layout.mjs
 
-      - name: Verify Morglum balance change and gameplay smoke
-        run: node scripts/test-morglum-browser.mjs
+      - name: Verify balance changes and gameplay smoke
+        run: |
+          node scripts/test-morglum-browser.mjs
+          node scripts/test-seraphic-leaf-browser.mjs
 
       - name: Upload skill-card layout evidence
         if: always()

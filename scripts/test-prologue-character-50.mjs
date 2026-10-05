@@ -23,6 +23,11 @@ for(const old of baseline.units){
   // Approved balance adjustment: only Fire Wing Strike's explicit COST changes.
   const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_false_dragon_beta_02')expected[5]=3;return expected;});
   assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Ashleia except approved Fire Wing Strike COST');
+ }else if(old.id==='seralphia'){
+  // Approved leaf drain addition; every other field and move stays unchanged.
+  const expectedMoves=old.moves.map(move=>move[8]==='skill_seralphia_03'?
+   ["セラフィックリーフ",68,"grass","tactical",null,4,"実際に減らした相手のHPの20%を吸収する。",null,"skill_seralphia_03",{drain:.2}]:move);
+  assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Seralphia except approved leaf drain');
  }else if(old.id==='alchemion'){
   // Remove only the redundant custom description; generated effect copy is
   // checked by test-alchemion-recoil. Preserve every other legacy field.
