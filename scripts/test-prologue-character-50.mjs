@@ -16,6 +16,10 @@ for(const old of baseline.units){
   assert.equal(unit.moves.length,old.moves.length+2);
   const legacyMoves=old.moves.map(move=>unit.moves.find(candidate=>candidate[8]===move[8]));
   assert.equal(JSON.stringify({...unit,moves:legacyMoves}),JSON.stringify(old),'preserve Golem legacy cards and non-move data');
+ }else if(old.id==='false_dragon_beta'){
+  // Approved balance adjustment: only Fire Wing Strike's explicit COST changes.
+  const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_false_dragon_beta_02')expected[5]=3;return expected;});
+  assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Ashleia except approved Fire Wing Strike COST');
  }else if(old.id==='alchemion'){
   // Remove only the redundant custom description; generated effect copy is
   // checked by test-alchemion-recoil. Preserve every other legacy field.

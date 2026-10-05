@@ -631,7 +631,7 @@ const M = [
   {id:'false_dragon_beta',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_beta',no:30,dexNo:39,name:'アシュレイア',rarity:'★★★★',types:['fire'],huntLevels:{hard:92},
    hp:390,spd:88,catchRate:.04,
    desc:'火山の上昇気流に乗って飛ぶ大型の火炎鳥。赤黒い翼に炎をまとい、火口上空を縄張りとしている。',
-   moves:[["灼熱光砲",76,"fire",null,null,null,"翼に集めた熱を灼熱の光線にして放つ。",null,"skill_false_dragon_beta_01"],["火翼撃",62,"fire",null,null,null,"炎をまとった大翼で相手を打ち払う。",null,"skill_false_dragon_beta_02"],["紅蓮光砲",94,"fire",null,null,null,"火口の熱を凝縮し、紅蓮の光線を撃ち放つ。",null,"skill_false_dragon_beta_03"]]},
+   moves:[["灼熱光砲",76,"fire",null,null,null,"翼に集めた熱を灼熱の光線にして放つ。",null,"skill_false_dragon_beta_01"],["火翼撃",62,"fire",null,null,3,"炎をまとった大翼で相手を打ち払う。",null,"skill_false_dragon_beta_02"],["紅蓮光砲",94,"fire",null,null,null,"火口の熱を凝縮し、紅蓮の光線を撃ち放つ。",null,"skill_false_dragon_beta_03"]]},
   {id:'false_dragon_gamma',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":false},imgKey:'false_dragon_gamma',no:31,dexNo:40,name:'モルグラム',rarity:'★★★★',types:['grass'],huntLevels:{hard:94},
    hp:420,spd:94,catchRate:.035,
    desc:'古木と巨大な菌類が一体化した森林の守護巨体。苔むした木の身体で森の深部を巡回し、大地を揺らす。',

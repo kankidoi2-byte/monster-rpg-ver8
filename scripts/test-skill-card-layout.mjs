@@ -62,5 +62,35 @@ try{
   results.push({width,height,result:'PASS',existingInteractionChecks:suite.split('\n').length,buttons});
   await page.close();
  }
+ // Exercise the approved COST adjustment through the real entry and save path.
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.dismiss());
+ await page.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
+ assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();
+ await page.evaluate(()=>{
+  clearTutorialUi();save=initSave();save.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
+  const ins=addInstance('false_dragon_beta',4);save.party=[ins.uid];
+  save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=['skill_false_dragon_beta_01'];show('home');
+ });
+ assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
+ assert(await page.locator('#partySet').isVisible());await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
+ assert((await page.locator('[data-skill-card-id="skill_false_dragon_beta_02"]').textContent()).includes('COST 3'));
+ const loadout=await page.evaluate(()=>{
+  const wing=equipSkill('skill_false_dragon_beta_02'),charge=equipSkill('skill_freigal_04');
+  return {wing,charge,total:equippedSkillCost(save.instances[0]),limit:skillCostLimitFor(by('false_dragon_beta'),save.instances[0])};
+ });
+ assert.deepEqual(loadout,{wing:true,charge:true,total:9,limit:9});
+ const saved=await page.evaluate(()=>{
+  if(!saveGame())throw Error('save failed');
+  return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills});
+ });
+ await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+ assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})),saved);
+ await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
+ await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+ assert((await page.locator('#commands').textContent()).includes('火翼撃'));
+ assert.equal(errors.length,0,errors.join('\n'));
+ results.push({scenario:'Ashleia Lv4 COST9: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
+ await page.close();
  fs.writeFileSync(`${out}/results.json`,JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
 }finally{await browser.close();server.kill();}
