@@ -93,7 +93,7 @@ const context=vm.createContext({
   SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01',name:'連続斬り',cost:2,power:34,types:['normal']}},
   isSkillAllowedForMonster:()=>true,equippedSkillCost:instance=>(context.saveView?.equippedSkills?.[instance.uid]||[]).length,
   skillCostLimitFor:()=>5,availableSkillCount:id=>Math.max(0,Number(context.saveView?.skillCards?.[id]||0)),
-  skillTypes:skill=>skill.types,skillCardClass:()=>'',skillCardHeader:()=>'',skillTypeLabel:()=>'',skillToMove:()=>['連続斬り',34,'normal'],moveEffectText:()=>'',
+  skillTypes:skill=>skill.types,skillCardClass:()=>'',skillCardHeader:()=>'',skillCardStats:()=>'',skillCardEffect:()=>'',skillTypeLabel:()=>'',skillToMove:()=>['連続斬り',34,'normal'],moveEffectText:()=>'',
   moveTypes:move=>Array.isArray(move?.[2])?move[2]:[move?.[2]],typeEff:(types,targetTypes)=>types.includes('fire')&&targetTypes.includes('grass')?2:1,
   openSkillEdit:uid=>{context.editingSkillUid=uid;activeScreen='skillEdit';},resetSkillFilters(){},renderSkillEdit(){},
   activateTutorialAlchemyLesson:config=>(context.activeAlchemyLesson=config,true),deactivateTutorialAlchemyLesson:()=>{context.activeAlchemyLesson=null;},showAlchemy:()=>{activeScreen='alchemy';},

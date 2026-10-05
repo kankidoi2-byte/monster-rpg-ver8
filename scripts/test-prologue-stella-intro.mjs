@@ -80,7 +80,7 @@ function makeContext({saveSucceeds=true,replaying=false,alreadyGranted=false}={}
     },
     setTutorialStep:id=>{context.save.progress.tutorial.stepId=id;},saveGame:()=>saveSucceeds,
     document:{getElementById:()=>null},showUiNotice:message=>context.notices.push(message),notices:[],
-    tutorialCurrentStepId:()=>null,skillCardClass:()=>'',skillTypes:()=>['normal'],skillCardHeader:()=>'',skillTypeLabel:()=>'',skillToMove:()=>[],moveEffectText:()=>'',
+    tutorialCurrentStepId:()=>null,skillCardClass:()=>'',skillTypes:()=>['normal'],skillCardHeader:()=>'',skillCardStats:()=>'',skillCardEffect:()=>'',skillTypeLabel:()=>'',skillToMove:()=>[],moveEffectText:()=>'',
     equippedSkillCost:()=>0,skillCostLimitFor:()=>4,availableSkillCount:()=>1,
     tutorialUiState:{active:false},tutorialNext:()=>{},openSkillEdit:()=>{},resetSkillFilters:()=>{}
   });

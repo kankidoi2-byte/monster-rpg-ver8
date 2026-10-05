@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261005-skill-card-display-fix",date:"2026-10-05",category:"fix",title:"技カードを読みやすくしました",body:"技装備・図鑑などで属性と威力が重複していた表示を整理しました。補助技は「補助技」と表示し、追加効果・条件・反動を確認しやすくしました。技の性能や装備条件は変わりません。"}),
   Object.freeze({id:"20261005-alchemion-recoil-fix",date:"2026-10-05",category:"fix",title:"錬核崩砕の反動と説明を修正しました",body:"複数体戦の錬核崩砕で、相手の残りHPを超えたダメージが反動に含まれる問題を修正しました。技説明の重複も解消しました。"}),
   Object.freeze({id:"20261005-noam-removal",date:"2026-10-05",category:"update",title:"キャラクターデータを整理しました",body:"ノアム3形態と専用技をゲームデータから削除しました。第1章のキャラクター登録は空にし、序章の50枠は維持しています。旧セーブのノアムは編成・使用できなくなりますが、個体データは隔離保存されます。"}),
   Object.freeze({id:"20261004-stella-sorcerer-artwork-v2",date:"2026-10-04",category:"update",title:"魔導師ステラのイラストを更新しました",body:"魔導師ステラのイラストを新しい画像に変更しました。"}),

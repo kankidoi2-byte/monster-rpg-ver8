@@ -12,7 +12,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -30,3 +30,18 @@ jobs:
 
       - name: Compare world-map reward rules with the pre-map baseline
         run: npm run check:world-map-economy
+
+      - name: Install isolated browser for skill-card layout checks
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+
+      - name: Verify mobile skill-card layout and interactions
+        run: node scripts/test-skill-card-layout.mjs
+
+      - name: Upload skill-card layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-card-layout
+          path: artifacts/skill-card-layout
