@@ -14,7 +14,12 @@ function skillButtonClass(typeOrTypes){
   const types=normalizeMoveTypes(typeOrTypes);
   return types.length>1 ? `dual-${types.join('-')}` : (types[0]||'normal');
 }
-function skillCardHeader(sk){const types=skillTypes(sk);return `<div class="skill-card-head"><h3 class="skill-card-title">${skillTypeLabel(types)} ${sk.name}</h3><span class="skill-cost-badge">COST ${sk.cost}</span></div>`;}
+function skillCardHeader(sk){return `<div class="skill-card-head"><h3 class="skill-card-title">${sk.name}</h3><span class="skill-cost-badge">COST ${sk.cost}</span></div>`;}
+function skillCardStats(sk){return `<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / ${sk.power === 0 ? '補助技' : `威力 ${sk.power}`}</p>`;}
+function skillCardEffect(mv){
+  const text=moveEffectText(mv,{includeBase:false});
+  return text ? `<p class="small skill-effect-text">${text}</p>` : '';
+}
 
 /* ===== 属性相性 ===== */
 /* ===== 技カード定義・技装備システム ===== */
@@ -390,10 +395,10 @@ function playerAttackInstanceMultiplier(){
     : 1;
   return instanceStatModifier(activeInstance, 'attack') * linkMultiplier;
 }
-function moveEffectText(mv) {
+function moveEffectText(mv, {includeBase=true}={}) {
   const [,power,type,effect,chance,,customDesc] = mv;
   const typeText = moveTypes(mv).map(t=>TN[t]||t).join(' / ');
-  let txt = power === 0 ? `${typeText}属性 / 補助技` : `${typeText}属性 / 威力 ${power}`;
+  let txt = includeBase ? (power === 0 ? `${typeText}属性 / 補助技` : `${typeText}属性 / 威力 ${power}`) : '';
   const percent = Number.isFinite(chance) ? Math.round(chance * 100) : null;
   const fx = {
     heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'強力だが反動ダメージあり',
@@ -407,7 +412,15 @@ function moveEffectText(mv) {
     aqua_shield:'次に受ける攻撃ダメージを半減する',
     repeat_attack:`${percent ?? 30}%でもう一度攻撃する`
   };
-  if (fx[effect]) txt += ' / ' + fx[effect];
-  if (customDesc) txt += '。' + customDesc;
+  if (fx[effect]) txt += (txt ? ' / ' : '') + fx[effect];
+  let description=customDesc;
+  if (!includeBase && description) {
+    // Omit only known base-only copy; conditions and numeric effects stay intact.
+    if (!fx[effect] && description === '追加効果のない攻撃。') description='';
+    const types=moveTypes(mv);
+    const dualIntro=types.map(t=>TN[t]||t).join('と')+'の複合攻撃。';
+    if (types.length > 1 && description.startsWith(dualIntro)) description=description.slice(dualIntro.length);
+  }
+  if (description) txt += (txt ? '。' : '') + description;
   return txt;
 }

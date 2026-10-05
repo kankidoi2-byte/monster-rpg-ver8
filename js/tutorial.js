@@ -1360,7 +1360,7 @@ function renderTutorialStellaSkillCard(){
   const button=document.getElementById('tutorialStellaSkillEditButton');
   if(!card||!visual||!status||!button)return false;
   visual.className=`tutorial-stella-skill-card ${skillCardClass(skillTypes(card))}`;
-  visual.innerHTML=`${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p>${moveEffectText(skillToMove(card.id))}</p><small>エルナの契約体が装備できます。</small>`;
+  visual.innerHTML=`${skillCardHeader(card)}${skillCardStats(card)}${skillCardEffect(skillToMove(card.id))}<small>エルナの契約体が装備できます。</small>`;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   status.textContent=tutorialStellaSkillIsEquipped()?'連続斬りは装備済みです。':tutorial?.stellaSkillCardGranted?'技カードを受け取りました。':'ステラから受け取る技カードです。';
   button.disabled=tutorialCurrentStepId()!=='stella_skill_open'||tutorialStellaCardBusy;

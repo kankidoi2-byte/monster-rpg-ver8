@@ -49,7 +49,7 @@ function showItemDexDetail(itemId){
 }
 function renderUnitSkillList(m) {
   return `<h3>技一覧</h3>
-    ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<div class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</div><div style="font-size:12px;color:#aab3cc">${moveEffectText(mv)}</div></div>`;}).join('')}`;
+    ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}${skillCardEffect(mv)}</div>`;}).join('')}`;
 }
 function dexRegisteredCount(units){
   return units.filter(unit=>typeof caughtHas==='function'&&caughtHas(unit.id)).length;

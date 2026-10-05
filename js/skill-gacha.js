@@ -100,7 +100,7 @@ function setSkillGachaPresentationSpeed(speed){
 function skillGachaCardMarkup(entry,index,faceDown=false){
   const card=entry.card;
   const acquisition=entry.isNew?'<span class="skill-gacha-new">NEW</span>':`<span class="skill-gacha-owned">所持 ×${entry.after}</span>`;
-  return `<article class="skill-gacha-reveal-card skill-gacha-tier-${entry.tier}${faceDown?' is-facedown':''}" data-skill-gacha-card="${index}" data-cost="${card.cost}" role="button" tabindex="${faceDown?'-1':'0'}" aria-expanded="false" onclick="openSkillGachaCardDetail(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSkillGachaCardDetail(${index});}"><div class="skill-gacha-card-inner"><div class="skill-gacha-card-back"><span>✦</span><small>技紋</small></div><div class="skill-gacha-card-front card ${skillCardClass(skillTypes(card))}">${acquisition}${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p class="small">${moveEffectText(skillToMove(card.id))}</p></div></div></article>`;
+  return `<article class="skill-gacha-reveal-card skill-gacha-tier-${entry.tier}${faceDown?' is-facedown':''}" data-skill-gacha-card="${index}" data-cost="${card.cost}" role="button" tabindex="${faceDown?'-1':'0'}" aria-expanded="false" onclick="openSkillGachaCardDetail(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSkillGachaCardDetail(${index});}"><div class="skill-gacha-card-inner"><div class="skill-gacha-card-back"><span>✦</span><small>技紋</small></div><div class="skill-gacha-card-front card ${skillCardClass(skillTypes(card))}">${acquisition}${skillCardHeader(card)}${skillCardStats(card)}${skillCardEffect(skillToMove(card.id))}</div></div></article>`;
 }
 function renderSkillGacha(){
   const coin=document.getElementById('skillGachaCoinView');
@@ -134,7 +134,7 @@ function openSkillGachaCardDetail(index){
   closeSkillGachaCardDetail();
   const card=entry.card;
   const acquisition=entry.isNew?'NEW・初獲得':`所持 ×${entry.after}`;
-  detail.innerHTML=`<div>${skillCardHeader(card)}<b>${acquisition}</b></div><p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p>${moveEffectText(skillToMove(card.id))}</p><button type="button" onclick="closeSkillGachaCardDetail()">詳細を閉じる</button>`;
+  detail.innerHTML=`<div>${skillCardHeader(card)}<b>${acquisition}</b></div>${skillCardStats(card)}${skillCardEffect(skillToMove(card.id))}<button type="button" onclick="closeSkillGachaCardDetail()">詳細を閉じる</button>`;
   detail.hidden=false;
   cardElement.classList.add('is-selected');
   cardElement.setAttribute('aria-expanded','true');
