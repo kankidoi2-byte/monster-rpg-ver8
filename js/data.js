@@ -691,7 +691,7 @@ const M = [
   {id:'alchemion',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'alchemion',no:47,dexNo:47,name:'錬核獣アルケミオン',rarity:'★★★',types:['normal'],
    hp:180,spd:75,catchRate:0,contractable:false,alchemyExclusive:true,
    desc:'錬成核から生まれる無属性の錬成限定モンスター。個体ごとに異なる能力傾向を持つ。',
-   moves:[["錬核崩砕",140,"normal","alchemy_recoil",null,5,"攻撃後、実際に与えたダメージの25％を反動として受ける。","alchemion","skill_alchemion_01"]]},
+   moves:[["錬核崩砕",140,"normal","alchemy_recoil",null,5,null,"alchemion","skill_alchemion_01"]]},
   {id:'kimeragna',entityKind:'monster',eligibility:{"contract":false,"alchemyCatalyst":true,"alchemySuccess":true,"alchemyFailure":false},imgKey:'kimeragna',no:48,dexNo:48,name:'混成翼竜キメラグナ',rarity:'★★★',types:['wind','dragon'],
    hp:150,spd:100,catchRate:0,contractable:false,alchemyExclusive:true,evolution:'kimeragna_apex',evolutionLevel:5,
    desc:'風と竜の性質を併せ持つ錬成限定の翼竜。猛毒を帯びた翼で獲物を追い詰める。',

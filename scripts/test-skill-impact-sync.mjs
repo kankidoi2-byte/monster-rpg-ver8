@@ -5,6 +5,16 @@ import {execFileSync} from 'node:child_process';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
 const base='282f774d00e240c599f8542843d7f27a65a49cec';
 const old=Object.fromEntries(['core','battle-view','battle-rules','multi-battle'].map(f=>[f,()=>execFileSync('git',['show',`${base}:js/${f}.js`],{encoding:'utf8'})]));
+// The approved alchemy overkill correction intentionally differs from this
+// historical engine. Apply only that correction to the comparison baseline;
+// test-alchemion-recoil independently checks the actual HP-loss contract.
+const historicalMultiBattle=old['multi-battle'];
+old['multi-battle']=()=>{
+ const source=historicalMultiBattle();
+ const original='alchemyRecoilDamage(damage),guarded=actorIsPlayer';
+ assert.equal(source.split(original).length,2);
+ return source.replace(original,'alchemyRecoilDamage(Math.min(damage,Math.max(0,defenderHpBefore))),guarded=actorIsPlayer');
+};
 const before=runtime(old),after=runtime();
 const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);beginChosenBattle('grassland','slime','normal',activeHuntRequest);pHp=70;eHp=60;`;
 const multiSetup=setup+`activeHuntRequest.battleMode='three_way';activeHuntRequest.secondEnemyId='goblin';beginThreeWayBattle();multiBattle.enemies.forEach(e=>{e.hp=60;e.guard=true;e.aquaShield=true;});`;
