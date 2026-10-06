@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261006-evolution-all-skill-cards",date:"2026-10-06",category:"fix",title:"進化時の固有技カード不足を修正しました",body:"今後の通常進化・特殊進化では、進化先の全固有技カードを各1枚入手できます。装備枠やCOSTに収まらない技も対象です。統合された同じ技は重複配布しません。装備の引き継ぎと装備制限は従来どおりです。すでに進化済みの個体への不足カード補填は含みません。"}),
   Object.freeze({id:"20261006-crash-rush-taxonomy",date:"2026-10-06",category:"fix",title:"クラッシュ技の装備条件を修正しました",body:"「クラッシュ」を含む4技に、誤って突進能力の装備条件が付いていた問題を修正しました。属性や個体専用の条件は引き続き適用されます。技の威力・COST・効果と打撃演出は変わりません。"}),
   Object.freeze({id:"20261005-seraphic-leaf-drain",date:"2026-10-05",category:"update",title:"セラフィックリーフに吸収効果を追加しました",body:"セラフィックリーフで実際に減らした相手のHPの20%を吸収します。威力68・森属性・COST4はそのままです。敵のセラルフィアも同じ効果を使います。所持カードと装備は引き継がれます。"}),
   Object.freeze({id:"20261005-morglum-spore-cost",date:"2026-10-05",category:"update",title:"胞子弾のCOSTを4に調整しました",body:"モルグラムの「胞子弾」のCOSTを5から4にしました。Lv1から「胞子弾・守りを固める・癒しの芽吹き」を合計COST8で装備できます。威力・属性・追加効果・装備条件は変わりません。新しく仲間にした際の初期技と技ガチャの排出率はCOSTに応じて変わります。既存の装備に技を自動追加することはありません。"}),
