@@ -36,12 +36,18 @@ function grantEquippedSkillCardsForInstance(ins){
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
   });
 }
-function grantDefaultSkillCardsForInstance(ins){
+// Evolution rewards use every declared move, independently of equipment eligibility,
+// slot count and COST. Normalize old aliases before deduplicating merged cards.
+function evolutionSkillCardIdsForMonster(mon){
+  return [...new Set((mon?.moves || []).map(skillIdFromMove).map(canonicalSkillId))]
+    .filter(id => SKILL_BY_ID[id]);
+}
+function grantEvolutionSkillCardsForInstance(ins){
   if (!ins?.uid) return [];
   const mon = by(ins.id);
   if (!mon) return [];
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
-  const ids = defaultSkillIdsForMonster(mon, ins);
+  const ids = evolutionSkillCardIdsForMonster(mon);
   ids.forEach(id => {
     if (!SKILL_BY_ID[id]) return;
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;

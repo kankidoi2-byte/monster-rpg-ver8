@@ -126,10 +126,10 @@ context.save.instances.push(evolving);
 vm.runInContext("ensureInstanceSkills(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
 const equippedBeforeEvolution=[...context.save.equippedSkills[evolving.uid]];
 evolving.id='freiwolf';
-const expectedEvolutionCards=taxonomy.defaultSkillIdsForMonster(freiwolf,evolving);
+const expectedEvolutionCards=vm.runInContext("evolutionSkillCardIdsForMonster(by('freiwolf'))",context);
 const countsBeforeEvolution=Object.fromEntries(expectedEvolutionCards.map(id => [id,context.save.skillCards[id] || 0]));
-const grantedEvolutionCards=vm.runInContext("grantDefaultSkillCardsForInstance(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
-assert.deepEqual([...grantedEvolutionCards],[...expectedEvolutionCards],'evolution must grant the evolved form default skill cards');
+const grantedEvolutionCards=vm.runInContext("grantEvolutionSkillCardsForInstance(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
+assert.deepEqual([...grantedEvolutionCards],[...expectedEvolutionCards],'evolution must grant the evolved form all declared skill cards');
 assert.deepEqual([...context.save.equippedSkills[evolving.uid]],equippedBeforeEvolution,'granting evolution cards must not change the equipped loadout');
 for (const id of expectedEvolutionCards) assert.equal(context.save.skillCards[id],countsBeforeEvolution[id]+1,`evolution must grant one ${id} card`);
 
@@ -169,6 +169,6 @@ vm.runInContext('migrateSkillSystem()',context);
 assert.equal(JSON.stringify(context.save),repairedSave,'save and reload must not duplicate repair cards');
 
 const progressionSource=read('js/progression.js');
-assert.equal((progressionSource.match(/grantDefaultSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant default skill cards');
+assert.equal((progressionSource.match(/grantEvolutionSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant all declared skill cards');
 
 console.log(`Skill taxonomy validation passed (100 tagged units, 316 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);

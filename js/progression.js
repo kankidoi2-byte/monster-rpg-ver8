@@ -48,7 +48,7 @@ function tryFusion(idx) {
   save.items[r.item] -= r.count;
   ins.id = r.to;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
-  if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
+  if (typeof grantEvolutionSkillCardsForInstance === 'function') grantEvolutionSkillCardsForInstance(ins);
   if (firstRegistration) {
     save.caught.push(r.to);
     if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(r.to);
@@ -121,10 +121,13 @@ function confirmEvolution(toId) {
   if (!currentEvolution) return;
   const ins = getInstance(currentEvolution.uid);
   if (!ins) { currentEvolution=null; processNextEvolution(); return; }
+  // Ignore stale or invalid choices; only a currently eligible transition grants cards.
+  if (ins.id !== currentEvolution.from || !currentEvolution.choices.includes(toId) ||
+      !getEvoCandidates(ins).includes(toId)) return;
   const from = by(ins.id), to = by(toId), firstRegistration=!caughtHas(toId);
   ins.id = toId;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
-  if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
+  if (typeof grantEvolutionSkillCardsForInstance === 'function') grantEvolutionSkillCardsForInstance(ins);
   if (firstRegistration) {
     save.caught.push(toId);
     if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(toId);
