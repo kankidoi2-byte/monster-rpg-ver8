@@ -3,7 +3,7 @@ const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.
 const out='artifacts/skill-card-layout/powered-modifiers';fs.mkdirSync(out,{recursive:true});
 try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});browser=await chromium.launch({headless:true});
- const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[];
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'no-preference'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
  await page.goto('http://127.0.0.1:4181/?legacy=1',{waitUntil:'networkidle'});assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.addScriptTag({path:'scripts/powered-modifier-fixture.js'});
@@ -12,16 +12,18 @@ try{
  await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
  for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){const text=await page.locator(`[data-skill-card-id="${id}"]`).first().textContent();assert.match(text,/威力/);assert.match(text,/攻撃後/);}
  await page.screenshot({path:`${out}/equipment.png`,fullPage:true});
- await page.evaluate(()=>renderDex());
- for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02'])assert(await page.locator(`[data-skill-card-id="${id}"]`).count()>0);
- await page.evaluate(()=>{show('partySet');startBattleFromParty();});assert(await page.locator('#battleChoices').isVisible());await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+ await page.evaluate(()=>show('dex'));
+ for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){await page.evaluate(skillId=>showDexDetail(SKILL_BY_ID[skillId].sourceUnitId),id);const text=await page.locator(`#dexDetail [data-skill-card-id="${id}"]`).textContent();assert.match(text,/攻撃後/);}
+ await page.evaluate(()=>show('partySet'));await page.locator('#partySet').waitFor({state:'visible'});
+ await page.evaluate(()=>startBattleFromParty());await page.locator('#battleChoices').waitFor({state:'visible'});await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  const cases=await page.evaluate(()=>poweredModifierCases().filter(x=>Object.keys(x).length===3));const results=[];
  for(const opts of cases){
   const result=await page.evaluate(async options=>{
    const original=playBattleSkillMotion,motions=[];playBattleSkillMotion=async(...args)=>{motions.push({source:args[0],target:args[1],role:skillBattleMotionForMove(args[2]).role});return original(...args);};
-   try{return {...await poweredModifierScenario(options),motions};}finally{playBattleSkillMotion=original;}
+   try{const result=await poweredModifierScenario(options);return {...result,motions,targetLabel:battleUiMoveTarget(skillToMove(options.skillId))};}finally{playBattleSkillMotion=original;}
   },opts);results.push({opts,...result});
   assert.match(result.log,/ダメージ/);assert.match(result.log,/攻撃力が/);assert.equal((result.log.match(/攻撃力が/g)||[]).length,1);
+  assert.equal(result.targetLabel,(opts.skillId==='skill_shenhairon_02'?'自分と':'')+(opts.mode==='single'?'敵1体':'選択した敵1体'));
   assert.equal(result.motions.length,1);assert.equal(result.motions[0].role,'damage');assert.notEqual(result.motions[0].source,result.motions[0].target);
   if(opts.mode!=='single')assert(result.action.includes(' → ')&&!result.action.includes('undefined'));
   if(opts.skillId==='skill_shenhairon_02'&&opts.direction==='player')await page.screenshot({path:`${out}/${opts.mode}.png`,fullPage:true});
@@ -30,4 +32,4 @@ try{
  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});assert.deepEqual(JSON.parse(after),JSON.parse(before));assert.deepEqual(errors,[]);
  fs.writeFileSync(`${out}/results.json`,JSON.stringify({result:'PASS',cases:results.length,errors,results},null,2));console.log(`PASS ${results.length} actual browser attacks, motion targets, logs, equipment/dex, title/home/party/hunt/battle and save/reload`);
-}finally{if(browser)await browser.close();server.kill();}
+}catch(error){if(browser){const pages=browser.contexts().flatMap(c=>c.pages());if(pages[0]){console.log(await pages[0].evaluate(()=>({party:save.party,instances:save.instances.map(i=>({id:i.id,uid:i.uid})),active:[...document.querySelectorAll('.screen.active')].map(e=>e.id),tutorial:save.progress.tutorial})));await pages[0].screenshot({path:`${out}/failure.png`,fullPage:true});}}throw error;}finally{if(browser)await browser.close();server.kill();}

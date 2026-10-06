@@ -30,4 +30,8 @@ for(const [id,power,cost] of [['skill_shenhairon_02',42,3],['skill_nightmare_02'
  assert.equal(after.run(`skillBattleMotionForMove(skillToMove('${id}')).role`),'damage');
  assert.match(after.run(`moveEffectText(skillToMove('${id}'),{includeBase:false})`),/攻撃後.*基本値.*上限|攻撃後.*基本値.*下限/);
 }
+
+after.context.document.addEventListener=()=>{};
+vm.runInContext(fs.readFileSync(new URL('../js/battle-ui.js',import.meta.url),'utf8'),after.context);
+for(const multi of [false,true]){after.run(`multiBattle={active:${multi}}`);for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02'])assert.equal(after.run(`battleUiMoveTarget(skillToMove('${id}'))`),(id==='skill_shenhairon_02'?'自分と':'')+(multi?'選択した敵1体':'敵1体'));assert.equal(after.run("battleUiMoveTarget(['補助',0,'normal','buff'])"),'自分');}
 console.log(JSON.stringify({result:'PASS',cases:count,originalZeroDamageReproductions:reproduced,coverage:'single/three-way/invasion; all directions; caps, zero-power, guard/shield, resistance, half-healing, miss, barrier, kill attribution; rendering stubbed'}));
