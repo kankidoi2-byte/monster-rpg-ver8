@@ -102,7 +102,7 @@
     "check:character-recycle": "node scripts/test-character-recycle.mjs",
     "check:balance-audit": "node tools/balance-audit/test-regressions.mjs && node tools/balance-audit/test-link-invasion.mjs && node tools/balance-audit/test-integration.mjs && node tools/balance-audit/verify-reproduction.mjs",
     "analyze:balance": "node tools/balance-audit/run.mjs && node tools/balance-audit/compare.mjs && node tools/balance-audit/economy.mjs && node tools/balance-audit/mechanics.mjs && node tools/balance-audit/acquisition-candidates.mjs && python3 tools/balance-audit/report.py && node tools/balance-audit/verify-reproduction.mjs --generated && node tools/balance-audit/compact-results.mjs",
-    "check:battle-readability": "node scripts/test-multi-battle-motion-update.mjs && node scripts/test-multi-battle-outcomes.mjs && node scripts/test-alchemion-recoil.mjs && node scripts/test-simultaneous-ko.mjs && node scripts/test-battle-readability.mjs",
+    "check:battle-readability": "node scripts/test-multi-battle-motion-update.mjs && node scripts/test-multi-battle-outcomes.mjs && node scripts/test-alchemion-recoil.mjs && node scripts/test-simultaneous-ko.mjs && node scripts/test-single-hp-clamp.mjs && node scripts/test-battle-readability.mjs",
     "check:skill-impact": "node scripts/test-skill-impact-sync.mjs",
     "check:english": "node scripts/test-english-study.mjs",
     "check:url-migration": "node scripts/test-url-migration.mjs",

@@ -529,11 +529,11 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
   if (isPlayer) {
-    eHp -= dmg;
+    eHp = Math.max(0, eHp - dmg);
     eGuard = false;
     if (shield) eAquaShield = false;
   } else {
-    pHp -= dmg;
+    pHp = Math.max(0, pHp - dmg);
     pGuard = false;
     if (shield) pAquaShield = false;
   }
@@ -572,12 +572,12 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (effect === 'recoil') {
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
-    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp -= 8; else eHp -= 8;if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:8});msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp = Math.max(0, pHp - 8); else eHp = Math.max(0, eHp - 8);if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:8});msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}
   }
   if (effect === 'alchemy_recoil') {
     const recoilDamage = alchemyRecoilDamage(actualDamage);
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
-    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp -= recoilDamage; else eHp -= recoilDamage;if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:recoilDamage});msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;}
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp = Math.max(0, pHp - recoilDamage); else eHp = Math.max(0, eHp - recoilDamage);if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:recoilDamage});msg += `<br>💥 ${attacker.name}は反動で${recoilDamage}ダメージ！`;}
   }
   if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.5):{chance:Number.isFinite(effectChance)?effectChance:0.5,boosted:false};
@@ -614,7 +614,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
     const secondDmg = secondBarrier.hpDamage;
     const secondHpBefore=isPlayer?eHp:pHp;
-    if (isPlayer) eHp -= secondDmg; else pHp -= secondDmg;
+    if (isPlayer) eHp = Math.max(0, eHp - secondDmg); else pHp = Math.max(0, pHp - secondDmg);
     if(typeof battleHpResult==='function')battleHpResult(targetId,secondHpBefore,isPlayer?eHp:pHp,{label:'追加攻撃',damage:secondDmg,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(mv),power,impact:true});
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
     const secondDefenseMsg=kokoroLinkDefenseMessage(secondBarrier);if(secondDefenseMsg)msg+=`<br>${secondDefenseMsg}`;

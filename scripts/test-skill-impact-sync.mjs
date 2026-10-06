@@ -35,7 +35,9 @@ for(const direction of ['single-player','single-enemy','player-enemy','enemy-pla
   const rng=seeded(192);let count=0;r.context.Math.random=()=>{count++;return rng();};
   if(direction.startsWith('single'))await r.run(`doAttack(${direction==='single-player'?'player,enemy':'enemy,player'},${JSON.stringify(move)},${direction==='single-player'})`);
   else await r.run(`performMultiAttack(${direction==='player-enemy'?"{kind:'player'}":'multiBattle.enemies[0]'},${direction==='enemy-player'?"{kind:'player'}":'multiBattle.enemies[1]'},${JSON.stringify(move)})`);
-  states.push(r.run('JSON.stringify([pHp,eHp,pAtk,eAtk,pGuard,eGuard,pStatus,eStatus,pPoisonTurns,ePoisonTurns,pParalysisTurns,eParalysisTurns,pConfusionTurns,eConfusionTurns,pSleepTurns,eSleepTurns,pAquaShield,eAquaShield,pFlareCharge,eFlareCharge,multiBattle?.enemies,save.coins,battleTurnCount])'));draws.push(count);
+  // Immediate HP clamps intentionally replace transient negative HP; compare final
+  // nonnegative HP while retaining every other outcome and RNG-count check.
+  states.push(r.run('JSON.stringify([Math.max(0,pHp),Math.max(0,eHp),pAtk,eAtk,pGuard,eGuard,pStatus,eStatus,pPoisonTurns,ePoisonTurns,pParalysisTurns,eParalysisTurns,pConfusionTurns,eConfusionTurns,pSleepTurns,eSleepTurns,pAquaShield,eAquaShield,pFlareCharge,eFlareCharge,multiBattle?.enemies,save.coins,battleTurnCount])'));draws.push(count);
  }
  assert.equal(states[0],states[1],`${direction}/${move[0]} outcomes`);assert.equal(draws[0],draws[1],`${direction}/${move[0]} RNG`);cases++;
 }

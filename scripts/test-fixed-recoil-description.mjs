@@ -62,7 +62,9 @@ assert.equal(r.run(`moveEffectText(skillToMove('skill_alchemion_01'),{includeBas
 for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert(r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`).includes('最大HP'));
 assert.equal(fs.readFileSync(new URL('js/data.js',root),'utf8'),original('data').replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'));
 assert.equal(fs.readFileSync(new URL('js/core.js',root),'utf8'),original('core').replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'"));
-assert.equal(sources['battle-rules'],original('battle-rules'));
+// Allow only the separately regression-tested immediate HP clamp; keep all formulas frozen.
+const withoutHpClamp=source=>source.split('async function doAttack')[0]+'async function doAttack'+source.split('async function doAttack')[1].replace(/([pe]Hp) = Math\.max\(0, \1 - (dmg|8|recoilDamage|secondDmg)\);/g,'$1 -= $2;');
+assert.equal(withoutHpClamp(sources['battle-rules']),original('battle-rules'));
 // Freeze attack/recoil calculation, while allowing independently tested outcome ordering.
 const attackSource=source=>source.match(/async function performMultiAttack[\s\S]*?\n}\n/)[0];
 assert.equal(attackSource(sources['multi-battle']),attackSource(original('multi-battle')));
