@@ -62,5 +62,8 @@ assert.equal(r.run(`moveEffectText(skillToMove('skill_alchemion_01'),{includeBas
 for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert(r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`).includes('最大HP'));
 assert.equal(fs.readFileSync(new URL('js/data.js',root),'utf8'),original('data').replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'));
 assert.equal(fs.readFileSync(new URL('js/core.js',root),'utf8'),original('core').replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'"));
-for(const file of ['battle-rules','multi-battle'])assert.equal(fs.readFileSync(new URL('js/'+file+'.js',root),'utf8'),original(file));
-console.log('PASS fixed recoil display: 5 skills, equipment/dex, 25 battle scenarios; other descriptions, all non-copy data and battle sources unchanged.');
+assert.equal(sources['battle-rules'],original('battle-rules'));
+// Freeze attack/recoil calculation, while allowing independently tested outcome ordering.
+const attackSource=source=>source.match(/async function performMultiAttack[\s\S]*?\n}\n/)[0];
+assert.equal(attackSource(sources['multi-battle']),attackSource(original('multi-battle')));
+console.log('PASS fixed recoil display: 5 skills, equipment/dex, 25 battle scenarios; other descriptions, all non-copy data and attack/recoil calculations unchanged.');
