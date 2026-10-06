@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261007-legacy-status-descriptions",date:"2026-10-07",category:"fix",title:"状態異常技の効果を詳しく表示しました",body:"毒・麻痺・こんらん・ねむりの11技に、付与確率・継続期間・ダメージや行動への影響を明記しました。毒はターン終了時、ほかは行動時の効果として区別し、重複する説明も整理しました。技の性能や戦闘処理は変わりません。"}),
   Object.freeze({id:"20261006-evolution-native-card-backfill",date:"2026-10-06",category:"fix",title:"進化済みの仲間の不足技カードを補填します",body:"以前の進化で配られなかった固有技カードを、現在所持している対象の仲間の数に応じて補填します。すでに必要枚数を持っている場合は追加しません。図鑑への登録だけでは補填されません。余分に持っているカードや現在の装備はそのままです。"}),
   Object.freeze({id:"20261006-skill-dex",date:"2026-10-06",category:"update",title:"技図鑑を追加しました",body:"図鑑一覧から全技の属性・威力・COST・追加効果と使用キャラを確認できます。技名検索、属性や効果の絞り込み、並び替えに対応。キャラクター・モンスターの詳細からも技図鑑を開けます。"}),
   Object.freeze({id:"20261006-powered-buff-debuff",date:"2026-10-06",category:"fix",title:"咆哮・視線技のダメージを修正しました",body:"蒼竜の咆哮・呪いの視線・蝕月咆哮が、設定された威力で攻撃した後に強化・弱体化するよう修正しました。強化は使用者、弱体化は攻撃対象に適用します。威力・COST・効果量と上限・下限は変わりません。"}),

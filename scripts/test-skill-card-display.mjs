@@ -1,3 +1,4 @@
+import {applyStatusDataCopy,applyStatusCoreCopy} from './status-description-copy-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -7,7 +8,7 @@ const base='2f9e81d2dbffc2b02f25648c5bdd5ee3ba9812a0';
 const read=name=>fs.readFileSync(new URL('../js/'+name+'.js',import.meta.url),'utf8');
 // Apply the separately tested taxonomy fix to the display baseline as well:
 // Normalize the two intentional recoil copy edits; all other card data and descriptions remain compared.
-const old=runtime({data:s=>s.replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'),core:()=>execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'})
+const old=runtime({data:s=>applyStatusDataCopy(s).replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'),core:()=>applyStatusCoreCopy(execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'}))
  .replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'")
  .replace('ダイブ|ラッシュ|ランページ','ダイブ|(?<!ク)ラッシュ|ランページ')
  .replace('  if (fx[effect]) txt +=',read('core').match(/  const poweredModifierText=[\s\S]*?\n  if\(poweredModifierText\[mv\[8\]\]\)fx\[effect\]=poweredModifierText\[mv\[8\]\];\n/)[0]+'  if (fx[effect]) txt +=')});
