@@ -472,6 +472,15 @@
 <!-- 図鑑 -->
 <section id="skillDex" class="screen ui-hub-screen">
   <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">SKILL DEX</span><h1>技図鑑</h1><p>全技を閲覧できます。性能と使えるキャラを確認して、編成に役立てましょう。</p></div>
+  <details id="skillDexStatusHelp" class="panel">
+    <summary>状態異常について</summary>
+    <dl>
+      <dt>毒</dt><dd>しばらくの間、少しずつHPが減る。</dd>
+      <dt>麻痺</dt><dd>体がしびれて、動けないことがある。</dd>
+      <dt>こんらん</dt><dd>行動に失敗したり、自分を攻撃してしまうことがある。</dd>
+      <dt>ねむり</dt><dd>しばらく眠ってしまい、行動できない。</dd>
+    </dl>
+  </details>
   <div class="panel skill-dex-filters">
     <label>技名検索<input id="skillDexSearch" type="search" placeholder="技名を入力" oninput="renderSkillDex()"></label>
     <label>属性<select id="skillDexType" onchange="renderSkillDex()"><option value="">すべて</option><option value="fire">火</option><option value="water">水</option><option value="grass">森</option><option value="thunder">雷</option><option value="wind">風</option><option value="light">光</option><option value="dark">闇</option><option value="star">星</option><option value="dragon">竜</option><option value="normal">無</option></select></label>
