@@ -11,7 +11,7 @@ try{
   const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
   await page.goto('http://127.0.0.1:4184/?legacy=1',{waitUntil:'networkidle'});
   assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
-  await page.evaluate(()=>{clearTutorialUi();save=initSave();initStarters();migrateSkillSystem();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);show('home');saveGame();});
+  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);show('home');saveGame();});
   assert(await page.locator('#home').isVisible());
   await page.evaluate(()=>show('dexHub'));
   const before=await page.evaluate(()=>JSON.stringify(save));
