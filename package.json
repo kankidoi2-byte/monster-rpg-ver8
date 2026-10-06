@@ -39,7 +39,7 @@
     "check:alchemy": "node scripts/test-alchemy-workbench.mjs",
     "check:expedition": "node scripts/test-expedition.mjs",
     "check:golden-land": "node scripts/test-golden-land.mjs",
-    "check:save": "node scripts/test-save-migrations.mjs",
+    "check:save": "node scripts/test-save-migrations.mjs && node scripts/test-evolution-native-card-migration.mjs",
     "check:tutorial": "node scripts/test-tutorial.mjs",
     "check:tutorial-ui": "node scripts/test-tutorial-ui.mjs",
     "check:tutorial-phase4a": "node scripts/test-tutorial-phase4a.mjs",

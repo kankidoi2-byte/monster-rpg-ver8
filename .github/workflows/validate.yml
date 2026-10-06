@@ -45,6 +45,7 @@ jobs:
           node scripts/test-seraphic-leaf-browser.mjs
           node scripts/test-crash-rush-browser.mjs
           node scripts/test-evolution-skill-cards-browser.mjs
+          node scripts/test-evolution-native-card-migration-browser.mjs
           node scripts/test-simultaneous-ko-browser.mjs
           node scripts/test-single-hp-clamp-browser.mjs
           node scripts/test-powered-modifiers-browser.mjs
