@@ -27,6 +27,8 @@ try{
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  for(const mode of ['single','multi','invasion'])for(const cause of ['player-recoil','enemy-recoil','poison','victory','defeat','continue'])for(const reserve of [false,true])for(const enemiesRemain of (['player-recoil','enemy-recoil','poison'].includes(cause)?[false,true]:[false])){
+  // Follow the real result transition before starting another isolated fixture.
+  if(await page.locator('#next').isVisible())await page.locator('#next').click();
   const result=await page.evaluate(opts=>simultaneousKoScenario(opts),{mode,cause,reserve,enemiesRemain});results.push(result);
   assert(await page.locator('#battle').isVisible());
   if(result.outcome==='victory'){
@@ -48,6 +50,7 @@ try{
   }
  }
  for(const mode of ['multi','invasion'])for(const reserve of [false,true])for(const poison of [false,true]){
+  if(await page.locator('#next').isVisible())await page.locator('#next').click();
   results.push(await page.evaluate(opts=>simultaneousKoEnemyAttribution(opts),{mode,reserve,poison}));
   assert.equal(await page.locator('#multiContractPanel button').count(),0,'enemy kills/poison never become contract candidates');
  }
