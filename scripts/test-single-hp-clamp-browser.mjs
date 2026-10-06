@@ -37,7 +37,9 @@ try{
        const before=await page.evaluate(()=>{migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
        await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
        // Startup legitimately updates save timestamps/hash; all gameplay fields must match.
-       assert.equal(await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);}),before);
+       const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});
+       fs.writeFileSync(`${out}/reload-before.json`,before);fs.writeFileSync(`${out}/reload-after.json`,after);
+       assert.deepEqual(JSON.parse(after),JSON.parse(before));
        await loadFixtures();
        await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
        await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
