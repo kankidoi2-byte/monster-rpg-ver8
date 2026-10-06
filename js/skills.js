@@ -1,4 +1,38 @@
 const SKILL_CARD_INVENTORY_MIGRATION = 'equipped_skill_cards_v1';
+const EVOLUTION_NATIVE_CARDS_MIGRATION = 'evolution_native_cards_v1';
+// Frozen v1 scope, audited from all evolution routes and legal levels at f2c8e8f.
+// Only cards the former default-loadout reward could omit; never infer past owners.
+const EVOLUTION_NATIVE_CARD_TARGETS = Object.freeze({
+  freiwolf: Object.freeze(["skill_freiwolf_03"]),
+  highaquaron: Object.freeze(["skill_highaquaron_03"]),
+  shenhairon: Object.freeze(["skill_orca_abyss_02"]),
+  tienhairon: Object.freeze(["skill_tienhairon_03"]),
+  thornbeat: Object.freeze(["skill_thornbeat_03"]),
+  granbeat: Object.freeze(["skill_granbeat_03"]),
+  seralphia: Object.freeze(["skill_seralphia_03"]),
+  voltax: Object.freeze(["skill_voltax_03","skill_voltax_04"]),
+  nemesia: Object.freeze(["skill_nemesia_03"]),
+  nemesion: Object.freeze(["skill_nemesion_03"]),
+  elna_middle: Object.freeze(["skill_elna_middle_03"]),
+  elna_advanced: Object.freeze(["skill_elna_advanced_03"]),
+  gran_volmoog: Object.freeze(["skill_gran_volmoog_03"]),
+  stella_wizard: Object.freeze(["skill_stella_wizard_03"]),
+  stella_sorcerer: Object.freeze(["skill_stella_sorcerer_03"]),
+  lumina_wizard: Object.freeze(["skill_stella_wizard_03"]),
+  lumina_sorcerer: Object.freeze(["skill_lumina_sorcerer_03"]),
+  orca_stream: Object.freeze(["skill_orca_abyss_02"]),
+  orca_abyss: Object.freeze(["skill_orca_abyss_03"]),
+  kimeragna_apex: Object.freeze(["skill_kimeragna_apex_02","skill_kimeragna_apex_03"]),
+  zephyray: Object.freeze(["skill_zephyray_03"]),
+  tempestray: Object.freeze(["skill_tempestray_03"]),
+  noclaid: Object.freeze(["skill_noclaid_03"]),
+  noxvelg: Object.freeze(["skill_noxvelg_02","skill_noxvelg_03"]),
+  luxiard: Object.freeze(["skill_luxiard_03"]),
+  lux_galdion: Object.freeze(["skill_lux_galdion_03"]),
+  elna_water: Object.freeze(["skill_elna_water_03"]),
+  doom_nemesion: Object.freeze(["skill_doom_nemesion_03"]),
+  elna_kaen: Object.freeze(["skill_elna_kaen_03"]),
+});
 
 function migrateSkillSystem(){
   if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
@@ -11,13 +45,37 @@ function migrateSkillSystem(){
     save.skillCards = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id,equippedCounts[sk.id] || 0]));
     save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
     if (typeof saveRecoveryReport !== 'undefined' && Array.isArray(saveRecoveryReport)) saveRecoveryReport.push('技カード所持数を現在の装備内容から再構築');
-    return;
   }
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
   MOVE_CARDS.forEach(sk => {
     const owned = Math.max(0,Math.floor(Number(save.skillCards[sk.id]) || 0));
     save.skillCards[sk.id] = Math.max(owned,equippedCounts[sk.id] || 0);
   });
+  migrateEvolutionNativeSkillCards();
+}
+function migrateEvolutionNativeSkillCards(){
+  if (save.saveMeta.migrations.includes(EVOLUTION_NATIVE_CARDS_MIGRATION)) return;
+  const required = Object.create(null);
+  (save.instances || []).forEach(ins => {
+    const mon = by(ins.id);
+    if (!mon) return;
+    const nativeIds = new Set(evolutionSkillCardIdsForMonster(mon));
+    const targets = new Set((EVOLUTION_NATIVE_CARD_TARGETS[mon.id] || []).map(canonicalSkillId));
+    targets.forEach(id => {
+      if (nativeIds.has(id)) required[id] = (required[id] || 0) + 1;
+    });
+  });
+  let added = 0;
+  Object.entries(required).forEach(([id,count]) => {
+    const owned = Math.max(0,Math.floor(Number(save.skillCards[id]) || 0));
+    added += Math.max(0,count-owned);
+    save.skillCards[id] = Math.max(owned,count);
+  });
+  // init.js saves inventory and marker together; profiles switch by reloading that save.
+  save.saveMeta.migrations.push(EVOLUTION_NATIVE_CARDS_MIGRATION);
+  if (typeof saveRecoveryReport !== 'undefined' && Array.isArray(saveRecoveryReport)) {
+    saveRecoveryReport.push('進化固有技の不足カードを補填: ' + added + '枚');
+  }
 }
 function equippedSkillCardCounts(){
   const counts=Object.create(null);
