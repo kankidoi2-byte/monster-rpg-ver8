@@ -1929,7 +1929,7 @@ registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID,[
   {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図と自然発見は別の入口',text:'道具の地図を使った入口は出発時に1枚消費します。探索で自然に見つけた入口は地図を消費しませんが、ほかで2戦すると閉じます。ゲームを閉じている間は進みません。',progressLabel:'GOLDEN LAND',nextLabel:'世界地図へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_DEX_FLOW_ID,[
-  {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'4つの図鑑',text:'モンスター、キャラクター、マップ、アイテムの発見記録を確認できます。項目を選ぶと詳細へ進みます。',progressLabel:'DEX'},
+  {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'5つの図鑑',text:'モンスター、キャラクター、マップ、アイテムの発見記録と、全技の性能を確認できます。項目を選ぶと詳細へ進みます。',progressLabel:'DEX'},
   {id:'dex_records',screenId:'dexHub',target:'#dexHubGrid',title:'出会った情報が記録されます',text:'契約や進化、訪れたマップ、入手したアイテムが保存されます。モンスター図鑑では主な入手方法も確認できます。',progressLabel:'DEX',nextLabel:'図鑑を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_SHOP_ITEMS_FLOW_ID,[

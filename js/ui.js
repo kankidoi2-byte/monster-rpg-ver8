@@ -44,6 +44,7 @@ function show(id) {
   if (id === 'homeFavoriteSelect') renderHomeFavoriteOptions();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
   if (id === 'party')    renderParty();
+  if (id === 'skillDex') renderSkillDex();
   if (id === 'dexHub')   renderDexHub();
   if (id === 'dex')      renderDex();
   if (id === 'characterDex') renderCharacterDex();
@@ -302,7 +303,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'monsters';
-  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
+  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){

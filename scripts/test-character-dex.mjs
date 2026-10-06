@@ -104,6 +104,8 @@ Object.assign(context,{
   ITEM_DEX_ITEMS:[],
   save:{itemDex:[],mapDex:[]}
 });
+vm.runInContext(coreSource,context);
+vm.runInContext(fs.readFileSync(new URL('../js/skill-dex.js',import.meta.url),'utf8'),context);
 vm.runInContext(dexSource,context);
 const entries=vm.runInContext('characterDexEntries()',context);
 assert.equal(entries.length,50);

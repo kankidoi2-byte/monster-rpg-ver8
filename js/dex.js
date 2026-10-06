@@ -49,7 +49,7 @@ function showItemDexDetail(itemId){
 }
 function renderUnitSkillList(m) {
   return `<h3>技一覧</h3>
-    ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}${skillCardEffect(mv)}</div>`;}).join('')}`;
+    ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}${skillCardEffect(mv)}<button class="skill-dex-open" onclick="openSkillDex('${canonicalSkillId(skillIdFromMove(mv))}')">技図鑑で詳しく見る ›</button></div>`;}).join('')}`;
 }
 function dexRegisteredCount(units){
   return units.filter(unit=>typeof caughtHas==='function'&&caughtHas(unit.id)).length;
@@ -64,6 +64,7 @@ function renderDexHub(){
   const cards=[
     {id:'dexHubMonsterButton',screen:'dex',icon:'🐉',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
     {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態（登場予定を含む）',count:dexRegisteredCount(characters),total:characterDexEntries().length},
+    {screen:'skillDex',icon:'🃏',title:'技図鑑',desc:'全技の性能・効果・使用キャラ',count:skillDexEntries().length,total:skillDexEntries().length},
     {screen:'mapDex',icon:'🗺️',title:'マップ図鑑',desc:'土地・生息種・特殊イベント',count:mapCount,total:MAPS.length},
     {screen:'itemDex',icon:'🎒',title:'アイテム図鑑',desc:'入手した道具と素材',count:itemCount,total:ITEM_DEX_ITEMS.length}
   ];
@@ -151,7 +152,7 @@ function monsterDexNumber(m) {
   return m.dexNo ?? m.no;
 }
 function showDexDetail(id) {
-  renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection);
+  renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m));
 }
 function showCharacterDexDetail(id) {
   renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m));

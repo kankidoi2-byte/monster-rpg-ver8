@@ -1,0 +1,16 @@
+.skill-dex-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.skill-dex-filters label{display:grid;gap:4px;font-size:13px;min-width:0}
+.skill-dex-filters label:first-child{grid-column:1/-1}
+.skill-dex-filters input,.skill-dex-filters select{width:100%;min-width:0;box-sizing:border-box;min-height:44px;font-size:16px;background:#171e30;color:#fff;border:1px solid #64708e;border-radius:8px;padding:9px}
+.skill-dex-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px}
+.skill-dex-card{width:100%;margin:0;text-align:left;min-width:0;cursor:pointer}
+.skill-dex-card .skill-card-title{white-space:normal;overflow-wrap:anywhere}
+.skill-dex-card small{display:block;margin-top:6px}
+.skill-dex-units{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.skill-dex-unit{min-height:44px;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.skill-dex-unit small{display:block}
+#skillDexDetail:empty{display:none}
+#skillDexDetail{scroll-margin-top:80px;outline-offset:4px}
+#skillDexDetail details summary{cursor:pointer;min-height:44px;padding-top:10px}
+.skill-dex-open{min-height:44px;margin-top:8px}
+@media(min-width:700px){.skill-dex-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
