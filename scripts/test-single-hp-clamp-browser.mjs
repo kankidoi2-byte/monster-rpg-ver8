@@ -34,7 +34,7 @@ try{
    if(result.outcome==='victory'){
      assert(await page.locator('#battle.is-finished').isVisible());
      if(cause==='player-recoil'&&reserve&&!enemiesRemain){
-       const before=await page.evaluate(()=>{migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
+       const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
        await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
        // Startup legitimately updates save timestamps/hash; all gameplay fields must match.
        const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});
