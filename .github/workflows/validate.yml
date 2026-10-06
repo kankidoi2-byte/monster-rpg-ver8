@@ -47,6 +47,7 @@ jobs:
           node scripts/test-evolution-skill-cards-browser.mjs
           node scripts/test-simultaneous-ko-browser.mjs
           node scripts/test-single-hp-clamp-browser.mjs
+          node scripts/test-powered-modifiers-browser.mjs
 
       - name: Upload skill-card layout evidence
         if: always()

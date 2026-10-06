@@ -416,6 +416,12 @@ function moveEffectText(mv, {includeBase=true}={}) {
     aqua_shield:'次に受ける攻撃ダメージを半減する',
     repeat_attack:`${percent ?? 30}%でもう一度攻撃する`
   };
+  const poweredModifierText={
+    skill_shenhairon_02:'攻撃後、自分の攻撃力を基本値の25%分上げる（上限160%）。',
+    skill_nightmare_02:'攻撃後、相手の攻撃力を基本値の20%分下げる（下限65%）。',
+    skill_noxvelg_02:'攻撃後、相手の攻撃力を基本値の20%分下げる（下限65%）。'
+  };
+  if(poweredModifierText[mv[8]])fx[effect]=poweredModifierText[mv[8]];
   if (fx[effect]) txt += (txt ? ' / ' : '') + fx[effect];
   let description=customDesc;
   if (!includeBase && description) {
