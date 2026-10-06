@@ -1,3 +1,4 @@
+import {applyStatusDataCopy,applyStatusCoreCopy} from './status-description-copy-baseline.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
@@ -35,7 +36,7 @@ async function scenario({skillId,mode='single',actor='player',targetHp=3,guarded
 const base='d0d67c85fcdb3ccc426c8774736d330302bd62e4';
 const original=file=>execFileSync('git',['show',base+':js/'+file+'.js'],{encoding:'utf8'});
 const r=runtime();vm.runInContext(fs.readFileSync(new URL('js/dex.js',root),'utf8'),r.context);
-const old=runtime({data:()=>original('data'),core:()=>original('core')});
+const old=runtime({data:()=>applyStatusDataCopy(original('data')),core:()=>applyStatusCoreCopy(original('core'))});
 const cards=JSON.parse(JSON.stringify(r.run('MOVE_CARDS.filter(s=>s.effect==="recoil")')));
 assert.deepEqual(cards.map(s=>s.id).sort(),['skill_freigal_03','skill_freiwolf_02','skill_doom_nemesion_03','skill_ignaros_03','skill_kimeragna_apex_03'].sort());
 const text='攻撃後、自分も8ダメージを受ける';
@@ -60,8 +61,8 @@ for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect!=="recoil"&&!["skill_shenha
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_alchemion_01'),{includeBase:false})`),'攻撃後、実際に与えたダメージの25％を反動として受ける');
 for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert(r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`).includes('最大HP'));
-assert.equal(fs.readFileSync(new URL('js/data.js',root),'utf8'),original('data').replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'));
-assert.equal(fs.readFileSync(new URL('js/core.js',root),'utf8').replace(/  const poweredModifierText=[\s\S]*?\n  if\(poweredModifierText\[mv\[8\]\]\)fx\[effect\]=poweredModifierText\[mv\[8\]\];\n/,''),original('core').replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'"));
+assert.equal(fs.readFileSync(new URL('js/data.js',root),'utf8'),applyStatusDataCopy(original('data')).replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'));
+assert.equal(fs.readFileSync(new URL('js/core.js',root),'utf8').replace(/  const poweredModifierText=[\s\S]*?\n  if\(poweredModifierText\[mv\[8\]\]\)fx\[effect\]=poweredModifierText\[mv\[8\]\];\n/,''),applyStatusCoreCopy(original('core')).replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'"));
 // Allow only the separately regression-tested immediate HP clamp; keep all formulas frozen.
 const withoutHpClamp=source=>source.split('async function doAttack')[0]+'async function doAttack'+source.split('async function doAttack')[1].replace(/([pe]Hp) = Math\.max\(0, \1 - (dmg|8|recoilDamage|secondDmg)\);/g,'$1 -= $2;');
 const withoutPoweredSingle=s=>s.replace("if (effect === 'buff' && power <= 0)","if (effect === 'buff')").replace("if (effect === 'debuff' && power <= 0)","if (effect === 'debuff')").replace(/  \/\/ Powered legacy buffs[\s\S]*?(?=  if \(effect === 'recoil'\))/, '');
