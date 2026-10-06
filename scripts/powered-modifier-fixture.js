@@ -1,7 +1,7 @@
 // Shared production-runtime fixture; never loaded by the game.
 async function poweredModifierScenario({skillId,mode='single',direction='player',control=false,zero=false,cap=false,guard=false,shield=false,half=false,resist=false,miss=false,barrier=false,kill=false}) {
   if(typeof clearTutorialUi==='function')clearTutorialUi();
-  save=initSave();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  save=initSave();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);
   const move=skillToMove(skillId), owner=SKILL_BY_ID[skillId].sourceUnitId;
   const isPlayer=direction==='player', defenderPlayer=direction==='enemy-player';
   save.party=[addInstance(isPlayer?owner:'slime',10).uid];prepareBattleParty();
