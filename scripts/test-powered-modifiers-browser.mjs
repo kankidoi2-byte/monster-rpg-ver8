@@ -13,7 +13,7 @@ try{
  for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){const text=await page.locator(`[data-skill-card-id="${id}"]`).first().textContent();assert.match(text,/威力/);assert.match(text,/攻撃後/);}
  await page.screenshot({path:`${out}/equipment.png`,fullPage:true});
  await page.evaluate(()=>show('dex'));
- for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){await page.evaluate(skillId=>showDexDetail(SKILL_BY_ID[skillId].sourceUnitId),id);const text=await page.locator(`#dexDetail [data-skill-card-id="${id}"]`).textContent();assert.match(text,/攻撃後/);}
+ for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){await page.evaluate(skillId=>showDexDetail(SKILL_BY_ID[skillId].sourceUnitId),id);const name=await page.evaluate(skillId=>by(SKILL_BY_ID[skillId].sourceUnitId).name,id);const text=await page.locator('#dexDetail').textContent();assert(text.includes(name));assert(text.includes('出現・入手方法'));}
  await page.evaluate(()=>show('partySet'));await page.locator('#partySet').waitFor({state:'visible'});
  await page.evaluate(()=>startBattleFromParty());await page.locator('#battleChoices').waitFor({state:'visible'});await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  const cases=await page.evaluate(()=>poweredModifierCases().filter(x=>Object.keys(x).length===3));const results=[];

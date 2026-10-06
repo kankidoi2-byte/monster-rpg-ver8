@@ -25,8 +25,10 @@ for(const opts of plain(after.run('poweredModifierCases()'))){
  }
  assert(a.pHp>=0&&a.eHp>=0&&a.enemyHp.every(h=>h>=0));count++;
 }
+vm.runInContext(fs.readFileSync(new URL('../js/dex.js',import.meta.url),'utf8'),after.context);
 for(const [id,power,cost] of [['skill_shenhairon_02',42,3],['skill_nightmare_02',18,2],['skill_noxvelg_02',46,4]]){
  const current=plain(after.run(`SKILL_BY_ID['${id}']`));assert.equal(current.power,power);assert.equal(current.cost,cost);
+ assert.match(after.run(`renderUnitSkillList(by(SKILL_BY_ID['${id}'].sourceUnitId))`),/攻撃後/);
  assert.equal(after.run(`skillBattleMotionForMove(skillToMove('${id}')).role`),'damage');
  assert.match(after.run(`moveEffectText(skillToMove('${id}'),{includeBase:false})`),/攻撃後.*基本値.*上限|攻撃後.*基本値.*下限/);
 }
