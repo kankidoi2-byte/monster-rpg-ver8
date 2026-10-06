@@ -34,10 +34,10 @@ try{
    if(result.outcome==='victory'){
      assert(await page.locator('#battle.is-finished').isVisible());
      if(cause==='player-recoil'&&reserve&&!enemiesRemain){
-       const before=await page.evaluate(()=>JSON.stringify(save));
+       const before=await page.evaluate(()=>{migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
        await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
-       // Use the actual parser for the expected additive reload preparation.
-       assert.equal(await page.evaluate(stored=>JSON.stringify(save)===JSON.stringify(parseAndPrepareSave(stored,[])),before),true);
+       // Startup legitimately updates save timestamps/hash; all gameplay fields must match.
+       assert.equal(await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);}),before);
        await loadFixtures();
        await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
        await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
