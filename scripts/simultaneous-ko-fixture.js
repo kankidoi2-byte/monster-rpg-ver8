@@ -4,8 +4,9 @@ async function simultaneousKoScenario({mode='single',cause='player-recoil',reser
   if(typeof clearTutorialUi==='function')clearTutorialUi();
   save=initSave();save.instances=[];save.party=[];
   if(typeof tutorialSaveDefaults==='function')save.progress.tutorial=tutorialSaveDefaults({legacy:true});
-  save.party.push(addInstance('freigal',10).uid);
-  if(reserve)save.party.push(addInstance('aquaron',10).uid);
+  // Evolved units keep unrelated evolution dialogs out of the outcome matrix.
+  save.party.push(addInstance('freiwolf',10).uid);
+  if(reserve)save.party.push(addInstance('freiwolf',10).uid);
   prepareBattleParty();
   const request=createHuntRequest(MAPS[0],by('slime'),'normal',[]);
   request.battleMode=mode==='multi'?'three_way':'single';request.secondEnemyId='goblin';

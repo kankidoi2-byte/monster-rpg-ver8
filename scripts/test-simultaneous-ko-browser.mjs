@@ -30,7 +30,8 @@ try{
   // Follow the real result transition before starting another isolated fixture.
   if(await page.locator('#next').isVisible())await page.locator('#next').click();
   const result=await page.evaluate(opts=>simultaneousKoScenario(opts),{mode,cause,reserve,enemiesRemain});results.push(result);
-  assert(await page.locator('#battle').isVisible());
+  console.log(JSON.stringify(result));
+  assert(await page.locator('#battle').isVisible(),JSON.stringify(result));
   if(result.outcome==='victory'){
     assert(await page.locator('#battle.is-finished').isVisible());
     if(mode!=='single'){
