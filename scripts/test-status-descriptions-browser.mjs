@@ -11,7 +11,7 @@ try{
   const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
   await page.goto(process.env.GAME_TEST_URL||'http://127.0.0.1:4188/?legacy=1',{waitUntil:'networkidle'});
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
-  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('freigal',1).uid];show('home');});
+  await page.evaluate(()=>{clearTutorialUi();save=initSave();migrateSkillSystem();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('freigal',1).uid];show('home');});
   assert(await page.locator('#home').isVisible());
   const rows=await page.evaluate(()=>MOVE_CARDS.filter(s=>['poison','paralysis','confusion','sleep'].includes(s.effect)).map(s=>({id:s.id,source:s.sourceUnitId,text:moveEffectText(skillToMove(s.id),{includeBase:false})})));assert.equal(rows.length,11);
   const check=async(selector,text)=>{const el=page.locator(selector).filter({hasText:text}).first();assert(await el.isVisible(),selector);const box=await el.evaluate(el=>({overflow:el.scrollWidth>el.clientWidth+1,clip:['hidden','clip'].includes(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1,text:el.textContent}));assert(!box.overflow&&!box.clip,selector+' readable');assert(box.text.includes(text));};
