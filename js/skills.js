@@ -34,7 +34,7 @@ const EVOLUTION_NATIVE_CARD_TARGETS = Object.freeze({
   elna_kaen: Object.freeze(["skill_elna_kaen_03"]),
 });
 
-function migrateSkillSystem(){
+function migrateSkillSystem(evolutionNativeInstances = save.instances || []){
   if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
   if (!Array.isArray(save.saveMeta.migrations)) save.saveMeta.migrations = [];
   if (!save.equippedSkills) save.equippedSkills = {};
@@ -51,12 +51,12 @@ function migrateSkillSystem(){
     const owned = Math.max(0,Math.floor(Number(save.skillCards[sk.id]) || 0));
     save.skillCards[sk.id] = Math.max(owned,equippedCounts[sk.id] || 0);
   });
-  migrateEvolutionNativeSkillCards();
+  migrateEvolutionNativeSkillCards(evolutionNativeInstances);
 }
-function migrateEvolutionNativeSkillCards(){
+function migrateEvolutionNativeSkillCards(instances = save.instances || []){
   if (save.saveMeta.migrations.includes(EVOLUTION_NATIVE_CARDS_MIGRATION)) return;
   const required = Object.create(null);
-  (save.instances || []).forEach(ins => {
+  instances.forEach(ins => {
     const mon = by(ins.id);
     if (!mon) return;
     const nativeIds = new Set(evolutionSkillCardIdsForMonster(mon));

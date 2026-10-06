@@ -12,7 +12,11 @@ try{
  const page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept(d.type()==='prompt'?'1':undefined));
  const url=publicUrl||'http://127.0.0.1:4181/?legacy=1';
- await page.goto(url,{waitUntil:'networkidle'});
+ // Public telemetry/media can keep connections active after the game is ready.
+ // Wait for document and explicit app readiness, rather than network silence.
+ if(publicUrl)page.setDefaultNavigationTimeout(60000);
+ await page.goto(url,{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>typeof EVOLUTION_NATIVE_CARDS_MIGRATION!=='undefined'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'));
  const fixture=await page.evaluate(()=>{
   const old=initSave();old.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
   old.progress.tutorial=tutorialSaveDefaults({legacy:true});old.instances=[];old.party=[];old.equippedSkills={};
@@ -34,7 +38,7 @@ try{
   }
  },fixture);
  const snapshot=()=>page.evaluate(()=>({instances:save.instances,party:save.party,equippedSkills:save.equippedSkills,coins:save.coins,items:save.items,progress:save.progress,cards:save.skillCards,migrations:save.saveMeta.migrations}));
- await page.reload({waitUntil:'networkidle'});
+ await page.reload({waitUntil:'domcontentloaded'});
  assert(await page.locator('#titleScreen').isVisible());
  const first=await snapshot();assert.equal(first.cards.skill_voltax_03,2);assert.equal(first.cards.skill_voltax_04,2);assert.equal(first.cards.skill_orca_abyss_02,2);
  for(const field of ['instances','party','equippedSkills','coins','items','progress'])assert.deepEqual(first[field],fixture[field],field);
@@ -42,14 +46,27 @@ try{
  assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('mb_v95c')).saveMeta.migrations.includes('evolution_native_cards_v1')),'marker and cards persisted by init');
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>{show('partySet');renderParty();renderDex();});assert(await page.locator('#partySet').isVisible());
- await page.reload({waitUntil:'networkidle'});assert.deepEqual(await snapshot(),first,'reload must not mint cards');
- await Promise.all([page.waitForNavigation({waitUntil:'networkidle'}),page.evaluate(()=>MonsterProfiles.switchTo(2))]);
+ await page.reload({waitUntil:'domcontentloaded'});assert.deepEqual(await snapshot(),first,'reload must not mint cards');
+ await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded'}),page.evaluate(()=>MonsterProfiles.switchTo(2))]);
  const second=await snapshot();assert.equal(second.cards.skill_voltax_03,1);assert.equal(second.cards.skill_voltax_04,1);assert(second.migrations.includes('equipped_skill_cards_v1'));assert(second.migrations.includes('evolution_native_cards_v1'));
- await Promise.all([page.waitForNavigation({waitUntil:'networkidle'}),page.evaluate(()=>MonsterProfiles.switchTo(1))]);
+ await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded'}),page.evaluate(()=>MonsterProfiles.switchTo(1))]);
  assert.deepEqual(await snapshot(),first,'account round trip preserves completed compensation');
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+ const emptyContext=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const emptyPage=await emptyContext.newPage();emptyPage.on('pageerror',e=>errors.push(e.message));
+ await emptyContext.addInitScript(f=>{
+  if(!sessionStorage.getItem('migration-test-seeded')){
+   f.instances=[];f.party=[];f.equippedSkills={};f.caught=['voltax'];
+   localStorage.setItem('mb_v95c',JSON.stringify(f));sessionStorage.setItem('migration-test-seeded','1');
+  }
+ },fixture);
+ await emptyPage.goto(url,{waitUntil:'domcontentloaded'});
+ const noOwner=await emptyPage.evaluate(()=>({cards:save.skillCards,migrations:save.saveMeta.migrations}));
+ assert.equal(noOwner.cards.skill_voltax_03,0);assert.equal(noOwner.cards.skill_voltax_04,0);
+ assert(noOwner.migrations.includes('evolution_native_cards_v1'),'caught-only history must not become compensation owners at startup');
+ await emptyContext.close();
  assert.deepEqual(errors,[]);
- console.log(`PASS evolution compensation browser: ${publicUrl?'published':'local'} isolated save, title/home/party/hunt/battle, initial persistence, old inventory, shared cards, preservation, reload and real profile round trip (390x844).`);
+ console.log(`PASS evolution compensation browser: ${publicUrl?'published':'local'} isolated save, title/home/party/hunt/battle, initial persistence, old inventory, shared cards, preservation, reload, real profile round trip and no owner/caught-only startup (390x844).`);
 }finally{if(browser)await browser.close();if(server)server.kill();}
