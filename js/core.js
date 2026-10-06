@@ -405,7 +405,7 @@ function moveEffectText(mv, {includeBase=true}={}) {
   let txt = includeBase ? (power === 0 ? `${typeText}属性 / 補助技` : `${typeText}属性 / 威力 ${power}`) : '';
   const percent = Number.isFinite(chance) ? Math.round(chance * 100) : null;
   const fx = {
-    heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'強力だが反動ダメージあり',
+    heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'攻撃後、自分も8ダメージを受ける',
     alchemy_recoil:'攻撃後、実際に与えたダメージの25％を反動として受ける',
     guard:'次のダメージを軽減', buff:'自分の攻撃力を上げる', debuff:'相手の攻撃力を下げる',
     poison:`${percent ?? 50}%で相手を毒状態にする`,

@@ -6,8 +6,9 @@ import {runtime} from '../tools/balance-audit/runtime.mjs';
 const base='2f9e81d2dbffc2b02f25648c5bdd5ee3ba9812a0';
 const read=name=>fs.readFileSync(new URL('../js/'+name+'.js',import.meta.url),'utf8');
 // Apply the separately tested taxonomy fix to the display baseline as well:
-// this test isolates card presentation from the four corrected requirements.
-const old=runtime({core:()=>execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'})
+// Normalize the two intentional recoil copy edits; all other card data and descriptions remain compared.
+const old=runtime({data:s=>s.replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'),core:()=>execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'})
+ .replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'")
  .replace('ダイブ|ラッシュ|ランページ','ダイブ|(?<!ク)ラッシュ|ランページ')});
 const r=runtime();
 vm.runInContext(read('dex'),r.context);
