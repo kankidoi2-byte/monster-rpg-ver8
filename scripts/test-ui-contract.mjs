@@ -107,7 +107,7 @@ expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roste
 expect(dex.includes('monster-dex-card'), 'monster-first dex cards are missing');
 expect(dex.includes('function monsterObtainEntries'), 'monster dex acquisition-source renderer is missing');
 expect(dex.includes('INITIAL_PARTY_IDS.includes(m.id)'), 'monster dex must derive initial acquisition from the shared initial-party definition');
-expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection)"), 'monster dex must show acquisition sources instead of skills');
+expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m))"), 'monster dex must preserve acquisition sources alongside skill links');
 expect(dex.includes('detailSection=renderUnitSkillList'), 'character dex must retain its skill list');
 expect(index.includes('カードをタップすると出現マップと入手方法を確認できます。'), 'monster dex guidance still describes the removed skill list');
 expect(index.includes('onclick="show(\'dexHub\')"') && index.includes('<strong>図鑑</strong>'), 'unified dex hub menu entry is missing');
