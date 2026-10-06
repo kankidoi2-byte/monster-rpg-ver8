@@ -73,4 +73,9 @@ for(const ids of [[],['volteck']]){
 }
 r.run('save=initSave();initStarters();migrateSkillSystem()');
 assert.equal(cards().skill_voltax_03,0);
+// Startup's legacy starter reconstruction must not turn caught history into
+// compensation owners. init.js passes the actual pre-reconstruction snapshot.
+fixture([]);
+r.run("save.caught=['voltax'];var loadedOwners=[...save.instances];initStarters();migrateSkillSystem(loadedOwners)");
+assert.equal(cards().skill_voltax_03,0);assert.equal(cards().skill_voltax_04,0);
 console.log(`PASS evolution native migration: ${routes.length} routes, ${Object.keys(targets).length} forms, ${Object.values(targets).flat().length} form/card pairs, ${Object.keys(users).length} unique cards; 0/partial/sufficient/surplus, duplicate owners, shared canonical IDs, legacy IDs/inventory, reload, preserved state, no owner/new save.`);

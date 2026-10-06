@@ -20,8 +20,11 @@ function initSaveManagementUi(){
 initSaveManagementUi();
 if(typeof MonsterProfiles!=='undefined')MonsterProfiles.mount();
 if(typeof MonsterAnalytics!=='undefined')MonsterAnalytics.start();
+// Backfill only actual loaded individuals, before legacy starter reconstruction
+// can create individuals from encyclopedia history alone.
+const evolutionNativeMigrationInstances = [...(save.instances || [])];
 initStarters();
-migrateSkillSystem();
+migrateSkillSystem(evolutionNativeMigrationInstances);
 saveGame();
 renderParty();
 

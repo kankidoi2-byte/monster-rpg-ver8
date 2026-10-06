@@ -43,9 +43,9 @@
 ## 移行順序と保存
 
 1. save.jsのloadSave/parseAndPrepareSaveで既存スキーマ移行・repairSave、旧名技IDのnormalizeSkillIdによる固定ID化。
-2. init.jsのinitStarters、migrateSkillSystemで既存装備補修とequipped_skill_cards_v1のカード移行。全99枚を廃止する旧移行の意味は変更しない。
+2. init.jsで起動時に実在する個体の配列を保存してからinitStartersを実行。旧初期化が図鑑履歴から復元した個体を補填の所持個体とは推測しない。migrateSkillSystemで既存装備補修とequipped_skill_cards_v1のカード移行。全99枚を廃止する旧移行の意味は変更しない。
 3. 旧移行のearly returnを除去し、同じ初期化で装備所持枚数の既存下限保証を完了。
-4. evolution_native_cards_v1が未記録なら補填してsave.saveMeta.migrationsに記録。対象がなくても記録。
+4. 起動前の実在個体スナップショットのみを集計し、evolution_native_cards_v1が未記録なら補填してsave.saveMeta.migrationsに記録。対象がなくても記録。
 5. 既存init.jsのsaveGameが補填枚数と移行キーを同じJSONで保存。アカウント切替・セーブ取込・復旧はreload後に同じ経路を通る。
 
 固定v1対象表は今後のデータ変更で過去の補填範囲が広がらないよう保持する。対象カードは実行時にcanonicalSkillIdと現在のmovesで検証。旧統合前装備カードは既存互換方針のまま保持し、装備を置換しない。保存失敗時も再読込は元の不足枚数から下限まで補填するため加算増殖しない。PR257の通常・特殊進化ごとの全固有技配布は変更なし。

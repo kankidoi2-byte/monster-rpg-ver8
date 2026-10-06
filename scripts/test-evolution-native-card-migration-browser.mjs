@@ -54,6 +54,19 @@ try{
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+ const emptyContext=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const emptyPage=await emptyContext.newPage();emptyPage.on('pageerror',e=>errors.push(e.message));
+ await emptyContext.addInitScript(f=>{
+  if(!sessionStorage.getItem('migration-test-seeded')){
+   f.instances=[];f.party=[];f.equippedSkills={};f.caught=['voltax'];
+   localStorage.setItem('mb_v95c',JSON.stringify(f));sessionStorage.setItem('migration-test-seeded','1');
+  }
+ },fixture);
+ await emptyPage.goto(url,{waitUntil:'domcontentloaded'});
+ const noOwner=await emptyPage.evaluate(()=>({cards:save.skillCards,migrations:save.saveMeta.migrations}));
+ assert.equal(noOwner.cards.skill_voltax_03,0);assert.equal(noOwner.cards.skill_voltax_04,0);
+ assert(noOwner.migrations.includes('evolution_native_cards_v1'),'caught-only history must not become compensation owners at startup');
+ await emptyContext.close();
  assert.deepEqual(errors,[]);
- console.log(`PASS evolution compensation browser: ${publicUrl?'published':'local'} isolated save, title/home/party/hunt/battle, initial persistence, old inventory, shared cards, preservation, reload and real profile round trip (390x844).`);
+ console.log(`PASS evolution compensation browser: ${publicUrl?'published':'local'} isolated save, title/home/party/hunt/battle, initial persistence, old inventory, shared cards, preservation, reload, real profile round trip and no owner/caught-only startup (390x844).`);
 }finally{if(browser)await browser.close();if(server)server.kill();}
