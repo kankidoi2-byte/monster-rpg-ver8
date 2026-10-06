@@ -28,6 +28,10 @@ for(const old of baseline.units){
   const expectedMoves=old.moves.map(move=>move[8]==='skill_seralphia_03'?
    ["セラフィックリーフ",68,"grass","tactical",null,4,"実際に減らした相手のHPの20%を吸収する。",null,"skill_seralphia_03",{drain:.2}]:move);
   assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Seralphia except approved leaf drain');
+ }else if(old.id==='kimeragna_apex'){
+  // Only the approved duplicate recoil description changes.
+  const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_kimeragna_apex_03')expected[6]='極限の嵐を解放する。';return expected;});
+  assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Apex except duplicate recoil copy');
  }else if(old.id==='alchemion'){
   // Remove only the redundant custom description; generated effect copy is
   // checked by test-alchemion-recoil. Preserve every other legacy field.
