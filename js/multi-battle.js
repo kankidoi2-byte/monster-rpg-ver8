@@ -227,8 +227,9 @@ async function runMultiActions(actions,index) {
     const target=targetDescriptor?.kind==='enemy' ? multiEnemy(targetDescriptor.id) : targetDescriptor;
     if (target) result=await performMultiAttack(actor,target,action.move);
   }
-  if (pHp<=0 && !switchPartyMember()) return;
+  // Match single battles: enemy annihilation wins before a forced party switch.
   if (!aliveMultiEnemies().length) { winMultiBattle(); return; }
+  if (pHp<=0 && !switchPartyMember()) return;
   await battleMotionDelay(result?.animated?140:550);
   runMultiActions(actions,index+1);
 }
@@ -357,7 +358,11 @@ function finishMultiBattleTurn(){
   aliveMultiEnemies().forEach(entry=>{if(entry.status==='poison'&&entry.poisonTurns>0){const dmg=Math.max(1,Math.floor(entry.maxHp*poison.maxHpDamageRate));const before=entry.hp;entry.hp=Math.max(0,entry.hp-dmg);if(typeof battleHpResult==='function')battleHpResult(`${entry.id}Vis`,before,entry.hp,{label:'毒',damage:dmg});entry.poisonTurns--;appendMultiLog(`☠️ ${entry.mon.name}は毒で${dmg}ダメージ！`);if(!entry.poisonTurns)entry.status=null;if(entry.hp<=0){entry.alive=false;entry.defeatedByPlayer=entry.poisonSourceIsPlayer;appendMultiLog(`💀 ${entry.mon.name}は毒で倒れた！`);}}});
   aliveMultiEnemies().forEach(entry=>{const result=tickKokoroLinkEnemyEffects(entry.id,entry.hp,entry.maxHp);entry.hp=result.hp;if(result.damage)appendMultiLog(`🔥☠️ ${entry.mon.name}はリンク状態異常で${result.damage}ダメージ！`);if(result.expiredLabels.length&&entry.hp>0)appendMultiLog(`✨ ${[...new Set(result.expiredLabels)].join('・')}の効果が切れた！`);if(entry.hp<=0){entry.alive=false;entry.defeatedByPlayer=true;appendMultiLog(`💀 ${entry.mon.name}はリンク状態異常で倒れた！`);}});
   if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)appendMultiLog(regenMsg);}
-  updateMultiBattleView(); if(pHp<=0&&!switchPartyMember())return;if(!aliveMultiEnemies().length){winMultiBattle();return;} busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();
+  updateMultiBattleView();
+  // Resolve every end-of-turn effect before testing victory, then party survival.
+  if (!aliveMultiEnemies().length) { winMultiBattle(); return; }
+  if (pHp<=0 && !switchPartyMember()) return;
+  busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
 
 function grantMultiEnemyReward(entry,turnBonus){
