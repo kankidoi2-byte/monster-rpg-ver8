@@ -250,7 +250,7 @@ async function performMultiAttack(actor,target,move) {
   if(typeof battleFeedback!=='undefined'){
     const label=entry=>entry.kind==='player'?`味方・${player.name}`:`敵${multiBattle.enemies.indexOf(entry)===0?'A':'B'}・${entry.mon.name}`;
     const tactical=tacticalSkillProfile(move);
-    const selfEffect=['guard','heal','buff','aqua_shield'].includes(effect)||
+    const selfEffect=['guard','heal','aqua_shield'].includes(effect)||(effect==='buff'&&power<=0)||
       (effect==='tactical'&&power<=0&&!tactical?.debuff&&!tactical?.dispel);
     battleFeedback.action=`${label(actor)} → ${label(selfEffect?actor:target)}：「${name}」`;
     battleHistoryEntry(battleFeedback.action,'target');renderBattleInputState();
@@ -273,9 +273,9 @@ async function performMultiAttack(actor,target,move) {
     if(typeof battleHpResult==='function')battleHpResult(sourceId,before,actorIsPlayer?pHp:actor.hp,{label:'回復'});
     appendMultiLog(`💚 ${a.name}はHPを${healed}回復した！`);updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
-  if(effect==='buff'){if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);appendMultiLog(`⬆️ ${a.name}の攻撃力が上がった！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
+  if(effect==='buff'&&power<=0){if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);appendMultiLog(`⬆️ ${a.name}の攻撃力が上がった！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
   const targetEntry=defenderIsPlayer?null:target;
-  if(effect==='debuff'){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
+  if(effect==='debuff'&&power<=0){if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);appendMultiLog(`⬇️ ${d.name}の攻撃力が下がった！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
   if(effect==='aqua_shield'){if(actorIsPlayer)pAquaShield=true;else actor.aquaShield=true;appendMultiLog(`💧 ${a.name}は水の盾を展開した！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};}
   if(effect==='sleep'&&power<=0){
     const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.7):{chance:effectChance??.7,boosted:false};
@@ -322,6 +322,15 @@ async function performMultiAttack(actor,target,move) {
     msg+=`<br>⚡ 電撃が連鎖した！ 追加で<b>${second}</b>ダメージ！`;
     const secondDefense=kokoroLinkDefenseMessage(secondBarrier);if(secondDefense)msg+=`<br>${secondDefense}`;
     }
+  }
+  // Apply legacy attack modifiers once, after the normal damage path.
+  if(effect==='buff'){
+    if(actorIsPlayer)pAtk=Math.min(1.6,pAtk+.25);else actor.attack=Math.min(1.6,actor.attack+.25);
+    msg+=`<br>⬆️ ${a.name}の攻撃力が上がった！`;
+  }
+  if(effect==='debuff'){
+    if(defenderIsPlayer)pAtk=Math.max(.65,pAtk-.2);else targetEntry.attack=Math.max(.65,targetEntry.attack-.2);
+    msg+=`<br>⬇️ ${d.name}の攻撃力が下がった！`;
   }
   if(effect==='recoil'||effect==='alchemy_recoil'){
     const recoil=effect==='recoil'?8:alchemyRecoilDamage(Math.min(damage,Math.max(0,defenderHpBefore))),guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);

@@ -24,7 +24,10 @@ moves.push(['通常攻撃',24,'normal'],['弱体化',0,'dark','debuff'],['追加
 // outcome/RNG contract for all legacy effect paths; the new effects are covered
 // by test-character-tactical-skills and test-seraphic-leaf-drain.
 // Every card still runs the timing checks below.
-const comparisonMoves=moves.filter(move=>move[3]!=='tactical');
+// The three powered modifiers now intentionally deal damage; the dedicated
+// production-runtime matrix compares them with the old engine and normal attacks.
+const poweredIds=['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02'];
+const comparisonMoves=moves.filter(move=>move[3]!=='tactical'&&!poweredIds.includes(move[8]));
 assert(moves.filter(move=>move[3]==='tactical').every(move=>(/^skill_character_/.test(move[8])||move[8]==='skill_seralphia_03')&&move[9]));
 let cases=0;
 for(const direction of ['single-player','single-enemy','player-enemy','enemy-player','enemy-enemy'])for(const move of comparisonMoves){
@@ -49,7 +52,7 @@ const stage=node('stage');nodes.set('pVis',node('pVis',30,210));nodes.set('eVis'
 const c=vm.createContext({console,Math,matchMedia:()=>({matches:false}),document:{getElementById:n=>nodes.get(n),querySelector:()=>stage,createElement:()=>node('effect')},setTimeout:(fn,ms)=>{timers.set(++id,{fn,at:now+ms});return id;},clearTimeout:i=>timers.delete(i)});
 for(const f of ['data','core','battle-view'])vm.runInContext(fs.readFileSync(`js/${f}.js`,'utf8'),c);
 async function tick(ms){const end=now+ms;while(true){const entry=[...timers].filter(([,t])=>t.at<=end).sort((a,b)=>a[1].at-b[1].at)[0];if(!entry)break;now=entry[1].at;timers.delete(entry[0]);entry[1].fn();for(let i=0;i<6;i++)await Promise.resolve();}now=end;for(let i=0;i<6;i++)await Promise.resolve();}
-for(const mv of moves){c.mv=mv;const motion=vm.runInContext('skillBattleMotionForMove(mv)',c);const timing=vm.runInContext('battleMotionTiming(skillBattleMotionForMove(mv))',c);let contact=false;const self=['heal','guard','buff','aqua_shield'].includes(mv[3]);
+for(const mv of moves){c.mv=mv;const motion=vm.runInContext('skillBattleMotionForMove(mv)',c);const timing=vm.runInContext('battleMotionTiming(skillBattleMotionForMove(mv))',c);let contact=false;const self=['heal','guard','aqua_shield'].includes(mv[3])||(mv[3]==='buff'&&mv[1]<=0);
  const p=vm.runInContext(`playBattleSkillMotion('pVis','${self?'pVis':'eVis'}',mv,{untilImpact:true})`,c).then(()=>contact=true);
  const effect=stage.children.at(-1);await tick(timing.contact-1);assert(!contact,`${mv[0]} must not resolve before contact`);assert(!effect.removed);
  await tick(1);assert(contact,`${mv[0]} must resolve at contact`);assert(!effect.removed,`${mv[0]} effect still exists at result`);

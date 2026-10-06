@@ -481,11 +481,11 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:effect==='drain'?'吸収':'回復'});
     logEl.innerHTML = `💚 ${attacker.name}はHPを${healed}回復した！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
-  if (effect === 'buff') {
+  if (effect === 'buff' && power <= 0) {
     isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
     logEl.innerHTML = `⬆️ ${attacker.name}の攻撃力が上がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
-  if (effect === 'debuff') {
+  if (effect === 'debuff' && power <= 0) {
     isPlayer ? eAtk=Math.max(.65,eAtk-.2) : pAtk=Math.max(.65,pAtk-.2);
     logEl.innerHTML = `⬇️ ${defender.name}の攻撃力が下がった！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
@@ -569,6 +569,16 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   if(effect==='tactical'){
     const tacticalMessage=resolveTacticalSkillEffects(mv,isPlayer,null,null,actualDamage);
     if(tacticalMessage)msg+=`<br>${tacticalMessage}`;
+  }
+  // Powered legacy buffs/debuffs resolve after damage, like tactical attacks.
+  // They remain unconditional on a resolved hit (no new chance or HP gate).
+  if (effect === 'buff') {
+    isPlayer ? pAtk=Math.min(1.6,pAtk+.25) : eAtk=Math.min(1.6,eAtk+.25);
+    msg += `<br>⬆️ ${attacker.name}の攻撃力が上がった！`;
+  }
+  if (effect === 'debuff') {
+    isPlayer ? eAtk=Math.max(.65,eAtk-.2) : pAtk=Math.max(.65,pAtk-.2);
+    msg += `<br>⬇️ ${defender.name}の攻撃力が下がった！`;
   }
   if (effect === 'recoil') {
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);

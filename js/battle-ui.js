@@ -34,6 +34,7 @@ function battleUiMoveTarget(move){
     const opponent=Number(move[1])>0||profile.debuff||profile.dispel||profile.status;
     return self?(opponent?`自分と${enemyLabel}`:'自分'):enemyLabel;
   }
+  if(move?.[3]==='buff'&&Number(move[1])>0)return `自分と${enemyLabel}`;
   return ['guard','heal','buff','aqua_shield'].includes(move?.[3])?'自分':enemyLabel;
 }
 function battleUiSkillInfo(move){return `<small class="battle-choice-detail">対象：${battleUiMoveTarget(move)}<br>${battleUiEscape(moveEffectText(move))}</small>`;}

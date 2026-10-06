@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261006-powered-buff-debuff",date:"2026-10-06",category:"fix",title:"咆哮・視線技のダメージを修正しました",body:"蒼竜の咆哮・呪いの視線・蝕月咆哮が、設定された威力で攻撃した後に強化・弱体化するよう修正しました。強化は使用者、弱体化は攻撃対象に適用します。威力・COST・効果量と上限・下限は変わりません。"}),
   Object.freeze({id:"20261006-simultaneous-ko-victory",date:"2026-10-06",category:"fix",title:"同時に倒れたときの勝敗を統一しました",body:"三つ巴・乱入戦でも、味方と敵全員が反動や毒で同時に倒れた場合は、通常戦と同じく勝利になります。控えがいても交代せず勝利します。敵が残っているときの交代・敗北や、契約できる相手の条件は従来どおりです。"}),
   Object.freeze({id:"20261006-fixed-recoil-description",date:"2026-10-06",category:"fix",title:"反動技のダメージ量を明記しました",body:"爆炎チャージ・フレアラッシュ・アポカリプスノヴァ・火口崩し・アペクスストームの説明に、自分が受ける8ダメージを明記しました。アペクスストームの反動説明の重複も整理しました。技の性能や戦闘処理は変わりません。"}),
   Object.freeze({id:"20261006-evolution-all-skill-cards",date:"2026-10-06",category:"fix",title:"進化時の固有技カード不足を修正しました",body:"今後の通常進化・特殊進化では、進化先の全固有技カードを各1枚入手できます。装備枠やCOSTに収まらない技も対象です。統合された同じ技は重複配布しません。装備の引き継ぎと装備制限は従来どおりです。すでに進化済みの個体への不足カード補填は含みません。"}),
