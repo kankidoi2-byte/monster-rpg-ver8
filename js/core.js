@@ -408,10 +408,10 @@ function moveEffectText(mv, {includeBase=true}={}) {
     heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'攻撃後、自分も8ダメージを受ける',
     alchemy_recoil:'攻撃後、実際に与えたダメージの25％を反動として受ける',
     guard:'次のダメージを軽減', buff:'自分の攻撃力を上げる', debuff:'相手の攻撃力を下げる',
-    poison:`${percent ?? 50}%で相手を毒状態にする。3ターン継続し、各ターン終了時に最大HPの10%ダメージ（端数切り捨て、最低1ダメージ）`,
-    paralysis:`${percent ?? 30}%で相手を麻痺状態にする。3回の行動まで継続し、行動時30%で行動不能（行動できた場合も残り回数を消費）`,
-    confusion:`${percent ?? 60}%で相手をこんらん状態にする。2～3回の行動まで継続し、行動時50%で通常行動、25%で行動不能、25%で自分を攻撃`,
-    sleep:`${percent ?? 70}%で相手をねむり状態にする。2回の行動まで継続し、行動時に行動不能`,
+    poison:'相手を毒状態にすることがある',
+    paralysis:'相手を麻痺させることがある',
+    confusion:'相手をこんらんさせることがある',
+    sleep:'相手をねむり状態にする',
     flare_charge:'次の攻撃の攻撃力が20%アップする',
     aqua_shield:'次に受ける攻撃ダメージを半減する',
     repeat_attack:`${percent ?? 30}%でもう一度攻撃する`
@@ -422,6 +422,10 @@ function moveEffectText(mv, {includeBase=true}={}) {
     skill_noxvelg_02:'攻撃後、相手の攻撃力を基本値の20%分下げる（下限65%）。'
   };
   if(poweredModifierText[mv[8]])fx[effect]=poweredModifierText[mv[8]];
+  // Legacy status skills use short flavor-first copy; tactical skills keep their own descriptions.
+  if (['poison','paralysis','confusion','sleep'].includes(effect)) {
+    return txt + (txt ? ' / ' : '') + (customDesc || '') + fx[effect] + '。';
+  }
   if (fx[effect]) txt += (txt ? ' / ' : '') + fx[effect];
   let description=customDesc;
   if (!includeBase && description) {

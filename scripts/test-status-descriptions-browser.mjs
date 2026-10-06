@@ -15,6 +15,8 @@ try{
   assert(await page.locator('#home').isVisible());
   const rows=await page.evaluate(()=>MOVE_CARDS.filter(s=>['poison','paralysis','confusion','sleep'].includes(s.effect)).map(s=>({id:s.id,source:s.sourceUnitId,text:moveEffectText(skillToMove(s.id),{includeBase:false})})));assert.equal(rows.length,11);
   const check=async(selector,text)=>{const el=page.locator(selector).filter({hasText:text}).first();assert(await el.isVisible(),selector);const box=await el.evaluate(el=>({overflow:el.scrollWidth>el.clientWidth+1,clip:['hidden','clip'].includes(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1,text:el.textContent}));assert(!box.overflow&&!box.clip,selector+' readable');assert(box.text.includes(text));};
+  await page.evaluate(()=>show('skillDex'));await page.locator('#skillDexStatusHelp summary').click();
+  for(const text of ['しばらくの間、少しずつHPが減る。','体がしびれて、動けないことがある。','行動に失敗したり、自分を攻撃してしまうことがある。','しばらく眠ってしまい、行動できない。'])await check('#skillDexStatusHelp dd',text);
   for(const row of rows){
    await page.evaluate(id=>{show('skillDex');showSkillDexDetail(id,false);},row.id);await check('#skillDexDetail .skill-effect-text',row.text);
    await page.evaluate(source=>{show('dex');renderUnitDexDetail(source,'dexDetail',()=>'',renderUnitSkillList);},row.source);await check('#dexDetail .skill-effect-text',row.text);
