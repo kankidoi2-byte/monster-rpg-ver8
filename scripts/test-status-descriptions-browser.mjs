@@ -20,8 +20,9 @@ try{
    await page.evaluate(source=>{show('dex');renderUnitDexDetail(source,'dexDetail',()=>'',renderUnitSkillList);},row.source);await check('#dexDetail .skill-effect-text',row.text);
    await page.evaluate(source=>{clearTutorialUi();save.instances=[];save.party=[];const ins=addInstance(source,1);save.party=[ins.uid];save.skillCards=Object.fromEntries(MOVE_CARDS.map(s=>[s.id,10]));openSkillEdit(ins.uid);},row.source);await check('#skillCardList .skill-effect-text',row.text);
    // Equip through the production save field; render with the real battle setup and UI.
-   await page.evaluate(id=>{save.equippedSkills[save.party[0]]=[id];show('partySet');startBattleFromParty();startChosenBattle('grassland','slime','easy');renderSkillButtons();document.getElementById('commands').classList.remove('hidden');},row.id);
-   await check('#commands .battle-choice-detail',row.text);
+   await page.evaluate(id=>{save.equippedSkills[save.party[0]]=[id];show('partySet');startBattleFromParty();startChosenBattle('grassland','slime','easy');renderSkillButtons();closeBattleSkillPanel();toggleBattleSkillPanel();},row.id);
+   await page.evaluate(()=>{document.getElementById('battleCompactInfo').open=true;document.querySelector('.battle-skill-help').open=true;});
+   await check('.battle-skill-help .battle-choice-detail',row.text);
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'viewport overflow');
   }
   await page.screenshot({path:`${out}/${width}.png`,fullPage:true});
