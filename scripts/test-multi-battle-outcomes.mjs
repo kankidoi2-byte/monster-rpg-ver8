@@ -1,7 +1,8 @@
+import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
-const baseline=runtime({'multi-battle':()=>execFileSync('git',['show','ae3911ef02f0c0724ec0f2b13baa4d456414060c:js/multi-battle.js'],{encoding:'utf8'})});
+const baseline=runtime({'multi-battle':()=>applyNormalHealingSpec('multi-battle',execFileSync('git',['show','ae3911ef02f0c0724ec0f2b13baa4d456414060c:js/multi-battle.js'],{encoding:'utf8'}))});
 const current=runtime();
 const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='three_way';activeHuntRequest.secondEnemyId='goblin';beginChosenBattle('grassland','slime','normal',activeHuntRequest);pHp=70;multiBattle.enemies.forEach(e=>{e.hp=60;e.guard=true;e.aquaShield=true;});`;
 let cases=0;
@@ -16,4 +17,4 @@ for(const direction of ['player-enemy','enemy-player','enemy-enemy'])for(const e
  }
  assert.equal(states[0],states[1],`${direction}/${effect}`);assert.equal(draws[0],draws[1]);cases++;
 }
-console.log(`PASS ${cases} multi-faction outcomes and RNG counts match latest main`);
+console.log(`PASS ${cases} multi-faction outcomes and RNG counts match the baseline with the reviewed normal-healing formula`);

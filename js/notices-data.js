@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261008-shared-normal-healing",date:"2026-10-08",category:"update",title:"味方と敵の通常回復量を統一しました",body:"通常回復技は、味方も敵も使用者のレベルに応じて回復するようになりました。単体戦・複数戦とも共通で、最大HPを超える分は回復しません。"}),
   Object.freeze({id:"20261007-simple-status-copy",date:"2026-10-07",category:"update",title:"状態異常技の説明を短くしました",body:"毒・麻痺・こんらん・ねむりの11技を、技の特徴と効果が伝わる短い説明にしました。技図鑑に状態異常の簡単な案内も追加しました。技の性能は変わりません。"}),
   Object.freeze({id:"20261007-legacy-status-descriptions",date:"2026-10-07",category:"fix",title:"状態異常技の詳細表示について（取り下げ）",body:"付与確率・継続期間などを詳しく表示する案内は取り下げました。現在は「状態異常技の説明を短くしました」のとおり、技の特徴と効果を短く伝える説明です。技の性能や戦闘処理は変わりません。"}),
   Object.freeze({id:"20261006-evolution-native-card-backfill",date:"2026-10-06",category:"fix",title:"進化済みの仲間の不足技カードを補填します",body:"以前の進化で配られなかった固有技カードを、現在所持している対象の仲間の数に応じて補填します。すでに必要枚数を持っている場合は追加しません。図鑑への登録だけでは補填されません。余分に持っているカードや現在の装備はそのままです。"}),
