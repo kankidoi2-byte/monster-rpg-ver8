@@ -1,3 +1,4 @@
+import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -38,7 +39,7 @@ for(const sk of cards){
 }
 assert.equal(read('data'),applyStatusDataCopy(original('data')),'exact approved flavor edits, no other data changes');
 assert.equal(read('core'),applyStatusCoreCopy(original('core')),'exact approved shared description edits, no logic changes');
-for(const name of ['battle-rules','multi-battle','save','skills','dex','skill-dex','battle-ui'])assert.equal(read(name),original(name),'unchanged production logic/callers: '+name);
+for(const name of ['battle-rules','multi-battle','save','skills','dex','skill-dex','battle-ui'])assert.equal(read(name),applyNormalHealingSpec(name,original(name)),'unchanged production logic/callers: '+name);
 assert.deepEqual(json(r.run('BATTLE_STATUS_EFFECTS.poison')),{duration:3,maxHpDamageRate:.10});
 const help=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8').match(/<details id="skillDexStatusHelp"[\s\S]*?<\/details>/)[0];
 for(const text of ['しばらくの間、少しずつHPが減る。','体がしびれて、動けないことがある。','行動に失敗したり、自分を攻撃してしまうことがある。','しばらく眠ってしまい、行動できない。'])assert(help.includes(text));

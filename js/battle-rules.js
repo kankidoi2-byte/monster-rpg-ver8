@@ -454,6 +454,11 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
   }
   return messages.join('<br>');
 }
+// Ordinary healing uses the caster's battle level, with the existing Lv1 fallback
+// and level bounds. Hunt healing modifiers remain shared by both sides.
+function normalBattleHealing(level) {
+  return adjustedBattleHealing(24 + clampLevel(level) * 3);
+}
 async function doAttack(attacker, defender, mv, isPlayer) {
   const [name, power, type, effect, effectChance] = mv;
   const logEl = document.getElementById('log');
@@ -472,8 +477,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'heal') {
-    const baseHealing = 24 + (isPlayer ? (activeInstance?.level || 1) : 1)*3;
-    const healing = adjustedBattleHealing(baseHealing);
+    const healing = normalBattleHealing(isPlayer ? activeInstance?.level : activeHuntRequest?.enemyLevel);
     const before = isPlayer ? pHp : eHp;
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
