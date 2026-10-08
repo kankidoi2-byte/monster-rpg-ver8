@@ -13,7 +13,10 @@ try{
  browser=await chromium.launch({headless:true});
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'no-preference'}),errors=[],results=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
- await page.goto(publicUrl||'http://127.0.0.1:4190/?legacy=1',{waitUntil:'networkidle'});
+ // Public media/telemetry can keep connections active after the app is ready.
+ if(publicUrl)page.setDefaultNavigationTimeout(60000);
+ await page.goto(publicUrl||'http://127.0.0.1:4190/?legacy=1',{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>typeof normalBattleHealing==='function'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'));
  assert(await page.locator('#titleScreen').isVisible());
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
@@ -66,7 +69,9 @@ try{
   }
  }
  const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
- await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>typeof normalBattleHealing==='function'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'));
+ await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});
  assert.deepEqual(JSON.parse(after),JSON.parse(before));assert.deepEqual(errors,[]);
  fs.writeFileSync(`${out}/results.json`,JSON.stringify({result:'PASS',cases:results.length,errors,results},null,2));
