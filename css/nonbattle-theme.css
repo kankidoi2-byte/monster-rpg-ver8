@@ -157,3 +157,13 @@ body[data-nonbattle-theme] :is(#contractAnimation,#skillGachaPresentation){color
  #home.nonbattle-screen.active .home-block{grid-template-columns:minmax(0,1fr);}
  #home.nonbattle-screen.active .home-party-preview{grid-template-columns:minmax(0,1fr);}
 }
+/* Container width follows CSS zoom as well as the viewport media query. */
+#home.nonbattle-screen.active{container-type:inline-size;}
+@container(max-width:260px){
+ #home.nonbattle-screen.active .home-welcome{flex-wrap:wrap;}
+ #home.nonbattle-screen.active .home-story-row,
+ #home.nonbattle-screen.active .home-block,
+ #home.nonbattle-screen.active .home-party-preview{grid-template-columns:minmax(0,1fr);}
+ #home.nonbattle-screen.active .home-party-member{grid-template-columns:40px minmax(0,1fr);gap:6px;}
+ #home.nonbattle-screen.active .home-party-member small{grid-column:2;min-width:0;overflow-wrap:anywhere;}
+}
