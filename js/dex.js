@@ -63,7 +63,7 @@ function renderDexHub(){
   const mapCount=MAPS.filter(map=>save.mapDex?.includes(map.id)).length;
   const cards=[
     {id:'dexHubMonsterButton',screen:'dex',icon:'🐉',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
-    {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態（登場予定を含む）',count:dexRegisteredCount(characters),total:characterDexEntries().length},
+    {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:characterDexEntries().some(entry=>entry.planned)?'仲間と成長形態（登場予定を含む）':'仲間と成長形態',count:dexRegisteredCount(characters),total:characterDexEntries().length},
     {screen:'skillDex',icon:'🃏',title:'技図鑑',desc:'全技の性能・効果・使用キャラ',count:skillDexEntries().length,total:skillDexEntries().length},
     {screen:'mapDex',icon:'🗺️',title:'マップ図鑑',desc:'土地・生息種・特殊イベント',count:mapCount,total:MAPS.length},
     {screen:'itemDex',icon:'🎒',title:'アイテム図鑑',desc:'入手した道具と素材',count:itemCount,total:ITEM_DEX_ITEMS.length}

@@ -1,3 +1,4 @@
+import {retiredReservations} from './retired-dex-reservations-baseline.mjs';
 import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -37,12 +38,11 @@ for(const sk of cards){
   for(const opts of ['',',{includeBase:false}'])assert.equal(r.run(`moveEffectText(skillToMove(${arg})${opts})`),before.run(`moveEffectText(skillToMove(${arg})${opts})`));
  }
 }
-assert.equal(read('data'),applyStatusDataCopy(original('data')),'exact approved flavor edits, no other data changes');
+assert.equal(read('data'),retiredReservations(applyStatusDataCopy(original('data'))),'only approved flavor edits and tested display reservations change');
 assert.equal(read('core'),applyStatusCoreCopy(original('core')),'exact approved shared description edits, no logic changes');
 for(const name of ['battle-rules','multi-battle','save','skills','dex','skill-dex','battle-ui']){
- // The separately covered conditional-power filter adds one derived classification.
- const current=name==='skill-dex'?read(name).replace("  if(sk.tactical?.bonus?.condition)keys.add('conditional_power');\n",''):read(name);
- assert.equal(current,applyNormalHealingSpec(name,original(name)),'unchanged production logic/callers except tested dex classification: '+name);
+ const current=name==='dex'?read(name).replace("desc:characterDexEntries().some(entry=>entry.planned)?'仲間と成長形態（登場予定を含む）':'仲間と成長形態'","desc:'仲間と成長形態（登場予定を含む）'"):name==='skill-dex'?read(name).replace("  if(sk.tactical?.bonus?.condition)keys.add('conditional_power');\n",''):read(name);
+ assert.equal(current,applyNormalHealingSpec(name,original(name)),'unchanged logic except tested dex hub label: '+name);
 }
 assert.deepEqual(json(r.run('BATTLE_STATUS_EFFECTS.poison')),{duration:3,maxHpDamageRate:.10});
 const help=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8').match(/<details id="skillDexStatusHelp"[\s\S]*?<\/details>/)[0];
