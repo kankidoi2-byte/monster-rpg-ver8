@@ -67,6 +67,7 @@ function show(id) {
   scheduleContractorRankUpPresentation();
   if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
+  if(typeof applyNonbattleTheme==='function')applyNonbattleTheme(document.querySelector('.screen.active')?.id || id);
 }
 function openBattleHub(){
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
@@ -355,6 +356,7 @@ function selectHomeFavorite(id){
   return true;
 }
 function renderHome(){
+  if(typeof renderNonbattleHomeContext==='function')renderNonbattleHomeContext();
   renderHomeFavorite();
   const partyPreview = document.getElementById('homePartyPreview');
   const growthPreview = document.getElementById('homeGrowthPreview');

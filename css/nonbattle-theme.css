@@ -1,0 +1,180 @@
+/* White / black planes with restrained gold edges. All rules are opt-in.
+ * Battle, battle item/contract screens and cinematic overlays are excluded.
+ * No :root palette overrides: battle keeps its existing inherited variables. */
+body[data-nonbattle-theme]:not(.title-mode){
+  background:#fff;color:#17263f;isolation:isolate;
+  --nb-ink:#17263f;--nb-muted:#48566c;--nb-gold:#aa8b46;--nb-paper:#fff;
+}
+body[data-nonbattle-theme]:not(.title-mode)::before{
+  content:"";position:fixed;inset:58px 0 0;z-index:-1;pointer-events:none;
+  background:#090a0d;clip-path:var(--nonbattle-shape);
+}
+body[data-nonbattle-theme]:not(.title-mode)>.app-topbar,
+body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav{
+  background:#fff;color:#17263f;border-color:#aa8b46;box-shadow:none;backdrop-filter:none;
+}
+body[data-nonbattle-theme]:not(.title-mode)>.app-topbar button,
+body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav button{
+  background:#fff;color:#17263f;box-shadow:none;
+}
+body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav button.is-current,
+body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav button[aria-current="page"]{
+  background:#17263f;color:#fff;border:1px solid #aa8b46;
+}
+body[data-nonbattle-theme]:not(.title-mode)>.app-topbar :is(.contractor-rank span,.app-brand,.app-resource){color:#17263f}
+.nonbattle-screen:not(#skillGachaPresentation, #skillGachaPresentation *){background:none!important;color:#17263f;overflow-wrap:anywhere;}
+.nonbattle-screen :is(h1,h2,h3,h4):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;-webkit-text-fill-color:currentColor;background-image:none;text-shadow:none}
+.nonbattle-screen :is(.ui-page-heading,.ui-section-heading):not(#skillGachaPresentation, #skillGachaPresentation *){background:#fff;border:1px solid #aa8b46;border-radius:10px;padding:12px;}
+.nonbattle-screen :is(.ui-eyebrow,.small,.ui-page-heading p):not(#skillGachaPresentation, #skillGachaPresentation *){color:#48566c;text-shadow:none}
+/* Surfaces, not arbitrary descendants: preserve element/rarity/status colors. */
+.nonbattle-screen :is(.panel,.card,.log,.dex-detail,.move-box,.mini,.chart-group,.fusion-recipe,
+  .ui-hub-grid>button,.ui-menu-list>button,.home-party-member,.home-empty-party,.home-favorite-option,
+  .monster-roster-card,.monster-roster-summary,.monster-roster-details,.monster-inventory-summary,
+  .party-current-card,.party-select-card,.skill-synthesis-card,.skill-dex-card,.skill-dex-filters,.skill-dex-detail,
+  .character-gacha-card,.contractor-rank-card,.contractor-rank-hero,.contractor-reward-card,.contractor-title-card,
+  .story-continue-card,.story-episode-card,.story-chapter-banner,.story-coming-soon,.story-empty-state,
+  .map-dex-card,.map-dex-detail,.map-dex-locked-detail,.item-dex-card,.save-management,.profile-panel,
+  .expedition-card,.expedition-slot,.alchemy-recipe,.notice-card,.notice-item,.world-map-panel,
+  .hunt-card,.hunt-card-body,.tutorial-request-card,.skill-edit-status):not(#skillGachaPresentation *):not(#skillGachaPresentation, #skillGachaPresentation *){
+  background:#fff!important;color:#17263f;border-color:#aa8b46!important;box-shadow:none!important;
+  backdrop-filter:none;text-shadow:none;
+}
+.nonbattle-screen :is(button,input,select,textarea):not(#skillGachaPresentation *):not(.ui-danger-button):not(#skillGachaPresentation, #skillGachaPresentation *){
+  max-width:100%;color:#17263f;background:#fff;border:1px solid #aa8b46;box-shadow:none;
+}
+.nonbattle-screen button:not(#skillGachaPresentation *):not(#skillGachaPresentation, #skillGachaPresentation *){min-height:44px;white-space:normal;line-height:1.4;}
+.nonbattle-screen button:not(#skillGachaPresentation *):hover:not(#skillGachaPresentation, #skillGachaPresentation *){transform:none;opacity:1;border-color:#17263f;}
+.nonbattle-screen button:not(#skillGachaPresentation *):active:not(#skillGachaPresentation, #skillGachaPresentation *){transform:translateY(1px);background:#e8ecf2;}
+.nonbattle-screen :is(button,input,select,textarea,a,summary):not(#skillGachaPresentation *):focus-visible:not(#skillGachaPresentation, #skillGachaPresentation *){
+  outline:3px solid #245b98;outline-offset:3px;
+}
+.nonbattle-screen button:not(#skillGachaPresentation *):disabled:not(#skillGachaPresentation, #skillGachaPresentation *){background:#eee;color:#626a77;border-style:dashed;opacity:.75;cursor:not-allowed;}
+.nonbattle-screen :is(button[aria-pressed=true],button.selected,.is-selected):not(#skillGachaPresentation *):not(#skillGachaPresentation, #skillGachaPresentation *){
+  border:2px solid #17263f;background:#f5f0e5;box-shadow:none;
+}
+.nonbattle-screen :is(.ui-back-link,.nonbattle-home-button):not(#skillGachaPresentation, #skillGachaPresentation *){
+  background:#fff!important;color:#17263f!important;border:1px solid #17263f!important;
+  min-height:44px!important;font-weight:800;letter-spacing:.02em;padding:10px 14px!important;
+}
+.nonbattle-screen :is(.ui-hub-grid>button>span,.ui-menu-list>button>span,.dex-hub-count):not(#skillGachaPresentation, #skillGachaPresentation *){background:#f4f4f4;color:#17263f}
+.nonbattle-screen :is(.story-continue-card,.story-chapter-banner) :is(h2,strong,p,small,span):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;text-shadow:none}
+.nonbattle-screen :is(.story-continue-card,.story-chapter-banner)::before,
+.nonbattle-screen :is(.story-continue-card,.story-chapter-banner):not(#skillGachaPresentation, #skillGachaPresentation *)::after{display:none}
+.nonbattle-screen .story-chapter-banner:not(#skillGachaPresentation, #skillGachaPresentation *){background-image:none!important;}
+.nonbattle-screen :is(.move-name,.instance-badge):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;background:#f2f2f2;border-color:#aa8b46;}
+.nonbattle-screen :is(.dex-detail,.skill-dex-detail,.monster-roster-details):not(#skillGachaPresentation, #skillGachaPresentation *){
+  border:1px solid #aa8b46;border-left:5px solid #090a0d;
+}
+.nonbattle-screen :is(#dexDetail,#characterDexDetail,#mapDexDetail,#itemDexDetail,#skillDexDetail):not(:empty):not(#skillGachaPresentation, #skillGachaPresentation *){
+  padding:12px;background:#fff;position:relative;border:1px solid #aa8b46;
+  border-top:12px solid #090a0d;isolation:isolate;
+}
+.nonbattle-screen :is(.home-favorite-option,.monster-roster-card,.party-select-card) img:not(#skillGachaPresentation, #skillGachaPresentation *){filter:none;object-fit:contain;}
+.nonbattle-screen .rarity:not(#skillGachaPresentation, #skillGachaPresentation *){background:#17263f;padding:2px 5px;border-radius:4px;}
+/* Keep pale attribute labels readable without removing their meaning/color. */
+.nonbattle-screen :is(.fire,.water,.grass,.dark,.thunder,.light,.star,.dragon,.wind,.normal):not(#skillGachaPresentation, #skillGachaPresentation *){
+  background-color:#17263f;border-radius:3px;padding:1px 3px;text-shadow:none;
+}
+.nonbattle-screen :is(.ui-danger-button,.danger):not(#skillGachaPresentation, #skillGachaPresentation *){background:#fff0ef!important;color:#a32222!important;border-color:#c35b54!important;}
+/* Home retains artwork -> story/expedition -> three-member party hierarchy.
+ * Flow layout also makes landscape and enlarged text scroll safely. */
+#home.nonbattle-screen.active{
+  height:auto;min-height:calc(100dvh - 58px);max-width:780px;
+  grid-template-rows:auto minmax(240px,1fr) auto auto;
+  padding:8px 12px calc(var(--ui-nav-height,78px) + env(safe-area-inset-bottom,0px) + 18px);gap:10px;
+}
+#home.nonbattle-screen.active .home-welcome{position:static;width:100%;display:flex;align-items:center;gap:8px;pointer-events:auto;}
+#home.nonbattle-screen.active .home-welcome h1{display:block;background:#fff;padding:6px 9px;border:1px solid #aa8b46;border-radius:6px;font-size:14px;}
+#home.nonbattle-screen.active .home-notice-button{min-height:44px;background:#fff;}
+#home.nonbattle-screen.active .home-favorite-stage{grid-row:2;min-height:300px;height:clamp(300px,49dvh,540px);}
+#home.nonbattle-screen.active .home-favorite-art{inset:0 0 54px;}
+#home.nonbattle-screen.active .home-portrait-frame{
+  border:1px solid #aa8b46;border-image:none;background:#fff;box-shadow:none;
+  width:min(calc(100cqw - 24px),calc((100cqh - 8px)*var(--portrait-ratio)));
+  height:min(calc(100cqh - 8px),calc((100cqw - 24px)/var(--portrait-ratio)));
+}
+#home.nonbattle-screen.active .home-portrait-frame::after,
+#home.nonbattle-screen.active .home-portrait-crest,
+#home.nonbattle-screen.active .home-favorite-caption::before,
+#home.nonbattle-screen.active .home-favorite-caption::after{display:none;}
+#home.nonbattle-screen.active .home-favorite-caption{bottom:-48px;width:min(330px,85vw);min-height:40px;padding:6px 10px;background:#fff;border:1px solid #aa8b46;border-radius:5px;box-shadow:none;}
+#home.nonbattle-screen.active .home-favorite-caption :is(strong,small){color:#17263f;text-shadow:none;}
+#home.nonbattle-screen.active .home-favorite-change{top:0;right:0;min-height:44px;background:#fff;}
+#home.nonbattle-screen.active .home-story-row{position:static;grid-row:3;width:100%;gap:8px;}
+#home.nonbattle-screen.active :is(.home-adventure,.home-expedition-card){background:#fff;border:1px solid #aa8b46;box-shadow:none;}
+#home.nonbattle-screen.active :is(.home-adventure,.home-expedition-card button){height:auto;min-height:64px;padding:9px;}
+#home.nonbattle-screen.active .home-adventure-shade{display:none;}
+#home.nonbattle-screen.active .home-adventure-copy :is(strong,small){color:#17263f;background:none;text-shadow:none;}
+#home.nonbattle-screen.active .home-block{grid-row:4;}
+#home.nonbattle-screen.active .ui-section-heading{padding:0;border:0;background:#fff;border-radius:5px;}
+#home.nonbattle-screen.active .home-party-member{background:#fff;}
+#home.nonbattle-screen.active .home-party-member strong{white-space:normal;overflow-wrap:anywhere;}
+#home.nonbattle-screen.active .home-story-symbol{color:#17263f;opacity:.18;}
+.nonbattle-screen :is(.grid,.ui-hub-grid,.ui-menu-list,.home-party-preview)>*:not(#skillGachaPresentation, #skillGachaPresentation *){min-width:0;}
+@media(max-width:360px){
+  .nonbattle-screen:not(#skillGachaPresentation, #skillGachaPresentation *){padding-left:10px;padding-right:10px;}
+  .nonbattle-screen .grid:not(#skillGachaPresentation, #skillGachaPresentation *){grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));}
+  .nonbattle-screen .ui-menu-list button:not(#skillGachaPresentation, #skillGachaPresentation *){grid-template-columns:34px minmax(0,1fr) auto;gap:7px;}
+  .nonbattle-screen .ui-menu-list button>span:not(#skillGachaPresentation, #skillGachaPresentation *){width:32px;height:32px;}
+  #home.nonbattle-screen.active .home-favorite-stage{min-height:270px;height:38dvh;}
+}
+@media(max-height:500px) and (orientation:landscape){
+  #home.nonbattle-screen.active .home-favorite-stage{height:300px;}
+}
+@media(prefers-reduced-motion:reduce){.nonbattle-screen.ui-screen-enter:not(#skillGachaPresentation, #skillGachaPresentation *){animation:none;}}
+
+/* Details live inside list routes; their background uses the shared detail preset. */
+body[data-nonbattle-theme]:not(.title-mode):has(.screen.active :is(#dexDetail,#characterDexDetail,#mapDexDetail,#itemDexDetail,#skillDexDetail):not(:empty))::before{clip-path:var(--nonbattle-detail-shape);}
+/* Legacy inline colors and the real workbench/map surfaces. */
+.nonbattle-screen :is(button,input,select,textarea):not(#skillGachaPresentation, #skillGachaPresentation *):not(.ui-danger-button){background:#fff!important;color:#17263f!important;}
+.nonbattle-screen :is(button[aria-pressed=true],button.is-selected,button.selected):not(#skillGachaPresentation, #skillGachaPresentation *){background:#f5f0e5!important;border-color:#17263f;}
+.nonbattle-screen button:disabled:not(#skillGachaPresentation, #skillGachaPresentation *){background:#eee!important;color:#626a77!important;}
+.nonbattle-screen :is(.alchemy-confirm-card,.alchemy-result-card,.alchemy-material-board,.alchemy-material-row,.alchemy-catalyst,.alchemy-coin-compact,.alchemy-forecast,.tutorial-alchemy-recipe,.tutorial-alchemy-lumina,.wm-calm,.wm-events,.wm-intro-guide,.wm-city,.wm-list,.wm-beyond,.wm-detail,.wm-event-notice,.wm-sealed-message,.wm-enemies li,.contractor-title-current,.notice-entry){background:#fff!important;color:#17263f;border-color:#aa8b46!important;box-shadow:none!important;}
+.nonbattle-screen :is(.monster-roster-visual,.alchemy-workbench){background:#fff!important;}
+.nonbattle-screen .alchemy-workbench::before{display:none;}
+.nonbattle-screen .wm-detail-art>div{background:#fff;color:#17263f;border:1px solid #aa8b46;}
+.nonbattle-screen .wm-detail-art>div :is(h2,p,small,span){color:#17263f;text-shadow:none;}
+.nonbattle-screen :is(.skill-card-title,.skill-card-description,.skill-card-stats):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;}
+.nonbattle-screen :is(#skillEditTarget,.skill-filter-panel,.contractor-next-title,.contractor-migration-note,.contractor-exp-history>div){background:#fff!important;border-color:#aa8b46!important;box-shadow:none;}
+body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card){background:#fff;color:#17263f;border:1px solid #aa8b46;box-shadow:0 6px 24px #0003;}
+body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card) :is(h2,p,button){color:#17263f;}
+body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card) button{background:#fff;border:1px solid #aa8b46;min-height:44px;}
+/* Keep keyboard/programmatic focus and anchor scrolling clear of fixed chrome. */
+.nonbattle-screen :is(button,input,select,textarea,summary,a,[tabindex]){scroll-margin-top:82px;scroll-margin-bottom:calc(var(--ui-nav-height,78px) + 18px);}
+#home.nonbattle-screen.active .home-favorite-stage{background:none;}
+.nonbattle-screen :is(#dexDetail,#characterDexDetail,#mapDexDetail,#itemDexDetail,#skillDexDetail){scroll-margin-top:82px;scroll-margin-bottom:calc(var(--ui-nav-height,78px) + 18px);}
+
+/* Cinematics inherit the original runtime foreground, not their host page ink. */
+body[data-nonbattle-theme] :is(#contractAnimation,#skillGachaPresentation){color:#e8eaf6;overflow-wrap:normal;}
+/* Shrink intrinsic home tracks when text is enlarged on a narrow viewport. */
+#home.nonbattle-screen.active{grid-template-columns:minmax(0,1fr);min-width:0;}
+#home.nonbattle-screen.active>*{min-width:0;max-width:100%;}
+#home.nonbattle-screen.active .home-story-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+#home.nonbattle-screen.active .home-favorite-caption{max-width:100%;}
+@media(max-width:240px){
+ #home.nonbattle-screen.active .home-welcome{flex-wrap:wrap;}
+ #home.nonbattle-screen.active .home-story-row{grid-template-columns:minmax(0,1fr);}
+ #home.nonbattle-screen.active .home-block{grid-template-columns:minmax(0,1fr);}
+ #home.nonbattle-screen.active .home-party-preview{grid-template-columns:minmax(0,1fr);}
+}
+/* Container width follows CSS zoom as well as the viewport media query. */
+#home.nonbattle-screen.active{container-type:inline-size;}
+@container(max-width:260px){
+ #home.nonbattle-screen.active .home-welcome{flex-wrap:wrap;}
+ #home.nonbattle-screen.active .home-story-row,
+ #home.nonbattle-screen.active .home-block,
+ #home.nonbattle-screen.active .home-party-preview{grid-template-columns:minmax(0,1fr);}
+ #home.nonbattle-screen.active .home-party-member{grid-template-columns:40px minmax(0,1fr);gap:6px;}
+ #home.nonbattle-screen.active .home-party-member small{grid-column:2;min-width:0;overflow-wrap:anywhere;}
+}
+/* Desktop-width navigation must also fit the narrower CSS viewport at zoom. */
+body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav{max-width:100%;height:auto;min-height:var(--ui-nav-height,78px);}
+/* A wrapped caption starts below the portrait, never over its lower pixels. */
+#home.nonbattle-screen.active .home-portrait-frame>.home-favorite-caption{top:calc(100% + 8px);bottom:auto;}
+@container(max-width:260px){
+ #home.nonbattle-screen.active .home-favorite-stage{height:auto;min-height:0;padding-top:52px;}
+ #home.nonbattle-screen.active .home-favorite-art{position:relative;inset:auto;display:block;container-type:inline-size;}
+ #home.nonbattle-screen.active .home-portrait-frame{width:calc(100cqw - 24px);height:auto;margin:0 auto;box-sizing:border-box;}
+ #home.nonbattle-screen.active .home-portrait-frame img{height:auto!important;}
+ #home.nonbattle-screen.active .home-portrait-frame>.home-favorite-caption{position:relative;inset:auto;transform:none;margin:8px auto 0;width:100%;}
+}

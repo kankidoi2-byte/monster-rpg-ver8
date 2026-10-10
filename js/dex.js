@@ -31,6 +31,7 @@ function showItemDexDetail(itemId){
       <h2 style="text-align:center">？？？</h2>
       <p class="small" style="text-align:center">このアイテムはまだ入手していません。</p>
     </div>`;
+    detail.scrollIntoView?.({behavior:'smooth',block:'start'});
     return;
   }
 
@@ -46,6 +47,7 @@ function showItemDexDetail(itemId){
     ${it.price > 0 ? `<p><b>価格：</b>コイン${it.price}枚</p>` : ''}
     ${it.usableFromDex ? `<button onclick="useGoldenLandMap()" ${goldenLandMapIsReady()?'disabled':''}>${goldenLandMapIsReady()?'地図使用中（黄金郷を予約済み）':'この地図を使う'}</button>` : ''}
   </div>`;
+  detail.scrollIntoView?.({behavior:'smooth',block:'start'});
 }
 function renderUnitSkillList(m) {
   return `<h3>技一覧</h3>

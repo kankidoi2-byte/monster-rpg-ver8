@@ -12,14 +12,20 @@ try{
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
-  save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];save.equippedSkills={};
+  save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  // This regression covers evolution rewards/save behavior for a returning
+  // player. First-visit dialogue pagination has dedicated tutorial coverage.
+  Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
+  save.instances=[];save.party=[];save.equippedSkills={};
   const ins=addInstance('spaquinn',3);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));show('home');
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));assert(await page.locator('#partySet').isVisible());
  const before=await page.evaluate(()=>({...save.skillCards}));
  await page.evaluate(()=>{checkEvolution(save.instances[0]);processNextEvolution();});
- assert(await page.locator('#evolution').isVisible());await page.locator('#evoChoices button').filter({hasText:'ボルタックスに進化する'}).click();
+ assert(await page.locator('#evolution').isVisible());
+ assert(!(await page.locator('#tutorialOverlay').isVisible()),'returning-player fixture has no first-visit guide');
+ await page.locator('#evoChoices button').filter({hasText:'ボルタックスに進化する'}).click();
  const result=await page.evaluate(()=>({id:save.instances[0].id,cards:{...save.skillCards},ids:evolutionSkillCardIdsForMonster(by('voltax')),equipped:getEquippedSkillIds(save.instances[0])}));
  assert.equal(result.id,'voltax');assert(result.ids.length>=1);assert(result.ids.every(id=>/^s110_/.test(id)&&Number(id.slice(5))<=106));
  for(const id of result.ids)assert.equal(result.cards[id],before[id]+1);assert(result.equipped.length<=3);

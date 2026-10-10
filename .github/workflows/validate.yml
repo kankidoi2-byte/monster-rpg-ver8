@@ -59,3 +59,34 @@ jobs:
         with:
           name: skill-card-layout
           path: artifacts/skill-card-layout
+
+  monochrome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify nonbattle monochrome layout and isolation
+        run: node scripts/test-monochrome-browser.mjs
+      - name: Upload nonbattle monochrome evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nonbattle-monochrome-evidence
+          path: artifacts/nonbattle-theme
+
+      - name: Upload nonbattle verification manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nonbattle-monochrome-manifest
+          path: artifacts/nonbattle-theme/manifest.json
