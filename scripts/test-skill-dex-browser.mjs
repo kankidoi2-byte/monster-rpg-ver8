@@ -31,7 +31,7 @@ try{
   await page.locator('#skillDexSearch').fill('存在しない技名');assert.match(await page.locator('#skillDexList').textContent(),/条件に合う技はありません/);
   await page.evaluate(()=>resetSkillDexFilters());await page.locator('#skillDexSort').selectOption('power');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');
-  const cards=await page.locator('#skillDexList .skill-card').evaluateAll(els=>els.map(el=>{const title=el.querySelector('.skill-card-title'),cost=el.querySelector('.skill-cost-badge');return {lines:el.querySelectorAll('.skill-type-line').length,overlap:title.getBoundingClientRect().right>cost.getBoundingClientRect().left+1,overflow:title.scrollWidth>title.clientWidth+1};}));assert(cards.every(c=>c.lines===1&&!c.overlap&&!c.overflow));
+  const cards=await page.locator('#skillDexList .skill-card').evaluateAll(els=>els.map(el=>{const title=el.querySelector('.skill-card-title'),cost=el.querySelector('.skill-cost-badge');return {lines:el.querySelectorAll('.skill-type-line').length,overlap:(()=>{const a=title.getBoundingClientRect(),b=cost.getBoundingClientRect();return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1;})(),overflow:title.scrollWidth>title.clientWidth+1};}));assert(cards.every(c=>c.lines===1&&!c.overlap&&!c.overflow));
   assert.equal(await page.evaluate(()=>JSON.stringify(save)),before,'browse is read-only');
   await page.evaluate(()=>{show('characterDex');showCharacterDexDetail('elna_beginner');});await page.locator('#characterDexDetail .skill-dex-open').first().click();assert(await page.locator('#skillDex').isVisible());
   await page.evaluate(()=>{showSkillSynthesis();});

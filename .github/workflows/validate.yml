@@ -50,6 +50,7 @@ jobs:
           node scripts/test-single-hp-clamp-browser.mjs
           node scripts/test-powered-modifiers-browser.mjs
           node scripts/test-skill-dex-browser.mjs
+          node scripts/test-skill-dex-portrait-browser.mjs
           node scripts/test-status-descriptions-browser.mjs
           node scripts/test-normal-healing-browser.mjs
 
