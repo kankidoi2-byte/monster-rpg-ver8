@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261010-character-dex-reservations",date:"2026-10-10",category:"fix",title:"キャラクター図鑑の案内を整理しました",body:"実装済みキャラクターの古い予約情報を整理し、図鑑一覧の「登場予定を含む」という案内を現状に合わせました。"}),
   Object.freeze({id:"20261010-skill-dex-conditional-power",date:"2026-10-10",category:"update",title:"条件で威力が上がる技を探しやすくしました",body:"技図鑑の追加効果に「条件付き威力アップ」を追加しました。HPや相手の状態に応じて威力が上がる技を絞り込めます。"}),
   Object.freeze({id:"20261010-skill-equipment-star-filter",date:"2026-10-10",category:"fix",title:"技装備の属性絞り込みを整理しました",body:"技装備画面の属性絞り込みで「星」が重複して表示されていた問題を修正しました。"}),
   Object.freeze({id:"20261008-shared-normal-healing",date:"2026-10-08",category:"update",title:"味方と敵の通常回復量を統一しました",body:"通常回復技は、味方も敵も使用者のレベルに応じて回復するようになりました。単体戦・複数戦とも共通で、最大HPを超える分は回復しません。"}),

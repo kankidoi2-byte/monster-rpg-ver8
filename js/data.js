@@ -436,46 +436,9 @@ const TN = {
 
 const TYPE_ICONS={fire:'🔥',water:'💧',thunder:'⚡',wind:'🌪️',grass:'🌳',light:'✨',dark:'🌑',star:'⭐',dragon:'🐉',normal:'⚪'};
 
-// Prologue character encyclopedia reservations; these are not battle units in M.
-// Source: 序章ガチャキャラクター制作状況 (2026-08-30). See docs/prologue-character-dex-slots.md.
-const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([
-  Object.freeze({"characterNo":15,"name":"接雷の従士ブリジット","rarity":"★★","types":["thunder","normal"],"imgKey":"brigitte_squire_star2_v1","slotId":"prologue_brigitte_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":16,"name":"雷壁騎士ブリジット","rarity":"★★★","types":["thunder","normal"],"imgKey":"brigitte_knight_star3_v1","slotId":"prologue_brigitte_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":17,"name":"城塞隊長ブリジット","rarity":"★★★★","types":["thunder","normal"],"imgKey":"brigitte_captain_star4_v1","slotId":"prologue_brigitte_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":18,"name":"風便見習いトビア","rarity":"★★","types":["wind"],"imgKey":"tobia_apprentice_star2","slotId":"prologue_tobia_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":19,"name":"峡谷便使いトビア","rarity":"★★★","types":["wind"],"imgKey":"tobia_canyon_star3","slotId":"prologue_tobia_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":20,"name":"天路伝令長トビア","rarity":"★★★★","types":["wind"],"imgKey":"tobia_sky_star4","slotId":"prologue_tobia_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":21,"name":"流炉職人ローデン","rarity":"★★","types":["fire","normal"],"imgKey":"roden_forge_star2","slotId":"prologue_roden_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":22,"name":"戦炉術師ローデン","rarity":"★★★","types":["fire","normal"],"imgKey":"roden_battle_star3","slotId":"prologue_roden_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":23,"name":"百錬の炉匠ローデン","rarity":"★★★★","types":["fire","normal"],"imgKey":"roden_master_star4","slotId":"prologue_roden_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":24,"name":"巡回水医セレネ","rarity":"★★","types":["water","light"],"imgKey":"selene_patrol_star2","slotId":"prologue_selene_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":25,"name":"水脈医セレネ","rarity":"★★★","types":["water","light"],"imgKey":"selene_water_star3","slotId":"prologue_selene_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":26,"name":"命泉の医導師セレネ","rarity":"★★★★","types":["water","light"],"imgKey":"selene_master_star4","slotId":"prologue_selene_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":27,"name":"隊商槍士サフィラ","rarity":"★★","types":["fire","wind"],"imgKey":"safira_caravan_star2_v1","slotId":"prologue_safira_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":28,"name":"砂嵐槍士サフィラ","rarity":"★★★","types":["fire","wind"],"imgKey":"safira_sandstorm_star3_v1","slotId":"prologue_safira_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":29,"name":"紅砂護商長サフィラ","rarity":"★★★★","types":["fire","wind"],"imgKey":"safira_crimson_star4_v1","slotId":"prologue_safira_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":30,"name":"新入りのボルド","rarity":"★★","types":["grass"],"imgKey":"bordo_novice_star2_v1","slotId":"prologue_bordo_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":31,"name":"熟練のボルド","rarity":"★★★","types":["grass","normal"],"imgKey":"bordo_veteran_star3_v1","slotId":"prologue_bordo_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":32,"name":"司厨長ボルド","rarity":"★★★★","types":["grass","normal"],"imgKey":"bordo_chef_star4_v1","slotId":"prologue_bordo_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":33,"name":"札売り娘リゼ","rarity":"★★","types":["dark","normal"],"imgKey":"lize_vendor_star2","slotId":"prologue_lize_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":34,"name":"影札師リゼ","rarity":"★★★","types":["dark","normal"],"imgKey":"lize_shadow_star3","slotId":"prologue_lize_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":35,"name":"千契の奇術頭リゼ","rarity":"★★★★","types":["dark","normal"],"imgKey":"lize_master_star4","slotId":"prologue_lize_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":36,"name":"傷負いの剣士レグス","rarity":"★★","types":["dark"],"imgKey":"regus_wounded_star2","slotId":"prologue_regus_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":37,"name":"呪鉄剣士レグス","rarity":"★★★","types":["dark"],"imgKey":"regus_cursed_star3","slotId":"prologue_regus_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":38,"name":"断呪の紫刃レグス","rarity":"★★★★","types":["dark"],"imgKey":"regus_violet_star4","slotId":"prologue_regus_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":39,"name":"レムネス","rarity":"★★","types":["normal"],"imgKey":"remnes_star2_v1","slotId":"prologue_remnes_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":40,"name":"記憶騎装レムネス","rarity":"★★★","types":["normal","star"],"imgKey":"remnes_memory_star3_v1","slotId":"prologue_remnes_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":41,"name":"星鎧のレムナント","rarity":"★★★★","types":["star","normal"],"imgKey":"remnant_star4_v1","slotId":"prologue_remnes_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":42,"name":"もの作り少年ニコ","rarity":"★★","types":["thunder"],"imgKey":"nico_maker_star2","slotId":"prologue_nico_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":43,"name":"蒼電機巧師ニコ","rarity":"★★★","types":["thunder"],"imgKey":"nico_artificer_star3","slotId":"prologue_nico_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":44,"name":"蒼雷の発明王ニコ","rarity":"★★★★","types":["thunder"],"imgKey":"nico_inventor_star4","slotId":"prologue_nico_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":45,"name":"流れ芸人ミレーユ","rarity":"★★","types":["star"],"imgKey":"mireille_performer_star2","slotId":"prologue_mireille_2","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":46,"name":"幻術師ミレーユ","rarity":"★★★","types":["star"],"imgKey":"mireille_illusionist_star3","slotId":"prologue_mireille_3","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":47,"name":"幻惑の女王ミレーユ","rarity":"★★★★","types":["star"],"imgKey":"mireille_queen_star4","slotId":"prologue_mireille_4","chapter":"序章","planned":true}),
-  Object.freeze({"characterNo":51,"prologueCharacterNo":48,"name":"人間兵器ヴェーラ","rarity":"★★★","types":["fire","dark"],"slotId":"prologue_vera_3","imgKey":"vera_weapon_star3","chapter":"序章","planned":true,"baseForm":true}),
-  Object.freeze({"characterNo":52,"prologueCharacterNo":49,"name":"黒炎戦姫ヴェーラ","rarity":"★★★★","types":["fire","dark"],"slotId":"prologue_vera_4","imgKey":"vera_blackflame_star4","chapter":"序章","planned":true,"baseForm":false}),
-  Object.freeze({"characterNo":53,"prologueCharacterNo":50,"name":"終焉の殲滅姫ヴェーラ","rarity":"★★★★★","types":["fire","dark"],"slotId":"prologue_vera_5","imgKey":"vera_annihilator_star5","chapter":"序章","planned":true,"baseForm":false}),
-]);
+// Future character encyclopedia reservations; these are not battle units in M.
+// All 36 former reservations are implemented in M. History: docs/prologue-character-dex-slots.md.
+const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([]);
 const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron']);
 const ADV = {
   fire:    {grass:1.5, water:.7},

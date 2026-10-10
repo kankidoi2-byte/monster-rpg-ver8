@@ -118,3 +118,30 @@ assert.equal((elements.characterDexList.innerHTML.match(/<button /g)||[]).length
 assert.equal((elements.characterDexList.innerHTML.match(/character-dex-planned/g)||[]).length,0);
 assert.match(elements.dexHubGrid.innerHTML,/1 \/ 50/);
 console.log('Character dex validation passed: 50 prologue display forms, empty chapter-one roster; existing IDs and monster numbers preserved.');
+
+// Every retired reservation is already represented by the same implemented form.
+const {execFileSync}=await import('node:child_process');
+const baseline=execFileSync('git',['show','accc2c5187ddd627c2ea8fbe35f91ece48eeb9d1:js/data.js'],{encoding:'utf8'});
+const oldContext=vm.createContext({});vm.runInContext(baseline,oldContext);
+const retired=vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS',oldContext);
+assert.equal(retired.length,36);
+for(const slot of retired){
+ const mon=characters.find(m=>m.characterNo===slot.characterNo);
+ assert(mon,`implemented equivalent for ${slot.slotId}`);
+ for(const field of ['name','rarity','types','imgKey','chapter'])assert.equal(JSON.stringify(mon[field]),JSON.stringify(slot[field]),`${slot.slotId}: ${field}`);
+ assert.equal(mon.prologueCharacterNo??mon.characterNo,slot.prologueCharacterNo??slot.characterNo);
+}
+assert.equal(vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS.length',context),0);
+assert.equal(JSON.stringify(records),vm.runInContext('JSON.stringify(M)',oldContext),'all battle units, IDs, skills and numbers unchanged');
+assert(!elements.dexHubGrid.innerHTML.includes('登場予定'),'no stale coming-soon label');
+// Keep genuine future plans visible, read-only and out of the battle roster.
+const future=vm.createContext({...context});
+const futureData=dataSource.replace('const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([]);',`const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([{slotId:'test_future',characterNo:999,name:'未来の予約',rarity:'★★',types:['star'],chapter:'序章',planned:true}]);`);
+vm.runInContext(futureData,future);vm.runInContext(coreSource,future);vm.runInContext(fs.readFileSync(new URL('../js/skill-dex.js',import.meta.url),'utf8'),future);vm.runInContext(dexSource,future);
+assert.equal(vm.runInContext('characterDexEntries().length',future),51);
+assert.equal(vm.runInContext('M.some(m=>m.characterNo===999)',future),false);
+vm.runInContext('renderCharacterDex();renderDexHub();showCharacterDexSlot("test_future")',future);
+assert(elements.dexHubGrid.innerHTML.includes('登場予定'));
+assert(elements.characterDexDetail.innerHTML.includes('現在は入手・対戦できません'));
+assert.equal((elements.characterDexList.innerHTML.match(/character-dex-planned/g)||[]).length,1);
+console.log('PASS retired reservations: 36 exact implemented equivalents, unchanged M, preserved future planned-slot rendering');
