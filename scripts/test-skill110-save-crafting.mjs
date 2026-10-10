@@ -98,7 +98,7 @@ assert.equal(durable.run('save.coins'),123,'failed import restores original live
 assert.equal(durable.run('JSON.stringify(saveRecoveryReport)'),JSON.stringify(['existing report']));
 assert.equal(durable.run('localStorage.getItem(SAVE_KEY)'),durable.run('originalImportDisk'));
 assert.equal(durable.context.reloadCount||0,0);
-durable.run('localStorage.setItem=realSetItem;');
+durable.run('localStorage.setItem=realSetItem;downloadTextFile=()=>{};exportReplacementRecovery();acknowledgeReplacementRecovery();');
 await durable.run('importSaveData(importFile)');
 assert.equal(durable.run('save.coins'),999);
 assert.equal(durable.context.reloadCount,1);
@@ -111,5 +111,5 @@ durable.run('save=initSave();save.coins=123;saveRecoveryReport=["restore report"
 assert.equal(durable.run('save.coins'),123);
 assert.equal(durable.run('JSON.stringify(saveRecoveryReport)'),JSON.stringify(['restore report']));
 assert.equal(durable.context.reloadCount,1);
-assert.equal(durable.run('localStorage.getItem(SAVE_BACKUP_KEY)'),durable.run('incomingRaw'),'failed restore retains restorable backup');
+assert.equal(durable.run('JSON.parse(localStorage.getItem(SAVE_REPLACEMENT_RECOVERY_KEY)).backupBefore'),durable.run('incomingRaw'),'failed restore retains exact recovery candidate in durable sidecar');
 console.log('PASS actual import/restore handlers: cancellation, quota failure rollback of live state/report, successful110 migration commit, reload stability, failed restore never reloads.');

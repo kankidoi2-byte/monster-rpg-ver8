@@ -532,6 +532,8 @@ function openAlchemyConfirmation(){
   show('alchemyConfirm');
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyConfirmationOpened==='function')handleTutorialAlchemyConfirmationOpened();
 }
+let alchemyTransactionRetry=null;
+const committedAlchemyPlans=new WeakSet();
 function executeAlchemyConfirmed(){
   if(alchemyBusy) return;
   const plan = alchemyPlan();
@@ -543,19 +545,28 @@ function executeAlchemyConfirmed(){
   if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1 && !confirm('この形態のキャラクターは最後の1体です。錬成で消費してもよろしいですか？'))return;
   try{alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);}
   catch(_error){alchemyDiagnosticsSelection=null;}
+  plan.transactionIdentity=saveTransactionIdentity();
   alchemyBusy = true;
   alchemyDiagnosticsStage='processing';
   alchemyDiagnosticsResultKind='none';
   alchemyDiagnosticsTutorialLesson=plan.tutorialLesson===true;
   const button = document.getElementById('alchemyExecuteButton');
   if(button) button.disabled = true;
+  try{
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyExecutionStarted==='function')handleTutorialAlchemyExecutionStarted();
   show('alchemyResult');
   document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-animation alchemy-lumina-wait" role="status"><picture><source media="(prefers-reduced-motion: reduce)" srcset="images/ui/lumina_alchemy_still_v1.webp"><img class="alchemy-wait-art" src="images/ui/lumina_alchemy_wait_v1.webp" width="440" height="440" alt="ルミナが大きな釜を一生懸命かき混ぜています" onerror="this.hidden=true"></picture><h2>錬成核を構築中……</h2><p>素材と魔力を結合しています</p></div>`;
   setTimeout(() => finalizeAlchemy(plan), 900);
+  }catch(error){alchemyBusy=false;saveTransactionNotice('錬成の表示を開始できませんでした。素材は消費していません。');console.error(error);}
+
 }
 function finalizeAlchemy(originalPlan){
-  const snapshot = JSON.stringify(save);
+  if(committedAlchemyPlans.has(originalPlan))return;
+  if(originalPlan.transactionIdentity&&originalPlan.transactionIdentity!==saveTransactionIdentity()){
+    alchemyBusy=false;saveTransactionNotice('アカウントが変わったため錬成を中止しました。');return;
+  }
+  const snapshot = captureSaveTransaction();
+  let committed=false;
   try{
     const plan = alchemyPlan(originalPlan.selection);
     const errors = validateAlchemyPlan(plan);
@@ -568,15 +579,21 @@ function finalizeAlchemy(originalPlan){
       if(save.equippedSkills) delete save.equippedSkills[plan.instance.uid];
     }
 
-    const success = plan.tutorialLesson||rollAlchemySuccess(plan);
-    const candidate = plan.tutorialLesson
-      ?eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).find(entry=>entry.monsterId===tutorialAlchemyLessonConfig.resultId)
-      :rollAlchemyResultCandidate(plan.recipe, success, plan.coinOption);
+    const retryKey=JSON.stringify([saveTransactionIdentity(),plan.selection,plan.tutorialLesson]);
+    if(alchemyTransactionRetry?.key!==retryKey){
+      const success=plan.tutorialLesson||rollAlchemySuccess(plan);
+      const candidate=plan.tutorialLesson
+        ?eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).find(entry=>entry.monsterId===tutorialAlchemyLessonConfig.resultId)
+        :rollAlchemyResultCandidate(plan.recipe,success,plan.coinOption);
+      alchemyTransactionRetry={key:retryKey,success,candidate,archetypeRoll:Math.random()};
+    }
+    const {success,candidate,archetypeRoll}=alchemyTransactionRetry;
     if(plan.tutorialLesson&&!candidate)throw new Error('入門錬成の完成候補が見つかりません。');
-    const {resultMonster, resultInstance, archetype} = createAlchemyResultInstance(candidate);
+    const {resultMonster,resultInstance,archetype}=createAlchemyResultInstance(candidate,()=>archetypeRoll);
     if(success&&typeof grantContractorAlchemySuccess==='function')grantContractorAlchemySuccess();
     if(plan.tutorialLesson&&typeof commitTutorialLuminaAlchemySuccess==='function'&&!commitTutorialLuminaAlchemySuccess())throw new Error('入門錬成の完了状態を保存できません。');
     if(!saveGame())throw new Error('錬成結果を保存できません。');
+    committed=true;committedAlchemyPlans.add(originalPlan);alchemyTransactionRetry=null;
 
     const content = document.getElementById('alchemyResultContent');
     const modifierHtml = archetype ? instanceAlchemySummary(resultInstance) : '<p class="small">通常モンスターとして完成しました。</p>';
@@ -601,12 +618,14 @@ function finalizeAlchemy(originalPlan){
       if(typeof handleTutorialLuminaAlchemyCompleted==='function')handleTutorialLuminaAlchemyCompleted();
     }
   }catch(error){
-    alchemyDiagnosticsStage='rolled_back';
-    alchemyDiagnosticsResultKind='error';
-    save = JSON.parse(snapshot);
-    try{ localStorage.setItem('mb_v95c', snapshot); }catch(restoreError){ console.error('alchemy rollback save failed:', restoreError); }
-    document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-errors"><h2>錬成を中止しました</h2><p>消費前の状態へ戻しました。</p><p>${String(error?.message || error).replaceAll('\n','<br>')}</p></div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
-    console.error('alchemy failed and rolled back:', error);
+    alchemyDiagnosticsStage=committed?'completed':'rolled_back';
+    alchemyDiagnosticsResultKind=committed?'saved_display_error':'error';
+    if(!committed)rollbackSaveTransaction(snapshot);
+    const message=committed?'錬成結果は保存済みです。手持ちから完成個体を確認してください。':'錬成を保存できませんでした。消費は確定していません。';
+    try{document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-errors"><h2>${message}</h2></div><button onclick="show('party')">手持ちを確認</button><button onclick="showAlchemy()">錬成画面へ戻る</button>`;}
+    catch(displayError){console.error('alchemy fallback display failed:',displayError);}
+    saveTransactionNotice(message);
+    console.error('alchemy transaction/display failed:', error);
   }finally{
     alchemyBusy = false;
   }

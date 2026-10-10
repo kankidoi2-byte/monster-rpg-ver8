@@ -44,6 +44,7 @@ function tryFusion(idx) {
 
   if (!confirm(`${from.name}と${r.itemName} × ${r.count}を合成して${to.name}に進化させますか？`)) return;
 
+  if(!commitSaveMutation(()=>{
   const firstRegistration=!caughtHas(r.to);
   save.items[r.item] -= r.count;
   ins.id = r.to;
@@ -55,7 +56,9 @@ function tryFusion(idx) {
   }
   if(typeof grantContractorEvolution==='function')grantContractorEvolution({special:true});
 
-  saveGame();
+
+  }))return;
+  showCommittedSaveResult(()=>{
   renderFusion();
   renderParty();
   renderDex();
@@ -63,6 +66,7 @@ function tryFusion(idx) {
   log.innerHTML = `✨ 合成成功！${from.name}は${to.name}に進化した！`;
   if(typeof replayUiMotion==='function')replayUiMotion(log,'ui-reward-pop',850);
   if(typeof showUiNotice==='function')showUiNotice(`${to.name}への合成成功！`);
+  });
 }
 function grantPartyExp(baseExp) {
   const targets = getPartyInstances();

@@ -404,9 +404,27 @@ function renderMultiContractPanel(){
 }
 function selectMultiBattleContractTarget(id){const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
 async function useMultiBattleContractScroll(itemId){
-  const entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;if(!entry||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[entry.id]){show('battle');return;}if((save.items[itemId]||0)<=0){alert(`${it.name}を持っていない！`);show('battle');return;}
-  save.items[itemId]--;const rate=Math.min(.95,(entry.mon.catchRate??.25)*(it.catchMultiplier||1)),roll=Math.random(),animationStage=contractAnimationStage(roll,rate),ok=animationStage===3;multiBattle.contractAttempts[entry.id]=true;pendingMultiBattleContractId=null;
-  if(ok){addInstance(entry.mon.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(entry.mon.id);}saveGame();show('battle');busy=true;await playContractAnimation({monsterName:entry.mon.name,stage:animationStage});
-  if(ok){appendMultiLog(`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`);}else{appendMultiLog(`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);}busy=false;updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();
+  if(postBattleContractBusy||!multiBattle?.active||!multiBattle.finished)return false;
+  const battle=multiBattle,entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;
+  if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||battle.contractAttempts[entry.id])return false;
+  if((save.items[itemId]||0)<=0){saveTransactionNotice(`${it.name}を持っていません。`);return false;}
+  const snapshot=captureSaveTransaction(),animationStage=postBattleContractStage(entry.mon,itemId,entry),ok=animationStage===3;
+  let committed=false;postBattleContractBusy=true;
+  try{
+    save.items[itemId]--;
+    if(ok){addInstance(entry.mon.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(entry.mon.id);}
+    if(!saveGame())throw new Error('multi_contract_save');
+    committed=true;battle.contractAttempts[entry.id]=true;pendingMultiBattleContractId=null;postBattleContractRetry=null;
+    busy=true;show('battle');await playContractAnimation({monsterName:entry.mon.name,stage:animationStage});
+    if(snapshot.identity!==saveTransactionIdentity()||multiBattle!==battle)return true;
+    appendMultiLog(ok?`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`:`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);
+    updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();return true;
+  }catch(error){
+    if(!committed)rollbackSaveTransaction(snapshot);
+    saveTransactionNotice(committed?'契約結果は保存済みです。手持ちと契約書の枚数をご確認ください。':'契約結果を保存できませんでした。契約書は消費していません。');
+    console.error('multi-battle contract failed:',error);
+    try{show('battle');renderMultiContractPanel();}catch(displayError){console.error(displayError);}
+    return committed;
+  }finally{postBattleContractBusy=false;busy=false;}
 }
 function runAwayFromMultiBattle(){resetBattleTransientEffects();if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}
