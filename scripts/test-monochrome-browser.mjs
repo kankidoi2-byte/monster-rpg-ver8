@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn,execFileSync} from 'node:child_process';
 const out='artifacts/nonbattle-theme';fs.mkdirSync(out,{recursive:true});
-const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',screenshotFormat:'JPEG quality 75; full matrix retained',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[],flows:[]};
+const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',screenshotFormat:'JPEG quality 75; full matrix retained',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[],flows:[],zoomReachability:[]};
 const origin='http://127.0.0.1:4177';
 let browser,server;
 const baselines=new WeakMap();
@@ -77,7 +77,8 @@ async function capture(page,name,{validate=true}={}){
  }
  entry.layout=await page.evaluate(()=>{
   const screen=document.querySelector('.screen.active');
-  const overflow=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title')].filter(el=>{
+  const candidates=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title'),...document.querySelectorAll('.app-topbar,.app-bottom-nav,.app-topbar button,.app-bottom-nav button,.app-topbar input,.app-topbar select')];
+  const overflow=candidates.filter(el=>{
    if(el.closest('.wm-map-scroll'))return false; // Tested as a clipped, reachable pan surface below.
    const r=el.getBoundingClientRect();return r.width&&r.height&&(r.left < -1||r.right>innerWidth+1);
   }).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,text:el.textContent.slice(0,80),left:r.left,right:r.right,width:r.width};});
@@ -111,6 +112,13 @@ async function capture(page,name,{validate=true}={}){
   }
   entry.mapScrollers.push({geometry,nodes});
  }
+ entry.chromeControls=await page.locator('.app-topbar button:visible:not([disabled]),.app-bottom-nav button:visible:not([disabled])').evaluateAll(elements=>elements.map(el=>{
+  const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+  return {text:el.textContent.slice(0,80),id:el.id,rect:{left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height},
+   inViewport:r.width>0&&r.height>0&&r.left>=-1&&r.right<=innerWidth+1&&r.top>=-1&&r.bottom<=innerHeight+1,
+   uncovered:hit===el||el.contains(hit),hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
+ }));
+ for(const control of entry.chromeControls)verify(control.inViewport&&control.uncovered,`${name}: global navigation control reachable ${JSON.stringify(control)}`);
  const control=page.locator('.screen.active button:visible:not([disabled])').first();
  if(await control.count()){
   // 'IfNeeded' accepts a control hidden under a sticky header as in-view.
@@ -128,6 +136,46 @@ async function capture(page,name,{validate=true}={}){
   verify(!entry.layout.horizontalOverflow,`${name}: document horizontal overflow ${JSON.stringify({geometry:entry.layout.geometry,elements:entry.layout.overflowingElements})}`);
   verify(entry.layout.overflow.length===0,`${name}: controls/headings overflow ${JSON.stringify(entry.layout.overflow)}`);
   verify(entry.layout.family&&entry.layout.family===entry.layout.bodyFamily,`${name}: active family matches body`);
+ }
+}
+async function zoomHomeReachability(page,width,height){
+ for(const [kind,selector] of [['favorite-image','#home .home-portrait-frame img'],['favorite-change','#home .home-favorite-change']]){
+  const target=page.locator(selector).first();
+  verify(await target.count()>0,`${width}x${height} zoom home: ${kind} exists`);
+  if(!await target.count())continue;
+  await target.evaluate(el=>el.scrollIntoView({block:'center',inline:'center',behavior:'instant'}));
+  // Center in the actual unobstructed band, not behind fixed navigation.
+  for(let attempt=0;attempt<3;attempt++)await target.evaluate(async el=>{
+   const top=document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0;
+   const bottom=document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||innerHeight;
+   const r=el.getBoundingClientRect();
+   window.scrollBy({top:(r.top+r.bottom)/2-(Math.max(0,top)+Math.min(innerHeight,bottom))/2,behavior:'instant'});
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  });
+  const measurement=await target.evaluate(el=>{
+   const rect=r=>({left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height});
+   const r=el.getBoundingClientRect(),top=Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0);
+   const bottom=Math.min(innerHeight,document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||innerHeight);
+   let clippedByAncestor=false;
+   for(let ancestor=el.parentElement;ancestor&&ancestor!==document.body;ancestor=ancestor.parentElement){
+    const a=ancestor.getBoundingClientRect(),style=getComputedStyle(ancestor);
+    if(['hidden','clip','auto','scroll'].includes(style.overflowX)&&(r.left<a.left-1||r.right>a.right+1))clippedByAncestor=true;
+    if(['hidden','clip','auto','scroll'].includes(style.overflowY)&&(r.top<a.top-1||r.bottom>a.bottom+1))clippedByAncestor=true;
+   }
+   const visible={left:Math.max(0,r.left),right:Math.min(innerWidth,r.right),top:Math.max(top,r.top),bottom:Math.min(bottom,r.bottom)};
+   const x=(visible.left+visible.right)/2,y=(visible.top+visible.bottom)/2,hit=document.elementFromPoint(x,y);
+   return {rect:rect(r),usable:{top,bottom},visible,scrollY,viewport:{width:innerWidth,height:innerHeight},
+    positive:r.width>0&&r.height>0,visibleArea:visible.right>visible.left&&visible.bottom>visible.top,
+    centerReachable:(r.top+r.bottom)/2>=top&&(r.top+r.bottom)/2<=bottom,
+    horizontalFit:r.left>=-1&&r.right<=innerWidth+1,clippedByAncestor,
+    fullyVisible:r.top>=top-1&&r.bottom<=bottom+1,
+    imageLoaded:el.tagName!=='IMG'||el.complete&&el.naturalWidth>0,
+    uncovered:hit===el||el.contains(hit),hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
+  });
+  const screenshot=`${width}x${height}-zoom200-${kind}-reachable.jpg`;
+  await page.screenshot({path:`${out}/${screenshot}`,type:'jpeg',quality:75,fullPage:false,animations:'disabled'});
+  manifest.zoomReachability.push({width,height,kind,selector,screenshot,...measurement});write();
+  verify(measurement.positive&&measurement.visibleArea&&measurement.centerReachable&&measurement.horizontalFit&&!measurement.clippedByAncestor&&measurement.imageLoaded&&measurement.uncovered&&(kind!=='favorite-change'||measurement.fullyVisible),`${width}x${height} zoom home ${kind} reachability ${JSON.stringify(measurement)}`);
  }
 }
 async function styles(page,selector,{rootOnly=false}={}){
@@ -249,7 +297,7 @@ try{
   await fixture(page);
   // CSS zoom exercises enlarged controls; separate half-width viewport exercises reflow.
   await both(page,()=>document.documentElement.style.zoom='2');
-  for(const id of ['home','partySet','skillDex','shop']){await route(page,id);await capture(page,`${width}x${height}-zoom200-${id}`);}
+  for(const id of ['home','partySet','skillDex','shop']){await route(page,id);await capture(page,`${width}x${height}-zoom200-${id}`);if(id==='home')await zoomHomeReachability(page,width,height);}
   await both(page,()=>document.documentElement.style.zoom='');
   await viewport(page,{width:Math.max(160,Math.floor(width/2)),height:Math.floor(height/2)});
   await route(page,'home');await capture(page,`${width}x${height}-zoom-reflow-home`);

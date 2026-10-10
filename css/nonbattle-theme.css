@@ -167,3 +167,5 @@ body[data-nonbattle-theme] :is(#contractAnimation,#skillGachaPresentation){color
  #home.nonbattle-screen.active .home-party-member{grid-template-columns:40px minmax(0,1fr);gap:6px;}
  #home.nonbattle-screen.active .home-party-member small{grid-column:2;min-width:0;overflow-wrap:anywhere;}
 }
+/* Desktop-width navigation must also fit the narrower CSS viewport at zoom. */
+body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav{max-width:100%;height:auto;min-height:var(--ui-nav-height,78px);}
