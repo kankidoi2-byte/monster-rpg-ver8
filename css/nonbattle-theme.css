@@ -143,3 +143,17 @@ body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank
 .nonbattle-screen :is(button,input,select,textarea,summary,a,[tabindex]){scroll-margin-top:82px;scroll-margin-bottom:calc(var(--ui-nav-height,78px) + 18px);}
 #home.nonbattle-screen.active .home-favorite-stage{background:none;}
 .nonbattle-screen :is(#dexDetail,#characterDexDetail,#mapDexDetail,#itemDexDetail,#skillDexDetail){scroll-margin-top:82px;scroll-margin-bottom:calc(var(--ui-nav-height,78px) + 18px);}
+
+/* Cinematics inherit the original runtime foreground, not their host page ink. */
+body[data-nonbattle-theme] :is(#contractAnimation,#skillGachaPresentation){color:#e8eaf6;overflow-wrap:normal;}
+/* Shrink intrinsic home tracks when text is enlarged on a narrow viewport. */
+#home.nonbattle-screen.active{grid-template-columns:minmax(0,1fr);min-width:0;}
+#home.nonbattle-screen.active>*{min-width:0;max-width:100%;}
+#home.nonbattle-screen.active .home-story-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+#home.nonbattle-screen.active .home-favorite-caption{max-width:100%;}
+@media(max-width:240px){
+ #home.nonbattle-screen.active .home-welcome{flex-wrap:wrap;}
+ #home.nonbattle-screen.active .home-story-row{grid-template-columns:minmax(0,1fr);}
+ #home.nonbattle-screen.active .home-block{grid-template-columns:minmax(0,1fr);}
+ #home.nonbattle-screen.active .home-party-preview{grid-template-columns:minmax(0,1fr);}
+}

@@ -10,8 +10,8 @@ export async function runMonochromeFlows(page,out,record){
   await locator.click(); // Normal actionability checks; never force through overlays.
  };
  const pass=async (name,detail={})=>{
-  await page.screenshot({path:`${out}/flow-${name}.png`,fullPage:true,animations:'disabled'});
-  record({name,result:'PASS',screenshot:`flow-${name}.png`,...detail});
+  await page.screenshot({path:`${out}/flow-${name}.jpg`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
+  record({name,result:'PASS',screenshot:`flow-${name}.jpg`,...detail});
  };
  await page.evaluate(()=>{
   clearTutorialUi();closeSkillGachaPresentation();busy=false;

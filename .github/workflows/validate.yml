@@ -83,3 +83,10 @@ jobs:
         with:
           name: nonbattle-monochrome-evidence
           path: artifacts/nonbattle-theme
+
+      - name: Upload nonbattle verification manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nonbattle-monochrome-manifest
+          path: artifacts/nonbattle-theme/manifest.json

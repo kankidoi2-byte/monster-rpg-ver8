@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn,execFileSync} from 'node:child_process';
 const out='artifacts/nonbattle-theme';fs.mkdirSync(out,{recursive:true});
-const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[],flows:[]};
+const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',screenshotFormat:'JPEG quality 75; full matrix retained',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[],flows:[]};
 const origin='http://127.0.0.1:4177';
 let browser,server;
 const baselines=new WeakMap();
@@ -17,7 +17,7 @@ async function both(page,fn,arg){const baseline=baselines.get(page);if(baseline)
 async function viewport(page,size){await baselines.get(page)?.setViewportSize(size);await page.setViewportSize(size);}
 
 const write=()=>fs.writeFileSync(`${out}/manifest.json`,JSON.stringify(manifest,null,2));
-function verify(condition,message){if(!condition){manifest.failures.push(message);write();}}
+function verify(condition,message){if(!condition){console.error(`QA FAILURE: ${message}`);manifest.failures.push(message);write();}}
 async function theme(page,enabled){
  await page.locator('link[href*="css/nonbattle-theme.css"]').evaluate((link,enabled)=>{link.disabled=!enabled;},enabled);
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -72,17 +72,19 @@ async function capture(page,name,{validate=true}={}){
  const entry={name,viewport:page.viewportSize()};
  for(const [enabled,label] of [[false,'before'],[true,'after']]){
   const target=enabled?page:baselines.get(page);
-  if(enabled)await theme(page,true);entry[label]=`${name}-${label}.png`;
-  await target.screenshot({path:`${out}/${entry[label]}`,fullPage:true,animations:'disabled'});
+  if(enabled)await theme(page,true);entry[label]=`${name}-${label}.jpg`;
+  await target.screenshot({path:`${out}/${entry[label]}`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
  }
  entry.layout=await page.evaluate(()=>{
   const screen=document.querySelector('.screen.active');
   const overflow=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title')].filter(el=>{
    if(el.closest('.wm-map-scroll'))return false; // Tested as a clipped, reachable pan surface below.
    const r=el.getBoundingClientRect();return r.width&&r.height&&(r.left < -1||r.right>innerWidth+1);
-  }).map(el=>({tag:el.tagName,id:el.id,text:el.textContent.slice(0,80)}));
+  }).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,text:el.textContent.slice(0,80),left:r.left,right:r.right,width:r.width};});
   return {screen:screen.id,family:screen.dataset.themeFamily,bodyFamily:document.body.dataset.nonbattleTheme,
-   horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow};
+   horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow,
+   geometry:{viewport:innerWidth,documentScrollWidth:document.documentElement.scrollWidth,documentClientWidth:document.documentElement.clientWidth,bodyScrollWidth:document.body.scrollWidth,zoom:getComputedStyle(document.documentElement).zoom},
+   overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
  });
  entry.mapScrollers=[];
  for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible').all()){
@@ -123,7 +125,7 @@ async function capture(page,name,{validate=true}={}){
  manifest.cases.push(entry);write();
  if(validate){
   if(entry.firstControl)verify(entry.firstControl.uncovered,`${name}: first enabled control is covered`);
-  verify(!entry.layout.horizontalOverflow,`${name}: document horizontal overflow`);
+  verify(!entry.layout.horizontalOverflow,`${name}: document horizontal overflow ${JSON.stringify({geometry:entry.layout.geometry,elements:entry.layout.overflowingElements})}`);
   verify(entry.layout.overflow.length===0,`${name}: controls/headings overflow ${JSON.stringify(entry.layout.overflow)}`);
   verify(entry.layout.family&&entry.layout.family===entry.layout.bodyFamily,`${name}: active family matches body`);
  }
@@ -136,14 +138,23 @@ async function styles(page,selector,{rootOnly=false}={}){
 }
 async function preservation(page,selector,label,{rootOnly=false}={}){
  const name=`${page.viewportSize().width}x${page.viewportSize().height}-${label.replaceAll(' ','-')}`;
+ // Measure both states before screenshots: fullPage capture may resize the
+ // viewport transiently and 'animations:disabled' advances finite animations.
+ // Neither screenshot side effect should sit between compared style samples.
  await theme(page,false);const before=await styles(page,selector,{rootOnly});
- await page.screenshot({path:`${out}/${name}-disabled.png`,fullPage:true,animations:'disabled'});
  await theme(page,true);const after=await styles(page,selector,{rootOnly});
- await page.screenshot({path:`${out}/${name}-enabled.png`,fullPage:true,animations:'disabled'});
- const isolated=JSON.stringify(after)===JSON.stringify(before);
+ const differences=[];
+ for(let index=0;index<Math.max(before.length,after.length);index++){
+  const a=before[index],b=after[index];
+  if(!a||!b){differences.push({index,before:a?.id||a?.tag||null,after:b?.id||b?.tag||null});continue;}
+  for(const key of Object.keys(a.css))if(a.css[key]!==b.css[key])differences.push({index,id:a.id,tag:a.tag,key,before:a.css[key],after:b.css[key]});
+ }
+ const isolated=differences.length===0;
+ await theme(page,false);await page.screenshot({path:`${out}/${name}-disabled.jpg`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
+ await theme(page,true);await page.screenshot({path:`${out}/${name}-enabled.jpg`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
  verify(before.length>0,`${label} preservation has actual nodes`);
- verify(isolated,`${name}: computed styles changed when theme enabled`);
- manifest.preservation.push({label,selector,rootOnly,nodes:before.length,result:isolated?'PASS':'FAIL',...(!isolated?{stylesBefore:before,stylesAfter:after}:{}),before:`${name}-disabled.png`,after:`${name}-enabled.png`});write();
+ verify(isolated,`${name}: ${differences.length} computed-style differences ${JSON.stringify(differences.slice(0,16))}`);
+ manifest.preservation.push({label,selector,rootOnly,nodes:before.length,differences,result:isolated?'PASS':'FAIL',...(!isolated?{stylesBefore:before,stylesAfter:after}:{}),before:`${name}-disabled.jpg`,after:`${name}-enabled.jpg`});write();
 }
 try{
  server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4177'],{stdio:['ignore','pipe','inherit']});
@@ -223,18 +234,18 @@ try{
   await preservation(page,'body','battle body',{rootOnly:true});
   await preservation(page,'.app-topbar','battle topbar');
   await preservation(page,'.app-bottom-nav','battle bottom navigation');
-  await page.screenshot({path:`${out}/${width}x${height}-battle-preserved.png`,fullPage:true});
+  await page.screenshot({path:`${out}/${width}x${height}-battle-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
   await route(page,'battleItemSelect');await preservation(page,'#battleItemSelect','battle item picker');
   await route(page,'contractConfirm');await preservation(page,'#contractConfirm','contract confirmation');
   // Compare cinematic subtree in a fixed stage to avoid timer-dependent false differences.
   await page.evaluate(()=>{show('home');document.querySelector('#contractAnimation').classList.remove('hidden');document.querySelector('#contractPaper').className='contract-paper';});
   await preservation(page,'#contractAnimation','contract cinematic');
-  await page.screenshot({path:`${out}/${width}x${height}-contract-preserved.png`,fullPage:true});
+  await page.screenshot({path:`${out}/${width}x${height}-contract-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
   await page.evaluate(()=>document.querySelector('#contractAnimation').classList.add('hidden'));
   await route(page,'skillGacha');
   await page.evaluate(()=>{const overlay=document.querySelector('#skillGachaPresentation');overlay.hidden=false;overlay.setAttribute('aria-hidden','false');});
   await preservation(page,'#skillGachaPresentation','skill gacha cinematic');
-  await page.screenshot({path:`${out}/${width}x${height}-skill-gacha-preserved.png`,fullPage:true});
+  await page.screenshot({path:`${out}/${width}x${height}-skill-gacha-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
   assert.equal(errors.length,0,errors.join('\n'));
   await baselineContext.close();await context.close();
  }
@@ -243,7 +254,7 @@ try{
 }catch(error){
  manifest.status='FAIL';manifest.error=error.stack||String(error);
  for(const [index,page] of (browser?.contexts().flatMap(context=>context.pages())||[]).entries()){
-  try{await page.screenshot({path:`${out}/failure-${index}.png`,fullPage:true,timeout:10000});}catch{}
+  try{await page.screenshot({path:`${out}/failure-${index}.jpg`,type:'jpeg',quality:75,fullPage:true,timeout:10000});}catch{}
  }
  write();throw error;
 }finally{await browser?.close();server?.kill();}
