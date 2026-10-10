@@ -18,7 +18,10 @@ const NONBATTLE_SCREEN_THEMES = Object.freeze({
   storyMode:'story',tutorialRequestReport:'story',tutorialStellaCard:'story',battleChoices:'story',
   expedition:'growth',shop:'menu',moreMenu:'menu',contractorRank:'menu',contractorRankRewards:'menu',contractorTitles:'menu',notices:'settings',diagnosticsScreen:'settings'
 });
+let nonbattlePreviousScreenId=null;
 function applyNonbattleTheme(id){
+  const changed=nonbattlePreviousScreenId!==id;
+  nonbattlePreviousScreenId=id;
   const family=NONBATTLE_SCREEN_THEMES[id];
   if(!family){
     delete document.body.dataset.nonbattleTheme;
@@ -27,6 +30,7 @@ function applyNonbattleTheme(id){
   }
   const screen=document.getElementById(id);
   if(!screen)return;
+  if(changed&&typeof window!=='undefined'&&typeof window.scrollTo==='function')window.scrollTo({top:0,left:0,behavior:'instant'});
   screen.classList.add('nonbattle-screen');
   screen.dataset.themeFamily=family;
   document.body.dataset.nonbattleTheme=family;

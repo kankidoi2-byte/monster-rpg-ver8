@@ -139,3 +139,5 @@ body[data-nonbattle-theme]:not(.title-mode):has(.screen.active :is(#dexDetail,#c
 body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card){background:#fff;color:#17263f;border:1px solid #aa8b46;box-shadow:0 6px 24px #0003;}
 body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card) :is(h2,p,button){color:#17263f;}
 body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card) button{background:#fff;border:1px solid #aa8b46;min-height:44px;}
+/* Keep keyboard/programmatic focus and anchor scrolling clear of fixed chrome. */
+.nonbattle-screen :is(button,input,select,textarea,summary,a,[tabindex]){scroll-margin-top:82px;scroll-margin-bottom:calc(var(--ui-nav-height,78px) + 18px);}

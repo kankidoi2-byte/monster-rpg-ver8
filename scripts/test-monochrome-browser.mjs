@@ -61,6 +61,12 @@ async function route(page,id){
  assert(await page.locator(`#${id}`).isVisible(),`${id} route is visible`);
 }
 async function capture(page,name,{validate=true}={}){
+ // Route changes intentionally preserve gameplay scroll. Normalize the two QA
+ // documents so paired evidence is not affected by the previous case's position.
+ await both(page,()=>{
+  window.scrollTo({top:0,left:0,behavior:'instant'});
+  const screen=document.querySelector('.screen.active');if(screen)screen.scrollTop=0;
+ });
  const entry={name,viewport:page.viewportSize()};
  for(const [enabled,label] of [[false,'before'],[true,'after']]){
   const target=enabled?page:baselines.get(page);
@@ -77,10 +83,13 @@ async function capture(page,name,{validate=true}={}){
  });
  const control=page.locator('.screen.active button:visible:not([disabled])').first();
  if(await control.count()){
-  await control.scrollIntoViewIfNeeded();
-  entry.firstControl=await control.evaluate(el=>{
+  // 'IfNeeded' accepts a control hidden under a sticky header as in-view.
+  // Center it as a user scroll would, then sample after layout settles.
+  await control.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+  entry.firstControl=await control.evaluate(async el=>{
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
    const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
-   return {text:el.textContent.slice(0,80),width:r.width,height:r.height,uncovered:hit===el||el.contains(hit)};
+   return {text:el.textContent.slice(0,80),width:r.width,height:r.height,rect:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},scrollY,hit:hit?{id:hit.id,tag:hit.tagName,className:hit.className}:null,uncovered:hit===el||el.contains(hit)};
   });
  }
  manifest.cases.push(entry);write();
