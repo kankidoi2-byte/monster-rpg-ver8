@@ -38,8 +38,10 @@ battle、battleItemSelect、contractConfirmはtheme registryから除外。グ�
 ## 検証
 - 静的契約: scripts/test-monochrome-theme.mjs
 - ブラウザ: scripts/test-monochrome-browser.mjs。CIの隔離ブラウザで320/360/390/430px、横844x390、空・多数・長名、詳細、200%相当のCSS zoomと半幅reflow、戦闘・契約のCSS不変を検証。実機Android/Chromebook、OSブラウザ拡大そのものとは区別する。
-- 成果: CI artifact `nonbattle-monochrome-evidence`、manifest.json と変更前後PNG。
+- 成果: CI artifact `nonbattle-monochrome-evidence`、manifest.json と変更前後JPEG（比較画像は品質75、判定値は無損失JSON）。manifestは別artifactでも取得可能。
 - ローカルでは既知のbrowser socket制限を回避せず、ブラウザ試験をCIに委ねる。CI完了前のスクリーンショットや合格は主張しない。
-- npm run check と world-map economy比較を既存CIで実行。
+- 390pxで実際のボタン操作・確認を通る編成保存、図鑑分類/絞込/詳細/戻る、技合成、技ガチャ、錬成、遠征開始/帰還/報酬、プロフィール表示名とセーブ再読込を確認。遠征の進行だけは既存の勝利進行ハンドラをテストから呼び出し、実戦勝利とは区別。
+- 隔離比較はbody/上下ナビを含む40件。有限アニメーションを双方で終了し、レイアウト確定後にOFF→ON→OFFを厳密比較。色や寸法の例外許容はしない。
+- npm run check と world-map economy比較、既存の戦闘/110技モバイル試験を既存CIで実行。
 
 最終PR本文に最新head、実際に合格した検証、プレビューURL、未確認事項を追記する。
