@@ -1,0 +1,19 @@
+name: Verify published count release hashes
+on:
+  push:
+    branches: [verify/count-hashes-live-20261011]
+permissions:
+  contents: read
+jobs:
+  published-runtime-hashes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Compare all approved public runtime files
+        run: python scripts/verify-count-live-hashes.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: count-release-live-hashes
+          path: artifacts/count-public-verification.json
