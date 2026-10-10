@@ -7,9 +7,9 @@
  * rem-based minimum columns allow larger user text to reflow to one column. */
 #skillDex.nonbattle-screen #skillDexList{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.25rem),1fr));gap:12px;align-items:stretch}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card{
-  display:flex;flex-direction:column;align-items:flex-start;gap:.6rem;
-  width:100%;min-width:0;min-height:20rem;height:auto;aspect-ratio:auto;box-sizing:border-box;
-  margin:0;padding:.85rem .7rem;text-align:left;cursor:pointer;
+  display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;
+  width:100%;min-width:0;min-height:clamp(15rem,64vw,17rem);height:auto;aspect-ratio:auto;box-sizing:border-box;
+  margin:0;padding:.65rem .65rem;text-align:left;cursor:pointer;
   background:linear-gradient(135deg,var(--dex-fill-a) 0 50%,var(--dex-fill-b) 50% 100%)!important;
   border:2px solid var(--dex-edge)!important;border-radius:12px;
   color:#fff!important;overflow:visible;white-space:normal;line-height:1.55;
@@ -18,12 +18,12 @@
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card::before{display:none}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card>*{flex-shrink:0;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;color:#fff;background:none;margin:0;text-shadow:none}
 #skillDex.nonbattle-screen #skillDexList .skill-card-title{font-size:1.1rem;font-weight:850;line-height:1.4;-webkit-text-fill-color:currentColor}
-#skillDex.nonbattle-screen #skillDexList .skill-cost-badge{font-size:.8rem;line-height:1.4;min-height:1.75rem;height:auto;padding:.2rem .55rem;background:#080b10;color:#fff;border:1px solid #ffffff70;box-shadow:none;white-space:nowrap;flex-shrink:0}
+#skillDex.nonbattle-screen #skillDexList .skill-cost-badge{font-size:.8rem;line-height:1.4;min-height:1.55rem;height:auto;padding:.2rem .55rem;background:#080b10;color:#fff;border:1px solid #ffffff70;box-shadow:none;white-space:nowrap;flex-shrink:0}
 #skillDex.nonbattle-screen #skillDexList .skill-type-line{font-size:.95rem;font-weight:800;line-height:1.5;padding:0;border:0;border-radius:0}
-#skillDex.nonbattle-screen #skillDexList .skill-dex-performance{align-self:stretch;padding:.5rem 0;border-block:1px solid #ffffff60;font-size:.95rem;line-height:1.4}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-performance{align-self:stretch;padding:.3rem 0;border-block:1px solid #ffffff60;font-size:.95rem;line-height:1.4}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-performance strong{font-size:1.3em;font-weight:850}
-#skillDex.nonbattle-screen #skillDexList .skill-dex-description{font-size:.9rem;line-height:1.65}
-#skillDex.nonbattle-screen #skillDexList .skill-dex-cta{align-self:flex-end;margin-top:auto;padding-top:.45rem;font-size:.9rem;font-weight:800;line-height:1.6}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-description{font-size:.9rem;line-height:1.5}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-cta{align-self:flex-end;margin-top:auto;padding-top:.25rem;font-size:.9rem;font-weight:800;line-height:1.6}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card:hover{border-color:#fff!important}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card:focus-visible{outline:3px solid #17263f;outline-offset:3px;box-shadow:0 0 0 3px #fff!important}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card:active{transform:translateY(1px)}
