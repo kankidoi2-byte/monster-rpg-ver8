@@ -17,9 +17,10 @@ try{
   const before=await page.evaluate(()=>JSON.stringify(save));
   await page.locator('#dexHubGrid button').filter({hasText:'技図鑑'}).click();
   assert(await page.locator('#skillDex').isVisible());assert.equal(await page.locator('[data-skill-dex-id]').count(),await page.evaluate(()=>skillDexEntries().length));
-  await page.locator('#skillDexSearch').fill('セラフィックリーフ');assert.equal(await page.locator('[data-skill-dex-id]').count(),1);
-  await page.locator('[data-skill-dex-id]').click();assert.match(await page.locator('#skillDexDetail').textContent(),/20%/);
-  await page.locator('#skillDexDetail .skill-dex-unit').first().click();assert(await page.locator('#dex').isVisible());
+  await page.locator('#skillDexSearch').fill('命流採水');assert.equal(await page.locator('[data-skill-dex-id]').count(),1);
+  await page.locator('[data-skill-dex-id]').click();assert.match(await page.locator('#skillDexDetail').textContent(),/30%/);
+  await page.locator('#skillDexDetail details').last().locator('summary').click();
+  await page.locator('#skillDexDetail .skill-dex-unit:visible').first().click();assert(await page.locator('#dex').isVisible());
   await page.locator('#dexDetail .skill-dex-open').filter({hasText:'技図鑑'}).last().click();assert(await page.locator('#skillDex').isVisible());
   await page.evaluate(()=>resetSkillDexFilters());
   for(const type of await page.evaluate(()=>[...new Set(skillDexEntries().flatMap(skillTypes))])){
@@ -33,6 +34,22 @@ try{
   const cards=await page.locator('#skillDexList .skill-card').evaluateAll(els=>els.map(el=>{const title=el.querySelector('.skill-card-title'),cost=el.querySelector('.skill-cost-badge');return {lines:el.querySelectorAll('.skill-type-line').length,overlap:title.getBoundingClientRect().right>cost.getBoundingClientRect().left+1,overflow:title.scrollWidth>title.clientWidth+1};}));assert(cards.every(c=>c.lines===1&&!c.overlap&&!c.overflow));
   assert.equal(await page.evaluate(()=>JSON.stringify(save)),before,'browse is read-only');
   await page.evaluate(()=>{show('characterDex');showCharacterDexDetail('elna_beginner');});await page.locator('#characterDexDetail .skill-dex-open').first().click();assert(await page.locator('#skillDex').isVisible());
+  await page.evaluate(()=>{showSkillSynthesis();});
+  assert.equal(await page.locator('[data-synthesis-id]').count(),4);
+  assert.equal(await page.locator('[data-synthesis-id]:disabled').count(),4);
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'synthesis horizontal overflow');
+  await page.evaluate(()=>{for(const recipe of SKILL110_SYNTHESIS_RECIPES)for(const id of recipe.materials)save.skillCards[id]=2;renderSkillSynthesis();});
+  assert.equal(await page.locator('[data-synthesis-id]:disabled').count(),0);
+  // Dismissed confirmation preserves inventory; accepted confirmation crafts exactly one.
+  const beforeCancel=await page.evaluate(()=>JSON.stringify(save.skillCards));
+  await page.locator('[data-synthesis-id]').first().click();
+  assert.equal(await page.evaluate(()=>JSON.stringify(save.skillCards)),beforeCancel);
+  page.removeAllListeners('dialog');page.on('dialog',dialog=>dialog.accept());
+  await page.locator('[data-synthesis-id]').first().click();
+  assert.equal(await page.evaluate(()=>save.skillCards.s110_107),1);
+  await page.evaluate(()=>show('skillDex'));
+  await page.locator('#skillDexCost').selectOption('25');assert.equal(await page.locator('[data-skill-dex-id]').count(),4);
+  await page.locator('[data-skill-dex-id]').first().click();assert.match(await page.locator('#skillDexDetail').textContent(),/合成限定/);
   await page.screenshot({path:`${out}/${width}.png`,fullPage:true});
   await page.evaluate(()=>{show('partySet');});assert(await page.locator('#partySet').isVisible());
   await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());

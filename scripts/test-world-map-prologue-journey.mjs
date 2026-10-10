@@ -90,10 +90,10 @@ const context=vm.createContext({
   registerHuntRequest:request=>(huntRequests.set(request.requestId,request),request),
   enemyMaxHp:()=>10,setupBattle(){},showBattleOutcome(){},endPartyRecovery(){},
   playContractAnimation:async()=>{},
-  SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01',name:'連続斬り',cost:2,power:34,types:['normal']}},
+  SKILL_BY_ID:{s110_041:{id:'s110_041',name:'連続斬り',cost:3,power:44,types:['normal']}},
   isSkillAllowedForMonster:()=>true,equippedSkillCost:instance=>(context.saveView?.equippedSkills?.[instance.uid]||[]).length,
   skillCostLimitFor:()=>5,availableSkillCount:id=>Math.max(0,Number(context.saveView?.skillCards?.[id]||0)),
-  skillTypes:skill=>skill.types,skillCardClass:()=>'',skillCardHeader:()=>'',skillCardStats:()=>'',skillCardEffect:()=>'',skillTypeLabel:()=>'',skillToMove:()=>['連続斬り',34,'normal'],moveEffectText:()=>'',
+  skillTypes:skill=>skill.types,skillCardClass:()=>'',skillCardHeader:()=>'',skillCardStats:()=>'',skillCardEffect:()=>'',skillTypeLabel:()=>'',skillToMove:()=>['連続斬り',44,'normal'],moveEffectText:()=>'',
   moveTypes:move=>Array.isArray(move?.[2])?move[2]:[move?.[2]],typeEff:(types,targetTypes)=>types.includes('fire')&&targetTypes.includes('grass')?2:1,
   openSkillEdit:uid=>{context.editingSkillUid=uid;activeScreen='skillEdit';},resetSkillFilters(){},renderSkillEdit(){},
   activateTutorialAlchemyLesson:config=>(context.activeAlchemyLesson=config,true),deactivateTutorialAlchemyLesson:()=>{context.activeAlchemyLesson=null;},showAlchemy:()=>{activeScreen='alchemy';},
@@ -198,9 +198,9 @@ while(state().status==='in_progress'){
     }
     case 'stella_skill_equip': {
       const uid=run('tutorialStellaSkillTargetInstance().uid');
-      context.saveView.equippedSkills[uid].push('skill_elna_middle_01');
-      context.saveView.skillCards.skill_elna_middle_01--;
-      assert.equal(run(`handleTutorialStellaSkillEquipped('skill_elna_middle_01','${uid}')`),true);
+      context.saveView.equippedSkills[uid].push('s110_041');
+      context.saveView.skillCards.s110_041--;
+      assert.equal(run(`handleTutorialStellaSkillEquipped('s110_041','${uid}')`),true);
       break;
     }
     case 'stella_mock_skill_open': assert.equal(run("handleTutorialBattleAction('skill_panel_opened')"),true);flushTimers();break;

@@ -13,14 +13,13 @@ try{
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();migrateSkillSystem();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('freigal',1).uid];show('home');});
   assert(await page.locator('#home').isVisible());
-  const rows=await page.evaluate(()=>MOVE_CARDS.filter(s=>['poison','paralysis','confusion','sleep'].includes(s.effect)).map(s=>({id:s.id,source:s.sourceUnitId,text:moveEffectText(skillToMove(s.id),{includeBase:false})})));assert.equal(rows.length,11);
+  const rows=await page.evaluate(()=>SKILL110_CATALOG.filter(s=>s.tactical?.status).map(s=>({id:s.id,source:M.find(m=>isSkillAllowedForMonster(s.id,m)).id,text:moveEffectText(skillToMove(s.id),{includeBase:false})})));assert.equal(rows.length,6);
   const check=async(selector,text)=>{const el=page.locator(selector).filter({hasText:text}).first();assert(await el.isVisible(),selector);const box=await el.evaluate(el=>({overflow:el.scrollWidth>el.clientWidth+1,clip:['hidden','clip'].includes(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1,text:el.textContent}));assert(!box.overflow&&!box.clip,selector+' readable');assert(box.text.includes(text));};
   await page.evaluate(()=>show('skillDex'));await page.locator('#skillDexStatusHelp summary').click();
   for(const text of ['しばらくの間、少しずつHPが減る。','体がしびれて、動けないことがある。','行動に失敗したり、自分を攻撃してしまうことがある。','しばらく眠ってしまい、行動できない。'])await check('#skillDexStatusHelp dd',text);
   for(const row of rows){
    await page.evaluate(id=>{show('skillDex');showSkillDexDetail(id,false);},row.id);await check('#skillDexDetail .skill-effect-text',row.text);
-   await page.evaluate(source=>{show('dex');renderUnitDexDetail(source,'dexDetail',()=>'',renderUnitSkillList);},row.source);await check('#dexDetail .skill-effect-text',row.text);
-   await page.evaluate(source=>{clearTutorialUi();save.instances=[];save.party=[];const ins=addInstance(source,1);save.party=[ins.uid];save.skillCards=Object.fromEntries(MOVE_CARDS.map(s=>[s.id,10]));openSkillEdit(ins.uid);},row.source);await check('#skillCardList .skill-effect-text',row.text);
+   await page.evaluate(source=>{clearTutorialUi();save.instances=[];save.party=[];const ins=addInstance(source,100);save.party=[ins.uid];save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(s=>[s.id,10]));openSkillEdit(ins.uid);},row.source);await check('#skillCardList .skill-effect-text',row.text);
    // Equip through the production save field; render with the real battle setup and UI.
    await page.evaluate(id=>{save.equippedSkills[save.party[0]]=[id];show('partySet');startBattleFromParty();startChosenBattle('grassland','slime','easy');renderSkillButtons();closeBattleSkillPanel();toggleBattleSkillPanel();},row.id);
    await page.evaluate(()=>{document.getElementById('battleCompactInfo').open=true;document.querySelector('.battle-skill-help').open=true;});
@@ -31,5 +30,5 @@ try{
   const saved=await page.evaluate(()=>{saveGame();return JSON.stringify({party:save.party,instances:save.instances,equippedSkills:save.equippedSkills,skillCards:save.skillCards});});await page.reload({waitUntil:'networkidle'});assert.equal(await page.evaluate(()=>JSON.stringify({party:save.party,instances:save.instances,equippedSkills:save.equippedSkills,skillCards:save.skillCards})),saved);
   assert.deepEqual(errors,[]);await page.close();
  }
- console.log('PASS status browser: 11 skills × 4 screens × 320/390/430/landscape; unclipped wrapping, title/home/party/hunt/battle/save/reload, no page errors');
+ console.log('PASS status browser: 6 adopted status skills × dex/equipment/battle × 320/390/430/landscape; unclipped wrapping, title/home/party/hunt/battle/save/reload, no page errors');
 }finally{await browser?.close();server.kill();}

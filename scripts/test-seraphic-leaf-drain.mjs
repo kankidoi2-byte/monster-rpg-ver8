@@ -1,3 +1,4 @@
+import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import assert from 'node:assert/strict';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
 const id='skill_seralphia_03',oldMove=['セラフィックリーフ',68,'grass',null,null,null,null,null,id];
@@ -7,7 +8,7 @@ const plain=v=>JSON.parse(JSON.stringify(v));
 assert.deepEqual(plain(after.run(`skillToMove('${id}')`)),newMove);
 assert.equal(before.run(`SKILL_BY_ID['${id}'].effect`),null);
 assert.equal(after.run(`SKILL_BY_ID['${id}'].cost`),4);
-assert.deepEqual(plain(after.run('M')).map(m=>({...m,moves:m.moves.map(mv=>mv[8]===id?oldMove:mv)})),plain(before.run('M')));
+assert.deepEqual(plain(after.run('M')).map(legacyUnitProjection).map(m=>({...m,moves:m.moves.map(mv=>mv[8]===id?oldMove:mv)})),plain(before.run('M')).map(legacyUnitProjection));
 assert.deepEqual(plain(after.run('MOVE_CARDS')).filter(c=>c.id!==id),plain(before.run('MOVE_CARDS')).filter(c=>c.id!==id));
 for(const field of ['id','cost','power','types','requirements','exclusiveMonsterId','sourceUnitId','form'])assert.deepEqual(plain(after.run(`SKILL_BY_ID['${id}'].${field}`)),plain(before.run(`SKILL_BY_ID['${id}'].${field}`)));
 assert.deepEqual(plain(after.run('MOVE_CARDS.map(c=>[c.id,canonicalSkillId(c.id),M.filter(m=>isSkillAllowedForMonster(c.id,m)).map(m=>m.id)])')),plain(before.run('MOVE_CARDS.map(c=>[c.id,canonicalSkillId(c.id),M.filter(m=>isSkillAllowedForMonster(c.id,m)).map(m=>m.id)])')));
@@ -26,7 +27,8 @@ for(const input of [id,alias]){
  const fields='({instances:save.instances.map(({uid,id,level,exp})=>({uid,id,level,exp})),party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})';
  const first=plain(after.run(fields));
  assert.deepEqual(first.instances,after.context.fixture.instances);assert.deepEqual(first.party,after.context.fixture.party);
- assert.deepEqual(Object.fromEntries(Object.entries(first.skillCards).filter(([,n])=>n>0)),{[id]:7,skill_freigal_01:2});assert.deepEqual(first.equippedSkills,{'sera-save':[id],'starter-save':['skill_freigal_01']});
+ const mapped=after.run(`canonicalSkillId('${input}')`),starter=after.run("canonicalSkillId('skill_freigal_01')");
+ assert.equal(first.skillCards[mapped],7);assert.equal(first.skillCards[starter],2);assert(first.equippedSkills['sera-save'].every(id=>after.run(`isSkillAllowedForMonster('${id}',by('seralphia'))`)));assert(first.equippedSkills['starter-save'].includes(starter));
  after.run('save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();migrateSkillSystem()');assert.deepEqual(plain(after.run(fields)),first);
 }
 function setup(r,{actor='player',hp=75,actorHp=10,half=false,link=false,guard=false,defender='slime',seed=42}={}){

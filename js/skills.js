@@ -35,6 +35,13 @@ const EVOLUTION_NATIVE_CARD_TARGETS = Object.freeze({
 });
 
 function migrateSkillSystem(evolutionNativeInstances = save.instances || []){
+  if (typeof skill110MigrationAvailable === 'function' && skill110MigrationAvailable()) {
+    if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
+    if (!Array.isArray(save.saveMeta.migrations)) save.saveMeta.migrations = [];
+    migrateSkill110Save(save, typeof saveRecoveryReport !== 'undefined' ? saveRecoveryReport : []);
+    (save.instances || []).forEach(ins => ensureInstanceSkills(ins));
+    return;
+  }
   if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
   if (!Array.isArray(save.saveMeta.migrations)) save.saveMeta.migrations = [];
   if (!save.equippedSkills) save.equippedSkills = {};
@@ -54,6 +61,7 @@ function migrateSkillSystem(evolutionNativeInstances = save.instances || []){
   migrateEvolutionNativeSkillCards(evolutionNativeInstances);
 }
 function migrateEvolutionNativeSkillCards(instances = save.instances || []){
+  if (typeof isSkill110Save === 'function' && isSkill110Save(save)) return;
   if (save.saveMeta.migrations.includes(EVOLUTION_NATIVE_CARDS_MIGRATION)) return;
   const required = Object.create(null);
   instances.forEach(ins => {
@@ -90,7 +98,7 @@ function grantEquippedSkillCardsForInstance(ins){
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
   ensureInstanceSkills(ins);
   (save.equippedSkills?.[ins.uid] || []).forEach(id => {
-    if (!SKILL_BY_ID[id]) return;
+    if (!SKILL_BY_ID[id] || SKILL_BY_ID[id].deprecated || SKILL_BY_ID[id].cost === 25) return;
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
   });
 }
@@ -98,7 +106,7 @@ function grantEquippedSkillCardsForInstance(ins){
 // slot count and COST. Normalize old aliases before deduplicating merged cards.
 function evolutionSkillCardIdsForMonster(mon){
   return [...new Set((mon?.moves || []).map(skillIdFromMove).map(canonicalSkillId))]
-    .filter(id => SKILL_BY_ID[id]);
+    .filter(id => SKILL_BY_ID[id] && !SKILL_BY_ID[id].deprecated && SKILL_BY_ID[id].cost !== 25);
 }
 function grantEvolutionSkillCardsForInstance(ins){
   if (!ins?.uid) return [];
@@ -107,12 +115,29 @@ function grantEvolutionSkillCardsForInstance(ins){
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
   const ids = evolutionSkillCardIdsForMonster(mon);
   ids.forEach(id => {
-    if (!SKILL_BY_ID[id]) return;
+    if (!SKILL_BY_ID[id] || SKILL_BY_ID[id].deprecated || SKILL_BY_ID[id].cost === 25) return;
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
   });
   return ids;
 }
 function ensureInstanceSkills(ins){
+  if (typeof skill110MigrationAvailable === 'function' && skill110MigrationAvailable()) {
+    if (!ins?.uid) return;
+    if (!save.equippedSkills) save.equippedSkills = {};
+    const mon = by(ins.id); if (!mon) return;
+    const current = save.equippedSkills[ins.uid];
+    if (!Array.isArray(current)) {
+      save.equippedSkills[ins.uid] = defaultSkillIdsForMonster(mon,ins).filter(id => SKILL_BY_ID[id]?.cost !== 25);
+      return;
+    }
+    let total = 0;
+    save.equippedSkills[ins.uid] = current.filter(id => {
+      const sk = SKILL_BY_ID[id];
+      if (!sk || sk.deprecated || !isSkillAllowedForMonster(id,mon) || total + sk.cost > skillCostLimitFor(mon,ins)) return false;
+      total += sk.cost; return true;
+    }).slice(0,3);
+    return;
+  }
   if (!ins || !ins.uid) return;
   if (!save.equippedSkills) save.equippedSkills = {};
   const mon = by(ins.id);
@@ -239,7 +264,7 @@ function renderSkillEdit({preservePosition=false}={}){
     const tutorialTarget=typeof shouldMarkTutorialStellaUnequip==='function'&&shouldMarkTutorialStellaUnequip(ins.uid)?' data-tutorial-stella-unequip':'';
     return `<div class="card ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}${skillCardEffect(skillToMove(id))}<button${tutorialTarget} onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
   }).join('') || '<div class="card">技が未装備です。</div>';
-  const skillPool = mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS;
+  const skillPool = typeof SKILL110_CATALOG !== 'undefined' ? SKILL110_CATALOG : (mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS);
   const filteredCards = skillPool.filter(sk => {
     const allowed = isSkillAllowedForMonster(sk.id, mon);
     const slotOk = equipped.length < 3;
@@ -249,7 +274,10 @@ function renderSkillEdit({preservePosition=false}={}){
     if (keyword && !sk.name.toLowerCase().includes(keyword)) return false;
     if (typeFilter !== 'all' && !skillTypes(sk).includes(typeFilter)) return false;
     if (costFilter !== 'all') {
-      if (costFilter === '5plus') {
+      if (['low','high','super','ultimate'].includes(costFilter)) {
+        const tier = sk.cost <= 5 ? 'low' : sk.cost <= 10 ? 'high' : sk.cost <= 20 ? 'super' : 'ultimate';
+        if (tier !== costFilter) return false;
+      } else if (costFilter === '5plus') {
         if (sk.cost < 5) return false;
       } else if (sk.cost !== Number(costFilter)) {
         return false;

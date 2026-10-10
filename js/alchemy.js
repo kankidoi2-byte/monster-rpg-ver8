@@ -585,7 +585,7 @@ function finalizeAlchemy(originalPlan){
       ${vis(resultMonster)}<h1>${resultMonster.name}</h1>
       <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${String(resultInstance.uid).slice(-8)}</p>
       ${modifierHtml}
-      ${candidate?.alchemyInstance?`<p><b>専用技：</b>${resultMonster.moves.filter((_,index)=>(ALCHEMY_MONSTER_CONFIGS[resultMonster.id]?.exclusiveMoveIndexes||[]).includes(index)).map(move=>`${skillTypeLabel(moveTypes(move))} ${move[0]}（威力${move[1]}・${moveEffectText(move)}）`).join('')}</p>`:''}
+      ${candidate?.alchemyInstance?`<p><b>初期技：</b>${resultMonster.moves.filter((_,index)=>(ALCHEMY_MONSTER_CONFIGS[resultMonster.id]?.exclusiveMoveIndexes||[]).includes(index)).map(move=>`${skillTypeLabel(moveTypes(move))} ${move[0]}（威力${move[1]}・${moveEffectText(move)}）`).join('')}</p>`:''}
       <button onclick="show('party')">完成個体を手持ちで確認</button>
       <button onclick="showAlchemy()" class="secondary-button">もう一度錬成する</button>
     </div>`;

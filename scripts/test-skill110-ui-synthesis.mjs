@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {runtime} from '../tools/balance-audit/runtime.mjs';
+const r=runtime();
+for(const file of ['skill-synthesis','skill-synthesis-ui'])vm.runInContext(fs.readFileSync(new URL(`../js/${file}.js`,import.meta.url),'utf8'),r.context);
+let confirmed=false,question='',notices=[];
+r.context.confirm=message=>{question=message;return confirmed;};
+r.context.showUiNotice=(message,kind)=>notices.push({message,kind});
+r.run('save=initSave();save.skillCards={};save.equippedSkills={};renderSkillSynthesis()');
+const el=r.elements.get('skillSynthesisList');assert.equal((el.innerHTML.match(/data-synthesis-id=/g)||[]).length,4);assert.equal((el.innerHTML.match(/ disabled/g)||[]).length,4);
+r.run("save.skillCards.s110_091=2;save.skillCards.s110_094=2;renderSkillSynthesis()");assert.equal((el.innerHTML.match(/ disabled/g)||[]).length,3);
+const before=r.run('JSON.stringify(save)');r.run("confirmSkillSynthesis('synth110_107')");assert.equal(r.run('JSON.stringify(save)'),before);assert(question.includes('紅蓮光砲 ×1'));assert(question.includes('過負荷の蒼雷 ×1'));
+confirmed=true;r.run("confirmSkillSynthesis('synth110_107')");assert.equal(r.run('save.skillCards.s110_107'),1);assert.equal(r.run('save.skillCards.s110_091'),1);assert(notices.some(n=>n.message.includes('オーバーブレイクを1枚合成')));
+assert.equal(r.run('skillSynthesisUiBusy'),false);assert.equal(r.run('skillSynthesisBusy'),false);
+console.log('PASS synthesis UI: 4 recipes, insufficient disable, explicit cancel, transaction integration and independent busy locks');
+// When the last owned copy is equipped, the same confirmation names the exact affected unit.
+r.run("save=initSave();save.instances=[];save.party=[];var synthesisIns=addInstance('freigal',100);save.skillCards={s110_091:1,s110_094:1};save.equippedSkills={[synthesisIns.uid]:['s110_091']};");
+confirmed=false;const equippedBefore=r.run('JSON.stringify(save)');r.run("confirmSkillSynthesis('synth110_107')");assert.equal(r.run('JSON.stringify(save)'),equippedBefore);assert(question.includes(r.run('synthesisIns.uid')));assert(question.includes('フレイガル'));assert(question.includes('装備が調整'));
+confirmed=true;r.run("confirmSkillSynthesis('synth110_107')");assert.equal(r.run('save.skillCards.s110_107'),1);assert(!r.run("save.equippedSkills[synthesisIns.uid].includes('s110_091')"));
+console.log('PASS synthesis UI equipment impact lists exact UID/unit/skill before removal');

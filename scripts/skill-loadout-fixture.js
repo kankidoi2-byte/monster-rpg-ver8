@@ -9,9 +9,9 @@ if(window.parent!==window){
     save=initSave();save.tutorial=tutorialSaveDefaults({legacy:true});
     save.instances=[];save.party=[];
     const ins=addInstance(kind==='tutorial'?'elna_beginner':'freigal',1);save.party=[ins.uid];
-    save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,10]));
-    const mon=by(ins.id),allowed=MOVE_CARDS.filter(sk=>isSkillAllowedForMonster(sk.id,mon));
-    const cheap=allowed.find(sk=>sk.cost===1),limit=skillCostLimitFor(mon,ins);
+    save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(sk=>[sk.id,10]));
+    const mon=by(ins.id),allowed=EQUIPPABLE_MOVE_CARDS.filter(sk=>isSkillAllowedForMonster(sk.id,mon));
+    const cheap=allowed.find(sk=>sk.cost===1&&skillTypes(sk).includes(mon.types?.[0]||mon.type))||allowed.find(sk=>sk.cost===1),limit=skillCostLimitFor(mon,ins);
     save.equippedSkills[ins.uid]=[cheap.id];
     if(kind==='full'||kind==='tutorial')save.equippedSkills[ins.uid]=[cheap.id,cheap.id,cheap.id];
     if(kind==='exact'||kind==='short'){

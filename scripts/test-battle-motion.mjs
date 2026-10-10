@@ -14,7 +14,8 @@ const motion = vm.runInContext(`({
   skillToMove,
   skillBattleMotionForMove,
   by,
-  cards:MOVE_CARDS.filter(card=>!card.sourceUnitId.startsWith('character_'))
+  cards:MOVE_CARDS.filter(card=>!card.id.startsWith('s110_')&&!card.sourceUnitId.startsWith('character_')),
+  newCards:SKILL110_CATALOG
 })`, context);
 
 const breathMove = motion.skillToMove('skill_nemes_03');
@@ -88,7 +89,7 @@ for(const [skillId,form] of genericMotionCases){
   assert.equal(descriptor.animated, true, `${skillId} must receive a supplemented attack motion`);
 }
 
-const originalBreath = motion.by('nemes').moves.find(move => move[0] === 'コスモブレス');
+const originalBreath = motion.by('nemes').legacyMoves.find(move => move[0] === 'コスモブレス');
 assert(originalBreath, 'the source monster must still expose its original breath move');
 assert.equal(motion.skillBattleMotionForMove(originalBreath).skillId, 'skill_nemes_03', 'original monster moves must resolve through the existing move-to-skill bridge');
 assert.equal(motion.skillBattleMotionForMove(originalBreath).animated, true);
@@ -311,3 +312,6 @@ assert(css.includes('.battle-support-motion.is-sleep') && css.includes('@keyfram
 assert(css.includes('.battle-skill-motion,.battle-melee-motion,.battle-impact-motion,.battle-anatomy-motion,.battle-arcane-motion,.battle-support-motion{display:none}'), 'reduced-motion users must be able to skip all battle motion');
 
 console.log(`Battle skill motion validation passed (all ${damageCards.length} attacks and ${supportCards.length} support skills, ${damageCards.length+supportCards.length} total; normal and multi-battle wiring, reduced-motion fallback).`);
+
+for(const card of motion.newCards){const motionInfo=motion.skillBattleMotionForMove(motion.skillToMove(card.id));assert.equal(motionInfo.animated,true,card.id+' new skill animation');assert.equal(motionInfo.role,card.power>0?'damage':'support');}
+console.log('PASS all 110 new skills have compatible battle motion descriptors');

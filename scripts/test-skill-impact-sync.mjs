@@ -29,8 +29,8 @@ moves.push(['通常攻撃',24,'normal'],['弱体化',0,'dark','debuff'],['追加
 // The three powered modifiers now intentionally deal damage; the dedicated
 // production-runtime matrix compares them with the old engine and normal attacks.
 const poweredIds=['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02'];
-const comparisonMoves=moves.filter(move=>move[3]!=='tactical'&&!poweredIds.includes(move[8]));
-assert(moves.filter(move=>move[3]==='tactical').every(move=>(/^skill_character_/.test(move[8])||move[8]==='skill_seralphia_03')&&move[9]));
+const comparisonMoves=moves.filter(move=>move[3]!=='tactical'&&!poweredIds.includes(move[8])&&(move[8]||move[3]));
+assert(moves.filter(move=>move[3]==='tactical').every(move=>(/^(skill_character_|s110_)/.test(move[8])||move[8]==='skill_seralphia_03')&&move[9]));
 let cases=0;
 for(const direction of ['single-player','single-enemy','player-enemy','enemy-player','enemy-enemy'])for(const move of comparisonMoves){
  const states=[],draws=[];
@@ -42,7 +42,7 @@ for(const direction of ['single-player','single-enemy','player-enemy','enemy-pla
   else await r.run(`performMultiAttack(${direction==='player-enemy'?"{kind:'player'}":'multiBattle.enemies[0]'},${direction==='enemy-player'?"{kind:'player'}":'multiBattle.enemies[1]'},${JSON.stringify(move)})`);
   // Immediate HP clamps intentionally replace transient negative HP; compare final
   // nonnegative HP while retaining every other outcome and RNG-count check.
-  states.push(r.run('JSON.stringify([Math.max(0,pHp),Math.max(0,eHp),pAtk,eAtk,pGuard,eGuard,pStatus,eStatus,pPoisonTurns,ePoisonTurns,pParalysisTurns,eParalysisTurns,pConfusionTurns,eConfusionTurns,pSleepTurns,eSleepTurns,pAquaShield,eAquaShield,pFlareCharge,eFlareCharge,multiBattle?.enemies,save.coins,battleTurnCount])'));draws.push(count);
+  states.push(r.run('JSON.stringify([Math.max(0,pHp),Math.max(0,eHp),pAtk,eAtk,pGuard,eGuard,pStatus,eStatus,pPoisonTurns,ePoisonTurns,pParalysisTurns,eParalysisTurns,pConfusionTurns,eConfusionTurns,pSleepTurns,eSleepTurns,pAquaShield,eAquaShield,pFlareCharge,eFlareCharge,multiBattle?.enemies.map(({mon,...entry})=>({...entry,monId:mon.id})),save.coins,battleTurnCount])'));draws.push(count);
  }
  assert.equal(states[0],states[1],`${direction}/${move[0]} outcomes`);assert.equal(draws[0],draws[1],`${direction}/${move[0]} RNG`);cases++;
 }

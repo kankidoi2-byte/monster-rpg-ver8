@@ -51,6 +51,8 @@ const resumeContext=vm.createContext({
   tutorialUiState:{active:false,flowId:null,steps:[],index:0,persist:false,replay:false,returnScreen:null,previousFocus:null,lastFocusedStep:null},
   tutorialFlowSteps:()=>mainSteps,
   resolveTutorialExpeditionResumeStep:(_flowId,stepId)=>stepId,
+  // This fixture isolates removed-step redirects; real COST-aware resume is covered by test-skill110-tutorial.
+  resolveTutorialStellaSkillResumeStep:stepId=>stepId,
   clearTutorialUi:()=>{resumeContext.tutorialUiState.active=false;resumeContext.tutorialUiState.steps=[];resumeContext.tutorialUiState.index=0;},
   renderTutorialStep:()=>{resumeContext.rendered=true;},
   updateTutorialMenuSummary:()=>{},
@@ -70,7 +72,7 @@ const legacyRewardSnapshot=()=>({
   ],
   coins:777,
   items:{monster_bone:7,magic_crystal:7,metal_ore:7,unstable_alchemy_matter:7},
-  skillCards:{skill_elna_middle_01:2},
+  skillCards:{s110_041:2},
   expeditions:{completedCount:4,active:[{id:'legacy_short',mapId:'grassland',distanceId:'short',memberUids:['legacy_alchemion'],progress:0,status:'active'}]},
   progress:{tutorial:{
     id:'prologue',version:2,status:'in_progress',stepId:null,replaying:false,
@@ -127,7 +129,7 @@ for(const id of requiredActions)assert.ok(ids.includes(id),`essential operation 
 
 assert.match(main,/id:'battle_enemy'[^\n]+敵・味方・HP[^\n]+1ターン/,'battle overview must retain the merged enemy, ally, HP, and turn explanation');
 assert.match(main,/id:'battle_choose_skill'[^\n]+COST[^\n]+実際に使って/,'skill selection must retain the cost explanation and real operation');
-assert.match(main,/id:'stella_skill_equip'[^\n]+無属性・威力34・COST 2[^\n]+剣士タグ/,'Stella equip must retain the card details');
+assert.match(main,/id:'stella_skill_equip'[^\n]+無属性・COST 3[^\n]+剣を使う仲間/,'Stella equip must retain the card details');
 assert.match(main,/id:'lumina_materials'[^\n]+4種類[^\n]+250枚[^\n]+必ず成功[^\n]+契約体は消費しない/,'Gnosis must retain all first-alchemy conditions');
 
 const idSet=new Set(ids);

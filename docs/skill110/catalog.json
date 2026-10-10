@@ -1,0 +1,4196 @@
+[
+  {
+    "id": "s110_001",
+    "name": "一撃",
+    "cost": 1,
+    "power": 24,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_002",
+    "name": "強打",
+    "cost": 4,
+    "power": 50,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_003",
+    "name": "身構える",
+    "cost": 2,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "guard": 0.45
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "次に受ける攻撃技を45%軽減",
+    "customDesc": "身構えて次の攻撃を軽減する。",
+    "desc": "身構えて次の攻撃を軽減する。"
+  },
+  {
+    "id": "s110_004",
+    "name": "小回復",
+    "cost": 3,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "heal": {
+        "flat": 14,
+        "perLevel": 1.2
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分を14＋使用者Lv×1.2回復",
+    "customDesc": "自分のHPを少し回復する。",
+    "desc": "自分のHPを少し回復する。"
+  },
+  {
+    "id": "s110_005",
+    "name": "毒払い",
+    "cost": 2,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "cleanse": [
+        "poison"
+      ]
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分の毒を解除",
+    "customDesc": "自分の毒を解除する。",
+    "desc": "自分の毒を解除する。"
+  },
+  {
+    "id": "s110_006",
+    "name": "しびれ取り",
+    "cost": 2,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "cleanse": [
+        "paralysis"
+      ]
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分の麻痺を解除",
+    "customDesc": "自分の麻痺を解除する。",
+    "desc": "自分の麻痺を解除する。"
+  },
+  {
+    "id": "s110_007",
+    "name": "気付け",
+    "cost": 2,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "cleanse": [
+        "confusion"
+      ]
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分の混乱を解除",
+    "customDesc": "自分の混乱を解除する。",
+    "desc": "自分の混乱を解除する。"
+  },
+  {
+    "id": "s110_008",
+    "name": "気合溜め",
+    "cost": 3,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "buff": 0.2
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分の攻撃倍率＋0.2",
+    "customDesc": "気合を入れて自分の攻撃力を上げる。",
+    "desc": "気合を入れて自分の攻撃力を上げる。"
+  },
+  {
+    "id": "s110_009",
+    "name": "威圧",
+    "cost": 4,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "debuff": 0.15
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "敵の攻撃倍率−0.15",
+    "customDesc": "相手を威圧して攻撃力を下げる。",
+    "desc": "相手を威圧して攻撃力を下げる。"
+  },
+  {
+    "id": "s110_010",
+    "name": "集中",
+    "cost": 1,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "charge": 1.2
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "次の攻撃技のダメージ1.2倍",
+    "customDesc": "集中して次の攻撃を強める。",
+    "desc": "集中して次の攻撃を強める。"
+  },
+  {
+    "id": "s110_011",
+    "name": "立て直し",
+    "cost": 5,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "cleanse": [
+        "poison",
+        "paralysis",
+        "confusion"
+      ]
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分の毒・麻痺・混乱を解除",
+    "customDesc": "自分の毒・麻痺・混乱を解除する。",
+    "desc": "自分の毒・麻痺・混乱を解除する。"
+  },
+  {
+    "id": "s110_012",
+    "name": "打ち消し",
+    "cost": 5,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "dispel": "attack"
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "敵の攻撃力強化のみ解除",
+    "customDesc": "相手の攻撃力強化を打ち消す。",
+    "desc": "相手の攻撃力強化を打ち消す。"
+  },
+  {
+    "id": "s110_013",
+    "name": "火花の舞",
+    "cost": 1,
+    "power": 24,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_014",
+    "name": "火炎弾",
+    "cost": 3,
+    "power": 42,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_015",
+    "name": "爆炎チャージ",
+    "cost": 5,
+    "power": 64,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.05
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire"
+    ],
+    "detailedDesc": "最大HPの5%反動",
+    "customDesc": "激しく突撃する。自分も反動を受ける。",
+    "desc": "激しく突撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_016",
+    "name": "水流弾",
+    "cost": 1,
+    "power": 24,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_017",
+    "name": "大波召喚",
+    "cost": 3,
+    "power": 42,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_018",
+    "name": "吸水",
+    "cost": 5,
+    "power": 40,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "drain": 0.2
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:water"
+    ],
+    "detailedDesc": "実際に削ったHPの20%吸収",
+    "customDesc": "攻撃して相手のHPを吸収する。",
+    "desc": "攻撃して相手のHPを吸収する。"
+  },
+  {
+    "id": "s110_019",
+    "name": "リーフカッター",
+    "cost": 1,
+    "power": 24,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:grass"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_020",
+    "name": "森の一撃",
+    "cost": 3,
+    "power": 42,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:grass"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_021",
+    "name": "ポイズンニードル",
+    "cost": 5,
+    "power": 38,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "status": {
+        "kind": "poison",
+        "chance": 0.25
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:grass"
+    ],
+    "detailedDesc": "毒を25%で付与",
+    "customDesc": "毒針で攻撃する。毒にすることがある。",
+    "desc": "毒針で攻撃する。毒にすることがある。"
+  },
+  {
+    "id": "s110_022",
+    "name": "雷撃",
+    "cost": 1,
+    "power": 24,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:thunder"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_023",
+    "name": "雷光弾",
+    "cost": 3,
+    "power": 42,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:thunder"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_024",
+    "name": "サンダーボルト",
+    "cost": 5,
+    "power": 38,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "status": {
+        "kind": "paralysis",
+        "chance": 0.2
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:thunder"
+    ],
+    "detailedDesc": "麻痺を20%で付与",
+    "customDesc": "雷で攻撃する。麻痺させることがある。",
+    "desc": "雷で攻撃する。麻痺させることがある。"
+  },
+  {
+    "id": "s110_025",
+    "name": "突風",
+    "cost": 1,
+    "power": 24,
+    "type": "wind",
+    "types": [
+      "wind"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:wind"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_026",
+    "name": "ゼファーカッター",
+    "cost": 3,
+    "power": 42,
+    "type": "wind",
+    "types": [
+      "wind"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:wind"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_027",
+    "name": "追い風の封書",
+    "cost": 5,
+    "power": 38,
+    "type": "wind",
+    "types": [
+      "wind"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "charge": 1.2
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:wind"
+    ],
+    "detailedDesc": "次の攻撃技のダメージ1.2倍",
+    "customDesc": "風で攻撃し、次の攻撃に集中する。",
+    "desc": "風で攻撃し、次の攻撃に集中する。"
+  },
+  {
+    "id": "s110_028",
+    "name": "光雫弾",
+    "cost": 1,
+    "power": 24,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:light"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_029",
+    "name": "祈光弾",
+    "cost": 3,
+    "power": 42,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:light"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_030",
+    "name": "癒しの光弾",
+    "cost": 5,
+    "power": 38,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "heal": {
+        "flat": 8,
+        "perLevel": 0.5
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:light"
+    ],
+    "detailedDesc": "自分を8＋使用者Lv×0.5回復",
+    "customDesc": "光で攻撃し、自分のHPも回復する。",
+    "desc": "光で攻撃し、自分のHPも回復する。"
+  },
+  {
+    "id": "s110_031",
+    "name": "影打ち",
+    "cost": 1,
+    "power": 24,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dark"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_032",
+    "name": "闇の波動",
+    "cost": 3,
+    "power": 42,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dark"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_033",
+    "name": "呪いの視線",
+    "cost": 5,
+    "power": 38,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "debuff": 0.1
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dark"
+    ],
+    "detailedDesc": "敵の攻撃倍率−0.1",
+    "customDesc": "闇で攻撃し、相手の攻撃力を下げる。",
+    "desc": "闇で攻撃し、相手の攻撃力を下げる。"
+  },
+  {
+    "id": "s110_034",
+    "name": "星屑弾",
+    "cost": 1,
+    "power": 24,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_035",
+    "name": "スターライトレイ",
+    "cost": 3,
+    "power": 42,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_036",
+    "name": "イリュージョン",
+    "cost": 5,
+    "power": 38,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "status": {
+        "kind": "confusion",
+        "chance": 0.2
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "混乱を20%で付与",
+    "customDesc": "幻で攻撃する。混乱させることがある。",
+    "desc": "幻で攻撃する。混乱させることがある。"
+  },
+  {
+    "id": "s110_037",
+    "name": "夜滑り",
+    "cost": 1,
+    "power": 24,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_038",
+    "name": "竜気弾",
+    "cost": 3,
+    "power": 42,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "属性の力で相手を攻撃する。",
+    "desc": "属性の力で相手を攻撃する。"
+  },
+  {
+    "id": "s110_039",
+    "name": "蒼竜の咆哮",
+    "cost": 5,
+    "power": 38,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "buff": 0.1
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dragon"
+    ],
+    "detailedDesc": "自分の攻撃倍率＋0.1",
+    "customDesc": "咆哮で攻撃し、自分の攻撃力を上げる。",
+    "desc": "咆哮で攻撃し、自分の攻撃力を上げる。"
+  },
+  {
+    "id": "s110_040",
+    "name": "斬りつけ",
+    "cost": 1,
+    "power": 26,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "sword",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "weapon:sword"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:sword",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_041",
+    "name": "連続斬り",
+    "cost": 3,
+    "power": 44,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "hits": 2
+    },
+    "form": "sword",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "weapon:sword"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:sword",
+      "element:normal"
+    ],
+    "detailedDesc": "2回攻撃（合計威力44）",
+    "customDesc": "連続で相手を斬りつける。",
+    "desc": "連続で相手を斬りつける。"
+  },
+  {
+    "id": "s110_042",
+    "name": "渾身斬り",
+    "cost": 5,
+    "power": 62,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "sword",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "weapon:sword"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:sword",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_043",
+    "name": "フレイムクロー",
+    "cost": 2,
+    "power": 34,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "claw",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:claw"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:claw",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_044",
+    "name": "竜のひっかき",
+    "cost": 2,
+    "power": 34,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "claw",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:claw"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:claw",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_045",
+    "name": "星雲の爪",
+    "cost": 4,
+    "power": 54,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "claw",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:claw"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:claw",
+      "element:star"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_046",
+    "name": "火炎牙",
+    "cost": 2,
+    "power": 34,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fang",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fang"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fang",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_047",
+    "name": "影牙",
+    "cost": 2,
+    "power": 34,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fang",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fang"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fang",
+      "element:dark"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_048",
+    "name": "炎狼牙",
+    "cost": 4,
+    "power": 54,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fang",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fang"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fang",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_049",
+    "name": "しっぽ打ち",
+    "cost": 1,
+    "power": 26,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "tail",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:tail"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:tail",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_050",
+    "name": "幼竜の尾",
+    "cost": 2,
+    "power": 34,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "tail",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:tail"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:tail",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_051",
+    "name": "ストリームテイル",
+    "cost": 4,
+    "power": 54,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "tail",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:tail"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:tail",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_052",
+    "name": "ソーンホーン",
+    "cost": 3,
+    "power": 44,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "horn",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:horn"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:horn",
+      "element:grass"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_053",
+    "name": "溶岩角",
+    "cost": 4,
+    "power": 54,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "horn",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:horn"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:horn",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_054",
+    "name": "ルクスホーン",
+    "cost": 4,
+    "power": 54,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "horn",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:horn"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:horn",
+      "element:light"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_055",
+    "name": "氷の拳",
+    "cost": 2,
+    "power": 34,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fist",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fist"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fist",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_056",
+    "name": "石造拳",
+    "cost": 4,
+    "power": 54,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fist",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fist"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fist",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_057",
+    "name": "氷塊拳",
+    "cost": 4,
+    "power": 54,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fist",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fist"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fist",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_058",
+    "name": "たいあたり",
+    "cost": 1,
+    "power": 26,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "charge",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "capability:charge"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:charge",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_059",
+    "name": "若葉の突進",
+    "cost": 2,
+    "power": 34,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "charge",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "capability:charge"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:charge",
+      "element:grass"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_060",
+    "name": "蒼海の突進",
+    "cost": 4,
+    "power": 54,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "charge",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "capability:charge"
+      ]
+    },
+    "universal": false,
+    "tier": "低級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:charge",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_061",
+    "name": "捨て身打ち",
+    "cost": 6,
+    "power": 80,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.08
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "最大HPの8%反動",
+    "customDesc": "反動を顧みず強く打ちつける。",
+    "desc": "反動を顧みず強く打ちつける。"
+  },
+  {
+    "id": "s110_062",
+    "name": "応急治療",
+    "cost": 7,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "heal": {
+        "flat": 24,
+        "perLevel": 3
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分を24＋使用者Lv×3回復",
+    "customDesc": "応急処置で自分のHPを回復する。",
+    "desc": "応急処置で自分のHPを回復する。"
+  },
+  {
+    "id": "s110_063",
+    "name": "鉄壁の構え",
+    "cost": 7,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "guard": 0.7
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "次に受ける攻撃技を70%軽減",
+    "customDesc": "守りを固めて次の攻撃を大きく軽減する。",
+    "desc": "守りを固めて次の攻撃を大きく軽減する。"
+  },
+  {
+    "id": "s110_064",
+    "name": "奮起",
+    "cost": 8,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "buff": 0.25,
+      "cleanse": [
+        "confusion"
+      ]
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分の攻撃倍率＋0.25。自分の混乱を解除",
+    "customDesc": "混乱を振り払い、自分の攻撃力を上げる。",
+    "desc": "混乱を振り払い、自分の攻撃力を上げる。"
+  },
+  {
+    "id": "s110_065",
+    "name": "崩しの一撃",
+    "cost": 9,
+    "power": 52,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "dispel": true
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "攻撃後に敵の攻撃力強化・防御・障壁・集中を解除",
+    "customDesc": "攻撃して相手の強化を解除する。",
+    "desc": "攻撃して相手の強化を解除する。"
+  },
+  {
+    "id": "s110_066",
+    "name": "再起",
+    "cost": 10,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "heal": {
+        "flat": 24,
+        "perLevel": 2
+      },
+      "cleanse": [
+        "poison",
+        "paralysis",
+        "confusion"
+      ]
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分を24＋使用者Lv×2回復。自分の毒・麻痺・混乱を解除",
+    "customDesc": "HPを回復し、毒・麻痺・混乱を解除する。",
+    "desc": "HPを回復し、毒・麻痺・混乱を解除する。"
+  },
+  {
+    "id": "s110_067",
+    "name": "灼熱光砲",
+    "cost": 7,
+    "power": 68,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_068",
+    "name": "焼き直し",
+    "cost": 9,
+    "power": 48,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "dispel": true
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire"
+    ],
+    "detailedDesc": "攻撃後に敵の攻撃力強化・防御・障壁・集中を解除",
+    "customDesc": "相手を攻撃する。相手の強化を解除する。",
+    "desc": "相手を攻撃する。相手の強化を解除する。"
+  },
+  {
+    "id": "s110_069",
+    "name": "ハイドロスパイラル",
+    "cost": 7,
+    "power": 68,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_070",
+    "name": "命流採水",
+    "cost": 9,
+    "power": 52,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "drain": 0.3
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:water"
+    ],
+    "detailedDesc": "実際に削ったHPの30%吸収",
+    "customDesc": "相手を攻撃する。相手のHPを吸収する。",
+    "desc": "相手を攻撃する。相手のHPを吸収する。"
+  },
+  {
+    "id": "s110_071",
+    "name": "ガイアスラッシュ",
+    "cost": 7,
+    "power": 68,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:grass"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_072",
+    "name": "トキシックガーデン",
+    "cost": 10,
+    "power": 48,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "status": {
+        "kind": "poison",
+        "chance": 0.4
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:grass"
+    ],
+    "detailedDesc": "毒を40%で付与",
+    "customDesc": "相手を攻撃する。毒にすることがある。",
+    "desc": "相手を攻撃する。毒にすることがある。"
+  },
+  {
+    "id": "s110_073",
+    "name": "ボルテックストーム",
+    "cost": 7,
+    "power": 68,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:thunder"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_074",
+    "name": "サンダーストーム",
+    "cost": 10,
+    "power": 48,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "status": {
+        "kind": "paralysis",
+        "chance": 0.35
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:thunder"
+    ],
+    "detailedDesc": "麻痺を35%で付与",
+    "customDesc": "相手を攻撃する。麻痺にすることがある。",
+    "desc": "相手を攻撃する。麻痺にすることがある。"
+  },
+  {
+    "id": "s110_075",
+    "name": "暴風刃",
+    "cost": 7,
+    "power": 68,
+    "type": "wind",
+    "types": [
+      "wind"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:wind"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_076",
+    "name": "峡谷の風便",
+    "cost": 9,
+    "power": 48,
+    "type": "wind",
+    "types": [
+      "wind"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "dispel": true
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:wind"
+    ],
+    "detailedDesc": "攻撃後に敵の攻撃力強化・防御・障壁・集中を解除",
+    "customDesc": "相手を攻撃する。相手の強化を解除する。",
+    "desc": "相手を攻撃する。相手の強化を解除する。"
+  },
+  {
+    "id": "s110_077",
+    "name": "ジャッジメント",
+    "cost": 7,
+    "power": 68,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:light"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_078",
+    "name": "浄光のメス",
+    "cost": 9,
+    "power": 48,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "dispel": true
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:light"
+    ],
+    "detailedDesc": "攻撃後に敵の攻撃力強化・防御・障壁・集中を解除",
+    "customDesc": "相手を攻撃する。相手の強化を解除する。",
+    "desc": "相手を攻撃する。相手の強化を解除する。"
+  },
+  {
+    "id": "s110_079",
+    "name": "ノクスエクリプス",
+    "cost": 7,
+    "power": 62,
+    "type": "dark",
+    "types": [
+      "dark",
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dark",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_080",
+    "name": "衰弱の呪印",
+    "cost": 9,
+    "power": 48,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "debuff": 0.15
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dark"
+    ],
+    "detailedDesc": "敵の攻撃倍率−0.15",
+    "customDesc": "相手を攻撃する。相手の攻撃力を下げる。",
+    "desc": "相手を攻撃する。相手の攻撃力を下げる。"
+  },
+  {
+    "id": "s110_081",
+    "name": "アストラルフレア",
+    "cost": 7,
+    "power": 68,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_082",
+    "name": "星幕の迷路",
+    "cost": 10,
+    "power": 48,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "status": {
+        "kind": "confusion",
+        "chance": 0.35
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "混乱を35%で付与",
+    "customDesc": "相手を攻撃する。混乱にすることがある。",
+    "desc": "相手を攻撃する。混乱にすることがある。"
+  },
+  {
+    "id": "s110_083",
+    "name": "蒼天龍波",
+    "cost": 7,
+    "power": 68,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_084",
+    "name": "蝕月咆哮",
+    "cost": 9,
+    "power": 48,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "debuff": 0.15
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dragon"
+    ],
+    "detailedDesc": "敵の攻撃倍率−0.15",
+    "customDesc": "相手を攻撃する。相手の攻撃力を下げる。",
+    "desc": "相手を攻撃する。相手の攻撃力を下げる。"
+  },
+  {
+    "id": "s110_085",
+    "name": "白銀連斬",
+    "cost": 8,
+    "power": 76,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "sword",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "weapon:sword"
+      ]
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:sword",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_086",
+    "name": "ボルテッククロー",
+    "cost": 7,
+    "power": 72,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "claw",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:claw"
+      ]
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:claw",
+      "element:thunder"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_087",
+    "name": "夜天竜牙",
+    "cost": 8,
+    "power": 76,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fang",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fang"
+      ]
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fang",
+      "element:dark"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_088",
+    "name": "竜の尾撃",
+    "cost": 7,
+    "power": 72,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "tail",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:tail"
+      ]
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:tail",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_089",
+    "name": "火口崩し",
+    "cost": 9,
+    "power": 88,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.06
+    },
+    "form": "charge",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "capability:charge"
+      ]
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:charge",
+      "element:fire"
+    ],
+    "detailedDesc": "最大HPの6%反動",
+    "customDesc": "相手を攻撃する。自分も反動を受ける。",
+    "desc": "相手を攻撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_090",
+    "name": "巨岩クラッシュ",
+    "cost": 9,
+    "power": 82,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "fist",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": [
+        "anatomy:fist"
+      ]
+    },
+    "universal": false,
+    "tier": "上級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:fist",
+      "element:normal"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_091",
+    "name": "紅蓮光砲",
+    "cost": 15,
+    "power": 108,
+    "type": "fire",
+    "types": [
+      "fire"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_092",
+    "name": "オルカアビス",
+    "cost": 15,
+    "power": 108,
+    "type": "water",
+    "types": [
+      "water"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:water"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_093",
+    "name": "古森の波動",
+    "cost": 15,
+    "power": 108,
+    "type": "grass",
+    "types": [
+      "grass"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:grass"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_094",
+    "name": "過負荷の蒼雷",
+    "cost": 16,
+    "power": 126,
+    "type": "thunder",
+    "types": [
+      "thunder"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.1
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:thunder"
+    ],
+    "detailedDesc": "最大HPの10%反動",
+    "customDesc": "相手を攻撃する。自分も反動を受ける。",
+    "desc": "相手を攻撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_095",
+    "name": "アペクスストーム",
+    "cost": 20,
+    "power": 138,
+    "type": "wind",
+    "types": [
+      "wind",
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.1
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:wind",
+      "element:dragon"
+    ],
+    "detailedDesc": "最大HPの10%反動",
+    "customDesc": "相手を攻撃する。自分も反動を受ける。",
+    "desc": "相手を攻撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_096",
+    "name": "コード・アルファ",
+    "cost": 15,
+    "power": 108,
+    "type": "light",
+    "types": [
+      "light"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:light"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_097",
+    "name": "総決算の影札",
+    "cost": 17,
+    "power": 88,
+    "type": "dark",
+    "types": [
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "bonus": {
+        "condition": "target_hurt",
+        "threshold": 0.5,
+        "multiplier": 1.3
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dark"
+    ],
+    "detailedDesc": "攻撃直前の敵HPが50%以下ならダメージ1.3倍",
+    "customDesc": "相手を攻撃する。弱った相手には効果が高い。",
+    "desc": "相手を攻撃する。弱った相手には効果が高い。"
+  },
+  {
+    "id": "s110_098",
+    "name": "コスモスアーク",
+    "cost": 15,
+    "power": 108,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_099",
+    "name": "終焉竜波",
+    "cost": 15,
+    "power": 108,
+    "type": "dragon",
+    "types": [
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_100",
+    "name": "大回復",
+    "cost": 15,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "heal": {
+        "flat": 40,
+        "perLevel": 4
+      }
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分を40＋使用者Lv×4回復",
+    "customDesc": "自分のHPを回復する。",
+    "desc": "自分のHPを回復する。"
+  },
+  {
+    "id": "s110_101",
+    "name": "不退の構え",
+    "cost": 12,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "guard": 0.6,
+      "buff": 0.15
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "次に受ける攻撃技を60%軽減。自分の攻撃倍率＋0.15",
+    "customDesc": "次の攻撃を軽減する。自分の攻撃力を上げる。",
+    "desc": "次の攻撃を軽減する。自分の攻撃力を上げる。"
+  },
+  {
+    "id": "s110_102",
+    "name": "清浄の守り",
+    "cost": 16,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "cleanse": [
+        "poison",
+        "paralysis",
+        "confusion"
+      ],
+      "guard": 0.6
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "次に受ける攻撃技を60%軽減。自分の毒・麻痺・混乱を解除",
+    "customDesc": "次の攻撃を軽減する。自分の状態異常を解除する。",
+    "desc": "次の攻撃を軽減する。自分の状態異常を解除する。"
+  },
+  {
+    "id": "s110_103",
+    "name": "エリクシオン・ノヴァ",
+    "cost": 20,
+    "power": 135,
+    "type": "normal",
+    "types": [
+      "normal",
+      "dragon"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {},
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal",
+      "element:dragon"
+    ],
+    "detailedDesc": "追加効果のない単体攻撃。",
+    "customDesc": "相手を攻撃する。",
+    "desc": "相手を攻撃する。"
+  },
+  {
+    "id": "s110_104",
+    "name": "錬核崩砕",
+    "cost": 20,
+    "power": 165,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.15
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "最大HPの15%反動",
+    "customDesc": "相手を攻撃する。自分も反動を受ける。",
+    "desc": "相手を攻撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_105",
+    "name": "アポカリプスノヴァ",
+    "cost": 20,
+    "power": 150,
+    "type": "star",
+    "types": [
+      "star"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.1
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:star"
+    ],
+    "detailedDesc": "最大HPの10%反動",
+    "customDesc": "相手を攻撃する。自分も反動を受ける。",
+    "desc": "相手を攻撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_106",
+    "name": "終焉の一斉射撃",
+    "cost": 20,
+    "power": 145,
+    "type": "fire",
+    "types": [
+      "fire",
+      "dark"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "recoil": 0.08
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": false,
+    "tier": "超級",
+    "acquisition": "normal",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:fire",
+      "element:dark"
+    ],
+    "detailedDesc": "最大HPの8%反動",
+    "customDesc": "相手を攻撃する。自分も反動を受ける。",
+    "desc": "相手を攻撃する。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_107",
+    "name": "オーバーブレイク",
+    "cost": 25,
+    "power": 170,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "ignoreDefense": true,
+      "recoil": 0.15
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "最強",
+    "acquisition": "synthesis",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "最大HPの15%反動。防御・障壁の軽減を無視",
+    "customDesc": "相手の守りを貫く一撃。自分も反動を受ける。",
+    "desc": "相手の守りを貫く一撃。自分も反動を受ける。"
+  },
+  {
+    "id": "s110_108",
+    "name": "オーバードレイン",
+    "cost": 25,
+    "power": 110,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "drain": 0.5
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "最強",
+    "acquisition": "synthesis",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:damage",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "実際に削ったHPの50%吸収",
+    "customDesc": "強烈な攻撃で相手のHPを吸収する。",
+    "desc": "強烈な攻撃で相手のHPを吸収する。"
+  },
+  {
+    "id": "s110_109",
+    "name": "オーバードライブ",
+    "cost": 25,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "buff": 0.3,
+      "charge": 1.3,
+      "guard": 0.6
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "最強",
+    "acquisition": "synthesis",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "次に受ける攻撃技を60%軽減。次の攻撃技のダメージ1.3倍。自分の攻撃倍率＋0.3",
+    "customDesc": "攻撃力を高め、次の攻撃と守りを強化する。",
+    "desc": "攻撃力を高め、次の攻撃と守りを強化する。"
+  },
+  {
+    "id": "s110_110",
+    "name": "オーバーリバース",
+    "cost": 25,
+    "power": 0,
+    "type": "normal",
+    "types": [
+      "normal"
+    ],
+    "effect": "tactical",
+    "chance": null,
+    "tactical": {
+      "heal": {
+        "flat": 60,
+        "perLevel": 5
+      },
+      "cleanse": [
+        "poison",
+        "paralysis",
+        "confusion"
+      ],
+      "restoreAttack": true,
+      "guard": 0.4
+    },
+    "form": "generic",
+    "requirements": {
+      "entityKinds": [
+        "monster",
+        "character"
+      ],
+      "requiredAll": []
+    },
+    "universal": true,
+    "tier": "最強",
+    "acquisition": "synthesis",
+    "exclusiveMonsterId": null,
+    "sourceUnitId": "skill110",
+    "sourceEntityKind": null,
+    "tags": [
+      "source:shared",
+      "role:support",
+      "form:generic",
+      "element:normal"
+    ],
+    "detailedDesc": "自分を60＋使用者Lv×5回復。次に受ける攻撃技を40%軽減。自分の毒・麻痺・混乱を解除。攻撃倍率が1未満なら1へ戻す（強化維持）",
+    "customDesc": "HPと状態を回復し、態勢を立て直す。",
+    "desc": "HPと状態を回復し、態勢を立て直す。"
+  }
+]

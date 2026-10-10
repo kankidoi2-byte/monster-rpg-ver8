@@ -59,7 +59,8 @@ try {
   vm.runInContext(
     `${dataSource}\n;globalThis.__GAME_DATA__ = {
       IMG, MAPIMG, MAPS, M, FUSIONS, SHOP_ITEMS, ITEM_DEX_EXTRA, ITEM_IMG,
-      ALCHEMY_MATERIAL_DROPS, ALCHEMY_ALL_FAILURE_CANDIDATES, ALCHEMY_RECIPES
+      ALCHEMY_MATERIAL_DROPS, ALCHEMY_ALL_FAILURE_CANDIDATES, ALCHEMY_RECIPES,
+      SKILL110_CATALOG, SKILL110_MIGRATION_MAP
     };`,
     context,
     { filename: 'js/data.js' }
@@ -70,6 +71,21 @@ try {
 
 const data = context.__GAME_DATA__;
 if (data) {
+  checkUnique('110 skill IDs',data.SKILL110_CATALOG.map(skill=>skill.id));
+  checkUnique('110 skill names',data.SKILL110_CATALOG.map(skill=>skill.name));
+  if(data.SKILL110_CATALOG.length!==110) fail('Active skill catalog must contain exactly 110 entries');
+  const tierCounts=[5,10,20,25].map((max,index)=>data.SKILL110_CATALOG.filter(skill=>skill.cost<=max&&skill.cost>[0,5,10,20][index]).length);
+  if(JSON.stringify(tierCounts)!=='[60,30,16,4]') fail('Skill tier counts must be 60/30/16/4');
+  const skill110Ids=new Set(data.SKILL110_CATALOG.map(skill=>skill.id));
+  for(const [oldId,newId] of Object.entries(data.SKILL110_MIGRATION_MAP)) {
+    if(!skill110Ids.has(newId)) fail(`Legacy skill ${oldId} maps to missing skill ${newId}`);
+    if(data.SKILL110_CATALOG.find(skill=>skill.id===newId)?.cost===25) fail(`Legacy skill ${oldId} directly grants an ultimate`);
+  }
+  for(const skill of data.SKILL110_CATALOG) {
+    if(skill.cost>20&&skill.cost!==25)fail(`Invalid adopted skill cost ${skill.id}`);
+    if(skill.exclusiveMonsterId)fail(`Adopted skill ${skill.id} cannot have individual exclusivity`);
+    if((skill.cost===25)!==(skill.acquisition==='synthesis'))fail(`Incorrect acquisition ${skill.id}`);
+  }
   const monsterIds = data.M.map(monster => monster.id);
   const monsterIdSet = new Set(monsterIds);
   const monsterRecords = data.M.filter(monster => monster.entityKind === 'monster');

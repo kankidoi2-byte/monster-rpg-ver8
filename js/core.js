@@ -29,7 +29,7 @@ function legacySkillIdFromMove(mv){
   return `sk_${code}_${moveTypes(mv).join('-')}_${mv[1] || 0}_${mv[3] || 'none'}`;
 }
 function skillCostFromMove(mv){
-  if (Number.isFinite(mv[5])) return Math.max(1, Math.min(6, Number(mv[5])));
+  if (Number.isFinite(mv[5])) return Math.max(1, Math.min(String(mv[8] || '').startsWith('s110_') ? 25 : 6, Number(mv[5])));
   const power = Number(mv[1] || 0);
   const effect = mv[3] || '';
   let cost = power <= 0 ? 1 : power <= 30 ? 1 : power <= 45 ? 2 : power <= 60 ? 3 : power <= 80 ? 4 : 5;
@@ -173,38 +173,22 @@ function skillConsolidationKey(sk){
 function preferredPowerForBand(band){
   return {basic:28,standard:42,advanced:60,master:78,support:0}[band] ?? 0;
 }
-const _skillConsolidationGroups = new Map();
-MOVE_CARDS.forEach(sk => {
-  const key=skillConsolidationKey(sk);
-  if (!_skillConsolidationGroups.has(key)) _skillConsolidationGroups.set(key,[]);
-  _skillConsolidationGroups.get(key).push(sk);
-});
-const SKILL_CANONICAL_BY_ID = Object.create(null);
-const SKILL_CANONICAL_PRIORITY = Object.freeze([
-  'skill_icegolem_02','skill_suiren_02','skill_thornbeat_02','skill_rikasheef_02',
-  'skill_tsubaki_03','skill_zephyray_02','skill_luxiard_03','skill_slime_01',
-  'skill_aquaron_03','skill_highaquaron_03','skill_orca_abyss_02',
-  'skill_rikasheef_03','skill_elna_middle_01','skill_elna_beginner_02','skill_elna_middle_03',
-  'skill_stella_apprentice_01','skill_stella_apprentice_02','skill_stella_apprentice_03',
-  'skill_stella_wizard_01','skill_stella_wizard_02','skill_stella_wizard_03','skill_stella_sorcerer_01'
-]);
-function canonicalPriority(skillId){
-  const index=SKILL_CANONICAL_PRIORITY.indexOf(skillId);
-  return index < 0 ? Number.MAX_SAFE_INTEGER : index;
-}
-_skillConsolidationGroups.forEach(cards => {
-  const target=preferredPowerForBand(skillPowerBand(cards[0]?.power));
-  const canonical=[...cards].sort((a,b) => canonicalPriority(a.id)-canonicalPriority(b.id) || Math.abs(a.power-target)-Math.abs(b.power-target) || a.id.localeCompare(b.id))[0];
-  cards.forEach(card => { SKILL_CANONICAL_BY_ID[card.id]=canonical.id; });
-});
+// All legacy cards remain addressable for old-save inspection; only the approved
+// catalog is offered for acquisition/equipment. Mapping is explicit and versioned.
+const SKILL_CANONICAL_BY_ID = Object.freeze({...SKILL110_MIGRATION_MAP,
+  ...Object.fromEntries(SKILL110_CATALOG.map(card => [card.id,card.id]))});
 MOVE_CARDS.forEach(card => {
-  card.canonicalId=SKILL_CANONICAL_BY_ID[card.id] || card.id;
-  card.deprecated=card.canonicalId !== card.id;
+  card.canonicalId=SKILL110_MIGRATION_MAP[card.id];
+  card.deprecated=true;
 });
-Object.freeze(SKILL_CANONICAL_BY_ID);
-const EQUIPPABLE_MOVE_CARDS = Object.freeze(MOVE_CARDS.filter(card => !card.deprecated));
-const MONSTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'monster'));
-const CHARACTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'character' && (card.commonCharacterSkill || (by(card.sourceUnitId)?.chapter || '序章') === '序章')));
+SKILL110_CATALOG.forEach(card => {
+  card.canonicalId=card.id;
+  card.deprecated=false;
+  MOVE_CARDS.push(card);
+});
+const EQUIPPABLE_MOVE_CARDS = Object.freeze([...SKILL110_CATALOG]);
+const MONSTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.acquisition !== 'synthesis'));
+const CHARACTER_MOVE_CARDS = MONSTER_MOVE_CARDS;
 const SKILL_BY_ID = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id, sk]));
 function skillIdFromMove(mv){
   return (typeof mv?.[8] === 'string' && mv[8]) || _skillIdByMove.get(mv) || legacySkillIdFromMove(mv);
@@ -213,6 +197,7 @@ function normalizeSkillId(skillId){
   return SKILL_BY_ID[skillId] ? skillId : (LEGACY_SKILL_ID_ALIASES[skillId] || skillId);
 }
 function canonicalSkillId(skillId){
+  if (SKILL110_MIGRATION_MAP[skillId]) return SKILL110_MIGRATION_MAP[skillId];
   const normalized=normalizeSkillId(skillId);
   return SKILL_CANONICAL_BY_ID[normalized] || normalized;
 }
@@ -291,6 +276,14 @@ function isSkillAllowedForMonster(skillId, mon, options={}){
   const sk = SKILL_BY_ID[skillId];
   if (!sk || !mon) return false;
   if (sk.deprecated && !options.allowDeprecated) return false;
+  if (sk.id.startsWith('s110_')) {
+    const tags=new Set(mon.tags || []);
+    if ((sk.requirements.requiredAll || []).some(tag => !tags.has(tag))) return false;
+    if (sk.universal) return true;
+    // Normal mixed with an element never opens that mixed skill to everybody.
+    const elements=skillTypes(sk).filter(type => type !== 'normal');
+    return elements.length === 0 || elements.some(type => (mon.types || []).includes(type));
+  }
   if (sk.sourceEntityKind && sk.sourceEntityKind !== mon.entityKind) return false;
   if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id &&
       !isLaterCharacterForm(sk.exclusiveMonsterId, mon.id)) return false;
@@ -304,19 +297,42 @@ function isEquippedSkillUsableForMonster(skillId,mon){
   return isSkillAllowedForMonster(skillId,mon,{allowDeprecated:true});
 }
 function defaultSkillIdsForMonster(mon, ins){
-  const ids = [...new Set((mon?.moves || []).map(skillIdFromMove).map(canonicalSkillId).filter(id => SKILL_BY_ID[id]))];
-  const limit = skillCostLimitFor(mon, ins);
-  const chosen = [];
-  let cost = 0;
-  ids.forEach(id => {
-    const sk = SKILL_BY_ID[id];
-    if (chosen.length < 3 && isSkillAllowedForMonster(id, mon) && cost + sk.cost <= limit) {
-      chosen.push(id); cost += sk.cost;
+  if (!mon) return [];
+  const limit=skillCostLimitFor(mon,ins), chosen=[];
+  const legacy=mon.legacyMoves || mon.moves || [];
+  const preferred=[...new Set(legacy.map(skillIdFromMove).map(canonicalSkillId))]
+    .filter(id => SKILL_BY_ID[id] && SKILL_BY_ID[id].acquisition !== 'synthesis' && isSkillAllowedForMonster(id,mon));
+  // Reserve a real, usable attack before support. Favor the unit's weapon/body,
+  // then its primary element; never grant an unequippable signature as inventory.
+  const basic=EQUIPPABLE_MOVE_CARDS.filter(sk => sk.power>0 && sk.cost<=2 && isSkillAllowedForMonster(sk.id,mon));
+  basic.sort((a,b) =>
+    Number(!a.requirements.requiredAll.length)-Number(!b.requirements.requiredAll.length) ||
+    Number(!a.types.includes(mon.types?.[0]))-Number(!b.types.includes(mon.types?.[0])) || a.cost-b.cost || a.id.localeCompare(b.id));
+  const primary=preferred.find(id => SKILL_BY_ID[id].power>0 && SKILL_BY_ID[id].cost<=Math.max(1,limit-2)) || basic[0]?.id || 's110_001';
+  let used=0;
+  for (const id of [primary,...preferred,'s110_003','s110_010']) {
+    const sk=SKILL_BY_ID[id];
+    if (sk && !chosen.includes(id) && chosen.length<3 && used+sk.cost<=limit && isSkillAllowedForMonster(id,mon)) {
+      chosen.push(id); used+=sk.cost;
     }
-  });
-  if (!chosen.length) chosen.push(skillIdFromMove(['通常攻撃',24,'normal']));
-  return chosen.slice(0,3);
+  }
+  return chosen;
 }
+// Snapshot immutable legacy source loadouts before replacing runtime defaults.
+// All species, including evolved/boss forms, are legal even when created at Lv1.
+M.forEach(mon => {
+  mon.legacyMoves=mon.moves.map(move => [...move]);
+  mon.legacyTags=mon.tags;
+  // Luxiard's established ルクスホーン demonstrates its horn; do not infer
+  // this anatomy for unrelated dragons or for every character.
+  if (mon.id==='luxiard') mon.tags=Object.freeze([...new Set([...mon.tags,'anatomy:horn'])]);
+  if (mon.entityKind === 'character') {
+    const extra=['anatomy:fist','capability:charge'];
+    if (/^character_(brigitte|regus)_/.test(mon.id) || mon.id==='character_remnes_4') extra.push('weapon:sword');
+    mon.tags=Object.freeze([...new Set([...mon.tags,...extra])]);
+  }
+});
+M.forEach(mon => { mon.moves=defaultSkillIdsForMonster(mon,{level:1}).map(skillToMove); });
 const ITEM_BY_ID = Object.fromEntries(SHOP_ITEMS.map(it => [it.id, it]));
 
 /* ===== Ver7.8 アイテム図鑑マスター ===== */

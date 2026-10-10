@@ -36,7 +36,7 @@ const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
   coins:250,
   materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])
 });
-const TUTORIAL_STELLA_SKILL_ID='skill_elna_middle_01';
+const TUTORIAL_STELLA_SKILL_ID='s110_041';
 const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'easy'});
 const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
   recipeId:'galdra_standard',displayName:'ルミナの入門錬成',resultId:'galdra',
@@ -605,7 +605,7 @@ function persistTutorialStep(){
 function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}={}){
   const steps=tutorialFlowSteps(flowId);
   if(!steps.length)return false;
-  const resolvedStepId=resolveTutorialExpeditionResumeStep(flowId,stepId,false);
+  const resolvedStepId=resolveTutorialStellaSkillResumeStep(resolveTutorialExpeditionResumeStep(flowId,stepId,false));
   clearTutorialUi();
   tutorialUiState.active=true;tutorialUiState.flowId=flowId;tutorialUiState.steps=steps;
   tutorialUiState.index=tutorialStepIndex(steps,resolvedStepId);tutorialUiState.persist=persist;
@@ -992,6 +992,7 @@ function startTutorialRescueBattle(){
   }
 }
 function failTutorialRescueBattle(reason){
+  if(typeof resetBattleTransientEffects==='function')resetBattleTransientEffects();
   console.error('エルナ救援戦の敵を準備できませんでした。',reason);
   tutorialBattleSession.enemyQueue=[];
   if(typeof showBattleOutcome==='function')showBattleOutcome({kind:'retreat',title:'救援戦を再準備',note:'スライムを準備できませんでした。進行を保持して再挑戦できます。'});
@@ -1344,6 +1345,11 @@ function tutorialStellaSkillIsEquipped(){
   const instance=tutorialStellaSkillTargetInstance();
   return Boolean(instance&&(save?.equippedSkills?.[instance.uid]||[]).includes(TUTORIAL_STELLA_SKILL_ID));
 }
+function resolveTutorialStellaSkillResumeStep(stepId){
+  if(['stella_skill_equip','stella_skill_card_detail'].includes(stepId)&&tutorialStellaSkillTargetInstance()
+    &&!tutorialStellaSkillIsEquipped()&&!tutorialStellaSkillCanEquip())return 'stella_skill_unequip';
+  return stepId;
+}
 function tutorialStellaSkillCanEquip(){
   const instance=tutorialStellaSkillTargetInstance();
   const skill=tutorialStellaSkillCard();
@@ -1418,7 +1424,12 @@ function shouldMarkTutorialStellaSkillCard(skillId,uid){
     &&skillId===TUTORIAL_STELLA_SKILL_ID&&uid===tutorialStellaSkillTargetInstance()?.uid;
 }
 function handleTutorialStellaSkillUnequipped(uid){
-  if(tutorialCurrentStepId()!=='stella_skill_unequip'||uid!==tutorialStellaSkillTargetInstance()?.uid||!tutorialStellaSkillCanEquip())return false;
+  if(tutorialCurrentStepId()!=='stella_skill_unequip'||uid!==tutorialStellaSkillTargetInstance()?.uid)return false;
+  if(!tutorialStellaSkillCanEquip()){
+    // Unequipping rebuilt the card DOM; point the still-active step at its new button.
+    renderTutorialStep();
+    return false;
+  }
   tutorialNext(true);
   return true;
 }
@@ -1838,8 +1849,8 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_encounter',screenId:'home',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'戦う前に技カードを準備しよう',text:'バトルの前に技カードの使い方を説明するぞ！負けられないバトルだからな！ちゃんと準備しないと！',progressLabel:'STELLA'},
   {id:'stella_card_receive',screenId:'home',transition:'grant_stella_skill_card',nextStepId:'stella_skill_open',replayNextStepId:'stella_attribute_intro',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'連続斬りを受け取る',text:'エルナが使える「連続斬り」をあげるぞ。カードの属性・威力・COSTを見て、実際に装備しよう！',progressLabel:'SKILL CARD',nextLabel:'受け取る'},
   {id:'stella_skill_open',screenId:'tutorialStellaCard',target:'#tutorialStellaSkillEditButton',externalAdvance:true,persistAs:'stella_skill_open',disableBack:true,title:'カードを確認して技編集へ',text:'連続斬りの内容を確認したら、ここを押してエルナの技編集を開こう！',progressLabel:'SKILL CARD'},
-  {id:'stella_skill_unequip',screenId:'skillEdit',target:'[data-tutorial-stella-unequip]',externalAdvance:true,disableBack:true,title:'技を1枚外そう',text:'ここを押して、今の技を1枚外そう。新しいカードを入れる空きを作るぞ！',progressLabel:'SKILL CARD'},
-  {id:'stella_skill_equip',screenId:'skillEdit',target:'[data-tutorial-stella-skill-equip]',externalAdvance:true,disableBack:true,title:'連続斬りを装備',text:'無属性・威力34・COST 2で、エルナの剣士タグに合う技だ。ここを押して装備しよう！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_unequip',screenId:'skillEdit',target:'[data-tutorial-stella-unequip]',externalAdvance:true,disableBack:true,title:'COST 3の空きを作ろう',text:'今の技を外して、残りCOSTを3以上にしよう。空きが足りなければ、続けて別の技も外すんだ！',progressLabel:'SKILL CARD'},
+  {id:'stella_skill_equip',screenId:'skillEdit',target:'[data-tutorial-stella-skill-equip]',externalAdvance:true,disableBack:true,title:'連続斬りを装備',text:'無属性・COST 3の連続攻撃で、剣を使う仲間に合う技だ。ここを押して装備しよう！',progressLabel:'SKILL CARD'},
   {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'技の属性',text:'技には属性がある！相手に有利な属性なら、ダメージが大きくなるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_more_open',screenId:'skillEdit',target:'[data-nav="more"]',advanceOnTarget:true,title:'属性表を見よう',text:'ここを押すと、属性相性を確認できるメニューへ進めるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_type_chart_open',screenId:'moreMenu',target:'#typeChartButton',advanceOnTarget:true,title:'属性相性',text:'ここを押すと、どの属性が有利か確認できるぞ！',progressLabel:'ATTRIBUTE'},
@@ -1921,8 +1932,8 @@ registerTutorialFlow(TUTORIAL_SKILL_CARDS_FLOW_ID,[
   {id:'skill_inventory',screenId:'skillEdit',target:'#skillCardList',title:'技カードは所持枚数ぶん使えます',text:'属性や区分などの条件を満たすカードだけ装備できます。技ガチャではコインを使って新しいカードを獲得できます。',progressLabel:'SKILL CARDS',nextLabel:'技編集へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_SKILL_GACHA_FLOW_ID,[
-  {id:'skill_gacha_draw',screenId:'skillGacha',target:'.skill-gacha-actions',title:'コインで技カードを獲得',text:'1回は100コイン、10回は900コインです。10回ではCOST 2以上が少なくとも1枚出ます。',progressLabel:'SKILL GACHA'},
-  {id:'skill_gacha_rates',screenId:'skillGacha',target:'#skillGachaRateList',title:'種類と排出率を確認',text:'モンスター技とキャラクター技は別のガチャです。獲得したカードは、仲間の技編集で条件とコスト内なら装備できます。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
+  {id:'skill_gacha_draw',screenId:'skillGacha',target:'.skill-gacha-actions',title:'コインで技カードを獲得',text:'1回は100コイン、10回は900コインです。10回では上級以上の技が少なくとも1枚出ます。',progressLabel:'SKILL GACHA'},
+  {id:'skill_gacha_rates',screenId:'skillGacha',target:'#skillGachaRateList',title:'種類と排出率を確認',text:'どちらの技ガチャからも共通の106種類を入手できます。最強4技は合成限定です。仲間の技編集で、適性とコストに合うカードを装備しよう。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID,[
   {id:'golden_land_intro',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'黄金郷への入口が現れました',text:'世界地図に現れる希少な入口です。ゴールド系モンスターだけが出現し、勝利すると難易度に応じた追加コインを獲得できます。',progressLabel:'GOLDEN LAND'},

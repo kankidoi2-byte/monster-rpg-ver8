@@ -19,7 +19,7 @@ assert.notEqual(core,legacyCore,'the guarded rush alternative must be present');
 const previous=load(legacyCore);
 const plain=value=>JSON.parse(JSON.stringify(value));
 const affected=['skill_thornbeat_03','skill_icegolem_03','skill_proto_icegolem_05','skill_proto_icegolem_03'];
-assert.deepEqual(plain(current.cards.filter(card=>card.name.includes('クラッシュ')).map(card=>card.id)),affected);
+assert.deepEqual(plain(current.cards.filter(card=>card.deprecated&&card.name.includes('クラッシュ')).map(card=>card.id)),affected);
 
 for(const name of ['クラッシュ','凍結クラッシュ','スパイクラッシュ','クラッシュクラッシュ']){
   assert.equal(current.chargeRule.pattern.test(name),false,name);
@@ -66,6 +66,6 @@ for(const unit of current.units){
       plain(previous.defaultSkillIdsForMonster(unit,{level})),`initial loadout ${unit.id} Lv${level}`);
   }
 }
-assert.equal(current.isSkillAllowedForMonster('skill_icegolem_03',current.units.find(unit=>unit.id==='aquaron')),true);
+assert.equal(current.isSkillAllowedForMonster('skill_icegolem_03',current.units.find(unit=>unit.id==='aquaron'),{allowDeprecated:true}),true);
 assert.equal(current.isSkillAllowedForMonster('skill_proto_icegolem_05',current.units.find(unit=>unit.id==='slime')),false,'exclusive Golem restriction remains');
 console.log(JSON.stringify({cardsCompared:current.cards.length,equipmentPairsCompared:current.cards.length*current.units.length,diffs,equipmentDiffs},null,2));

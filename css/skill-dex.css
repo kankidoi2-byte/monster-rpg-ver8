@@ -14,3 +14,11 @@
 #skillDexDetail details summary{cursor:pointer;min-height:44px;padding-top:10px}
 .skill-dex-open{min-height:44px;margin-top:8px}
 @media(min-width:700px){.skill-dex-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.skill-synthesis-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.skill-synthesis-card{min-width:0;overflow-wrap:anywhere}
+.skill-synthesis-card button{width:100%;min-height:48px;white-space:normal}
+.skill-synthesis-card summary{min-height:44px;cursor:pointer}
+.skill-synthesis-materials{list-style:none;padding:0;margin:12px 0}
+.skill-synthesis-materials li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;padding:8px 0;border-bottom:1px solid #64708e}
+.skill-synthesis-card .skill-card-title{white-space:normal;overflow-wrap:anywhere}
+.skill-dex-numbers{white-space:normal;overflow-wrap:anywhere;line-height:1.7}

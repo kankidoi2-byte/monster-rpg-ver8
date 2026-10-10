@@ -77,6 +77,14 @@ function initTitleScreen(){
     }
   }
 }
+function showSkill110MigrationNotice(){
+  if(!save.skill110Migration?.noticePending)return;
+  const message='技体系を110種類に更新しました。所持カードを引き継ぎ、属性・装備コストに合わせて技装備を調整しました。技図鑑と装備画面をご確認ください。';
+  if(typeof showUiNotice!=='function')return;
+  showUiNotice(message,'info');
+  save.skill110Migration.noticePending=false;
+  if(!saveGame())save.skill110Migration.noticePending=true;
+}
 function startFromTitle(){
   if(titleStarted) return;
   titleStarted=true;
@@ -86,6 +94,7 @@ function startFromTitle(){
     document.body.classList.remove('title-mode');
     if(screen) screen.remove();
     show('home');
+    showSkill110MigrationNotice();
     if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
   },620);
 }

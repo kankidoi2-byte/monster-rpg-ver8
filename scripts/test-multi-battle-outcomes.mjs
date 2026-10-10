@@ -11,7 +11,7 @@ for(const direction of ['player-enemy','enemy-player','enemy-enemy'])for(const e
  for(const [i,r] of [baseline,current].entries()){
   r.run(`(()=>{${setup}})()`);const rng=seeded(192);r.context.Math.random=()=>{draws[i]++;return rng()};
   const actor=direction==='player-enemy'?"{kind:'player'}":"multiBattle.enemies[0]",target=direction==='enemy-player'?"{kind:'player'}":'multiBattle.enemies[1]';
-  const move=['検証',['guard','heal','buff','debuff','sleep','aqua_shield'].includes(effect)?0:24,'normal',effect,1];
+  const move=['検証',['guard','heal','buff','debuff','sleep','aqua_shield'].includes(effect)?0:24,'normal',effect,1,null,null,null,'skill_slime_01'];
   await r.run(`performMultiAttack(${actor},${target},${JSON.stringify(move)})`);
   states.push(r.run('JSON.stringify([pHp,pAtk,pGuard,pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns,pAquaShield,multiBattle.enemies,save.coins,battleTurnCount])'));
  }

@@ -39,6 +39,7 @@ for(const route of routes){
  const equipment=json(old.run('save=fixture;save.instances[0].id=target;ensureInstanceSkills(save.instances[0]);save.equippedSkills'));
  assert.deepEqual(after.equippedSkills,equipment);
  assert(r.run('getEquippedSkillIds(ins).length<=3 && equippedSkillCost(ins)<=skillCostLimitFor(by(ins.id),ins)'));
+ assert(r.run('getEquippedSkillIds(ins).some(id=>SKILL_BY_ID[id].power>0)'), 'evolution retains a usable attack');
  if(route.special)assert.equal(after.items[route.item],before.items[route.item]-route.count);
  else assert.deepEqual(after.items,before.items);
  if(!route.special||route.repeatable){
@@ -68,13 +69,13 @@ for(const route of routes){
  }
 }
 // Synthetic >3 moves, repeated canonical move, merged raw ID, legacy alias and invalid ID.
-const raw=json(r.run(`by('highaquaron').moves.find(m=>canonicalSkillId(skillIdFromMove(m))!==skillIdFromMove(m))`));
+const raw=json(r.run(`skillToMove(MOVE_CARDS.find(sk=>sk.deprecated&&SKILL110_MIGRATION_MAP[sk.id]&&SKILL_BY_ID[SKILL110_MIGRATION_MAP[sk.id]].cost<=20).id)`));
 assert(raw,'real merged-ID fixture');r.context.raw=raw;
-r.run(`var synthetic={moves:[raw,raw,...by('voltax').moves,[...raw.slice(0,8),legacySkillIdFromMove(raw)],[...raw.slice(0,8),'invalid-id']]};save=initSave();save.skillCards={};var fake={uid:'fixture',id:'highaquaron'};var realBy=by;by=id=>id==='highaquaron'?synthetic:realBy(id);`);
+r.run(`var synthetic={moves:[raw,raw,...SKILL110_IDS.slice(0,6).map(skillToMove),skillToMove('s110_107'),[...raw.slice(0,8),legacySkillIdFromMove(raw)],[...raw.slice(0,8),'invalid-id']]};save=initSave();save.skillCards={};var fake={uid:'fixture',id:'highaquaron'};var realBy=by;by=id=>id==='highaquaron'?synthetic:realBy(id);`);
 const syntheticIds=json(r.run('grantEvolutionSkillCardsForInstance(fake)'));
 assert(syntheticIds.length>3);assert.equal(new Set(syntheticIds).size,syntheticIds.length);
 assert(r.run('Object.values(save.skillCards).every(n=>n===1)'));
-assert(!syntheticIds.includes('invalid-id'));assert(syntheticIds.every(id=>r.run(`SKILL_BY_ID['${id}']&&!SKILL_BY_ID['${id}'].deprecated`)));
+assert(!syntheticIds.includes('invalid-id'));assert(!syntheticIds.includes('s110_107'));assert(syntheticIds.every(id=>r.run(`SKILL_BY_ID['${id}']&&!SKILL_BY_ID['${id}'].deprecated`)));
 assert.equal(r.run('grantEvolutionSkillCardsForInstance(null).length'),0);
 const lacking=report.filter(e=>e.before.length<e.after.length);
 console.log(`PASS evolution cards: ${routes.length} routes (${routes.filter(e=>e.special).length} special), ${lacking.length} formerly incomplete; per-individual, cancellation/failure/reload, equipment/save preservation, aliases/merged IDs and >3 slots.`);

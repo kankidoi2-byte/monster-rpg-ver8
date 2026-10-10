@@ -28,9 +28,9 @@ try{
  await page.evaluate(()=>show('partySet'));assert(await page.locator('#partySet').isVisible());
  await page.evaluate(()=>startBattleFromParty());await page.locator('#battleChoices').waitFor({state:'visible'});
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
- for(const mode of ['single','multi','invasion'])for(const side of mode==='single'?['player','enemyA']:['player','enemyA','enemyB']){
+ for(const skillId of ['skill_luxseed_03','s110_062'])for(const mode of ['single','multi','invasion'])for(const side of mode==='single'?['player','enemyA']:['player','enemyA','enemyB']){
   for(const [level,amount] of [[1,27],[10,54],[50,174],[100,324]])for(const shortage of [800,5,0]){
-   const result=await page.evaluate(async({mode,side,level,shortage})=>{
+   const result=await page.evaluate(async({mode,side,level,shortage,skillId})=>{
     clearTutorialUi();save.instances[0].level=side==='player'?level:99;prepareBattleParty();
     const request=createHuntRequest(MAPS[0],by('slime'),'normal',[]);
     request.battleMode=mode==='multi'?'three_way':'single';request.secondEnemyId='goblin';request.conditions=[];
@@ -51,21 +51,21 @@ try{
     if(multi)updateMultiBattleView();else update();refreshBattleFeedback();
     const feedback=[],original=battleHpResult;
     battleHpResult=(...args)=>{feedback.push({id:args[0],before:args[1],after:args[2],label:args[3].label});return original(...args);};
-    const move=skillToMove('skill_luxseed_03');
-    if(move[3]!=='heal')throw Error('real healing skill missing');
+    const move=skillToMove(skillId);
+    if(move[3]!=='heal'&&!(move[3]==='tactical'&&move[9]?.heal))throw Error('real healing skill missing');
     try{
      if(multi)await performMultiAttack(isPlayer?{kind:'player'}:entries[index],isPlayer?entries[1]:{kind:'player'},move);
      else await doAttack(isPlayer?player:enemy,isPlayer?enemy:player,move,isPlayer);
      const after=isPlayer?pHp:multi?entries[index].hp:eHp;
      return {before,after,maximum,missing,feedback,log:document.getElementById('log').textContent};
     }finally{battleHpResult=original;}
-   },{mode,side,level,shortage});
+   },{mode,side,level,shortage,skillId});
    const expected=Math.min(result.missing,amount);
    assert.equal(result.after-result.before,expected,`${mode}/${side}/${level}/${shortage}`);
    assert(result.after<=result.maximum);assert.match(result.log,new RegExp(`HPを${expected}回復した`));
    assert.equal(result.feedback.length,1);assert.equal(result.feedback[0].after-result.feedback[0].before,expected);
-   if(level===10&&shortage===5&&side==='player')await page.screenshot({path:`${out}/${mode}.png`,fullPage:true});
-   results.push({mode,side,level,shortage,...result});
+   if(level===10&&shortage===5&&side==='player')await page.screenshot({path:`${out}/${skillId}-${mode}.png`,fullPage:true});
+   results.push({skillId,mode,side,level,shortage,...result});
   }
  }
  const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});

@@ -7,10 +7,13 @@ try{
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
  await page.goto('http://127.0.0.1:4181/?legacy=1',{waitUntil:'networkidle'});assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.addScriptTag({path:'scripts/powered-modifier-fixture.js'});
- await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);save.instances=[];save.party=[addInstance('shenhairon',10).uid];save.skillCards=Object.fromEntries(MOVE_CARDS.map(s=>[s.id,3]));show('home');});
+ await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);save.instances=[];save.party=[addInstance('shenhairon',10).uid];save.skillCards=Object.fromEntries(SKILL110_CATALOG.map(s=>[s.id,3]));show('home');});
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));assert(await page.locator('#partySet').isVisible());
  await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
- for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){const text=await page.locator(`[data-skill-card-id="${id}"]`).first().textContent();assert.match(text,/威力/);assert.match(text,/攻撃後/);}
+ for(const id of ['s110_001','s110_003','s110_010']){const text=await page.locator(`[data-skill-card-id="${id}"]`).first().textContent();const expected=await page.evaluate(id=>SKILL_BY_ID[id].name,id);assert(text.includes(expected));assert.match(text,/COST/);}
+ // Archived IDs remain executable for the legacy modifier regression below,
+ // but must not reappear in the live equipment catalog.
+ for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){assert.equal(await page.locator(`[data-skill-card-id="${id}"]`).count(),0);assert.match(await page.evaluate(id=>moveEffectText(skillToMove(id)),id),/攻撃後/);}
  await page.screenshot({path:`${out}/equipment.png`,fullPage:true});
  await page.evaluate(()=>show('dex'));
  for(const id of ['skill_shenhairon_02','skill_nightmare_02','skill_noxvelg_02']){await page.evaluate(skillId=>showDexDetail(SKILL_BY_ID[skillId].sourceUnitId),id);const name=await page.evaluate(skillId=>by(SKILL_BY_ID[skillId].sourceUnitId).name,id);const text=await page.locator('#dexDetail').textContent();assert(text.includes(name));assert(text.includes('出現・入手方法'));}

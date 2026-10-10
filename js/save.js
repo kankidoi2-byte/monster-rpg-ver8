@@ -113,7 +113,7 @@ function contractorSaveDefaults(){
 function initSave() {
   return {
     schemaVersion:SAVE_SCHEMA_VERSION,
-    saveMeta:{migrations:['character_first_lock_v1'], lastSavedAt:null, integrityHash:null},
+    saveMeta:{migrations:['character_first_lock_v1',...(skill110MigrationAvailable() ? ['skill_system_110_v1','equipped_skill_cards_v1','evolution_native_cards_v1'] : [])], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
     items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
     coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
@@ -182,7 +182,93 @@ function isCharacterSaveId(id){
   const unit=typeof M!=='undefined'?M.find(entry=>entry.id===id):null;
   return unit?.entityKind==='character'||(!unit?.entityKind&&unit?.unitType==='character');
 }
+const SKILL110_SAVE_MIGRATION = 'skill_system_110_v1';
+function skill110MigrationAvailable(){
+  return typeof SKILL110_MIGRATION_MAP !== 'undefined' && typeof SKILL110_CATALOG !== 'undefined';
+}
+function isSkill110Save(payload){return payload?.saveMeta?.migrations?.includes(SKILL110_SAVE_MIGRATION) === true;}
+function skill110SaveTarget(id){
+  if (!skill110MigrationAvailable() || typeof id !== 'string') return null;
+  if (SKILL110_CATALOG.some(sk => sk.id === id)) return SKILL_BY_ID[id]?.cost === 25 ? null : id;
+  const normalized = repairSkillId(id);
+  const target = Object.hasOwn(SKILL110_MIGRATION_MAP,id) ? SKILL110_MIGRATION_MAP[id] :
+    (Object.hasOwn(SKILL110_MIGRATION_MAP,normalized) ? SKILL110_MIGRATION_MAP[normalized] : null);
+  // Imported legacy records must never create synthesis-only cards.
+  return typeof target === 'string' && SKILL110_CATALOG.some(sk => sk.id === target && sk.cost <= 20) ? target : null;
+}
+function captureSkill110Backup(payload){
+  if (!skill110MigrationAvailable() || isSkill110Save(payload) || payload.skill110MigrationBackup) return;
+  payload.skill110MigrationBackup = JSON.parse(JSON.stringify(payload));
+}
+function migrateSkill110Save(payload, report=[]){
+  if (!skill110MigrationAvailable() || isSkill110Save(payload)) return false;
+  captureSkill110Backup(payload);
+  const cards = Object.create(null), unmapped = Object.create(null);
+  Object.entries(payload.skillCards || {}).forEach(([id,count]) => {
+    const target = skill110SaveTarget(id), amount = nonNegativeInteger(count);
+    if (target) cards[target] = (cards[target] || 0) + amount;
+    else if (amount) unmapped[id] = amount;
+  });
+  payload.skillCards = cards;
+  payload.skill110UnmappedCards = unmapped; // Never discard a future/unknown imported ID.
+  payload.equippedSkills = isSaveObject(payload.equippedSkills) ? payload.equippedSkills : {};
+  const reserved = {};
+  let compensated = 0, adjusted = 0;
+  (payload.instances || []).forEach(ins => {
+    const mon = typeof by === 'function' ? by(ins.id) : M.find(entry => entry.id === ins.id);
+    if (!mon) return;
+    const previous = Array.isArray(payload.equippedSkills[ins.uid]) ? payload.equippedSkills[ins.uid] : [];
+    const limit = skillCostLimitFor(mon, ins), kept = [];
+    let used = 0;
+    previous.map(skill110SaveTarget).filter(Boolean).forEach(id => {
+      const sk = SKILL_BY_ID[id];
+      if (kept.length < 3 && sk && isSkillAllowedForMonster(id,mon) && used + sk.cost <= limit &&
+          (reserved[id] || 0) < (cards[id] || 0)) {
+        kept.push(id); used += sk.cost; reserved[id] = (reserved[id] || 0) + 1;
+      }
+    });
+    if (!kept.some(id => SKILL_BY_ID[id].power > 0)) {
+      // The universal COST 1 attack guarantees an actionable loadout without granting high-cost cards.
+      const basic = 's110_001', cost = SKILL_BY_ID[basic].cost;
+      while (kept.length >= 3 || used + cost > limit) {
+        const removed = kept.pop(); if (!removed) break;
+        used -= SKILL_BY_ID[removed].cost; reserved[removed]--;
+      }
+      if ((cards[basic] || 0) <= (reserved[basic] || 0)) {
+        cards[basic] = (cards[basic] || 0) + 1; compensated++;
+      }
+      kept.push(basic); reserved[basic] = (reserved[basic] || 0) + 1;
+    }
+    if (JSON.stringify(previous) !== JSON.stringify(kept)) adjusted++;
+    payload.equippedSkills[ins.uid] = kept;
+    if (Array.isArray(ins.alchemy?.exclusiveSkillIds)) {
+      ins.alchemy.exclusiveSkillIds = [...new Set(ins.alchemy.exclusiveSkillIds.map(skill110SaveTarget).filter(Boolean))];
+    }
+  });
+  // Present saves derive skill discovery from owned cards; preserve optional historical discovery fields too.
+  ['skillDex','discoveredSkills','knownSkills'].forEach(key => {
+    if (Array.isArray(payload[key])) payload[key] = [...new Set(payload[key].map(id => skill110SaveTarget(id) || id))];
+    else if (isSaveObject(payload[key])) {
+      const mapped = Object.create(null);
+      Object.entries(payload[key]).forEach(([id,value]) => {
+        const target = skill110SaveTarget(id) || id;
+        mapped[target] = typeof value === 'number' ? Math.max(Number(mapped[target]) || 0,value) : (mapped[target] || value);
+      });
+      payload[key] = mapped;
+    }
+  });
+  payload.saveMeta.migrations.push(SKILL110_SAVE_MIGRATION);
+  // Supersede previous card backfills; running them after this migration would mint/reset inventory.
+  ['equipped_skill_cards_v1','evolution_native_cards_v1'].forEach(id => {
+    if (!payload.saveMeta.migrations.includes(id)) payload.saveMeta.migrations.push(id);
+  });
+  payload.skill110Migration = {version:1,adjustedInstances:adjusted,basicAttackCompensation:compensated,
+    unresolvedIds:Object.keys(unmapped),noticePending:true};
+  report.push(`技体系を110種類へ更新。装備調整 ${adjusted}体、基本攻撃補填 ${compensated}枚。`);
+  return true;
+}
 function repairSave(payload,report=[]){
+  captureSkill110Backup(payload);
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
   if(!isSaveObject(payload.saveMeta))payload.saveMeta={...defaults.saveMeta,migrations:[]};
   if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];
@@ -220,6 +306,7 @@ function repairSave(payload,report=[]){
   payload.worldMap=normalizeWorldMapSaveState(payload.worldMap);
   payload.history=isSaveObject(payload.history)?payload.history:defaults.history;payload.history.wins=nonNegativeInteger(payload.history.wins);payload.history.logs=Array.isArray(payload.history.logs)?payload.history.logs.filter(x=>typeof x==='string').slice(-30):[];
   payload.skillCards=isSaveObject(payload.skillCards)?payload.skillCards:{};payload.equippedSkills=isSaveObject(payload.equippedSkills)?payload.equippedSkills:{};
+  migrateSkill110Save(payload,report);
   let migratedSkillIds=false;const normalizedSkillCards={};Object.entries(payload.skillCards).forEach(([id,count])=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;normalizedSkillCards[normalizedId]=Math.max(nonNegativeInteger(normalizedSkillCards[normalizedId]),nonNegativeInteger(count));});payload.skillCards=normalizedSkillCards;
   Object.keys(payload.equippedSkills).forEach(key=>{if(!seenUids.has(key))delete payload.equippedSkills[key];else payload.equippedSkills[key]=Array.isArray(payload.equippedSkills[key])?payload.equippedSkills[key].filter(x=>typeof x==='string').map(id=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;return normalizedId;}):[];});
   if(migratedSkillIds&&!payload.saveMeta.migrations.includes('fixed_skill_ids_v1')){payload.saveMeta.migrations.push('fixed_skill_ids_v1');report.push('旧技IDを固定skillIdへ移行');}
@@ -414,14 +501,17 @@ function exportSaveData(){saveGame();const date=new Date().toISOString().slice(0
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
 async function importSaveData(input){
   const file=input?.files?.[0];if(!file)return;
+  let previousSave=null,previousReport=null,previousBackup=null,persisted=false;
   try{
     const raw=await file.text();const report=[];const imported=parseAndPrepareSave(raw,report);
     if(!confirm(`セーブデータを読み込みますか？\n個体 ${imported.instances.length}体／コイン ${imported.coins}\n現在のデータはバックアップされます。`))return;
+    previousBackup=safeStorageGet(SAVE_BACKUP_KEY);
     const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
+    previousSave=save;previousReport=saveRecoveryReport;
     save=imported;saveRecoveryReport=report.concat('ファイルからセーブデータを読込み');
     if(!saveGame())throw lastSaveError||new Error('保存できませんでした。');
-    location.reload();
-  }catch(error){alert(`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
+    persisted=true;location.reload();
+  }catch(error){if(previousSave&&!persisted){save=previousSave;saveRecoveryReport=previousReport;if(previousBackup!==null)safeStorageSet(SAVE_BACKUP_KEY,previousBackup);else safeStorageRemove(SAVE_BACKUP_KEY);}alert(`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
 }
 async function copySaveText(kind='current'){
   const raw=kind==='corrupt'?safeStorageGet(SAVE_CORRUPT_KEY):(safeStorageGet(SAVE_KEY)||JSON.stringify(save));
@@ -430,8 +520,15 @@ async function copySaveText(kind='current'){
 }
 function restoreLastKnownGood(){
   const backup=safeStorageGet(SAVE_BACKUP_KEY);if(!backup){alert('復旧できるバックアップがありません。');return;}
-  try{const report=[];const restored=parseAndPrepareSave(backup,report);if(!confirm('直前の正常なバックアップへ戻しますか？'))return;save=restored;saveRecoveryReport=report.concat('lastKnownGoodから手動復旧');saveGame();location.reload();}
-  catch(error){alert(`バックアップを復旧できませんでした。\n${error.message}`);}
+  let previousSave=null,previousReport=null,persisted=false;
+  try{
+    const report=[];const restored=parseAndPrepareSave(backup,report);
+    if(!confirm('直前の正常なバックアップへ戻しますか？'))return;
+    previousSave=save;previousReport=saveRecoveryReport;
+    save=restored;saveRecoveryReport=report.concat('lastKnownGoodから手動復旧');
+    if(!saveGame())throw lastSaveError||new Error('保存できませんでした。');
+    persisted=true;location.reload();
+  }catch(error){if(previousSave&&!persisted){save=previousSave;saveRecoveryReport=previousReport;safeStorageSet(SAVE_BACKUP_KEY,backup);}alert(`バックアップを復旧できませんでした。\n${error.message}`);}
 }
 function showSaveRecoveryReport(){alert(saveRecoveryReport.length?saveRecoveryReport.join('\n'):'修復・移行の記録はありません。');}
 

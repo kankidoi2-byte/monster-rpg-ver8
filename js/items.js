@@ -218,8 +218,8 @@ function useBattleItem(id) {
     msg = `💉 上回復薬を使った！ HPが${h}回復した！`;
   } else if (id === 'attack_potion') {
     save.items[id]--;
-    pAtk = 2;
-    msg = `⚡ 力の薬を使った！ ${player.name}の攻撃力が2倍になった！`;
+    pAtk = 1.6;
+    msg = `⚡ 力の薬を使った！ ${player.name}の攻撃力が強化上限の1.6倍になった！`;
   }
   saveGame(); updateItems(); update();
   show('battle');
