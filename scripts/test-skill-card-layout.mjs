@@ -72,12 +72,16 @@ try{
  await page.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
-  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
+  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  // Returning-player flow: feature-guide tutorials are exercised separately in every iframe width.
+  Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
+  save.instances=[];save.party=[];
   const ins=addInstance('freigal',100);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=[];show('home');
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
  assert(await page.locator('#partySet').isVisible());await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
+ await page.locator('#skillEdit .skill-filter-panel > summary').click();
  await page.locator('#skillCostFilter').selectOption('25');
  assert.equal(await page.locator('#skillCardList [data-skill-card-id]').count(),4);
  assert((await page.locator('[data-skill-card-id="s110_107"]').textContent()).includes('COST 25'));
