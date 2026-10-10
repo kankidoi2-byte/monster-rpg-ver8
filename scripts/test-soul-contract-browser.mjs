@@ -54,11 +54,12 @@ try{
   await page.evaluate(()=>{rollCharacterGacha(1);rollCharacterGacha(10);});
   await page.locator('#soulContractPresentation').waitFor({state:'detached',timeout:90000});await page.waitForTimeout(500);
   const events=await page.evaluate(()=>{window.soulObserver.disconnect();return window.soulEvents;});
-  const reveals=events.filter(e=>e.stage==='reveal');assert.deepEqual(reveals.map(e=>e.unit),ids);
+  const reveals=events.filter(e=>e.stage==='reveal');assert.deepEqual(reveals.map(e=>e.unit),ids);assert.deepEqual(reveals.map(e=>e.lit),ids.map((_,i)=>i),'progress advances once per completed prior contract');
   assert.deepEqual(events.filter(e=>e.stage==='gold').map(e=>e.index),ids.map((id,i)=>id==='character_vera_3'?i:-1).filter(i=>i>=0));
   assert.equal(await page.evaluate(()=>save.coins),before.coins-(ids.length===10?900:100));assert.equal(await page.evaluate(()=>save.instances.length),before.count+ids.length);
   assert.equal(await page.locator('#characterGachaResult article').count(),ids.length);
-  await screenshot(page,`${name}-results`);await page.waitForTimeout(1000);
+  if(await page.locator('#contractorRankUpOverlay').isVisible()){await page.locator('#contractorRankUpOverlay button').click();await page.waitForTimeout(200);}
+  await screenshot(page,`${name}-results`);await page.waitForTimeout(1800);
   const video=page.video();await context.close();const original=await video.path();fs.renameSync(original,`${out}/${name}-runtime.webm`);report.videos.push(`${name}-runtime.webm`);report.cases.push({name:`actual-${name}-order-gold-repeat`,result:'PASS',events});write();
  }
  // Recovery + save failure are exercised against real storage, no acquired result may vanish.
@@ -71,6 +72,35 @@ try{
  await fixedDraw(page,['elna_beginner']);await page.locator('.soul-skip').click();assert.equal(await page.locator('#soulContractPresentation').count(),0);assert.equal(await page.locator('body>[inert]').count(),0);await page.evaluate(()=>HTMLCanvasElement.prototype.getContext=window.originalCanvasGetContext);report.cases.push({name:'canvas-initialization-fallback-cleanup',result:'PASS'});
  await page.emulateMedia({reducedMotion:'reduce'});await fixedDraw(page,['stella_apprentice']);await page.locator('#soulContractPresentation').waitFor({state:'detached',timeout:10000});report.cases.push({name:'reduced-motion-completes',result:'PASS'});
  await context.close();
+ // Reproduce the stale ordinary writer's final write after a successful draw.
+ // The exact check/write interleaving is independently covered by the Node suite.
+ const mixed=await browser.newContext({viewport:{width:320,height:568}});await mixed.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.abort());
+ const m=await mixed.newPage();m.on('dialog',d=>d.dismiss());await fixture(m);
+ const stale=await m.evaluate(()=>safeStorageGet(SAVE_KEY));const mixedBefore=await fixedDraw(m,['elna_beginner']);await m.locator('.soul-skip').click();
+ const recoveryRaw=await m.evaluate(()=>localStorage.getItem(characterGachaRecoveryKey()));assert(recoveryRaw);
+ const other=await mixed.newPage();await other.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});
+ await other.evaluate(raw=>localStorage.setItem(MonsterProfiles.key(SAVE_KEY),raw),stale);
+ await m.waitForFunction(()=>inspectCharacterGachaRecovery().blocked);await m.evaluate(()=>renderCharacterGacha());
+ assert(await m.getByText('契約のセーブ記録を確認してください',{exact:true}).isVisible());
+ assert.equal(await m.evaluate(()=>localStorage.getItem(characterGachaRecoveryKey())),recoveryRaw);
+ assert.equal((await m.evaluate(()=>rollCharacterGacha(1))).ok,false);assert.equal(await m.evaluate(()=>safeStorageGet(SAVE_KEY)),stale);
+ await m.evaluate(()=>{window.recoveryDownloads=[];downloadTextFile=(name,text)=>window.recoveryDownloads.push({name,text});});
+ await m.getByRole('button',{name:'契約時のセーブを書き出す',exact:true}).click();await m.getByRole('button',{name:'現在の保存済みセーブを書き出す（保存しない）',exact:true}).click();
+ const exports=await m.evaluate(()=>window.recoveryDownloads.map(d=>JSON.parse(d.text)));
+ assert.equal(exports[0].coins,mixedBefore.coins-100);assert.equal(exports[0].instances.length,mixedBefore.count+1);assert.equal(exports[0].soulContractAppliedId,JSON.parse(recoveryRaw).id);
+ assert.deepEqual(exports[1],JSON.parse(stale));assert.equal(await m.evaluate(()=>safeStorageGet(SAVE_KEY)),stale);
+ await screenshot(m,'320-conflict-recovery');await m.reload({waitUntil:'networkidle'});await m.locator('#titleScreen').click();await m.locator('#titleScreen').waitFor({state:'detached'});await m.evaluate(()=>show('characterGacha'));
+ assert(await m.evaluate(()=>inspectCharacterGachaRecovery().blocked));assert.equal(await m.evaluate(()=>save.instances.length),mixedBefore.count);assert.equal((await m.evaluate(()=>rollCharacterGacha(1))).ok,false);
+ report.cases.push({name:'mixed-ordinary-write-preserves-recovery-and-current-history-no-regrant',result:'PASS'});await mixed.close();
+ // A fresh-device import explicitly establishes a local baseline without grants.
+ const imported=await browser.newContext({viewport:{width:390,height:844}});await imported.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.abort());
+ const ip=await imported.newPage();ip.on('dialog',d=>d.accept());await fixture(ip);
+ await ip.evaluate(snapshot=>{save=snapshot;if(!saveGame())throw Error('import fixture failed');renderCharacterGacha();},exports[0]);
+ assert(await ip.evaluate(()=>inspectCharacterGachaRecovery().canEstablishBaseline));const importRaw=await ip.evaluate(()=>safeStorageGet(SAVE_KEY));
+ await ip.getByRole('button',{name:'読み込んだセーブをこの端末の基準にする',exact:true}).click();await ip.waitForFunction(()=>!inspectCharacterGachaRecovery().blocked);
+ assert.equal(await ip.evaluate(()=>safeStorageGet(SAVE_KEY)),importRaw,'baseline never saves/grants or changes economy');
+ assert.equal(await ip.evaluate(()=>save.instances.length),exports[0].instances.length);
+ report.cases.push({name:'fresh-device-import-explicit-baseline-no-regrant',result:'PASS'});await imported.close();
  // Deterministic real two-page competition under the production Web Lock.
  const race=await browser.newContext({viewport:{width:390,height:844}});await race.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
  await race.addInitScript(()=>{const NativeDate=Date;globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[1791630000000]));}static now(){return 1791630000000;}};});

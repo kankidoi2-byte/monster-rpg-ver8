@@ -23,8 +23,8 @@ function queuedWebLocks(){
   };
 }
 function harness({storage=new Map(),slot=1,profiles=false}={}){
-  const elements=new Map(),alerts=[],writes=[],callbacks=[],rankStates=[];
-  const fault={key:null,afterWrite:false,read:false},session=new Map([['mb_profile_tab_v1',String(slot)]]);
+  const elements=new Map(),alerts=[],writes=[],callbacks=[],rankStates=[],listeners=new Map(),downloads=[];
+  const fault={key:null,afterWrite:false,read:false,remove:null},session=new Map([['mb_profile_tab_v1',String(slot)]]);
   let reloads=0;
   const element=id=>{
     if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:'',scrolls:0,style:{},dataset:{},
@@ -35,10 +35,10 @@ function harness({storage=new Map(),slot=1,profiles=false}={}){
   const context=vm.createContext({console,Math:Object.create(Math),Date,JSON,crypto:webcrypto,
     localStorage:{getItem:key=>{if(fault.read)throw Error('read unavailable');return storage.get(key)??null;},
       setItem:(key,value)=>{writes.push(key);if(key===fault.key&&!fault.afterWrite)throw Error('quota');storage.set(key,value);if(key===fault.key)throw Error('after write');},
-      removeItem:key=>storage.delete(key)},
+      removeItem:key=>{if(fault.remove===key)throw Error('remove denied');storage.delete(key);}},
     sessionStorage:{getItem:key=>session.get(key)??null,setItem:(key,value)=>session.set(key,value)},
     document:{getElementById:element,querySelectorAll:()=>buttons,querySelector:()=>({id:'characterGacha'}),body:element('body')},
-    addEventListener(){},location:{reload(){reloads++;}},alert:text=>alerts.push(text),confirm:()=>false,
+    addEventListener(type,listener){if(!listeners.has(type))listeners.set(type,[]);listeners.get(type).push(listener);},location:{reload(){reloads++;}},alert:text=>alerts.push(text),confirm:()=>false,
     vis:unit=>`<img alt="${unit.name}">`,updateAppResourceBar(){},
     playSoulContractPresentation:(result,onFinish)=>{callbacks.push({result,onFinish});},
   });
@@ -46,8 +46,10 @@ function harness({storage=new Map(),slot=1,profiles=false}={}){
   for(const file of ['data','core','save','skills','contractor-rank','character-gacha'])vm.runInContext(read(file),context,{filename:`js/${file}.js`});
   const run=source=>vm.runInContext(source,context);
   context.refreshContractorRankUi=()=>rankStates.push(run('save.contractor.exp'));
+  context.downloadTextFile=(name,text)=>downloads.push({name,text});
   const key=profiles?context.MonsterProfiles.key('mb_v95c'):'mb_v95c';
-  return {context,run,storage,key,element,buttons,alerts,writes,callbacks,fault,rankStates,reloads:()=>reloads,
+  return {context,run,storage,key,element,buttons,alerts,writes,callbacks,fault,rankStates,downloads,reloads:()=>reloads,
+    emitStorage(key){for(const listener of listeners.get('storage')||[])listener({key,newValue:storage.get(key)??null});},
     seed(coins=2000){run(`save=initSave();save.coins=${coins};save.customSoulCompatibility={retained:true};saveGame();`);writes.length=0;},
     finish(index=callbacks.length-1){callbacks[index].onFinish();},
     primaryWrites:()=>writes.filter(k=>k===key).length,
@@ -347,4 +349,199 @@ for(const mode of ['missing','throws','declines','rejects']){
   h.run('rollCharacterGacha(1)');assert.equal(h.run('contractorRankUpCanPresent()'),false);
   h.finish();assert.equal(h.run('contractorRankUpCanPresent()'),true);
 }
+
+// Exact finalized before/after snapshots are independently durable before the
+// primary write, and acknowledgment keeps a continuity marker and recovery copy.
+{
+  const h=harness();h.seed();const before=JSON.parse(h.snapshot()),set=h.context.localStorage.setItem;
+  const recoveryKey=h.run('characterGachaRecoveryKey()');let verifiedBeforeWrite=false;
+  h.context.localStorage.setItem=(key,raw)=>{
+    if(key===h.key){const recovery=JSON.parse(h.storage.get(recoveryKey));
+      assert.equal(recovery.status,'prepared');assert.equal(JSON.stringify(recovery.after),raw);
+      assert.deepEqual(recovery.before,before);verifiedBeforeWrite=true;}
+    return set(key,raw);
+  };
+  assert(h.run('rollCharacterGacha(1).ok'));assert(verifiedBeforeWrite);h.finish();
+  h.context.localStorage.setItem=set;
+  const recordRaw=h.storage.get(recoveryKey),record=JSON.parse(recordRaw),marker=h.run('save.soulContractAppliedId');
+  assert.equal(record.id,marker);assert.equal(record.status,'committed');assert.equal(record.previous,null);
+  assert.equal(JSON.stringify(record.after),h.storage.get(h.key));
+  assert(h.run('acknowledgeCharacterGachaReceipt()'));assert.equal(h.run('save.soulContractAppliedId'),marker);
+  assert.equal(h.storage.get(recoveryKey),recordRaw,'acknowledgment cannot remove the only recovery copy');
+  // Deliberately consume every acquired instance and progress other resources.
+  h.run('save.instances=[];save.equippedSkills={};save.coins+=17;save.items.potion+=2;saveGame()');
+  assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),false,'legitimate recycling/evolution is identified by marker, not old UIDs');
+  assert.equal(h.run('save.instances.length'),0);
+}
+
+// Recovery quota/read errors refuse a new paid draw. A primary failure restores
+// the previous envelope exactly, or removes a first prepared record safely.
+{
+  const h=harness();h.seed();const before=h.snapshot(),recoveryKey=h.run('characterGachaRecoveryKey()');
+  h.fault.key=recoveryKey;assert.equal(h.run('rollCharacterGacha(1).ok'),false);
+  assert.equal(h.snapshot(),before);assert.equal(h.primaryWrites(),0);assert.equal(h.callbacks.length,0);
+  assert.equal(h.storage.has(recoveryKey),false);
+  h.fault.key=h.key;assert.equal(h.run('rollCharacterGacha(1).ok'),false);
+  assert.equal(h.storage.has(recoveryKey),false);assert.equal(h.snapshot(),before);
+  h.fault.key=null;h.fault.read=true;assert.equal(h.run('rollCharacterGacha(1).ok'),false);
+  h.fault.read=false;assert.equal(h.snapshot(),before);
+  assert(h.run('rollCharacterGacha(1).ok'));h.finish();
+  const prior=h.storage.get(recoveryKey),priorMain=h.storage.get(h.key),priorLive=h.snapshot();h.fault.key=h.key;
+  assert.equal(h.run('rollCharacterGacha(1).ok'),false);
+  assert.equal(h.storage.get(recoveryKey),prior);assert.equal(h.storage.get(h.key),priorMain);
+  assert.equal(h.snapshot(),priorLive);assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),false);
+}
+
+// Failed cleanup is explicit and fail-closed. Both snapshots can be exported,
+// but neither is automatically applied and the failed draw never grants units.
+{
+  const h=harness();h.seed();const before=h.snapshot(),recoveryKey=h.run('characterGachaRecoveryKey()');
+  h.fault.key=h.key;h.fault.remove=recoveryKey;
+  assert.equal(h.run('rollCharacterGacha(1).ok'),false);assert.equal(h.snapshot(),before);
+  assert.equal(JSON.parse(h.storage.get(recoveryKey)).status,'failed');
+  assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),true);
+  h.fault.key=null;h.fault.remove=null;
+  const writes=h.writes.length;assert.equal(h.run('rollCharacterGacha(1).ok'),false);
+  assert.equal(h.run('acknowledgeCharacterGachaReceipt()'),false);
+  assert.equal(h.run('exportCharacterGachaRecovery()'),true);assert.equal(h.run('exportCharacterGachaRecovery("before")'),true);
+  assert.equal(JSON.parse(h.downloads[0].text).instances.length,1);assert.equal(JSON.parse(h.downloads[1].text).instances.length,0);
+  assert.equal(h.writes.length,writes);assert.equal(h.snapshot(),before);
+}
+
+// If another writer changes primary during a failed commit, cleanup may not
+// discard the staged evidence even though no successful main write was proven.
+{
+  const h=harness();h.seed();const before=h.snapshot();
+  const other=JSON.parse(h.storage.get(h.key));other.items.potion+=1;
+  h.context.otherPrimary=JSON.stringify(other);
+  h.run('globalThis.actualStorageSet=safeStorageSet;safeStorageSet=(key,raw)=>{if(key===SAVE_KEY){localStorage.setItem(SAVE_KEY,otherPrimary);return false;}return actualStorageSet(key,raw);};');
+  assert.equal(h.run('rollCharacterGacha(1).ok'),false);assert.equal(h.snapshot(),before);
+  const record=JSON.parse(h.storage.get(h.run('characterGachaRecoveryKey()')));
+  assert.equal(record.status,'failed');assert.equal(record.after.instances.length,1);
+  assert.equal(h.storage.get(h.key),h.context.otherPrimary);assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),true);
+}
+
+// A successful primary write plus a throwing hook and transient proof-read
+// failure is uncertain, not a proven refund. Keep recovery evidence and use
+// accurate fail-closed wording without touching the committed durable save.
+{
+  const h=harness({profiles:true});h.seed();
+  const after=h.context.MonsterProfiles.afterSave,get=h.context.localStorage.getItem;let failProof=false;
+  h.context.MonsterProfiles.afterSave=raw=>{after(raw);failProof=true;throw Error('afterSave hook fault');};
+  h.context.localStorage.getItem=key=>{if(key===h.key&&failProof){failProof=false;throw Error('transient readback failure');}return get(key);};
+  const result=h.run('rollCharacterGacha(1)');assert.equal(result.ok,false);assert(result.recovery);
+  assert.match(result.error,/保存状態を確認できない/);assert.doesNotMatch(result.error,/契約前の状態に戻しました/);
+  assert.equal(h.run('save.coins'),2000);assert.equal(JSON.parse(h.storage.get(h.key)).coins,1900);
+  const record=JSON.parse(h.storage.get(h.run('characterGachaRecoveryKey()')));
+  assert.equal(record.status,'failed');assert.equal(record.after.instances.length,1);
+}
+
+// Optional compaction may fail without sacrificing the already verified backup.
+// Even repeated compaction failures retain only one prior envelope, never a chain.
+{
+  const h=harness();h.seed();const recoveryKey=h.run('characterGachaRecoveryKey()'),set=h.context.localStorage.setItem;
+  h.context.localStorage.setItem=(key,raw)=>{
+    if(key===recoveryKey&&JSON.parse(raw).status==='committed')throw Error('compaction quota');
+    return set(key,raw);
+  };
+  let previousId=null;
+  for(let n=0;n<3;n++){
+    assert(h.run('rollCharacterGacha(1).ok'));h.finish();
+    const record=JSON.parse(h.storage.get(recoveryKey));assert.equal(record.status,'prepared');
+    assert.equal(record.previous?.id??null,previousId);assert.equal(record.previous?.previous,undefined);
+    assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),false);previousId=record.id;
+  }
+  assert.equal(h.primaryWrites(),3);assert.equal(h.run('save.instances.length'),3);
+}
+
+// Reproduce the real mixed-writer race: ordinary tab B has already read its old
+// baseline when A commits. B's non-locking save then overwrites the new primary.
+// The independent contract snapshot survives, blocks more draws and exports
+// exactly, while B's current primary and each tab's live state remain untouched.
+{
+  const storage=new Map(),a=harness({storage,profiles:true});a.seed();
+  const b=harness({storage,profiles:true}),get=b.context.localStorage.getItem;
+  let reads=0,aResult=null;
+  b.context.localStorage.getItem=key=>{
+    const captured=get(key);
+    if(key===b.key&&++reads===3)aResult=a.run('commitCharacterGacha(1,()=>0)');
+    return captured;
+  };
+  assert.equal(b.run('save.items.potion+=1;saveGame()'),true);assert(aResult?.ok);
+  const rawB=storage.get(b.key),primaryB=JSON.parse(rawB),key=a.run('characterGachaRecoveryKey()'),backup=JSON.parse(storage.get(key));
+  assert.equal(primaryB.coins,2000);assert.equal(primaryB.instances.length,0);assert.equal(primaryB.soulContractAppliedId,undefined);
+  assert.equal(backup.after.coins,1900);assert.equal(backup.after.instances.length,1);
+  assert.equal(backup.after.instances[0].uid,aResult.entries[0].instance.uid);
+  assert.equal(backup.id,backup.after.soulContractAppliedId);
+  assert.equal(a.run('inspectCharacterGachaRecovery().blocked'),true);assert.equal(b.run('inspectCharacterGachaRecovery().blocked'),true);
+  a.emitStorage(a.key);assert.match(a.element('characterGachaResult').innerHTML,/契約時のセーブを書き出す/);
+  assert(a.buttons.every(button=>button.disabled));
+  const liveA=a.snapshot(),liveB=b.snapshot(),allStored=JSON.stringify([...storage]);
+  for(const tab of [a,b]){
+    assert.equal(tab.run('rollCharacterGacha(1).ok'),false);assert.equal(tab.run('rollCharacterGacha(10).ok'),false);
+    assert.equal(tab.run('acknowledgeCharacterGachaReceipt()'),false);
+    assert(tab.run('exportCharacterGachaRecovery()'));assert.deepEqual(JSON.parse(tab.downloads.at(-1).text),backup.after);
+    assert(tab.run('exportCharacterGachaRecovery("current")'));
+    assert.equal(tab.downloads.at(-1).text,rawB,'current export contains durable B history, not stale A memory');
+  }
+  assert.equal(a.snapshot(),liveA);assert.equal(b.snapshot(),liveB);assert.equal(storage.get(a.key),rawB);
+  assert.equal(JSON.stringify([...storage]),allStored,'export/recovery must be read-only');
+  const reload=harness({storage,profiles:true});reload.run('renderCharacterGacha()');
+  assert.equal(reload.run('save.instances.length'),0);assert.equal(reload.run('rollCharacterGacha(1).ok'),false);
+  const other=harness({storage,profiles:true,slot:2});other.seed();
+  assert.notEqual(other.run('characterGachaRecoveryKey()'),key);assert(other.run('rollCharacterGacha(1).ok'));
+  assert.equal(storage.get(a.key),rawB);assert.equal(JSON.parse(storage.get(key)).id,backup.id);
+}
+
+// A crash after preparation but before primary commitment is ambiguous. The old
+// primary equalling the before snapshot is not permission to auto-apply a draw.
+{
+  const h=harness();h.seed();const before=h.storage.get(h.key);h.run('rollCharacterGacha(1)');
+  const key=h.run('characterGachaRecoveryKey()'),record=JSON.parse(h.storage.get(key));record.status='prepared';
+  h.storage.set(key,JSON.stringify(record));h.storage.set(h.key,before);
+  const reload=harness({storage:h.storage});const live=reload.snapshot(),writes=reload.writes.length;
+  reload.run('renderCharacterGacha()');assert.equal(reload.run('rollCharacterGacha(1).ok'),false);
+  assert.equal(reload.snapshot(),live);assert.equal(reload.writes.length,writes);assert.equal(reload.run('save.instances.length'),0);
+}
+
+// A legitimate export/import on a fresh device has no companion record. Only
+// explicit confirmation may establish an imported-current baseline; original
+// contract history is not fabricated, and primary/economy/RNG are untouched.
+for(const acknowledge of [false,true]){
+  const original=harness();original.seed();original.run('rollCharacterGacha(1)');original.finish();
+  if(acknowledge){original.run('acknowledgeCharacterGachaReceipt();save.instances=[];save.equippedSkills={};save.coins+=23;saveGame()');}
+  const importedRaw=original.storage.get(original.key),storage=new Map([['mb_v95c',importedRaw]]),h=harness({storage});
+  const before=h.snapshot(),key=h.run('characterGachaRecoveryKey()');
+  assert.equal(h.run('inspectCharacterGachaRecovery().canEstablishBaseline'),true);
+  assert.equal(h.run('rollCharacterGacha(1).ok'),false);
+  assert.equal(h.run('establishCharacterGachaRecoveryBaseline()'),false,'cancel makes no writes');
+  assert.equal(storage.has(key),false);assert.equal(h.primaryWrites(),0);
+  h.context.confirm=()=>true;h.context.Math.random=()=>{throw Error('baseline cannot draw');};
+  h.fault.key=key;assert.equal(h.run('establishCharacterGachaRecoveryBaseline()'),false);
+  assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),true);assert.equal(storage.has(key),false);
+  h.fault.key=null;assert.equal(h.run('establishCharacterGachaRecoveryBaseline()'),true);
+  assert.equal(h.run('inspectCharacterGachaRecovery().blocked'),false);
+  const baseline=JSON.parse(storage.get(key));assert.equal(baseline.status,'baseline');
+  assert.equal(JSON.stringify(baseline.after),importedRaw);assert.equal(h.snapshot(),before);
+  assert.equal(storage.get(h.key),importedRaw);assert.equal(h.primaryWrites(),0);
+  assert.equal(h.run('establishCharacterGachaRecoveryBaseline()'),false,'existing records cannot be reset');
+}
+
+// Missing-record confirmation cannot excuse a mismatched marker, replace a
+// corrupt/failed/divergent existing envelope, or bleed between profile slots.
+{
+  const original=harness();original.seed();original.run('rollCharacterGacha(1)');original.finish();
+  const raw=original.storage.get(original.key),storage=new Map([['mb_v95c',raw],['mb_v95c_profile2',raw]]);
+  const one=harness({storage,profiles:true,slot:1}),two=harness({storage,profiles:true,slot:2});
+  one.context.confirm=()=>true;two.context.confirm=()=>true;
+  one.run('save.soulContractAppliedId="different"');
+  assert.equal(one.run('establishCharacterGachaRecoveryBaseline()'),false);assert.equal(one.primaryWrites(),0);
+  assert(two.run('establishCharacterGachaRecoveryBaseline()'));
+  assert.equal(storage.has(one.run('characterGachaRecoveryKey()')),false);
+  assert.equal(two.run('inspectCharacterGachaRecovery().blocked'),false);
+  storage.set(one.run('characterGachaRecoveryKey()'),'{broken');
+  assert.equal(one.run('establishCharacterGachaRecoveryBaseline()'),false);
+  assert.equal(storage.get(one.run('characterGachaRecoveryKey()')),'{broken');
+}
+
 console.log('Soul Contract transactions: single/ten atomic commits, repeated input, ordered receipts, reload recovery, full side-effect rollback, failed acknowledgments, UID repair, corrupt receipts, profiles/conflicts, and presentation fallbacks passed.');

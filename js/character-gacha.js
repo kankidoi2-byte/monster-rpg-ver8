@@ -36,12 +36,107 @@ let characterGachaCommitting=false;
 let characterGachaPresentation=null;
 let characterGachaSeenReceipt=null;
 let characterGachaLockPending=null;
+const CHARACTER_GACHA_RECOVERY_KEY=`${SAVE_KEY}_soulContractRecovery_v1`;
 function isCharacterGachaPresenting(){
   return Boolean(characterGachaLockPending)||characterGachaCommitting||Boolean(characterGachaPresentation?.owner===save);
 }
 function cancelPendingCharacterGacha(){ characterGachaLockPending=null; }
 function characterGachaStorageKey(){
   return typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SAVE_KEY):SAVE_KEY;
+}
+function characterGachaRecoveryKey(){
+  return typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(CHARACTER_GACHA_RECOVERY_KEY):CHARACTER_GACHA_RECOVERY_KEY;
+}
+function readCharacterGachaStorage(key){
+  try{return {ok:true,raw:localStorage.getItem(key)};}catch(_error){return {ok:false,raw:null};}
+}
+function writeCharacterGachaRecovery(raw){
+  const key=characterGachaRecoveryKey();
+  try{if(raw===null)localStorage.removeItem(key);else localStorage.setItem(key,raw);}catch(_error){}
+  const stored=readCharacterGachaStorage(key);
+  return stored.ok&&stored.raw===raw;
+}
+function characterGachaRecoveryRecord(raw){
+  if(raw===null)return null;
+  try{
+    const record=JSON.parse(raw);
+    if(record?.version!==1||!['prepared','committed','failed','baseline'].includes(record.status)||
+      typeof record.id!=='string'||!isSaveObject(record.before)||!isSaveObject(record.after)||
+      record.after.soulContractAppliedId!==record.id||
+      (record.status!=='baseline'&&(record.after.soulContractReceipt?.id!==record.id||
+      !characterGachaReceiptResult(record.after.soulContractReceipt))))return null;
+    return record;
+  }catch(_error){return null;}
+}
+function inspectCharacterGachaRecovery(){
+  const stored=readCharacterGachaStorage(characterGachaRecoveryKey());
+  if(!stored.ok)return {blocked:true,reason:'unreadable',record:null,raw:null};
+  const record=characterGachaRecoveryRecord(stored.raw);
+  if(stored.raw!==null&&!record)return {blocked:true,reason:'invalid',record:null,raw:stored.raw};
+  if(!record){
+    const primary=readCharacterGachaStorage(characterGachaStorageKey());let persisted=null;
+    if(!primary.ok)return {blocked:true,reason:'unreadable',record:null,raw:null};
+    try{if(primary.ok&&primary.raw!==null)persisted=JSON.parse(primary.raw);}catch(_error){}
+    return {blocked:Boolean(save.soulContractAppliedId||persisted?.soulContractAppliedId),reason:'missing',record:null,raw:null,
+      canEstablishBaseline:typeof save.soulContractAppliedId==='string'&&Boolean(save.soulContractAppliedId)&&persisted?.soulContractAppliedId===save.soulContractAppliedId};
+  }
+  const primary=readCharacterGachaStorage(characterGachaStorageKey());
+  let persisted=null;
+  try{if(primary.ok&&primary.raw!==null)persisted=JSON.parse(primary.raw);}catch(_error){}
+  // The marker survives acknowledgment and ordinary progression. Do not test
+  // owned UIDs: evolution, fusion and recycling can legitimately consume them.
+  const matches=primary.ok&&persisted?.soulContractAppliedId===record.id&&save.soulContractAppliedId===record.id;
+  return {blocked:record.status==='failed'||!matches,reason:record.status==='failed'?'failed':'diverged',record,raw:stored.raw};
+}
+function renderCharacterGachaRecoveryWarning(state=inspectCharacterGachaRecovery()){
+  if(!state.blocked)return false;
+  const target=document.getElementById('characterGachaResult');
+  const importedNote=state.record?.status==='baseline'?'<p>この復旧記録は、この端末で確認した読み込み済みセーブです。元の契約時点の記録ではありません。</p>':'';
+  if(target)target.innerHTML='<h2>契約のセーブ記録を確認してください</h2><p>現在のセーブと契約時の記録を照合できないため、新しい契約を停止しました。現在のデータを上書きしたり、仲間を再追加したりしていません。別の画面での更新や保存エラーがないか確認してください。</p>'+
+    (state.record?importedNote+'<p>復旧記録を書き出して保管できます。自動復元は行いません。保存に失敗した記録の場合、契約後の内容は確定済みとは限りません。</p><button type="button" onclick="exportCharacterGachaRecovery()">契約時のセーブを書き出す</button><button type="button" onclick="exportCharacterGachaRecovery(\'before\')">契約前のセーブを書き出す</button>':'<p>契約時の記録を読み取れません。現在のデータを書き出して保管してください。</p>')+
+    '<button type="button" onclick="exportCharacterGachaRecovery(\'current\')">現在の保存済みセーブを書き出す（保存しない）</button>'+
+    (state.canEstablishBaseline?'<p>別の端末から読み込んだセーブの場合、元の契約時点の復旧記録はこの端末にありません。現在の保存済みセーブを確認し、この端末の基準として記録できます。</p><button type="button" onclick="establishCharacterGachaRecoveryBaseline()">読み込んだセーブをこの端末の基準にする</button>':'');
+  document.querySelectorAll('[data-character-gacha-count]').forEach(button=>{button.disabled=true;});
+  return true;
+}
+function exportCharacterGachaRecovery(which='after'){
+  const state=inspectCharacterGachaRecovery();
+  const snapshot=state.record?.[which==='before'?'before':'after'];
+  const primary=which==='current'?readCharacterGachaStorage(characterGachaStorageKey()):null;
+  const text=which==='current'?(primary.ok?primary.raw:null):(snapshot?JSON.stringify(snapshot,null,2):null);
+  if(text===null){alert('保存記録を読み取れませんでした。ブラウザの保存設定を確認してください。');return false;}
+  // Unlike exportSaveData, this read-only action must never save the live state.
+  downloadTextFile(`soul-contract-${which==='current'?'current':which==='before'?'before':'recovery'}-${new Date().toISOString().slice(0,10)}.json`,text);
+  return true;
+}
+function establishCharacterGachaRecoveryBaseline(){
+  if(isCharacterGachaPresenting()||!inspectCharacterGachaRecovery().canEstablishBaseline)return false;
+  if(!confirm('元の契約時点の復旧記録はこの端末にありません。現在の保存済みセーブを、この端末で今後の契約に使う基準として記録しますか？仲間・コイン・現在のセーブは変更しません。'))return false;
+  return withCharacterGachaLock(()=>{
+    if(!inspectCharacterGachaRecovery().canEstablishBaseline)return false;
+    const primary=readCharacterGachaStorage(characterGachaStorageKey());let snapshot=null;
+    try{if(primary.ok&&primary.raw!==null)snapshot=JSON.parse(primary.raw);}catch(_error){}
+    if(!snapshot||snapshot.soulContractAppliedId!==save.soulContractAppliedId)return false;
+    const record={version:1,id:snapshot.soulContractAppliedId,status:'baseline',before:snapshot,after:snapshot,previous:null};
+    if(!writeCharacterGachaRecovery(JSON.stringify(record))){alert('基準の記録を保存できませんでした。端末の空き容量やブラウザ設定を確認してください。');return false;}
+    const target=document.getElementById('characterGachaResult');if(target)target.innerHTML='';
+    renderCharacterGacha();return true;
+  },false);
+}
+function rollbackCharacterGachaRecovery(record,previousRaw,previousPrimary){
+  if(!record)return;
+  const current=readCharacterGachaStorage(characterGachaRecoveryKey());
+  if(!current.ok||current.raw===previousRaw)return;
+  if(characterGachaRecoveryRecord(current.raw)?.id!==record.id)return;
+  const primary=readCharacterGachaStorage(characterGachaStorageKey());
+  // Restore/remove a prepared record only if the durable primary is still the
+  // exact pre-attempt value. Any intervening writer makes commitment uncertain;
+  // retain both snapshots as failed/manual-only instead of deleting evidence.
+  if(primary.ok&&previousPrimary.ok&&primary.raw===previousPrimary.raw&&writeCharacterGachaRecovery(previousRaw))return;
+  // Failed cleanup is never treated as a fresh draw or silently reapplied.
+  const remaining=readCharacterGachaStorage(characterGachaRecoveryKey());
+  if(remaining.ok&&characterGachaRecoveryRecord(remaining.raw)?.id===record.id)
+    writeCharacterGachaRecovery(JSON.stringify({...record,status:'failed'}));
 }
 function withCharacterGachaLock(action,failureResult){
   // Command-line tests retain the synchronous primitives. In actual browsers,
@@ -104,8 +199,13 @@ function refreshCharacterGachaResources(){
   // all belong to the staged save; refresh after rollback as well as success.
   if(typeof refreshContractorRankUi==='function')refreshContractorRankUi();
 }
-function persistCharacterGachaSave(){
-  try{if(saveGame())return true;}catch(error){if(typeof console!=='undefined')console.warn('Soul Contract save failed',error);}
+function persistCharacterGachaSave(beforePrimaryWrite=null){
+  const originalStorageSet=safeStorageSet;
+  if(beforePrimaryWrite)safeStorageSet=(key,raw)=>key===SAVE_KEY&&!beforePrimaryWrite(raw)?false:originalStorageSet(key,raw);
+  let saved=false;
+  try{saved=saveGame();}catch(error){if(typeof console!=='undefined')console.warn('Soul Contract save failed',error);}
+  finally{if(beforePrimaryWrite)safeStorageSet=originalStorageSet;}
+  if(saved)return true;
   // A storage write can succeed before an after-save hook throws. A byte-for-
   // byte read-back proves commitment; rolling that transaction back would let a
   // subsequent click charge/acquire again. Never overwrite a conflicting save.
@@ -121,8 +221,13 @@ function persistCharacterGachaSave(){
 }
 function commitCharacterGacha(count,randomFn=Math.random){
   if(isCharacterGachaPresenting())return {ok:false,busy:true,error:'契約の結果を確認してください。'};
+  const recovery=inspectCharacterGachaRecovery();
+  if(recovery.blocked)return {ok:false,recovery:true,error:'契約のセーブ記録を照合できません。契約画面から記録を書き出して保管してください。'};
   if(save.soulContractReceipt&&!characterGachaReceiptWasSeen())return {ok:false,pending:true,error:'保存された契約の結果を先に確認してください。'};
   const previousSave=save,previousReport=saveRecoveryReport;
+  const previousPrimary=readCharacterGachaStorage(characterGachaStorageKey());
+  if(!previousPrimary.ok)return {ok:false,recovery:true,error:'セーブを読み取れないため契約を停止しました。'};
+  let recoveryRecord=null,recoveryPrepared=false;
   characterGachaCommitting=true;
   try{
     // Staging the entire object includes addInstance side effects, custom fields,
@@ -139,12 +244,28 @@ function commitCharacterGacha(count,randomFn=Math.random){
         unitId:unit.id,instanceUid:instance.uid,isNew,locked:instance.locked===true
       }))};
     save.soulContractReceipt=receipt;
-    if(!persistCharacterGachaSave())throw new Error('契約結果を保存できませんでした。');
+    save.soulContractAppliedId=receipt.id;
+    const persisted=persistCharacterGachaSave(raw=>{
+      // Capture saveGame's exact finalized JSON (including grants, repairs and
+      // integrity hash), and verify an independent durable copy BEFORE setItem.
+      // Retain one prior envelope until success; never build a history chain.
+      const previous=recovery.record?{version:1,id:recovery.record.id,status:recovery.record.status,
+        before:recovery.record.before,after:recovery.record.after}:null;
+      recoveryRecord={version:1,id:receipt.id,status:'prepared',before:JSON.parse(JSON.stringify(previousSave)),after:JSON.parse(raw),previous};
+      recoveryPrepared=writeCharacterGachaRecovery(JSON.stringify(recoveryRecord));
+      return recoveryPrepared;
+    });
+    if(!persisted||!recoveryPrepared)throw new Error('契約結果または復旧用の記録を保存できませんでした。');
+    // Compaction is optional: if it fails, the verified prepared envelope still
+    // contains the exact committed snapshot and at most one prior envelope.
+    writeCharacterGachaRecovery(JSON.stringify({...recoveryRecord,status:'committed',previous:null}));
     characterGachaSeenReceipt=null;
     return {...result,receiptId:receipt.id};
   }catch(error){
     if(typeof console!=='undefined')console.warn('Soul Contract transaction failed',error);
     save=previousSave;saveRecoveryReport=previousReport;
+    rollbackCharacterGachaRecovery(recoveryRecord,recovery.raw,previousPrimary);
+    if(inspectCharacterGachaRecovery().blocked)return {ok:false,recovery:true,error:'保存状態を確認できないため新しい契約を停止しました。契約画面から復旧記録と現在の保存済みセーブを書き出して保管してください。'};
     return {ok:false,error:'保存できなかったため、コインと仲間を契約前の状態に戻しました。端末の空き容量やブラウザ設定を確認してください。'};
   }finally{
     characterGachaCommitting=false;
@@ -173,6 +294,8 @@ function renderCharacterGachaResults(result,{recovered=false}={}){
   return true;
 }
 function recoverCharacterGachaReceipt(){
+  const recovery=inspectCharacterGachaRecovery();
+  if(recovery.blocked){renderCharacterGachaRecoveryWarning(recovery);return null;}
   if(isCharacterGachaPresenting()||!save.soulContractReceipt)return null;
   const result=characterGachaReceiptResult();
   if(!result){
@@ -186,10 +309,12 @@ function recoverCharacterGachaReceipt(){
   return result;
 }
 function acknowledgeCharacterGachaReceipt(){
+  if(renderCharacterGachaRecoveryWarning())return false;
   if(isCharacterGachaPresenting()||!characterGachaReceiptWasSeen()||!characterGachaReceiptResult())return false;
   return withCharacterGachaLock(acknowledgeCharacterGachaReceiptCommitted,false);
 }
 function acknowledgeCharacterGachaReceiptCommitted(){
+  if(renderCharacterGachaRecoveryWarning())return false;
   if(isCharacterGachaPresenting()||!characterGachaReceiptWasSeen()||!characterGachaReceiptResult())return false;
   const previousSave=save,previousReport=saveRecoveryReport;
   characterGachaCommitting=true;
@@ -215,6 +340,7 @@ function acknowledgeCharacterGachaReceiptCommitted(){
 }
 function rollCharacterGacha(count){
   if(isCharacterGachaPresenting())return {ok:false,busy:true};
+  if(renderCharacterGachaRecoveryWarning())return {ok:false,recovery:true};
   if(save.soulContractReceipt&&!characterGachaReceiptWasSeen()){
     const recovered=recoverCharacterGachaReceipt();
     return recovered?{...recovered,recovered:true}:{ok:false,pending:true};
@@ -225,6 +351,7 @@ function rollCharacterGachaCommitted(count){
   if(isCharacterGachaPresenting())return {ok:false,busy:true};
   const result=commitCharacterGacha(count);
   if(!result.ok){if(!result.busy)alert(result.error);renderCharacterGacha();return result;}
+  if(renderCharacterGachaRecoveryWarning())return {...result,recovery:true};
   const session={owner:save,id:result.receiptId};
   characterGachaPresentation=session;
   renderCharacterGacha();
@@ -253,3 +380,10 @@ function rollCharacterGachaCommitted(count){
   }
   return result;
 }
+if(typeof globalThis.addEventListener==='function')globalThis.addEventListener('storage',event=>{
+  if(event.key!==null&&event.key!==characterGachaStorageKey()&&event.key!==characterGachaRecoveryKey())return;
+  if(!inspectCharacterGachaRecovery().blocked)return;
+  cancelPendingCharacterGacha();
+  if(typeof cancelSoulContractPresentation==='function')cancelSoulContractPresentation();
+  if(document.querySelector?.('.screen.active')?.id==='characterGacha')renderCharacterGacha();
+});
