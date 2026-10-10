@@ -35,8 +35,48 @@ function performCharacterGacha(count,randomFn=Math.random){
 let characterGachaCommitting=false;
 let characterGachaPresentation=null;
 let characterGachaSeenReceipt=null;
+let characterGachaLockPending=null;
 function isCharacterGachaPresenting(){
-  return characterGachaCommitting||Boolean(characterGachaPresentation?.owner===save);
+  return Boolean(characterGachaLockPending)||characterGachaCommitting||Boolean(characterGachaPresentation?.owner===save);
+}
+function characterGachaStorageKey(){
+  return typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SAVE_KEY):SAVE_KEY;
+}
+function withCharacterGachaLock(action,failureResult){
+  // Command-line tests retain the synchronous primitives. In actual browsers,
+  // every draw/acknowledgment must use the same exclusive origin/profile lock.
+  // A localStorage spinlock cannot close the check-then-write race across tabs.
+  if(typeof navigator==='undefined')return action();
+  if(!navigator.locks||typeof navigator.locks.request!=='function'){
+    alert('このブラウザでは安全な同時保存を利用できないため、契約を開始できません。対応する最新のブラウザで開き直してください。');
+    return failureResult;
+  }
+  const pending={owner:save,key:characterGachaStorageKey()};
+  characterGachaLockPending=pending;
+  renderCharacterGacha();
+  let entered=false;
+  const failed=()=>{
+    if(characterGachaLockPending===pending)characterGachaLockPending=null;
+    renderCharacterGacha();
+    alert(entered?'契約結果の表示を再開できませんでした。画面を開き直して保存済みの結果を確認してください。':'安全な保存の準備に失敗しました。画面を開き直してから契約をやり直してください。');
+    return failureResult;
+  };
+  try{
+    return navigator.locks.request(`monster-rpg:character-gacha:${pending.key}`,{mode:'exclusive'},()=>{
+      entered=true;
+      if(characterGachaLockPending!==pending)return failureResult;
+      // Release only the local input guard before the synchronous transaction's
+      // own guard. The browser lock remains held until this callback returns.
+      characterGachaLockPending=null;
+      if(save!==pending.owner||characterGachaStorageKey()!==pending.key){renderCharacterGacha();return failureResult;}
+      // Another tab may have committed while this request waited. Re-read the
+      // existing profile baseline under the lock, before RNG or acquisition.
+      if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave()){
+        renderCharacterGacha();return failureResult;
+      }
+      return action();
+    }).catch(failed);
+  }catch(_error){return failed();}
 }
 function characterGachaReceiptResult(receipt=save.soulContractReceipt){
   if(!receipt||receipt.version!==1||typeof receipt.id!=='string'||!receipt.id||
@@ -102,6 +142,7 @@ function commitCharacterGacha(count,randomFn=Math.random){
     characterGachaSeenReceipt=null;
     return {...result,receiptId:receipt.id};
   }catch(error){
+    if(typeof console!=='undefined')console.warn('Soul Contract transaction failed',error);
     save=previousSave;saveRecoveryReport=previousReport;
     return {ok:false,error:'保存できなかったため、コインと仲間を契約前の状態に戻しました。端末の空き容量やブラウザ設定を確認してください。'};
   }finally{
@@ -145,6 +186,10 @@ function recoverCharacterGachaReceipt(){
 }
 function acknowledgeCharacterGachaReceipt(){
   if(isCharacterGachaPresenting()||!characterGachaReceiptWasSeen()||!characterGachaReceiptResult())return false;
+  return withCharacterGachaLock(acknowledgeCharacterGachaReceiptCommitted,false);
+}
+function acknowledgeCharacterGachaReceiptCommitted(){
+  if(isCharacterGachaPresenting()||!characterGachaReceiptWasSeen()||!characterGachaReceiptResult())return false;
   const previousSave=save,previousReport=saveRecoveryReport;
   characterGachaCommitting=true;
   let saved=false;
@@ -173,6 +218,10 @@ function rollCharacterGacha(count){
     const recovered=recoverCharacterGachaReceipt();
     return recovered?{...recovered,recovered:true}:{ok:false,pending:true};
   }
+  return withCharacterGachaLock(()=>rollCharacterGachaCommitted(count),{ok:false,blocked:true});
+}
+function rollCharacterGachaCommitted(count){
+  if(isCharacterGachaPresenting())return {ok:false,busy:true};
   const result=commitCharacterGacha(count);
   if(!result.ok){if(!result.busy)alert(result.error);renderCharacterGacha();return result;}
   const session={owner:save,id:result.receiptId};

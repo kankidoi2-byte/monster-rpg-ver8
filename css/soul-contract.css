@@ -54,3 +54,5 @@
  #soulContractPresentation .soul-progress{bottom:12px;}
 }
 @media(prefers-reduced-motion:reduce){#soulContractPresentation *,#soulContractPresentation *::after{animation:none!important;transition:none!important;}#soulContractPresentation .soul-glyph{stroke-dashoffset:0;}#soulContractPresentation .soul-release{display:none;}}
+/* Static same-palette stars also cover devices where Canvas cannot initialize. */
+#soulContractPresentation{background-image:radial-gradient(circle at 21px 31px,#bcd3e18c .7px,transparent 1.8px),radial-gradient(circle at 81px 63px,#ecf7ffc7 1px,#cce2f02e 2px,transparent 7px);background-size:117px 149px,211px 263px;}

@@ -5,6 +5,23 @@ import {webcrypto} from 'node:crypto';
 
 const read=name=>fs.readFileSync(new URL(`../js/${name}.js`,import.meta.url),'utf8');
 const plain=value=>JSON.parse(JSON.stringify(value));
+function queuedWebLocks(){
+  const waiting=[],held=new Set(),names=[];
+  return {
+    waiting,names,
+    request(name,options,callback){
+      assert.equal(options.mode,'exclusive');names.push(name);
+      return new Promise((resolve,reject)=>waiting.push({name,callback,resolve,reject}));
+    },
+    async grant(index=0){
+      const request=waiting.splice(index,1)[0];assert(request);assert(!held.has(request.name));held.add(request.name);
+      try{request.resolve(await request.callback({name:request.name,mode:'exclusive'}));}
+      catch(error){request.reject(error);}
+      finally{held.delete(request.name);}
+      await Promise.resolve();
+    }
+  };
+}
 function harness({storage=new Map(),slot=1,profiles=false}={}){
   const elements=new Map(),alerts=[],writes=[],callbacks=[],rankStates=[];
   const fault={key:null,afterWrite:false,read:false},session=new Map([['mb_profile_tab_v1',String(slot)]]);
@@ -226,6 +243,74 @@ for(const mode of ['acquisition','save']){
   assert.equal(one.snapshot(),before);assert.equal(storage.get('mb_v95c'),newer);
   assert.equal(one.run('acknowledgeCharacterGachaReceipt()'),false);
   assert.equal(storage.get('mb_v95c'),newer);
+}
+
+// Same-origin browser tabs serialize before the baseline re-read, not merely
+// before setItem. The losing tab never consumes RNG, currency, cards, or units.
+{
+  const storage=new Map(),first=harness({storage,profiles:true});first.seed();
+  const second=harness({storage,profiles:true}),locks=queuedWebLocks();
+  first.context.navigator={locks};second.context.navigator={locks};
+  const secondBefore=second.snapshot();second.context.Math.random=()=>{throw Error('conflicted draw must not roll');};
+  const one=first.run('rollCharacterGacha(1)'),two=second.run('rollCharacterGacha(10)');
+  assert.equal(locks.waiting.length,2);assert.equal(first.run('rollCharacterGacha(1).busy'),true);
+  assert.equal(first.context.MonsterProfiles.switchTo(2),false,'pending lock blocks profile switching');
+  assert(first.buttons.every(button=>button.disabled));assert.equal(first.primaryWrites(),0);
+  assert.deepEqual(locks.names,['monster-rpg:character-gacha:mb_v95c','monster-rpg:character-gacha:mb_v95c']);
+  await locks.grant();assert((await one).ok);assert.equal(first.primaryWrites(),1);
+  assert.equal(first.run('isCharacterGachaPresenting()'),true,'lock released before the cinematic finishes');
+  const committed=storage.get(first.key);
+  await locks.grant();assert.equal((await two).ok,false);
+  assert.equal(second.primaryWrites(),0);assert.equal(second.callbacks.length,0);
+  assert.equal(second.snapshot(),secondBefore);assert.equal(storage.get(first.key),committed);
+  assert.equal(second.run('isCharacterGachaPresenting()'),false);
+  first.finish();
+}
+
+// Receipt acknowledgment uses that same lock, so it cannot overwrite a draw
+// committed by another tab between its conflict check and final storage write.
+{
+  const h=harness({profiles:true});h.seed();h.run('rollCharacterGacha(1)');h.finish();
+  const locks=queuedWebLocks();h.context.navigator={locks};const before=h.primaryWrites();
+  const result=h.run('acknowledgeCharacterGachaReceipt()');
+  assert.equal(h.primaryWrites(),before);assert.equal(h.run('acknowledgeCharacterGachaReceipt()'),false);
+  await locks.grant();assert.equal(await result,true);assert.equal(h.primaryWrites(),before+1);
+  assert.equal(h.run('save.soulContractReceipt'),null);assert.equal(h.run('save.coins'),1900);
+}
+{
+  const storage=new Map(),seed=harness({storage,profiles:true});seed.seed();seed.run('rollCharacterGacha(1)');seed.finish();
+  const drawer=harness({storage,profiles:true}),acknowledger=harness({storage,profiles:true}),locks=queuedWebLocks();
+  for(const tab of [drawer,acknowledger]){tab.run('renderCharacterGacha()');tab.context.navigator={locks};}
+  const draw=drawer.run('rollCharacterGacha(1)'),ack=acknowledger.run('acknowledgeCharacterGachaReceipt()');
+  assert.equal(locks.waiting.length,2);await locks.grant();assert((await draw).ok);
+  const committed=storage.get(drawer.key);await locks.grant();assert.equal(await ack,false);
+  assert.equal(storage.get(drawer.key),committed);assert.equal(JSON.parse(committed).instances.length,2);
+  assert.equal(acknowledger.primaryWrites(),0);
+}
+
+// Different profile slots use distinct lock names, and queued work is cancelled
+// if an import replaces the owning save before its lock is acquired.
+{
+  const storage=new Map(),one=harness({storage,profiles:true,slot:1}),two=harness({storage,profiles:true,slot:2}),locks=queuedWebLocks();
+  one.seed();two.seed();one.context.navigator={locks};two.context.navigator={locks};
+  const first=one.run('rollCharacterGacha(1)'),second=two.run('rollCharacterGacha(1)');
+  assert.notEqual(locks.names[0],locks.names[1]);assert(locks.names[1].endsWith('mb_v95c_profile2'));
+  one.run('save=initSave();save.coins=555;');const replacement=one.snapshot();
+  await locks.grant();assert.equal((await first).ok,false);assert.equal(one.snapshot(),replacement);
+  assert.equal(one.primaryWrites(),0);await locks.grant();assert((await second).ok);
+}
+
+// Browsers without Web Locks (or denied/rejected lock acquisition) must fail
+// closed. No silently unlocked browser fallback is allowed.
+for(const mode of ['unavailable','throws','rejects']){
+  const h=harness();h.seed();const before=h.snapshot();
+  h.context.navigator=mode==='unavailable'?{}:{locks:{request(){
+    if(mode==='throws')throw Error('lock access denied');
+    return Promise.reject(Error('lock unavailable'));
+  }}};
+  assert.equal((await h.run('rollCharacterGacha(1)')).ok,false);
+  assert.equal(h.snapshot(),before);assert.equal(h.primaryWrites(),0);assert.equal(h.callbacks.length,0);
+  assert.equal(h.run('isCharacterGachaPresenting()'),false);assert(h.alerts.length>0);
 }
 
 // Broken/missing presentation code falls back to the real final list immediately.

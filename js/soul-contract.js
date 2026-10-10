@@ -25,7 +25,8 @@ function playSoulContractPresentation(result,onFinish){
   const backgrounds=[...document.body.children].filter(el=>el!==overlay&&el.tagName!=='SCRIPT');
   const inertState=backgrounds.map(el=>[el,el.inert]);backgrounds.forEach(el=>el.inert=true);
   const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const canvas=overlay.querySelector('canvas'),ctx=canvas.getContext('2d');
+  const canvas=overlay.querySelector('canvas');
+  let ctx=null;try{ctx=canvas.getContext('2d');}catch(_error){/* Flat navy fallback when Canvas is unavailable. */}
   let stopped=false,raf=0,timer=0,wake=null,lastFrame=0,frameCount=0;
   let width=0,height=0;
   const stars=Array.from({length:100},(_,i)=>({x:((i*73+17)%101)/101,y:((i*41+9)%103)/103,r:i%13===0?1.8:i%5===0?1.15:.55,phase:i*1.7}));
