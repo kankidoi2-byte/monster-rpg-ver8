@@ -169,3 +169,12 @@ body[data-nonbattle-theme] :is(#contractAnimation,#skillGachaPresentation){color
 }
 /* Desktop-width navigation must also fit the narrower CSS viewport at zoom. */
 body[data-nonbattle-theme]:not(.title-mode)>.app-bottom-nav{max-width:100%;height:auto;min-height:var(--ui-nav-height,78px);}
+/* A wrapped caption starts below the portrait, never over its lower pixels. */
+#home.nonbattle-screen.active .home-portrait-frame>.home-favorite-caption{top:calc(100% + 8px);bottom:auto;}
+@container(max-width:260px){
+ #home.nonbattle-screen.active .home-favorite-stage{height:auto;min-height:0;padding-top:52px;}
+ #home.nonbattle-screen.active .home-favorite-art{position:relative;inset:auto;display:block;container-type:inline-size;}
+ #home.nonbattle-screen.active .home-portrait-frame{width:calc(100cqw - 24px);height:auto;margin:0 auto;box-sizing:border-box;}
+ #home.nonbattle-screen.active .home-portrait-frame img{height:auto!important;}
+ #home.nonbattle-screen.active .home-portrait-frame>.home-favorite-caption{position:relative;inset:auto;transform:none;margin:8px auto 0;width:100%;}
+}

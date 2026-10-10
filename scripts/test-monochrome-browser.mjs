@@ -87,6 +87,19 @@ async function capture(page,name,{validate=true}={}){
    geometry:{viewport:innerWidth,documentScrollWidth:document.documentElement.scrollWidth,documentClientWidth:document.documentElement.clientWidth,bodyScrollWidth:document.body.scrollWidth,zoom:getComputedStyle(document.documentElement).zoom},
    overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
  });
+ if(entry.layout.screen==='home'){
+  entry.homeComposition=await page.evaluate(()=>{
+   const image=document.querySelector('#home .home-portrait-frame img'),caption=document.querySelector('#home .home-favorite-caption'),story=document.querySelector('#home .home-story-row');
+   if(!image||!caption||!story)return null; // Empty-party case has no favorite artwork.
+   const box=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};};
+   const a=box(image),b=box(caption),c=box(story);
+   return {image:a,caption:b,story:c,imageCaptionOverlap:Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1,captionBeforeStory:b.bottom<=c.top+1};
+  });
+  if(entry.homeComposition){
+   verify(!entry.homeComposition.imageCaptionOverlap,`${name}: favorite caption overlaps artwork ${JSON.stringify(entry.homeComposition)}`);
+   verify(entry.homeComposition.captionBeforeStory,`${name}: favorite caption intrudes into story row ${JSON.stringify(entry.homeComposition)}`);
+  }
+ }
  entry.mapScrollers=[];
  for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible').all()){
   const geometry=await scroller.evaluate(el=>{
@@ -164,7 +177,14 @@ async function zoomHomeReachability(page,width,height){
    }
    const visible={left:Math.max(0,r.left),right:Math.min(innerWidth,r.right),top:Math.max(top,r.top),bottom:Math.min(bottom,r.bottom)};
    const x=(visible.left+visible.right)/2,y=(visible.top+visible.bottom)/2,hit=document.elementFromPoint(x,y);
-   return {rect:rect(r),usable:{top,bottom},visible,scrollY,viewport:{width:innerWidth,height:innerHeight},
+   const caption=el.tagName==='IMG'?el.closest('.home-portrait-frame')?.querySelector('.home-favorite-caption')?.getBoundingClientRect():null;
+   const story=document.querySelector('#home .home-story-row')?.getBoundingClientRect();
+   const samples=el.tagName==='IMG'?[.25,.5,.75].map(fraction=>{
+    const sampleY=visible.top+(visible.bottom-visible.top)*fraction,sampleHit=document.elementFromPoint(x,sampleY);
+    return {x,y:sampleY,uncovered:sampleHit===el||el.contains(sampleHit),hit:sampleHit?{tag:sampleHit.tagName,id:sampleHit.id,className:sampleHit.className}:null};
+   }):[];
+
+   return {rect:rect(r),caption:caption?rect(caption):null,story:story?rect(story):null,samples,captionOverlaps:!!caption&&Math.min(r.right,caption.right)-Math.max(r.left,caption.left)>1&&Math.min(r.bottom,caption.bottom)-Math.max(r.top,caption.top)>1,captionBeforeStory:!caption||!story||caption.bottom<=story.top+1,usable:{top,bottom},visible,scrollY,viewport:{width:innerWidth,height:innerHeight},
     positive:r.width>0&&r.height>0,visibleArea:visible.right>visible.left&&visible.bottom>visible.top,
     centerReachable:(r.top+r.bottom)/2>=top&&(r.top+r.bottom)/2<=bottom,
     horizontalFit:r.left>=-1&&r.right<=innerWidth+1,clippedByAncestor,
@@ -175,7 +195,7 @@ async function zoomHomeReachability(page,width,height){
   const screenshot=`${width}x${height}-zoom200-${kind}-reachable.jpg`;
   await page.screenshot({path:`${out}/${screenshot}`,type:'jpeg',quality:75,fullPage:false,animations:'disabled'});
   manifest.zoomReachability.push({width,height,kind,selector,screenshot,...measurement});write();
-  verify(measurement.positive&&measurement.visibleArea&&measurement.centerReachable&&measurement.horizontalFit&&!measurement.clippedByAncestor&&measurement.imageLoaded&&measurement.uncovered&&(kind!=='favorite-change'||measurement.fullyVisible),`${width}x${height} zoom home ${kind} reachability ${JSON.stringify(measurement)}`);
+  verify(measurement.positive&&measurement.visibleArea&&measurement.centerReachable&&measurement.horizontalFit&&!measurement.clippedByAncestor&&measurement.imageLoaded&&measurement.uncovered&&!measurement.captionOverlaps&&measurement.captionBeforeStory&&measurement.samples.every(sample=>sample.uncovered)&&(kind!=='favorite-change'||measurement.fullyVisible),`${width}x${height} zoom home ${kind} reachability ${JSON.stringify(measurement)}`);
  }
 }
 async function styles(page,selector,{rootOnly=false}={}){
