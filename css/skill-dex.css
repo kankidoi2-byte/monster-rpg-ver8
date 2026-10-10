@@ -16,7 +16,7 @@
   box-shadow:none;text-shadow:none;
 }
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card::before{display:none}
-#skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card>*{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;color:#fff;background:none;margin:0;text-shadow:none}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card>*{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;color:#fff;background:none;margin:0;text-shadow:none}
 #skillDex.nonbattle-screen #skillDexList .skill-card-title{font-size:1.1rem;font-weight:850;line-height:1.4;-webkit-text-fill-color:currentColor}
 #skillDex.nonbattle-screen #skillDexList .skill-cost-badge{font-size:.8rem;line-height:1.4;min-height:1.75rem;height:auto;padding:.2rem .55rem;background:#080b10;color:#fff;border:1px solid #ffffff70;box-shadow:none;white-space:nowrap;flex-shrink:0}
 #skillDex.nonbattle-screen #skillDexList .skill-type-line{font-size:.95rem;font-weight:800;line-height:1.5;padding:0;border:0;border-radius:0}
