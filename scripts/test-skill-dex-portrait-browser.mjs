@@ -135,7 +135,10 @@ try{
   await page.evaluate(()=>resetSkillDexFilters());
   await page.locator('#skillDexSearch').fill('オーバーリバース');
   const target=page.locator('[data-skill-dex-id]');assert.equal(await target.count(),1);
-  await target.focus();assert(await target.evaluate(el=>el===document.activeElement));
+  await target.focus();
+  // Establish keyboard modality with real Tab traversal, not programmatic focus after mouse use.
+  await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
+  assert(await target.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')),'real keyboard navigation activates visible focus');
   const focusStyle=await target.evaluate(el=>{const s=getComputedStyle(el);return {outline:s.outlineStyle,shadow:s.boxShadow};});
   assert(focusStyle.outline!=='none'||focusStyle.shadow!=='none','visible keyboard focus');
   await page.keyboard.press('Enter');assert.match(await page.locator('#skillDexDetail').textContent(),/オーバーリバース/);
