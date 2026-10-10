@@ -33,7 +33,7 @@
 - 長い情報は削除せず、ホームも通常フローと縦スクロールで拡大・横向きに対応。
 
 ## 除外と隔離
-battle、battleItemSelect、contractConfirmはtheme registryから除外。グローバルな:root変数は変えず、bodyのテーマ属性を画面切替時に除去する。contractAnimation・skillGachaPresentation・tutorialOverlay・battle操作パネルは変更しない。titleScreenも既存のオープニング演出を維持する。仲間画像に切抜き・グレースケール・再描画はしない。属性色は暗い小背景で可読性を確保し色の意味を保持。
+battle、battleItemSelect、contractConfirmはtheme registryから除外。グローバルな:root変数は変えず、bodyのテーマ属性を画面切替時に除去する。contractAnimation・skillGachaPresentation・battle操作パネルは変更しない。tutorialOverlayの会話パネルとRank通知は非戦闘時だけ白い面へ統一し、戦闘時の表示を維持する。titleScreenも既存のオープニング演出を維持する。仲間画像に切抜き・グレースケール・再描画はしない。属性色は暗い小背景で可読性を確保し色の意味を保持。
 
 ## 検証
 - 静的契約: scripts/test-monochrome-theme.mjs

@@ -135,3 +135,7 @@ body[data-nonbattle-theme]:not(.title-mode):has(.screen.active :is(#dexDetail,#c
 .nonbattle-screen .wm-detail-art>div{background:#fff;color:#17263f;border:1px solid #aa8b46;}
 .nonbattle-screen .wm-detail-art>div :is(h2,p,small,span){color:#17263f;text-shadow:none;}
 .nonbattle-screen :is(.skill-card-title,.skill-card-description,.skill-card-stats):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;}
+.nonbattle-screen :is(#skillEditTarget,.skill-filter-panel,.contractor-next-title,.contractor-migration-note,.contractor-exp-history>div){background:#fff!important;border-color:#aa8b46!important;box-shadow:none;}
+body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card){background:#fff;color:#17263f;border:1px solid #aa8b46;box-shadow:0 6px 24px #0003;}
+body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card) :is(h2,p,button){color:#17263f;}
+body[data-nonbattle-theme]:not(.title-mode) :is(#tutorialBubble,.contractor-rank-up-card) button{background:#fff;border:1px solid #aa8b46;min-height:44px;}

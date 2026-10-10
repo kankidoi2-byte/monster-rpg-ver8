@@ -67,7 +67,7 @@ function show(id) {
   scheduleContractorRankUpPresentation();
   if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
-  if(typeof applyNonbattleTheme==='function')applyNonbattleTheme(id);
+  if(typeof applyNonbattleTheme==='function')applyNonbattleTheme(document.querySelector('.screen.active')?.id || id);
 }
 function openBattleHub(){
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
