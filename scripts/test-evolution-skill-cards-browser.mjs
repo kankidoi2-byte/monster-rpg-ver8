@@ -19,7 +19,14 @@ try{
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));assert(await page.locator('#partySet').isVisible());
  const before=await page.evaluate(()=>({...save.skillCards}));
  await page.evaluate(()=>{checkEvolution(save.instances[0]);processNextEvolution();});
- assert(await page.locator('#evolution').isVisible());await page.locator('#evoChoices button').filter({hasText:'ボルタックスに進化する'}).click();
+ assert(await page.locator('#evolution').isVisible());
+ // The first-visit evolution guide is a real dismissible overlay. Complete it
+ // through its normal button before clicking the underlying evolution action.
+ if(await page.locator('#tutorialOverlay').isVisible()){
+  await page.locator('#tutorialNextButton').click();
+  await page.locator('#tutorialOverlay').waitFor({state:'hidden'});
+ }
+ await page.locator('#evoChoices button').filter({hasText:'ボルタックスに進化する'}).click();
  const result=await page.evaluate(()=>({id:save.instances[0].id,cards:{...save.skillCards},ids:evolutionSkillCardIdsForMonster(by('voltax')),equipped:getEquippedSkillIds(save.instances[0])}));
  assert.equal(result.id,'voltax');assert(result.ids.length>=1);assert(result.ids.every(id=>/^s110_/.test(id)&&Number(id.slice(5))<=106));
  for(const id of result.ids)assert.equal(result.cards[id],before[id]+1);assert(result.equipped.length<=3);

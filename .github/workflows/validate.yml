@@ -61,6 +61,7 @@ jobs:
           path: artifacts/skill-card-layout
 
       - name: Verify nonbattle monochrome layout and isolation
+        if: ${{ !cancelled() }}
         run: node scripts/test-monochrome-browser.mjs
 
       - name: Upload nonbattle monochrome evidence
