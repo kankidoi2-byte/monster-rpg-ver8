@@ -59,7 +59,12 @@ const assert=require('node:assert/strict');
       assert.equal(await page.evaluate(()=>save.skillCards.s110_041),inventory);
       await page.locator('.tutorial-target-active').click();
       await page.waitForFunction(()=>['stella_skill_unequip','stella_skill_equip'].includes(tutorialCurrentStepId()));
-      if(await page.evaluate(()=>tutorialCurrentStepId()==='stella_skill_unequip'))await page.locator('.tutorial-target-active').click();
+      // Lv1 Elna has COST4 used: remove cards until the COST3 tutorial move fits.
+      for(let removals=0;await page.evaluate(()=>tutorialCurrentStepId()==='stella_skill_unequip');removals++){
+        assert(removals<3,'unequip guidance must advance within the three equipped slots');
+        await page.locator('.tutorial-target-active').click();
+      }
+      assert.equal(await page.evaluate(()=>tutorialStellaSkillCanEquip()),true);
       await at('stella_skill_equip');await page.locator('.tutorial-target-active').click();
       await at('stella_attribute_intro');
       assert.equal(await page.evaluate(()=>tutorialStellaSkillIsEquipped()),true);

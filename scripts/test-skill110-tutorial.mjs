@@ -51,17 +51,38 @@ assert.equal(run('equippedSkillCost(elna)'),1);
 assert.equal(run('advanceCount'),1);assert.equal(run('step'),'stella_skill_equip');
 assert.equal(run('tutorialStellaSkillCanEquip()'),true);
 assert.equal(run("resolveTutorialStellaSkillResumeStep('stella_skill_equip')"),'stella_skill_equip');
+// Failed equip rolls back the card slot and reattaches the retry target; no advance.
+run('saveGame=()=>false;var equipBefore=JSON.stringify(save.equippedSkills);var equipAdvances=advanceCount,equipRetargets=retargetCount;');
+assert.equal(run("equipSkill('s110_041')"),false);
+assert.equal(run('tutorialStellaSkillIsEquipped()'),false);
+assert.equal(run('JSON.stringify(save.equippedSkills)'),run('equipBefore'));
+assert.equal(run('advanceCount'),run('equipAdvances'));
+assert.equal(run('retargetCount'),run('equipRetargets')+1);
+assert.equal(run('spotlightGeneration'),run('domGeneration'));
+run('saveGame=()=>true;');
 assert.equal(run("equipSkill('s110_041')"),true);
 assert.equal(run('equippedSkillCost(elna)'),4);
 assert.equal(run('advanceCount'),2);assert.equal(run('step'),'stella_attribute_intro');
 assert.equal(run('tutorialStellaSkillIsEquipped()'),true);
 assert.equal(run("resolveTutorialStellaSkillResumeStep('stella_skill_equip')"),'stella_skill_equip','equipped resume must not force another removal');
 assert.equal(run('save.skillCards.s110_041'),1);
-// A failed removal save must not change equipment or spotlight/progression.
-run("step='stella_skill_unequip';setTutorialStep(step);saveGame=()=>false;var before=JSON.stringify(save.equippedSkills);var beforeAdvance=advanceCount,beforeRetarget=retargetCount;");
+// Failed unequip keeps the original loadout and retargets the recreated remove button.
+run("save=initSave();elna=addInstance('elna_beginner',1);editingSkillUid=elna.uid;save.skillCards.s110_041=1;step='stella_skill_unequip';setTutorialStep(step);saveGame=()=>false;var before=JSON.stringify(save.equippedSkills);var beforeAdvance=advanceCount,beforeRetarget=retargetCount;");
 assert.equal(run('unequipSkill(0)'),false);
 assert.equal(run('JSON.stringify(save.equippedSkills)'),run('before'));
-assert.equal(run('advanceCount'),run('beforeAdvance'));assert.equal(run('retargetCount'),run('beforeRetarget'));
+assert.equal(run('advanceCount'),run('beforeAdvance'));
+assert.equal(run('retargetCount'),run('beforeRetarget')+1);
+assert.equal(run('spotlightGeneration'),run('domGeneration'));
+// Once saving works, the exact retry succeeds, then the second removal can advance.
+run('saveGame=()=>true;');
+assert.equal(run('unequipSkill(0)'),true);
+assert.equal(run('equippedSkillCost(elna)'),3);
+assert.equal(run('advanceCount'),run('beforeAdvance'));
+assert.equal(run('spotlightGeneration'),run('domGeneration'));
+assert.equal(run('unequipSkill(0)'),true);
+assert.equal(run('step'),'stella_skill_equip');
+assert.equal(run("equipSkill('s110_041')"),true);
+assert.equal(run('tutorialStellaSkillIsEquipped()'),true);
 assert.match(source,/id:'stella_skill_unequip'[^\n]+残りCOSTを3以上/);
 assert(source.includes('resolveTutorialStellaSkillResumeStep(resolveTutorialExpeditionResumeStep(flowId,stepId,false))'));
 assert.match(source,/id:'skill_gacha_rates'[^\n]+共通の106種類/);

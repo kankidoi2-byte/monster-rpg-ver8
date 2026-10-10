@@ -331,7 +331,10 @@ function equipSkill(skillId){
   if(saveGame()===false){
     save.equippedSkills[ins.uid]=previous;
     if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
-    renderSkillEdit({preservePosition:true});return false;
+    renderSkillEdit({preservePosition:true});
+    // A failed write still rebuilt the buttons. Reattach guidance without advancing it.
+    if(typeof tutorialCurrentStepId==='function'&&['stella_skill_unequip','stella_skill_equip'].includes(tutorialCurrentStepId())&&typeof renderTutorialStep==='function')renderTutorialStep();
+    return false;
   }
   renderSkillEdit({preservePosition:true}); renderParty();
   if(typeof handleTutorialStellaSkillEquipped==='function')handleTutorialStellaSkillEquipped(skillId,ins.uid);
@@ -347,7 +350,10 @@ function unequipSkill(idx){
   if(saveGame()===false){
     save.equippedSkills[ins.uid]=previous;
     if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
-    renderSkillEdit({preservePosition:true});return false;
+    renderSkillEdit({preservePosition:true});
+    // A failed write still rebuilt the buttons. Reattach guidance without advancing it.
+    if(typeof tutorialCurrentStepId==='function'&&['stella_skill_unequip','stella_skill_equip'].includes(tutorialCurrentStepId())&&typeof renderTutorialStep==='function')renderTutorialStep();
+    return false;
   }
   renderSkillEdit({preservePosition:true}); renderParty();
   if(typeof handleTutorialStellaSkillUnequipped==='function')handleTutorialStellaSkillUnequipped(ins.uid);
