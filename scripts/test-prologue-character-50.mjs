@@ -1,3 +1,4 @@
+import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import {applyStatusDataCopy} from './status-description-copy-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -11,7 +12,7 @@ const baseline={};vm.createContext(baseline);
 vm.runInContext(applyStatusDataCopy(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'}))+';globalThis.units=M;',baseline);
 assert.equal(current.length,100);
 for(const old of baseline.units){
- const unit=current.find(u=>u.id===old.id);
+ const unit=legacyUnitProjection(current.find(u=>u.id===old.id));
  if(old.id==='proto_icegolem'){
   // The subsequent Golem fix adds two normal attacks but retains all original fields and cards.
   assert.equal(unit.moves.length,old.moves.length+2);
@@ -51,18 +52,12 @@ for(const u of added){
   assert(path && fs.existsSync(path),`${u.id}: released artwork exists`);
  }
 }
-// Every exclusive card is usable only by its own form and later forms of the same character.
-const families=added.filter(u=>!u.evolutionOnly).map(base=>{
- const middle=current.find(u=>u.id===base.evolution);
- return [base,middle,current.find(u=>u.id===middle.evolution)];
-});
-for(const family of families)for(const [sourceStage,source] of family.entries()){
- for(const move of source.moves)for(const target of current){
-  const targetStage=family.findIndex(u=>u.id===target.id);
-  r.context.cardUnderTest=move[8];r.context.unitUnderTest=target.id;
-  assert.equal(run('isSkillAllowedForMonster(cardUnderTest,by(unitUnderTest))'),
-    targetStage>=sourceStage,`${move[8]} -> ${target.id}: forward inheritance only`);
- }
+// The new shared catalog deliberately replaces historical character-only inheritance.
+// Verify each new native move against explicit type/anatomy requirements instead.
+for(const source of added)for(const move of source.moves){
+ r.context.cardUnderTest=move[8];r.context.unitUnderTest=source.id;
+ assert(run('isSkillAllowedForMonster(cardUnderTest,by(unitUnderTest))'));
+ assert(run('SKILL_BY_ID[cardUnderTest].exclusiveMonsterId===null'));
 }
 
 vm.runInContext(fs.readFileSync('js/ui.js','utf8').split('function replayUiMotion')[0],r.context);
@@ -104,10 +99,10 @@ for(const u of added.filter(u=>!u.evolutionOnly)){
  for(let stage=0;stage<2;stage++){
   run('currentEvolution={uid:chain.uid,from:chain.id,choices:getEvoCandidates(chain)};confirmEvolution(currentEvolution.choices[0]);');
   assert.deepEqual([...run('getEquippedSkillIds(chain)')],beforeEquipment,'evolution retains earlier equipped moves');
-  assert(run('defaultSkillIdsForMonster(by(chain.id),chain).every(id=>save.skillCards[id]>=1)'),'new form cards are granted alongside retained equipment');
+  assert(run('evolutionSkillCardIdsForMonster(by(chain.id)).every(id=>save.skillCards[id]>=1)'),'new form cards are granted alongside retained equipment');
  }
  for(const [id,count] of Object.entries(oldInventory)){
-  r.context.oldCard=id;assert.equal(run('save.skillCards[oldCard]'),count,'old card ownership is retained');
+  r.context.oldCard=id;assert(run('save.skillCards[oldCard]')>=count,'old card ownership is retained; a shared native card may be granted again');
  }
  const savedUid=run('chain.uid');
  run('save= parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();chain=getInstance(save.party[0]);');
@@ -125,4 +120,4 @@ for(const u of added.filter(u=>!u.evolutionOnly)){
  assert.equal(run('by(chain.id).rarity'),'★'.repeat(u.rarity.length+2));
  assert.equal(run('chain.uid'),run('save.party[0]'));
 }
-console.log('PASS: original records preserved except additive Golem attack fix; all 36 added names render, attack/support handlers, save/reload; 12 complete evolution chains; exclusive skill inheritance, ownership, reload and battle.');
+console.log('PASS: original records preserved except additive Golem attack fix; all 36 added names render, attack/support handlers, save/reload; 12 complete evolution chains; shared skill eligibility, ownership, reload and battle.');

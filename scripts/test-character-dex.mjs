@@ -1,3 +1,4 @@
+import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -132,7 +133,7 @@ for(const slot of retired){
  assert.equal(mon.prologueCharacterNo??mon.characterNo,slot.prologueCharacterNo??slot.characterNo);
 }
 assert.equal(vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS.length',context),0);
-assert.equal(JSON.stringify(records),vm.runInContext('JSON.stringify(M)',oldContext),'all battle units, IDs, skills and numbers unchanged');
+assert.equal(JSON.stringify(records.map(legacyUnitProjection)),vm.runInContext('JSON.stringify(M)',oldContext),'all historical unit data preserved; live110 loadouts tested separately');
 assert(!elements.dexHubGrid.innerHTML.includes('登場予定'),'no stale coming-soon label');
 // Keep genuine future plans visible, read-only and out of the battle roster.
 const future=vm.createContext({...context});

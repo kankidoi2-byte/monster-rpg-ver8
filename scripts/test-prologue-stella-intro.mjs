@@ -57,9 +57,9 @@ assert.ok(skills.includes('handleTutorialStellaSkillUnequipped')&&skills.include
 const dataContext=vm.createContext({console,alert:()=>{},confirm:()=>false});
 vm.runInContext(read('js/data.js'),dataContext,{filename:'js/data.js'});
 vm.runInContext(read('js/core.js'),dataContext,{filename:'js/core.js'});
-const taxonomy=vm.runInContext(`({card:SKILL_BY_ID.skill_elna_middle_01,elna:by('elna_beginner'),allowed:isSkillAllowedForMonster('skill_elna_middle_01',by('elna_beginner'))})`,dataContext);
+const taxonomy=vm.runInContext(`({card:SKILL_BY_ID.s110_041,elna:by('elna_beginner'),allowed:isSkillAllowedForMonster('s110_041',by('elna_beginner'))})`,dataContext);
 assert.equal(taxonomy.card.name,'連続斬り');
-assert.equal(taxonomy.card.cost,2);
+assert.equal(taxonomy.card.cost,3);
 assert.equal(taxonomy.allowed,true,'the granted card must be equippable by the tutorial Elna contract body');
 
 const helperStart=tutorial.indexOf('function tutorialStellaSkillCard()');
@@ -68,9 +68,9 @@ assert.ok(helperStart>=0&&helperEnd>helperStart);
 function makeContext({saveSucceeds=true,replaying=false,alreadyGranted=false}={}){
   const state={status:'in_progress',stepId:'stella_card_receive',replaying,stellaSkillCardGranted:alreadyGranted};
   const context=vm.createContext({
-    console:{error:()=>{}},TUTORIAL_STELLA_SKILL_ID:'skill_elna_middle_01',tutorialStellaCardBusy:false,
-    save:{skillCards:{skill_elna_middle_01:0},equippedSkills:{elna:[]},instances:[{uid:'elna',id:'elna_beginner'}],progress:{tutorial:state}},
-    SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01',name:'連続斬り',cost:2,power:34,types:['normal'],deprecated:false}},
+    console:{error:()=>{}},TUTORIAL_STELLA_SKILL_ID:'s110_041',tutorialStellaCardBusy:false,
+    save:{skillCards:{s110_041:0},equippedSkills:{elna:[]},instances:[{uid:'elna',id:'elna_beginner'}],progress:{tutorial:state}},
+    SKILL_BY_ID:{s110_041:{id:'s110_041',name:'連続斬り',cost:3,power:44,types:['normal'],deprecated:false}},
     currentTutorialState:()=>context.save.progress.tutorial,
     tutorialElnaContractInstance:()=>context.save.instances[0],by:()=>({id:'elna_beginner'}),
     isSkillAllowedForMonster:()=>true,markTutorialStellaSkillCardGranted:()=>{
@@ -91,30 +91,30 @@ function makeContext({saveSucceeds=true,replaying=false,alreadyGranted=false}={}
 const granted=makeContext();
 let result=vm.runInContext('commitTutorialStellaSkillCard()',granted);
 assert.equal(result.granted,true);assert.equal(result.replay,false);
-assert.equal(granted.save.skillCards.skill_elna_middle_01,1);
+assert.equal(granted.save.skillCards.s110_041,1);
 assert.equal(granted.save.progress.tutorial.stellaSkillCardGranted,true);
 assert.equal(granted.save.progress.tutorial.stepId,'stella_skill_open');
 result=vm.runInContext('commitTutorialStellaSkillCard()',granted);
 assert.equal(result.granted,false);
-assert.equal(granted.save.skillCards.skill_elna_middle_01,1,'a repeated transition must not grant a duplicate card');
+assert.equal(granted.save.skillCards.s110_041,1,'a repeated transition must not grant a duplicate card');
 
 const failed=makeContext({saveSucceeds:false});
 assert.equal(vm.runInContext('commitTutorialStellaSkillCard()',failed),null);
-assert.equal(failed.save.skillCards.skill_elna_middle_01,0,'failed persistence must roll back the card');
+assert.equal(failed.save.skillCards.s110_041,0,'failed persistence must roll back the card');
 assert.equal(failed.save.progress.tutorial.stellaSkillCardGranted,false);
 assert.equal(failed.notices.length,1);
 
 const replay=makeContext({replaying:true,alreadyGranted:true});
 result=vm.runInContext('commitTutorialStellaSkillCard()',replay);
 assert.equal(result.granted,false);assert.equal(result.replay,true);
-assert.equal(replay.save.skillCards.skill_elna_middle_01,0,'replay must not grant another card');
+assert.equal(replay.save.skillCards.s110_041,0,'replay must not grant another card');
 
 const skillActionSource=skills.slice(skills.indexOf('function equipSkill'));
 function makeSkillActionContext(saveSucceeds=true){
   const context=vm.createContext({
     editingSkillUid:'elna',save:{equippedSkills:{elna:[]}},callbacks:[],renders:0,alerts:[],notices:[],
     getInstance:()=>({uid:'elna',id:'elna_beginner'}),ensureInstanceSkills:()=>{},by:()=>({id:'elna_beginner'}),
-    SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01',cost:2}},isSkillAllowedForMonster:()=>true,
+    SKILL_BY_ID:{s110_041:{id:'s110_041',cost:2}},isSkillAllowedForMonster:()=>true,
     equippedSkillCost:()=>0,skillCostLimitFor:()=>4,availableSkillCount:()=>1,saveGame:()=>saveSucceeds,
     renderSkillEdit:()=>context.renders++,renderParty:()=>context.renders++,alert:message=>context.alerts.push(message),
     showUiNotice:message=>context.notices.push(message),
@@ -125,11 +125,11 @@ function makeSkillActionContext(saveSucceeds=true){
   return context;
 }
 const equipSuccess=makeSkillActionContext(true);
-assert.equal(vm.runInContext("equipSkill('skill_elna_middle_01')",equipSuccess),true);
-assert.deepEqual([...equipSuccess.save.equippedSkills.elna],['skill_elna_middle_01']);
-assert.deepEqual(equipSuccess.callbacks,['equip:skill_elna_middle_01:elna'],'successful equip must be the only operation that advances the tutorial');
+assert.equal(vm.runInContext("equipSkill('s110_041')",equipSuccess),true);
+assert.deepEqual([...equipSuccess.save.equippedSkills.elna],['s110_041']);
+assert.deepEqual(equipSuccess.callbacks,['equip:s110_041:elna'],'successful equip must be the only operation that advances the tutorial');
 const equipFailure=makeSkillActionContext(false);
-assert.equal(vm.runInContext("equipSkill('skill_elna_middle_01')",equipFailure),false);
+assert.equal(vm.runInContext("equipSkill('s110_041')",equipFailure),false);
 assert.deepEqual([...equipFailure.save.equippedSkills.elna],[],'failed equip save must restore the previous loadout');
 assert.deepEqual(equipFailure.callbacks,[],'failed equip must not advance the tutorial');
 equipSuccess.callbacks=[];

@@ -48,29 +48,22 @@ for(const sk of cards){
  assert.equal(effect.split(text).length-1,1);
  assert(!effect.includes('威力')&&!effect.includes('属性 /')&&!effect.includes('代わりに反動'));
  const full=r.run(`moveEffectText(skillToMove(${arg}))`);assert(full.includes(text));
- const html=r.run(`renderUnitSkillList(by(${JSON.stringify(sk.sourceUnitId)}))`);
+ const html=r.run(`renderUnitSkillList({...by(${JSON.stringify(sk.sourceUnitId)}),moves:by(${JSON.stringify(sk.sourceUnitId)}).legacyMoves})`);
  assert(html.includes(text));
  r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance(${JSON.stringify(sk.sourceUnitId)},1);save.party=[ins.uid];save.skillCards=Object.fromEntries(MOVE_CARDS.map(s=>[s.id,10]));editingSkillUid=ins.uid;renderSkillEdit();`);
- assert(r.context.document.getElementById('skillCardList').innerHTML.includes(text));
+ assert(!r.context.document.getElementById('skillCardList').innerHTML.includes(`equipSkill('${sk.id}')`),'retired recoil cards excluded from equipment');
  for(const actor of ['player','enemy','enemy-other'])for(const mode of actor==='enemy-other'?['multi']:['single','multi']){
   const result=await scenario({skillId:sk.id,mode,actor,targetHp:1000});assert.equal(result.recoil,8,JSON.stringify(result));
  }
  console.log('PASS fixed recoil: '+sk.id+' '+sk.name+' / '+effect);
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_kimeragna_apex_03'),{includeBase:false})`),text+'。極限の嵐を解放する。');
-for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect!=="recoil"&&!["skill_shenhairon_02","skill_nightmare_02","skill_noxvelg_02"].includes(s.id))')){
+for(const sk of r.run('MOVE_CARDS.filter(s=>!s.id.startsWith("s110_")&&s.effect!=="recoil"&&!["skill_shenhairon_02","skill_nightmare_02","skill_noxvelg_02"].includes(s.id))')){
  const arg=JSON.stringify(sk.id);assert.equal(r.run(`moveEffectText(skillToMove(${arg}))`),old.run(`moveEffectText(skillToMove(${arg}))`));
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_alchemion_01'),{includeBase:false})`),'攻撃後、実際に与えたダメージの25％を反動として受ける');
-for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert(r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`).includes('最大HP'));
-assert.equal(fs.readFileSync(new URL('js/data.js',root),'utf8'),retiredReservations(applyStatusDataCopy(original('data'))).replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'));
-assert.equal(fs.readFileSync(new URL('js/core.js',root),'utf8').replace(/  const poweredModifierText=[\s\S]*?\n  if\(poweredModifierText\[mv\[8\]\]\)fx\[effect\]=poweredModifierText\[mv\[8\]\];\n/,''),applyStatusCoreCopy(original('core')).replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'"));
-// Allow only the separately regression-tested immediate HP clamp; keep other formulas frozen (normal healing is independently tested).
-const withoutHpClamp=source=>source.split('async function doAttack')[0]+'async function doAttack'+source.split('async function doAttack')[1].replace(/([pe]Hp) = Math\.max\(0, \1 - (dmg|8|recoilDamage|secondDmg)\);/g,'$1 -= $2;');
-const withoutPoweredSingle=s=>s.replace("if (effect === 'buff' && power <= 0)","if (effect === 'buff')").replace("if (effect === 'debuff' && power <= 0)","if (effect === 'debuff')").replace(/  \/\/ Powered legacy buffs[\s\S]*?(?=  if \(effect === 'recoil'\))/, '');
-assert.equal(withoutPoweredSingle(withoutHpClamp(sources['battle-rules'])),applyNormalHealingSpec('battle-rules',original('battle-rules')));
-// Freeze attack/recoil calculation, while allowing independently tested outcome ordering.
-const attackSource=source=>source.match(/async function performMultiAttack[\s\S]*?\n}\n/)[0];
-const withoutPoweredMulti=s=>s.replace("const selfEffect=['guard','heal','aqua_shield'].includes(effect)||(effect==='buff'&&power<=0)||","const selfEffect=['guard','heal','buff','aqua_shield'].includes(effect)||").replace("if(effect==='buff'&&power<=0)","if(effect==='buff')").replace("if(effect==='debuff'&&power<=0)","if(effect==='debuff')").replace(/  \/\/ Apply legacy attack modifiers[\s\S]*?(?=  if\(effect==='recoil'\|\|effect==='alchemy_recoil'\))/, '');
-assert.equal(withoutPoweredMulti(attackSource(sources['multi-battle'])),attackSource(applyNormalHealingSpec('multi-battle',original('multi-battle'))));
-console.log('PASS fixed recoil display: 5 skills, equipment/dex, 25 battle scenarios; other descriptions, all non-copy data and attack/recoil calculations unchanged.');
+for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert((sk.detailedDesc||r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`)).includes('最大HP'));
+// Exact source equality from a narrow historical copy patch is superseded by the approved110 migration.
+assert.equal(r.run('EQUIPPABLE_MOVE_CARDS.length'),110);
+assert(r.run('SKILL110_CATALOG.filter(sk=>sk.tactical.recoil).every(sk=>sk.tactical.recoil>0&&sk.tactical.recoil<=.15)'));
+console.log('PASS preserved legacy fixed recoil: five skills and25 battle scenarios; new maxHP recoil verified by skill110 combat suite.');

@@ -22,7 +22,7 @@ async function scenario({mode='single',actor='player',targetHp=3,guarded=false,z
  var partyBattle=[{hp:pHp}];
  var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
  var entryB={id:'enemy_b',kind:'enemy',mon:by('slime'),hp:${targetHp},maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
- var multiBattle={enemies:[entryA,entryB]};var testMove=by('alchemion').moves[0];`);
+ var multiBattle={enemies:[entryA,entryB]};var testMove=skillToMove('skill_alchemion_01');`);
  if(zeroDamage)r.context.resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:140,barrierRemaining:0});
  const before=r.run(actor==='player'?'pHp':mode==='single'?'eHp':'entryA.hp');
  if(mode==='single')await r.run(`doAttack(${isPlayer?'player,enemy':'enemy,player'},testMove,${isPlayer})`);

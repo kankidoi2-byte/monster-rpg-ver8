@@ -7,7 +7,7 @@ const r=runtime(), run=r.run;
 const plain=value=>JSON.parse(JSON.stringify(value));
 const units=plain(run('M'));
 const revised=units.filter(unit=>unit.entityKind==='character'&&unit.characterNo>=15&&!unit.id.startsWith('character_vera_'));
-const exclusive=revised.flatMap(unit=>unit.moves);
+const exclusive=revised.flatMap(unit=>unit.legacyMoves);
 const commons=plain(run('CHARACTER_COMMON_MOVES'));
 const cards=plain(run('MOVE_CARDS'));
 assert.equal(revised.length,33);
@@ -27,7 +27,7 @@ for(const move of [...exclusive,...commons]){
  r.context.testMove=move;
  const card=cards.find(candidate=>candidate.id===move[8]);
  assert(card,move[8]);
- assert.equal(cards.filter(candidate=>candidate.name===move[0]).length,1,`unique name: ${move[0]}`);
+ assert.equal(cards.filter(candidate=>candidate.deprecated&&candidate.name===move[0]).length,1,`unique name: ${move[0]}`);
  assert.doesNotMatch(move[0],/[・\s][234２３４]$/,'remove stage-number suffixes');
  const converted=plain(run('skillToMove(testMove[8])'));
  assert.deepEqual(converted.slice(0,3),move.slice(0,3));
@@ -55,13 +55,13 @@ for(const [id,move] of Object.entries(legacy)){
  assert.equal(run('normalizeSkillId(legacySkillIdFromMove(testMove))'),id,`old name alias ${id}`);
 }
 
-// Common cards must be usable by the full 50-character roster, with no monster leakage.
+// Legacy records retain identity while their adopted replacements use shared
+// attribute/body compatibility rather than character-only restrictions.
 for(const move of commons){
  r.context.testId=move[8];
  assert(run('SKILL_BY_ID[testId].commonCharacterSkill'));
- assert.equal(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).length'),50);
- assert(run('M.filter(unit=>isSkillAllowedForMonster(testId,unit)).every(isCharacterUnit)'));
- assert(move[5]>=2,'10-pull common guarantee also meets the previous COST 2 minimum');
+ assert(run('SKILL_BY_ID[testId].deprecated'));
+ assert(run('SKILL110_MIGRATION_MAP[testId]'));
 }
 for(const unit of units){
  r.context.unitId=unit.id;
@@ -75,46 +75,32 @@ for(const unit of units){
  }
 }
 
-// Read an old save using all old name-derived IDs; preserve the exact 99-card inventory,
-// all UIDs and inherited equipment. Run migration twice to catch duplicate grants.
-run(`save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
+// All 99 historical name-derived inventories merge additively by target.
+run(`save=initSave();save.saveMeta.migrations=save.saveMeta.migrations.filter(id=>id!=='skill_system_110_v1');
  save.coins=4321;save.instances=[];save.party=[];save.skillCards={};save.equippedSkills={};`);
+const expected={};
 for(const [index,unit] of revised.entries()){
- r.context.unitId=unit.id;
- run(`var savedInstance=addInstance(unitId,100);savedInstance.uid='tactical_saved_${index}';
-  save.equippedSkills[savedInstance.uid]=by(unitId).moves.map(move=>legacySkillIdFromMove(CHARACTER_SKILL_LEGACY_MOVES[move[8]]));`);
+ r.context.savedUnit={id:unit.id,uid:`tactical_saved_${index}`,level:100,exp:0,locked:false};
+ r.context.savedMoves=unit.legacyMoves.map(move=>move[8]);
+ run('save.instances.push(savedUnit);save.equippedSkills[savedUnit.uid]=savedMoves;');
 }
-run(`save.party=save.instances.slice(0,3).map(ins=>ins.uid);save.skillCards={};
- Object.entries(CHARACTER_SKILL_LEGACY_MOVES).forEach(([id,move],index)=>{save.skillCards[legacySkillIdFromMove(move)]=index+7;});
- var previousUids=save.instances.map(ins=>ins.uid);save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();`);
-assert.equal(run('SAVE_KEY'),'mb_v95c');
-assert.equal(run('save.coins'),4321);
+for(const [index,[id,move]] of Object.entries(legacy).entries()){
+ r.context.testMove=move;
+ const oldId=run('legacySkillIdFromMove(testMove)');r.context.oldId=oldId;
+ const target=run('SKILL110_MIGRATION_MAP[oldId]');assert(target);
+ expected[target]=(expected[target]||0)+index+7;r.context.count=index+7;
+ run('save.skillCards[oldId]=count;');
+}
+run(`save.party=save.instances.slice(0,3).map(ins=>ins.uid);var previousUids=save.instances.map(ins=>ins.uid);
+ save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();`);
+assert.equal(run('SAVE_KEY'),'mb_v95c');assert.equal(run('save.coins'),4321);
 assert.deepEqual(plain(run('save.instances.map(ins=>ins.uid)')),plain(run('previousUids')));
-for(const [index,id] of Object.keys(legacy).entries()){
- r.context.testId=id;
- assert.equal(run('save.skillCards[testId]'),index+7,`old inventory ${id}`);
+for(const [id,count] of Object.entries(expected)){
+ r.context.testId=id;assert.equal(run('save.skillCards[testId]'),count,`merged historical inventory ${id}`);
 }
-for(const unit of revised){
- r.context.unitId=unit.id;
- assert.deepEqual(plain(run('getEquippedSkillIds(save.instances.find(ins=>ins.id===unitId))')),unit.moves.map(move=>move[8]));
-}
-const once=run('JSON.stringify(save.skillCards)');
-run('migrateSkillSystem();');
-assert.equal(run('JSON.stringify(save.skillCards)'),once);
-// Three formerly COST 1 healing cards exceed the new level-1 budget. The active
-// loadout may shrink, but the unequipped copy must remain owned without extra grants.
-run(`save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
- var lowLevel=addInstance('character_bordo_2',1);var lowLevelUid=lowLevel.uid;
- var oldHealingAlias=legacySkillIdFromMove(CHARACTER_SKILL_LEGACY_MOVES.skill_character_bordo_2_02);
- delete save.skillCards.skill_character_bordo_2_02;save.skillCards[oldHealingAlias]=9;
- save.equippedSkills[lowLevel.uid]=Array(3).fill(oldHealingAlias);
- save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();lowLevel=getInstance(lowLevelUid);`);
-assert.equal(run('lowLevel.uid'),run('lowLevelUid'));
-assert.equal(run('save.skillCards.skill_character_bordo_2_02'),9);
-assert.equal(run('getEquippedSkillIds(lowLevel).length'),2);
-assert.equal(run("availableSkillCount('skill_character_bordo_2_02')"),7,'trimmed card is available in inventory');
-assert(run('equippedSkillCost(lowLevel)<=skillCostLimitFor(by(lowLevel.id),lowLevel)'));
-run('migrateSkillSystem();');assert.equal(run('save.skillCards.skill_character_bordo_2_02'),9);
+assert(run('save.instances.every(ins=>getEquippedSkillIds(ins).some(id=>SKILL_BY_ID[id].power>0))'));
+assert(run('save.instances.every(ins=>equippedSkillCost(ins)<=skillCostLimitFor(by(ins.id),ins))'));
+const once=run('JSON.stringify(save.skillCards)');run('migrateSkillSystem();');assert.equal(run('JSON.stringify(save.skillCards)'),once);
 for(const base of revised.filter(unit=>!unit.evolutionOnly)){
  r.context.unitId=base.id;
  run('save=initSave();var evolved=addInstance(unitId,100);save.party=[evolved.uid];');

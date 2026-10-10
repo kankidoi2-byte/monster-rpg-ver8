@@ -9,11 +9,12 @@ if(window.parent!==window){
     save=initSave();save.tutorial=tutorialSaveDefaults({legacy:true});
     save.instances=[];save.party=[];
     const ins=addInstance(kind==='tutorial'?'elna_beginner':'freigal',1);save.party=[ins.uid];
-    save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,10]));
-    const mon=by(ins.id),allowed=MOVE_CARDS.filter(sk=>isSkillAllowedForMonster(sk.id,mon));
-    const cheap=allowed.find(sk=>sk.cost===1),limit=skillCostLimitFor(mon,ins);
-    save.equippedSkills[ins.uid]=[cheap.id];
-    if(kind==='full'||kind==='tutorial')save.equippedSkills[ins.uid]=[cheap.id,cheap.id,cheap.id];
+    save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(sk=>[sk.id,10]));
+    const mon=by(ins.id),allowed=EQUIPPABLE_MOVE_CARDS.filter(sk=>isSkillAllowedForMonster(sk.id,mon));
+    const cheap=allowed.find(sk=>sk.cost===1&&skillTypes(sk).includes(mon.types?.[0]||mon.type))||allowed.find(sk=>sk.cost===1),limit=skillCostLimitFor(mon,ins);
+    // Tutorial keeps the real Lv1 Elna default: COST 1 + 2 + 1.
+    if(kind!=='tutorial')save.equippedSkills[ins.uid]=[cheap.id];
+    if(kind==='full')save.equippedSkills[ins.uid]=[cheap.id,cheap.id,cheap.id];
     if(kind==='exact'||kind==='short'){
       const pair=allowed.flatMap(a=>allowed.map(b=>[a,b])).find(([a,b])=>a.cost+b.cost===limit-(kind==='short'?1:0));
       if(!pair)throw Error('境界条件のカード不足');save.equippedSkills[ins.uid]=pair.map(sk=>sk.id);
@@ -57,14 +58,36 @@ if(window.parent!==window){
     state=setup('empty');check(document.getElementById('skillCardList').textContent.includes('条件に合う技カードがありません'),'検索結果なし');
     state=setup('long');await frame();check(document.documentElement.scrollWidth<=innerWidth,'長名・横溢れなし');
     state=setup('tutorial');await frame();await frame();
+    check(JSON.stringify(getEquippedSkillIds(state.ins).map(id=>SKILL_BY_ID[id].cost))==='[1,2,1]','チュートリアルは実際の初期装備を使用');
     positionTutorialUi();
     const action=document.querySelector('[data-tutorial-stella-unequip]').getBoundingClientRect();
     const hud=document.getElementById('skillEditTarget').getBoundingClientRect(),bubble=document.getElementById('tutorialBubble').getBoundingClientRect(),nav=document.querySelector('.app-bottom-nav').getBoundingClientRect();
     check(bubble.top>=hud.bottom&&bubble.bottom<=nav.top+1,'チュートリアルと上下バー非重複');
     check(bubble.bottom<=action.top||bubble.top>=action.bottom||bubble.left>=action.right||bubble.right<=action.left,'案内が解除ボタンを隠さない');
+    const beforeTutorialUnequip=JSON.stringify(save.equippedSkills[state.ins.uid]);
+    saveGame=()=>false;
     document.querySelector('[data-tutorial-stella-unequip]').click();await frame();await frame();
+    check(JSON.stringify(save.equippedSkills[state.ins.uid])===beforeTutorialUnequip&&tutorialCurrentStepId()==='stella_skill_unequip','解除の保存失敗で装備と案内段階を保持');
+    const retryUnequip=document.querySelector('[data-tutorial-stella-unequip]');
+    check(retryUnequip?.isConnected&&tutorialUiState.target===retryUnequip&&tutorialUiState.target.isConnected,'解除失敗後も新しいボタンへスポットライトを接続');
+    saveGame=()=>true;
+    retryUnequip.click();await frame();await frame();
+    check(tutorialCurrentStepId()==='stella_skill_unequip','1回目の解除後も必要COSTが不足する間は案内を継続');
+    const nextUnequip=document.querySelector('[data-tutorial-stella-unequip]');
+    check(nextUnequip?.isConnected&&tutorialUiState.target===nextUnequip&&tutorialUiState.target.isConnected,'再描画された解除ボタンへスポットライトを接続');
+    positionTutorialUi();
+    const spotlight=document.getElementById('tutorialSpotlight').getBoundingClientRect();
+    check(!document.getElementById('tutorialSpotlight').classList.contains('is-empty')&&spotlight.width>0&&spotlight.height>0,'2回目の解除対象を可視スポットライトで案内');
+    nextUnequip.click();await frame();await frame();
     check(tutorialCurrentStepId()==='stella_skill_equip','チュートリアル解除から装備へ');
+    const beforeTutorialEquip=JSON.stringify(save.equippedSkills[state.ins.uid]);
+    saveGame=()=>false;
     document.querySelector('[data-tutorial-stella-skill-equip]').click();await frame();await frame();
+    check(JSON.stringify(save.equippedSkills[state.ins.uid])===beforeTutorialEquip&&tutorialCurrentStepId()==='stella_skill_equip','装備の保存失敗で装備と案内段階を保持');
+    const retryEquip=document.querySelector('[data-tutorial-stella-skill-equip]');
+    check(retryEquip?.isConnected&&tutorialUiState.target===retryEquip&&tutorialUiState.target.isConnected,'装備失敗後も新しいボタンへスポットライトを接続');
+    saveGame=()=>true;
+    retryEquip.click();await frame();await frame();
     check(tutorialCurrentStepId()==='stella_attribute_intro','チュートリアル装備から属性案内へ');
     report(results.join('\n'));return results;
   }

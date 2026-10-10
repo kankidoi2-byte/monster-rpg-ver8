@@ -21,7 +21,7 @@ try{
  await page.evaluate(()=>{checkEvolution(save.instances[0]);processNextEvolution();});
  assert(await page.locator('#evolution').isVisible());await page.locator('#evoChoices button').filter({hasText:'ボルタックスに進化する'}).click();
  const result=await page.evaluate(()=>({id:save.instances[0].id,cards:{...save.skillCards},ids:evolutionSkillCardIdsForMonster(by('voltax')),equipped:getEquippedSkillIds(save.instances[0])}));
- assert.equal(result.id,'voltax');assert.equal(result.ids.length,4);
+ assert.equal(result.id,'voltax');assert(result.ids.length>=1);assert(result.ids.every(id=>/^s110_/.test(id)&&Number(id.slice(5))<=106));
  for(const id of result.ids)assert.equal(result.cards[id],before[id]+1);assert(result.equipped.length<=3);
  await page.evaluate(()=>{
   const a=addInstance('elna_advanced',3),b=addInstance('elna_advanced',3);save.items.fire_orb=2;showFusion();
@@ -41,5 +41,5 @@ try{
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  assert.equal(errors.length,0,errors.join('\n'));
- console.log('PASS evolution browser: title/home/party, normal 4-card evolution, two special evolutions, render/save/reload, hunt/battle (390x844).');
+ console.log('PASS evolution browser: title/home/party, normal 110-system evolution, two special evolutions, render/save/reload, hunt/battle (390x844).');
 }finally{if(browser)await browser.close();server.kill();}

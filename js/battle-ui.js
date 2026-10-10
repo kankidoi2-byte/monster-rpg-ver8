@@ -37,7 +37,11 @@ function battleUiMoveTarget(move){
   if(move?.[3]==='buff'&&Number(move[1])>0)return `自分と${enemyLabel}`;
   return ['guard','heal','buff','aqua_shield'].includes(move?.[3])?'自分':enemyLabel;
 }
-function battleUiSkillInfo(move){return `<small class="battle-choice-detail">対象：${battleUiMoveTarget(move)}<br>${battleUiEscape(moveEffectText(move))}</small>`;}
+function battleUiSkillInfo(move){
+  const card=String(move?.[8]||'').startsWith('s110_')?SKILL_BY_ID[move[8]]:null;
+  const numeric=card?.detailedDesc?`<br><span class="battle-choice-numbers">${battleUiEscape(card.detailedDesc)}</span>`:'';
+  return `<small class="battle-choice-detail">対象：${battleUiMoveTarget(move)}<br>${battleUiEscape(moveEffectText(move))}${numeric}</small>`;
+}
 function syncBattleUi(){
   const screen=document.getElementById('battle');if(!screen)return;
   const active=screen.classList.contains('active');

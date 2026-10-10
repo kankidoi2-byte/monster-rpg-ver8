@@ -1,174 +1,22 @@
+// The 110-skill catalog supersedes source-kind exclusivity and old consolidation.
+// Dedicated catalog tests retain coverage of stable aliases, anatomy, types,
+// legal starter budgets, and every historical skill ID.
+import './skill110-catalog.test.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-
-function read(relativePath) {
-  return fs.readFileSync(new URL(`../${relativePath}`, import.meta.url), 'utf8');
+const ctx=vm.createContext({console});
+const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+vm.runInContext(read('js/data.js')+read('js/core.js'),ctx);
+const x=vm.runInContext('({M,MOVE_CARDS,MONSTER_MOVE_CARDS,CHARACTER_MOVE_CARDS,SKILL_BY_ID,defaultSkillIdsForMonster,isSkillAllowedForMonster})',ctx);
+assert.equal(x.M.length,100);assert.equal(x.MOVE_CARDS.filter(s=>s.deprecated).length,316,'all formerly registered fixed IDs remain readable');
+assert.equal(x.MONSTER_MOVE_CARDS.length,106);assert.equal(x.CHARACTER_MOVE_CARDS.length,106);
+assert.deepEqual([...x.MONSTER_MOVE_CARDS.map(s=>s.id)],[...x.CHARACTER_MOVE_CARDS.map(s=>s.id)],'both entity kinds share the same catalog');
+for(const unit of x.M){
+ assert(unit.tags.includes(`entity:${unit.entityKind}`));assert(unit.types.every(t=>unit.tags.includes(`element:${t}`)));assert(unit.legacyMoves.length);
+ assert(unit.moves.every(mv=>mv[8].startsWith('s110_')));
 }
-
-const context = vm.createContext({console, alert:()=>{}, confirm:()=>false});
-vm.runInContext(read('js/data.js'), context, {filename:'js/data.js'});
-vm.runInContext(read('js/core.js'), context, {filename:'js/core.js'});
-
-const taxonomy = vm.runInContext(`({
-  units:M,
-  cards:MOVE_CARDS,
-  equippable:EQUIPPABLE_MOVE_CARDS,
-  monsterPool:MONSTER_MOVE_CARDS,
-  characterPool:CHARACTER_MOVE_CARDS,
-  by,
-  canonicalSkillId,
-  defaultSkillIdsForMonster,
-  isSkillAllowedForMonster,
-  isEquippedSkillUsableForMonster,
-  skillCostLimitFor
-})`, context);
-
-assert.equal(taxonomy.units.length,100);
-assert(taxonomy.units.every(unit => Array.isArray(unit.tags) && unit.tags.includes(`entity:${unit.entityKind}`)));
-assert(taxonomy.units.every(unit => unit.types.every(type => unit.tags.includes(`element:${type}`))));
-
-assert.equal(taxonomy.cards.length,316,'only registered skills are active; retired Noam IDs are not reused');
-assert(taxonomy.cards.every(card => card.sourceUnitId && card.sourceEntityKind));
-assert(taxonomy.cards.every(card => Array.isArray(card.tags) && card.tags.length >= 3));
-assert(taxonomy.cards.every(card => Array.isArray(card.requirements?.entityKinds)));
-assert(taxonomy.cards.every(card => Array.isArray(card.requirements?.requiredAll)));
-assert(taxonomy.equippable.length < taxonomy.cards.length,'duplicate skills must be removed from new equipment choices');
-assert.equal(taxonomy.monsterPool.length + taxonomy.characterPool.length,taxonomy.equippable.length);
-assert(taxonomy.monsterPool.every(card => card.sourceEntityKind === 'monster'));
-assert(taxonomy.characterPool.every(card => card.sourceEntityKind === 'character'));
-
-const deprecated = taxonomy.cards.filter(card => card.deprecated);
-assert(deprecated.length > 0,'the consolidation pass must identify duplicate skills');
-for (const card of deprecated) {
-  const canonical = taxonomy.cards.find(candidate => candidate.id === card.canonicalId);
-  assert(canonical,`deprecated skill ${card.id} must resolve to a fixed skill ID`);
-  assert.equal(canonical.deprecated,false,`canonical skill ${canonical.id} must remain equippable`);
-  assert.equal(taxonomy.canonicalSkillId(card.id),canonical.id);
-}
-
-const elna = taxonomy.by('elna_advanced');
-const stella = taxonomy.by('stella_apprentice');
-const lumina = taxonomy.by('lumina_apprentice');
-const freiwolf = taxonomy.by('freiwolf');
-const slime = taxonomy.by('slime');
-const falseDragon = taxonomy.by('false_dragon_gamma');
-
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_elna_middle_03',elna),true,'a swordsman can use a compatible sword skill');
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_stella_apprentice_01',lumina),true,'a mage can use a compatible mage skill');
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_elna_advanced_03',falseDragon),false,'monsters cannot equip character sword skills');
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_stella_apprentice_01',falseDragon),false,'monsters cannot equip character magic skills');
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_slime_01',stella),false,'characters cannot equip monster skills');
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_freigal_01',freiwolf),true,'a monster with fangs can use a compatible fang skill');
-assert.equal(taxonomy.isSkillAllowedForMonster('skill_freigal_01',slime),false,'a monster without fangs cannot use a fang skill');
-
-const deprecatedSkill = deprecated[0];
-assert.equal(taxonomy.isSkillAllowedForMonster(deprecatedSkill.id,taxonomy.by(deprecatedSkill.sourceUnitId)),false,'deprecated skills cannot be newly equipped');
-assert.equal(taxonomy.isEquippedSkillUsableForMonster(deprecatedSkill.id,taxonomy.by(deprecatedSkill.sourceUnitId)),true,'a compatible deprecated skill already in a save remains usable');
-
-for (const unit of taxonomy.units) {
-  const instance = {id:unit.id,level:1};
-  const defaults = taxonomy.defaultSkillIdsForMonster(unit,instance);
-  assert(defaults.length > 0 && defaults.length <= 3,`${unit.id} must have one to three default skills`);
-  assert(defaults.every(id => taxonomy.canonicalSkillId(id) === id),`${unit.id} defaults must use canonical skill IDs`);
-  assert(defaults.every(id => taxonomy.isSkillAllowedForMonster(id,unit)),`${unit.id} defaults must satisfy tag requirements`);
-  const cost = defaults.reduce((sum,id) => sum + taxonomy.cards.find(card => card.id === id).cost,0);
-  assert(cost <= taxonomy.skillCostLimitFor(unit,instance),`${unit.id} defaults must fit the skill cost limit`);
-}
-
-// Golem defaults must attack at every tested level without changing legacy water cards.
-const golem = taxonomy.by('proto_icegolem');
-assert.deepEqual([...golem.types],['normal']);
-for (const level of [1,3,30,100]) {
-  const ids = taxonomy.defaultSkillIdsForMonster(golem,{level});
-  assert(ids.some(id => taxonomy.cards.find(card => card.id === id).power > 0),`Golem Lv${level} must start with an attack`);
-  assert(ids.every(id => taxonomy.isSkillAllowedForMonster(id,golem)));
-}
-assert(taxonomy.defaultSkillIdsForMonster(golem,{level:30}).includes('skill_proto_icegolem_05'));
-for (const id of ['skill_proto_icegolem_01','skill_proto_icegolem_03']) {
-  assert(taxonomy.cards.find(card => card.id === id).types.includes('water'),'legacy water cards must retain their attribute');
-}
-
-context.save = {
-  saveMeta:{migrations:[]},
-  instances:[
-    {uid:'legacy-ok',id:deprecatedSkill.sourceUnitId,level:99},
-    {uid:'legacy-copy',id:deprecatedSkill.sourceUnitId,level:99},
-    {uid:'cross-kind',id:'slime',level:99}
-  ],
-  skillCards:Object.fromEntries(taxonomy.cards.map(card => [card.id,99])),
-  equippedSkills:{
-    'legacy-ok':[deprecatedSkill.id],
-    'legacy-copy':[deprecatedSkill.id],
-    'cross-kind':['skill_elna_middle_03']
-  }
-};
-vm.runInContext(read('js/skills.js'), context, {filename:'js/skills.js'});
-vm.runInContext('migrateSkillSystem()', context);
-assert.deepEqual([...context.save.equippedSkills['legacy-ok']],[deprecatedSkill.id]);
-assert(!context.save.equippedSkills['cross-kind'].includes('skill_elna_middle_03'),'invalid cross-kind skills must be removed from old loadouts');
-assert.equal(context.save.skillCards[deprecatedSkill.id],2,'each equipped slot must be backed by one owned card');
-assert.equal(context.save.skillCards.skill_elna_middle_03,0,'unequipped cards must migrate from 99 to zero');
-assert(context.save.saveMeta.migrations.includes('equipped_skill_cards_v1'));
-
-context.save.skillCards[deprecatedSkill.id]=5;
-vm.runInContext('migrateSkillSystem()', context);
-assert.equal(context.save.skillCards[deprecatedSkill.id],5,'subsequent loads must preserve cards obtained after migration');
-
-context.save.instances.push({uid:'new-unit',id:deprecatedSkill.sourceUnitId,level:99});
-vm.runInContext("grantEquippedSkillCardsForInstance(save.instances.find(instance => instance.uid === 'new-unit'))", context);
-const newUnitIds=context.save.equippedSkills['new-unit'];
-assert(newUnitIds.length > 0);
-for (const id of newUnitIds) assert(context.save.skillCards[id] >= 1,'new instances must own every default equipped card');
-
-const evolving={uid:'evolving-unit',id:'freigal',level:20};
-context.save.instances.push(evolving);
-vm.runInContext("ensureInstanceSkills(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
-const equippedBeforeEvolution=[...context.save.equippedSkills[evolving.uid]];
-evolving.id='freiwolf';
-const expectedEvolutionCards=vm.runInContext("evolutionSkillCardIdsForMonster(by('freiwolf'))",context);
-const countsBeforeEvolution=Object.fromEntries(expectedEvolutionCards.map(id => [id,context.save.skillCards[id] || 0]));
-const grantedEvolutionCards=vm.runInContext("grantEvolutionSkillCardsForInstance(save.instances.find(instance => instance.uid === 'evolving-unit'))", context);
-assert.deepEqual([...grantedEvolutionCards],[...expectedEvolutionCards],'evolution must grant the evolved form all declared skill cards');
-assert.deepEqual([...context.save.equippedSkills[evolving.uid]],equippedBeforeEvolution,'granting evolution cards must not change the equipped loadout');
-for (const id of expectedEvolutionCards) assert.equal(context.save.skillCards[id],countsBeforeEvolution[id]+1,`evolution must grant one ${id} card`);
-
-// Existing guard-only defaults are repaired once, including two copies sharing cards.
-const legacyGuard=taxonomy.canonicalSkillId('skill_proto_icegolem_02');
-context.save={saveMeta:{migrations:['equipped_skill_cards_v1']},instances:[
-  {uid:'golem-low',id:'proto_icegolem',level:1},
-  {uid:'golem-high',id:'proto_icegolem',level:30},
-  {uid:'golem-custom',id:'proto_icegolem',level:30}
-],skillCards:{[legacyGuard]:2,skill_proto_icegolem_01:7},equippedSkills:{
-  'golem-low':[legacyGuard],'golem-high':['skill_proto_icegolem_02'],
-  'golem-custom':['skill_proto_icegolem_04']
-}};
-vm.runInContext('migrateSkillSystem()',context);
-for (const uid of ['golem-low','golem-high']) {
-  const instance=context.save.instances.find(ins=>ins.uid===uid);
-  assert.deepEqual([...context.save.equippedSkills[uid]],[...taxonomy.defaultSkillIdsForMonster(golem,instance)]);
-}
-assert.deepEqual([...context.save.equippedSkills['golem-custom']],['skill_proto_icegolem_04'],'custom attacking loadout must remain unchanged');
-assert.equal(context.save.skillCards.skill_proto_icegolem_01,7,'legacy inventory must survive repair');
-assert.equal(context.save.skillCards.skill_proto_icegolem_04,3,'each repaired or custom slot must own a card');
-// Repair must not discard any unequipped or unrelated inventory in migrated saves.
-context.save.skillCards.skill_freigal_01=99;
-const inventoryBefore={...context.save.skillCards};
-vm.runInContext('migrateSkillSystem()',context);
-for(const [id,count] of Object.entries(inventoryBefore)) {
- assert.equal(context.save.skillCards[id],count,`Golem repair must preserve all inventory: ${id}`);
-}
-for(const unit of taxonomy.units.filter(unit=>unit.id!=='proto_icegolem')) {
- for(const id of ['skill_proto_icegolem_04','skill_proto_icegolem_05']) {
-  assert.equal(taxonomy.isSkillAllowedForMonster(id,unit),false,'new Golem attacks must be exclusive');
- }
-}
-const repairedSave=JSON.stringify(context.save);
-context.save=JSON.parse(repairedSave);
-vm.runInContext('migrateSkillSystem()',context);
-assert.equal(JSON.stringify(context.save),repairedSave,'save and reload must not duplicate repair cards');
-
-const progressionSource=read('js/progression.js');
-assert.equal((progressionSource.match(/grantEvolutionSkillCardsForInstance\(ins\)/g) || []).length,2,'normal and fusion evolutions must both grant all declared skill cards');
-
-console.log(`Skill taxonomy validation passed (100 tagged units, 316 compatible fixed IDs, ${taxonomy.equippable.length} consolidated equipment choices, finite card inventory, evolution grants).`);
+for(const id of ['skill_proto_icegolem_01','skill_proto_icegolem_03'])assert(x.SKILL_BY_ID[id].types.includes('water'),'legacy record attributes remain untouched');
+assert.equal(x.isSkillAllowedForMonster('skill_freigal_01',x.M.find(m=>m.id==='freigal')),false,'legacy records cannot be newly equipped');
+assert.equal((read('js/progression.js').match(/grantEvolutionSkillCardsForInstance\(ins\)/g)||[]).length,2,'normal and fusion evolution retain card-grant hooks');
+console.log('Shared taxonomy: 316 legacy records retained, 106 shared acquisition skills, entity tags and evolution hooks passed.');

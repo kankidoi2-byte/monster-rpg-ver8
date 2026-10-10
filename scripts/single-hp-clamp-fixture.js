@@ -75,7 +75,7 @@ async function singleHpScenario(options,strict=true){
   if(link&&isPlayer)kokoroLinkBattleState.linksByTargetUid.set(activeInstance.uid,{targetUid:activeInstance.uid,effects:{attackMultiplier:1},powerAbility:{id:'life_steal',charges:1,damageRate:.2,maxHpRateCap:.1}});
   const probe=installSingleHpProbe(strict);
   try{
-    const move=skill?skillToMove(skill):['HP検証',40,'normal',effect,1];
+    const move=skill?skillToMove(skill):['HP検証',40,'normal',effect,1,null,null,null,'skill_slime_01'];
     await doAttack(isPlayer?player:enemy,isPlayer?enemy:player,move,isPlayer);
     singleHpProbe('after-attack');
     const result={name:options.name,isPlayer,pHp,eHp,events:probe.events,actual:probe.actual,log:document.getElementById('log').innerHTML,

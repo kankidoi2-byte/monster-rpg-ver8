@@ -1,3 +1,4 @@
+import {legacyCardProjection} from './skill110-legacy-projection.mjs';
 import {applyStatusDataCopy,applyStatusCoreCopy} from './status-description-copy-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -15,8 +16,8 @@ const old=runtime({data:s=>applyStatusDataCopy(s).replace('極限の嵐を解放
 const r=runtime();
 vm.runInContext(read('dex'),r.context);
 const strip=html=>html.replace(/<[^>]+>/g,'');
-const cards=r.run('MOVE_CARDS');
-assert.equal(JSON.stringify(cards),JSON.stringify(old.run('MOVE_CARDS')),'card IDs, COST, stats, descriptions and equipment metadata are unchanged');
+const cards=r.run('MOVE_CARDS.filter(sk=>!sk.id.startsWith("s110_"))');
+for(const sk of cards){const previous=old.run(`SKILL_BY_ID['${sk.id}']`);assert.deepEqual(legacyCardProjection(sk),legacyCardProjection(previous),sk.id);}
 let checks=0;
 for(const sk of cards){
  const arg=JSON.stringify(sk.id);
@@ -41,6 +42,7 @@ for(const sk of cards){
  checks++;
 }
 r.run(`save=initSave();save.instances=[];save.party=[];var testIns=addInstance('freigal',1);save.party=[testIns.uid];save.skillCards=Object.fromEntries(MOVE_CARDS.map(s=>[s.id,10]));editingSkillUid=testIns.uid;`);
+r.run('ensureInstanceSkills(testIns)');
 const before=r.run('JSON.stringify(save)');
 r.run('renderSkillEdit()');
 assert.equal(r.run('JSON.stringify(save)'),before,'rendering does not change inventory or save');
@@ -59,3 +61,14 @@ for(const file of ['skills','dex','skill-gacha','tutorial']){
  assert(!/moveEffectText\(/.test(source),'all card callers use effects-only helper: '+file);
 }
 console.log(`PASS skill-card display: ${checks} cards, default compatibility, all unit dexes, equipment inventory preservation and caller coverage`);
+
+for(const sk of r.run('SKILL110_CATALOG')){
+ const arg=JSON.stringify(sk.id),html=r.run(`skillCardEffect(skillToMove(${arg}))`);
+ assert(html.includes(`<p class="small skill-effect-text">${sk.customDesc}</p>`),sk.id+' concise explanation');
+ if(sk.detailedDesc){
+  assert(html.includes('<details class="skill-numeric-detail"'));
+  assert(!/<details[^>]*\sopen(?:\s|>)/.test(html),'numeric detail is initially collapsed');
+  assert(html.includes(`<p class="small skill-numeric-text">${sk.detailedDesc}</p>`));
+ }
+}
+console.log('PASS adopted110 card summaries and collapsed numeric detail disclosures');

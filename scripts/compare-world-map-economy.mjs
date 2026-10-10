@@ -99,6 +99,10 @@ function functionSource(source,name){
 }
 
 function normalizedRuleSource(source,name){
+  // 110-skill end-of-battle cleanup is independently tested; it does not change reward rules.
+  source=source.replace(/resetBattleTransientEffects\(\);/g,'')
+    .replace(/(?:pStatus|eStatus|pPoisonTurns|ePoisonTurns|pParalysisTurns|eParalysisTurns|pConfusionTurns|eConfusionTurns|pSleepTurns|eSleepTurns|pFlareCharge|eFlareCharge|pAquaShield|eAquaShield)\s*=\s*(?:null|0|false);/g,'')
+    .replace(/(if\(typeof completeTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory\(\)\))\{\s*return;\s*\}/g,'$1return;');
   // Presentation-only evolution scheduling moved from win to afterBattleNext.
   // Exclude exactly that audited tail, preserving every reward/contract statement.
   if(name==='win')source=source
@@ -109,7 +113,8 @@ function normalizedRuleSource(source,name){
     .replace(/\/\/ Queued evolution opens afterBattleNext\./g,'');
   return source
     .replace(/if\(typeof recordWorldMapVictory==='function'\)\s*recordWorldMapVictory\(\);?/g,'')
-    .replace(/\s+/g,'');
+    .replace(/\s+/g,'')
+    .replace("if(typeofcompleteTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory()){return;}","if(typeofcompleteTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory())return;");
 }
 
 function simulateTwentyWins(rules,grasslandEnemyIds=null){

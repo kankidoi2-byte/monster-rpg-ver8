@@ -255,6 +255,8 @@ async function performMultiAttack(actor,target,move) {
     battleFeedback.action=`${label(actor)} → ${label(selfEffect?actor:target)}：「${name}」`;
     battleHistoryEntry(battleFeedback.action,'target');renderBattleInputState();
   }
+  const adoptedMove=skill110BattleMove(move);
+  if(adoptedMove)return performSkill110Attack(adoptedMove,actorIsPlayer,actorIsPlayer?null:actor,target);
   const sourceId=actorIsPlayer?'pVis':`${actor.id}Vis`,impactTargetId=defenderIsPlayer?'pVis':`${target.id}Vis`;
   const tactical=tacticalSkillProfile(move);
   const supportTargetId=['sleep','debuff'].includes(effect)||(effect==='tactical'&&(tactical?.debuff||tactical?.dispel))?impactTargetId:sourceId;
@@ -383,7 +385,7 @@ function grantMultiEnemyReward(entry,turnBonus){
   return {exp,coins,message};
 }
 function winMultiBattle(){
-  if(battleRewardGranted)return;battleRewardGranted=true;if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();completeBattleTurn();multiBattle.finished=true;busy=true;
+  if(battleRewardGranted)return;battleRewardGranted=true;if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();completeBattleTurn();resetBattleTransientEffects();multiBattle.finished=true;busy=true;
   const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus));
   const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
@@ -407,4 +409,4 @@ async function useMultiBattleContractScroll(itemId){
   if(ok){addInstance(entry.mon.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(entry.mon.id);}saveGame();show('battle');busy=true;await playContractAnimation({monsterName:entry.mon.name,stage:animationStage});
   if(ok){appendMultiLog(`🤝 ${it.name}を使い、${entry.mon.name}との契約に成功した！`);}else{appendMultiLog(`📜 ${it.name}を使ったが、${entry.mon.name}との契約には失敗した……`);}busy=false;updateItems();renderParty();renderDex();show('battle');renderMultiContractPanel();
 }
-function runAwayFromMultiBattle(){if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}
+function runAwayFromMultiBattle(){resetBattleTransientEffects();if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}

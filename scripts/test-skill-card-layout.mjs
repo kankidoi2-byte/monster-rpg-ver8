@@ -48,15 +48,36 @@ try{
    const sk=MONSTER_MOVE_CARDS[0];sk.name='天空を巡る白金の守護者・超長名称の複合属性専用技';renderSkillEdit();
   });
   check(await inspect('#skillEditCurrent .skill-card, #skillCardList .skill-card'),'long name');
-  const buttons=await frame.evaluate(async()=>{
-   const result=[];
-   for(const el of [...document.querySelectorAll('#skillEditCurrent button, #skillCardList button:not([disabled])')].slice(0,4)){
-    el.scrollIntoView({block:'center'});await new Promise(r=>requestAnimationFrame(r));
-    const b=el.getBoundingClientRect(),hit=document.elementFromPoint(b.left+b.width/2,b.top+b.height/2);
-    result.push({text:el.textContent,visible:b.top>=0&&b.bottom<=innerHeight,uncovered:hit===el||el.contains(hit)});
-   }return result;
-  });
-  assert(buttons.length&&buttons.every(b=>b.visible&&b.uncovered),'operation buttons visible and uncovered');
+  await frame.evaluate(()=>{document.getElementById('skillCostFilter').value='25';renderSkillEdit();});
+  assert.equal(await frame.locator('#skillCardList [data-skill-card-id]').count(),4);
+  check(await inspect('#skillCardList .skill-card'),'COST25');
+  await frame.evaluate(()=>{document.getElementById('skillCostFilter').value='all';renderSkillEdit();});
+  // The growing fixture report can move the entire iframe below the parent viewport.
+  // Bring both scroll containers into view before testing real pointer hit targets.
+  await page.locator('#game').scrollIntoViewIfNeeded();
+  const buttonLocators=frame.locator('#skillEditCurrent button, #skillCardList button:not([disabled])');
+  const buttons=[];
+  for(let index=0;index<Math.min(4,await buttonLocators.count());index++){
+   const button=buttonLocators.nth(index);
+   await button.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+   await page.locator('#game').scrollIntoViewIfNeeded();
+   const measurement=await button.evaluate(async el=>{
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const b=el.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;
+    const hit=document.elementFromPoint(x,y);
+    return {text:el.textContent,visible:b.top>=0&&b.bottom<=innerHeight&&b.left>=0&&b.right<=innerWidth,
+     uncovered:hit===el||el.contains(hit),rect:{left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height},
+     viewport:{width:innerWidth,height:innerHeight},scrollY,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className,text:hit.textContent?.slice(0,80)}:null};
+   });
+   measurement.parent=await page.locator('#game').evaluate((iframe,rect)=>{
+    const b=iframe.getBoundingClientRect(),x=b.left+(rect.left+rect.right)/2,y=b.top+(rect.top+rect.bottom)/2;
+    const hit=document.elementFromPoint(x,y);
+    return {iframeRect:{left:b.left,top:b.top,right:b.right,bottom:b.bottom},viewport:{width:innerWidth,height:innerHeight},scrollY,
+     uncovered:hit===iframe,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
+   },measurement.rect);
+   buttons.push(measurement);
+  }
+  assert(buttons.length&&buttons.every(b=>b.visible&&b.uncovered&&b.parent.uncovered),`operation buttons visible and uncovered: ${JSON.stringify(buttons)}`);
   await page.screenshot({path:`${out}/${width}x${height}.png`,fullPage:true});
   assert.equal(errors.length,0,errors.join('\n'));
   results.push({width,height,result:'PASS',existingInteractionChecks:suite.split('\n').length,buttons});
@@ -68,18 +89,26 @@ try{
  await page.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
-  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
-  const ins=addInstance('false_dragon_beta',4);save.party=[ins.uid];
-  save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=['skill_false_dragon_beta_01'];show('home');
+  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  // Returning-player flow: feature-guide tutorials are exercised separately in every iframe width.
+  Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
+  save.instances=[];save.party=[];
+  const ins=addInstance('freigal',100);save.party=[ins.uid];
+  save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=[];show('home');
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
  assert(await page.locator('#partySet').isVisible());await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
- assert((await page.locator('[data-skill-card-id="skill_false_dragon_beta_02"]').textContent()).includes('COST 3'));
+ await page.locator('#skillEdit .skill-filter-panel > summary').click();
+ await page.locator('#skillCostFilter').selectOption('25');
+ assert.equal(await page.locator('#skillCardList [data-skill-card-id]').count(),4);
+ assert((await page.locator('[data-skill-card-id="s110_107"]').textContent()).includes('COST 25'));
+ assert(await page.evaluate(()=>[...document.querySelectorAll('[data-skill-card-id]')].every(el=>!SKILL_BY_ID[el.dataset.skillCardId].deprecated)));
  const loadout=await page.evaluate(()=>{
-  const wing=equipSkill('skill_false_dragon_beta_02'),charge=equipSkill('skill_freigal_04');
-  return {wing,charge,total:equippedSkillCost(save.instances[0]),limit:skillCostLimitFor(by('false_dragon_beta'),save.instances[0])};
+  const over=equipSkill('s110_107'),basic=equipSkill('s110_001');
+  return {over,basic,total:equippedSkillCost(save.instances[0]),limit:skillCostLimitFor(by('freigal'),save.instances[0])};
  });
- assert.deepEqual(loadout,{wing:true,charge:true,total:9,limit:9});
+ assert.equal(loadout.over,true);assert.equal(loadout.basic,true);assert.equal(loadout.total,26);assert(loadout.limit>=26);
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'COST25 equipment overflow');
  const saved=await page.evaluate(()=>{
   if(!saveGame())throw Error('save failed');
   return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills});
@@ -88,9 +117,23 @@ try{
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})),saved);
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
- assert((await page.locator('#commands').textContent()).includes('火翼撃'));
+ assert((await page.locator('#commands').textContent()).includes('オーバーブレイク'));
  assert.equal(errors.length,0,errors.join('\n'));
- results.push({scenario:'Ashleia Lv4 COST9: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
+ results.push({scenario:'Freigal Lv100 COST25: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
  await page.close();
  fs.writeFileSync(`${out}/results.json`,JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
+}catch(error){
+ // Capture before closing contexts, including failures in the first 320px case.
+ const failures=[];
+ const pages=browser.contexts().flatMap(context=>context.pages()).filter(page=>!page.isClosed());
+ for(const [index,page] of pages.entries()){
+  const file=`failure-${index+1}.png`;
+  const diagnostic={url:page.url(),viewport:page.viewportSize(),screenshot:file};
+  try{await page.screenshot({path:`${out}/${file}`,fullPage:true,timeout:10000});}
+  catch(captureError){diagnostic.screenshotError=captureError.message;}
+  try{diagnostic.fixtureReport=await page.locator('#report').textContent({timeout:1000});}catch{}
+  failures.push(diagnostic);
+ }
+ fs.writeFileSync(`${out}/failure.json`,JSON.stringify({error:error.stack||String(error),completed:results,pages:failures},null,2));
+ throw error;
 }finally{await browser.close();server.kill();}

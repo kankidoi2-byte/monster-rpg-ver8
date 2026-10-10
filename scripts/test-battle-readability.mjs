@@ -44,7 +44,7 @@ for(const effect of [null,'repeat_attack','drain','recoil','alchemy_recoil','poi
  baseline.run(`function setup(){${setup.replace('refreshBattleFeedback();','')}};setup();pHp=70;eHp=60;pGuard=true;eGuard=true;pAquaShield=true;eAquaShield=true;`);
  run('setup();pHp=70;eHp=60;pGuard=true;eGuard=true;pAquaShield=true;eAquaShield=true;refreshBattleFeedback()');
  baseline.context.Math.random=()=>{drawsA++;return a()};r.context.Math.random=()=>{drawsB++;return b()};
- const move=JSON.stringify(['検証', ['guard','heal','buff','aqua_shield'].includes(effect)?0:24,'normal',effect,1]);
+ const move=JSON.stringify(['検証', ['guard','heal','buff','aqua_shield'].includes(effect)?0:24,'normal',effect,1,null,null,null,'skill_slime_01']);
  await baseline.run(`doAttack(player,enemy,${move},true)`);await run(`doAttack(player,enemy,${move},true)`);
  const state='JSON.stringify([pHp,eHp,pAtk,eAtk,pGuard,eGuard,pStatus,eStatus,pPoisonTurns,ePoisonTurns,eParalysisTurns,eConfusionTurns,pAquaShield,eAquaShield])';
  assert.equal(run(state),baseline.run(state),effect||'normal');assert.equal(drawsA,drawsB,'random draw count');

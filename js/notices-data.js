@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261010-skill-system-110",date:"2026-10-10",category:"important",title:"技体系を110種類に更新しました",body:"技を低級60・上級30・超級16・最強4種類に整理しました。所持技は新しい技へ引き継ぎ、装備を適性とコストに合わせて調整します。最強技は技合成で作成でき、素材とレシピは技図鑑から確認できます。"}),
   Object.freeze({id:"20261010-character-dex-reservations",date:"2026-10-10",category:"fix",title:"キャラクター図鑑の案内を整理しました",body:"実装済みキャラクターの古い予約情報を整理し、図鑑一覧の「登場予定を含む」という案内を現状に合わせました。"}),
   Object.freeze({id:"20261010-skill-dex-conditional-power",date:"2026-10-10",category:"update",title:"条件で威力が上がる技を探しやすくしました",body:"技図鑑の追加効果に「条件付き威力アップ」を追加しました。HPや相手の状態に応じて威力が上がる技を絞り込めます。"}),
   Object.freeze({id:"20261010-skill-equipment-star-filter",date:"2026-10-10",category:"fix",title:"技装備の属性絞り込みを整理しました",body:"技装備画面の属性絞り込みで「星」が重複して表示されていた問題を修正しました。"}),

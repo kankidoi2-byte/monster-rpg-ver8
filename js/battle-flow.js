@@ -185,13 +185,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   pHp = partyBattle[activePartyIdx].hp;
   eHp = enemyMaxHp();
   pAtk = eAtk = 1; pGuard = eGuard = false;
-  pStatus = null; eStatus = null;
-  pPoisonTurns = 0; ePoisonTurns = 0;
-  pParalysisTurns = 0; eParalysisTurns = 0;
-  pConfusionTurns = 0; eConfusionTurns = 0;
-  pSleepTurns = 0; eSleepTurns = 0;
-  pFlareCharge = false; eFlareCharge = false;
-  pAquaShield = false; eAquaShield = false;
+  resetBattleTransientEffects();
   if (activeHuntRequest.battleMode === 'three_way' && activeHuntRequest.secondEnemyId) {
     beginThreeWayBattle();
     return;
@@ -293,16 +287,23 @@ function losePartyBattle() {
   if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('defeat');
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
+// Outcome cleanup deliberately preserves HP, kill attribution and reward flags
+// for the result/contract screen; only temporary combat effects are cleared.
+function resetBattleTransientEffects(){
+  pAtk=eAtk=1;pGuard=eGuard=false;
+  pStatus=eStatus=null;pPoisonTurns=ePoisonTurns=0;
+  pParalysisTurns=eParalysisTurns=pConfusionTurns=eConfusionTurns=pSleepTurns=eSleepTurns=0;
+  pFlareCharge=eFlareCharge=pAquaShield=eAquaShield=false;
+  for(const entry of multiBattle?.enemies||[]){
+    entry.attack=1;entry.guard=false;entry.status=null;
+    entry.poisonTurns=entry.paralysisTurns=entry.confusionTurns=entry.sleepTurns=0;
+    entry.flareCharge=entry.aquaShield=false;
+  }
+}
 function endPartyRecovery() {
   partyBattle.forEach(p => { p.hp = instanceMaxHp(p.inst); p.fainted = false; });
   partyBattle = []; activePartyIdx = 0;
-  pStatus = null; eStatus = null;
-  pPoisonTurns = 0; ePoisonTurns = 0;
-  pParalysisTurns = 0; eParalysisTurns = 0;
-  pConfusionTurns = 0; eConfusionTurns = 0;
-  pSleepTurns = 0; eSleepTurns = 0;
-  pFlareCharge = false; eFlareCharge = false;
-  pAquaShield = false; eAquaShield = false;
+  resetBattleTransientEffects();
   multiBattle = null;
   pendingMultiBattleContractId = null;
   if (typeof setMultiBattleLayout === 'function') setMultiBattleLayout(false);
@@ -313,13 +314,7 @@ function runAway() {
   if (busy) return;
   if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
-  pStatus = null; eStatus = null;
-  pPoisonTurns = 0; ePoisonTurns = 0;
-  pParalysisTurns = 0; eParalysisTurns = 0;
-  pConfusionTurns = 0; eConfusionTurns = 0;
-  pSleepTurns = 0; eSleepTurns = 0;
-  pFlareCharge = false; eFlareCharge = false;
-  pAquaShield = false; eAquaShield = false;
+  resetBattleTransientEffects();
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
   document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';if(typeof captureBattleLog==='function')captureBattleLog();
@@ -330,19 +325,13 @@ function runAway() {
 function win() {
   if (eHp > 0) return;
   if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
-  if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) return;
+  if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) {resetBattleTransientEffects();return;}
   if (battleRewardGranted) return;
   battleRewardGranted = true;
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   completeBattleTurn();
   eHp = 0;
-  pStatus = null; eStatus = null;
-  pPoisonTurns = 0; ePoisonTurns = 0;
-  pParalysisTurns = 0; eParalysisTurns = 0;
-  pConfusionTurns = 0; eConfusionTurns = 0;
-  pSleepTurns = 0; eSleepTurns = 0;
-  pFlareCharge = false; eFlareCharge = false;
-  pAquaShield = false; eAquaShield = false;
+  resetBattleTransientEffects();
   const ov = document.getElementById('enemyDefeatOverlay');
   if (ov) ov.style.display = 'flex';
   const turnBonusActive = hasHuntCondition('swift_clear');
