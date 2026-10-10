@@ -1,5 +1,12 @@
 # 110技体系・レビュー資料
 
+## 公開状況の追記（2026-10-10 JST）
+
+110技体系は[PR #273](https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/273)で統合済みです。統合コミットは `ae5e064dda4159cce8b75f462be3bf280eb406d8`、配信側は[PR #29](https://github.com/pactforge-studio/monster-rpg-ver8/pull/29)の `07ceb3a5834d726dad8001de367f1e26323542d3`。その後の白黒UI・魂の契約・技カードの変更を含む今回の照合基準は、開発元 `be298108049bd80886789d5e314524b5b78b7c32`、配信 `ca0cc6f04610b6cf4dae54012f19413978621860` です。
+
+[公開後検証](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/38033322901)と[最新mainのCI](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/38059879660)は成功。以下の「レビュー用」「公開未実施」は初回提出時点の歴史的記録で、現在の公開状態ではありません。未確認の実機項目や、追加監査で見つかった別機能の保存例外を解決済みとはしません。
+
+
 参照main: `9d62c8f7752e105871702db81a9342d5ba62196e`。開発元の作業ブランチのみで変更し、main統合・配信用リポジトリ更新・本編公開は行わない。
 
 ## 提出資料

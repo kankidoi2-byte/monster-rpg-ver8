@@ -1,5 +1,16 @@
 # 制作ロードマップの区分と現在地
 
+## 最新の照合基準（2026-10-10 JST）
+
+- 開発元main: `be298108049bd80886789d5e314524b5b78b7c32`。本編配信snapshot: `ca0cc6f04610b6cf4dae54012f19413978621860`。
+- 110技への全面移行（[PR #273](https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/273)）、非戦闘画面の白黒デザイン（[PR #274](https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/274)）、魂の契約（[PR #275](https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/275)）、技図鑑の縦長カードは公開済み。カードの高さ短縮も上記mainに含まれる。
+- [main CI](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/38059879660)と[公開カード検証](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/38060464775)を確認済み。自動ブラウザ検証とユーザーの実機確認を混同しない。
+- 第1章以降、キャラクター/サイド物語は実行可能な本編話が未登録。序章6話は実装済み。新しい物語や素材の採用判断は別途行う。
+- 戦闘効果音の[Draft PR #182](https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/182)は未統合。以下のPR #175を「最新」とする表現は過去時点の履歴。
+- 全体点検で見つかった保存例外の修正は承認待ち。今回の表示・文書整備によって保存不具合が解決したと扱わない。
+- この追記は既存の制作Cycle/Phaseの完了数を加算しない。
+
+
 ## 最新公開状態：PR #175 数値監査・三つ巴修正
 
 - PR #174・#176の統合済みmainへ追従し、PR #175を `d2e6fb123d544b5f525dff68692064bc16d2efe6` で統合・公開。ユーザーのPR #175実機確認報告と公開承認を受領。端末別の詳細結果は未報告のため補完しない。
