@@ -21,12 +21,12 @@ async function measure(page){
   const selectors=['.skill-card-title','.skill-cost-badge','.skill-type-line','.skill-dex-performance','.skill-dex-description','.skill-dex-cta'];
   return {overflow:document.documentElement.scrollWidth>innerWidth+1,cards:[...document.querySelectorAll('#skillDexList .skill-dex-card')].map(el=>{
    const style=getComputedStyle(el),a=style.getPropertyValue('--dex-fill-a').trim(),b=style.getPropertyValue('--dex-fill-b').trim()||a;
-   const parts=selectors.map(selector=>{const node=el.querySelector(selector);if(!node)return {selector,missing:true};const cs=getComputedStyle(node);return {selector,text:node.textContent,rect:rect(node),overflow:node.scrollWidth>node.clientWidth+2||node.scrollHeight>node.clientHeight+2,ellipsis:cs.textOverflow==='ellipsis'||!['none','0',''].includes(cs.webkitLineClamp),hidden:cs.display==='none'||cs.visibility==='hidden',contrast:selector==='.skill-cost-badge'?contrast(cs.color,cs.backgroundColor):(a?Math.min(contrast(cs.color,a),contrast(cs.color,b)):null)};});
+   const parts=selectors.map(selector=>{const node=el.querySelector(selector);if(!node)return {selector,missing:true};const cs=getComputedStyle(node);return {selector,text:node.textContent,rect:rect(node),dimensions:{scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,scrollHeight:node.scrollHeight,clientHeight:node.clientHeight},flexShrink:cs.flexShrink,overflow:node.scrollWidth>node.clientWidth+2||node.scrollHeight>node.clientHeight+2,ellipsis:cs.textOverflow==='ellipsis'||!['none','0',''].includes(cs.webkitLineClamp),hidden:cs.display==='none'||cs.visibility==='hidden',contrast:selector==='.skill-cost-badge'?contrast(cs.color,cs.backgroundColor):(a?Math.min(contrast(cs.color,a),contrast(cs.color,b)):null)};});
    const sk=SKILL_BY_ID[el.dataset.skillDexId];
    // CSSOM may serialize double-position stops either compactly or as four stops.
    const stops=[...style.backgroundImage.matchAll(/(rgba?\([^)]*\))\s+([\d.]+)%(?:\s+([\d.]+)%)?/g)].flatMap(match=>[match[2],match[3]].filter(x=>x!==undefined).map(at=>({color:rgb(match[1]),at:Number(at)})));
    const edge=style.getPropertyValue('--dex-edge').trim();
-   return {id:sk.id,name:sk.name,types:skillTypes(sk),cost:sk.cost,power:sk.power,description:sk.customDesc||sk.description||'',tier:skillDexTier(sk.cost),typeLabel:skillTypeLabel(skillTypes(sk)),rect:rect(el),parts,background:style.backgroundImage,fillA:a,fillB:b,fillARGB:rgb(a),fillBRGB:rgb(b),gradientStops:stops,edgeRGB:rgb(edge),borderRGB:rgb(style.borderTopColor),border:style.borderColor,text:el.textContent,overflow:el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2};
+   return {id:sk.id,name:sk.name,types:skillTypes(sk),cost:sk.cost,power:sk.power,description:sk.customDesc||sk.description||'',dimensions:{scrollWidth:el.scrollWidth,clientWidth:el.clientWidth,scrollHeight:el.scrollHeight,clientHeight:el.clientHeight},tier:skillDexTier(sk.cost),typeLabel:skillTypeLabel(skillTypes(sk)),rect:rect(el),parts,background:style.backgroundImage,fillA:a,fillB:b,fillARGB:rgb(a),fillBRGB:rgb(b),gradientStops:stops,edgeRGB:rgb(edge),borderRGB:rgb(style.borderTopColor),border:style.borderColor,text:el.textContent,overflow:el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2};
   })};
  });
 }
@@ -70,6 +70,22 @@ function verifyLayout(metrics,label,{phone=false,expectedCount=110}={}){
  if(phone)assert.equal(rows[0].length,2,`${label}: first row exactly two columns`);
  return {count:metrics.cards.length,columns:rows[0]?.length,minWidth:Math.min(...metrics.cards.map(c=>c.rect.width)),maxHeight:Math.max(...metrics.cards.map(c=>c.rect.height)),minimumTextContrast:Math.min(...metrics.cards.flatMap(c=>c.parts.map(p=>p.contrast))),dualAttributeCards:metrics.cards.filter(c=>c.types.length>1).length};
 }
+async function checkedMetrics(page,label,file,options={}){
+ const metrics=await measure(page);
+ // Persist diagnostics before assertions, including on the first failing card.
+ fs.writeFileSync(`${out}/${file}-all-cards.json`,JSON.stringify(metrics,null,2));
+ try{return {metrics,result:verifyLayout(metrics,label,options)};}
+ catch(error){
+  fs.writeFileSync(`${out}/${file}-failure.txt`,String(error.stack||error));
+  const id=String(error.message).match(/s110_\d+/)?.[0];
+  try{
+   if(id)await page.locator(`[data-skill-dex-id="${id}"]`).scrollIntoViewIfNeeded();
+   await page.screenshot({path:`${out}/${file}-failure.png`,animations:'disabled'});
+   if(id)await page.locator(`[data-skill-dex-id="${id}"]`).screenshot({path:`${out}/${file}-${id}-failure.png`,animations:'disabled'});
+  }catch(captureError){fs.writeFileSync(`${out}/${file}-capture-error.txt`,String(captureError));}
+  throw error;
+ }
+}
 async function screenshotExamples(page,label){
  // Reorder only rendered nodes for the evidence viewport. No skill data or save is changed.
  await page.evaluate(()=>{
@@ -98,8 +114,8 @@ try{
   await page.addStyleTag({content:'html, body, * { scroll-behavior: auto !important; }'});
   await settle(page);
   const before=await page.evaluate(()=>({save:JSON.stringify(save),storage:JSON.stringify({...localStorage}),data:JSON.stringify(EQUIPPABLE_MOVE_CARDS)}));
-  const metrics=await measure(page),entry={width,height,normal:verifyLayout(metrics,`${width}px`,{phone:width<=430})};
-  fs.writeFileSync(`${out}/${width}-all-cards.json`,JSON.stringify(metrics,null,2));
+  const measured=await checkedMetrics(page,`${width}px`,`${width}`,{phone:width<=430});
+  const metrics=measured.metrics,entry={width,height,normal:measured.result};
   assert.equal(new Set(metrics.cards.map(c=>c.id)).size,110);
   assert.equal(new Set(metrics.cards.flatMap(c=>c.types)).size,10,'all ten attributes represented');
   if(width>=844){assert(entry.normal.columns>=3,'larger screens adapt column count');assert(entry.normal.minWidth>=140,'readable adaptive desktop card width');}
@@ -131,11 +147,11 @@ try{
   }
   if(width<=430){
    await page.evaluate(()=>document.documentElement.style.fontSize='200%');await settle(page);
-   entry.rootFont200=verifyLayout(await measure(page),`${width}px root font 200%`);
+   entry.rootFont200=(await checkedMetrics(page,`${width}px root font 200%`,`${width}-root-font-200`)).result;
    await page.locator('[data-skill-dex-id]').first().scrollIntoViewIfNeeded();
    await page.screenshot({path:`${out}/${width}-root-font-200.png`,animations:'disabled'});
    await page.evaluate(()=>{document.documentElement.style.fontSize='';document.body.style.zoom='2';});await settle(page);
-   entry.cssZoom200=verifyLayout(await measure(page),`${width}px CSS zoom 200%`);
+   entry.cssZoom200=(await checkedMetrics(page,`${width}px CSS zoom 200%`,`${width}-css-zoom-200`)).result;
    await page.locator('[data-skill-dex-id]').first().scrollIntoViewIfNeeded();
    await page.screenshot({path:`${out}/${width}-css-zoom-200.png`,animations:'disabled'});
    await page.evaluate(()=>document.body.style.zoom='');
