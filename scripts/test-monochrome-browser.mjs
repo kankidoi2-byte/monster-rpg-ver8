@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn,execFileSync} from 'node:child_process';
 const out='artifacts/nonbattle-theme';fs.mkdirSync(out,{recursive:true});
-const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[]};
+const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[]};
 const origin='http://127.0.0.1:4177';
 let browser,server;
 const baselines=new WeakMap();
@@ -16,6 +16,7 @@ async function both(page,fn,arg){const baseline=baselines.get(page);if(baseline)
 async function viewport(page,size){await baselines.get(page)?.setViewportSize(size);await page.setViewportSize(size);}
 
 const write=()=>fs.writeFileSync(`${out}/manifest.json`,JSON.stringify(manifest,null,2));
+function verify(condition,message){if(!condition){manifest.failures.push(message);write();}}
 async function theme(page,enabled){
  await page.locator('link[href*="css/nonbattle-theme.css"]').evaluate((link,enabled)=>{link.disabled=!enabled;},enabled);
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -76,11 +77,37 @@ async function capture(page,name,{validate=true}={}){
  entry.layout=await page.evaluate(()=>{
   const screen=document.querySelector('.screen.active');
   const overflow=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title')].filter(el=>{
+   if(el.closest('.wm-map-scroll'))return false; // Tested as a clipped, reachable pan surface below.
    const r=el.getBoundingClientRect();return r.width&&r.height&&(r.left < -1||r.right>innerWidth+1);
   }).map(el=>({tag:el.tagName,id:el.id,text:el.textContent.slice(0,80)}));
   return {screen:screen.id,family:screen.dataset.themeFamily,bodyFamily:document.body.dataset.nonbattleTheme,
    horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow};
  });
+ entry.mapScrollers=[];
+ for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible').all()){
+  const geometry=await scroller.evaluate(el=>{
+   const r=el.getBoundingClientRect();return {left:r.left,right:r.right,viewport:innerWidth,overflowX:getComputedStyle(el).overflowX,clientWidth:el.clientWidth,scrollWidth:el.scrollWidth};
+  });
+  verify(geometry.left>=-1&&geometry.right<=geometry.viewport+1,`${name}: map scrolling container fits viewport`);
+  verify(['auto','scroll'].includes(geometry.overflowX),`${name}: map provides horizontal scrolling`);
+  if(geometry.scrollWidth>geometry.clientWidth+1){
+   verify(await scroller.evaluate(el=>{const old=el.scrollLeft;el.scrollLeft=el.scrollWidth;const moved=el.scrollLeft>0;el.scrollLeft=old;return moved;}),`${name}: map horizontal scrolling works`);
+  }
+  const nodes=[];
+  for(const node of await scroller.locator('button:visible').all()){
+   await node.evaluate(el=>el.scrollIntoView({block:'center',inline:'center',behavior:'instant'}));
+   const measurement=await node.evaluate(async el=>{
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const r=el.getBoundingClientRect(),clip=el.closest('.wm-map-scroll').getBoundingClientRect();
+    const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+    return {text:el.textContent.slice(0,80),insideClip:r.left>=clip.left-1&&r.right<=clip.right+1,
+     insideViewport:r.left>=-1&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight,uncovered:hit===el||el.contains(hit)};
+   });
+   nodes.push(measurement);
+   verify(measurement.insideClip&&measurement.insideViewport&&measurement.uncovered,`${name}: map node is reachable ${JSON.stringify(measurement)}`);
+  }
+  entry.mapScrollers.push({geometry,nodes});
+ }
  const control=page.locator('.screen.active button:visible:not([disabled])').first();
  if(await control.count()){
   // 'IfNeeded' accepts a control hidden under a sticky header as in-view.
@@ -94,27 +121,28 @@ async function capture(page,name,{validate=true}={}){
  }
  manifest.cases.push(entry);write();
  if(validate){
-  if(entry.firstControl)assert(entry.firstControl.uncovered,`${name}: first enabled control is covered`);
-  assert(!entry.layout.horizontalOverflow,`${name}: document horizontal overflow`);
-  assert.equal(entry.layout.overflow.length,0,`${name}: controls/headings overflow ${JSON.stringify(entry.layout.overflow)}`);
-  assert(entry.layout.family&&entry.layout.family===entry.layout.bodyFamily,`${name}: active family matches body`);
+  if(entry.firstControl)verify(entry.firstControl.uncovered,`${name}: first enabled control is covered`);
+  verify(!entry.layout.horizontalOverflow,`${name}: document horizontal overflow`);
+  verify(entry.layout.overflow.length===0,`${name}: controls/headings overflow ${JSON.stringify(entry.layout.overflow)}`);
+  verify(entry.layout.family&&entry.layout.family===entry.layout.bodyFamily,`${name}: active family matches body`);
  }
 }
-async function styles(page,selector){
- return page.locator(selector).evaluateAll(nodes=>nodes.flatMap(root=>[root,...root.querySelectorAll('*')]).map(el=>{
+async function styles(page,selector,{rootOnly=false}={}){
+ return page.locator(selector).evaluateAll((nodes,rootOnly)=>nodes.flatMap(root=>rootOnly?[root]:[root,...root.querySelectorAll('*')]).map(el=>{
   const s=getComputedStyle(el);const keys=['color','backgroundColor','backgroundImage','borderColor','borderRadius','boxShadow','fontFamily','fontSize','fontWeight','lineHeight','display','position','padding','margin','width','height','filter','opacity'];
   return {tag:el.tagName,id:el.id,css:Object.fromEntries(keys.map(key=>[key,s[key]]))};
- }));
+ }),rootOnly);
 }
-async function preservation(page,selector,label){
+async function preservation(page,selector,label,{rootOnly=false}={}){
  const name=`${page.viewportSize().width}x${page.viewportSize().height}-${label.replaceAll(' ','-')}`;
- await theme(page,false);const before=await styles(page,selector);
+ await theme(page,false);const before=await styles(page,selector,{rootOnly});
  await page.screenshot({path:`${out}/${name}-disabled.png`,fullPage:true,animations:'disabled'});
- await theme(page,true);const after=await styles(page,selector);
+ await theme(page,true);const after=await styles(page,selector,{rootOnly});
  await page.screenshot({path:`${out}/${name}-enabled.png`,fullPage:true,animations:'disabled'});
- assert(before.length,`${label} preservation has actual nodes`);
- assert.deepEqual(after,before,`${label} must not change when theme is enabled`);
- manifest.preservation.push({label,selector,nodes:before.length,result:'PASS',before:`${name}-disabled.png`,after:`${name}-enabled.png`});write();
+ const isolated=JSON.stringify(after)===JSON.stringify(before);
+ verify(before.length>0,`${label} preservation has actual nodes`);
+ verify(isolated,`${name}: computed styles changed when theme enabled`);
+ manifest.preservation.push({label,selector,rootOnly,nodes:before.length,result:isolated?'PASS':'FAIL',...(!isolated?{stylesBefore:before,stylesAfter:after}:{}),before:`${name}-disabled.png`,after:`${name}-enabled.png`});write();
 }
 try{
  server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4177'],{stdio:['ignore','pipe','inherit']});
@@ -153,9 +181,19 @@ try{
     if(id==='characterDex')showCharacterDexDetail('elna_beginner');
     if(id==='mapDex')showMapDexDetail('grassland');
     if(id==='itemDex')showItemDexDetail(ITEM_DEX_ITEMS[0].id);
-    if(id==='skillDex')showSkillDexDetail(EQUIPPABLE_MOVE_CARDS[0].id,false);
+    if(id==='skillDex')showSkillDexDetail(EQUIPPABLE_MOVE_CARDS[0].id);
    },id);
    assert((await page.locator(`#${detail}`).textContent()).trim(),`${detail} rendered`);
+   // Check the renderer's own scroll destination before capture resets scroll.
+   await page.waitForTimeout(350);
+   const target=await page.locator(`#${detail}`).evaluate(el=>{
+    const r=el.getBoundingClientRect(),heading=el.querySelector('h1,h2,h3,.skill-card-title');
+    const header=document.querySelector('.app-topbar')?.getBoundingClientRect();
+    return {top:r.top,headingTop:heading?.getBoundingClientRect().top,headerBottom:header?.bottom||0,viewportHeight:innerHeight};
+   });
+   manifest.detailTargets.push({width,height,detail,...target});write();
+   verify(target.top>=target.headerBottom-1&&target.top<target.viewportHeight,`${detail}: scroll anchor visible below sticky header ${JSON.stringify(target)}`);
+   if(target.headingTop!==undefined)verify(target.headingTop>=target.headerBottom-1,`${detail}: heading is not hidden by sticky header`);
    await capture(page,`${width}x${height}-${detail}`);
   }
   assert.equal(await page.evaluate(()=>{show('home');return document.querySelector('#homeAdventureKicker').textContent;}),'序章クリア');
@@ -178,6 +216,11 @@ try{
   assert(await page.locator('#battle').isVisible());
   assert.equal(await page.locator('body').getAttribute('data-nonbattle-theme'),null,'battle disables body theme');
   await preservation(page,'#battle','battle');
+  // Exclude hidden nonbattle descendants of body, but include global chrome
+  // subtrees to detect inherited or overly broad palette/layout regressions.
+  await preservation(page,'body','battle body',{rootOnly:true});
+  await preservation(page,'.app-topbar','battle topbar');
+  await preservation(page,'.app-bottom-nav','battle bottom navigation');
   await page.screenshot({path:`${out}/${width}x${height}-battle-preserved.png`,fullPage:true});
   await route(page,'battleItemSelect');await preservation(page,'#battleItemSelect','battle item picker');
   await route(page,'contractConfirm');await preservation(page,'#contractConfirm','contract confirmation');
@@ -193,6 +236,7 @@ try{
   assert.equal(errors.length,0,errors.join('\n'));
   await baselineContext.close();await context.close();
  }
+ assert.equal(manifest.failures.length,0,`Layout/isolation failures (${manifest.failures.length}):\n${manifest.failures.join('\n')}`);
  manifest.status='PASS';write();console.log(`PASS ${manifest.cases.length} nonbattle screenshot pairs; ${manifest.preservation.length} isolation comparisons`);
 }catch(error){
  manifest.status='FAIL';manifest.error=error.stack||String(error);

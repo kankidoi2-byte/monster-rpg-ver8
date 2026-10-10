@@ -1,6 +1,6 @@
 /* Presentation only. No save, progression, combat or economy writes. */
 const NONBATTLE_THEME_PRESETS = Object.freeze({
-  home: Object.freeze({white:70, black:30, shape:'polygon(0 0, 60% 0, 0 100%)'}),
+  home: Object.freeze({white:70, black:30, shape:'polygon(0 0, 42% 0, 18% 100%, 0 100%)'}),
   party: Object.freeze({white:85, black:15, shape:'polygon(70% 0, 100% 0, 100% 100%)'}),
   growth: Object.freeze({white:85, black:15, shape:'polygon(100% 0, 100% 100%, 70% 100%)'}),
   dex: Object.freeze({white:90, black:10, shape:'polygon(0 0, 100% 0, 100% 20%)'}),
