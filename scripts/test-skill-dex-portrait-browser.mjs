@@ -2,13 +2,17 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {spawn} from 'node:child_process';
 
 const out='artifacts/skill-card-layout/skill-dex-portrait';
 fs.mkdirSync(out,{recursive:true});
-const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4197'],{stdio:['ignore','pipe','inherit']});
+// Live verification only: an absent or unexpected target is a hard failure, never localhost fallback.
+const target=process.env.GAME_TEST_URL;
+assert(target,'GAME_TEST_URL is required for published-game verification');
+const publicUrl=new URL(target);
+assert.equal(publicUrl.href,'https://pactforge-studio.github.io/monster-rpg-ver8/','only the approved public runtime is allowed');
+const entryUrl=new URL('?legacy=1',publicUrl).href;
 let browser;
-const report={scope:'All 110 production skills; isolated synthetic save; no player data',zoomCaveat:'Root font enlargement and CSS zoom are automated simulations, not native browser zoom or Galaxy hardware testing.',viewports:[]};
+const report={target:publicUrl.href,networkPolicy:'Fresh nonpersistent contexts; only GET requests to the approved public runtime path; all external analytics and non-GET requests aborted; service workers blocked',scope:'All 110 production skills; isolated synthetic save; no player data',zoomCaveat:'Root font enlargement and CSS zoom are automated simulations, not native browser zoom or Galaxy hardware testing.',viewports:[]};
 const compact=s=>s.replace(/\s+/g,'').trim();
 const settle=page=>page.evaluate(async()=>{await document.fonts.ready;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});
 
@@ -105,12 +109,17 @@ async function screenshotExamples(page,label){
  await page.evaluate(()=>resetSkillDexFilters());
 }
 try{
- await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
  browser=await chromium.launch({headless:true});
  for(const [width,height] of [[320,568],[360,800],[390,844],[430,932],[844,390],[1280,900]]){
-  const page=await browser.newPage({viewport:{width,height}}),errors=[];
+  const context=await browser.newContext({viewport:{width,height},serviceWorkers:'block'});
+  await context.route('**/*',route=>{
+   const request=route.request(),url=new URL(request.url());
+   const permitted=request.method()==='GET'&&url.origin===publicUrl.origin&&url.pathname.startsWith(publicUrl.pathname);
+   return permitted?route.continue():route.abort('blockedbyclient');
+  });
+  const page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
-  await page.goto('http://127.0.0.1:4197/?legacy=1',{waitUntil:'networkidle'});
+  await page.goto(entryUrl,{waitUntil:'networkidle'});
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);show('home');saveGame();show('skillDex');});
   await page.addStyleTag({content:'html, body, * { scroll-behavior: auto !important; }'});
@@ -163,7 +172,7 @@ try{
   }
   assert.deepEqual(await page.evaluate(()=>({save:JSON.stringify(save),storage:JSON.stringify({...localStorage}),data:JSON.stringify(EQUIPPABLE_MOVE_CARDS)})),before,'dex browsing never changes save/storage/skill data');
   assert.deepEqual(errors,[],`${width}: browser errors`);report.viewports.push(entry);
-  fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2));await page.close();
+  fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2));await context.close();
  }
  console.log('PASS portrait skill dex: all 110 skills × 6 viewports; phone 2 columns; full text, contrast, row/CTA alignment; all filters; keyboard/detail; fixed chrome; read-only save; simulated text/zoom enlargement.');
-}finally{await browser?.close();server.kill();}
+}finally{await browser?.close();}
