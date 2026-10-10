@@ -1,11 +1,12 @@
 // Isolated CI browser only. Never connect to a player's browser or saved profile.
 // Before images use runtime from ae5e064; isolation checks also disable only the new CSS.
 import {chromium} from 'playwright';
+import {runMonochromeFlows} from './test-monochrome-flows.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn,execFileSync} from 'node:child_process';
 const out='artifacts/nonbattle-theme';fs.mkdirSync(out,{recursive:true});
-const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[]};
+const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[],flows:[]};
 const origin='http://127.0.0.1:4177';
 let browser,server;
 const baselines=new WeakMap();
@@ -212,6 +213,7 @@ try{
   await viewport(page,{width:Math.max(160,Math.floor(width/2)),height:Math.floor(height/2)});
   await route(page,'home');await capture(page,`${width}x${height}-zoom-reflow-home`);
   await viewport(page,{width,height});
+  if(width===390)await runMonochromeFlows(page,out,result=>{manifest.flows.push(result);write();});
   await both(page,()=>{startBattleFromParty();startChosenBattle('grassland','slime','easy');});
   assert(await page.locator('#battle').isVisible());
   assert.equal(await page.locator('body').getAttribute('data-nonbattle-theme'),null,'battle disables body theme');
