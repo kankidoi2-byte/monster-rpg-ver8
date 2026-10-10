@@ -23,8 +23,8 @@ async function measure(page){
    const style=getComputedStyle(el),a=style.getPropertyValue('--dex-fill-a').trim(),b=style.getPropertyValue('--dex-fill-b').trim()||a;
    const parts=selectors.map(selector=>{const node=el.querySelector(selector);if(!node)return {selector,missing:true};const cs=getComputedStyle(node);return {selector,text:node.textContent,rect:rect(node),dimensions:{scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,scrollHeight:node.scrollHeight,clientHeight:node.clientHeight},flexShrink:cs.flexShrink,overflow:node.scrollWidth>node.clientWidth+2||node.scrollHeight>node.clientHeight+2,ellipsis:cs.textOverflow==='ellipsis'||!['none','0',''].includes(cs.webkitLineClamp),hidden:cs.display==='none'||cs.visibility==='hidden',contrast:selector==='.skill-cost-badge'?contrast(cs.color,cs.backgroundColor):(a?Math.min(contrast(cs.color,a),contrast(cs.color,b)):null)};});
    const sk=SKILL_BY_ID[el.dataset.skillDexId];
-   // CSSOM may serialize double-position stops either compactly or as four stops.
-   const stops=[...style.backgroundImage.matchAll(/(rgba?\([^)]*\))\s+([\d.]+)%(?:\s+([\d.]+)%)?/g)].flatMap(match=>[match[2],match[3]].filter(x=>x!==undefined).map(at=>({color:rgb(match[1]),at:Number(at)})));
+   // CSSOM may expand double-position stops and normalize the zero endpoint to 0px. Only zero px is equivalent to a percentage endpoint.
+   const stops=[...style.backgroundImage.matchAll(/(rgba?\([^)]*\))\s+([\d.]+)(%|px)(?:\s+([\d.]+)(%|px))?/g)].flatMap(match=>[[match[2],match[3]],[match[4],match[5]]].filter(([at])=>at!==undefined).map(([at,unit])=>({color:rgb(match[1]),at:unit==='%'||Number(at)===0?Number(at):`${at}${unit}`})));
    const edge=style.getPropertyValue('--dex-edge').trim();
    return {id:sk.id,name:sk.name,types:skillTypes(sk),cost:sk.cost,power:sk.power,description:sk.customDesc||sk.description||'',dimensions:{scrollWidth:el.scrollWidth,clientWidth:el.clientWidth,scrollHeight:el.scrollHeight,clientHeight:el.clientHeight},tier:skillDexTier(sk.cost),typeLabel:skillTypeLabel(skillTypes(sk)),rect:rect(el),parts,background:style.backgroundImage,fillA:a,fillB:b,fillARGB:rgb(a),fillBRGB:rgb(b),gradientStops:stops,edgeRGB:rgb(edge),borderRGB:rgb(style.borderTopColor),border:style.borderColor,text:el.textContent,overflow:el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2};
   })};
@@ -71,6 +71,8 @@ function verifyLayout(metrics,label,{phone=false,expectedCount=110}={}){
  return {count:metrics.cards.length,columns:rows[0]?.length,minWidth:Math.min(...metrics.cards.map(c=>c.rect.width)),maxHeight:Math.max(...metrics.cards.map(c=>c.rect.height)),minimumTextContrast:Math.min(...metrics.cards.flatMap(c=>c.parts.map(p=>p.contrast))),dualAttributeCards:metrics.cards.filter(c=>c.types.length>1).length};
 }
 async function checkedMetrics(page,label,file,options={}){
+ // Card hover intentionally uses a white border; assess normal palette outside hover.
+ await page.mouse.move(0,0);await settle(page);
  const metrics=await measure(page);
  // Persist diagnostics before assertions, including on the first failing card.
  fs.writeFileSync(`${out}/${file}-all-cards.json`,JSON.stringify(metrics,null,2));
@@ -142,7 +144,7 @@ try{
   await page.evaluate(()=>{skillDexSelectedId=null;document.getElementById('skillDexDetail').innerHTML='';resetSkillDexFilters();});
   // Every card, including the last, can reach a point not blocked by the fixed chrome.
   for(const card of await page.locator('[data-skill-dex-id]').all()){
-   await card.locator('.skill-dex-cta').scrollIntoViewIfNeeded();
+   await card.locator('.skill-dex-cta').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));await settle(page);
    assert(await card.locator('.skill-dex-cta').evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);return !!hit&&(el.contains(hit)||el.closest('button').contains(hit));}),'CTA not occluded by fixed chrome');
   }
   if(width<=430){

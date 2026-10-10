@@ -3,12 +3,12 @@
 .skill-dex-filters label:first-child{grid-column:1/-1}
 .skill-dex-filters input,.skill-dex-filters select{width:100%;min-width:0;box-sizing:border-box;min-height:44px;font-size:16px;background:#171e30;color:#fff;border:1px solid #64708e;border-radius:8px;padding:9px}
 /* List cards only. Detail, equipment and battle card styles are unchanged.
- * A preferred 2:3 shape grows with content; no fixed height or text clipping.
+ * Portrait proportions are a guide: content controls height without a forced aspect ratio.
  * rem-based minimum columns allow larger user text to reflow to one column. */
 #skillDex.nonbattle-screen #skillDexList{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.25rem),1fr));gap:12px;align-items:stretch}
 #skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card{
   display:flex;flex-direction:column;align-items:flex-start;gap:.6rem;
-  width:100%;min-width:0;min-height:max-content;height:auto;aspect-ratio:2/3;box-sizing:border-box;
+  width:100%;min-width:0;min-height:20rem;height:auto;aspect-ratio:auto;box-sizing:border-box;
   margin:0;padding:.85rem .7rem;text-align:left;cursor:pointer;
   background:linear-gradient(135deg,var(--dex-fill-a) 0 50%,var(--dex-fill-b) 50% 100%)!important;
   border:2px solid var(--dex-edge)!important;border-radius:12px;
