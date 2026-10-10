@@ -18,7 +18,10 @@ function skillCardHeader(sk){return `<div class="skill-card-head"><h3 class="ski
 function skillCardStats(sk){return `<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / ${sk.power === 0 ? '補助技' : `威力 ${sk.power}`}</p>`;}
 function skillCardEffect(mv){
   const text=moveEffectText(mv,{includeBase:false});
-  return text ? `<p class="small skill-effect-text">${text}</p>` : '';
+  const short=text ? `<p class="small skill-effect-text">${text}</p>` : '';
+  const card=String(mv?.[8]||'').startsWith('s110_')?SKILL_BY_ID[mv[8]]:null;
+  if(!card?.detailedDesc)return short;
+  return `${short}<details class="skill-numeric-detail" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()"><summary style="min-height:44px;cursor:pointer">数値・詳しい効果</summary><p class="small skill-numeric-text">${card.detailedDesc}</p></details>`;
 }
 
 /* ===== 属性相性 ===== */

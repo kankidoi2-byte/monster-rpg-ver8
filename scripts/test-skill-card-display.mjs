@@ -61,3 +61,14 @@ for(const file of ['skills','dex','skill-gacha','tutorial']){
  assert(!/moveEffectText\(/.test(source),'all card callers use effects-only helper: '+file);
 }
 console.log(`PASS skill-card display: ${checks} cards, default compatibility, all unit dexes, equipment inventory preservation and caller coverage`);
+
+for(const sk of r.run('SKILL110_CATALOG')){
+ const arg=JSON.stringify(sk.id),html=r.run(`skillCardEffect(skillToMove(${arg}))`);
+ assert(html.includes(`<p class="small skill-effect-text">${sk.customDesc}</p>`),sk.id+' concise explanation');
+ if(sk.detailedDesc){
+  assert(html.includes('<details class="skill-numeric-detail"'));
+  assert(!/<details[^>]*\sopen(?:\s|>)/.test(html),'numeric detail is initially collapsed');
+  assert(html.includes(`<p class="small skill-numeric-text">${sk.detailedDesc}</p>`));
+ }
+}
+console.log('PASS adopted110 card summaries and collapsed numeric detail disclosures');

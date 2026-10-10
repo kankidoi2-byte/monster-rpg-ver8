@@ -40,6 +40,7 @@ try{
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'synthesis horizontal overflow');
   await page.evaluate(()=>{for(const recipe of SKILL110_SYNTHESIS_RECIPES)for(const id of recipe.materials)save.skillCards[id]=2;renderSkillSynthesis();});
   assert.equal(await page.locator('[data-synthesis-id]:disabled').count(),0);
+  await page.screenshot({path:`${out}/synthesis-${width}.png`,fullPage:true});
   // Dismissed confirmation preserves inventory; accepted confirmation crafts exactly one.
   const beforeCancel=await page.evaluate(()=>JSON.stringify(save.skillCards));
   await page.locator('[data-synthesis-id]').first().click();
