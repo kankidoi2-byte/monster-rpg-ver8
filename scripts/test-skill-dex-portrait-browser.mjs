@@ -19,7 +19,8 @@ async function measure(page){
   const lum=c=>c.map(x=>{const s=x/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;}).reduce((a,x,i)=>a+x*[.2126,.7152,.0722][i],0);
   const contrast=(a,b)=>{const x=lum(rgb(a)),y=lum(rgb(b));return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
   const selectors=['.skill-card-title','.skill-cost-badge','.skill-type-line','.skill-dex-performance','.skill-dex-description','.skill-dex-cta'];
-  return {overflow:document.documentElement.scrollWidth>innerWidth+1,cards:[...document.querySelectorAll('#skillDexList .skill-dex-card')].map(el=>{
+  const count=document.getElementById('skillDexCount'),countStyle=getComputedStyle(count);
+  return {count:{text:count.textContent,opacity:countStyle.opacity,display:countStyle.display,visibility:countStyle.visibility,contrast:contrast(countStyle.color,countStyle.backgroundColor),background:countStyle.backgroundColor,withinViewport:count.getBoundingClientRect().left>=0&&count.getBoundingClientRect().right<=innerWidth+1,rect:rect(count),overflow:count.scrollWidth>count.clientWidth+1},overflow:document.documentElement.scrollWidth>innerWidth+1,cards:[...document.querySelectorAll('#skillDexList .skill-dex-card')].map(el=>{
    const style=getComputedStyle(el),a=style.getPropertyValue('--dex-fill-a').trim(),b=style.getPropertyValue('--dex-fill-b').trim()||a;
    const parts=selectors.map(selector=>{const node=el.querySelector(selector);if(!node)return {selector,missing:true};const cs=getComputedStyle(node);return {selector,text:node.textContent,rect:rect(node),dimensions:{scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,scrollHeight:node.scrollHeight,clientHeight:node.clientHeight},flexShrink:cs.flexShrink,overflow:node.scrollWidth>node.clientWidth+2||node.scrollHeight>node.clientHeight+2,ellipsis:cs.textOverflow==='ellipsis'||!['none','0',''].includes(cs.webkitLineClamp),hidden:cs.display==='none'||cs.visibility==='hidden',contrast:selector==='.skill-cost-badge'?contrast(cs.color,cs.backgroundColor):(a?Math.min(contrast(cs.color,a),contrast(cs.color,b)):null)};});
    const sk=SKILL_BY_ID[el.dataset.skillDexId];
@@ -32,6 +33,12 @@ async function measure(page){
 }
 function verifyLayout(metrics,label,{phone=false,expectedCount=110}={}){
  assert.equal(metrics.overflow,false,`${label}: document horizontal overflow`);
+ assert.equal(metrics.count.opacity,'1',`${label}: count surface must remain opaque`);
+ assert(metrics.count.display!=='none'&&metrics.count.visibility==='visible',`${label}: count must remain visible`);
+ assert(metrics.count.contrast>=4.5,`${label}: count readable on its opaque surface`);
+ assert.equal(metrics.count.background,'rgb(255, 255, 255)',`${label}: count must have an opaque backing across white/black boundary`);
+ assert(!metrics.count.overflow,`${label}: count text clipping`);
+ assert(metrics.count.withinViewport,`${label}: count outside viewport`);
  assert.equal(metrics.cards.length,expectedCount,`${label}: all skills present`);
  const rows=[];
  for(const card of metrics.cards){

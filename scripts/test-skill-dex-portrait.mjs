@@ -21,3 +21,5 @@ assert.equal(r.run('JSON.stringify({save,skills:EQUIPPABLE_MOVE_CARDS})'),before
 const css=fs.readFileSync('css/skill-dex.css','utf8');assert(css.includes('#skillDexList .skill-dex-card'));
 assert(!/line-clamp|text-overflow:\s*ellipsis/.test(css));
 console.log('PASS portrait cards: all 110 records retained, semantic order, all attributes and full copy, no data/save mutation');
+
+assert.match(css,/#skillDex\.nonbattle-screen #skillDexCount\{[^}]*background:#fff;[^}]*color:#17263f;/,'count needs an opaque high-contrast surface independent of diagonal background');

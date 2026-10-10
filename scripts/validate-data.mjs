@@ -276,7 +276,8 @@ if (data) {
   notes.push(`${itemRecords.length} items`);
   notes.push(`${data.FUSIONS.length} fusions`);
   notes.push(`${data.ALCHEMY_RECIPES.length} alchemy recipes`);
-  notes.push(`${skillDefinitions.size} fixed skills`);
+  notes.push(`${data.SKILL110_CATALOG.length} active skills (normal encyclopedia/equipment catalog)`);
+  notes.push(`${skillDefinitions.size} legacy fixed skill definitions referenced by entity move records (compatibility only)`);
 }
 
 if (errors.length) {
