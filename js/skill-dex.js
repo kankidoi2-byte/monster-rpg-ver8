@@ -6,6 +6,7 @@ function skillDexEffectKeys(sk){
   const keys=new Set();
   if(sk.effect)keys.add(sk.effect);
   Object.keys(sk.tactical||{}).forEach(key=>{if(sk.tactical[key])keys.add(key);});
+  if(sk.tactical?.bonus?.condition)keys.add('conditional_power');
   if(keys.has('drain')||keys.has('heal'))keys.add('recovery');
   if(keys.has('recoil')||keys.has('alchemy_recoil'))keys.add('recoil');
   if(['poison','paralysis','confusion','sleep','blind'].some(key=>keys.has(key)))keys.add('status');

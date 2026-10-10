@@ -32,3 +32,23 @@ const alias=r.run('MOVE_CARDS.find(s=>s.deprecated).id');r.run(`showSkillDexDeta
 r.run('renderSkillDex()');assert(r.elements.get('skillDexList').innerHTML.includes('data-skill-dex-id'));
 assert.deepEqual(plain('save'),before,'encyclopedia must not mutate player save');
 console.log(`PASS skill dex: ${entries.length} canonical skills, all types, eligibility, descriptions and save isolation`);
+
+const conditional=plain("skillDexQueryEntries({effect:'conditional_power'})");
+const conditionalExpected=entries.filter(sk=>sk.tactical?.bonus?.condition).map(sk=>sk.id).sort();
+assert.equal(conditionalExpected.length,16,'current conditional-power move coverage');
+assert.deepEqual(conditional.map(sk=>sk.id).sort(),conditionalExpected,'every conditional bonus is discoverable');
+assert(!conditional.some(sk=>!sk.tactical?.bonus),'exclude plain attacks, charge and unconditional buffs');
+const fireConditional=plain("skillDexQueryEntries({effect:'conditional_power',type:'fire',sort:'power'})");
+assert(fireConditional.length>0);assert(fireConditional.every(sk=>sk.types.includes('fire')));
+assert(fireConditional.every((sk,i)=>!i||fireConditional[i-1].power>=sk.power));
+const index=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert.match(index,/<select id="skillDexEffect"[^>]*>[\s\S]*?<option value="conditional_power">条件付き威力アップ<\/option>[\s\S]*?<\/select>/);
+r.context.document.getElementById('skillDexEffect').value='conditional_power';
+r.run('renderSkillDex()');
+assert.equal(r.elements.get('skillDexCount').textContent,`16 / ${entries.length} 技`);
+assert.equal((r.elements.get('skillDexList').innerHTML.match(/data-skill-dex-id=/g)||[]).length,16);
+r.run('resetSkillDexFilters()');
+assert.equal(r.elements.get('skillDexEffect').value,'');
+assert.equal(r.elements.get('skillDexCount').textContent,`${entries.length} / ${entries.length} 技`);
+assert.deepEqual(plain('save'),before,'conditional filtering and reset preserve save');
+console.log('PASS conditional-power filter: all 16 moves, combined filters, rendering and reset');
