@@ -31,12 +31,31 @@ function skillDexEligibleUnits(sk){return M.filter(m=>isSkillAllowedForMonster(s
 function skillDexUnitLinks(units){
   return units.length?units.map(m=>`<button class="skill-dex-unit" onclick="openUnitFromSkillDex('${m.id}')">${m.name}<small>${m.rarity} · ${m.chapter||'序章'}</small></button>`).join(''):'<p class="small">該当するキャラはいません。</p>';
 }
+// Presentation-only colors: same element hues as the existing skill-card palette.
+// Kept out of the skill data so performance, eligibility and acquisition stay unchanged.
+const SKILL_DEX_CARD_PALETTE=Object.freeze({
+  fire:['#4b1715','#ff7043'],water:['#102b49','#42a5f5'],grass:['#12351a','#66bb6a'],
+  thunder:['#453b0c','#ffee58'],wind:['#0b3c3f','#80deea'],light:['#3b300d','#ffd740'],
+  dark:['#30153a','#ce93d8'],star:['#103830','#64ffda'],dragon:['#451529','#f48fb1'],
+  normal:['#252b36','#cdd3e0']
+});
+function skillDexCardMarkup(sk){
+  const types=skillTypes(sk),colors=types.map(type=>SKILL_DEX_CARD_PALETTE[type]||SKILL_DEX_CARD_PALETTE.normal);
+  return `<button class="move-box skill-dex-card ${skillCardClass(types)}" style="--dex-fill-a:${colors[0][0]};--dex-fill-b:${(colors[1]||colors[0])[0]};--dex-edge:${colors[0][1]}" data-skill-dex-id="${sk.id}" onclick="showSkillDexDetail('${sk.id}')">
+    <span class="skill-card-title">${sk.name}</span>
+    <span class="skill-cost-badge">COST ${sk.cost}</span>
+    <span class="skill-type-line">${skillTypeLabel(types)}</span>
+    <span class="skill-dex-performance">${sk.power===0?'補助技':`威力 <strong>${sk.power}</strong>`}</span>
+    <span class="skill-dex-description">${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||''}</span>
+    <span class="skill-dex-cta">詳細を見る ›</span>
+  </button>`;
+}
 function renderSkillDex(){
   const list=document.getElementById('skillDexList');if(!list)return;
   const get=id=>document.getElementById(id)?.value||'';
   const entries=skillDexQueryEntries({query:get('skillDexSearch'),type:get('skillDexType'),cost:get('skillDexCost'),kind:get('skillDexKind'),effect:get('skillDexEffect'),tier:get('skillDexTier'),sort:get('skillDexSort')});
   document.getElementById('skillDexCount').textContent=`${entries.length} / ${skillDexEntries().length} 技`;
-  list.innerHTML=entries.length?entries.map(sk=>`<button class="move-box skill-dex-card ${skillCardClass(skillTypes(sk))}" data-skill-dex-id="${sk.id}" onclick="showSkillDexDetail('${sk.id}')">${skillCardHeader(sk)}${skillCardStats(sk)}<p>${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||''}</p><small>詳細を見る ›</small></button>`).join(''):'<p class="panel">条件に合う技はありません。検索条件を変更してください。</p>';
+  list.innerHTML=entries.length?entries.map(skillDexCardMarkup).join(''):'<p class="panel">条件に合う技はありません。検索条件を変更してください。</p>';
   if(skillDexSelectedId)showSkillDexDetail(skillDexSelectedId,false);
 }
 function showSkillDexDetail(id,focus=true){
