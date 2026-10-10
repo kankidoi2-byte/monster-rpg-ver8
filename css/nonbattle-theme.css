@@ -78,17 +78,17 @@ body[data-nonbattle-theme]:not(.title-mode)>.app-topbar :is(.contractor-rank spa
 .nonbattle-screen :is(.ui-danger-button,.danger):not(#skillGachaPresentation, #skillGachaPresentation *){background:#fff0ef!important;color:#a32222!important;border-color:#c35b54!important;}
 /* Home retains artwork -> story/expedition -> three-member party hierarchy.
  * Flow layout also makes landscape and enlarged text scroll safely. */
-#home.nonbattle-screen.active:not(#skillGachaPresentation, #skillGachaPresentation *){
+#home.nonbattle-screen.active{
   height:auto;min-height:calc(100dvh - 58px);max-width:780px;
   grid-template-rows:auto minmax(240px,1fr) auto auto;
   padding:8px 12px calc(var(--ui-nav-height,78px) + env(safe-area-inset-bottom,0px) + 18px);gap:10px;
 }
-#home.nonbattle-screen.active .home-welcome:not(#skillGachaPresentation, #skillGachaPresentation *){position:static;width:100%;display:flex;align-items:center;gap:8px;pointer-events:auto;}
-#home.nonbattle-screen.active .home-welcome h1:not(#skillGachaPresentation, #skillGachaPresentation *){display:block;background:#fff;padding:6px 9px;border:1px solid #aa8b46;border-radius:6px;font-size:14px;}
-#home.nonbattle-screen.active .home-notice-button:not(#skillGachaPresentation, #skillGachaPresentation *){min-height:44px;background:#fff;}
-#home.nonbattle-screen.active .home-favorite-stage:not(#skillGachaPresentation, #skillGachaPresentation *){grid-row:2;min-height:300px;height:clamp(300px,49dvh,540px);}
-#home.nonbattle-screen.active .home-favorite-art:not(#skillGachaPresentation, #skillGachaPresentation *){inset:0 0 54px;}
-#home.nonbattle-screen.active .home-portrait-frame:not(#skillGachaPresentation, #skillGachaPresentation *){
+#home.nonbattle-screen.active .home-welcome{position:static;width:100%;display:flex;align-items:center;gap:8px;pointer-events:auto;}
+#home.nonbattle-screen.active .home-welcome h1{display:block;background:#fff;padding:6px 9px;border:1px solid #aa8b46;border-radius:6px;font-size:14px;}
+#home.nonbattle-screen.active .home-notice-button{min-height:44px;background:#fff;}
+#home.nonbattle-screen.active .home-favorite-stage{grid-row:2;min-height:300px;height:clamp(300px,49dvh,540px);}
+#home.nonbattle-screen.active .home-favorite-art{inset:0 0 54px;}
+#home.nonbattle-screen.active .home-portrait-frame{
   border:1px solid #aa8b46;border-image:none;background:#fff;box-shadow:none;
   width:min(calc(100cqw - 24px),calc((100cqh - 8px)*var(--portrait-ratio)));
   height:min(calc(100cqh - 8px),calc((100cqw - 24px)/var(--portrait-ratio)));
@@ -96,30 +96,30 @@ body[data-nonbattle-theme]:not(.title-mode)>.app-topbar :is(.contractor-rank spa
 #home.nonbattle-screen.active .home-portrait-frame::after,
 #home.nonbattle-screen.active .home-portrait-crest,
 #home.nonbattle-screen.active .home-favorite-caption::before,
-#home.nonbattle-screen.active .home-favorite-caption:not(#skillGachaPresentation, #skillGachaPresentation *)::after{display:none;}
-#home.nonbattle-screen.active .home-favorite-caption:not(#skillGachaPresentation, #skillGachaPresentation *){bottom:-48px;width:min(330px,85vw);min-height:40px;padding:6px 10px;background:#fff;border:1px solid #aa8b46;border-radius:5px;box-shadow:none;}
-#home.nonbattle-screen.active .home-favorite-caption :is(strong,small):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;text-shadow:none;}
-#home.nonbattle-screen.active .home-favorite-change:not(#skillGachaPresentation, #skillGachaPresentation *){top:0;right:0;min-height:44px;background:#fff;}
-#home.nonbattle-screen.active .home-story-row:not(#skillGachaPresentation, #skillGachaPresentation *){position:static;grid-row:3;width:100%;gap:8px;}
-#home.nonbattle-screen.active :is(.home-adventure,.home-expedition-card):not(#skillGachaPresentation, #skillGachaPresentation *){background:#fff;border:1px solid #aa8b46;box-shadow:none;}
-#home.nonbattle-screen.active :is(.home-adventure,.home-expedition-card button):not(#skillGachaPresentation, #skillGachaPresentation *){height:auto;min-height:64px;padding:9px;}
-#home.nonbattle-screen.active .home-adventure-shade:not(#skillGachaPresentation, #skillGachaPresentation *){display:none;}
-#home.nonbattle-screen.active .home-adventure-copy :is(strong,small):not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;background:none;text-shadow:none;}
-#home.nonbattle-screen.active .home-block:not(#skillGachaPresentation, #skillGachaPresentation *){grid-row:4;}
-#home.nonbattle-screen.active .ui-section-heading:not(#skillGachaPresentation, #skillGachaPresentation *){padding:0;border:0;background:#fff;border-radius:5px;}
-#home.nonbattle-screen.active .home-party-member:not(#skillGachaPresentation, #skillGachaPresentation *){background:#fff;}
-#home.nonbattle-screen.active .home-party-member strong:not(#skillGachaPresentation, #skillGachaPresentation *){white-space:normal;overflow-wrap:anywhere;}
-#home.nonbattle-screen.active .home-story-symbol:not(#skillGachaPresentation, #skillGachaPresentation *){color:#17263f;opacity:.18;}
+#home.nonbattle-screen.active .home-favorite-caption::after{display:none;}
+#home.nonbattle-screen.active .home-favorite-caption{bottom:-48px;width:min(330px,85vw);min-height:40px;padding:6px 10px;background:#fff;border:1px solid #aa8b46;border-radius:5px;box-shadow:none;}
+#home.nonbattle-screen.active .home-favorite-caption :is(strong,small){color:#17263f;text-shadow:none;}
+#home.nonbattle-screen.active .home-favorite-change{top:0;right:0;min-height:44px;background:#fff;}
+#home.nonbattle-screen.active .home-story-row{position:static;grid-row:3;width:100%;gap:8px;}
+#home.nonbattle-screen.active :is(.home-adventure,.home-expedition-card){background:#fff;border:1px solid #aa8b46;box-shadow:none;}
+#home.nonbattle-screen.active :is(.home-adventure,.home-expedition-card button){height:auto;min-height:64px;padding:9px;}
+#home.nonbattle-screen.active .home-adventure-shade{display:none;}
+#home.nonbattle-screen.active .home-adventure-copy :is(strong,small){color:#17263f;background:none;text-shadow:none;}
+#home.nonbattle-screen.active .home-block{grid-row:4;}
+#home.nonbattle-screen.active .ui-section-heading{padding:0;border:0;background:#fff;border-radius:5px;}
+#home.nonbattle-screen.active .home-party-member{background:#fff;}
+#home.nonbattle-screen.active .home-party-member strong{white-space:normal;overflow-wrap:anywhere;}
+#home.nonbattle-screen.active .home-story-symbol{color:#17263f;opacity:.18;}
 .nonbattle-screen :is(.grid,.ui-hub-grid,.ui-menu-list,.home-party-preview)>*:not(#skillGachaPresentation, #skillGachaPresentation *){min-width:0;}
 @media(max-width:360px){
   .nonbattle-screen:not(#skillGachaPresentation, #skillGachaPresentation *){padding-left:10px;padding-right:10px;}
   .nonbattle-screen .grid:not(#skillGachaPresentation, #skillGachaPresentation *){grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));}
   .nonbattle-screen .ui-menu-list button:not(#skillGachaPresentation, #skillGachaPresentation *){grid-template-columns:34px minmax(0,1fr) auto;gap:7px;}
   .nonbattle-screen .ui-menu-list button>span:not(#skillGachaPresentation, #skillGachaPresentation *){width:32px;height:32px;}
-  #home.nonbattle-screen.active .home-favorite-stage:not(#skillGachaPresentation, #skillGachaPresentation *){min-height:270px;height:38dvh;}
+  #home.nonbattle-screen.active .home-favorite-stage{min-height:270px;height:38dvh;}
 }
 @media(max-height:500px) and (orientation:landscape){
-  #home.nonbattle-screen.active .home-favorite-stage:not(#skillGachaPresentation, #skillGachaPresentation *){height:300px;}
+  #home.nonbattle-screen.active .home-favorite-stage{height:300px;}
 }
 @media(prefers-reduced-motion:reduce){.nonbattle-screen.ui-screen-enter:not(#skillGachaPresentation, #skillGachaPresentation *){animation:none;}}
 

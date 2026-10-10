@@ -160,7 +160,8 @@ async function zoomHomeReachability(page,width,height){
   // Center in the actual unobstructed band, not behind fixed navigation.
   for(let attempt=0;attempt<3;attempt++)await target.evaluate(async el=>{
    const top=document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0;
-   const bottom=document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||innerHeight;
+   const nav=document.querySelector('.app-bottom-nav');
+   const bottom=nav?Math.min(...[nav,...nav.querySelectorAll('button')].map(node=>node.getBoundingClientRect().top)):innerHeight;
    const r=el.getBoundingClientRect();
    window.scrollBy({top:(r.top+r.bottom)/2-(Math.max(0,top)+Math.min(innerHeight,bottom))/2,behavior:'instant'});
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -168,7 +169,8 @@ async function zoomHomeReachability(page,width,height){
   const measurement=await target.evaluate(el=>{
    const rect=r=>({left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height});
    const r=el.getBoundingClientRect(),top=Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0);
-   const bottom=Math.min(innerHeight,document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||innerHeight);
+   const nav=document.querySelector('.app-bottom-nav');
+   const bottom=Math.min(innerHeight,nav?Math.min(...[nav,...nav.querySelectorAll('button')].map(node=>node.getBoundingClientRect().top)):innerHeight);
    let clippedByAncestor=false;
    for(let ancestor=el.parentElement;ancestor&&ancestor!==document.body;ancestor=ancestor.parentElement){
     const a=ancestor.getBoundingClientRect(),style=getComputedStyle(ancestor);
