@@ -161,8 +161,8 @@ async function zoomHomeReachability(page,width,height){
   for(let attempt=0;attempt<3;attempt++)await target.evaluate(async el=>{
    const top=document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0;
    const nav=document.querySelector('.app-bottom-nav');
-   const bottom=nav?Math.min(...[nav,...nav.querySelectorAll('button')].map(node=>node.getBoundingClientRect().top)):innerHeight;
    const r=el.getBoundingClientRect();
+   const bottom=nav?Math.min(...[nav,...nav.querySelectorAll('button')].map(node=>node.getBoundingClientRect()).filter(a=>a.width>0&&a.left<r.right&&a.right>r.left).map(a=>a.top)):innerHeight;
    window.scrollBy({top:(r.top+r.bottom)/2-(Math.max(0,top)+Math.min(innerHeight,bottom))/2,behavior:'instant'});
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   });
@@ -170,7 +170,7 @@ async function zoomHomeReachability(page,width,height){
    const rect=r=>({left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height});
    const r=el.getBoundingClientRect(),top=Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0);
    const nav=document.querySelector('.app-bottom-nav');
-   const bottom=Math.min(innerHeight,nav?Math.min(...[nav,...nav.querySelectorAll('button')].map(node=>node.getBoundingClientRect().top)):innerHeight);
+   const bottom=Math.min(innerHeight,nav?Math.min(...[nav,...nav.querySelectorAll('button')].map(node=>node.getBoundingClientRect()).filter(a=>a.width>0&&a.left<r.right&&a.right>r.left).map(a=>a.top)):innerHeight);
    let clippedByAncestor=false;
    for(let ancestor=el.parentElement;ancestor&&ancestor!==document.body;ancestor=ancestor.parentElement){
     const a=ancestor.getBoundingClientRect(),style=getComputedStyle(ancestor);
@@ -179,6 +179,7 @@ async function zoomHomeReachability(page,width,height){
    }
    const visible={left:Math.max(0,r.left),right:Math.min(innerWidth,r.right),top:Math.max(top,r.top),bottom:Math.min(bottom,r.bottom)};
    const x=(visible.left+visible.right)/2,y=(visible.top+visible.bottom)/2,hit=document.elementFromPoint(x,y);
+   const controlSamples=el.tagName==='BUTTON'?[.2,.5,.8].flatMap(fx=>[.2,.5,.8].map(fy=>{const px=r.left+r.width*fx,py=r.top+r.height*fy,h=document.elementFromPoint(px,py);return {x:px,y:py,uncovered:h===el||el.contains(h)};})):[];
    const caption=el.tagName==='IMG'?el.closest('.home-portrait-frame')?.querySelector('.home-favorite-caption')?.getBoundingClientRect():null;
    const story=document.querySelector('#home .home-story-row')?.getBoundingClientRect();
    const samples=el.tagName==='IMG'?[.25,.5,.75].map(fraction=>{
@@ -187,7 +188,7 @@ async function zoomHomeReachability(page,width,height){
    }):[];
 
    return {rect:rect(r),caption:caption?rect(caption):null,story:story?rect(story):null,samples,captionOverlaps:!!caption&&Math.min(r.right,caption.right)-Math.max(r.left,caption.left)>1&&Math.min(r.bottom,caption.bottom)-Math.max(r.top,caption.top)>1,captionBeforeStory:!caption||!story||caption.bottom<=story.top+1,usable:{top,bottom},visible,scrollY,viewport:{width:innerWidth,height:innerHeight},
-    positive:r.width>0&&r.height>0,visibleArea:visible.right>visible.left&&visible.bottom>visible.top,
+    controlSamples,positive:r.width>0&&r.height>0,visibleArea:visible.right>visible.left&&visible.bottom>visible.top,
     centerReachable:(r.top+r.bottom)/2>=top&&(r.top+r.bottom)/2<=bottom,
     horizontalFit:r.left>=-1&&r.right<=innerWidth+1,clippedByAncestor,
     fullyVisible:r.top>=top-1&&r.bottom<=bottom+1,
@@ -197,7 +198,7 @@ async function zoomHomeReachability(page,width,height){
   const screenshot=`${width}x${height}-zoom200-${kind}-reachable.jpg`;
   await page.screenshot({path:`${out}/${screenshot}`,type:'jpeg',quality:75,fullPage:false,animations:'disabled'});
   manifest.zoomReachability.push({width,height,kind,selector,screenshot,...measurement});write();
-  verify(measurement.positive&&measurement.visibleArea&&measurement.centerReachable&&measurement.horizontalFit&&!measurement.clippedByAncestor&&measurement.imageLoaded&&measurement.uncovered&&!measurement.captionOverlaps&&measurement.captionBeforeStory&&measurement.samples.every(sample=>sample.uncovered)&&(kind!=='favorite-change'||measurement.fullyVisible),`${width}x${height} zoom home ${kind} reachability ${JSON.stringify(measurement)}`);
+  verify(measurement.positive&&measurement.visibleArea&&measurement.centerReachable&&measurement.horizontalFit&&!measurement.clippedByAncestor&&measurement.imageLoaded&&measurement.uncovered&&!measurement.captionOverlaps&&measurement.captionBeforeStory&&measurement.samples.every(sample=>sample.uncovered)&&(kind!=='favorite-change'||measurement.fullyVisible&&measurement.controlSamples.every(sample=>sample.uncovered)),`${width}x${height} zoom home ${kind} reachability ${JSON.stringify(measurement)}`);
  }
 }
 async function styles(page,selector,{rootOnly=false}={}){
