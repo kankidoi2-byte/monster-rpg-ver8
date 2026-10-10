@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261010-skill-equipment-star-filter",date:"2026-10-10",category:"fix",title:"技装備の属性絞り込みを整理しました",body:"技装備画面の属性絞り込みで「星」が重複して表示されていた問題を修正しました。"}),
   Object.freeze({id:"20261008-shared-normal-healing",date:"2026-10-08",category:"update",title:"味方と敵の通常回復量を統一しました",body:"通常回復技は、味方も敵も使用者のレベルに応じて回復するようになりました。単体戦・複数戦とも共通で、最大HPを超える分は回復しません。"}),
   Object.freeze({id:"20261007-simple-status-copy",date:"2026-10-07",category:"update",title:"状態異常技の説明を短くしました",body:"毒・麻痺・こんらん・ねむりの11技を、技の特徴と効果が伝わる短い説明にしました。技図鑑に状態異常の簡単な案内も追加しました。技の性能は変わりません。"}),
   Object.freeze({id:"20261007-legacy-status-descriptions",date:"2026-10-07",category:"fix",title:"状態異常技の詳細表示について（取り下げ）",body:"付与確率・継続期間などを詳しく表示する案内は取り下げました。現在は「状態異常技の説明を短くしました」のとおり、技の特徴と効果を短く伝える説明です。技の性能や戦闘処理は変わりません。"}),
