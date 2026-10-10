@@ -12,7 +12,7 @@ async function fixture(page){
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.coins=10000;save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);if(!saveGame())throw Error('fixture save failed');show('characterGacha');});
 }
 async function fixedDraw(page,ids){
- return page.evaluate(async ids=>{const original=pickCharacterGachaUnit;let i=0;pickCharacterGachaUnit=()=>M.find(m=>m.id===ids[i++]);const before={coins:save.coins,count:save.instances.length};try{const result=await rollCharacterGacha(ids.length);if(!result?.ok)throw Error('Draw failed: '+JSON.stringify(result));}finally{pickCharacterGachaUnit=original;}return before;},ids);
+ return page.evaluate(async ids=>{const original=pickCharacterGachaUnit;let i=0;pickCharacterGachaUnit=()=>{const id=ids[i++];return M.find(m=>m.id===id);};const before={coins:save.coins,count:save.instances.length};try{const result=await rollCharacterGacha(ids.length);if(!result?.ok)throw Error('Draw failed: '+JSON.stringify(result));}finally{pickCharacterGachaUnit=original;}return before;},ids);
 }
 async function screenshot(page,name){await page.screenshot({path:`${out}/${name}.png`});report.screenshots.push(`${name}.png`);write();}
 async function waitStage(page,stage){await page.waitForFunction(stage=>document.querySelector('#soulContractPresentation')?.dataset.stage===stage,stage,{timeout:15000});}
