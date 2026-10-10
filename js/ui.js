@@ -31,6 +31,8 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(id!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();
+  if(typeof cancelSoulContractPresentation==='function')cancelSoulContractPresentation();
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
@@ -258,7 +260,7 @@ function setContractorTitle(titleId){
 }
 function contractorRankUpCanPresent(){
   const active=document.querySelector('.screen.active')?.id;
-  return !document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
+  return !(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
 }
 function scheduleContractorRankUpPresentation(){
   clearTimeout(contractorRankUpTimer);

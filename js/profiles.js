@@ -15,7 +15,7 @@
   function current(){return state?.profiles.find(p=>p.slot===slot)||null;}
   function persist(){const fresh=JSON.parse(localStorage.getItem(META)||JSON.stringify(state));fresh.profiles=fresh.profiles.map(p=>p.slot===slot?current():p);fresh.selected=state.selected;localStorage.setItem(META,JSON.stringify(fresh));state=fresh;}
   function notify(text){if(typeof alert==='function')alert(text);}
-  function canSwitch(){return typeof busy==='undefined'||!busy||document.getElementById('battle')?.classList.contains('is-finished');}
+  function canSwitch(){return !(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&(typeof busy==='undefined'||!busy||document.getElementById('battle')?.classList.contains('is-finished'));}
   global.MonsterProfiles={
     key,current,slot:()=>slot,available:()=>available,
     beforeSave(){if(!available)return false;let actual;try{actual=localStorage.getItem(key(BASE));}catch(_){notify('セーブを読み取れないため保存を停止しました。');return false;}if(conflict||actual!==baseline){conflict=true;notify('同じプロフィールが別の画面で更新されました。この画面からの保存を止めました。再読み込みしてください。');return false;}return true;},

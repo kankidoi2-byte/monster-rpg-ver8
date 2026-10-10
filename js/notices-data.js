@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261010-soul-contract",date:"2026-10-10",category:"update",title:"キャラクター契約の演出を更新しました",body:"星空と魂の星、異世界文字の契約書が仲間との出会いを彩ります。単発・10連に対応し、★3の契約書は金色に輝きます。演出をスキップしても獲得結果を確認できます。保存が競合した場合は新しい契約を止め、契約時のセーブを書き出して保管できます。"},
   {id:'20261010-nonbattle-monochrome',date:'2026-10-10',category:'update',title:'ホームとメニューのデザインを更新しました',body:'ホームや図鑑、育成などを白黒と金色の枠で統一しました。仲間の画像や属性の色、これまでの操作はそのままです。'},
   Object.freeze({id:"20261010-skill-system-110",date:"2026-10-10",category:"important",title:"技体系を110種類に更新しました",body:"技を低級60・上級30・超級16・最強4種類に整理しました。所持技は新しい技へ引き継ぎ、装備を適性とコストに合わせて調整します。最強技は技合成で作成でき、素材とレシピは技図鑑から確認できます。"}),
   Object.freeze({id:"20261010-character-dex-reservations",date:"2026-10-10",category:"fix",title:"キャラクター図鑑の案内を整理しました",body:"実装済みキャラクターの古い予約情報を整理し、図鑑一覧の「登場予定を含む」という案内を現状に合わせました。"}),
