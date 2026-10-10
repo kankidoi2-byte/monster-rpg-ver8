@@ -101,4 +101,18 @@ try{
  results.push({scenario:'Freigal Lv100 COST25: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
  await page.close();
  fs.writeFileSync(`${out}/results.json`,JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
+}catch(error){
+ // Capture before closing contexts, including failures in the first 320px case.
+ const failures=[];
+ const pages=browser.contexts().flatMap(context=>context.pages()).filter(page=>!page.isClosed());
+ for(const [index,page] of pages.entries()){
+  const file=`failure-${index+1}.png`;
+  const diagnostic={url:page.url(),viewport:page.viewportSize(),screenshot:file};
+  try{await page.screenshot({path:`${out}/${file}`,fullPage:true,timeout:10000});}
+  catch(captureError){diagnostic.screenshotError=captureError.message;}
+  try{diagnostic.fixtureReport=await page.locator('#report').textContent({timeout:1000});}catch{}
+  failures.push(diagnostic);
+ }
+ fs.writeFileSync(`${out}/failure.json`,JSON.stringify({error:error.stack||String(error),completed:results,pages:failures},null,2));
+ throw error;
 }finally{await browser.close();server.kill();}
