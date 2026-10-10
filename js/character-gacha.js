@@ -39,6 +39,7 @@ let characterGachaLockPending=null;
 function isCharacterGachaPresenting(){
   return Boolean(characterGachaLockPending)||characterGachaCommitting||Boolean(characterGachaPresentation?.owner===save);
 }
+function cancelPendingCharacterGacha(){ characterGachaLockPending=null; }
 function characterGachaStorageKey(){
   return typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SAVE_KEY):SAVE_KEY;
 }

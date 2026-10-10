@@ -300,6 +300,17 @@ for(const mode of ['acquisition','save']){
   assert.equal(one.primaryWrites(),0);await locks.grant();assert((await second).ok);
 }
 
+// Leaving the gacha screen while its lock is queued cancels without charging.
+{
+  const h=harness();h.seed();const locks=queuedWebLocks();h.context.navigator={locks};
+  const before=h.snapshot(),pending=h.run('rollCharacterGacha(1)');
+  h.run('cancelPendingCharacterGacha()');await locks.grant();
+  assert.equal((await pending).ok,false);assert.equal(h.snapshot(),before);
+  assert.equal(h.primaryWrites(),0);assert.equal(h.callbacks.length,0);
+  assert.equal(h.run('isCharacterGachaPresenting()'),false);
+  assert(read('ui').includes("if(id!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();"));
+}
+
 // Browsers without Web Locks (or denied/rejected lock acquisition) must fail
 // closed. No silently unlocked browser fallback is allowed.
 for(const mode of ['unavailable','throws','rejects']){

@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(id!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();
   if(typeof cancelSoulContractPresentation==='function')cancelSoulContractPresentation();
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
