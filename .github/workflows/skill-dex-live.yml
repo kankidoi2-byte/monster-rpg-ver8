@@ -1,0 +1,31 @@
+name: Verify published count contrast and cards
+on:
+  push:
+    branches: [verify/count-contrast-live-20261011]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  published-skill-dex:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify actual public cards with disposable local saves
+        env:
+          GAME_TEST_URL: https://pactforge-studio.github.io/monster-rpg-ver8/
+        run: node scripts/test-skill-dex-portrait-browser.mjs
+      - name: Upload published skill-card evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: count-contrast-published-evidence
+          path: artifacts/skill-card-layout/skill-dex-portrait
