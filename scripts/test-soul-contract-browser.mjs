@@ -5,8 +5,8 @@ import {chromium} from 'playwright';
 const out='artifacts/soul-contract';fs.mkdirSync(out,{recursive:true});
 const report={cases:[],screenshots:[],videos:[],errors:[],performance:[],limitations:['Chromium mobile emulation, not a physical Android/Galaxy device','Existing runtime has no audio or volume system; this cinematic remains silent']};
 const write=()=>fs.writeFileSync(`${out}/manifest.json`,JSON.stringify(report,null,2));
-const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4192'],{stdio:['ignore','pipe','inherit']});let browser;
-const origin='http://127.0.0.1:4192';
+const server=process.env.GAME_TEST_URL?null:spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4192'],{stdio:['ignore','pipe','inherit']});let browser;
+const origin=(process.env.GAME_TEST_URL||'http://127.0.0.1:4192').replace(/\/$/,'');
 async function fixture(page){
  await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.coins=10000;save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);if(!saveGame())throw Error('fixture save failed');show('characterGacha');});
@@ -17,7 +17,7 @@ async function fixedDraw(page,ids){
 async function screenshot(page,name){await page.screenshot({path:`${out}/${name}.png`});report.screenshots.push(`${name}.png`);write();}
 async function waitStage(page,stage){await page.waitForFunction(stage=>document.querySelector('#soulContractPresentation')?.dataset.stage===stage,stage,{timeout:15000});}
 try{
- await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});browser=await chromium.launch({headless:true});
+ if(server)await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});browser=await chromium.launch({headless:true});
  for(const [width,height] of [[320,568],[360,800],[390,844],[430,932],[844,390]]){
   const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,deviceScaleFactor:2});
   await context.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
@@ -115,4 +115,4 @@ try{
  assert.equal(raceResults.filter(r=>r.ok).length,1,'only one same-baseline draw commits');
  const persisted=await a.evaluate(()=>JSON.parse(safeStorageGet(SAVE_KEY)));assert.equal(persisted.coins,raceBefore.coins-100);assert.equal(persisted.instances.length,raceBefore.count+1);assert.equal(persisted.soulContractReceipt.entries[0].instanceUid,raceResults.find(r=>r.ok).entries[0].instance.uid);
  report.cases.push({name:'real-two-tab-exclusive-draw-no-lost-success',result:'PASS'});await race.close();assert.deepEqual(report.errors,[]);report.status='PASS';write();console.log('PASS Soul Contract mobile, order, rare timing, skip, recovery, save failure, recordings');
-}catch(error){report.status='FAIL';report.failure=error.stack;write();for(const [i,p] of (browser?.contexts().flatMap(c=>c.pages())||[]).entries())try{await p.screenshot({path:`${out}/failure-${i}.png`});}catch{}throw error;}finally{await browser?.close();server.kill();}
+}catch(error){report.status='FAIL';report.failure=error.stack;write();for(const [i,p] of (browser?.contexts().flatMap(c=>c.pages())||[]).entries())try{await p.screenshot({path:`${out}/failure-${i}.png`});}catch{}throw error;}finally{await browser?.close();server?.kill();}
