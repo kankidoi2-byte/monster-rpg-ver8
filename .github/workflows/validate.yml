@@ -90,3 +90,31 @@ jobs:
         with:
           name: nonbattle-monochrome-manifest
           path: artifacts/nonbattle-theme/manifest.json
+
+  soul-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify Soul Contract runtime and interruption safety
+        run: node scripts/test-soul-contract-browser.mjs
+      - name: Upload Soul Contract browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: soul-contract-evidence
+          path: artifacts/soul-contract
+      - name: Upload Soul Contract manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: soul-contract-manifest
+          path: artifacts/soul-contract/manifest.json
