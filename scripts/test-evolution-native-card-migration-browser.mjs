@@ -49,13 +49,25 @@ try{
  await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded'}),page.evaluate(()=>MonsterProfiles.switchTo(1))]);
  assert.deepEqual(await snapshot(),first,'account round trip preserves110 migration');
  // Exercise the real file import entry point with an old save, followed by repeat import of the migrated export.
- await page.locator('#saveImportInput').setInputFiles({name:'legacy.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
- await page.waitForLoadState('domcontentloaded');await page.waitForFunction(()=>save.saveMeta.migrations.includes('skill_system_110_v1'));
- const imported=await snapshot();assert.deepEqual(imported.cards,first.cards);
- const exported=await page.evaluate(()=>JSON.stringify(save));
- await page.locator('#saveImportInput').setInputFiles({name:'current.json',mimeType:'application/json',buffer:Buffer.from(exported)});
- await page.waitForLoadState('domcontentloaded');await page.waitForFunction(()=>save.saveMeta.migrations.includes('skill_system_110_v1'));
- assert.deepEqual((await snapshot()).cards,first.cards,'reimport cannot duplicate compensation');
+ const legacyImport={...fixture,coins:12347};
+ assert.notEqual((await snapshot()).coins,legacyImport.coins,'legacy sentinel must differ from current account');
+ await Promise.all([
+  page.waitForNavigation({waitUntil:'domcontentloaded'}),
+  page.locator('#saveImportInput').setInputFiles({name:'legacy.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacyImport))})
+ ]);
+ await page.waitForFunction(()=>typeof save!=='undefined'&&save.coins===12347&&save.saveMeta.migrations.includes('skill_system_110_v1'));
+ const imported=await snapshot();assert.equal(imported.coins,legacyImport.coins);assert.deepEqual(imported.cards,first.cards);
+ assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('mb_v95c')).coins),legacyImport.coins,'legacy import sentinel persisted');
+ const exported=JSON.parse(await page.evaluate(()=>JSON.stringify(save)));exported.coins=23458;
+ assert.notEqual(imported.coins,exported.coins,'current sentinel must differ from imported legacy account');
+ await Promise.all([
+  page.waitForNavigation({waitUntil:'domcontentloaded'}),
+  page.locator('#saveImportInput').setInputFiles({name:'current.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))})
+ ]);
+ await page.waitForFunction(()=>typeof save!=='undefined'&&save.coins===23458&&save.saveMeta.migrations.includes('skill_system_110_v1'));
+ const reimported=await snapshot();assert.equal(reimported.coins,exported.coins);
+ assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('mb_v95c')).coins),exported.coins,'current import sentinel persisted');
+ assert.deepEqual(reimported.cards,first.cards,'reimport cannot duplicate compensation');
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());

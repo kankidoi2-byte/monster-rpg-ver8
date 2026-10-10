@@ -52,15 +52,32 @@ try{
   assert.equal(await frame.locator('#skillCardList [data-skill-card-id]').count(),4);
   check(await inspect('#skillCardList .skill-card'),'COST25');
   await frame.evaluate(()=>{document.getElementById('skillCostFilter').value='all';renderSkillEdit();});
-  const buttons=await frame.evaluate(async()=>{
-   const result=[];
-   for(const el of [...document.querySelectorAll('#skillEditCurrent button, #skillCardList button:not([disabled])')].slice(0,4)){
-    el.scrollIntoView({block:'center'});await new Promise(r=>requestAnimationFrame(r));
-    const b=el.getBoundingClientRect(),hit=document.elementFromPoint(b.left+b.width/2,b.top+b.height/2);
-    result.push({text:el.textContent,visible:b.top>=0&&b.bottom<=innerHeight,uncovered:hit===el||el.contains(hit)});
-   }return result;
-  });
-  assert(buttons.length&&buttons.every(b=>b.visible&&b.uncovered),'operation buttons visible and uncovered');
+  // The growing fixture report can move the entire iframe below the parent viewport.
+  // Bring both scroll containers into view before testing real pointer hit targets.
+  await page.locator('#game').scrollIntoViewIfNeeded();
+  const buttonLocators=frame.locator('#skillEditCurrent button, #skillCardList button:not([disabled])');
+  const buttons=[];
+  for(let index=0;index<Math.min(4,await buttonLocators.count());index++){
+   const button=buttonLocators.nth(index);
+   await button.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+   await page.locator('#game').scrollIntoViewIfNeeded();
+   const measurement=await button.evaluate(async el=>{
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const b=el.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;
+    const hit=document.elementFromPoint(x,y);
+    return {text:el.textContent,visible:b.top>=0&&b.bottom<=innerHeight&&b.left>=0&&b.right<=innerWidth,
+     uncovered:hit===el||el.contains(hit),rect:{left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height},
+     viewport:{width:innerWidth,height:innerHeight},scrollY,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className,text:hit.textContent?.slice(0,80)}:null};
+   });
+   measurement.parent=await page.locator('#game').evaluate((iframe,rect)=>{
+    const b=iframe.getBoundingClientRect(),x=b.left+(rect.left+rect.right)/2,y=b.top+(rect.top+rect.bottom)/2;
+    const hit=document.elementFromPoint(x,y);
+    return {iframeRect:{left:b.left,top:b.top,right:b.right,bottom:b.bottom},viewport:{width:innerWidth,height:innerHeight},scrollY,
+     uncovered:hit===iframe,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
+   },measurement.rect);
+   buttons.push(measurement);
+  }
+  assert(buttons.length&&buttons.every(b=>b.visible&&b.uncovered&&b.parent.uncovered),`operation buttons visible and uncovered: ${JSON.stringify(buttons)}`);
   await page.screenshot({path:`${out}/${width}x${height}.png`,fullPage:true});
   assert.equal(errors.length,0,errors.join('\n'));
   results.push({width,height,result:'PASS',existingInteractionChecks:suite.split('\n').length,buttons});
