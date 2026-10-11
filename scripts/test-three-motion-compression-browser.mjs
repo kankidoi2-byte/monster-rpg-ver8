@@ -18,11 +18,25 @@ let browser;
 async function openPage({width=390,height=844,reducedMotion='no-preference',fail=false}={}){
  const context=await browser.newContext({viewport:{width,height},reducedMotion});
  const page=await context.newPage();
+ const pending=new Map(),failed=[];
+ const requestPath=r=>{const url=new URL(r.url());return `${url.origin}${url.pathname}`;};
+ page.on('request',r=>pending.set(r,requestPath(r)));
+ page.on('requestfinished',r=>pending.delete(r));
+ page.on('requestfailed',r=>{pending.delete(r);if(failed.length<40)failed.push({url:requestPath(r),error:r.failure()?.errorText});});
  page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>d.dismiss());
  page.on('request',r=>{if(/\.webm(?:\?|$)/.test(r.url()))report.requests.push(new URL(r.url()).pathname);});
  if(fail)await page.route('**/*crf28_alpha.webm',r=>r.abort('failed'));
- await page.goto(gameUrl.href,{waitUntil:'networkidle'});
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ // Media/telemetry can remain connected after the game is usable. Require the
+ // actual app entry points and title, rather than waiting for global network idle.
+ try{
+  await page.goto(gameUrl.href,{waitUntil:'domcontentloaded',timeout:60000});
+  await page.waitForFunction(()=>typeof startFromTitle==='function'&&typeof beginChosenBattle==='function'&&typeof syncBattleIdleMedia==='function'&&typeof BATTLE_IDLE_MEDIA!=='undefined'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'),null,{timeout:30000});
+  await page.locator('#titleScreen').waitFor({state:'visible',timeout:30000});
+  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ }catch(error){
+  report.startupFailure={viewport:{width,height},reducedMotion,fail,pending:[...pending.values()].slice(0,40),failed};
+  throw error;
+ }
  assert.equal(await page.evaluate(()=>battleIdleLimit),1,'unchanged production decoder default');
  return {page,context};
 }

@@ -158,6 +158,19 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify adopted motion playback and fallback
         run: node scripts/test-three-motion-compression-browser.mjs
+      # One-release readiness regression against already published, hash-verified assets.
+      - name: Verify published startup readiness without global network idle
+        if: github.event_name == 'pull_request' && github.head_ref == 'test/motion-public-ready'
+        env:
+          GAME_TEST_URL: https://pactforge-studio.github.io/monster-rpg-ver8/
+          MOTION_QA_OUT: artifacts/three-motion-public-proof
+        run: node scripts/test-three-motion-compression-browser.mjs
+      - name: Upload published startup readiness proof
+        if: always() && github.event_name == 'pull_request' && github.head_ref == 'test/motion-public-ready'
+        uses: actions/upload-artifact@v4
+        with:
+          name: three-motion-public-proof
+          path: artifacts/three-motion-public-proof
       - name: Upload three motion browser evidence
         if: always()
         uses: actions/upload-artifact@v4
