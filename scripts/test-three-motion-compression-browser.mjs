@@ -10,7 +10,7 @@ const gameUrl=new URL(process.env.GAME_TEST_URL||`http://127.0.0.1:${port}/`);
 gameUrl.searchParams.set('legacy','1');
 const expected={kimeragna:'kimeragna_v7_crf28_alpha.webm',slime:'slime_adopted_crf28_alpha.webm',elixion:'elixion_arm_fixed_crf28_alpha.webm'};
 const originals=['kimeragna_v7_alpha.webm','slime_adopted_alpha.webm','elixion_arm_fixed_alpha.webm'];
-const report={result:'RUNNING',cases:[],requests:[],errors:[],limitations:['Desktop Chromium with mobile viewports, not physical Galaxy/Android performance validation.','Synthetic pagehide/pageshow exercises lifecycle handlers; not an OS background/foreground test.','Encoded fps/frame count is covered by asset metadata checks; browser playback is checked for advancement and a loop.','Session decoder limit 3 is a stress test only; production default 1 must remain unchanged.']};
+const report={result:'RUNNING',cases:[],requests:[],errors:[],limitations:['Desktop Chromium with mobile viewports, not physical Galaxy/Android performance validation.','Synthetic pagehide/pageshow exercises lifecycle handlers; not an OS background/foreground test.','Encoded fps/frame count is covered by asset metadata checks; browser playback is checked for advancement and a loop.','Production default is 3; explicit limit 1 remains covered for fallback lifecycle tests.']};
 fs.mkdirSync(out,{recursive:true});
 const write=()=>fs.writeFileSync(`${out}/results.json`,JSON.stringify(report,null,2)+'\n');
 const server=process.env.GAME_TEST_URL?null:spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port',String(port)],{stdio:['ignore','pipe','inherit']});
@@ -37,7 +37,7 @@ async function openPage({width=390,height=844,reducedMotion='no-preference',fail
   report.startupFailure={viewport:{width,height},reducedMotion,fail,pending:[...pending.values()].slice(0,40),failed};
   throw error;
  }
- assert.equal(await page.evaluate(()=>battleIdleLimit),1,'unchanged production decoder default');
+ assert.equal(await page.evaluate(()=>battleIdleLimit),3,'production supports ally and two enemies');
  return {page,context};
 }
 async function start(page,id,multi=false,limit=1){
@@ -49,7 +49,7 @@ async function start(page,id,multi=false,limit=1){
   for(const guide of TUTORIAL_GUIDE_IDS)save.progress.tutorial.guides[guide]=true;
   save.instances=[];save.party=[];
   for(const mon of [id,...['kimeragna','slime','elixion'].filter(x=>x!==id)])save.party.push(addInstance(mon,30).uid);
-  prepareBattleParty();setBattleIdleLimit(limit);
+  prepareBattleParty();if(limit!==null)setBattleIdleLimit(limit);
   const enemyId=id==='slime'?'elixion':'slime';
   const request=createHuntRequest(MAPS[0],by(enemyId),'normal',[]);
   request.battleMode=multi?'three_way':'single';request.secondEnemyId='elixion';
@@ -81,17 +81,17 @@ try{
   const {page,context}=await openPage(viewport);
   const registry=await page.evaluate(()=>Object.fromEntries(['kimeragna','slime','elixion'].map(id=>[id,BATTLE_IDLE_MEDIA[id].src.split('/').pop()])));assert.deepEqual(registry,expected);
   for(const id of Object.keys(expected)){
-   await start(page,id);await ready(page);const samples=await inspect(page);verifySamples(samples);
+   await start(page,id,false,null);await ready(page,2);const samples=await inspect(page);verifySamples(samples);
    assert(samples[0].src.endsWith(expected[id]));
    await page.screenshot({path:`${out}/${viewport.width}x${viewport.height}-${id}-single.png`});
    report.cases.push({name:`${viewport.width}x${viewport.height}-${id}-single`,samples});
   }
-  await start(page,'kimeragna',true,1);await ready(page);
-  assert.equal(await page.locator('#battle .battle-idle-video').count(),1,'normal multiple-combatant decoder budget');
-  await page.evaluate(()=>setBattleIdleLimit(3));await ready(page,3);const samples=await inspect(page);verifySamples(samples);
+  await start(page,'kimeragna',true,null);await ready(page,3);
+  assert.equal(await page.locator('#battle .battle-idle-video').count(),3,'default multiple-combatant decoder budget');
+  const samples=await inspect(page);verifySamples(samples);
   assert.equal(new Set(samples.map(s=>s.src)).size,3,'three distinct approved assets');
   await page.screenshot({path:`${out}/${viewport.width}x${viewport.height}-multi-three-decoder-stress.png`});
-  report.cases.push({name:`${viewport.width}x${viewport.height}-multi-default-and-stress`,samples});
+  report.cases.push({name:`${viewport.width}x${viewport.height}-multi-production-default`,samples});
   if(viewport.width===390){
    const loop=await page.evaluate(async()=>{
     const videos=[...battleIdleRecords.values()].map(r=>r.video),previous=videos.map(v=>v.currentTime),wraps=videos.map(()=>0),advances=videos.map(()=>0);
