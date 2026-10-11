@@ -3,6 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 const read=p=>fs.readFileSync(p,'utf8');
+for(const name of ['battle-idle-media','notices-data'])assert.ok(read('index.html').includes(name+'.js?v=')&&read('index.html').match(new RegExp(name+'\\.js\\?v=[^\"]*three-motion-20261011')), 'cache revision '+name);
 const manifest=JSON.parse(read('docs/motion-compression-20261011/manifest.json'));
 const media=vm.runInNewContext(read('js/battle-idle-media.js').split('// 5s')[0]+';BATTLE_IDLE_MEDIA');
 const catalog=vm.runInNewContext(read('tools/motion-review/catalog-data.generated.js')+';MOTION_CATALOG');
