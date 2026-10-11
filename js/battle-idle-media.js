@@ -272,7 +272,7 @@ galdra:Object.freeze({
   layout:Object.freeze({x:0.5,y:1,scale:0.5}),
   sourceBounds:Object.freeze({width:960,height:960,x:133,y:65,right:800,bottom:900})
 }),slime:Object.freeze({
-  src:'images/monsters/motion/slime_adopted_alpha.webm',poster:'images/monsters/motion/slime_adopted_static.webp',
+  src:'images/monsters/motion/slime_adopted_crf28_alpha.webm',poster:'images/monsters/motion/slime_adopted_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:0.3}),
   sourceBounds:Object.freeze({width:720,height:640,x:45,y:50,right:669,bottom:563})
@@ -284,13 +284,13 @@ alchemion:Object.freeze({
   sourceBounds:Object.freeze({width:960,height:960,x:112,y:101,right:859,bottom:845})
 }),
 elixion:Object.freeze({
-  src:'images/monsters/motion/elixion_arm_fixed_alpha.webm',poster:'images/monsters/motion/elixion_arm_fixed_static.webp',
+  src:'images/monsters/motion/elixion_arm_fixed_crf28_alpha.webm',poster:'images/monsters/motion/elixion_arm_fixed_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1.2}),
   sourceBounds:Object.freeze({width:960,height:960,x:110,y:96,right:876,bottom:873})
 }),
 kimeragna:Object.freeze({
-  src:'images/monsters/motion/kimeragna_v7_alpha.webm',poster:'images/monsters/motion/kimeragna_v7_static.webp',
+  src:'images/monsters/motion/kimeragna_v7_crf28_alpha.webm',poster:'images/monsters/motion/kimeragna_v7_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:0.75}),
   sourceBounds:Object.freeze({width:960,height:960,x:85,y:78,right:877,bottom:863})

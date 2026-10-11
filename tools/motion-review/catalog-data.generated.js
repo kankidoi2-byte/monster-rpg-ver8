@@ -774,7 +774,7 @@ const MOTION_CATALOG={
       "name": "スライム",
       "art": "images/monsters/slime_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/slime_adopted_alpha.webm",
+        "src": "images/monsters/motion/slime_adopted_crf28_alpha.webm",
         "poster": "images/monsters/motion/slime_adopted_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -793,7 +793,7 @@ const MOTION_CATALOG={
           "bottom": 563
         }
       },
-      "fingerprint": "6a8119f48c432aa5c875e48a2ac7fedd4a58a78182e3c5bdc578f96f9165737c",
+      "fingerprint": "7cd8866b2f8f470ea6dfdcc501ed1ecc6f089face124a7494ca6383e1afe59d9",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1306,7 +1306,7 @@ const MOTION_CATALOG={
       "name": "混成翼竜キメラグナ",
       "art": "images/monsters/kimeragna_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/kimeragna_v7_alpha.webm",
+        "src": "images/monsters/motion/kimeragna_v7_crf28_alpha.webm",
         "poster": "images/monsters/motion/kimeragna_v7_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1325,7 +1325,7 @@ const MOTION_CATALOG={
           "bottom": 863
         }
       },
-      "fingerprint": "558b9cf251f8adfc0299401680972679a5e804ad8836ab3c8483d1e4d0861015",
+      "fingerprint": "6b47b1d6fc8a1d44e2043d96f7a359ed105b7c693c807c1d4d6dbdefdb9a2a2a",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1362,7 +1362,7 @@ const MOTION_CATALOG={
       "name": "賢金神竜エリクシオン",
       "art": "images/monsters/elixion_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/elixion_arm_fixed_alpha.webm",
+        "src": "images/monsters/motion/elixion_arm_fixed_crf28_alpha.webm",
         "poster": "images/monsters/motion/elixion_arm_fixed_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1381,7 +1381,7 @@ const MOTION_CATALOG={
           "bottom": 873
         }
       },
-      "fingerprint": "b504abbf99916a6c7aa9499815a71a9ce519be2a1b51d6e480776fe4fbabf5dc",
+      "fingerprint": "96eae76d48cfdf6739148f5da47d8ab3b5ee94930283caeef3c7301fb474d334",
       "sourceState": "透過動画の所在確認が残る"
     }
   ]
