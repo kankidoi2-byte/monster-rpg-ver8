@@ -296,11 +296,22 @@ assert.deepEqual(addedEconomy.map(mon=>mon.id).sort(),[...addedCharacterIds].sor
 assert(addedEconomy.every(mon=>!mon.contractable && mon.catchRate===0 && !mon.expBonus && !mon.coinBonus && !mon.dropItem));
 assert(currentSnapshot.maps.every(map=>map.enemyIds.every(id=>!addedIds.has(id))),'new allies must not alter encounter/reward pools');
 assert.match(baseline.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'baseline contract formula not recognized');
-assert.match(current.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'current contract formula diverged');
+// Transaction boundaries changed intentionally (SAVE02); validate the actual shared
+// rate/stage helper instead of requiring the old unsafe two-save function body.
+vm.runInContext("globalThis.saveTransactionIdentity=()=> 'economy-fixture';Math=Object.create(Math);",current.context);
+let contractParityChecks=0;
+for(const catchRate of [undefined,0,.01,.25,.5,1])for(const multiplier of [undefined,0,1,1.5,2,10])for(const roll of [0,.001,.1,.249,.25,.5,.949,.95,.999]){
+  const itemId='contract_scroll';
+  const expected=canonicalValue(baseline,'contractAnimationStage(roll,Math.min(.95,(catchRate??.25)*(multiplier||1)))',{roll,catchRate,multiplier});
+  const actual=canonicalValue(current,`(()=>{const original=ITEM_BY_ID[itemId].catchMultiplier;try{ITEM_BY_ID[itemId].catchMultiplier=multiplier;postBattleContractRetry=null;Math.random=()=>roll;return postBattleContractStage({catchRate},itemId,null,false);}finally{ITEM_BY_ID[itemId].catchMultiplier=original;}})()`,{roll,catchRate,multiplier,itemId});
+  assert.equal(actual,expected,'shared contract probability/stage parity');contractParityChecks++;
+}
+assert.equal(canonicalValue(current,"postBattleContractRetry=null;postBattleContractStage({catchRate:0},'contract_scroll',null,true)"),3,'tutorial guarantee remains success');
+assert.match(canonicalValue(current,'tryContractWithScroll.toString()'),/postBattleContractStage\(target,itemId,null,guaranteed\)/);
+assert.match(functionSource(current.source['js/multi-battle.js'],'useMultiBattleContractScroll'),/postBattleContractStage\(entry.mon,itemId,entry\)/);
 assert.match(current.source['js/world-map.js'],/if \(eventKey\) \{ request\.battleMode='single';request\.secondEnemyId=null;request\.invasionEnemyId=null;request\.invasionTurn=null; \}/,'special world-map event single-battle policy diverged');
 for(const [file,name] of [
   ['js/battle-flow.js','win'],['js/multi-battle.js','grantMultiEnemyReward'],['js/multi-battle.js','winMultiBattle'],
-  ['js/items.js','tryContractWithScroll'],['js/multi-battle.js','useMultiBattleContractScroll'],
   ['js/expedition.js','progressActiveExpeditions'],['js/expedition.js','expeditionRewardPlan']
 ]){
   assert.equal(
@@ -323,7 +334,7 @@ assert.deepEqual(worldMapMode.expeditionTotals,oldMode.expeditionTotals,'expedit
 
 const access=accessComparison(baselineSnapshot);
 const report={
-  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,
+  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,contractParityChecks,
   baselineRevision:BASE_REV,currentHead:CURRENT_HEAD,currentHeadTree:CURRENT_HEAD_TREE,
   battleSeed:`0x${BATTLE_SEED.toString(16)}`,accessSeed:`0x${ACCESS_SEED.toString(16)}`,
   baselineRewardRules:{...oldMode.totals,expeditionRewards:oldMode.expeditionTotals},

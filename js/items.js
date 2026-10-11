@@ -30,11 +30,8 @@ function buyItem(id){
     alert('コインが足りない！');
     return;
   }
-  save.coins-=it.price;
-  save.items[id]=(save.items[id]||0)+1;
-  saveGame();
-  renderShop();
-  updateItems();
+  if(!commitSaveMutation(()=>{save.coins-=it.price;save.items[id]=(save.items[id]||0)+1;}))return;
+  showCommittedSaveResult(()=>{renderShop();updateItems();});
 }
 function itemCount(id){
   ensureContractScrollItem();
@@ -126,16 +123,16 @@ function rollItemGacha(){
     alert('コインが足りない！');
     return;
   }
-  save.coins -= ITEM_GACHA_COST;
   const itemId = pickGachaItem();
   const it = ITEM_BY_ID[itemId];
-  save.items[itemId] = (save.items[itemId]||0) + 1;
-  saveGame();
+  if(!commitSaveMutation(()=>{save.coins-=ITEM_GACHA_COST;save.items[itemId]=(save.items[itemId]||0)+1;}))return;
+  showCommittedSaveResult(()=>{
   const result = document.getElementById('gachaResult');
   if(result){result.innerHTML = `🎰 ガチャを回した！<br>✨ ${itemInlineVisual(it)} ${it.name}を入手！`;if(typeof replayUiMotion==='function')replayUiMotion(result,'ui-reward-pop',850);}
   if(typeof showUiNotice==='function')showUiNotice(`${it.name}を入手！`);
   updateItems();
   renderItemGacha();
+  });
 }
 function useExpItemOnInstance(itemId, uidValue){
   ensureContractScrollItem();
@@ -267,96 +264,66 @@ function askUseContractScroll(itemId){
   show('contractConfirm');
   setTimeout(refreshContractScrollDisplay,0);
 }
+let postBattleContractBusy=false;
+let postBattleContractRetry=null;
+function postBattleContractStage(target,itemId,scope,guaranteed=false){
+  const identity=saveTransactionIdentity();
+  if(postBattleContractRetry?.target===target&&postBattleContractRetry.itemId===itemId&&postBattleContractRetry.scope===scope&&postBattleContractRetry.identity===identity)return postBattleContractRetry.stage;
+  const it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;
+  const rate=Math.min(.95,(target.catchRate??.25)*(it.catchMultiplier||1));
+  const stage=guaranteed?3:contractAnimationStage(Math.random(),rate);
+  postBattleContractRetry={target,itemId,scope,identity,stage};return stage;
+}
 function useContractScrollConfirmed(){
+  if(postBattleContractBusy)return;
   ensureContractScrollItem();
-  const itemId = ITEM_BY_ID[pendingContractItemId]?.contract ? pendingContractItemId : chooseDefaultContractItem();
-  const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
+  const itemId=ITEM_BY_ID[pendingContractItemId]?.contract?pendingContractItemId:chooseDefaultContractItem();
+  if(multiBattle?.active&&multiBattle.finished&&pendingMultiBattleContractId)return useMultiBattleContractScroll(itemId);
   const tutorialGuarantee=typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,itemId);
-  if(multiBattle?.active && multiBattle.finished && pendingMultiBattleContractId){
-    useMultiBattleContractScroll(itemId);
-    return;
-  }
-  if(!isContractableUnit(enemy)){
-    alert('契約できる相手がいません。');
-    show('battle');
-    return;
-  }
-  if(!tutorialGuarantee&&(save.items[itemId]||0)<=0){
-    alert(`${it.name}を持っていない！ショップで購入してください。`);
-    refreshContractScrollDisplay();
-    show('battle');
-    return;
-  }
-  if(!tutorialGuarantee){
-    save.items[itemId]--;
-    saveGame();
-    updateItems();
-    refreshContractScrollDisplay();
-  }
-  tryContractWithScroll(itemId,{tutorialGuarantee});
+  return tryContractWithScroll(itemId,{tutorialGuarantee});
 }
 async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee=false}={}){
+  if(postBattleContractBusy||singleBattleContractAttempted||!battleRewardGranted||!isContractableUnit(enemy))return false;
   ensureContractScrollItem();
-  const it = ITEM_BY_ID[itemId] || ITEM_BY_ID.contract_scroll;
-  if(!isContractableUnit(enemy)){
-    alert('契約できる相手がいません。');
-    show('battle');
-    return;
-  }
+  const it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;
   const guaranteed=tutorialGuarantee&&typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,itemId);
-  const baseRate = enemy.catchRate ?? 0.25;
-  const rate = Math.min(0.95, baseRate * (it.catchMultiplier || 1));
-  const roll = guaranteed?0:Math.random();
-  const animationStage = guaranteed?3:contractAnimationStage(roll, rate);
-  const ok = animationStage === 3;
-  const logBox = document.getElementById('log');
-  singleBattleContractAttempted = true;
-
-  show('battle');
-  busy = true;
-
-  if(ok){
-    pStatus = null; eStatus = null;
-    pPoisonTurns = 0; ePoisonTurns = 0;
-    pParalysisTurns = 0; eParalysisTurns = 0;
-  pConfusionTurns = 0; eConfusionTurns = 0;
-  pSleepTurns = 0; eSleepTurns = 0;
-    pFlareCharge = false; eFlareCharge = false;
-    pAquaShield = false; eAquaShield = false;
-    const joinedInstance=guaranteed&&typeof commitTutorialFirstContract==='function'
-      ? commitTutorialFirstContract(itemId,enemy)
-      : addInstance(enemy.id);
-    if(!joinedInstance){
-      singleBattleContractAttempted=false;busy=false;
-      if(typeof showUiNotice==='function')showUiNotice('契約状態を保存できませんでした。もう一度お試しください。','error');
-      show('contractConfirm');
-      return;
+  if(!guaranteed&&(save.items[itemId]||0)<=0){saveTransactionNotice(`${it.name}を持っていません。`);return false;}
+  const target=enemy,snapshot=captureSaveTransaction();
+  const animationStage=postBattleContractStage(target,itemId,null,guaranteed),ok=animationStage===3;
+  postBattleContractBusy=true;
+  let committed=false;
+  try{
+    if(guaranteed){
+      if(typeof commitTutorialFirstContract!=='function'||!commitTutorialFirstContract(itemId,target))throw new Error('tutorial_contract_save');
+    }else{
+      save.items[itemId]--;
+      if(ok){addInstance(target.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(target.id);}
+      if(!saveGame())throw new Error('contract_save');
     }
-    if(!guaranteed){
-      if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(enemy.id);
-      saveGame();
-    }else if(typeof handleTutorialContractCommitted==='function')handleTutorialContractCommitted();
-    await playContractAnimation({monsterName:enemy.name, stage:animationStage});
-    updateItems();
-    renderParty();
-    renderDex();
-    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}🤝 ${it.name}を使い、${enemy.name}との契約に成功した！<br>${enemy.name}が手持ちに加わった！`;
-    refreshContractScrollDisplay();
-    busy = false;
+    committed=true;
+    singleBattleContractAttempted = true;
+    postBattleContractRetry=null;
+    busy=true;
+    if(ok){
+      pStatus=null;eStatus=null;pPoisonTurns=0;ePoisonTurns=0;pParalysisTurns=0;eParalysisTurns=0;
+      pConfusionTurns=0;eConfusionTurns=0;pSleepTurns=0;eSleepTurns=0;pFlareCharge=false;eFlareCharge=false;pAquaShield=false;eAquaShield=false;
+    }
+    if(guaranteed&&typeof handleTutorialContractCommitted==='function')handleTutorialContractCommitted();
     show('battle');
-    renderSingleBattleContractPanel();
+    await playContractAnimation({monsterName:target.name,stage:animationStage});
+    if(snapshot.identity!==saveTransactionIdentity())return true;
+    const logBox=document.getElementById('log');
+    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}${ok?`🤝 ${it.name}を使い、${target.name}との契約に成功した！<br>${target.name}が手持ちに加わった！`:`📜 ${it.name}を使ったが、${target.name}との契約には失敗した……`}`;
+    updateItems();renderParty();renderDex();refreshContractScrollDisplay();show('battle');renderSingleBattleContractPanel();
     if(guaranteed&&typeof handleTutorialContractAnimationComplete==='function')handleTutorialContractAnimationComplete();
-    return;
-  }
-
-  saveGame();
-  await playContractAnimation({monsterName:enemy.name, stage:animationStage});
-  if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}📜 ${it.name}を使ったが、${enemy.name}との契約には失敗した……`;
-  updateItems();
-  refreshContractScrollDisplay();
-  busy = false;
-  show('battle');
-  renderSingleBattleContractPanel();
+    return true;
+  }catch(error){
+    if(!committed){rollbackSaveTransaction(snapshot);singleBattleContractAttempted=false;}
+    saveTransactionNotice(committed?'契約結果は保存済みです。手持ちと契約書の枚数をご確認ください。':'契約結果を保存できませんでした。契約書は消費していません。再読み込みする前に保存状態をご確認ください。');
+    console.error('post-battle contract failed:',error);
+    try{if(guaranteed&&!committed){show('contractConfirm');refreshContractScrollDisplay();}else{show('battle');renderSingleBattleContractPanel();}}catch(displayError){console.error(displayError);}
+    return committed;
+  }finally{postBattleContractBusy=false;busy=false;}
 }
 function tryCatch(){ askUseContractScroll(); }
 function catchEnemy(){ askUseContractScroll(); }

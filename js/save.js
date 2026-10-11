@@ -471,7 +471,92 @@ function registerMapDex(mapId){
   return true;
 }
 
-function saveGame() {
+// Transaction snapshots are memory-only. Never overwrite another tab/profile on rollback.
+function saveTransactionIdentity(){
+  return typeof MonsterProfiles!=='undefined' ? `${MonsterProfiles.key(SAVE_KEY)}:${MonsterProfiles.current()?.id||''}` : SAVE_KEY;
+}
+function captureSaveTransaction(){
+  return {raw:JSON.stringify(save),identity:saveTransactionIdentity(),report:JSON.stringify(saveRecoveryReport),
+    activeUid:typeof activeInstance!=='undefined'?activeInstance?.uid:null,
+    evolutions:typeof pendingEvolutions!=='undefined'?JSON.stringify(pendingEvolutions):null};
+}
+function rollbackSaveTransaction(snapshot){
+  if(snapshot.identity!==saveTransactionIdentity())return false;
+  save=JSON.parse(snapshot.raw);
+  saveRecoveryReport=JSON.parse(snapshot.report);
+  if(typeof activeInstance!=='undefined'&&snapshot.activeUid)activeInstance=save.instances.find(x=>x.uid===snapshot.activeUid)||(activeInstance?.guest?activeInstance:null);
+  if(typeof partyBattle!=='undefined')partyBattle.forEach(entry=>{if(entry.inst&&!entry.guest){const restored=save.instances.find(x=>x.uid===entry.inst.uid);if(restored)entry.inst=restored;}});
+  if(typeof pendingEvolutions!=='undefined'&&snapshot.evolutions)pendingEvolutions=JSON.parse(snapshot.evolutions);
+  for(const refresh of [typeof refreshContractorRankUi==='function'?refreshContractorRankUi:null,typeof updateItems==='function'?updateItems:null]){
+    try{refresh?.();}catch(error){console.error('Rollback display refresh failed:',error);}
+  }
+  return true;
+}
+function saveTransactionNotice(message){
+  try{if(typeof showUiNotice==='function')showUiNotice(message,'error');else alert(message);}
+  catch(error){console.error('Save notice failed:',error);}
+}
+function showCommittedSaveResult(render){
+  try{render();}catch(error){saveTransactionNotice('結果は保存済みです。画面を開き直して所持品をご確認ください。');console.error('Committed result display failed:',error);}
+}
+function commitSaveMutation(mutate){
+  const snapshot=captureSaveTransaction();
+  try{mutate();if(!saveGame())throw new Error('save_failed');return true;}
+  catch(error){rollbackSaveTransaction(snapshot);saveTransactionNotice('保存できませんでした。今回の消費や取得は確定していません。');console.error('Save transaction failed:',error);return false;}
+}
+const SAVE_REPLACEMENT_RECOVERY_KEY='mb_v95c_replacement_recovery_v1';
+let replacementRecoveryExportedRaw=null;
+function readReplacementRecovery(){
+  lastSaveError=null;const raw=safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY);
+  if(lastSaveError)throw new Error('復旧記録を読み取れません。');
+  if(!raw)return {raw:null,record:null};
+  let record;try{record=JSON.parse(raw);}catch(_error){throw new Error('復旧記録が破損しています。書き出して保管してください。');}
+  if(record.version!==1||record.identity!==saveTransactionIdentity()||typeof record.before!=='string'||typeof record.after!=='string'||!(record.backupBefore===null||typeof record.backupBefore==='string')||!['pending','completed','acknowledged'].includes(record.status))throw new Error('復旧記録を確認できません。書き出して保管してください。');
+  return {raw,record};
+}
+function stageReplacementRecovery(before,after){
+  const existing=readReplacementRecovery();
+  if(existing.record?.status==='pending')throw new Error('未完了の復旧記録があります。セーブ管理から書き出して確認してください。');
+  lastSaveError=null;const backupBefore=safeStorageGet(SAVE_BACKUP_KEY);if(lastSaveError)throw new Error('現在のバックアップを読み取れません。');
+  const raw=JSON.stringify({version:1,identity:saveTransactionIdentity(),status:'pending',createdAt:new Date().toISOString(),before:before||'',backupBefore,after});
+  if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,raw)||safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)throw new Error('復旧用データを保管できないため、置換を中止しました。');
+  refreshReplacementRecoveryStatus();return raw;
+}
+function completeReplacementRecovery(raw){
+  if(safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)return;
+  const record=JSON.parse(raw);record.status='completed';
+  if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,JSON.stringify(record)))saveTransactionNotice('データの置換は完了しました。復旧記録は未完了表示のまま保管されています。');
+  refreshReplacementRecoveryStatus();
+}
+function replacementRecoveryStatusText(){
+  try{const {record}=readReplacementRecovery();return !record?'読込・復旧用の保管記録はありません。':record.status==='pending'?'未完了の読込・復旧記録があります。次の読込は停止中です。変更前・変更後候補を個別に書き出せます。自動では適用されません。':'読込・復旧記録を保管しています。各候補の書き出しは通常のセーブ読込で使えます。';}
+  catch(_error){return '確認できない読込・復旧記録があります。記録全体を書き出して保管してください。自動では変更・削除しません。';}
+}
+function refreshReplacementRecoveryStatus(){
+  try{const el=document.getElementById('replacementRecoveryStatus');if(el)el.textContent=replacementRecoveryStatusText();}catch(error){console.error(error);}
+}
+function exportReplacementRecovery(kind='all'){
+  try{
+    const raw=safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY);
+    if(!raw){saveTransactionNotice('保管された読込・復旧記録はありません。');return false;}
+    if(kind==='all'){downloadTextFile('monster-battle-replacement-recovery.json',raw);replacementRecoveryExportedRaw=raw;return true;}
+    if(!['before','after','backupBefore'].includes(kind))return false;
+    const {record}=readReplacementRecovery(),candidate=record[kind];
+    if(!candidate){saveTransactionNotice('この候補のセーブデータはありません。');return false;}
+    downloadTextFile(`monster-battle-recovery-${kind}.json`,candidate);return true;
+  }catch(error){saveTransactionNotice(error.message);return false;}
+}
+function acknowledgeReplacementRecovery(){
+  try{
+    const {raw,record}=readReplacementRecovery();if(!record)return;
+    if(replacementRecoveryExportedRaw!==raw){saveTransactionNotice('先に「読込・復旧データを書き出す」で変更前と変更後の候補を保管してください。');return;}
+    if(!confirm('書き出したファイルを保管しましたか？ 現在のセーブは変更せず、次の読込・復旧を許可します。次回の読込・復旧時にこの記録は置き換わります。'))return;
+    if(safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)throw new Error('記録が更新されました。もう一度確認してください。');
+    record.status='acknowledged';if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,JSON.stringify(record)))throw new Error('確認状態を保存できませんでした。');
+    refreshReplacementRecoveryStatus();
+  }catch(error){saveTransactionNotice(error.message);}
+}
+function saveGame({requireBackup=false}={}) {
   if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
@@ -481,13 +566,18 @@ function saveGame() {
   save.saveMeta.lastSavedAt = new Date().toISOString();
   save.saveMeta.integrityHash = saveHash(save);
   const raw=JSON.stringify(save);
+  lastSaveError=null;
   const previous=safeStorageGet(SAVE_KEY);
-  if(previous)safeStorageSet(SAVE_BACKUP_KEY,previous);
+  if(requireBackup&&lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
+  let replacementRecord=null;
+  if(requireBackup){try{replacementRecord=stageReplacementRecovery(previous,raw);}catch(error){saveTransactionNotice(error.message);return false;}}
+  if(previous){const backedUp=safeStorageSet(SAVE_BACKUP_KEY,previous);if(requireBackup&&!backedUp){saveTransactionNotice('バックアップを保存できないため、データの置換を中止しました。');return false;}}
   if(!safeStorageSet(SAVE_KEY,raw)){
     const message='セーブの保存に失敗しました。端末の空き容量やブラウザ設定を確認し、セーブ管理からデータを書き出してください。';
-    if(typeof showUiNotice==='function')showUiNotice(message,'error');else if(typeof alert==='function')alert(message);
+    saveTransactionNotice(message);
     return false;
   }
+  if(replacementRecord)completeReplacementRecovery(replacementRecord);
   if(!previous)safeStorageSet(SAVE_BACKUP_KEY,raw);
   if(typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(raw);
   return true;
@@ -501,17 +591,18 @@ function exportSaveData(){saveGame();const date=new Date().toISOString().slice(0
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
 async function importSaveData(input){
   const file=input?.files?.[0];if(!file)return;
-  let previousSave=null,previousReport=null,previousBackup=null,persisted=false;
+  const identity=saveTransactionIdentity();
+  let snapshot=null,persisted=false;
   try{
     const raw=await file.text();const report=[];const imported=parseAndPrepareSave(raw,report);
+    if(identity!==saveTransactionIdentity())throw new Error('読み込み中にアカウントが変わったため中止しました。');
     if(!confirm(`セーブデータを読み込みますか？\n個体 ${imported.instances.length}体／コイン ${imported.coins}\n現在のデータはバックアップされます。`))return;
-    previousBackup=safeStorageGet(SAVE_BACKUP_KEY);
-    const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
-    previousSave=save;previousReport=saveRecoveryReport;
+    if(identity!==saveTransactionIdentity())throw new Error('アカウントが変わったため中止しました。');
+    snapshot=captureSaveTransaction();
     save=imported;saveRecoveryReport=report.concat('ファイルからセーブデータを読込み');
-    if(!saveGame())throw lastSaveError||new Error('保存できませんでした。');
+    if(!saveGame({requireBackup:true}))throw lastSaveError||new Error('保存できませんでした。');
     persisted=true;location.reload();
-  }catch(error){if(previousSave&&!persisted){save=previousSave;saveRecoveryReport=previousReport;if(previousBackup!==null)safeStorageSet(SAVE_BACKUP_KEY,previousBackup);else safeStorageRemove(SAVE_BACKUP_KEY);}alert(`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
+  }catch(error){if(snapshot&&!persisted)rollbackSaveTransaction(snapshot);saveTransactionNotice(persisted?'読込結果は保存済みです。画面を再読み込みしてください。':`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
 }
 async function copySaveText(kind='current'){
   const raw=kind==='corrupt'?safeStorageGet(SAVE_CORRUPT_KEY):(safeStorageGet(SAVE_KEY)||JSON.stringify(save));
@@ -519,16 +610,21 @@ async function copySaveText(kind='current'){
   try{await navigator.clipboard.writeText(raw);alert('セーブデータをクリップボードへコピーしました。');}catch(_error){prompt('下の内容を長押ししてコピーしてください。',raw);}
 }
 function restoreLastKnownGood(){
-  const backup=safeStorageGet(SAVE_BACKUP_KEY);if(!backup){alert('復旧できるバックアップがありません。');return;}
-  let previousSave=null,previousReport=null,persisted=false;
+  const identity=saveTransactionIdentity(),backup=safeStorageGet(SAVE_BACKUP_KEY);if(!backup){alert('復旧できるバックアップがありません。');return;}
+  let snapshot=null,persisted=false,current=null;
   try{
     const report=[];const restored=parseAndPrepareSave(backup,report);
     if(!confirm('直前の正常なバックアップへ戻しますか？'))return;
-    previousSave=save;previousReport=saveRecoveryReport;
+    if(identity!==saveTransactionIdentity())throw new Error('アカウントが変わったため中止しました。');
+    snapshot=captureSaveTransaction();current=safeStorageGet(SAVE_KEY);
     save=restored;saveRecoveryReport=report.concat('lastKnownGoodから手動復旧');
-    if(!saveGame())throw lastSaveError||new Error('保存できませんでした。');
+    if(!saveGame({requireBackup:true}))throw lastSaveError||new Error('保存できませんでした。');
     persisted=true;location.reload();
-  }catch(error){if(previousSave&&!persisted){save=previousSave;saveRecoveryReport=previousReport;safeStorageSet(SAVE_BACKUP_KEY,backup);}alert(`バックアップを復旧できませんでした。\n${error.message}`);}
+  }catch(error){
+    if(snapshot&&!persisted)rollbackSaveTransaction(snapshot);
+    // Both original candidates remain in the durable recovery record; never roll disk backwards.
+    saveTransactionNotice(persisted?'復旧結果は保存済みです。画面を再読み込みしてください。':`バックアップを復旧できませんでした。\n${error.message}`);
+  }
 }
 function showSaveRecoveryReport(){alert(saveRecoveryReport.length?saveRecoveryReport.join('\n'):'修復・移行の記録はありません。');}
 

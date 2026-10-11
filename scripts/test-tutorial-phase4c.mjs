@@ -76,9 +76,9 @@ assert.equal(evaluate("commitTutorialFirstContract('contract_scroll',{id:'slime'
 assert.equal(JSON.stringify(context.save),beforeFailure,'a failed durable save must roll back grant, use, join, progression, and flags');
 assert.equal(context.saveCalls,1,'the failed atomic write must not be retried invisibly');
 
-assert.ok(items.includes('const animationStage = guaranteed?3:contractAnimationStage(roll, rate)'),'the tutorial success must enter the established successful animation path');
-assert.ok(items.includes("commitTutorialFirstContract(itemId,enemy)"),'confirmation must use the atomic tutorial transaction');
-assert.ok(items.includes("show('contractConfirm')")&&items.includes('契約状態を保存できませんでした'),'a failed transaction must remain safely retryable');
+assert.ok(items.includes('const stage=guaranteed?3:contractAnimationStage(Math.random(),rate)'),'the tutorial success must enter the established successful animation path');
+assert.ok(items.includes("commitTutorialFirstContract(itemId,target)"),'confirmation must use the atomic tutorial transaction');
+assert.ok(items.includes("show('contractConfirm')")&&items.includes('singleBattleContractAttempted=false')&&items.includes('契約結果を保存できませんでした'),'a failed transaction must remain safely retryable');
 assert.ok(animation.includes('const zoomLevels = [1.16, 1.32, 1.48]')&&animation.includes("paper.classList.add('is-stamping')"),'the existing three zoom pulses and paw-stamp success animation must remain in use');
 assert.ok(tutorial.includes("input:'elna_contract'")&&tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'the guide must not advance before the Elna contract commits');
 assert.ok(!items.includes('tutorialNext(true)'),'contract confirmation must not bypass the external-step transaction guard');

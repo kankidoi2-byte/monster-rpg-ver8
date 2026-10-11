@@ -176,6 +176,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   if(typeof resetBattleFeedback==='function')resetBattleFeedback();
   battleRewardGranted = false;
   singleBattleContractAttempted = false;
+  postBattleContractRetry = null;
   resetBattleTurnCounter();
   if (!partyBattle.length) prepareBattleParty();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
@@ -202,6 +203,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
 }
 function afterBattleNext() {
   singleBattleContractAttempted = false;
+  postBattleContractRetry = null;
   endPartyRecovery();
   hideBattleOutcome();
   showBattleChoices();

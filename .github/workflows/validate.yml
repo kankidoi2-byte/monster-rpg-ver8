@@ -120,3 +120,25 @@ jobs:
         with:
           name: soul-contract-manifest
           path: artifacts/soul-contract/manifest.json
+
+  save-transactions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify save failure boundaries in isolated profiles
+        run: node scripts/test-save-transactions-browser.mjs
+      - name: Upload save transaction evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: save-transaction-evidence
+          path: artifacts/save-transactions
