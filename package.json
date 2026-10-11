@@ -28,7 +28,7 @@
     "check:images": "node scripts/check-image-sizes.mjs",
     "check:ui-contract": "node scripts/test-ui-contract.mjs",
     "check:battle-switch": "node scripts/test-battle-switch.mjs",
-    "check:battle-motion": "node scripts/test-battle-motion.mjs",
+    "check:battle-motion": "node scripts/test-battle-motion.mjs && node scripts/test-three-motion-compression.mjs",
     "check:monster-dex": "node scripts/test-monster-obtain.mjs",
     "check:character-dex": "node scripts/test-character-dex.mjs",
     "check:map-dex": "node scripts/test-map-dex.mjs",

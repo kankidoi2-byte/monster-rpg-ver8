@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "sourceCommit": "f50901dfd5c7d8c55b5afbfaa8924dcee67128d6",
+  "comparisonCommit": "38f49bedc6959472fb315273f6a7429e959a4d85",
+  "approvedUtc": "2026-10-11T00:24:34Z",
+  "encoding": "VP9 CRF28 yuva420p, full original frame sequence",
+  "entries": [
+    {
+      "id": "kimeragna",
+      "original": "images/monsters/motion/kimeragna_v7_alpha.webm",
+      "src": "images/monsters/motion/kimeragna_v7_crf28_alpha.webm",
+      "originalSha256": "558b9cf251f8adfc0299401680972679a5e804ad8836ab3c8483d1e4d0861015",
+      "sha256": "6b47b1d6fc8a1d44e2043d96f7a359ed105b7c693c807c1d4d6dbdefdb9a2a2a",
+      "originalBytes": 20264000,
+      "bytes": 13753397,
+      "width": 960,
+      "height": 960,
+      "frames": 240,
+      "fps": 30,
+      "duration": 8,
+      "alphaMae": 0.2632321189597801,
+      "alphaMaxError": 61,
+      "compositePsnrDb": {
+        "0": 38.43053161118992,
+        "255": 38.04134254384677
+      },
+      "sourceFirstLastMse": {
+        "0": 267.0311279296875,
+        "255": 302.8399658203125
+      },
+      "candidateFirstLastMse": {
+        "0": 267.3171081542969,
+        "255": 303.50347900390625
+      }
+    },
+    {
+      "id": "slime",
+      "original": "images/monsters/motion/slime_adopted_alpha.webm",
+      "src": "images/monsters/motion/slime_adopted_crf28_alpha.webm",
+      "originalSha256": "6a8119f48c432aa5c875e48a2ac7fedd4a58a78182e3c5bdc578f96f9165737c",
+      "sha256": "7cd8866b2f8f470ea6dfdcc501ed1ecc6f089face124a7494ca6383e1afe59d9",
+      "originalBytes": 1488747,
+      "bytes": 1057132,
+      "width": 720,
+      "height": 640,
+      "frames": 240,
+      "fps": 30,
+      "duration": 8,
+      "alphaMae": 0.06294115306712963,
+      "alphaMaxError": 47,
+      "compositePsnrDb": {
+        "0": 44.50428341571634,
+        "255": 44.484574541329906
+      },
+      "sourceFirstLastMse": {
+        "0": 108.92594909667969,
+        "255": 73.6216812133789
+      },
+      "candidateFirstLastMse": {
+        "0": 109.2882080078125,
+        "255": 73.98553466796875
+      }
+    },
+    {
+      "id": "elixion",
+      "original": "images/monsters/motion/elixion_arm_fixed_alpha.webm",
+      "src": "images/monsters/motion/elixion_arm_fixed_crf28_alpha.webm",
+      "originalSha256": "b504abbf99916a6c7aa9499815a71a9ce519be2a1b51d6e480776fe4fbabf5dc",
+      "sha256": "96eae76d48cfdf6739148f5da47d8ab3b5ee94930283caeef3c7301fb474d334",
+      "originalBytes": 11695531,
+      "bytes": 7103086,
+      "width": 960,
+      "height": 960,
+      "frames": 240,
+      "fps": 30,
+      "duration": 8,
+      "alphaMae": 0.1794808349609375,
+      "alphaMaxError": 66,
+      "compositePsnrDb": {
+        "0": 38.81863068227483,
+        "255": 38.416375743540215
+      },
+      "sourceFirstLastMse": {
+        "0": 222.33682250976562,
+        "255": 307.4789123535156
+      },
+      "candidateFirstLastMse": {
+        "0": 221.9445343017578,
+        "255": 304.5506896972656
+      }
+    }
+  ]
+}
