@@ -8,8 +8,11 @@ const out=process.env.MOTION_QA_OUT||'artifacts/three-motion-compression';
 const port=Number(process.env.MOTION_QA_PORT||4187);
 const gameUrl=new URL(process.env.GAME_TEST_URL||`http://127.0.0.1:${port}/`);
 gameUrl.searchParams.set('legacy','1');
-const expected={kimeragna:'kimeragna_v7_crf28_alpha.webm',slime:'slime_adopted_crf28_alpha.webm',elixion:'elixion_arm_fixed_crf28_alpha.webm'};
-const originals=['kimeragna_v7_alpha.webm','slime_adopted_alpha.webm','elixion_arm_fixed_alpha.webm'];
+// 720px release (docs/motion-compression-720-20261011): slime was already 720x640 and keeps its CRF28 file.
+const expected={kimeragna:'kimeragna_v7_720_alpha.webm',slime:'slime_adopted_crf28_alpha.webm',elixion:'elixion_arm_fixed_720_alpha.webm'};
+// Network-failure cases block whichever approved encodes are registered (720px, or slime's CRF28).
+const approvedMotion=/_(crf28|720)_alpha\.webm/;
+const originals=['kimeragna_v7_alpha.webm','slime_adopted_alpha.webm','elixion_arm_fixed_alpha.webm','kimeragna_v7_crf28_alpha.webm','elixion_arm_fixed_crf28_alpha.webm'];
 const report={result:'RUNNING',cases:[],requests:[],errors:[],limitations:['Desktop Chromium with mobile viewports, not physical Galaxy/Android performance validation.','Synthetic pagehide/pageshow exercises lifecycle handlers; not an OS background/foreground test.','Encoded fps/frame count is covered by asset metadata checks; browser playback is checked for advancement and a loop.','Production default is 3; explicit limit 1 remains covered for fallback lifecycle tests.']};
 fs.mkdirSync(out,{recursive:true});
 const write=()=>fs.writeFileSync(`${out}/results.json`,JSON.stringify(report,null,2)+'\n');
@@ -25,7 +28,7 @@ async function openPage({width=390,height=844,reducedMotion='no-preference',fail
  page.on('requestfailed',r=>{pending.delete(r);if(failed.length<40)failed.push({url:requestPath(r),error:r.failure()?.errorText});});
  page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>d.dismiss());
  page.on('request',r=>{if(/\.webm(?:\?|$)/.test(r.url()))report.requests.push(new URL(r.url()).pathname);});
- if(fail)await page.route('**/*crf28_alpha.webm',r=>r.abort('failed'));
+ if(fail)await page.route(approvedMotion,r=>r.abort('failed'));
  // Media/telemetry can remain connected after the game is usable. Require the
  // actual app entry points and title, rather than waiting for global network idle.
  try{
@@ -134,7 +137,7 @@ try{
   const {page,context}=await openPage({fail:true});await start(page,id);
   await page.waitForFunction(()=>battleIdleRecords.size===1&&[...battleIdleRecords.values()].every(r=>r.failed&&r.state==='static'&&!r.video.getAttribute('src')&&getComputedStyle(r.img).visibility==='visible'));
   await page.screenshot({path:`${out}/${id}-network-failure-static.png`});
-  await page.unroute('**/*crf28_alpha.webm');
+  await page.unroute(approvedMotion);
   await page.evaluate(()=>{const r=[...battleIdleRecords.values()][0];r.details.open=true;r.button.click();});await ready(page);
   report.cases.push({name:`${id}-network-failure-poster-manual-retry`,result:'PASS'});await context.close();
  }

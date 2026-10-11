@@ -8,15 +8,20 @@ const manifest=JSON.parse(read('docs/motion-compression-20261011/manifest.json')
 const media=vm.runInNewContext(read('js/battle-idle-media.js').split('// 5s')[0]+';BATTLE_IDLE_MEDIA');
 const catalog=vm.runInNewContext(read('tools/motion-review/catalog-data.generated.js')+';MOTION_CATALOG');
 assert.deepEqual(manifest.entries.map(e=>e.id).sort(),['elixion','kimeragna','slime']);
+// The 720px release supersedes these assets; the approved files stay on disk for old caches.
+const successor=JSON.parse(read('docs/motion-compression-720-20261011/manifest.json'));
+const next=id=>successor.entries.find(x=>x.id===id);
 let oldTotal=0,newTotal=0;
 for(const e of manifest.entries){
- assert.equal(media[e.id].src,e.src);assert.notEqual(e.src,e.original);
+ const n=next(e.id);
+ if(n){assert.equal(n.previous,e.src);assert.equal(media[e.id].src,n.src);}else assert.equal(media[e.id].src,e.src);
+ assert.notEqual(e.src,e.original);
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(e.src)).digest('hex'),e.sha256);
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(e.original)).digest('hex'),e.originalSha256);
  assert.equal(fs.statSync(e.src).size,e.bytes);assert.equal(fs.statSync(e.original).size,e.originalBytes);assert.ok(e.bytes<e.originalBytes);
  assert.equal(e.duration,8);assert.equal(e.frames,240);assert.equal(e.fps,30);
  assert.equal(media[e.id].sourceBounds.width,e.width);assert.equal(media[e.id].sourceBounds.height,e.height);
- const row=catalog.rows.find(r=>r.id===e.id);assert.equal(row.motion.src,e.src);assert.equal(row.fingerprint,e.sha256);
+ const row=catalog.rows.find(r=>r.id===e.id);assert.equal(row.motion.src,media[e.id].src);assert.equal(row.fingerprint,n?n.sha256:e.sha256);
  oldTotal+=e.originalBytes;newTotal+=e.bytes;
 }
 assert.equal(oldTotal,33448278);assert.equal(newTotal,21913615);
