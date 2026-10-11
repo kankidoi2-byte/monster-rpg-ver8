@@ -14,7 +14,7 @@ const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
-w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
 const by=id=>d.getElementById(id);
@@ -69,10 +69,10 @@ run("show('home')");assert(observer.disconnected);stale();observer.emit(r.media,
 pass('exit disconnects observer and rejects queued timer/observer callbacks');
 // Normal game path, no review registry injection.
 run("save=initSave();completeTutorial();save.instances=[];save.party=[];for(const id of ['gran_volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('volmoog');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','volmoog','easy',activeHuntRequest);show('battle');");
-r=rec();assert.equal(run('battleIdleLimit'),1);assert(r.config.src.endsWith('/gran_volmoog_v18_alpha.webm'));
+r=rec();assert.equal(run('battleIdleLimit'),3);assert(r.config.src.endsWith('/gran_volmoog_v18_alpha.webm'));
 assert.equal(r.media.style.getPropertyValue('--idle-position'),'50% 100%');assert.equal(r.media.style.getPropertyValue('--idle-scale'),'0.75');
 assert.equal(r.facing.style.transform,'scaleX(-1)');emit(r,1);await flush();assert(!r.video.paused);
-run('setBattleIdleLimit(3)');let rs=records();assert.equal(rs.length,2);
+let rs=records();assert.equal(rs.length,2);
 rs.forEach(q=>emit(q,1));await flush();const enemy=rs.find(q=>q!==r);emit(r,0);fire(r);assert(r.video.paused&&!enemy.video.paused);
 run('pHp--;eHp--;update()');assert.equal(rec(),r);assert.equal(records().length,2);
 pass('ordinary gran registration, shared layout, mixed species independently stop and retain HP nodes');
@@ -80,4 +80,4 @@ run("show('home')");assert.equal(r.media.style.getPropertyValue('--idle-position
 for(let i=0;i<50;i++){setup();emit(rec(),1);run("show('home')");}
 assert(observers.every(o=>o.disconnected));assert.equal(records().length,0);
 checkIds();dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
-console.log(JSON.stringify({kind:'DOM + mocked media/IntersectionObserver; not real viewport or decoder',checks,pass:checks.length,normalRegistered:run("Object.keys(BATTLE_IDLE_MEDIA).length"),defaultLimit:1},null,2));
+console.log(JSON.stringify({kind:'DOM + mocked media/IntersectionObserver; not real viewport or decoder',checks,pass:checks.length,normalRegistered:run("Object.keys(BATTLE_IDLE_MEDIA).length"),defaultLimit:3},null,2));

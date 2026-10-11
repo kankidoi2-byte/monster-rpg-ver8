@@ -1,6 +1,6 @@
 /* Provisional visual sizes: ★1=.35–.45 (slime=.30), ★2=.50, ★3=.75, ★4=1.00, ★5=1.20.
  * Ratios apply to contained full-loop bounds; gameplay rarity and saves are unchanged. */
-/* Independent display lifetimes; bounded feature-branch registrations, default budget 1. */
+/* Independent display lifetimes; bounded feature-branch registrations, default budget 3. */
 const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   src:'images/monsters/motion/volmoog_v18_alpha.webm',
   poster:'images/monsters/motion/volmoog_v18_static.webp',
@@ -305,8 +305,8 @@ kimeragna_apex:Object.freeze({
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
 const BATTLE_IDLE_WAIT_MS=5000;
 const battleIdleRecords=new Map();
-let battleIdleRecord=null,battleIdlePageHidden=false,battleIdleLimit=1;
-// Session-only evaluation limit. No save writes; Android gate precedes raising default.
+let battleIdleRecord=null,battleIdlePageHidden=false,battleIdleLimit=3;
+// Session-only override. Production supports ally and both enemies; no save writes.
 function setBattleIdleLimit(value){
   if(!Number.isInteger(value)||value<1||value>3)return false;
   battleIdleLimit=value;syncBattleIdleMedia();return true;

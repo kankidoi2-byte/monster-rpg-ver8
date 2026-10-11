@@ -14,7 +14,7 @@ const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
-w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
 const by=id=>d.getElementById(id);
@@ -26,7 +26,8 @@ w.HTMLMediaElement.prototype.load=function(){};
 w.HTMLMediaElement.prototype.play=function(){playCalls++;if(defer)return new Promise((resolve,reject)=>deferred.push({resolve,reject,video:this}));if(refuse)return Promise.reject(new Error('simulated refusal'));this._paused=false;this.dispatchEvent(new w.Event('playing'));return Promise.resolve();};
 const fixed=[...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
 function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="${id}"]`).length,1,id);}
-function setup(){run(`save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};save.instances=[];save.party=[];
+// Exercise explicit one-decoder fallback independently of the production default.
+function setup(){run(`setBattleIdleLimit(1);save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};save.instances=[];save.party=[];
   for(const id of ['volmoog','elna_beginner','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('elna_beginner');
   activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';

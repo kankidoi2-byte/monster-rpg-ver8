@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261011-enemy-motion-limit-3",date:"2026-10-11",category:"fix",title:"敵の待機モーションが動かない問題を修正しました",body:"戦闘中に味方と敵の待機モーションを同時に再生できるようにしました。三つ巴では味方1体・敵2体まで動きます。"},
   {id:"20261011-three-motion-compression",date:"2026-10-11",category:"update",title:"3体のモーションデータを軽量化しました",body:"キメラグナ・スライム・エリクシオンの戦闘モーションを軽量化し、3体合計の読み込みデータ量を約34％削減しました。再生時間・コマ数・表示サイズは変わりません。"},
   {id:"20261011-save-transactions",date:"2026-10-11",category:"fix",title:"保存に失敗したときの取得処理を修正しました",body:"錬成や戦闘後の契約、購入・合成・遠征報酬で、保存できなかった結果を成功として扱わないよう修正しました。セーブ読込は、現在のデータのバックアップが保存できない場合に中止します。"},
   {id:"20261010-skill-dex-count-contrast",date:"2026-10-10",category:"fix",title:"技図鑑の件数を読みやすくしました",body:"検索・絞り込み後の技の件数が、背景の白黒にかかわらず読みやすくなるよう調整しました。カードの形や技の性能は変わりません。"},
