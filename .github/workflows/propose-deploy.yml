@@ -1,0 +1,131 @@
+name: Propose public deployment
+
+# After main passes validation, open (or refresh) a pull request in the public
+# deployment repository that pins source-ref.txt to the validated commit.
+# This workflow never merges: publishing stays a manual decision in the
+# deployment repository, after its own validation workflow passes.
+on:
+  workflow_run:
+    workflows: [Validate game data and assets]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Source commit to propose (default: current main)"
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: propose-deploy
+  cancel-in-progress: false
+
+env:
+  DEPLOY_REPO: pactforge-studio/monster-rpg-ver8
+  DEPLOY_BRANCH: deploy/auto-source-ref
+
+jobs:
+  propose:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require deployment token
+        env:
+          TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Secret DEPLOY_REPO_TOKEN is not set. Add a fine-grained token for $DEPLOY_REPO (Contents and Pull requests: read and write)."
+            exit 1
+          fi
+
+      - name: Resolve validated source commit
+        id: source
+        env:
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          INPUT_SHA: ${{ inputs.sha }}
+        run: |
+          sha="${RUN_SHA:-$INPUT_SHA}"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out source history
+        uses: actions/checkout@v5
+        with:
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out deployment repository
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          token: ${{ secrets.DEPLOY_REPO_TOKEN }}
+          path: deployment
+          fetch-depth: 0
+
+      - name: Decide whether a runtime update is needed
+        id: plan
+        env:
+          SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          cd source
+          [ -n "$SHA" ] || SHA=$(git rev-parse origin/main)
+          SHA=$(git rev-parse --verify "$SHA^{commit}")
+          git merge-base --is-ancestor "$SHA" origin/main || { echo "::error::$SHA is not on main"; exit 1; }
+          deployed=$(tr -d '\r\n' < ../deployment/source-ref.txt)
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "deployed=$deployed" >> "$GITHUB_OUTPUT"
+          if [ "$SHA" = "$deployed" ]; then
+            echo "Already published: $SHA"; echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          # Never propose a rollback or an unrelated commit.
+          if ! git merge-base --is-ancestor "$deployed" "$SHA"; then
+            echo "::error::Published $deployed is not an ancestor of $SHA; refusing to propose."; exit 1
+          fi
+          # Only files copied to the public site matter (see the deployment workflow).
+          changed=$(git diff --name-only "$deployed" "$SHA" -- index.html url-transfer.html js css images)
+          if [ -z "$changed" ]; then
+            echo "No runtime changes since $deployed"; echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "needed=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "## 公開候補"
+            echo
+            echo "ソース \`kankidoi2-byte/monster-rpg-ver8\` の検証済みコミットを公開候補として固定します。"
+            echo
+            echo "- 現在の公開版: \`$deployed\`"
+            echo "- 候補: \`$SHA\`"
+            echo
+            echo "### 含まれる変更"
+            git log --first-parent --format='- %s (%h)' "$deployed..$SHA"
+            echo
+            echo "### 公開されるファイルの変更数"
+            echo "$(echo "$changed" | wc -l) files (index.html / js / css / images)"
+            echo
+            echo "このPRは自動作成です。**マージは手動**で行ってください。マージすると公開と公開後テストが走ります。"
+          } > ../pr-body.md
+
+      - name: Push candidate branch and open or refresh pull request
+        if: steps.plan.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
+          SHA: ${{ steps.plan.outputs.sha }}
+        run: |
+          cd deployment
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$DEPLOY_BRANCH" origin/main
+          printf '%s\n' "$SHA" > source-ref.txt
+          git commit -am "deploy: pin source ${SHA:0:7}"
+          git push --force origin "$DEPLOY_BRANCH"
+          title="deploy: 公開候補 ${SHA:0:7}"
+          pr=$(gh pr list -R "$DEPLOY_REPO" --head "$DEPLOY_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" -R "$DEPLOY_REPO" --title "$title" --body-file ../pr-body.md
+            echo "Refreshed $DEPLOY_REPO#$pr" >> "$GITHUB_STEP_SUMMARY"
+          else
+            url=$(gh pr create -R "$DEPLOY_REPO" --base main --head "$DEPLOY_BRANCH" --title "$title" --body-file ../pr-body.md)
+            echo "Opened $url" >> "$GITHUB_STEP_SUMMARY"
+          fi
