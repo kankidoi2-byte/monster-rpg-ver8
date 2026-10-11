@@ -1,0 +1,35 @@
+name: Verify published save transaction boundaries
+on:
+  push:
+    branches: [verify/save-transactions-live-20261011]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  published-save-transactions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Verify published runtime hashes
+        run: python scripts/verify-save-live-hashes.py
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify actual public save faults with disposable local profiles
+        env:
+          GAME_TEST_URL: https://pactforge-studio.github.io/monster-rpg-ver8/
+        run: node scripts/test-save-transactions-browser.mjs
+      - name: Upload published skill-card evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: save-transactions-published-evidence
+          path: |
+            artifacts/save-transactions
+            artifacts/save-public-verification.json
