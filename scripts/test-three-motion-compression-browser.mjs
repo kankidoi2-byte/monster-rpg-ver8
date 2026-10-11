@@ -6,12 +6,14 @@ import {spawn} from 'node:child_process';
 import fs from 'node:fs';
 const out=process.env.MOTION_QA_OUT||'artifacts/three-motion-compression';
 const port=Number(process.env.MOTION_QA_PORT||4187);
+const gameUrl=new URL(process.env.GAME_TEST_URL||`http://127.0.0.1:${port}/`);
+gameUrl.searchParams.set('legacy','1');
 const expected={kimeragna:'kimeragna_v7_crf28_alpha.webm',slime:'slime_adopted_crf28_alpha.webm',elixion:'elixion_arm_fixed_crf28_alpha.webm'};
 const originals=['kimeragna_v7_alpha.webm','slime_adopted_alpha.webm','elixion_arm_fixed_alpha.webm'];
 const report={result:'RUNNING',cases:[],requests:[],errors:[],limitations:['Desktop Chromium with mobile viewports, not physical Galaxy/Android performance validation.','Synthetic pagehide/pageshow exercises lifecycle handlers; not an OS background/foreground test.','Encoded fps/frame count is covered by asset metadata checks; browser playback is checked for advancement and a loop.','Session decoder limit 3 is a stress test only; production default 1 must remain unchanged.']};
 fs.mkdirSync(out,{recursive:true});
 const write=()=>fs.writeFileSync(`${out}/results.json`,JSON.stringify(report,null,2)+'\n');
-const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port',String(port)],{stdio:['ignore','pipe','inherit']});
+const server=process.env.GAME_TEST_URL?null:spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port',String(port)],{stdio:['ignore','pipe','inherit']});
 let browser;
 async function openPage({width=390,height=844,reducedMotion='no-preference',fail=false}={}){
  const context=await browser.newContext({viewport:{width,height},reducedMotion});
@@ -19,20 +21,25 @@ async function openPage({width=390,height=844,reducedMotion='no-preference',fail
  page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>d.dismiss());
  page.on('request',r=>{if(/\.webm(?:\?|$)/.test(r.url()))report.requests.push(new URL(r.url()).pathname);});
  if(fail)await page.route('**/*crf28_alpha.webm',r=>r.abort('failed'));
- await page.goto(`http://127.0.0.1:${port}/?legacy=1`,{waitUntil:'networkidle'});
+ await page.goto(gameUrl.href,{waitUntil:'networkidle'});
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert.equal(await page.evaluate(()=>battleIdleLimit),1,'unchanged production decoder default');
  return {page,context};
 }
 async function start(page,id,multi=false,limit=1){
  await page.evaluate(({id,multi,limit})=>{
-  clearTutorialUi();show('home');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.instances=[];save.party=[];
+  clearTutorialUi();show('home');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  // Legacy-completed saves still have unseen feature guides by default. Mark them
+  // seen in this isolated QA fixture so their delayed render cannot redirect home
+  // back into the battle or cover the motion screenshots.
+  for(const guide of TUTORIAL_GUIDE_IDS)save.progress.tutorial.guides[guide]=true;
+  save.instances=[];save.party=[];
   for(const mon of [id,...['kimeragna','slime','elixion'].filter(x=>x!==id)])save.party.push(addInstance(mon,30).uid);
   prepareBattleParty();setBattleIdleLimit(limit);
   const enemyId=id==='slime'?'elixion':'slime';
   const request=createHuntRequest(MAPS[0],by(enemyId),'normal',[]);
   request.battleMode=multi?'three_way':'single';request.secondEnemyId='elixion';
-  beginChosenBattle('grassland',enemyId,'normal',request);
+  beginChosenBattle('grassland',enemyId,'normal',request);clearTutorialUi();
  },{id,multi,limit});
  await page.locator('#battle').waitFor({state:'visible'});
 }
@@ -54,7 +61,7 @@ function verifySamples(samples){for(const s of samples){
  assert(s.corners.every(a=>a<8),'transparent canvas corners');assert(s.loop&&s.muted&&s.inline);assert.equal(s.posterVisible,'hidden');
 }}
 try{
- await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);server.once('exit',code=>reject(Error(`server exited ${code}`)));});
+ if(server)await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);server.once('exit',code=>reject(Error(`server exited ${code}`)));});
  browser=await chromium.launch({headless:true});
  for(const viewport of [{width:320,height:720},{width:360,height:780},{width:390,height:844},{width:430,height:932},{width:844,height:390}]){
   const {page,context}=await openPage(viewport);
@@ -87,7 +94,17 @@ try{
     assert(await page.evaluate(i=>changeActivePartyMember(i),index));await ready(page);
     assert.equal(await page.locator('#battle .battle-idle-video').count(),1);
    }
-   await page.evaluate(()=>show('home'));assert.equal(await page.locator('.battle-idle-video').count(),0);
+   await page.evaluate(()=>show('home'));
+   const homeCleanup=await page.evaluate(()=>({
+    activeScreens:[...document.querySelectorAll('.screen.active')].map(el=>el.id),
+    records:[...battleIdleRecords.values()].map(r=>({key:r.key,state:r.state,owned:battleIdleOwned(r),connected:r.video.isConnected,src:r.video.getAttribute('src')})),
+    videos:[...document.querySelectorAll('.battle-idle-video')].map(v=>({parent:v.parentElement?.outerHTML.slice(0,1800),connected:v.isConnected,paused:v.paused,src:v.getAttribute('src'),owned:[...battleIdleRecords.values()].some(r=>r.video===v)}))
+   }));
+   report.cases.push({name:'home-disposal-diagnostics',...homeCleanup});
+   await page.screenshot({path:`${out}/home-after-switches.png`});
+   assert(homeCleanup.activeScreens.includes('home'),JSON.stringify(homeCleanup));
+   assert.equal(homeCleanup.records.length,0,JSON.stringify(homeCleanup));
+   assert.equal(homeCleanup.videos.length,0,JSON.stringify(homeCleanup));
    report.cases.push({name:'reduced-motion-lifecycle-six-party-switches-home-disposal',result:'PASS'});
   }
   await context.close();write();
@@ -110,4 +127,4 @@ try{
  assert(report.requests.length>0);assert(!report.requests.some(p=>originals.some(name=>p.endsWith('/'+name))),'no original videos requested');
  assert.deepEqual(report.errors,[]);report.result='PASS';write();console.log(`PASS ${report.cases.length} motion browser cases; evidence ${out}`);
 }catch(error){report.result='FAIL';report.failure=error.stack;write();throw error;}
-finally{if(browser)await browser.close();server.kill();}
+finally{if(browser)await browser.close();server?.kill();}
