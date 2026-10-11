@@ -7,7 +7,7 @@ const MOTION_CATALOG={
       "name": "フレイガル",
       "art": "images/monsters/freigal_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/freigal_v2_alpha.webm",
+        "src": "images/monsters/motion/freigal_v2_720_alpha.webm",
         "poster": "images/monsters/motion/freigal_v2_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -15,7 +15,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.4
         },
         "sourceBounds": {
           "width": 960,
@@ -26,7 +26,7 @@ const MOTION_CATALOG={
           "bottom": 839
         }
       },
-      "fingerprint": "91583d6dc1ca1bde2cffa02694393235e7bfbb1d239d6ed68379fbd619630bd6",
+      "fingerprint": "26778dc82e70c51e6057a452af6ee36b50c4207ed334f81573596f12fd9595a5",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -35,7 +35,7 @@ const MOTION_CATALOG={
       "name": "フレイウルフ",
       "art": "images/monsters/freiwolf_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/freiwolf_v2_alpha.webm",
+        "src": "images/monsters/motion/freiwolf_v2_720_alpha.webm",
         "poster": "images/monsters/motion/freiwolf_v2_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -43,7 +43,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -54,7 +54,7 @@ const MOTION_CATALOG={
           "bottom": 850
         }
       },
-      "fingerprint": "9d592cbebcd29a4a3f6dc9e041a5dc8e64b2b99c8247a973841328102a2a8da9",
+      "fingerprint": "48389bd93db19c4dd78033a8b39fccdda6e95439e2c56bb82c7b4de25fd30c2f",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -63,7 +63,7 @@ const MOTION_CATALOG={
       "name": "アクアロン",
       "art": "images/monsters/aquaron_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/aquaron_v3_alpha.webm",
+        "src": "images/monsters/motion/aquaron_v3_720_alpha.webm",
         "poster": "images/monsters/motion/aquaron_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -71,7 +71,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.45
         },
         "sourceBounds": {
           "width": 960,
@@ -82,7 +82,7 @@ const MOTION_CATALOG={
           "bottom": 949
         }
       },
-      "fingerprint": "725a195a7c2d88b760590ebcbd324a4e6a7d89ca81573aeaa81656240b4e5cc1",
+      "fingerprint": "daf6c42bfa968e884ec358adb119de530498d0d18237990dee59f6ba56ce6eb9",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -91,7 +91,7 @@ const MOTION_CATALOG={
       "name": "ハイアクアロン",
       "art": "images/monsters/highaquaron_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/highaquaron_v3_alpha.webm",
+        "src": "images/monsters/motion/highaquaron_v3_720_alpha.webm",
         "poster": "images/monsters/motion/highaquaron_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -99,7 +99,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -110,7 +110,7 @@ const MOTION_CATALOG={
           "bottom": 946
         }
       },
-      "fingerprint": "2518acf8a6caf7ffa82bdd1e826feeb890eeda5390dcc615a33c7b230973fb71",
+      "fingerprint": "1b515fa780cb75cbff0460551898c4b3bb7519dc64c58daaa97ebe73993f3f1a",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -119,14 +119,14 @@ const MOTION_CATALOG={
       "name": "シェンハイロン",
       "art": "images/monsters/shenhairon_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/shenhairon_v5_alpha.webm",
+        "src": "images/monsters/motion/shenhairon_v5_720_alpha.webm",
         "poster": "images/monsters/motion/shenhairon_v5_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -137,7 +137,7 @@ const MOTION_CATALOG={
           "bottom": 960
         }
       },
-      "fingerprint": "9cf6f7fc8e6748e6c324bdceb26b379c06223dcd1facf96656babcba0b5df659",
+      "fingerprint": "c89a1901737ecbc736ac0e0375f429e3bfab1353d82a03fa6dd058670704e940",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -146,14 +146,14 @@ const MOTION_CATALOG={
       "name": "ティエンハイロン",
       "art": "images/monsters/tienhairon_20260923.webp",
       "motion": {
-        "src": "images/monsters/motion/tienhairon_v5_alpha.webm",
+        "src": "images/monsters/motion/tienhairon_v5_720_alpha.webm",
         "poster": "images/monsters/motion/tienhairon_v5_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -164,7 +164,7 @@ const MOTION_CATALOG={
           "bottom": 945
         }
       },
-      "fingerprint": "4e046fcc3d7c67c77ab0ff1fb5477cc09ceef696b56eaf2c6713729d1b5eb747",
+      "fingerprint": "baf9d604165f7a3fb3364df5e29c5802ca9c57f657e1eb907802cec2caa5c5cd",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -173,7 +173,7 @@ const MOTION_CATALOG={
       "name": "グラスビート",
       "art": "images/monsters/grassbeat_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/grassbeat_v1_alpha.webm",
+        "src": "images/monsters/motion/grassbeat_v1_720_alpha.webm",
         "poster": "images/monsters/motion/grassbeat_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -181,7 +181,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.35
         },
         "sourceBounds": {
           "width": 960,
@@ -192,7 +192,7 @@ const MOTION_CATALOG={
           "bottom": 795
         }
       },
-      "fingerprint": "a8c3dba7dfc06d5ee125216235ba8710891e7797347d6796730cabb8430b9f65",
+      "fingerprint": "4055150c4c054aa5edcc615ea2d7eb3b8bf21e508e1311591de6d61b9d73647f",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -201,7 +201,7 @@ const MOTION_CATALOG={
       "name": "ソーンビート",
       "art": "images/monsters/thornbeat_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/thornbeat_v1_alpha.webm",
+        "src": "images/monsters/motion/thornbeat_v1_720_alpha.webm",
         "poster": "images/monsters/motion/thornbeat_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -209,7 +209,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -220,7 +220,7 @@ const MOTION_CATALOG={
           "bottom": 829
         }
       },
-      "fingerprint": "ed0cb884446118b9586211901c8fd0e00d0479c2017b8aaf12da3adc7bc5564b",
+      "fingerprint": "cd230a0b87e2ad31da5a34ddfeebed3c644a6ee0316747723a5be4ea1b3ddd03",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -229,7 +229,7 @@ const MOTION_CATALOG={
       "name": "グランビート",
       "art": "images/monsters/granbeat_20260919.webp",
       "motion": {
-        "src": "images/monsters/motion/granbeat_v4_alpha.webm",
+        "src": "images/monsters/motion/granbeat_v4_720_alpha.webm",
         "poster": "images/monsters/motion/granbeat_v4_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -237,7 +237,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -248,7 +248,7 @@ const MOTION_CATALOG={
           "bottom": 906
         }
       },
-      "fingerprint": "406cf595bdb62e801b487419294d1fb32b4076846355a9b876a17a4618f7357c",
+      "fingerprint": "4f48303219323126fe3d1b368375027ac550bc6d1aadd6ea41a7d57ab2330d2f",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -257,7 +257,7 @@ const MOTION_CATALOG={
       "name": "リカシーフ",
       "art": "images/monsters/rikasheef_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/rikasheef_v1_alpha.webm",
+        "src": "images/monsters/motion/rikasheef_v1_720_alpha.webm",
         "poster": "images/monsters/motion/rikasheef_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -265,7 +265,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.4
         },
         "sourceBounds": {
           "width": 960,
@@ -276,7 +276,7 @@ const MOTION_CATALOG={
           "bottom": 852
         }
       },
-      "fingerprint": "9c5ec7e212d963d61cb99ef14c4ab97a187010dac13298dbccc6a4f3206f98ff",
+      "fingerprint": "5c6eded3b68618691e64c092f86eb496439892facbc31f8e5dbfb9e716df6293",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -285,7 +285,7 @@ const MOTION_CATALOG={
       "name": "セラルフィア",
       "art": "images/monsters/seralphia_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/seralphia_v1_alpha.webm",
+        "src": "images/monsters/motion/seralphia_v1_720_alpha.webm",
         "poster": "images/monsters/motion/seralphia_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -293,7 +293,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -304,7 +304,7 @@ const MOTION_CATALOG={
           "bottom": 824
         }
       },
-      "fingerprint": "9e24a9e97ed546d71b9ce5d41ba0f17075acaf1a20ad84a0902b3619a706036d",
+      "fingerprint": "cc1687736a91ee485141ec1fd955122afa6908723c869b2b696add641848b975",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -313,7 +313,7 @@ const MOTION_CATALOG={
       "name": "ボルテック",
       "art": "images/monsters/volteck_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/volteck_v4_alpha.webm",
+        "src": "images/monsters/motion/volteck_v4_720_alpha.webm",
         "poster": "images/monsters/motion/volteck_v4_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -321,7 +321,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.35
         },
         "sourceBounds": {
           "width": 960,
@@ -332,7 +332,7 @@ const MOTION_CATALOG={
           "bottom": 835
         }
       },
-      "fingerprint": "98dc1240a4d1f8d8d8b4d873e878b2fb67162cebbbfa2a6fce174f3bed505c30",
+      "fingerprint": "3c3d018cf8338374c31cc234ce6893c9f30ecf0cee6173a70c46790bae6b8e91",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -341,7 +341,7 @@ const MOTION_CATALOG={
       "name": "スパクイン",
       "art": "images/monsters/spaquinn_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/spaquinn_v4_alpha.webm",
+        "src": "images/monsters/motion/spaquinn_v4_720_alpha.webm",
         "poster": "images/monsters/motion/spaquinn_v4_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -349,7 +349,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -360,7 +360,7 @@ const MOTION_CATALOG={
           "bottom": 887
         }
       },
-      "fingerprint": "df12b064a6b925cdf803ba452dcd6b33b92bea5f304abacdb3a8025a55bddf3e",
+      "fingerprint": "f8c5e06334e802cedfbc2bb048dab1c2f8d10b55522a542bc58908dc27f10571",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -369,7 +369,7 @@ const MOTION_CATALOG={
       "name": "ボルタックス",
       "art": "images/monsters/voltax_20260921_square.webp",
       "motion": {
-        "src": "images/monsters/motion/voltax_v5_alpha.webm",
+        "src": "images/monsters/motion/voltax_v5_720_alpha.webm",
         "poster": "images/monsters/motion/voltax_v5_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -377,7 +377,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -388,7 +388,7 @@ const MOTION_CATALOG={
           "bottom": 828
         }
       },
-      "fingerprint": "f21ca7748a80a337dd5dd166036998d6d3f0703cfaef8a3fc3c921d8fbcf5a0e",
+      "fingerprint": "e501e998bc96c612226dbfd3ee8dfbd6d647397a2aaac8eb40ecad9aa7b690e7",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -397,7 +397,7 @@ const MOTION_CATALOG={
       "name": "シルフィン",
       "art": "images/monsters/sylphin_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/sylphin_v1_alpha.webm",
+        "src": "images/monsters/motion/sylphin_v1_720_alpha.webm",
         "poster": "images/monsters/motion/sylphin_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -405,7 +405,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.45
         },
         "sourceBounds": {
           "width": 960,
@@ -416,7 +416,7 @@ const MOTION_CATALOG={
           "bottom": 808
         }
       },
-      "fingerprint": "2308ee7d740114d7b7582c5969ead7288497a9ee172b39580ccfc63e73d3be9b",
+      "fingerprint": "9675e27a2b204516a9805d6a41f5c0e96ed1d8fe767a0d866ab33ef99508dc11",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -425,7 +425,7 @@ const MOTION_CATALOG={
       "name": "ゼファーレイ",
       "art": "images/monsters/zephyray_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/zephyray_v1_alpha.webm",
+        "src": "images/monsters/motion/zephyray_v1_720_alpha.webm",
         "poster": "images/monsters/motion/zephyray_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -433,7 +433,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -444,7 +444,7 @@ const MOTION_CATALOG={
           "bottom": 803
         }
       },
-      "fingerprint": "9d18ccf012f4e6bd654fde38a349cebb3d7886390e883a015802d08ff0174059",
+      "fingerprint": "a8bb11f4e95d31f8a65601a0bc3652a19f01e00a7524de974a1418b7a11f97e3",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -453,7 +453,7 @@ const MOTION_CATALOG={
       "name": "テンペストレイ",
       "art": "images/monsters/tempestray_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/tempestray_v1_alpha.webm",
+        "src": "images/monsters/motion/tempestray_v1_720_alpha.webm",
         "poster": "images/monsters/motion/tempestray_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -461,7 +461,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -472,7 +472,7 @@ const MOTION_CATALOG={
           "bottom": 840
         }
       },
-      "fingerprint": "a62a0c0141e4a4ca10e78b8ddfad7a5f5ee8dab44cd76aec70a4f41c3eb596cb",
+      "fingerprint": "1eec73879da7f2a309161166e6b19167393bd0da2d4583537849242fb856d6b7",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -481,7 +481,7 @@ const MOTION_CATALOG={
       "name": "ルクシード",
       "art": "images/monsters/luxseed_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/luxseed_v1_alpha.webm",
+        "src": "images/monsters/motion/luxseed_v1_720_alpha.webm",
         "poster": "images/monsters/motion/luxseed_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -489,7 +489,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.45
         },
         "sourceBounds": {
           "width": 960,
@@ -500,7 +500,7 @@ const MOTION_CATALOG={
           "bottom": 847
         }
       },
-      "fingerprint": "d4b959149f01dfe3b83db0852168b725ba036648b536d742f57315a52e9409ca",
+      "fingerprint": "50c9b3a9cc56788f5b371e6ed3f811bf3019d666113a900e2d165d561fe32342",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -509,7 +509,7 @@ const MOTION_CATALOG={
       "name": "ルクシアード",
       "art": "images/monsters/luxiard_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/luxiard_v1_alpha.webm",
+        "src": "images/monsters/motion/luxiard_v1_720_alpha.webm",
         "poster": "images/monsters/motion/luxiard_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -517,7 +517,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -528,7 +528,7 @@ const MOTION_CATALOG={
           "bottom": 837
         }
       },
-      "fingerprint": "8f7b167f18a8ee9d878f97d3bd1bafef2f7d6cd0c99d4efbef2a4abc5833ce2a",
+      "fingerprint": "8e327abb2b33e41cb1b32b28288872694c2b2876cc657f9261626391e7abeb63",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -537,7 +537,7 @@ const MOTION_CATALOG={
       "name": "ルクスガルディオン",
       "art": "images/monsters/lux_galdion_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/lux_galdion_v1_alpha.webm",
+        "src": "images/monsters/motion/lux_galdion_v1_720_alpha.webm",
         "poster": "images/monsters/motion/lux_galdion_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -545,7 +545,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -556,7 +556,7 @@ const MOTION_CATALOG={
           "bottom": 812
         }
       },
-      "fingerprint": "89823e521b756c05d10120741e605197ad4bf2e705958839b4196e9cdc66b1c5",
+      "fingerprint": "affb53ac310cca75c3d1e50c06a3010fdc6b8f823c0f0b469b2b61095a780fae",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -565,7 +565,7 @@ const MOTION_CATALOG={
       "name": "ノクル",
       "art": "images/monsters/nocle_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/nocle_v1_alpha.webm",
+        "src": "images/monsters/motion/nocle_v1_720_alpha.webm",
         "poster": "images/monsters/motion/nocle_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -573,7 +573,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.45
         },
         "sourceBounds": {
           "width": 960,
@@ -584,7 +584,7 @@ const MOTION_CATALOG={
           "bottom": 863
         }
       },
-      "fingerprint": "ed2abae9c7c957bff474ca451cadd8aa88c1da708720bd35fcb49eeae6233743",
+      "fingerprint": "06462719c705ae4c26b5bafc15cd99987860ec366536276fc000e8af20c8319f",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -593,7 +593,7 @@ const MOTION_CATALOG={
       "name": "ノクレイド",
       "art": "images/monsters/noclaid_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/noclaid_v1_alpha.webm",
+        "src": "images/monsters/motion/noclaid_v1_720_alpha.webm",
         "poster": "images/monsters/motion/noclaid_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -601,7 +601,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -612,7 +612,7 @@ const MOTION_CATALOG={
           "bottom": 894
         }
       },
-      "fingerprint": "54d454b31353f3a00c27a9e2e4e3365471e3eed134f50c914f2b854550d98f73",
+      "fingerprint": "91852a0cf1b723ae6bd5a6b7a457b78ae07ed7bb66f08b1e461fb9bd1ba8cf71",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -621,7 +621,7 @@ const MOTION_CATALOG={
       "name": "ノクスヴェルグ",
       "art": "images/monsters/noxvelg_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/noxvelg_v1_alpha.webm",
+        "src": "images/monsters/motion/noxvelg_v1_720_alpha.webm",
         "poster": "images/monsters/motion/noxvelg_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -629,7 +629,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -640,7 +640,7 @@ const MOTION_CATALOG={
           "bottom": 860
         }
       },
-      "fingerprint": "9ce2219c632d49fe7258f25e503f7fd5bc71b5a258fed8bd73400974358be9ed",
+      "fingerprint": "e77a7211d71b7edf745dd264709b22359953d289fe64490ac1a38aa9d1117451",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -649,7 +649,7 @@ const MOTION_CATALOG={
       "name": "オルカーナ",
       "art": "images/monsters/orcana_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/orcana_v3_alpha.webm",
+        "src": "images/monsters/motion/orcana_v3_720_alpha.webm",
         "poster": "images/monsters/motion/orcana_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -657,7 +657,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -668,7 +668,7 @@ const MOTION_CATALOG={
           "bottom": 750
         }
       },
-      "fingerprint": "6bb1df5ea0704413e8c7147742f02db1ece2b29efba5b1fb3cbb21f35e9afd4f",
+      "fingerprint": "e9a3d9bd1f52127eda4a782ac898ffa1203137979b034225bd354bb4ba91dd8d",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -677,7 +677,7 @@ const MOTION_CATALOG={
       "name": "オルカストリーム",
       "art": "images/monsters/orca_stream_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/orca_stream_v3_alpha.webm",
+        "src": "images/monsters/motion/orca_stream_v3_720_alpha.webm",
         "poster": "images/monsters/motion/orca_stream_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -685,7 +685,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -696,7 +696,7 @@ const MOTION_CATALOG={
           "bottom": 820
         }
       },
-      "fingerprint": "750811efb1d6b5f587b887e616b0f0d729d047a031e22834466d190be3b24f0e",
+      "fingerprint": "1bc5ded0595940c4d93060856e4932f22d6978d40c8b2a22c5abc47e8c3e25b5",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -705,7 +705,7 @@ const MOTION_CATALOG={
       "name": "オルカアビス",
       "art": "images/monsters/orca_abyss_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/orca_abyss_v3_alpha.webm",
+        "src": "images/monsters/motion/orca_abyss_v3_720_alpha.webm",
         "poster": "images/monsters/motion/orca_abyss_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -724,7 +724,7 @@ const MOTION_CATALOG={
           "bottom": 837
         }
       },
-      "fingerprint": "49997b352ad528f7dd929fa756c4b0c975cc5ccc639137a623a821b3c776d663",
+      "fingerprint": "ebbb8b86cea40c15914214bf84ada663626ad0f177907b7f2a0fc1855197db9d",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -733,12 +733,25 @@ const MOTION_CATALOG={
       "name": "ボルモーグ",
       "art": "images/monsters/volmoog_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/volmoog_v18_alpha.webm",
+        "src": "images/monsters/motion/volmoog_v18_720_alpha.webm",
         "poster": "images/monsters/motion/volmoog_v18_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
-        "allyFlip": true
+        "allyFlip": true,
+        "layout": {
+          "x": 0.5,
+          "y": 1,
+          "scale": 0.5
+        },
+        "sourceBounds": {
+          "width": 960,
+          "height": 960,
+          "x": 16,
+          "y": 12,
+          "right": 958,
+          "bottom": 952
+        }
       },
-      "fingerprint": "d41b78045234b0b499aec61e644b4b44a269d30c71227e066fd57453993ffb4f",
+      "fingerprint": "cff0fbcb8cdaaf1f566f0e8f5b90a99b947ef9db693fe9aadb03ef26a8353877",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -747,14 +760,14 @@ const MOTION_CATALOG={
       "name": "グランボルモーグ",
       "art": "images/monsters/gran_volmoog_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/gran_volmoog_v18_alpha.webm",
+        "src": "images/monsters/motion/gran_volmoog_v18_720_alpha.webm",
         "poster": "images/monsters/motion/gran_volmoog_v18_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -765,7 +778,7 @@ const MOTION_CATALOG={
           "bottom": 945
         }
       },
-      "fingerprint": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
+      "fingerprint": "023701dd3442da2cbfca4ca2d971374464069b2aac4d9c577c6a2a6ec7faa719",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -782,7 +795,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.3
         },
         "sourceBounds": {
           "width": 720,
@@ -810,7 +823,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 720,
@@ -830,7 +843,7 @@ const MOTION_CATALOG={
       "name": "ゴブリン",
       "art": "images/monsters/goblin_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/goblin_v1_alpha.webm",
+        "src": "images/monsters/motion/goblin_v1_720_alpha.webm",
         "poster": "images/monsters/motion/goblin_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -838,7 +851,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.4
         },
         "sourceBounds": {
           "width": 960,
@@ -849,7 +862,7 @@ const MOTION_CATALOG={
           "bottom": 828
         }
       },
-      "fingerprint": "d1925050de300d2f5c677a853fb7b6e6fb40f8827052c18eb9cd6fc7d7b9914b",
+      "fingerprint": "aa9124f9a69de29a3cef5bf960d692ae058869781df38a32fa41ce8e85a63a95",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -858,7 +871,7 @@ const MOTION_CATALOG={
       "name": "イグナロス",
       "art": "images/monsters/ignaros_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/ignaros_v1_alpha.webm",
+        "src": "images/monsters/motion/ignaros_v1_720_alpha.webm",
         "poster": "images/monsters/motion/ignaros_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -866,7 +879,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -877,7 +890,7 @@ const MOTION_CATALOG={
           "bottom": 803
         }
       },
-      "fingerprint": "ccc7143795cd2be79e4359b4bed2bbfcc5cc8b31e206829c2114d00df8466694",
+      "fingerprint": "fbcfe90074f0cd4fc836aa3e7e0657b2513e306004ffb757471d5a02d7c9bc20",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -886,7 +899,7 @@ const MOTION_CATALOG={
       "name": "炎の精霊ツバキ",
       "art": "images/monsters/tsubaki_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/tsubaki_v1_alpha.webm",
+        "src": "images/monsters/motion/tsubaki_v1_720_alpha.webm",
         "poster": "images/monsters/motion/tsubaki_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -894,7 +907,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -905,7 +918,7 @@ const MOTION_CATALOG={
           "bottom": 783
         }
       },
-      "fingerprint": "2c2a648ddccca3dc4e7e31493cf5474f4660329791d063c8e4e1c16a8671ea8d",
+      "fingerprint": "b084f2e3230e46896e982b5f8bf4fd8d30bd0ed09a84e424cb43b7da00eaa11f",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -914,7 +927,7 @@ const MOTION_CATALOG={
       "name": "水の精霊スイレン",
       "art": "images/monsters/suiren_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/suiren_v2_alpha.webm",
+        "src": "images/monsters/motion/suiren_v2_720_alpha.webm",
         "poster": "images/monsters/motion/suiren_v2_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -922,7 +935,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -933,7 +946,7 @@ const MOTION_CATALOG={
           "bottom": 831
         }
       },
-      "fingerprint": "7c80cc3a5c2b31ef02599baec18b54d68e0da9e2e3054c5dace5d79f1cb4b879",
+      "fingerprint": "04daf57f1891eb8e5536f31c8564600746f808d983f8fba111e23ce82cedb1b7",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -942,7 +955,7 @@ const MOTION_CATALOG={
       "name": "ゴーレム",
       "art": "images/monsters/golem_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/proto_icegolem_v3_alpha.webm",
+        "src": "images/monsters/motion/proto_icegolem_v3_720_alpha.webm",
         "poster": "images/monsters/motion/proto_icegolem_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -950,7 +963,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -961,7 +974,7 @@ const MOTION_CATALOG={
           "bottom": 923
         }
       },
-      "fingerprint": "bc3f5f50c97a65b59734170e884a77d1696dece76a9a9c68ea19d6738fae5043",
+      "fingerprint": "40eedd3140ffc08f42700bd1eedf57e9d1bfd017f48977f85673b074c0ea59a6",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -970,7 +983,7 @@ const MOTION_CATALOG={
       "name": "アイスゴーレム",
       "art": "images/monsters/icegolem_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/icegolem_v3_alpha.webm",
+        "src": "images/monsters/motion/icegolem_v3_720_alpha.webm",
         "poster": "images/monsters/motion/icegolem_v3_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -978,7 +991,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -989,7 +1002,7 @@ const MOTION_CATALOG={
           "bottom": 905
         }
       },
-      "fingerprint": "da3d6a9ebc20ddf6e919a4324000ae0e54e0da8e75449c7864dc61739991f00d",
+      "fingerprint": "ea20c7b61c5056df55974e6572d29c02160276376a818f76df6235562ab7dafe",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -998,7 +1011,7 @@ const MOTION_CATALOG={
       "name": "ナイトメア",
       "art": "images/monsters/nightmare_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/nightmare_v1_alpha.webm",
+        "src": "images/monsters/motion/nightmare_v1_720_alpha.webm",
         "poster": "images/monsters/motion/nightmare_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1006,7 +1019,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -1017,7 +1030,7 @@ const MOTION_CATALOG={
           "bottom": 870
         }
       },
-      "fingerprint": "3297b2c39e3500a7a6d181282ec1050af47708e64a3aa9db95fafb5838f554b5",
+      "fingerprint": "c8f865fd038c44c1bc31a5bdc5f6cced93b22c534da2e40754df847954081fab",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1026,7 +1039,7 @@ const MOTION_CATALOG={
       "name": "アストラレピス",
       "art": "images/monsters/astralepis_20260920_v3.webp",
       "motion": {
-        "src": "images/monsters/motion/astralepis_v1_alpha.webm",
+        "src": "images/monsters/motion/astralepis_v1_720_alpha.webm",
         "poster": "images/monsters/motion/astralepis_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -1034,7 +1047,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -1045,7 +1058,7 @@ const MOTION_CATALOG={
           "bottom": 894
         }
       },
-      "fingerprint": "4dff4652961eaaad89f2b8dc67d8d20800d465c8dfc6cf621222b53fa7fdd277",
+      "fingerprint": "b3276c017b6748b8d8c89e7f2dbd6b96b72afaf89ac21337a7f9b87b232324a9",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1054,7 +1067,7 @@ const MOTION_CATALOG={
       "name": "アシュレイア",
       "art": "images/monsters/ashleia_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/false_dragon_beta_v2_alpha.webm",
+        "src": "images/monsters/motion/false_dragon_beta_v2_720_alpha.webm",
         "poster": "images/monsters/motion/false_dragon_beta_v2_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1073,7 +1086,7 @@ const MOTION_CATALOG={
           "bottom": 845
         }
       },
-      "fingerprint": "e83837f58d9f70ec058d16d5f5286923c617362802e8e3b895e1fc660519c797",
+      "fingerprint": "b04db1a40d17909afa574d69565c9a06871430977d00dfa926549b43ed25e84f",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1082,7 +1095,7 @@ const MOTION_CATALOG={
       "name": "モルグラム",
       "art": "images/monsters/morgram_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/false_dragon_gamma_v1_alpha.webm",
+        "src": "images/monsters/motion/false_dragon_gamma_v1_720_alpha.webm",
         "poster": "images/monsters/motion/false_dragon_gamma_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -1101,7 +1114,7 @@ const MOTION_CATALOG={
           "bottom": 885
         }
       },
-      "fingerprint": "d07509725eac02f79bddfe90e011b427415896ddbb4f0d8a0ebaec466e842a27",
+      "fingerprint": "3da1d49dd813b1f01851b545f3109b48f7335fdc58475ea686e4d472c17c25d3",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1110,7 +1123,7 @@ const MOTION_CATALOG={
       "name": "ネメス",
       "art": "images/monsters/nemes_v2.webp",
       "motion": {
-        "src": "images/monsters/motion/nemes_v1_alpha.webm",
+        "src": "images/monsters/motion/nemes_v1_720_alpha.webm",
         "poster": "images/monsters/motion/nemes_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -1118,7 +1131,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -1129,7 +1142,7 @@ const MOTION_CATALOG={
           "bottom": 863
         }
       },
-      "fingerprint": "7050c475e20d17ebc944a31657fe5fc04e0aaf418aec8d18ab6beb2889977307",
+      "fingerprint": "3d121557668de76202385c7b19500ba525d70f0ead4d93c13c591b03d27d1034",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1138,7 +1151,7 @@ const MOTION_CATALOG={
       "name": "ネメシア",
       "art": "images/monsters/nemesia_v2.webp",
       "motion": {
-        "src": "images/monsters/motion/nemesia_v1_alpha.webm",
+        "src": "images/monsters/motion/nemesia_v1_720_alpha.webm",
         "poster": "images/monsters/motion/nemesia_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1146,7 +1159,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -1157,7 +1170,7 @@ const MOTION_CATALOG={
           "bottom": 830
         }
       },
-      "fingerprint": "1b634bb27a61d5d9df6f9a03a3c6a1b5b521400fbb958588b3e1a22f2017d7c6",
+      "fingerprint": "8effbaaae3a06169eb57d374e525374012876596accdd685ee4ccbe46671e4a0",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1166,7 +1179,7 @@ const MOTION_CATALOG={
       "name": "ネメシオン",
       "art": "images/monsters/nemesion_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/nemesion_v1_alpha.webm",
+        "src": "images/monsters/motion/nemesion_v1_720_alpha.webm",
         "poster": "images/monsters/motion/nemesion_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1185,7 +1198,7 @@ const MOTION_CATALOG={
           "bottom": 895
         }
       },
-      "fingerprint": "0d548b4bbcf695976e6607b9d840f29e0062e1b592336625751a3704b5a4538b",
+      "fingerprint": "194e0739a7da4a9c21bebf11629b47486249b376d261251a18ade3370ae366f0",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1194,7 +1207,7 @@ const MOTION_CATALOG={
       "name": "滅亡の星 ネメシオン",
       "art": "images/monsters/doom_nemesion_20260924.webp",
       "motion": {
-        "src": "images/monsters/motion/doom_nemesion_v5_alpha.webm",
+        "src": "images/monsters/motion/doom_nemesion_v5_720_alpha.webm",
         "poster": "images/monsters/motion/doom_nemesion_v5_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1202,7 +1215,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 1.2
         },
         "sourceBounds": {
           "width": 960,
@@ -1213,7 +1226,7 @@ const MOTION_CATALOG={
           "bottom": 822
         }
       },
-      "fingerprint": "1b6d0a23d67efa6ff8a62d308b66ab73f8dcb6a10dfd589ba97eb10bc10079c3",
+      "fingerprint": "c71d1c89144e9d9f67372f6a081f9b546531258c0f5d2d3bd7420a8266380b81",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1222,7 +1235,7 @@ const MOTION_CATALOG={
       "name": "偽竜 code:alfa",
       "art": "images/monsters/false_dragon_alfa_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/false_dragon_alfa_v1_alpha.webm",
+        "src": "images/monsters/motion/false_dragon_alfa_v1_720_alpha.webm",
         "poster": "images/monsters/motion/false_dragon_alfa_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1230,7 +1243,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 1.2
         },
         "sourceBounds": {
           "width": 960,
@@ -1241,7 +1254,7 @@ const MOTION_CATALOG={
           "bottom": 882
         }
       },
-      "fingerprint": "bc0381141c46dba6312ea6503792170711d61065cac8d7d455857549788e9a8b",
+      "fingerprint": "ab31912e4c6f6c1a91fdb1b4033835b4fcf8ce78661fddf8d159310d9267382e",
       "sourceState": "透過動画の所在記録あり"
     },
     {
@@ -1250,7 +1263,7 @@ const MOTION_CATALOG={
       "name": "ガルドラ",
       "art": "images/monsters/galdra_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/galdra_v1_alpha.webm",
+        "src": "images/monsters/motion/galdra_v1_720_alpha.webm",
         "poster": "images/monsters/motion/galdra_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
@@ -1258,7 +1271,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.5
         },
         "sourceBounds": {
           "width": 960,
@@ -1269,7 +1282,7 @@ const MOTION_CATALOG={
           "bottom": 900
         }
       },
-      "fingerprint": "1f22d3a83e6455754da40db0e377ba45349013b7925c58f4dffb1fb17dba3bea",
+      "fingerprint": "e806019dfdb603174c3eecf5cfdeb59f77b6a990e27e731382213b191891e4af",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1278,7 +1291,7 @@ const MOTION_CATALOG={
       "name": "錬核獣アルケミオン",
       "art": "images/monsters/alchemion_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/alchemion_v1_alpha.webm",
+        "src": "images/monsters/motion/alchemion_v1_720_alpha.webm",
         "poster": "images/monsters/motion/alchemion_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1286,7 +1299,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -1297,7 +1310,7 @@ const MOTION_CATALOG={
           "bottom": 845
         }
       },
-      "fingerprint": "d099dfc61f291a15277a5e271b7534b79b8403f9d5e3ee83dcfb2e97aca024bf",
+      "fingerprint": "7cf53e792093911f82b2c410a616e6000879af8cead1f1d26be6a3c72e61343e",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1306,7 +1319,7 @@ const MOTION_CATALOG={
       "name": "混成翼竜キメラグナ",
       "art": "images/monsters/kimeragna_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/kimeragna_v7_crf28_alpha.webm",
+        "src": "images/monsters/motion/kimeragna_v7_720_alpha.webm",
         "poster": "images/monsters/motion/kimeragna_v7_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1314,7 +1327,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 0.75
         },
         "sourceBounds": {
           "width": 960,
@@ -1325,7 +1338,7 @@ const MOTION_CATALOG={
           "bottom": 863
         }
       },
-      "fingerprint": "6b47b1d6fc8a1d44e2043d96f7a359ed105b7c693c807c1d4d6dbdefdb9a2a2a",
+      "fingerprint": "95c89b3e2db46e81da0efdae705c43ac60ab56aa8af5442e7515c6bf2272ceed",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1334,7 +1347,7 @@ const MOTION_CATALOG={
       "name": "キメラグナ・アペクス",
       "art": "images/monsters/kimeragna_apex_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/kimeragna_apex_v2_alpha.webm",
+        "src": "images/monsters/motion/kimeragna_apex_v2_720_alpha.webm",
         "poster": "images/monsters/motion/kimeragna_apex_v2_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1353,7 +1366,7 @@ const MOTION_CATALOG={
           "bottom": 850
         }
       },
-      "fingerprint": "aad4ca52fbfe862f56a4b862ae3f2f1e63595f9f3fc2844dce440e9cea678311",
+      "fingerprint": "240f21056b9a18c83b32d8dd3c9316c4c512fb0b4d54562726e2eab20e24f24e",
       "sourceState": "透過動画の所在確認が残る"
     },
     {
@@ -1362,7 +1375,7 @@ const MOTION_CATALOG={
       "name": "賢金神竜エリクシオン",
       "art": "images/monsters/elixion_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/elixion_arm_fixed_crf28_alpha.webm",
+        "src": "images/monsters/motion/elixion_arm_fixed_720_alpha.webm",
         "poster": "images/monsters/motion/elixion_arm_fixed_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
@@ -1370,7 +1383,7 @@ const MOTION_CATALOG={
         "layout": {
           "x": 0.5,
           "y": 1,
-          "scale": 1
+          "scale": 1.2
         },
         "sourceBounds": {
           "width": 960,
@@ -1381,7 +1394,7 @@ const MOTION_CATALOG={
           "bottom": 873
         }
       },
-      "fingerprint": "96eae76d48cfdf6739148f5da47d8ab3b5ee94930283caeef3c7301fb474d334",
+      "fingerprint": "f62071796471436f0fa4c688b351c766df2d74ad2684f223b3ca83895f451da6",
       "sourceState": "透過動画の所在確認が残る"
     }
   ]
