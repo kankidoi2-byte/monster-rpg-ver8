@@ -12,6 +12,9 @@ try{
  browser=await chromium.launch({headless:true});
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
+ // Map encyclopedia registration can legitimately schedule a rank notice after entry.
+ // Dismiss it through the visible player control, including timer races during clicks.
+ await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{await page.locator('#contractorRankUpOverlay button').first().click();});
  await page.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',route=>route.fulfill({status:200,contentType:'application/json',body:'{}'}));
  await page.goto(publicUrl||'http://127.0.0.1:4199/?legacy=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
