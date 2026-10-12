@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261012-random-tier-synthesis",date:"2026-10-12",category:"update",title:"技合成を級別のランダム合成に変更しました",body:"低級・上級・超級は同じ級のカード3枚、最強は2枚でランダムな技1枚を獲得できます。昇級確率は低級30％・上級25％・超級10％。最強合成は最強の技を獲得します。追加コイン不要で、素材にした技や所持済みの技も出ます。"},
   {id:"20261012-skill-synthesis-growth-entry",date:"2026-10-12",category:"update",title:"技合成の入口を育成にまとめました",body:"モンスターの「育成」から「技合成」を開けます。技図鑑・技の詳細・技ガチャにあった入口は育成へ統一しました。合成画面からも育成に戻れます。"},
   {id:"20261011-enemy-motion-limit-3",date:"2026-10-11",category:"fix",title:"敵の待機モーションが動かない問題を修正しました",body:"戦闘中に味方と敵の待機モーションを同時に再生できるようにしました。三つ巴では味方1体・敵2体まで動きます。"},
   {id:"20261011-three-motion-compression",date:"2026-10-11",category:"update",title:"3体のモーションデータを軽量化しました",body:"キメラグナ・スライム・エリクシオンの戦闘モーションを軽量化し、3体合計の読み込みデータ量を約34％削減しました。再生時間・コマ数・表示サイズは変わりません。"},

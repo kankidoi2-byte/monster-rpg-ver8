@@ -47,19 +47,32 @@ try{
   assert(await page.locator('#growthHub').isVisible());
   await page.locator('#growthSkillSynthesisButton').click();
   assert.equal(await page.locator('[data-synthesis-id]').count(),4);
-  assert.equal(await page.locator('[data-synthesis-id]:disabled').count(),4);
+  assert(await page.locator('#skillSynthesisSubmit').isDisabled());
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'synthesis horizontal overflow');
-  await page.evaluate(()=>{for(const recipe of SKILL110_SYNTHESIS_RECIPES)for(const id of recipe.materials)save.skillCards[id]=2;renderSkillSynthesis();});
-  assert.equal(await page.locator('[data-synthesis-id]:disabled').count(),0);
-  await page.evaluate(async()=>{window.scrollTo({top:0,behavior:'instant'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
-  await page.screenshot({path:`${out}/synthesis-${width}.png`,fullPage:true,animations:'disabled'});
-  // Dismissed confirmation preserves inventory; accepted confirmation crafts exactly one.
-  const beforeCancel=await page.evaluate(()=>JSON.stringify(save.skillCards));
-  await page.locator('[data-synthesis-id]').first().click();
-  assert.equal(await page.evaluate(()=>JSON.stringify(save.skillCards)),beforeCancel);
+  await page.evaluate(()=>{save.skillCards={s110_001:4,s110_002:2,s110_061:3,s110_091:3,s110_107:2};renderSkillSynthesis();});
+  const tap=async locator=>{await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));await locator.click();};
+  for(const [tier,material,needed] of [['low','s110_001',3],['high','s110_061',3],['super','s110_091',3],['ultimate','s110_107',2]]){
+   await tap(page.locator(`[data-synthesis-id="synth_tier_${tier}_v1"]`));
+   for(let n=0;n<needed;n++)await tap(page.locator(`#synthesis-add-${material}`));
+   assert(await page.locator('#skillSynthesisSubmit').isEnabled());
+   const beforeCancel=await page.evaluate(()=>JSON.stringify(save));
+   await tap(page.locator('#skillSynthesisSubmit'));assert.equal(await page.evaluate(()=>JSON.stringify(save)),beforeCancel);
+   await page.screenshot({path:`${out}/synthesis-${tier}-${width}.png`,fullPage:true,animations:'disabled'});
+  }
   page.removeAllListeners('dialog');page.on('dialog',dialog=>dialog.accept());
-  await page.locator('[data-synthesis-id]').first().click();
-  assert.equal(await page.evaluate(()=>save.skillCards.s110_107),1);
+  const beforeCraft=await page.evaluate(()=>({...save.skillCards}));
+  await tap(page.locator('#skillSynthesisSubmit'));
+  const result=await page.evaluate(()=>({id:save.skillSynthesis.lastResultId,cards:save.skillCards}));
+  assert.equal(result.cards.s110_107,(beforeCraft.s110_107-2)+(result.id==='s110_107'?1:0));
+  assert.equal(Object.values(result.cards).reduce((n,v)=>n+v,0),Object.values(beforeCraft).reduce((n,v)=>n+v,0)-1);
+  assert(await page.locator('#skillSynthesisResult').isVisible());
+  // Mixed material choice through real controls, then a repeated copy, and a saved result.
+  await tap(page.locator('[data-synthesis-id="synth_tier_low_v1"]'));
+  await tap(page.locator('#synthesis-add-s110_001'));await tap(page.locator('#synthesis-add-s110_002'));await tap(page.locator('#synthesis-add-s110_001'));
+  assert.equal(await page.locator('[data-selected-count="s110_001"]').textContent(),'2');
+  await tap(page.locator('#skillSynthesisSubmit'));
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'material/result overflow');
+  await page.screenshot({path:`${out}/synthesis-result-${width}.png`,fullPage:true,animations:'disabled'});
   await page.evaluate(()=>show('skillDex'));
   await page.locator('#skillDexCost').selectOption('25');assert.equal(await page.locator('[data-skill-dex-id]').count(),4);
   await page.locator('[data-skill-dex-id]').first().click();assert.match(await page.locator('#skillDexDetail').textContent(),/合成限定/);

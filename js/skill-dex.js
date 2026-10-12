@@ -62,8 +62,7 @@ function showSkillDexDetail(id,focus=true){
   const sk=SKILL_BY_ID[canonicalSkillId(id)],detail=document.getElementById('skillDexDetail');if(!sk||!detail)return;
   skillDexSelectedId=sk.id;
   const learners=skillDexLearners(sk),eligible=skillDexEligibleUnits(sk);
-  const recipe=skillSynthesisRecipeFor(sk.id);
-  const acquisition=recipe?`合成限定：${skillSynthesisRecipeMarkup(recipe)}<br>「育成」の「技合成」で作成できます。`:'技カードガチャ（モンスター・キャラクター共通）。初期装備などからも入手できます。';
+  const acquisition=sk.acquisition==='synthesis'?'合成限定：「育成」の超級合成から抽選で入手（昇級10％・各最強技2.5％）。最強カード2枚を使う最強合成からも抽選で入手できます。':'技カードガチャ（モンスター・キャラクター共通）、技合成の抽選。初期装備などからも入手できます。';
   const aptitude=skillDexAptitude(sk);
   detail.innerHTML=`<article class="panel ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}<p>${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||'追加効果なし。'}</p>
     <p>適性：${aptitude}</p><details><summary>数値・詳しい効果</summary><p class="skill-dex-numbers">${sk.detailedDesc||skillCardEffect(skillToMove(sk.id))||'追加効果はありません。'}</p></details>

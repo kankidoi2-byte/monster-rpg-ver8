@@ -45,3 +45,28 @@
 .skill-synthesis-materials li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;padding:8px 0;border-bottom:1px solid #64708e}
 .skill-synthesis-card .skill-card-title{white-space:normal;overflow-wrap:anywhere}
 .skill-dex-numbers{white-space:normal;overflow-wrap:anywhere;line-height:1.7}
+
+/* Tier synthesis: selection and result stay within the mobile content column. */
+#skillSynthesisList{grid-template-columns:minmax(0,1fr)}
+.synthesis-tier-picker,.synthesis-material-grid{display:grid;gap:12px}
+.synthesis-tier-picker{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}
+.synthesis-material-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}
+.synthesis-tier-picker button{min-width:0;min-height:64px;display:grid;gap:4px}
+.synthesis-tier-picker button[aria-pressed="true"]{outline:3px solid #19283c;outline-offset:-3px;background:#eee9dd}
+.synthesis-rules,.synthesis-selection,.synthesis-confirm-panel{overflow-wrap:anywhere}
+.synthesis-rules p,.synthesis-selection p,.synthesis-material p{margin:8px 0}
+.synthesis-selection{padding:14px;border:1px solid #aa9663;border-radius:12px;background:#fff;color:#19283c}
+.synthesis-material{min-width:0;margin:0;display:grid;gap:8px;align-content:start;overflow-wrap:anywhere}
+.synthesis-material>strong{font-size:1rem}.synthesis-material>small{line-height:1.5}
+.synthesis-material p{font-size:.8rem}
+.synthesis-quantity{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.synthesis-quantity button{min-width:44px;min-height:44px;margin:0;padding:8px}
+.synthesis-quantity span{font-weight:700}
+.synthesis-confirm-panel button{min-height:48px;max-width:100%;white-space:normal}
+.synthesis-result{position:relative;overflow-wrap:anywhere;text-align:center}
+.synthesis-flash{display:block;font-size:2rem;animation:synthesis-reveal .25s ease both}
+.synthesis-result-tier{font-weight:700;animation:synthesis-reveal .25s .25s ease both}
+.synthesis-result-card{animation:synthesis-reveal .3s .6s ease both}
+@keyframes synthesis-reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:359px){.synthesis-material-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.synthesis-flash,.synthesis-result-tier,.synthesis-result-card{animation:none}}
