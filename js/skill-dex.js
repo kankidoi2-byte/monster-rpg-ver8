@@ -63,7 +63,7 @@ function showSkillDexDetail(id,focus=true){
   skillDexSelectedId=sk.id;
   const learners=skillDexLearners(sk),eligible=skillDexEligibleUnits(sk);
   const recipe=skillSynthesisRecipeFor(sk.id);
-  const acquisition=recipe?`合成限定：${skillSynthesisRecipeMarkup(recipe)}<br><button onclick="showSkillSynthesis()">合成画面へ</button>`:'技カードガチャ（モンスター・キャラクター共通）。初期装備などからも入手できます。';
+  const acquisition=recipe?`合成限定：${skillSynthesisRecipeMarkup(recipe)}<br>「育成」の「技合成」で作成できます。`:'技カードガチャ（モンスター・キャラクター共通）。初期装備などからも入手できます。';
   const aptitude=skillDexAptitude(sk);
   detail.innerHTML=`<article class="panel ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}<p>${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||'追加効果なし。'}</p>
     <p>適性：${aptitude}</p><details><summary>数値・詳しい効果</summary><p class="skill-dex-numbers">${sk.detailedDesc||skillCardEffect(skillToMove(sk.id))||'追加効果はありません。'}</p></details>

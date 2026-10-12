@@ -40,13 +40,18 @@ export async function runMonochromeFlows(page,out,record){
  assert(await page.locator('#dexHub').isVisible());
  await pass('dex-category-filter-detail-back');
 
- await page.evaluate(()=>showSkillSynthesis());
+ await page.evaluate(()=>show('growthHub'));
+ await click(page.locator('#growthSkillSynthesisButton'));
+ assert(await page.locator('#skillSynthesis').isVisible());
+ assert(await page.locator('.app-bottom-nav [data-nav="monsters"]').evaluate(el=>el.classList.contains('is-current')));
  const recipe=await page.evaluate(()=>{const r=SKILL110_SYNTHESIS_RECIPES[0];return {id:r.id,resultId:r.resultId,materials:r.materials,before:{...save.skillCards}};});
  await click(page.locator(`[data-synthesis-id="${recipe.id}"]`));
  const inventory=await page.evaluate(()=>({...save.skillCards}));
  assert.equal(inventory[recipe.resultId],recipe.before[recipe.resultId]+1);
  for(const id of recipe.materials)assert.equal(inventory[id],recipe.before[id]-1);
  await pass('skill-synthesis',{recipeId:recipe.id});
+ await click(page.locator('#skillSynthesis .ui-back-link'));
+ assert(await page.locator('#growthHub').isVisible());
 
  await page.evaluate(()=>{show('skillGacha');setSkillGachaPresentationSpeed('quick');});
  const drawBefore=await page.evaluate(()=>({coins:save.coins,count:Object.values(save.skillCards).reduce((sum,n)=>sum+n,0),cost:SKILL_GACHA_SINGLE_COST}));

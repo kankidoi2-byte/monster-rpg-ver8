@@ -306,8 +306,8 @@ function appNavigationSection(screenId){
   if(['gachaHub','itemGacha','skillGacha','characterGacha'].includes(screenId)) return 'gacha';
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
-  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'monsters';
-  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex','skillSynthesis'].includes(screenId)) return 'more';
+  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution','skillSynthesis'].includes(screenId)) return 'monsters';
+  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
