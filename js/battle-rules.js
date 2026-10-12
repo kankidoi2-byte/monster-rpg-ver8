@@ -124,6 +124,7 @@ function applyKokoroLinkOriginChoiceForBattle(optionId){
 }
 const skill110AiHistory=new WeakMap();
 function skill110EnemyMoves(monster,level){
+  if(monster?.mapStoryFixedMoves)return monster.moves;
   if(!(monster?.moves||[]).some(isSkill110Move))return monster?.moves||[];
   const ids=defaultSkillIdsForMonster(monster,{level:level||1});
   return ids.filter(id=>SKILL_BY_ID[id]?.cost<25).map(skillToMove);
@@ -232,6 +233,7 @@ function tryConfusionAction(isPlayer) {
   return result;
 }
 async function performAction(attacker, defender, move, isPlayer) {
+  const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   if(typeof beginBattleAction==='function')beginBattleAction(attacker,move,isPlayer);
   const logEl = document.getElementById('log');
   const sleep = trySleepAction(isPlayer);
@@ -250,6 +252,7 @@ async function performAction(attacker, defender, move, isPlayer) {
     return {acted:false,animated:false};
   }
   const result=await doAttack(attacker, defender, move, isPlayer);
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {acted:false,animated:false};
   const extra = [paralysis.message, confusion.message].filter(Boolean).join('<br>');
   if (extra) logEl.innerHTML += `<br>${extra}`;if(typeof captureBattleLog==='function')captureBattleLog();
   return {acted:true,animated:!!result?.animated};
@@ -309,6 +312,7 @@ function finishTurnWithPoison() {
   busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
 async function turn(i) {
+  const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   if (busy) return;
   const tutorialAction=i===-1?'normal_attack':'skill';
   const playerMove = i===-1?['通常攻撃',24,'normal',null,null,0]:getEquippedMovesForInstance(activeInstance)[i] || ['通常攻撃',24,'normal'];
@@ -329,10 +333,13 @@ async function turn(i) {
 
   if (playerFirst) {
     const playerResult=await performAction(player, enemy, playerMove, true);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0 && !switchPartyMember()) return;
     await battleMotionDelay(playerResult.animated?140:700);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     await performAction(enemy, player, enemyMove, false);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
@@ -344,6 +351,7 @@ async function turn(i) {
     finishTurnWithPoison();
   } else {
     const enemyResult=await performAction(enemy, player, enemyMove, false);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
@@ -353,7 +361,9 @@ async function turn(i) {
       return;
     }
     await battleMotionDelay(enemyResult.animated?140:700);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     await performAction(player, enemy, playerMove, true);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0 && !switchPartyMember()) return;
     finishTurnWithPoison();
@@ -527,11 +537,13 @@ function skill110IncomingDamage(damage,ignoreDefense,guardReduction=0){
   return {incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,reductionLabel,evaded:false,barrierRemaining:link?.barrierRemaining||0};
 }
 async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEntry=null){
+  const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const {actor,target}=tacticalCombatants(actorIsPlayer,actorEntry,targetEntry);
   actor.attack=actor.attack;target.attack=target.attack;
   const config=tacticalSkillProfile(move)||{},power=Number(move[1])||0;
   const sourceId=actor.visualId,targetId=power>0||config.debuff||config.dispel?target.visualId:sourceId;
   const animated=typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,move,{untilImpact:true}):false;
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
   let message=`${power>0?'⚔️':'✨'} ${actor.name}の「${move[0]}」！`,actualDamage=0;
   if(power>0){
     const charge=skillChargeMultiplier(actor.charge);
@@ -580,6 +592,7 @@ async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEn
   return {animated,actualDamage};
 }
 async function doAttack(attacker, defender, mv, isPlayer) {
+  const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const adoptedMove=skill110BattleMove(mv);
   if(adoptedMove)return performSkill110Attack(adoptedMove,isPlayer);
   const [name, power, type, effect, effectChance] = mv;
@@ -588,6 +601,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const tactical=tacticalSkillProfile(mv);
   const supportTargetId=['sleep','debuff'].includes(effect)||(effect==='tactical'&&(tactical?.debuff||tactical?.dispel))?targetId:sourceId;
   const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,mv,{untilImpact:true}):false;
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
   if(effect==='tactical'&&power<=0){
     logEl.innerHTML=`✨ ${attacker.name}の「${name}」！<br>${resolveTacticalSkillEffects(mv,isPlayer)}`;
     if(typeof captureBattleLog==='function')captureBattleLog();update();
@@ -599,7 +613,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'heal') {
-    const healing = normalBattleHealing(isPlayer ? activeInstance?.level : activeHuntRequest?.enemyLevel);
+    const healing = normalBattleHealing(isPlayer ? activeInstance?.level : activeHuntRequest?.source==='map_story'?1:activeHuntRequest?.enemyLevel);
     const before = isPlayer ? pHp : eHp;
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
@@ -635,6 +649,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true}):false;
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
   if(!isPlayer&&power>0&&enemyKokoroLinkMisses(singleEnemyKokoroLinkKey())){logEl.innerHTML=`⚔️ ${attacker.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`;if(typeof captureBattleLog==='function')captureBattleLog();update();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(animated):{animated};}
   // ダメージ計算
   const r = typeEff(type, defender.types);
@@ -745,6 +760,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if(Math.random()<chance.chance){
     if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true});
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
     // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
     const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
     const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);

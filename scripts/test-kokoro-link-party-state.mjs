@@ -58,7 +58,7 @@ const duplicate=[entry('active','freigal'),entry('same','aquaron'),entry('same',
 assert.equal(contract.listKokoroLinkSources(duplicate,0).length,1,'duplicate UIDs must not create duplicate link uses');
 assert.equal(contract.listKokoroLinkSources(party,-1).length,0,'invalid active indexes must fail closed');
 
-assert(battleFlowSource.includes("function prepareBattleParty() {\n  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();"),'battle preparation must reset link usage');
+assert(/function prepareBattleParty\([^)]*\) \{\n  if \(typeof resetKokoroLinkBattleState === 'function'\) resetKokoroLinkBattleState\(\);/.test(battleFlowSource),'battle preparation must reset link usage');
 assert(battleFlowSource.includes("function endPartyRecovery()")&&battleFlowSource.includes("function runAway()")&&battleFlowSource.includes("function win()"));
 assert((battleFlowSource.match(/resetKokoroLinkBattleState/g)||[]).length>=4,'normal battle lifecycle must reset link usage at preparation and every outcome');
 assert(multiBattleSource.includes("function winMultiBattle()")&&multiBattleSource.includes("function runAwayFromMultiBattle()"));

@@ -232,6 +232,7 @@ function chooseDefaultContractItem(){
   return 'contract_scroll';
 }
 function askUseContractScroll(itemId){
+  if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(multiBattle?.active && !multiBattle.finished){
     alert('複数陣営バトルでは、戦闘終了後に倒した相手と契約できます。');
     show('battle');
@@ -283,6 +284,7 @@ function useContractScrollConfirmed(){
   return tryContractWithScroll(itemId,{tutorialGuarantee});
 }
 async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee=false}={}){
+  if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||singleBattleContractAttempted||!battleRewardGranted||!isContractableUnit(enemy))return false;
   ensureContractScrollItem();
   const it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;

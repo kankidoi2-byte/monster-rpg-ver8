@@ -110,6 +110,22 @@ function contractorSaveDefaults(){
   };
 }
 
+function normalizeMapStories(value){
+  const maps=isSaveObject(value)?{...value}:{};
+  const source=isSaveObject(maps.grassland_whose)?maps.grassland_whose:{};
+  const episodes=isSaveObject(source.episodes)?{...source.episodes}:{};
+  const ids=Array.from({length:11},(_,i)=>`gl_${String(i+1).padStart(2,'0')}`);
+  for(const id of ids){
+    if(!isSaveObject(episodes[id]))continue;
+    const p=episodes[id];episodes[id]={...p,completed:p.completed===true,firstVictory:p.firstVictory===true,firstRewardClaimed:p.firstRewardClaimed===true,victoryCount:nonNegativeInteger(p.victoryCount)};
+  }
+  const r=source.resume;
+  const resume=isSaveObject(r)&&ids.includes(r.episodeId)&&['pre','battle','post'].includes(r.phase)?{...r,
+    nodeId:typeof r.nodeId==='string'?r.nodeId:null,attemptId:typeof r.attemptId==='string'?r.attemptId:null,
+    rewardCommitted:r.rewardCommitted===true,postPending:r.postPending===true,
+    participantUids:Array.isArray(r.participantUids)?[...new Set(r.participantUids.filter(x=>typeof x==='string'))]:[]}:null;
+  maps.grassland_whose={...source,version:1,episodes,resume};return maps;
+}
 function initSave() {
   return {
     schemaVersion:SAVE_SCHEMA_VERSION,
@@ -120,6 +136,7 @@ function initSave() {
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
     contractor:contractorSaveDefaults(),
     worldMap:normalizeWorldMapSaveState(null),
+    mapStories:normalizeMapStories(null),
     progress:{chapterId:'prologue', storyFlags:{}, tutorial:tutorialSaveDefaults(), missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
   };
@@ -304,6 +321,7 @@ function repairSave(payload,report=[]){
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
   payload.worldMap=normalizeWorldMapSaveState(payload.worldMap);
+  payload.mapStories=normalizeMapStories(payload.mapStories);
   payload.history=isSaveObject(payload.history)?payload.history:defaults.history;payload.history.wins=nonNegativeInteger(payload.history.wins);payload.history.logs=Array.isArray(payload.history.logs)?payload.history.logs.filter(x=>typeof x==='string').slice(-30):[];
   payload.skillCards=isSaveObject(payload.skillCards)?payload.skillCards:{};payload.equippedSkills=isSaveObject(payload.equippedSkills)?payload.equippedSkills:{};
   migrateSkill110Save(payload,report);
