@@ -39,49 +39,87 @@ assert.equal(run('(accountA.skillCards.s110_001||0)-(accountB.skillCards.s110_00
 // All newborn/evolved units grant legal initial cards only, never strongest cards.
 run('save=initSave();M.forEach(mon=>{var ins=addInstance(mon.id,1);grantEvolutionSkillCardsForInstance(ins);});');
 assert.equal(run("Object.keys(save.skillCards).some(id=>SKILL_BY_ID[id]?.cost===25&&save.skillCards[id]>0)"),false);
-// Save double-click/reload/failure tests, with a persistence boundary that records the committed payload.
+// Tier draws: exhaust every result, test boundaries, no RNG before valid confirmation.
 run(`var committed=null,persistOk=true,persistThrows=false;saveGame=()=>{save.saveMeta.lastSavedAt='attempt';if(persistThrows)throw Error('quota');if(!persistOk)return false;committed=JSON.stringify(save);return true;};`);
-for(const recipe of json(run('SKILL110_SYNTHESIS_RECIPES'))){
+const tiers=json(run('SKILL_SYNTHESIS_TIERS'));
+assert.deepEqual(tiers.map(t=>[t.tier,t.required,t.outcomes.map(o=>o.chance)]),[['low',3,[.7,.3]],['high',3,[.75,.25]],['super',3,[.9,.1]],['ultimate',2,[1]]]);
+assert.deepEqual(tiers.map(t=>run(`skillSynthesisPool('${t.tier}').length`)),[60,30,16,4]);
+for(const recipe of tiers){
  r.context.recipe=recipe;
- run('save=initSave();recipe.materials.forEach(id=>save.skillCards[id]=2);var preview=previewSkillSynthesis(recipe.id);var result=executeSkillSynthesis(recipe.id,{token:preview.token});');
- assert(run('result.ok'));assert.equal(run('save.skillCards[recipe.resultId]'),1);assert(run('recipe.materials.every(id=>save.skillCards[id]===1)'));
- assert.equal(run('executeSkillSynthesis(recipe.id,{token:preview.token}).ok'),false,'same token not reusable');
- run('save=parseAndPrepareSave(committed,[]);migrateSkillSystem();');assert.equal(run('save.skillCards[recipe.resultId]'),1);
- assert.equal(run('executeSkillSynthesis(recipe.id,{token:preview.token}).ok'),false,'reloaded token not reusable');
- assert.equal(run('skillSynthesisRecipe([...recipe.materials].reverse()).id'),recipe.id);
+ const material=run(`skillSynthesisPool(recipe.tier)[0].id`);
+ let lower=0;
+ for(const outcome of recipe.outcomes){
+  const pool=json(run(`skillSynthesisPool('${outcome.tier}')`));
+  for(let i=0;i<pool.length;i++){
+   r.context.selection={[material]:recipe.required};r.context.draws=[lower+outcome.chance/2,(i+.5)/pool.length];
+   run('save=initSave();save.skillCards={};Object.entries(selection).forEach(([id,n])=>save.skillCards[id]=n);var preview=previewSkillSynthesis(recipe.id,selection);var result=executeSkillSynthesis(recipe.id,{selection,token:preview.token,rng:()=>draws.shift()});');
+   assert(run('result.ok'));assert.equal(run('result.resultId'),pool[i].id);assert.equal(run('draws.length'),0);
+   assert.equal(run('Object.values(save.skillCards).reduce((n,v)=>n+v,0)'),1);
+   assert.equal(run('save.coins'),run('initSave().coins'));
+   assert.equal(run('executeSkillSynthesis(recipe.id,{selection,token:preview.token}).ok'),false,'token cannot commit twice');
+   run('save=parseAndPrepareSave(committed,[]);migrateSkillSystem();');
+   assert.equal(run('Object.values(save.skillCards).reduce((n,v)=>n+v,0)'),1,'reload does not repeat draw/consume');
+  }
+  lower+=outcome.chance;
+ }
+ // Exact rank boundary enters next tier. Zero and the highest valid value are reachable.
+ for(const roll of [0,recipe.outcomes[0].chance-1e-10,...(recipe.outcomes.length>1?[recipe.outcomes[0].chance]:[]),1-1e-10]){
+  r.context.selection={[material]:recipe.required};r.context.draws=[roll,1-1e-10];
+  run('save=initSave();save.skillCards={...selection};var p=previewSkillSynthesis(recipe.id,selection);var result=executeSkillSynthesis(recipe.id,{selection,token:p.token,rng:()=>draws.shift()});');
+  const expectedTier=roll<recipe.outcomes[0].chance?recipe.outcomes[0].tier:recipe.outcomes.at(-1).tier;
+  assert.equal(run('skillSynthesisTierOf(SKILL_BY_ID[result.resultId])'),expectedTier);
+ }
 }
-run(`save=initSave();var noMaterials=previewSkillSynthesis('synth110_107');`);assert.equal(run('noMaterials.ok'),false);
-run(`save.skillCards={s110_091:1,s110_094:1};var preview=previewSkillSynthesis('synth110_107');save.skillCards.s110_091=2;`);
-assert.equal(run("executeSkillSynthesis('synth110_107',{token:preview.token}).ok"),false,'stale preview rejected');
+run("save=initSave();save.skillCards={s110_001:5,s110_002:2,s110_061:3};var selection={s110_001:2,s110_002:1};var p=previewSkillSynthesis('synth_tier_low_v1',selection);");
+assert.equal(run("previewSkillSynthesis('synth_tier_low_v1',{s110_002:1,s110_001:2}).token"),run('p.token'),'order-independent selection');
+for(const bad of [{},{s110_001:2},{s110_001:4},{s110_001:2,s110_061:1},{s110_001:2.5,s110_002:.5},{s110_001:-1,s110_002:4},{future:3},{skill_slime_01:3},{s110_002:3},{s110_001:Infinity}]){
+ r.context.bad=bad;
+ const before=run('JSON.stringify(save)');
+ assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection:bad,token:p.token,rng:()=>{throw Error('must not roll');}}).ok"),false);
+ assert.equal(run('JSON.stringify(save)'),before);
+}
+assert.equal(run("executeSkillSynthesis('synth110_107',{selection,token:p.token}).ok"),false,'retired fixed recipes cannot be invoked');
+assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection:{s110_001:1,s110_002:2},token:p.token}).ok"),false,'selection token mismatch');
+run('save.skillCards.s110_001+=1;');assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection,token:p.token}).ok"),false,'inventory staleness');
+run("var p=previewSkillSynthesis('synth_tier_low_v1',selection);save=JSON.parse(JSON.stringify(save));");
+assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection,token:p.token}).ok"),false,'identical profile/reloaded save cannot reuse preview');
+// Duplicate selections remove exactly the oversubscribed equipment slots, with confirmation.
+run(`save=initSave();save.instances=[{uid:'a',id:'freigal',level:100},{uid:'b',id:'freigal',level:100}];save.skillCards={s110_001:4};save.equippedSkills={a:['s110_001'],b:['s110_001']};var selection={s110_001:3};var p=previewSkillSynthesis('synth_tier_low_v1',selection);var before=JSON.stringify(save);`);
+assert.equal(run('p.equipmentChanges.length'),1);
+assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection,token:p.token,rng:()=>{throw Error('must not roll');}}).needsEquipmentConfirmation"),true);
+assert.equal(run('JSON.stringify(save)'),run('before'));
+assert(run("executeSkillSynthesis('synth_tier_low_v1',{selection,token:p.token,confirmEquipment:true,rng:()=>.99}).ok"));assert.equal(run("countEquippedSkill('s110_001')"),1);
+// Save failure restores the entire save. Retrying the same preview retains its exact draw.
 for(const throwing of [false,true]){
  r.context.throwing=throwing;
- run(`save=initSave();save.skillCards={s110_091:1,s110_094:1};persistOk=false;persistThrows=throwing;var preview=previewSkillSynthesis('synth110_107');var before=JSON.stringify(save);var result=executeSkillSynthesis('synth110_107',{token:preview.token});`);
- assert.equal(run('result.ok'),false);assert.equal(run('JSON.stringify(save)'),run('before'),'full rollback on failed save');
+ run(`save=initSave();save.skillCards={s110_091:3};var selection={s110_091:3};persistOk=false;persistThrows=throwing;var p=previewSkillSynthesis('synth_tier_super_v1',selection);var before=JSON.stringify(save);var failed=executeSkillSynthesis('synth_tier_super_v1',{selection,token:p.token,rng:()=>.99});`);
+ assert.equal(run('failed.ok'),false);assert.equal(run('JSON.stringify(save)'),run('before'));
+ run('persistOk=true;persistThrows=false;');
+ assert(run("executeSkillSynthesis('synth_tier_super_v1',{selection,token:p.token,rng:()=>{throw Error('must retain previous draw');}}).ok"));
+ assert.equal(run('save.skillCards.s110_110'),1);
 }
-// Two copies equipped on two units: consume one, unequip exactly one, explicit confirmation required.
-run(`persistOk=true;persistThrows=false;save=initSave();save.instances=[{uid:'a',id:'freigal',level:100},{uid:'b',id:'freigal',level:100}];
-save.skillCards={s110_091:2,s110_094:1};save.equippedSkills={a:['s110_091'],b:['s110_091']};var preview=previewSkillSynthesis('synth110_107');var before=JSON.stringify(save);`);
-assert.equal(run('preview.equipmentChanges.length'),1);
-assert.equal(run("executeSkillSynthesis('synth110_107',{token:preview.token}).needsEquipmentConfirmation"),true);
-assert.equal(run('JSON.stringify(save)'),run('before'));
-assert(run("executeSkillSynthesis('synth110_107',{token:preview.token,confirmEquipment:true}).ok"));
-assert.equal(run("countEquippedSkill('s110_091')"),1);assert.equal(run('save.skillCards.s110_091'),1);
-console.log(`PASS skill110 save/crafting: ${oldIds.length} old IDs, sum-preserving migration, full backup, idempotence, illegal loadout repair, per-account/import isolation, no free ultimates, 4 recipes, reorder, confirmation, stale/repeated tokens, reload, save-failure rollback.`);
-// Real persistence path: primary localStorage setItem is atomic; quota failure cannot consume materials.
+// Invalid RNG cannot consume, and a busy transaction cannot draw or commit.
+for(const badRoll of [-.1,1,NaN,Infinity]){
+ r.context.badRoll=badRoll;run("save=initSave();save.skillCards={s110_001:3};var selection={s110_001:3};var p=previewSkillSynthesis('synth_tier_low_v1',selection);var before=JSON.stringify(save);");
+ assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection,token:p.token,rng:()=>badRoll}).ok"),false);assert.equal(run('JSON.stringify(save)'),run('before'));
+}
+run('skillSynthesisBusy=true;');assert.equal(run("executeSkillSynthesis('synth_tier_low_v1',{selection,token:p.token}).ok"),false);run('skillSynthesisBusy=false;');
+// Historical records and already synthesized cards survive without a new migration.
+run("save=initSave();save.skillCards={s110_107:4};save.skillSynthesis={version:1,sequence:9,lastRecipeId:'synth110_107',customHistory:'keep'};save=parseAndPrepareSave(JSON.stringify(save),[]);");
+assert.equal(run('save.skillCards.s110_107'),4);assert.equal(run('save.skillSynthesis.lastRecipeId'),'synth110_107');
+run("var selection={s110_107:2};var p=previewSkillSynthesis('synth_tier_ultimate_v1',selection);var result=executeSkillSynthesis('synth_tier_ultimate_v1',{selection,token:p.token,rng:()=>0});");
+assert(run('result.ok'));assert.equal(run('save.skillSynthesis.customHistory'),'keep');assert.equal(run('save.skillSynthesis.sequence'),10);assert.equal(run('save.skillCards.s110_107'),3,'same card may return');
+console.log(`PASS ${oldIds.length} old IDs and tier synthesis: all pools/results, exact rank boundaries, repeated/mixed/invalid selections, confirmation, stale/profile/double tokens, RNG validation, failure rollback and stable retry draw.`);
+// Real persistence path: primary-write failure cannot consume, and loadSave retains exact result.
 const durable=runtime({save:source=>source+'\nglobalThis.actualSkill110SaveGame=saveGame;'});
 vm.runInContext(fs.readFileSync(new URL('../js/skill-synthesis.js',import.meta.url),'utf8'),durable.context);
-durable.run('saveGame=actualSkill110SaveGame;save=initSave();save.skillCards={s110_091:1,s110_094:1};saveGame();var committedBefore=localStorage.getItem(SAVE_KEY);var memoryBefore=JSON.stringify(save);var realSetItem=localStorage.setItem;');
-durable.run("localStorage.setItem=(key,value)=>{if(key===SAVE_KEY)throw Error('quota');return realSetItem(key,value);};var p=previewSkillSynthesis('synth110_107');var failed=executeSkillSynthesis('synth110_107',{token:p.token});");
-assert.equal(durable.run('failed.ok'),false);
-assert.equal(durable.run('JSON.stringify(save)'),durable.run('memoryBefore'));
-assert.equal(durable.run('localStorage.getItem(SAVE_KEY)'),durable.run('committedBefore'));
-durable.run("localStorage.setItem=realSetItem;var p=previewSkillSynthesis('synth110_107');var succeeded=executeSkillSynthesis('synth110_107',{token:p.token});");
-assert(durable.run('succeeded.ok'));
-assert.equal(durable.run('JSON.parse(localStorage.getItem(SAVE_KEY)).skillCards.s110_107'),1);
-durable.run('save=loadSave();migrateSkillSystem();');
-assert.equal(durable.run('save.skillCards.s110_107'),1);
-assert.equal(durable.run('save.skillCards.s110_091'),0);
-console.log('PASS real localStorage synthesis: primary-write failure leaves memory/storage unchanged; retry commits material/result atomically; loadSave retains exactly one result.');
+durable.run('saveGame=actualSkill110SaveGame;save=initSave();save.skillCards={s110_091:3};saveGame();var selection={s110_091:3};var committedBefore=localStorage.getItem(SAVE_KEY);var memoryBefore=JSON.stringify(save);var realSetItem=localStorage.setItem;');
+durable.run("localStorage.setItem=(key,value)=>{if(key===SAVE_KEY)throw Error('quota');return realSetItem(key,value);};var p=previewSkillSynthesis('synth_tier_super_v1',selection);var failed=executeSkillSynthesis('synth_tier_super_v1',{selection,token:p.token,rng:()=>.99});");
+assert.equal(durable.run('failed.ok'),false);assert.equal(durable.run('JSON.stringify(save)'),durable.run('memoryBefore'));assert.equal(durable.run('localStorage.getItem(SAVE_KEY)'),durable.run('committedBefore'));
+durable.run("localStorage.setItem=realSetItem;var p=previewSkillSynthesis('synth_tier_super_v1',selection);var succeeded=executeSkillSynthesis('synth_tier_super_v1',{selection,token:p.token,rng:()=>{throw Error('no redraw');}});");
+assert(durable.run('succeeded.ok'));assert.equal(durable.run('JSON.parse(localStorage.getItem(SAVE_KEY)).skillCards.s110_110'),1);
+durable.run('save=loadSave();migrateSkillSystem();');assert.equal(durable.run('save.skillCards.s110_110'),1);assert.equal(durable.run('save.skillCards.s110_091'),0);
+console.log('PASS real localStorage synthesis: atomic material/result, unchanged disk/memory on quota failure, retry without reroll, loadSave exact result.');
 // Actual async import handler: cancelled/failed import must not replace the live account.
 durable.context.location={reload(){durable.context.reloadCount=(durable.context.reloadCount||0)+1;}};
 durable.run('save=initSave();save.coins=123;saveRecoveryReport=["existing report"];saveGame();var originalImportDisk=localStorage.getItem(SAVE_KEY);var originalImportMemory=JSON.stringify(save);var incoming=initSave();incoming.saveMeta.migrations=[];incoming.coins=999;incoming.skillCards={skill_voltax_03:4};var incomingRaw=JSON.stringify(incoming);');
