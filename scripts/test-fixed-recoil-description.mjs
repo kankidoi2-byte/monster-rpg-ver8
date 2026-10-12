@@ -28,7 +28,7 @@ async function scenario({skillId,mode='single',actor='player',targetHp=3,guarded
  var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
  var entryB={id:'enemy_b',kind:'enemy',mon:by('slime'),hp:${targetHp},maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
  var multiBattle={enemies:[entryA,entryB]};var testMove=skillToMove('${skillId}');`);
- if(zeroDamage)r.context.resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:140,barrierRemaining:0});
+ if(zeroDamage)r.context.skill110IncomingDamage=r.context.resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:140,barrierRemaining:0});
  const before=r.run(actor==='player'?'pHp':mode==='single'?'eHp':'entryA.hp');
  if(mode==='single')await r.run(`doAttack(${isPlayer?'player,enemy':'enemy,player'},testMove,${isPlayer})`);
  else await r.run(`performMultiAttack(${isPlayer?"{kind:'player'}":'entryA'},${actor==='enemy-other'?'entryB':isPlayer?'entryA':"{kind:'player'}"},testMove)`);

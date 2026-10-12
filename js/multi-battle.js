@@ -304,9 +304,9 @@ async function performMultiAttack(actor,target,move) {
   const effectivePower=resolvedPower*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
   const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
-  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=guard?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.5,penetration.rate):1;
-  const rawDamage=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map*guardMultiplier*shieldMultiplier));
-  const linkBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawDamage):{hpDamage:rawDamage,absorbed:0,barrierRemaining:0};
+  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
+  const rawDamage=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map;
+  const linkBarrier=legacyAttackDefense(rawDamage,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
   const damage=linkBarrier.hpDamage;
   const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
@@ -326,8 +326,8 @@ async function performMultiAttack(actor,target,move) {
     if(Math.random()<chance.chance){
     if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true});
-    const rawSecond=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map));
-    const secondBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawSecond):{hpDamage:rawSecond,absorbed:0,barrierRemaining:0};
+    const rawSecond=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map;
+    const secondBarrier=legacyAttackDefense(rawSecond,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
     const second=secondBarrier.hpDamage;const secondHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
     if(typeof battleHpResult==='function')battleHpResult(impactTargetId,secondHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:'追加攻撃',damage:second,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});

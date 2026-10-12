@@ -66,7 +66,7 @@ for(const mode of ['single','multi'])for(const actor of ['player','enemy','enemy
 }
 for(const mode of ['single','multi']){
  setup(after,{hp:75,link:true});after.run('pAtk=10');await attack(after,mode,'player');assert.equal(after.run('pHp'),40);assert.equal(after.run('healEvents.length'),2,'one link drain plus one skill drain');assert.equal(after.run('kokoroLinkPowerAbilityFor(activeInstance).charges'),0);
- const blocked=runtime();setup(blocked,{actor:'enemy',hp:75});blocked.context.resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:100,barrierRemaining:0});await attack(blocked,mode,'enemy');assert.equal(blocked.run(actorExpr(mode,'enemy')),10);assert.equal(blocked.run('healEvents.length'),0);
+ const blocked=runtime();setup(blocked,{actor:'enemy',hp:75});blocked.context.resolvePlayerIncomingDamage=blocked.context.skill110IncomingDamage=()=>({hpDamage:0,absorbed:100,barrierRemaining:0});await attack(blocked,mode,'enemy');assert.equal(blocked.run(actorExpr(mode,'enemy')),10);assert.equal(blocked.run('healEvents.length'),0);
 }
 let comparisons=0;
 for(const mode of ['single','multi'])for(const actor of ['player','enemy','enemy-other'])for(const defender of ['slime','aquaron','grassbeat','nemesion','doom_nemesion'])for(const guard of [false,true])for(const seed of [1,42,1234]){

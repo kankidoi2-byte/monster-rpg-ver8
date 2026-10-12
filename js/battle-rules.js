@@ -512,29 +512,40 @@ function skill110BattleMove(move){
 }
 function skillGuardReduction(value){return value===true?.45:Math.max(0,Math.min(1,Number(value)||0));}
 function skillChargeMultiplier(value){return value===true?1.2:Math.max(1,Number(value)||1);}
-function skill110IncomingDamage(damage,ignoreDefense,guardReduction=0){
+// Optional state keeps one defense/evasion decision for every hit of a legacy
+// attack. The normal 110 resolver calls this once for its whole damage budget.
+function skill110IncomingDamage(damage,ignoreDefense,guardReduction=0,attackState={}){
   const incoming=Math.max(1,Math.floor(damage));
   const link=typeof kokoroLinkEffectForInstance==='function'?kokoroLinkEffectForInstance(activeInstance):null;
-  const ability=link?.powerAbility;
-  if(ability?.id==='evasion'&&ability.charges>0){
-    ability.charges--;
-    if(Math.random()<(Number(ability.chance)||0))return {incoming,afterReduction:0,hpDamage:0,absorbed:0,reduced:0,evaded:true,barrierRemaining:link?.barrierRemaining||0};
-  }
-  // All percentage defenses take their strongest value, never a product.
-  // The separately tracked HP barrier absorbs the resulting damage afterward.
-  let reduction=ignoreDefense?0:guardReduction,reductionLabel=guardReduction?'防御':null;
-  if(!ignoreDefense){
-    for(const candidate of [ability,link?.tacticsAbility]){
-      if(['first_hit_guard','water_mirror_guard'].includes(candidate?.id)&&candidate.charges>0){
-        candidate.charges--;
-        if((Number(candidate.reductionRate)||0)>reduction){reduction=Number(candidate.reductionRate);reductionLabel=candidate.label;}
+  if(!attackState.initialized){
+    attackState.initialized=true;
+    attackState.reduction=ignoreDefense?0:guardReduction;
+    attackState.reductionLabel=guardReduction?'防御':null;
+    const ability=link?.powerAbility;
+    if(ability?.id==='evasion'&&ability.charges>0){
+      ability.charges--;
+      attackState.evaded=Math.random()<(Number(ability.chance)||0);
+    }
+    if(!ignoreDefense&&!attackState.evaded){
+      for(const candidate of [ability,link?.tacticsAbility]){
+        if(['first_hit_guard','water_mirror_guard'].includes(candidate?.id)&&candidate.charges>0){
+          candidate.charges--;
+          if((Number(candidate.reductionRate)||0)>attackState.reduction){attackState.reduction=Number(candidate.reductionRate);attackState.reductionLabel=candidate.label;}
+        }
       }
     }
   }
-  const afterReduction=Math.max(1,Math.floor(damage*(1-reduction))),reduced=Math.max(0,incoming-afterReduction);
+  if(attackState.evaded)return {incoming,afterReduction:0,hpDamage:0,absorbed:0,reduced:0,evaded:true,barrierRemaining:link?.barrierRemaining||0};
+  // Strongest percentage defense first; finite HP barrier afterward, per hit.
+  const afterReduction=Math.max(1,Math.floor(damage*(1-attackState.reduction))),reduced=Math.max(0,incoming-afterReduction);
   const absorbed=!ignoreDefense&&link?Math.min(afterReduction,Math.max(0,link.barrierRemaining||0)):0;
   if(absorbed)link.barrierRemaining-=absorbed;
-  return {incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,reductionLabel,evaded:false,barrierRemaining:link?.barrierRemaining||0};
+  return {incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,reductionLabel:attackState.reductionLabel,evaded:false,barrierRemaining:link?.barrierRemaining||0};
+}
+function legacyAttackDefense(damage,defenderIsPlayer,guard,shield,penetration=0,attackState={}){
+  const multiplier=kokoroLinkPenetratedMultiplier(1-Math.max(skillGuardReduction(guard),shield?.5:0),penetration);
+  if(defenderIsPlayer)return skill110IncomingDamage(damage,false,1-multiplier,attackState);
+  return {hpDamage:Math.max(1,Math.floor(damage*multiplier)),absorbed:0,barrierRemaining:0};
 }
 async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEntry=null){
   const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
@@ -664,9 +675,9 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const effectivePower=resolvedPower*powerBoost.multiplier;
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
-  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=g?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.50,penetration.rate):1;
-  const rawDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * guardMultiplier * shieldMultiplier));
-  const linkBarrier = isPlayer ? {hpDamage:rawDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawDmg);
+  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
+  const rawDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier;
+  const linkBarrier = legacyAttackDefense(rawDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
   const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
   if (isPlayer) {
@@ -761,9 +772,9 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true});
   if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
-    // 追加攻撃は最大1回。1撃目でガード・アクアシールドが消費されているため、2撃目には適用しない。
-    const rawSecondDmg = Math.max(1, Math.floor((effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier));
-    const secondBarrier = isPlayer ? {hpDamage:rawSecondDmg,absorbed:0,barrierRemaining:0} : resolvePlayerIncomingDamage(rawSecondDmg);
+    // Additional hit shares the attack-wide defense snapshot; no second charge consumption.
+    const rawSecondDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier;
+    const secondBarrier = legacyAttackDefense(rawSecondDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
     const secondDmg = secondBarrier.hpDamage;
     const secondHpBefore=isPlayer?eHp:pHp;
     if (isPlayer) eHp = Math.max(0, eHp - secondDmg); else pHp = Math.max(0, pHp - secondDmg);

@@ -36,13 +36,14 @@ assert.match(run('battleStateLabels(battleCombatants()[0]).join(" ")'),/防御.*
 // Identical messages across distinct actions are retained.
 run(`setup();beginBattleAction(player,['防御'],true);document.getElementById('log').innerHTML='身を守った';captureBattleLog();beginBattleAction(player,['防御'],true);document.getElementById('log').innerHTML='身を守った';captureBattleLog();`);
 assert.equal(history().filter(e=>e.text==='身を守った').length,2);
-// Compare actual rule outcomes and random draws with the production baseline.
+// Compare unchanged effects/RNG without defense; intentional defense rules are
+// covered by test-story-legacy-defense, including whole-attack consumption.
 const {execFileSync}=await import('node:child_process');
 const baseline=runtime(Object.fromEntries(['battle-rules','battle-flow','multi-battle','battle-view','items'].map(file=>[file,()=>execFileSync('git',['show',`4f3d5d5c488d4dd44da9b2bab30a56ab45663323:js/${file}.js`],{encoding:'utf8',maxBuffer:5e6})])));
 for(const effect of [null,'repeat_attack','drain','recoil','alchemy_recoil','poison','paralysis','confusion','guard','heal','buff','aqua_shield']){
  const seed=912;const a=seeded(seed),b=seeded(seed);let drawsA=0,drawsB=0;
- baseline.run(`function setup(){${setup.replace('refreshBattleFeedback();','')}};setup();pHp=70;eHp=60;pGuard=true;eGuard=true;pAquaShield=true;eAquaShield=true;`);
- run('setup();pHp=70;eHp=60;pGuard=true;eGuard=true;pAquaShield=true;eAquaShield=true;refreshBattleFeedback()');
+ baseline.run(`function setup(){${setup.replace('refreshBattleFeedback();','')}};setup();pHp=70;eHp=60;pGuard=false;eGuard=false;pAquaShield=false;eAquaShield=false;`);
+ run('setup();pHp=70;eHp=60;pGuard=false;eGuard=false;pAquaShield=false;eAquaShield=false;refreshBattleFeedback()');
  baseline.context.Math.random=()=>{drawsA++;return a()};r.context.Math.random=()=>{drawsB++;return b()};
  const move=JSON.stringify(['検証', ['guard','heal','buff','aqua_shield'].includes(effect)?0:24,'normal',effect,1,null,null,null,'skill_slime_01']);
  await baseline.run(`doAttack(player,enemy,${move},true)`);await run(`doAttack(player,enemy,${move},true)`);
