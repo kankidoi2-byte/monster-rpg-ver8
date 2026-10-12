@@ -16,7 +16,7 @@ try{
  await page.goto(publicUrl||'http://127.0.0.1:4199/?legacy=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
- await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));saveGame();show('home');});
+ await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];if(contractorRankUpTimer)clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;closeContractorRankUp();saveGame();show('home');});
  await page.locator('#homePartyEditButton').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();
  await page.evaluate(()=>{openBattleHub();showWorldMapLocation('grassland');});
  await page.locator('#battleChoiceList button[onclick="openMapStory()"] ').click();assert.equal(await page.locator('.map-story-card').count(),11);

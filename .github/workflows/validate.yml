@@ -54,7 +54,6 @@ jobs:
           node scripts/test-skill-dex-browser.mjs
           node scripts/test-status-descriptions-browser.mjs
           node scripts/test-normal-healing-browser.mjs
-          node scripts/test-map-story-browser.mjs
 
       - name: Upload skill-card layout evidence
         if: always()
@@ -178,3 +177,25 @@ jobs:
         with:
           name: three-motion-compression-evidence
           path: artifacts/three-motion-compression
+
+  map-story:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify grassland story and responsive controls
+        run: node scripts/test-map-story-browser.mjs
+      - name: Upload grassland story evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grassland-story-evidence
+          path: artifacts/skill-card-layout/grassland-story
