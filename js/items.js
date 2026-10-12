@@ -143,20 +143,23 @@ function useExpItemOnInstance(itemId, uidValue){
   if(!ins){ alert('対象のモンスターが見つかりません。'); return; }
   const mon = by(ins.id);
   if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;alert(`${mon.name}はすでに Lv.MAX です！`);return;}
-  save.items[itemId]--;
-  ins.exp = (ins.exp||0) + it.expAmount;
   let msg = `${it.icon || '📦'} ${it.name}を${mon.name}に与えた！\nEXP +${it.expAmount}`;
-  while(!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)){
-    ins.exp -= needExp(ins.level);
-    ins.level++;
-    msg += `\n${mon.name}は Lv.${ins.level} に上がった！`;
-  }
-  if(isMaxLevel(ins.level))ins.exp=0;
-  checkEvolution(ins);
-  saveGame();
-  renderParty();
-  alert(msg);
-  if(pendingEvolutions.length) processNextEvolution();
+  if(!commitSaveMutation(()=>{
+    save.items[itemId]--;
+    ins.exp = (ins.exp||0) + it.expAmount;
+    while(!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)){
+      ins.exp -= needExp(ins.level);
+      ins.level++;
+      msg += `\n${mon.name}は Lv.${ins.level} に上がった！`;
+    }
+    if(isMaxLevel(ins.level))ins.exp=0;
+    checkEvolution(ins);
+  }))return;
+  showCommittedSaveResult(()=>{
+    renderParty();
+    alert(msg);
+    if(pendingEvolutions.length) processNextEvolution();
+  });
 }
 function openBattleItemSelect() {
   if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;

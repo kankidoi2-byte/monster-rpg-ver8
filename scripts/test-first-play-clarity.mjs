@@ -27,6 +27,8 @@ const context=vm.createContext({
   ITEM_DEX_BY_ID:{water_mirror:{}},ITEM_BY_ID:{kilo_data:item},SHOP_ITEMS:[],vis:()=>'',typesHtml:()=>'',
   isMaxLevel:level=>level>=100,needExp:()=>100,getEquippedSkillIds:()=>[],SKILL_BY_ID:{},equippedSkillCost:()=>0,skillCostLimitFor:()=>1,isCharacterUnit:()=>false,
   pendingEvolutions:[],checkEvolution(){},saveGame:()=>true,alert(){},setTimeout(){},
+  // Persistence is exercised by test-save-transactions; this fixture isolates roster rendering.
+  commitSaveMutation:mutate=>{mutate();return true;},showCommittedSaveResult:render=>render(),
   activeHuntRequest:null
 });
 context.getInstance=uid=>context.save.instances.find(ins=>ins.uid===uid);
