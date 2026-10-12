@@ -16,6 +16,7 @@ r.run("changeSkillSynthesisMaterial('s110_002',1)");assert.equal(r.run('skillSyn
 assert.match(markup(),/素材選択 3 \/ 3枚/);assert(!/id="skillSynthesisSubmit"[^>]*disabled/.test(markup()));assert(markup().includes('上級 30％'));
 const before=r.run('JSON.stringify(save)');r.run('confirmSkillSynthesis()');assert.equal(r.run('JSON.stringify(save)'),before);assert.equal(draws,0);assert(question.includes('×2'));assert(question.includes('上級 30％'));
 confirmed=true;r.run('confirmSkillSynthesis()');assert.equal(draws,2);assert.equal(r.run('save.skillCards.s110_090'),1);assert.equal(r.run('save.skillCards.s110_001'),2);assert.equal(r.run('save.skillCards.s110_002'),1);assert(markup().includes('1枚獲得しました'));assert(notices.some(n=>n.kind==='success'));
+r.run("changeSkillSynthesisMaterial('s110_001',1)");assert(!markup().includes('id="skillSynthesisResult"'),'starting another selection cannot replay previous success');
 assert.equal(r.run('skillSynthesisUiBusy'),false);assert.equal(r.run('skillSynthesisBusy'),false);
 r.run("selectSkillSynthesisTier('synth_tier_super_v1')");assert.equal(r.run('JSON.stringify(skillSynthesisUiSelection)'),'{}');assert(markup().includes('最強 10％'));assert(!markup().includes('id="skillSynthesisResult"'));
 // Stale inventory can be corrected by reducing the selected count.

@@ -20,6 +20,7 @@ function changeSkillSynthesisMaterial(id,delta){
   const n=(skillSynthesisUiSelection[id]||0)+delta,owned=Number(save.skillCards?.[id])||0;
   if(n<0||(delta>0&&(n>owned||total>=recipe.required)))return;
   if(n)skillSynthesisUiSelection[id]=n;else delete skillSynthesisUiSelection[id];
+  skillSynthesisUiResult=null;
   renderSkillSynthesis();
   document.getElementById(`synthesis-${delta>0?'add':'remove'}-${id}`)?.focus?.({preventScroll:true});
 }
@@ -53,6 +54,7 @@ function confirmSkillSynthesis(){
   const impact=changes.length?'\n\n素材の消費により次の装備が外れます。\n'+changes.map(change=>`${by(change.monsterId)?.name||change.monsterId}（${change.uid}）: ${SKILL_BY_ID[change.skillId]?.name||change.skillId}・枠${change.slot+1}`).join('\n'):'';
   const names=preview.materials.map(material=>`${SKILL_BY_ID[material.id].name} ×${material.required}`).join(' ＋ ');
   if(!confirm(`${names}\n\n${preview.recipe.required}枚を消費し、ランダムな技を1枚獲得します。\n${skillSynthesisOddsMarkup(preview.recipe)}\n級内は均等抽選・素材と同じ技も排出・追加コイン不要。${impact}\n\n合成しますか？`))return;
+  skillSynthesisUiResult=null;
   skillSynthesisUiBusy=true;
   try{
     const completed=executeSkillSynthesis(preview.recipe.id,{selection,confirmEquipment:changes.length>0,token:preview.token});
