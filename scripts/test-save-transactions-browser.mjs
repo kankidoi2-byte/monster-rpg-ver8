@@ -46,7 +46,21 @@ try{
    const json=JSON.parse(fs.readFileSync(await download.path(),'utf8'));assert.equal(json.coins,coins);assert(Array.isArray(json.instances));
   }
   await page.screenshot({path:`${out}/${width}-slot${slot}-recovery-controls.png`});
-  report.cases.push({width,slot,result:'PASS',checks:['title/home/party/hunt/battle surface','primary quota rollback','inactive profile unchanged','saved outcome retained through animation exception and reload']});await context.close();
+  for(const feature of ['expItem','recall']){
+   const outcome=await page.evaluate(feature=>{
+    clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.coins=20000;
+    const hero=addInstance('aquaron',1);save.party=[];const item=SHOP_ITEMS.find(x=>x.expItem);save.items[item.id]=1;
+    save.expeditions.active=[{id:'browser-recall',mapId:'grassland',distanceId:'short',memberUids:[hero.uid],progress:1,requiredWins:3,status:'active',suitability:{greatRate:0},reward:null}];
+    saveGame();const before=JSON.stringify(save),key=MonsterProfiles.key(SAVE_KEY),disk=localStorage.getItem(key),otherKey=MonsterProfiles.slot()===1?'mb_v95c_profile2':'mb_v95c',other=localStorage.getItem(otherKey);
+    const action=()=>feature==='expItem'?useExpItemOnInstance(item.id,hero.uid):recallExpedition('browser-recall');
+    const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===key)throw new DOMException('Injected quota','QuotaExceededError');return set.call(this,k,v);};
+    try{action();}finally{Storage.prototype.setItem=set;}
+    const rolledBack=before===JSON.stringify(save)&&disk===localStorage.getItem(key);action();const committed=localStorage.getItem(key);action();
+    return {rolledBack,committed:committed===JSON.stringify(save),once:committed===localStorage.getItem(key),otherSame:other===localStorage.getItem(otherKey),feature};
+   },feature);
+   assert(outcome.rolledBack&&outcome.committed&&outcome.once&&outcome.otherSame);
+  }
+  report.cases.push({width,slot,result:'PASS',checks:['title/home/party/hunt/battle surface','primary quota rollback','inactive profile unchanged','saved outcome retained through animation exception and reload','XP item and early recall quota rollback, retry, no repeated grant, profile isolation']});await context.close();
  }
 }finally{fs.writeFileSync(`${out}/manifest.json`,JSON.stringify(report,null,2));await browser?.close();server.kill();}
 console.log('PASS browser save transaction scenarios');
