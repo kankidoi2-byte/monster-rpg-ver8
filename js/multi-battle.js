@@ -19,8 +19,10 @@ function setMultiBattleLayout(active) {
 }
 
 function createMultiEnemy(mon, factionId) {
-  const level = huntLevelFor(mon, activeHuntRequest?.difficultyId || 'normal');
-  const max = Math.max(1, Math.round(maxHp(mon, level) * (Number(huntDifficulty(activeHuntRequest?.difficultyId).hpMultiplier) || 1)));
+  const storySpec=activeHuntRequest?.source==='map_story'?activeHuntRequest.enemies[factionId==='enemy_b'?1:0]:null;
+  if(storySpec)mon=createMapStoryEnemy(storySpec);
+  const level = storySpec?.level || huntLevelFor(mon, activeHuntRequest?.difficultyId || 'normal');
+  const max = Math.max(1, Math.round(maxHp(mon, level) * (storySpec?1:(Number(huntDifficulty(activeHuntRequest?.difficultyId).hpMultiplier) || 1))));
   return {
     id:factionId, factionId, mon:structuredClone(mon), level, hp:max, maxHp:max,
     attack:1, guard:false, status:null, poisonTurns:0, paralysisTurns:0,
@@ -59,7 +61,8 @@ function beginThreeWayBattle() {
   document.getElementById('log').innerHTML =
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br>`+
     `⚔️ <b>${multiBattle.enemies[0].mon.name}</b>と<b>${multiBattle.enemies[1].mon.name}</b>が互いを警戒している！<br>${player.name}、三つ巴を制せ！`;if(typeof captureBattleLog==='function')captureBattleLog();
-  if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('threeWay',TUTORIAL_THREE_WAY_FLOW_ID);
+  if(activeHuntRequest.source==='map_story')mapStoryBattleBanner();
+  else if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('threeWay',TUTORIAL_THREE_WAY_FLOW_ID);
 }
 
 function createExistingMultiEnemy() {
@@ -153,7 +156,7 @@ function updateMultiBattleView() {
       `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
       `<div id="${entry.id}Status" class="battle-status" aria-label="${enemyLabel}の有効状態"></div>`+
       `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp-trail" style="width:${pct}%" aria-hidden="true"></div><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+
-      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':'💀 撃破済み'}</p>`+
+      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':activeHuntRequest?.source==='map_story'?'その場を離れた':'💀 撃破済み'}</p>`+
       `${entry.detailsOpen?`<div class="multi-enemy-details"><span>Lv.${entry.level}</span><span>${typesHtml(entry.mon.types)}</span><span>素早さ ${multiEnemyKokoroLinkSpeed(entry)}</span><small>もう一方の敵とプレイヤーの両方を攻撃対象にする。</small></div>`:''}</div></article>`;
   }).join('');
   if(typeof renderMultiBattleCards==='function')renderMultiBattleCards(cardsHtml);else document.getElementById('multiEnemyGrid').innerHTML=cardsHtml;
@@ -201,6 +204,8 @@ function startMultiBattleTurn(targetId) {
 }
 
 async function runMultiActions(actions,index) {
+  if(index===0)actions.storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(actions.storyToken))return;
   if (!multiBattle?.active || multiBattle.finished) return;
   if (index>=actions.length) { finishMultiBattleTurn(); return; }
   const action=actions[index];
@@ -227,14 +232,17 @@ async function runMultiActions(actions,index) {
     const target=targetDescriptor?.kind==='enemy' ? multiEnemy(targetDescriptor.id) : targetDescriptor;
     if (target) result=await performMultiAttack(actor,target,action.move);
   }
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(actions.storyToken))return;
   // Match single battles: enemy annihilation wins before a forced party switch.
   if (!aliveMultiEnemies().length) { winMultiBattle(); return; }
   if (pHp<=0 && !switchPartyMember()) return;
   await battleMotionDelay(result?.animated?140:550);
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(actions.storyToken))return;
   runMultiActions(actions,index+1);
 }
 
 async function performMultiAttack(actor,target,move) {
+  const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const actorIsPlayer=actor.kind==='player'; const defenderIsPlayer=target.kind==='player';
   const a=actorIsPlayer?player:actor.mon; const d=defenderIsPlayer?player:target.mon;
   const [name,power,type,effect,effectChance]=move; let msg='';
@@ -261,6 +269,7 @@ async function performMultiAttack(actor,target,move) {
   const tactical=tacticalSkillProfile(move);
   const supportTargetId=['sleep','debuff'].includes(effect)||(effect==='tactical'&&(tactical?.debuff||tactical?.dispel))?impactTargetId:sourceId;
   const supportAnimated=power<=0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,supportTargetId,move,{untilImpact:true}):false;
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
   if(effect==='tactical'&&power<=0){
     appendMultiLog(`✨ ${a.name}の「${name}」！<br>${resolveTacticalSkillEffects(move,actorIsPlayer,actorIsPlayer?null:actor,target)}`);
     updateMultiBattleView();
@@ -268,7 +277,7 @@ async function performMultiAttack(actor,target,move) {
   }
   if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated}; }
   if(effect==='heal'){
-    const amount=normalBattleHealing(actorIsPlayer ? activeInstance?.level : actor.level);
+    const amount=normalBattleHealing(actorIsPlayer ? activeInstance?.level : typeof activeHuntRequest!=='undefined'&&activeHuntRequest?.source==='map_story'?1:actor.level);
     const before=actorIsPlayer?pHp:actor.hp;
     if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+amount);else actor.hp=Math.min(actor.maxHp,actor.hp+amount);
     const healed=(actorIsPlayer?pHp:actor.hp)-before;
@@ -286,6 +295,7 @@ async function performMultiAttack(actor,target,move) {
     updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true}):false;
+  if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
   if(!actorIsPlayer&&power>0&&enemyKokoroLinkMisses(actor.id)){appendMultiLog(`⚔️ ${a.name}の「${name}」！<br>✨ 目くらましで攻撃は外れた！`);return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(animated):{animated};}
   const atk=(actorIsPlayer?pAtk*playerAttackInstanceMultiplier():actor.attack*enemyKokoroLinkAttackMultiplier(actor.id))*(actor.flareCharge||actorIsPlayer&&pFlareCharge?1.2:1);
   const resolvedPower=tacticalSkillPower(move,actorIsPlayer,actorIsPlayer?null:actor,target);
@@ -361,7 +371,7 @@ async function performMultiAttack(actor,target,move) {
   return {animated};
 }
 
-function appendMultiLog(message){const el=document.getElementById('log');if(el)el.innerHTML=message;if(typeof captureBattleLog==='function')captureBattleLog();if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();}
+function appendMultiLog(message){if(typeof activeHuntRequest!=='undefined'&&activeHuntRequest?.source==='map_story')message=message.replaceAll('💀 ','').replaceAll('に倒された！','の攻撃でその場を離れた！').replaceAll('反動で倒れた！','反動で動きが鈍った！').replaceAll('毒で倒れた！','毒で動きが鈍った！');const el=document.getElementById('log');if(el)el.innerHTML=message;if(typeof captureBattleLog==='function')captureBattleLog();if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();}
 function finishMultiBattleTurn(){
   completeBattleTurn();
   const poison=BATTLE_STATUS_EFFECTS.poison;
@@ -385,6 +395,7 @@ function grantMultiEnemyReward(entry,turnBonus){
   return {exp,coins,message};
 }
 function winMultiBattle(){
+  if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('victory'))return;
   if(battleRewardGranted)return;battleRewardGranted=true;if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();completeBattleTurn();resetBattleTransientEffects();multiBattle.finished=true;busy=true;
   const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus));
   const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
@@ -397,6 +408,7 @@ function winMultiBattle(){
 }
 
 function renderMultiContractPanel(){
+  if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return;
   const panel=document.getElementById('multiContractPanel');if(!panel||!multiBattle?.finished)return;
   const outcomeActions=document.getElementById('battleOutcomeActions');if(outcomeActions&&panel.parentElement!==outcomeActions)outcomeActions.appendChild(panel);
   const candidates=multiBattle.enemies.filter(entry=>entry.defeatedByPlayer&&isContractableUnit(entry.mon)&&!multiBattle.contractAttempts[entry.id]);
@@ -404,6 +416,7 @@ function renderMultiContractPanel(){
 }
 function selectMultiBattleContractTarget(id){const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
 async function useMultiBattleContractScroll(itemId){
+  if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||!multiBattle?.active||!multiBattle.finished)return false;
   const battle=multiBattle,entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;
   if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||battle.contractAttempts[entry.id])return false;
@@ -427,4 +440,4 @@ async function useMultiBattleContractScroll(itemId){
     return committed;
   }finally{postBattleContractBusy=false;busy=false;}
 }
-function runAwayFromMultiBattle(){resetBattleTransientEffects();if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}
+function runAwayFromMultiBattle(){if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('retreat'))return;resetBattleTransientEffects();if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}

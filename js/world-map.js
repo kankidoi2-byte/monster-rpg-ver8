@@ -158,6 +158,7 @@ function worldMapDetailHTML(map,eventKey=null) {
       <h3>出現するモンスター</h3><ul class="wm-enemies">${candidates.map(mon=>`<li><span>${worldMapEscape(mon.name)}</span><small>${worldMapEscape(mon.rarity)} · Lv.${huntLevelFor(mon,difficulty.id)}</small></li>`).join('')}</ul>
       ${map.goldenLand&&!eventKey&&goldenLandMapIsReady()?'<p class="wm-entry-note">地図による入場：出発時に「黄金郷への地図」を1枚消費します。自然に見つけた入口は別に保持されます。</p>':''}
       <button type="button" class="wm-depart" data-wm-depart${candidates.length?'':' disabled'}>${event?'この気配を確かめる':'この場所を探索する'} ›</button>`}
+    ${typeof mapStoryEntryHtml==='function'?mapStoryEntryHtml(map):''}
     <details class="wm-ecology"><summary>この場所の生態系</summary><p>${worldMapEscape(map.ecosystem)}</p></details></div></article>`;
 }
 function renderWorldMap(list,{saveNavigation=true}={}) {

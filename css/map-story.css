@@ -1,0 +1,13 @@
+#mapStory{max-width:920px;margin:auto;padding:16px;color:var(--nb-text,#171717)}
+#mapStory button{min-height:44px;white-space:normal;margin:4px;padding:10px 16px}
+.map-story-list{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.map-story-card{padding:16px;border:1px solid #c9bfa7;border-radius:12px;background:#fff}
+.map-story-card h3{margin:8px 0}.map-story-card p{line-height:1.65}
+.map-story-scene{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:380px;border-radius:12px;overflow:hidden;background:#252a20}
+.map-story-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.map-story-scene:before{content:'';position:absolute;inset:0;background:rgb(0 0 0 / var(--story-shade));z-index:-1}
+.map-story-speaker{height:230px;width:100%;object-fit:contain;object-position:center bottom;margin-top:16px}
+.map-story-dialogue{margin-top:auto;padding:20px;background:rgb(255 255 255 / .96);color:#171717;overflow-wrap:anywhere;line-height:1.8}
+.map-story-dialogue p{margin:8px 0 0;font-size:1.1em}.map-story-actions{display:flex;flex-wrap:wrap;justify-content:space-between;margin-top:12px}
+@media(orientation:landscape){.map-story-scene{min-height:230px}.map-story-speaker{height:170px}.map-story-dialogue{padding:12px 20px}}
+@media(prefers-reduced-motion:reduce){#mapStory{animation:none!important}}
