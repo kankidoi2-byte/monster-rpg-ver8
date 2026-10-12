@@ -1,7 +1,7 @@
-function prepareBattleParty() {
+function prepareBattleParty(storyInstances=null) {
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
-  const savedParty = getPartyInstances();
-  const party = typeof tutorialBattlePartyInstances === 'function'
+  const savedParty = storyInstances || getPartyInstances();
+  const party = !storyInstances && typeof tutorialBattlePartyInstances === 'function'
     ? tutorialBattlePartyInstances(savedParty)
     : savedParty;
   partyBattle = party.map(ins => ({
@@ -158,6 +158,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
   activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
+  if(activeHuntRequest.source==='map_story')enemy=createMapStoryEnemy(activeHuntRequest.enemies[0]);
   if (activeHuntRequest.goldenLandMapEntry) {
     const previousMapCount=save.items.golden_land_map;
     if (!consumeReservedGoldenLandMap()) {
@@ -202,6 +203,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function afterBattleNext() {
+  if(typeof isMapStoryBattle==='function'&&isMapStoryBattle()){resumeMapStoryAfterBattle();return;}
   singleBattleContractAttempted = false;
   postBattleContractRetry = null;
   endPartyRecovery();
@@ -248,6 +250,7 @@ function switchPartyMember() {
 }
 function performManualPartySwitch(nextIndex) {
   if (busy || !livingPartySwitchCandidates().some(candidate => candidate.index === nextIndex)) return false;
+  const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const previousName = player.name;
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   startBattleTurn();
@@ -267,7 +270,9 @@ function performManualPartySwitch(nextIndex) {
   const enemyAction = nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);
   const delayed = typeof consumeKokoroLinkEnemyActionDelay === 'function' && consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
   setTimeout(async () => {
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     await performAction(enemy,player,enemyAction.move,false);
+    if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return;
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
@@ -281,6 +286,7 @@ function performManualPartySwitch(nextIndex) {
   return true;
 }
 function losePartyBattle() {
+  if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('defeat'))return;
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
   completeBattleTurn();
   document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';if(typeof captureBattleLog==='function')captureBattleLog();
@@ -314,6 +320,7 @@ function endPartyRecovery() {
 }
 function runAway() {
   if (busy) return;
+  if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('retreat'))return;
   if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
   resetBattleTransientEffects();
@@ -326,6 +333,7 @@ function runAway() {
 }
 function win() {
   if (eHp > 0) return;
+  if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('victory'))return;
   if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
   if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) {resetBattleTransientEffects();return;}
   if (battleRewardGranted) return;

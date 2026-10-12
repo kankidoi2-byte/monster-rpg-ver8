@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261012-grassland-map-story",date:"2026-10-12",category:"update",title:"草原のマップストーリーを追加しました",body:"序章の完了・スキップ後、草原の詳細画面から全11話の「草原は、誰のもの」を遊べます。グノーシスとガルドラと草原を巡る物語です。戦闘後の会話からの再開・読み返し・再戦に対応。ストーリー戦での契約はできません。"},
   {id:"20261012-skill-synthesis-growth-entry",date:"2026-10-12",category:"update",title:"技合成の入口を育成にまとめました",body:"モンスターの「育成」から「技合成」を開けます。技図鑑・技の詳細・技ガチャにあった入口は育成へ統一しました。合成画面からも育成に戻れます。"},
   {id:"20261011-enemy-motion-limit-3",date:"2026-10-11",category:"fix",title:"敵の待機モーションが動かない問題を修正しました",body:"戦闘中に味方と敵の待機モーションを同時に再生できるようにしました。三つ巴では味方1体・敵2体まで動きます。"},
   {id:"20261011-three-motion-compression",date:"2026-10-11",category:"update",title:"3体のモーションデータを軽量化しました",body:"キメラグナ・スライム・エリクシオンの戦闘モーションを軽量化し、3体合計の読み込みデータ量を約34％削減しました。再生時間・コマ数・表示サイズは変わりません。"},

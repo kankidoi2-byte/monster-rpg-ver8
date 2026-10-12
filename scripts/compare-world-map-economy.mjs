@@ -99,6 +99,9 @@ function functionSource(source,name){
 }
 
 function normalizedRuleSource(source,name){
+  // Map-story rewards have an independent transaction path, covered by check:map-story.
+  // Strip only its exact early victory dispatch when comparing NORMAL exploration.
+  source=source.replace(/if\(typeof mapStoryOutcome==='function'&&mapStoryOutcome\('victory'\)\)return;/g,'');
   // 110-skill end-of-battle cleanup is independently tested; it does not change reward rules.
   source=source.replace(/resetBattleTransientEffects\(\);/g,'')
     .replace(/(?:pStatus|eStatus|pPoisonTurns|ePoisonTurns|pParalysisTurns|eParalysisTurns|pConfusionTurns|eConfusionTurns|pSleepTurns|eSleepTurns|pFlareCharge|eFlareCharge|pAquaShield|eAquaShield)\s*=\s*(?:null|0|false);/g,'')

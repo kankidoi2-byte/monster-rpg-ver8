@@ -58,6 +58,7 @@ function show(id) {
   if (id === 'contractorTitles') renderContractorTitles();
   if (id === 'storyMode' && typeof renderStoryMode === 'function') renderStoryMode();
   if (id === 'partySet') renderPartySetup();
+  if (id === 'partySet' && typeof renderMapStoryPartyReturn==='function') renderMapStoryPartyReturn();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
   if (id === 'characterGacha') renderCharacterGacha();
