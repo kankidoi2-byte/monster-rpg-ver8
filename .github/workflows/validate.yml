@@ -54,6 +54,7 @@ jobs:
           node scripts/test-skill-dex-browser.mjs
           node scripts/test-status-descriptions-browser.mjs
           node scripts/test-normal-healing-browser.mjs
+          node scripts/test-map-story-browser.mjs
 
       - name: Upload skill-card layout evidence
         if: always()
