@@ -18,7 +18,7 @@ function changeSkillSynthesisMaterial(id,delta){
   if(!skillSynthesisPool(recipe.tier).some(card=>card.id===id))return;
   const total=Object.values(skillSynthesisUiSelection).reduce((sum,n)=>sum+n,0);
   const n=(skillSynthesisUiSelection[id]||0)+delta,owned=Number(save.skillCards?.[id])||0;
-  if(n<0||n>owned||(delta>0&&total>=recipe.required))return;
+  if(n<0||(delta>0&&(n>owned||total>=recipe.required)))return;
   if(n)skillSynthesisUiSelection[id]=n;else delete skillSynthesisUiSelection[id];
   renderSkillSynthesis();
   document.getElementById(`synthesis-${delta>0?'add':'remove'}-${id}`)?.focus?.({preventScroll:true});

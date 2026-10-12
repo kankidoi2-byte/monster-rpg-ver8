@@ -18,6 +18,10 @@ const before=r.run('JSON.stringify(save)');r.run('confirmSkillSynthesis()');asse
 confirmed=true;r.run('confirmSkillSynthesis()');assert.equal(draws,2);assert.equal(r.run('save.skillCards.s110_090'),1);assert.equal(r.run('save.skillCards.s110_001'),2);assert.equal(r.run('save.skillCards.s110_002'),1);assert(markup().includes('1枚獲得しました'));assert(notices.some(n=>n.kind==='success'));
 assert.equal(r.run('skillSynthesisUiBusy'),false);assert.equal(r.run('skillSynthesisBusy'),false);
 r.run("selectSkillSynthesisTier('synth_tier_super_v1')");assert.equal(r.run('JSON.stringify(skillSynthesisUiSelection)'),'{}');assert(markup().includes('最強 10％'));assert(!markup().includes('id="skillSynthesisResult"'));
+// Stale inventory can be corrected by reducing the selected count.
+r.run("selectSkillSynthesisTier('synth_tier_low_v1');save.skillCards.s110_001=3;changeSkillSynthesisMaterial('s110_001',1);changeSkillSynthesisMaterial('s110_001',1);changeSkillSynthesisMaterial('s110_001',1);save.skillCards.s110_001=1;changeSkillSynthesisMaterial('s110_001',-1);changeSkillSynthesisMaterial('s110_001',-1);");
+assert.equal(r.run('skillSynthesisUiSelection.s110_001'),1);
+r.run("selectSkillSynthesisTier('synth_tier_super_v1')");
 // Confirmation names each equipped slot before consuming repeated material copies.
 r.run("save=initSave();save.instances=[];save.party=[];var synthesisIns=addInstance('freigal',100);save.skillCards={s110_091:3};save.equippedSkills={[synthesisIns.uid]:['s110_091']};renderSkillSynthesis();changeSkillSynthesisMaterial('s110_091',1);changeSkillSynthesisMaterial('s110_091',1);changeSkillSynthesisMaterial('s110_091',1);");
 confirmed=false;const equippedBefore=r.run('JSON.stringify(save)');r.run('confirmSkillSynthesis()');assert.equal(r.run('JSON.stringify(save)'),equippedBefore);assert(question.includes(r.run('synthesisIns.uid')));assert(question.includes('フレイガル'));assert(question.includes('装備が外れ'));
