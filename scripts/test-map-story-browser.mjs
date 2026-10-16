@@ -21,6 +21,28 @@ try{
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];if(contractorRankUpTimer)clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;closeContractorRankUp();saveGame();show('home');});
  await page.locator('#homePartyEditButton').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();
+ // Home story catalog uses the existing map-story gate and progress without save writes.
+ await page.locator('#homeAdventureButton').click();
+ await page.locator('#storyCategory-map').click();
+ assert(await page.locator('#storyPanel-map').isVisible());
+ assert((await page.locator('#storyMapList').innerText()).includes('0/11 完了'));
+ for(const [width,height] of [[320,720],[430,900],[844,390]]){
+  await page.setViewportSize({width,height});
+  assert(await page.locator('#storyMode').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
+  for(const key of ['main','map','character','side']){
+   const button=page.locator('#storyCategory-'+key);assert(await button.isVisible());assert((await button.boundingBox()).height>=44);
+  }
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.evaluate(()=>{save.progress.tutorial.status='in_progress';renderStoryMode();selectStoryCategory('map');});
+ assert(await page.locator('#storyMapList button').isDisabled());
+ assert((await page.locator('#storyMapList').innerText()).includes('序章を完了'));
+ await page.evaluate(()=>{save.progress.tutorial.status='skipped';renderStoryMode();selectStoryCategory('map');});
+ const savedBefore=await page.evaluate(()=>JSON.stringify(save));
+ await page.locator('#storyMapList button').click();assert.equal(await page.locator('.map-story-card').count(),11);
+ await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();
+ assert(await page.locator('#storyPanel-map').isVisible());
+ assert.equal(await page.evaluate(()=>JSON.stringify(save)),savedBefore);
  await page.evaluate(()=>{openBattleHub();showWorldMapLocation('grassland');});
  await page.locator('#battleChoiceList button[onclick="openMapStory()"] ').click();assert.equal(await page.locator('.map-story-card').count(),11);
  await page.locator('#mapStory button[onclick="startMapStoryEpisode(\'gl_01\')"]').click();
@@ -50,7 +72,11 @@ try{
  await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof mapStoryState==='function'&&mapStoryState().episodes.gl_11?.completed===true);
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>openMapStory());
  assert((await page.locator('#mapStory').innerText()).includes('11/11 完了'));await page.screenshot({path:`${out}/completed.png`,fullPage:true});
+ await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();
+ assert(await page.locator('#storyPanel-map').isVisible());assert((await page.locator('#storyMapList').innerText()).includes('11/11 完了'));
+ await page.locator('#storyMapList button').click();
  await page.locator('#mapStory button[onclick="leaveMapStory()"] ').click();assert.equal(await page.evaluate(()=>worldMapSelectedId),'grassland');
  assert.deepEqual(errors,[]);fs.writeFileSync(`${out}/manifest.json`,JSON.stringify({result:'PASS',publicUrl:publicUrl||null,viewports:[320,430,844],fontScale:200,episodes:11,reload:true,errors},null,2));
  console.log('PASS grassland browser: mobile/landscape/200% layout, all 11 flows, actual attack, multi result, evolution return, full reload and grassland return.');
 }finally{await browser?.close();server?.kill();}
+

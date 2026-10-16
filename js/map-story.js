@@ -48,7 +48,7 @@ function renderMapStory(){
   if(mapStoryUi?.identity!==saveTransactionIdentity())mapStoryUi=null;
   if(mapStoryUi){renderMapStoryDialogue();return;}
   const count=GRASSLAND_STORY.episodes.filter(e=>mapStoryProgress(e.id).completed).length;
-  root.innerHTML=`<h2>草原は、誰のもの</h2><p>全11話 · ${count}/11 完了</p>${count===11?'<p>草原の暮らしを知り、道を見つけた。</p>':''}<div class="map-story-list">${GRASSLAND_STORY.episodes.map(e=>{
+  root.innerHTML=`<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>草原は、誰のもの</h2><p>全11話 · ${count}/11 完了</p>${count===11?'<p>草原の暮らしを知り、道を見つけた。</p>':''}<div class="map-story-list">${GRASSLAND_STORY.episodes.map(e=>{
     const p=mapStoryProgress(e.id),unlocked=mapStoryUnlocked(e),pending=resume?.episodeId===e.id;
     const status=p.completed?'完了':pending?'進行中':unlocked?'解放済':'未解放';
     const action=pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}')">${resume.phase==='post'?'戦闘後から再開':'つづきから'}</button>`:!p.completed?`<button type="button" onclick="startMapStoryEpisode('${e.id}')" ${unlocked?'':'disabled'}>第${e.number}話を始める</button>`:'';
@@ -208,7 +208,8 @@ function completeMapStoryEpisode(){
   mapStoryWrite(()=>{mapStoryState().episodes[id].completed=true;mapStoryState().resume=null;},()=>{
     mapStoryUi=null;
     const root=document.getElementById('mapStoryContent');
-    root.innerHTML=e.number===11?'<h2>草原は、誰のもの 全11話 完了</h2><p>草原の暮らしを知り、道を見つけた。</p><button type="button" onclick="leaveMapStory()">草原へ戻る</button><button type="button" onclick="openMapStory()">読み返す</button>':`<h2>第${e.number}話 完了</h2><button type="button" onclick="startMapStoryEpisode('gl_${String(e.number+1).padStart(2,'0')}')">次の話へ</button><button type="button" onclick="openMapStory()">話一覧へ</button>`;
+    root.innerHTML=e.number===11?'<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>草原は、誰のもの 全11話 完了</h2><p>草原の暮らしを知り、道を見つけた。</p><button type="button" onclick="leaveMapStory()">草原へ戻る</button><button type="button" onclick="openMapStory()">読み返す</button>':`<h2>第${e.number}話 完了</h2><button type="button" onclick="startMapStoryEpisode('gl_${String(e.number+1).padStart(2,'0')}')">次の話へ</button><button type="button" onclick="openMapStory()">話一覧へ</button>`;
     if(typeof processNextEvolution==='function')processNextEvolution();
   });
 }
+
