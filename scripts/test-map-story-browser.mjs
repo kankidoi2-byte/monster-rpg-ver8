@@ -34,15 +34,14 @@ try{
   }
  }
  await page.setViewportSize({width:390,height:844});
- const savedBefore=await page.evaluate(()=>JSON.stringify(save));
  await page.evaluate(()=>{save.progress.tutorial.status='in_progress';renderStoryMode();selectStoryCategory('map');});
  assert(await page.locator('#storyMapList button').isDisabled());
  assert((await page.locator('#storyMapList').innerText()).includes('序章を完了'));
  await page.evaluate(()=>{save.progress.tutorial.status='skipped';renderStoryMode();selectStoryCategory('map');});
+ const savedBefore=await page.evaluate(()=>JSON.stringify(save));
  await page.locator('#storyMapList button').click();assert.equal(await page.locator('.map-story-card').count(),11);
  await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();
  assert(await page.locator('#storyPanel-map').isVisible());
- await page.evaluate(()=>{save.progress.tutorial.status='completed';});
  assert.equal(await page.evaluate(()=>JSON.stringify(save)),savedBefore);
  await page.evaluate(()=>{openBattleHub();showWorldMapLocation('grassland');});
  await page.locator('#battleChoiceList button[onclick="openMapStory()"] ').click();assert.equal(await page.locator('.map-story-card').count(),11);
