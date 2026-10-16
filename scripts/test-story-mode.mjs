@@ -61,3 +61,16 @@ vm.runInContext('renderHomeStoryCard()',context);
 assert.equal(elements.get('homeAdventureTitle').textContent,'救援依頼を報告');
 console.log('Story hub behavior passed (four categories, untouched progress, terminal states, six episodes, request guidance).');
 
+
+context.GRASSLAND_STORY={episodes:Array.from({length:11},(_,i)=>({id:'episode_'+i}))};
+let available=false;
+context.mapStoryAvailable=()=>available;
+context.mapStoryProgress=id=>({completed:Number(id.split('_')[1])<3});
+vm.runInContext('renderStoryMapCatalog()',context);
+assert.match(elements.get('storyMapList').innerHTML,/3\/11 完了/);
+assert.match(elements.get('storyMapList').innerHTML,/disabled/);
+available=true;
+vm.runInContext('renderStoryMapCatalog()',context);
+assert.ok(!elements.get('storyMapList').innerHTML.includes('disabled'));
+assert.match(elements.get('storyMapList').innerHTML,/onclick="openMapStory\(\)"/);
+console.log('Map catalog passed (existing gate, shared progress, playable entrance).');
