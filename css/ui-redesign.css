@@ -338,7 +338,7 @@ body:has(#battle.active) .app-topbar{position:fixed;right:0;left:0;background:#f
 .story-page-heading .ui-back-link{position:static;margin:0}
 .story-page-heading h1{font-size:24px;margin:0}
 .story-page-heading p{grid-column:1/-1;margin:2px 0;font-size:12px}
-.story-category-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:min(100%,780px);margin:0 auto 18px;padding:5px;border-radius:16px;background:#dcecf3}
+.story-category-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;width:min(100%,780px);margin:0 auto 18px;padding:5px;border-radius:16px;background:#dcecf3}
 .story-category-tabs button{min-width:0;min-height:44px;margin:0;padding:8px 3px;border-radius:12px;background:transparent;color:#416177;font-size:12px}
 .story-category-tabs button[aria-pressed="true"]{background:#fff;color:#12639e;box-shadow:0 3px 9px #275b7520}
 .story-category-tabs button:focus-visible,.home-story-row button:focus-visible{outline:3px solid #e5a91d;outline-offset:2px}
@@ -606,3 +606,8 @@ body:has(#skillEdit.active) .tutorial-bubble{transition:none}
 .battle-support-motion.is-debuff::before{inset:3% 24%;clip-path:polygon(30% 0,70% 0,70% 56%,100% 56%,50% 100%,0 56%,30% 56%);background:linear-gradient(var(--skill-color),var(--skill-color-secondary) 62%,#fff);filter:drop-shadow(0 0 7px var(--skill-color));animation:battleDebuffFall .36s ease-out forwards}
 @keyframes battleDebuffFall{0%{opacity:0;transform:translateY(-28%) scale(.45)}48%{opacity:1;transform:translateY(4%) scale(1.08)}100%{opacity:0;transform:translateY(38%) scale(.8)}}
 @media(prefers-reduced-motion:reduce){.battle-element-flash{display:none}.battle-support-motion.is-debuff,.battle-support-motion.is-debuff::before{animation:none}}
+
+
+.story-map-card{width:min(100%,780px);margin:0 auto 18px;border:1px solid var(--nb-border,#b7a86c);border-radius:18px;overflow:hidden;background:var(--nb-surface,#fff);color:var(--nb-text,#171717)}
+.story-map-card>img{display:block;width:100%;height:140px;object-fit:cover}
+.story-map-card>div{padding:20px}.story-map-card h2{margin:8px 0}.story-map-card button{min-height:44px;white-space:normal}

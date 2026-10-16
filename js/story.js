@@ -64,12 +64,12 @@ function renderHomeStoryCard(){
     kicker.textContent='序章 第3話';title.textContent='救援依頼を報告';summary.textContent='エルナ救援の報酬を受け取る';action.textContent='依頼へ ›';return;
   }
   if(snapshot.finished){
-    kicker.textContent=snapshot.tutorial.status==='skipped'?'序章スキップ済み':'序章クリア';title.textContent='ストーリー';summary.textContent='メイン・キャラクター・サイド';action.textContent='物語を見る ›';return;
+    kicker.textContent=snapshot.tutorial.status==='skipped'?'序章スキップ済み':'序章クリア';title.textContent='ストーリー';summary.textContent='メイン・マップ・キャラクター・サイド';action.textContent='物語を見る ›';return;
   }
   kicker.textContent=`序章 第${episode.number}話`;title.textContent='ストーリー';
   summary.textContent=episode.title;action.textContent=snapshot.tutorial.status==='not_started'?'物語を始める ›':'物語を進める ›';
 }
-const STORY_CATEGORIES=Object.freeze(['main','character','side']);
+const STORY_CATEGORIES=Object.freeze(['main','map','character','side']);
 function selectStoryCategory(category){
   if(!STORY_CATEGORIES.includes(category))return;
   STORY_CATEGORIES.forEach(key=>{
@@ -79,7 +79,21 @@ function selectStoryCategory(category){
     if(panel)panel.hidden=key!==category;
   });
 }
+function renderStoryMapCatalog(){
+  const root=document.getElementById('storyMapList');
+  if(!root||typeof GRASSLAND_STORY==='undefined')return;
+  const count=GRASSLAND_STORY.episodes.filter(e=>mapStoryProgress(e.id).completed).length;
+  const available=mapStoryAvailable();
+  root.innerHTML=`<article class="story-map-card"><img src="images/maps/grassland.webp" alt=""><div><small>草原 · マップストーリー</small><h2>草原は、誰のもの</h2><p>全${GRASSLAND_STORY.episodes.length}話 · ${count}/${GRASSLAND_STORY.episodes.length} 完了</p><button type="button" onclick="openMapStory()" ${available?'':'disabled'}>各話を見る ›</button>${available?'':'<p>序章を完了またはスキップすると解放されます。</p>'}</div></article>`;
+}
+function returnToStoryMapCatalog(){
+  if(mapStorySaveRetry)return;
+  mapStoryUi=null;
+  openStoryMode();
+  selectStoryCategory('map');
+}
 function renderStoryMode(){
+  renderStoryMapCatalog();
   selectStoryCategory('main');
   const continueCard=document.getElementById('storyContinueCard');
   const list=document.getElementById('storyEpisodeList');
@@ -99,3 +113,4 @@ function renderStoryMode(){
     return `<article class="story-episode-card is-${state}"><img src="${entry.image}" alt=""><div class="story-episode-copy"><span>序章 第${entry.number}話</span><h3>${entry.title}</h3><p>${state==='locked'?'前の話を完了すると解放されます。':entry.summary}</p>${action}</div><strong class="story-episode-status">${statusLabel}</strong></article>`;
   }).join('');
 }
+

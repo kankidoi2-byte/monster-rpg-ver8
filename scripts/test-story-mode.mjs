@@ -47,9 +47,9 @@ for(const status of ['not_started','completed','skipped']){
   assert.equal(elements.get('homeAdventureTitle').textContent,'ストーリー');
   assert.equal(elements.get('storyContinueCard').hidden,status!=='not_started');
   assert.equal((elements.get('storyEpisodeList').innerHTML.match(/<article /g)||[]).length,6);
-  for(const selected of ['character','side','main']){
+  for(const selected of ['character','side','map','main']){
     vm.runInContext(`selectStoryCategory('${selected}')`,context);
-    for(const category of ['main','character','side']){
+    for(const category of ['main','map','character','side']){
       assert.equal(elements.get('storyPanel-'+category).hidden,category!==selected);
       assert.equal(elements.get('storyCategory-'+category).attributes['aria-pressed'],String(category===selected));
     }
@@ -59,4 +59,5 @@ for(const status of ['not_started','completed','skipped']){
 checkpoint='home_requests';
 vm.runInContext('renderHomeStoryCard()',context);
 assert.equal(elements.get('homeAdventureTitle').textContent,'救援依頼を報告');
-console.log('Story hub behavior passed (three categories, untouched progress, terminal states, six episodes, request guidance).');
+console.log('Story hub behavior passed (four categories, untouched progress, terminal states, six episodes, request guidance).');
+
