@@ -96,17 +96,40 @@ function renderMapStoryDialogue(){
   const index=ui.replay?ui.cursor:resume?.nodeId?nodes.findIndex(n=>n.id===resume.nodeId):nodes.length;
   const node=nodes[index];
   const root=document.getElementById('mapStoryContent');
-  if(!node){
-    if(ui.phase==='pre'){
-      root.innerHTML=`<h2>第${episode.number}話「${mapStoryEscape(episode.title)}」</h2><p>${ui.replay?`${mapStoryEscape(mapStoryEnemiesLabel(episode))}との戦闘を切り抜けた。`:`第${episode.number}話を開始します。敵：${mapStoryEscape(mapStoryEnemiesLabel(episode))}／推奨Lv${episode.recommendedLevel}。ストーリー戦では契約できません。`}</p>${ui.replay?'<button type="button" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button><button type="button" onclick="editMapStoryParty()">編成を確認</button>`}<button type="button" onclick="closeMapStoryDialogue()">いったん戻る</button>`;
-    }else root.innerHTML=`<h2>第${episode.number}話「${mapStoryEscape(episode.title)}」</h2><button type="button" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':episode.number===11?'草原の物語を終える':`第${episode.number}話を終える`}</button><button type="button" onclick="closeMapStoryDialogue()">いったん戻る</button>`;
-    return;
-  }
-  const label={gnosis:'グノーシス',galdra:'ガルドラ',contractor:'契約者',system:'システム'}[node.speaker]||'';
-  const image=node.speaker==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':node.speaker==='galdra'?IMG[by('galdra').imgKey]:null;
-  const shade=episode.number<=4?0:episode.number<=7?.08:episode.number<=10?.14:ui.phase==='pre'?.18:0;
-  root.innerHTML=`<h2>第${episode.number}話「${mapStoryEscape(episode.title)}」</h2><div class="map-story-scene" style="--story-shade:${shade}"><img class="map-story-bg" src="images/maps/grassland.webp" alt="草原">${image?`<img class="map-story-speaker" src="${image}" alt="${label}">`:''}<div class="map-story-dialogue" aria-live="polite">${label?`<strong>${label}</strong>`:''}<p>${mapStoryEscape(mapStoryNodeText(node))}</p></div></div><div class="map-story-actions"><button type="button" onclick="advanceMapStoryNode()">次へ ›</button><button type="button" onclick="closeMapStoryDialogue()">話一覧へ</button></div>`;
+  const names={gnosis:'グノーシス',galdra:'ガルドラ',contractor:'契約者',system:'システム'};
+  const label=node?(names[node.speaker]||'情景'):ui.phase==='pre'?(ui.replay?'戦闘の記録':'戦闘の準備'):'この話の終わり';
+  const image=node?.speaker==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':node?.speaker==='galdra'?IMG[by('galdra').imgKey]:null;
+  const shade=episode.number<=4?.66:episode.number<=7?.69:episode.number<=10?.72:ui.phase==='pre'?.76:.66;
+  const text=node?mapStoryNodeText(node):ui.phase==='pre'?(ui.replay?`${mapStoryEnemiesLabel(episode)}との戦闘を切り抜けた。`:`敵：${mapStoryEnemiesLabel(episode)}／推奨Lv.${episode.recommendedLevel}。ストーリー戦では契約できません。`):ui.replay?'戦闘後の会話を読み終えました。':episode.number===11?'草原の物語を読み終えました。':'戦闘後の会話を読み終えました。次の話へ進めます。';
+  const primary=node?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">次へ</button>':ui.phase==='pre'?(ui.replay?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" class="map-story-next" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button>`):`<button type="button" class="map-story-next" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':episode.number===11?'草原の物語を終える':`第${episode.number}話を終える`}</button>`;
+  const secondary=!node&&ui.phase==='pre'&&!ui.replay?'<button type="button" class="map-story-skip" onclick="editMapStoryParty()">編成を確認</button>':`<button type="button" class="map-story-skip" onclick="skipMapStoryDialogue()" ${node?'':'disabled'}>会話スキップ</button>`;
+  const progress=Math.min(index+1,nodes.length);
+  root.innerHTML=`<div class="map-story-scene" style="--story-shade:${shade}">
+    <img class="map-story-bg" src="images/maps/grassland.webp" alt="草原">
+    <div class="map-story-character-stage">${image?`<img class="map-story-speaker" src="${image}" alt="${label}">`:''}</div>
+    <section class="map-story-dialogue" aria-labelledby="mapStoryEpisodeTitle">
+      <header class="map-story-dialogue-head"><div><span>草原 · ${ui.replay?'読み返し · ':''}${ui.phase==='pre'?'戦闘前':'戦闘後'}</span><h2 id="mapStoryEpisodeTitle">第${episode.number}話「${mapStoryEscape(episode.title)}」</h2></div><button type="button" class="map-story-close" onclick="closeMapStoryDialogue()" aria-label="会話を閉じて話一覧へ戻る">×</button></header>
+      <div class="map-story-progress" role="progressbar" aria-label="${ui.phase==='pre'?'戦闘前':'戦闘後'}の会話" aria-valuemin="0" aria-valuemax="${nodes.length}" aria-valuenow="${progress}"><span style="width:${progress/nodes.length*100}%"></span></div>
+      <div class="map-story-message" aria-live="polite" aria-atomic="true"><strong>${label}</strong><p>${mapStoryEscape(text)}</p></div>
+      <div class="map-story-actions">${primary}<button type="button" class="map-story-back" onclick="previousMapStoryNode()" ${index>0?'':'disabled'}>戻る</button>${secondary}<button type="button" class="map-story-list-button" onclick="closeMapStoryDialogue()">話一覧へ</button></div>
+    </section>
+  </div>`;
 }
+// Move only within the current conversation. Battle, rewards and completion keep
+// their existing explicit actions; replay navigation never writes to the save.
+function moveMapStoryCursor(target){
+  const ui=mapStoryUi;if(!ui||mapStorySaveRetry||ui.identity!==saveTransactionIdentity())return;
+  const episode=mapStoryEpisode(ui.episodeId),nodes=ui.phase==='post'?episode.postNodes:episode.preNodes;
+  const r=mapStoryState().resume;
+  if(!ui.replay&&(!r||r.episodeId!==ui.episodeId||r.phase!==ui.phase))return;
+  const index=ui.replay?ui.cursor:r.nodeId?nodes.findIndex(n=>n.id===r.nodeId):nodes.length;
+  const next=target==='end'?nodes.length:Math.max(0,index-1);
+  if(next===index)return;
+  if(ui.replay){ui.cursor=next;renderMapStory();return;}
+  mapStoryWrite(()=>{mapStoryState().resume.nodeId=nodes[next]?.id||null;},renderMapStory);
+}
+function previousMapStoryNode(){moveMapStoryCursor('previous');}
+function skipMapStoryDialogue(){moveMapStoryCursor('end');}
 function advanceMapStoryNode(){
   const ui=mapStoryUi;if(!ui||mapStorySaveRetry)return;
   const e=mapStoryEpisode(ui.episodeId),nodes=ui.phase==='post'?e.postNodes:e.preNodes;

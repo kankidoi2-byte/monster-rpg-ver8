@@ -20,6 +20,17 @@ run("save.progress.tutorial.status='skipped'");assert.equal(run('mapStoryAvailab
 assert.equal(run('startMapStoryEpisode("gl_02")'),false);
 const initial=json('save');
 const initialInstanceIds=initial.instances.map(i=>i.uid);
+// Conversation controls persist only the existing cursor, never bypass battles.
+run('startMapStoryEpisode("gl_01")');
+const firstNode=run('mapStoryState().resume.nodeId');
+run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),firstNode);
+run('advanceMapStoryNode();previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),firstNode);
+run('skipMapStoryDialogue()');assert.equal(run('mapStoryState().resume.nodeId'),null);
+assert.equal(run('mapStoryState().resume.phase'),'pre');assert.equal(run('mapStoryProgress("gl_01").completed'),false);
+assert.deepEqual(json('save.instances'),initial.instances);assert.equal(run('save.coins'),initial.coins);
+run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id);
+run('closeMapStoryDialogue();save=loadSave();startMapStoryEpisode("gl_01")');
+assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id);
 const beforeNormal=json('createHuntRequest(MAPS.find(m=>m.id==="grassland"),by("slime"),"easy",[])');
 function pre(id){assert.equal(run(`startMapStoryEpisode('${id}')`),true);for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');}
 function victory(){run('if(multiBattle?.active){multiBattle.enemies.forEach(e=>{e.hp=0;e.alive=false;});winMultiBattle();}else{eHp=0;win();}');}
@@ -40,6 +51,12 @@ for(const e of episodes){
  assert.equal(run(`startMapStoryEpisode('${e.id}')`),true);assert.equal(run('mapStoryUi.phase'),'post');
  const first=run('mapStoryState().resume.nodeId');run('advanceMapStoryNode()');const cursor=run('mapStoryState().resume.nodeId');assert.notEqual(cursor,first);
  run('closeMapStoryDialogue();save=loadSave()');run(`startMapStoryEpisode('${e.id}')`);assert.equal(run('mapStoryState().resume.nodeId'),cursor);
+ if(e.number===1){
+  const beforeSkip=json('save');run('skipMapStoryDialogue()');
+  assert.equal(run('mapStoryState().resume.phase'),'post');assert.equal(run('mapStoryProgress("gl_01").completed'),false);
+  assert.equal(run('save.coins'),beforeSkip.coins);assert.deepEqual(json('save.instances'),beforeSkip.instances);
+  run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),e.postNodes.at(-1).id);
+ }
  finish();assert.equal(run(`mapStoryProgress('${e.id}').completed`),true);
 }
 assert.equal(run('save.coins'),initial.coins+1265);
@@ -47,6 +64,10 @@ assert(json('save.instances').every(i=>i.level===12&&i.exp===110));
 assert.deepEqual(json('save.instances.map(i=>i.uid)'),initialInstanceIds);
 for(const field of ['history','items','worldMap','expeditions','contractor'])assert.deepEqual(json(`save.${field}`),initial[field],`${field} untouched by story rewards`);
 const completed=json('save');run('readMapStoryEpisode("gl_01")');for(let i=0;i<25;i++)run('advanceMapStoryNode()');run('completeMapStoryEpisode()');assert.deepEqual(json('save'),completed,'re-reading never writes');
+run('readMapStoryEpisode("gl_01");advanceMapStoryNode();previousMapStoryNode()');assert.equal(run('mapStoryUi.cursor'),0);
+run('skipMapStoryDialogue()');assert.equal(run('mapStoryUi.phase'),'pre');assert.equal(run('mapStoryUi.cursor'),episodes[0].preNodes.length);
+run('advanceMapStoryNode();skipMapStoryDialogue();previousMapStoryNode()');assert.equal(run('mapStoryUi.cursor'),episodes[0].postNodes.length-1);
+run('skipMapStoryDialogue();completeMapStoryEpisode()');assert.deepEqual(json('save'),completed,'replay back/skip never writes progress or rewards');
 run('startMapStoryEpisode("gl_01",true)');assert.equal(run('mapStoryState().resume.nodeId'),null);run('launchMapStoryBattle("gl_01")');victory();assert.equal(run('save.coins'),completed.coins+10);assert.equal(run('mapStoryProgress("gl_01").victoryCount'),2);finish();
 // Save failure rolls back EXP/coins/flags together; retry commits exactly once.
 run('startMapStoryEpisode("gl_01",true);launchMapStoryBattle("gl_01")');
