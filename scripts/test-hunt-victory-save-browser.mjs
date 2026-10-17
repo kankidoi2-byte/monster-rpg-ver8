@@ -45,10 +45,11 @@ try{
   await page.locator('#battleOutcomeActions button').first().click();assert(await page.locator('#contractConfirm').isVisible());
   await page.evaluate(()=>useContractScrollConfirmed());
   assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='slime').length),1);
-  await page.evaluate(()=>afterBattleNext());assert(await page.locator('#battleChoices').isVisible());
+  await page.evaluate(()=>afterBattleNext());assert(await page.locator('#evolution').isVisible());
+  await page.evaluate(()=>{cancelEvolution();startBattleFromParty();});assert(await page.locator('#battleChoices').isVisible());
   await page.reload({waitUntil:'networkidle'});
   assert.equal(await page.evaluate(()=>save.history.wins),1);assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='slime').length),1);
-  report.cases.push({slot,width,height,font,actualAttack:true,primaryWrites:1,retry:true,contract:true,reload:true});await context.close();
+  report.cases.push({slot,width,height,font,actualAttack:true,primaryWrites:1,retry:true,contract:true,evolution:true,reload:true});await context.close();
  }
  // Browser coverage of multiple enemies, bosses, gates, golden land and rescue.
  for(const slot of [1,2])for(const kind of ['three','invasion','boss','event','golden','rescue']){
