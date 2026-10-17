@@ -22,13 +22,13 @@ try{
   await page.evaluate(font=>{document.documentElement.style.fontSize=font+'%';clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('aquaron',1).uid];save.items.contract_scroll=5;saveGame();show('home');},font);
   for(const screen of ['home','partySet','battleChoices']){await page.evaluate(id=>show(id),screen);assert(await page.locator(`#${screen}`).isVisible());}
   const failure=await page.evaluate(async()=>{
-   normalVictoryReceipt=null;prepareBattleParty();beginChosenBattle('grassland','slime','normal');eHp=1;Math.random=()=>.5;
+   normalVictoryReceipt=null;prepareBattleParty();Math.random=()=>.5;const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[]);request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);eHp=1;
    window.victoryBefore=JSON.stringify(save);window.victoryKey=MonsterProfiles.key(SAVE_KEY);window.victoryDisk=localStorage.getItem(victoryKey);
    window.otherKey=MonsterProfiles.slot()===1?'mb_v95c_profile2':'mb_v95c';window.otherDisk=localStorage.getItem(otherKey);
    window.storageSet=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===victoryKey)throw Error('Injected quota');return storageSet.call(this,k,v)};
    await turn(-1);
-   return {same:JSON.stringify(save)===victoryBefore,disk:localStorage.getItem(victoryKey)===victoryDisk,pending:normalVictoryPending(),reward:battleRewardGranted};
-  });assert(failure.same&&failure.disk&&failure.pending&&!failure.reward);
+   return {same:JSON.stringify(save)===victoryBefore,disk:localStorage.getItem(victoryKey)===victoryDisk,pending:normalVictoryPending(),reward:battleRewardGranted,hp:eHp,busy,mode:activeHuntRequest.battleMode,log:document.getElementById('log').textContent};
+  });assert(failure.same&&failure.disk&&failure.pending&&!failure.reward,JSON.stringify({slot,width,font,...failure}));
   const retry=page.locator('#log button[onclick="retryNormalVictorySave()"]');assert(await retry.isVisible());assert(await retry.isEnabled());
   assert(await page.locator('#next').isHidden());
   const blocked=await page.evaluate(()=>{const request=activeHuntRequest;afterBattleNext();beginChosenBattle('volcano','freigal');askUseContractScroll('contract_scroll');processNextEvolution();return {same:activeHuntRequest===request,switched:MonsterProfiles.switchTo(MonsterProfiles.slot()===1?2:1),screen:document.querySelector('.screen.active')?.id};});
@@ -58,7 +58,7 @@ try{
   const page=await context.newPage();page.on('dialog',d=>d.accept());page.on('pageerror',e=>report.errors.push(e.message));
   await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   const result=await page.evaluate(async kind=>{
-   clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('aquaron',1).uid];const member=addInstance('freigal',1);save.expeditions.active=[{id:'browser-exp',mapId:'grassland',distanceId:'short',memberUids:[member.uid],progress:0,requiredWins:1,status:'active',suitability:{greatRate:0},reward:null}];saveGame();prepareBattleParty();beginChosenBattle('grassland','slime','normal');
+   clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('aquaron',1).uid];const member=addInstance('freigal',1);save.expeditions.active=[{id:'browser-exp',mapId:'grassland',distanceId:'short',memberUids:[member.uid],progress:0,requiredWins:1,status:'active',suitability:{greatRate:0},reward:null}];saveGame();prepareBattleParty();const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[]);request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
    activeHuntRequest.worldMapExploration=true;
    if(kind==='golden')selectedMap={...selectedMap,goldenLand:true};
    if(kind==='boss')enemy={...enemy,bossClass:'ボス'};
