@@ -29,7 +29,7 @@ try{
    await turn(-1);
    return {same:JSON.stringify(save)===victoryBefore,disk:localStorage.getItem(victoryKey)===victoryDisk,pending:normalVictoryPending(),reward:battleRewardGranted,hp:eHp,busy,mode:activeHuntRequest.battleMode,log:document.getElementById('log').textContent};
   });assert(failure.same&&failure.disk&&failure.pending&&!failure.reward,JSON.stringify({slot,width,font,...failure}));
-  const retry=page.locator('#log button[onclick="retryNormalVictorySave()"]');assert(await retry.isVisible());assert(await retry.isEnabled());
+  const retry=page.locator('#battleOutcomeActions button[onclick="retryNormalVictorySave()"]');assert(await retry.isVisible());assert(await retry.isEnabled());
   assert(await page.locator('#next').isHidden());
   const blocked=await page.evaluate(()=>{const request=activeHuntRequest;afterBattleNext();beginChosenBattle('volcano','freigal');askUseContractScroll('contract_scroll');processNextEvolution();return {same:activeHuntRequest===request,switched:MonsterProfiles.switchTo(MonsterProfiles.slot()===1?2:1),screen:document.querySelector('.screen.active')?.id};});
   assert(blocked.same&&!blocked.switched);assert.equal(blocked.screen,'battle');

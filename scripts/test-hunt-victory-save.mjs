@@ -66,8 +66,24 @@ for(const slot of [1,2])for(const kind of ['single','three','invasion','boss','g
  cases++;
 }
 // In-memory/profile/request drift cannot apply an old candidate, nor overwrite disk.
-for(const change of ['save.coins++','activeHuntRequest.difficultyId="easy"','partyBattle[0].inst.uid="different"','activeHuntRequest={...activeHuntRequest}','pendingEvolutions.push({uid:"changed"})']){
+for(const change of ['save.coins++','activeHuntRequest.difficultyId="easy"','partyBattle[0].inst.uid="different"','activeHuntRequest={...activeHuntRequest}','pendingEvolutions.push({uid:"changed"})','eHp=1']){
  const r=harness();r.run(`localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return actualSet(k,v)};win();localStorage.setItem=actualSet;${change};retryNormalVictorySave();`);assert(!r.run('battleRewardGranted'));assert.equal(r.run('actualGet(key)'),r.run('disk'));cases++;
+}
+// A read failure at saveGame's own final read must also keep the fixed candidate.
+for(const slot of [1,2]){
+ const r=harness(slot);r.run(`localStorage.getItem=k=>{if(k===key&&++reads===4)throw Error('late read');return actualGet(k)};win();`);
+ assert(!r.run('battleRewardGranted'));assert.equal(r.run('JSON.stringify(save)'),r.run('before'));assert.equal(r.run('writes'),0);
+ assert(r.run('!!normalVictoryReceipt.candidate'));
+ r.run(`localStorage.getItem=actualGet;Math.random=()=>{throw Error('reroll')};retryNormalVictorySave();`);
+ assert(r.run('battleRewardGranted'));assert.equal(r.run('writes'),1);cases++;
+}
+{
+ const r=harness();r.run(`localStorage.setItem=(k,v)=>{if(k===key){writes++;retryNormalVictorySave();win();}return actualSet(k,v)};win();`);
+ assert.equal(r.run('writes'),1);assert.equal(r.run('save.history.wins'),1);cases++;
+}
+{
+ const r=harness();r.run(`localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return actualSet(k,v)};win();localStorage.setItem=actualSet;MonsterProfiles.current=()=>({id:'changed-profile'});retryNormalVictorySave();`);
+ assert(!r.run('battleRewardGranted'));assert.equal(r.run('actualGet(key)'),r.run('disk'));cases++;
 }
 // Compare seeded successful outcomes with the actual pre-fix settlement functions.
 // All save fields except nondeterministic timestamps/hash must remain identical.

@@ -406,7 +406,7 @@ let normalVictoryPreparing=false;
 let normalVictorySettling=false;
 function normalVictoryPending(){return !!normalVictoryReceipt&&!normalVictoryReceipt.committed;}
 function normalVictoryContext(){
-  return JSON.stringify({request:activeHuntRequest,map:selectedMap,enemy,tutorial:typeof tutorialBattleSession!=='undefined'?tutorialBattleSession:null,evolutions:pendingEvolutions,participants:partyBattle.map(p=>p.inst?.uid),
+  return JSON.stringify({request:activeHuntRequest,map:selectedMap,enemy,enemyHp:eHp,turnCount:battleTurnCount,tutorial:typeof tutorialBattleSession!=='undefined'?tutorialBattleSession:null,evolutions:pendingEvolutions,participants:partyBattle.map(p=>p.inst?.uid),
     enemies:multiBattle?.enemies.map(e=>({id:e.id,mon:e.mon,hp:e.hp,defeatedByPlayer:e.defeatedByPlayer,rewardGranted:e.rewardGranted}))});
 }
 function readNormalVictoryDisk(){
@@ -441,10 +441,19 @@ function prepareNormalVictory(receipt){
 }
 function showNormalVictoryRetry(stale=false){
   busy=true;
-  // Keep the defeated battlefield visible, without a successful reward screen.
-  const log=document.getElementById('log');
-  if(log)log.innerHTML=stale?'別の保存や戦闘の変更を検出したため、報酬の確定を停止しました。再読み込み前にセーブを書き出して保管してください。'
-    :'勝利報酬を保存できませんでした。獲得はまだ確定していません。再読み込みや終了をせず、保存を再試行してください。<br><button onclick="retryNormalVictorySave()">保存を再試行</button>';
+  const message=stale?'別の保存や戦闘の変更を検出したため、報酬の確定を停止しました。再読み込み前にセーブを書き出して保管してください。'
+    :'獲得はまだ確定していません。再読み込みや終了をせず、保存を再試行してください。';
+  const log=document.getElementById('log');if(log)log.textContent=message;
+  // The legacy log is hidden in the current UI. Use the visible result surface,
+  // with no victory label or reward amounts, until the candidate is committed.
+  document.getElementById('battle')?.classList.add('is-finished');
+  const outcome=document.getElementById('battleOutcome');if(outcome)outcome.className='battle-outcome is-save-pending';
+  document.getElementById('battleOutcomeIcon').textContent='！';
+  document.getElementById('battleOutcomeEyebrow').textContent='SAVE PENDING';
+  document.getElementById('battleOutcomeTitle').textContent=stale?'報酬の確定を停止しました':'勝利報酬の保存待ち';
+  document.getElementById('battleOutcomeRewards').innerHTML='';
+  document.getElementById('battleOutcomeNote').textContent=message;
+  document.getElementById('battleOutcomeActions').innerHTML=stale?'':'<button onclick="retryNormalVictorySave()">保存を再試行</button>';
   document.getElementById('next')?.classList.add('hidden');
   document.getElementById('singleContractPanel')?.classList.add('hidden');
   document.getElementById('multiContractPanel')?.classList.add('hidden');
@@ -482,7 +491,7 @@ function settleNormalVictory(multi){
       showNormalVictoryRetry();return false;
     }
     // From here on display failures must never roll back a committed reward.
-    receipt.committed=true;battleRewardGranted=true;busy=true;
+    receipt.committed=true;battleRewardGranted=true;busy=true;if(!multi)eHp=0;
     if(activeHuntRequest&&candidate.request)Object.assign(activeHuntRequest,candidate.request);
     if(multiBattle){multiBattle.finished=true;multiBattle.enemies.forEach(e=>{e.rewardGranted=true;});}
     showCommittedSaveResult(()=>{
@@ -496,6 +505,7 @@ function settleNormalVictory(multi){
         const pv=document.getElementById('pVis');
         if(pv){pv.classList.remove('levelup-anim');void pv.offsetWidth;pv.classList.add('levelup-anim');}
       }
+      document.getElementById('battleOutcomeActions').innerHTML='';
       showBattleOutcome(candidate.outcome);
       if(multi)renderMultiContractPanel();
       else{
