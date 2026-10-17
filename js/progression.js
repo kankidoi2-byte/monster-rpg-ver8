@@ -68,7 +68,7 @@ function tryFusion(idx) {
   if(typeof showUiNotice==='function')showUiNotice(`${to.name}への合成成功！`);
   });
 }
-function grantPartyExp(baseExp) {
+function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
   const targets = getPartyInstances();
   const msgs = [];
   targets.forEach(ins => {
@@ -81,12 +81,12 @@ function grantPartyExp(baseExp) {
       msgs.push(`⬆️ ${by(ins.id).name} は Lv.${ins.level} に上がった！`);
       // LVUPアニメ
       const pv = document.getElementById('pVis');
-      if (pv) { pv.classList.remove('levelup-anim'); void pv.offsetWidth; pv.classList.add('levelup-anim'); }
+      if (animate && pv) { pv.classList.remove('levelup-anim'); void pv.offsetWidth; pv.classList.add('levelup-anim'); }
     }
     if (isMaxLevel(ins.level)) ins.exp=0;
     checkEvolution(ins);
   });
-  saveGame();
+  if(saveNow)saveGame();else syncItemDexFromInventory();
   return msgs.join('<br>');
 }
 function getEvoCandidates(ins) {
@@ -104,6 +104,7 @@ function checkEvolution(ins) {
   }
 }
 function processNextEvolution() {
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return;
   // Never replace an unresolved battle result or its contract animation.
   const outcome=document.getElementById('battleOutcome');
   if(typeof battleFeedback!=='undefined'&&battleFeedback.finished&&outcome&&!outcome.classList.contains('hidden'))return;

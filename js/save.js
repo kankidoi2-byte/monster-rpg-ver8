@@ -517,9 +517,9 @@ function saveTransactionNotice(message){
 function showCommittedSaveResult(render){
   try{render();}catch(error){saveTransactionNotice('結果は保存済みです。画面を開き直して所持品をご確認ください。');console.error('Committed result display failed:',error);}
 }
-function commitSaveMutation(mutate){
+function commitSaveMutation(mutate,{requireReadable=false}={}){
   const snapshot=captureSaveTransaction();
-  try{mutate();if(!saveGame())throw new Error('save_failed');return true;}
+  try{mutate();if(!saveGame({requireReadable}))throw new Error('save_failed');return true;}
   catch(error){rollbackSaveTransaction(snapshot);saveTransactionNotice('保存できませんでした。今回の消費や取得は確定していません。');console.error('Save transaction failed:',error);return false;}
 }
 const SAVE_REPLACEMENT_RECOVERY_KEY='mb_v95c_replacement_recovery_v1';
@@ -574,7 +574,7 @@ function acknowledgeReplacementRecovery(){
     refreshReplacementRecoveryStatus();
   }catch(error){saveTransactionNotice(error.message);}
 }
-function saveGame({requireBackup=false}={}) {
+function saveGame({requireBackup=false,requireReadable=false}={}) {
   if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
@@ -586,7 +586,7 @@ function saveGame({requireBackup=false}={}) {
   const raw=JSON.stringify(save);
   lastSaveError=null;
   const previous=safeStorageGet(SAVE_KEY);
-  if(requireBackup&&lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
+  if((requireBackup||requireReadable)&&lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
   let replacementRecord=null;
   if(requireBackup){try{replacementRecord=stageReplacementRecovery(previous,raw);}catch(error){saveTransactionNotice(error.message);return false;}}
   if(previous){const backedUp=safeStorageSet(SAVE_BACKUP_KEY,previous);if(requireBackup&&!backedUp){saveTransactionNotice('バックアップを保存できないため、データの置換を中止しました。');return false;}}

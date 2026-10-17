@@ -232,6 +232,7 @@ function chooseDefaultContractItem(){
   return 'contract_scroll';
 }
 function askUseContractScroll(itemId){
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(multiBattle?.active && !multiBattle.finished){
     alert('複数陣営バトルでは、戦闘終了後に倒した相手と契約できます。');
@@ -276,6 +277,7 @@ function postBattleContractStage(target,itemId,scope,guaranteed=false){
   postBattleContractRetry={target,itemId,scope,identity,stage};return stage;
 }
 function useContractScrollConfirmed(){
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(postBattleContractBusy)return;
   ensureContractScrollItem();
   const itemId=ITEM_BY_ID[pendingContractItemId]?.contract?pendingContractItemId:chooseDefaultContractItem();
@@ -284,6 +286,7 @@ function useContractScrollConfirmed(){
   return tryContractWithScroll(itemId,{tutorialGuarantee});
 }
 async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee=false}={}){
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||singleBattleContractAttempted||!battleRewardGranted||!isContractableUnit(enemy))return false;
   ensureContractScrollItem();

@@ -602,7 +602,7 @@ function persistTutorialStep(){
   if(typeof saveGame==='function')saveGame();
   updateTutorialMenuSummary();
 }
-function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}={}){
+function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null,checkpointSaved=false}={}){
   const steps=tutorialFlowSteps(flowId);
   if(!steps.length)return false;
   const resolvedStepId=resolveTutorialStellaSkillResumeStep(resolveTutorialExpeditionResumeStep(flowId,stepId,false));
@@ -612,7 +612,7 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null}=
   if(tutorialUiState.index<0){clearTutorialUi();return false;}
   tutorialUiState.replay=false;tutorialUiState.returnScreen=returnScreen;
   tutorialUiState.previousFocus=document.activeElement;tutorialUiState.lastFocusedStep=null;
-  if(persist){
+  if(persist&&!checkpointSaved){
     const persistedStepId=persistedTutorialStepId(steps[tutorialUiState.index]);
     setTutorialStep(persistedStepId);
     const tutorialState=typeof currentTutorialState==='function'?currentTutorialState():null;
@@ -872,12 +872,12 @@ function resumeTutorialIfNeeded(){
   if(tutorial.chapterGate){if(typeof show==='function')show('storyMode');return true;}
   return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:tutorial.stepId,persist:true});
 }
-function resumeTutorialMainFlowAfterEvent(stepId){
+function resumeTutorialMainFlowAfterEvent(stepId,_replaying=false,{checkpointSaved=false}={}){
   if(!stepId)return false;
   const resume=()=>{
     const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
     if(!tutorial||tutorial.status!=='in_progress')return false;
-    return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId,persist:true});
+    return startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId,persist:true,checkpointSaved});
   };
   // External renderers (battle result, contract animation and alchemy result)
   // finish their own DOM update in the current call stack. Reopen the guide on
@@ -1660,7 +1660,15 @@ function handleTutorialFirstSkillUsed(){
   tutorialBattleSession.firstSkillUsed=true;
   return handleTutorialBattleAction('skill')||true;
 }
-function handleTutorialBattleOutcome(kind,rewards={}){
+function prepareTutorialBattleVictoryCheckpoint(){
+  const tutorial=currentTutorialState();
+  if(!tutorialBattleSession.active||(tutorial.status!=='in_progress'&&!tutorial.replaying)||tutorialBattleSession.kind==='stella_mock')return;
+  const nextStep=tutorialBattleSession.kind==='elna_rescue'?'elna_rescue_complete':'victory_exp';
+  const step=tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).find(step=>step.id===nextStep);
+  setTutorialStep(persistedTutorialStepId(step)||nextStep);
+  currentTutorialState().chapterGate=false;
+}
+function handleTutorialBattleOutcome(kind,rewards={}, {victorySaved=false}={}){
   if(!tutorialBattleSession.active)return false;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying)){tutorialBattleSession.active=false;tutorialBattleSession.kind=null;return false;}
@@ -1678,9 +1686,11 @@ function handleTutorialBattleOutcome(kind,rewards={}){
   if(kind==='victory'){
     const nextStep=rescue?'elna_rescue_complete':'victory_exp';
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
-    setTutorialStep(rescue?'elna_rescue_complete':'first_contract');
-    if(typeof saveGame==='function')saveGame();
-    resumeTutorialMainFlowAfterEvent(nextStep,tutorial.replaying);
+    if(!victorySaved){
+      setTutorialStep(rescue?'elna_rescue_complete':'first_contract');
+      if(typeof saveGame==='function')saveGame();
+    }
+    resumeTutorialMainFlowAfterEvent(nextStep,tutorial.replaying,{checkpointSaved:victorySaved});
     return true;
   }
   tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];

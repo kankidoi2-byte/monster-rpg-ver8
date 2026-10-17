@@ -15,6 +15,7 @@ function prepareBattleParty(storyInstances=null) {
   pHp = partyBattle[0].hp;
 }
 function startBattleFromParty() {
+  if(normalVictoryPending())return;
   const party = getPartyInstances();
   if (!party.length) { alert('パーティーにモンスターを入れてください。'); return; }
   prepareBattleParty();
@@ -32,6 +33,7 @@ function huntRecommendationScore(request, monster) {
   return bestMatchup * 10 + levelMargin - (request.difficultyId === 'extreme' ? .5 : 0);
 }
 function showBattleChoices() {
+  if(normalVictoryPending()){show('battle');return;}
   activeHuntRequest = null;
   resetHuntRequestChoices();
   resetBattleTurnCounter();
@@ -141,6 +143,7 @@ function playBossCaution(mon, onComplete){
   }, 1800);
 }
 function startChosenBattle(mapId, enemyId, difficultyId='normal', requestId=null){
+  if(normalVictoryPending())return;
   if(bossCautionPlaying) return;
   const chosenEnemy = by(enemyId);
   if(!chosenEnemy) return;
@@ -154,6 +157,7 @@ function startChosenBattle(mapId, enemyId, difficultyId='normal', requestId=null
   }
 }
 function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) {
+  if(normalVictoryPending())return;
   selectedMap = MAPS.find(m => m.id === mapId) || MAPS[0];
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
@@ -175,6 +179,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     updateItems();
   }
   if(typeof resetBattleFeedback==='function')resetBattleFeedback();
+  normalVictoryReceipt=null;
   battleRewardGranted = false;
   singleBattleContractAttempted = false;
   postBattleContractRetry = null;
@@ -203,6 +208,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function afterBattleNext() {
+  if(normalVictoryPending())return;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle()){resumeMapStoryAfterBattle();return;}
   singleBattleContractAttempted = false;
   postBattleContractRetry = null;
@@ -337,13 +343,9 @@ function win() {
   if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
   if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) {resetBattleTransientEffects();return;}
   if (battleRewardGranted) return;
-  battleRewardGranted = true;
-  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
-  completeBattleTurn();
-  eHp = 0;
-  resetBattleTransientEffects();
-  const ov = document.getElementById('enemyDefeatOverlay');
-  if (ov) ov.style.display = 'flex';
+  settleNormalVictory(false);
+}
+function prepareSingleVictoryReward(){
   const turnBonusActive = hasHuntCondition('swift_clear');
   const turnBonusSucceeded = huntTurnBonusSucceeded();
   const baseExpGain = enemy.expBonus || (35 + Math.floor(Math.random()*25));
@@ -359,7 +361,7 @@ function win() {
       ? `⏱️ ${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`
       : `⌛ ${battleTurnCount}ターンで撃破。迅速討伐失敗（8ターン以内）<br>`;
   }
-  msg += grantPartyExp(expGain);
+  msg += grantPartyExp(expGain,{saveNow:false,animate:false});
   msg += `<br>🪙 コイン${coinGain}枚獲得！`;
   if (selectedMap?.goldenLand) {
     const bonus = goldenLandCoinBonus(activeHuntRequest?.difficultyId);
@@ -388,21 +390,122 @@ function win() {
   save.history.logs.push(`${enemy.name}に勝利`);
   if (save.history.logs.length > 30) save.history.logs = save.history.logs.slice(-30);
   const contractorReward=typeof grantContractorBattleWin==='function'?grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]}):{amount:0};
-  if(typeof progressActiveExpeditions==='function') progressActiveExpeditions();
+  if(typeof progressActiveExpeditions==='function') progressActiveExpeditions(Math.random,{saveNow:false});
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
-  saveGame();
-  document.getElementById('log').innerHTML = msg;
-  // ⑤ endPartyRecovery()はafterBattleNext()側のみで呼ぶ（二重呼び出し解消）
-  showBattleOutcome({
+  return {message:msg,outcome:{
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
     materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
-  });
-  const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',{exp:expGain,coins:displayedCoinGain,materials:materialRewards,contractorExp:contractorReward.amount});
-  if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
-  busy = true;
-  renderParty();
-  // The prologue resumes its next guide immediately after a tutorial battle.
-  // Do not let an automatic evolution screen replace that resumed guide.
-  // afterBattleNext opens queued evolution after the result/contract actions.
+  }};
+}
+
+// Memory-only receipt: the candidate is rolled once and retained until committed.
+// No storage writers are replaced; only the two reward helpers opt out of saving.
+let normalVictoryReceipt=null;
+let normalVictoryPreparing=false;
+let normalVictorySettling=false;
+function normalVictoryPending(){return !!normalVictoryReceipt&&!normalVictoryReceipt.committed;}
+function normalVictoryContext(){
+  return JSON.stringify({request:activeHuntRequest,map:selectedMap,enemy,tutorial:typeof tutorialBattleSession!=='undefined'?tutorialBattleSession:null,evolutions:pendingEvolutions,participants:partyBattle.map(p=>p.inst?.uid),
+    enemies:multiBattle?.enemies.map(e=>({id:e.id,mon:e.mon,hp:e.hp,defeatedByPlayer:e.defeatedByPlayer,rewardGranted:e.rewardGranted}))});
+}
+function readNormalVictoryDisk(){
+  lastSaveError=null;
+  const raw=safeStorageGet(SAVE_KEY);
+  if(lastSaveError)throw new Error('victory_storage_read');
+  return raw;
+}
+function rebindNormalVictoryInstances(){
+  if(activeInstance&&!activeInstance.guest)activeInstance=save.instances.find(p=>p.uid===activeInstance.uid)||activeInstance;
+  partyBattle.forEach(p=>{if(!p.inst?.guest)p.inst=save.instances.find(ins=>ins.uid===p.inst?.uid)||p.inst;});
+}
+function prepareNormalVictory(receipt){
+  const originalSave=save,originalEvolutions=pendingEvolutions,request=activeHuntRequest,battle=multiBattle;
+  const selection=typeof worldMapSelectedEvent!=='undefined'?worldMapSelectedEvent:null;
+  try{
+    save=JSON.parse(receipt.before);pendingEvolutions=structuredClone(originalEvolutions);
+    activeHuntRequest=request?structuredClone(request):request;
+    multiBattle=battle?structuredClone(battle):battle;
+    normalVictoryPreparing=true;
+    const result=receipt.multi?prepareMultiVictoryReward():prepareSingleVictoryReward();
+    // Include catalog/rank effects of all drops before the single primary write.
+    syncItemDexFromInventory();
+    if(typeof prepareTutorialBattleVictoryCheckpoint==='function')prepareTutorialBattleVictoryCheckpoint();
+    return {...result,after:JSON.stringify(save),evolutions:structuredClone(pendingEvolutions),
+      request:activeHuntRequest?structuredClone(activeHuntRequest):null,selection:typeof worldMapSelectedEvent!=='undefined'?worldMapSelectedEvent:null};
+  }finally{
+    save=originalSave;pendingEvolutions=originalEvolutions;activeHuntRequest=request;multiBattle=battle;
+    if(typeof worldMapSelectedEvent!=='undefined')worldMapSelectedEvent=selection;
+    normalVictoryPreparing=false;
+  }
+}
+function showNormalVictoryRetry(stale=false){
+  busy=true;
+  // Keep the defeated battlefield visible, without a successful reward screen.
+  const log=document.getElementById('log');
+  if(log)log.innerHTML=stale?'別の保存や戦闘の変更を検出したため、報酬の確定を停止しました。再読み込み前にセーブを書き出して保管してください。'
+    :'勝利報酬を保存できませんでした。獲得はまだ確定していません。再読み込みや終了をせず、保存を再試行してください。<br><button onclick="retryNormalVictorySave()">保存を再試行</button>';
+  document.getElementById('next')?.classList.add('hidden');
+  document.getElementById('singleContractPanel')?.classList.add('hidden');
+  document.getElementById('multiContractPanel')?.classList.add('hidden');
+  if(typeof renderBattleInputState==='function')renderBattleInputState();
+}
+function retryNormalVictorySave(){
+  if(!normalVictoryPending())return false;
+  return settleNormalVictory(normalVictoryReceipt.multi);
+}
+function settleNormalVictory(multi){
+  if(normalVictorySettling||battleRewardGranted)return false;
+  normalVictorySettling=true;
+  try{
+    if(!normalVictoryReceipt){
+      completeBattleTurn();
+      normalVictoryReceipt={identity:saveTransactionIdentity(),before:JSON.stringify(save),context:normalVictoryContext(),
+        request:activeHuntRequest,battle:multiBattle,multi,committed:false,candidate:null,disk:undefined};
+    }
+    const receipt=normalVictoryReceipt;
+    if(receipt.committed)return true;
+    if(receipt.identity!==saveTransactionIdentity()||receipt.before!==JSON.stringify(save)||receipt.context!==normalVictoryContext()||receipt.request!==activeHuntRequest||receipt.battle!==multiBattle){
+      showNormalVictoryRetry(true);return false;
+    }
+    const disk=readNormalVictoryDisk();
+    if(receipt.disk===undefined)receipt.disk=disk;
+    if(receipt.disk!==disk){showNormalVictoryRetry(true);return false;}
+    // Profile guard also rejects a save that predates this battle's receipt.
+    if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave()){showNormalVictoryRetry(true);return false;}
+    if(receipt.preparationFailed){showNormalVictoryRetry(true);return false;}
+    if(!receipt.candidate){
+      try{receipt.candidate=prepareNormalVictory(receipt);}catch(error){receipt.preparationFailed=true;throw error;}
+    }
+    const candidate=receipt.candidate;
+    if(!commitSaveMutation(()=>{save=JSON.parse(candidate.after);pendingEvolutions=structuredClone(candidate.evolutions);rebindNormalVictoryInstances();},{requireReadable:true})){
+      showNormalVictoryRetry();return false;
+    }
+    // From here on display failures must never roll back a committed reward.
+    receipt.committed=true;battleRewardGranted=true;busy=true;
+    if(activeHuntRequest&&candidate.request)Object.assign(activeHuntRequest,candidate.request);
+    if(multiBattle){multiBattle.finished=true;multiBattle.enemies.forEach(e=>{e.rewardGranted=true;});}
+    showCommittedSaveResult(()=>{
+      resetBattleTransientEffects();
+      if(typeof worldMapSelectedEvent!=='undefined')worldMapSelectedEvent=candidate.selection;
+      if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();
+      const overlay=document.getElementById('enemyDefeatOverlay');if(overlay)overlay.style.display='flex';
+      document.getElementById('log').innerHTML=candidate.message;
+      const before=JSON.parse(receipt.before);
+      if(save.instances.some(ins=>ins.level>(before.instances.find(old=>old.uid===ins.uid)?.level||ins.level))){
+        const pv=document.getElementById('pVis');
+        if(pv){pv.classList.remove('levelup-anim');void pv.offsetWidth;pv.classList.add('levelup-anim');}
+      }
+      showBattleOutcome(candidate.outcome);
+      if(multi)renderMultiContractPanel();
+      else{
+        const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',candidate.outcome,{victorySaved:true});
+        if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
+      }
+      if(typeof refreshContractorRankUi==='function')refreshContractorRankUi();
+      renderParty();
+    });
+    return true;
+  }catch(error){console.error('Victory save failed:',error);showNormalVictoryRetry();return false;}
+  finally{normalVictorySettling=false;}
 }
