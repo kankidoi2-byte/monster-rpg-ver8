@@ -9,7 +9,7 @@ const out='artifacts/skill-card-layout/grassland-story';fs.mkdirSync(out,{recurs
 let browser;
 try{
  if(server)await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
- browser=await chromium.launch({headless:true});
+ browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
  // Map encyclopedia registration can legitimately schedule a rank notice after entry.
@@ -46,13 +46,38 @@ try{
  await page.evaluate(()=>{openBattleHub();showWorldMapLocation('grassland');});
  await page.locator('#battleChoiceList button[onclick="openMapStory()"] ').click();assert.equal(await page.locator('.map-story-card').count(),11);
  await page.locator('#mapStory button[onclick="startMapStoryEpisode(\'gl_01\')"]').click();
- for(const [width,height,font] of [[320,720,100],[430,900,100],[844,390,100],[390,844,200]]){
+ const nextLine=()=>page.locator('#mapStory button[onclick="advanceMapStoryNode()"]');
+ const previous=()=>page.locator('#mapStory button[onclick="previousMapStoryNode()"]');
+ const skip=()=>page.locator('#mapStory button[onclick="skipMapStoryDialogue()"]');
+ assert(await previous().isDisabled());
+ await nextLine().click();await previous().click();assert(await previous().isDisabled());await nextLine().click();
+ assert.equal(await page.locator('.map-story-speaker').getAttribute('alt'),'グノーシス');
+ for(const [width,height,font] of [[320,568,100],[320,720,100],[390,844,100],[430,900,100],[844,390,100],[390,844,200]]){
   await page.setViewportSize({width,height});await page.locator('#mapStory').evaluate((el,font)=>el.style.fontSize=font+'%',font);
-  await page.screenshot({path:`${out}/dialogue-${width}-${font}.png`,fullPage:true});
+  await page.screenshot({path:`${out}/dialogue-${width}-${height}-${font}.png`,fullPage:true});
   const fits=await page.locator('#mapStory').evaluate(el=>el.scrollWidth<=el.clientWidth+1);assert(fits,`story fits ${width}px / ${font}%`);
-  const next=page.locator('#mapStory button[onclick="advanceMapStoryNode()"]');await next.scrollIntoViewIfNeeded();assert(await next.isVisible());assert((await next.boundingBox()).height>=44);
+  const scene=await page.locator('.map-story-scene').boundingBox(),panel=await page.locator('.map-story-dialogue').boundingBox(),portrait=await page.locator('.map-story-speaker').boundingBox();
+  assert.equal(scene.x,0);assert.equal(scene.y,0);assert.equal(scene.width,width);assert.equal(scene.height,height);
+  assert(panel.x>=0&&panel.y>=0&&panel.x+panel.width<=width&&panel.y+panel.height<=height,'panel fits viewport');
+  assert(width>=720?portrait.x+portrait.width<=panel.x:portrait.y+portrait.height<=panel.y,'portrait never overlaps dialogue');
+  assert(await page.locator('.app-topbar').isHidden());assert(await page.locator('.app-bottom-nav').isHidden());
+  for(const button of await page.locator('.map-story-scene button').all()){
+   await button.scrollIntoViewIfNeeded();assert(await button.isVisible());assert((await button.boundingBox()).height>=44);
+  }
+  assert((await nextLine().evaluate(el=>getComputedStyle(el).backgroundImage)).includes('linear-gradient'),'primary retains tutorial colors');
  }
  await page.setViewportSize({width:390,height:844});await page.locator('#mapStory').evaluate(el=>el.style.fontSize='100%');
+ const beforeSkip=await page.evaluate(()=>({coins:save.coins,instances:JSON.stringify(save.instances)}));
+ await skip().click();assert(await page.locator('#mapStory button[onclick="launchMapStoryBattle(\'gl_01\')"]').isVisible());
+ assert.equal(await page.evaluate(()=>mapStoryState().resume.phase),'pre');assert.equal(await page.evaluate(()=>mapStoryProgress('gl_01').completed),false);
+ assert.deepEqual(await page.evaluate(()=>({coins:save.coins,instances:JSON.stringify(save.instances)})),beforeSkip);
+ await previous().click();assert(await nextLine().isVisible());
+ const savedNode=await page.evaluate(()=>mapStoryState().resume.nodeId);
+ await page.locator('.map-story-close').click();assert(await page.locator('.app-topbar').isVisible());assert(await page.locator('.app-bottom-nav').isVisible());
+ await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
+ await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.evaluate(()=>openMapStory());await page.locator('#mapStory button[onclick="startMapStoryEpisode(\'gl_01\')"]').click();
+ assert.equal(await page.evaluate(()=>mapStoryState().resume.nodeId),savedNode);
  for(let number=1;number<=11;number++){
   const id='gl_'+String(number).padStart(2,'0');if(number!==1)await page.locator(`#mapStory button[onclick="startMapStoryEpisode('${id}')"]`).click();
   while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await page.locator('#mapStory button[onclick="advanceMapStoryNode()"] ').click();
@@ -75,6 +100,13 @@ try{
  await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();
  assert(await page.locator('#storyPanel-map').isVisible());assert((await page.locator('#storyMapList').innerText()).includes('11/11 完了'));
  await page.locator('#storyMapList button').click();
+ const completedSave=await page.evaluate(()=>JSON.stringify(save));
+ await page.locator('#mapStory button[onclick="readMapStoryEpisode(\'gl_01\')"]').click();
+ await skip().click();assert.equal(await page.evaluate(()=>mapStoryUi.phase),'pre');
+ await nextLine().click();assert.equal(await page.evaluate(()=>mapStoryUi.phase),'post');
+ await skip().click();await previous().click();assert(await nextLine().isVisible());await skip().click();
+ await page.locator('#mapStory button[onclick="completeMapStoryEpisode()"] ').click();
+ assert.equal(await page.evaluate(()=>JSON.stringify(save)),completedSave,'replay controls leave saved progress unchanged');
  await page.locator('#mapStory button[onclick="leaveMapStory()"] ').click();assert.equal(await page.evaluate(()=>worldMapSelectedId),'grassland');
  assert.deepEqual(errors,[]);fs.writeFileSync(`${out}/manifest.json`,JSON.stringify({result:'PASS',publicUrl:publicUrl||null,viewports:[320,430,844],fontScale:200,episodes:11,reload:true,errors},null,2));
  console.log('PASS grassland browser: mobile/landscape/200% layout, all 11 flows, actual attack, multi result, evolution return, full reload and grassland return.');
