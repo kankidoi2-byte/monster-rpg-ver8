@@ -1,5 +1,9 @@
 # 通常探索の勝利報酬の一括保存
 
+## 統合状況（2026-10-18）
+
+PR #293で #287/#288/#292/#289 をmain `81aa8cbf1c870e67d75cc6133e3da57cbfbc643d`へ統合済み。公開状況・検証証拠は[最新照合記録](../publication-status-20261012.md)を参照。以下の「未統合・未公開」「レビュー用」は初回提出時点の記録です。
+
 基点: main `2ef87b73d82c9d3afae68852f6ebcaeb78b07a89`（草原全画面UI #291を含む）。
 調査基準: [2026-10-12総点検資料 第5節](https://docs.google.com/document/d/1dLw3o45A3GjUZuPGJQ2oU2yLNzvxGCdowsXtpKVSGeA/edit)。本変更は独立レビュー用。未統合・未公開。
 
