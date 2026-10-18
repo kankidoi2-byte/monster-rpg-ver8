@@ -145,3 +145,35 @@ for(const slot of [1,2])for(const fault of ['none','quota','DOM']){
  assert.equal(r.run('JSON.stringify(save)'),r.run('after'));assert.equal(r.run('alchemyDiagnosticsStage'),'completed');results.push('alchemy/retry-cached-result-and-duplicate');
 }
 console.log(`PASS save transaction boundaries: ${results.length} cases (real profiles, save, contractor-rank and tutorial functions)`);
+
+// Remaining bounded transactions: XP consumables and early expedition recall.
+for(const slot of [1,2])for(const feature of ['expItem','recall'])for(const fault of ['none','quota','conflict','display','read','lateRead']){
+  const r=h(slot);
+  r.run(`var hero=addInstance('aquaron',1);save.party=[];activeInstance=hero;partyBattle=[{inst:hero,hp:instanceMaxHp(hero),fainted:false}];var item=SHOP_ITEMS.find(x=>x.expItem);save.items[item.id]=1;save.expeditions.active=[{id:'early-audit',mapId:'grassland',distanceId:'short',memberUids:[hero.uid],progress:1,requiredWins:3,status:'active',suitability:{greatRate:0},reward:null}];saveGame();var before=JSON.stringify(save);var pendingBefore=JSON.stringify(pendingEvolutions);var key=MonsterProfiles.key(SAVE_KEY);var disk=localStorage.getItem(key);var other=localStorage.getItem('mb_v95c');var realSet=localStorage.setItem;Math.random=()=>.9;`);
+  if(fault==='quota')r.run(`localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return realSet(k,v)}`);
+  if(fault==='conflict')r.run(`var newer=JSON.parse(disk);newer.coins=99999;realSet(key,JSON.stringify(newer));`);
+  if(['read','lateRead'].includes(fault))r.run(`var realGet=localStorage.getItem;var reads=0;localStorage.getItem=k=>{if(k===key&&(${fault==='read'?'true':'++reads===2'}))throw Error('read');return realGet(k)}`);
+  if(fault==='display')r.run(`renderParty=()=>{throw Error('display')}`);
+  const action=feature==='expItem'?'useExpItemOnInstance(item.id,hero.uid)':"recallExpedition('early-audit')";
+  r.run(action);
+  if(['read','lateRead'].includes(fault))r.run('localStorage.getItem=realGet;');
+  if(['quota','conflict','read','lateRead'].includes(fault)){
+    assert.equal(r.run('JSON.stringify(save)'),r.run('before'));
+    assert.equal(r.run('JSON.stringify(pendingEvolutions)'),r.run('pendingBefore'));
+    assert(r.run('activeInstance===getInstance(hero.uid)&&partyBattle[0].inst===activeInstance'),'rollback rebinds active instance');
+    if(fault!=='conflict')assert.equal(r.run('localStorage.getItem(key)'),r.run('disk'));
+    else assert.equal(r.run('JSON.parse(localStorage.getItem(key)).coins'),99999);
+  }else{
+    assert.equal(r.run('localStorage.getItem(key)'),r.run('JSON.stringify(save)'));
+    if(feature==='expItem'){assert.equal(r.run('save.items[item.id]'),0);assert(r.run('getInstance(hero.uid).level>1||getInstance(hero.uid).exp>0'));}
+    else assert.equal(r.run("save.expeditions.active.some(e=>e.id==='early-audit')"),false);
+    r.run('var committed=localStorage.getItem(key);');r.run(action);
+    assert.equal(r.run('localStorage.getItem(key)'),r.run('committed'),'repeated consumed action cannot grant twice');
+  }
+  if(slot===2)assert.equal(r.run("localStorage.getItem('mb_v95c')"),r.run('other'));
+  if(['quota','read','lateRead'].includes(fault)){
+    r.run('localStorage.setItem=realSet;');r.run(action);
+    assert.equal(r.run('localStorage.getItem(key)'),r.run('JSON.stringify(save)'),'retry commits once');
+  }
+}
+console.log('PASS XP item / early recall: both profiles, primary quota, stale-tab conflict, pointer/evolution rollback, retry, repeated action, postcommit display failure.');

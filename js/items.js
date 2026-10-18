@@ -143,20 +143,23 @@ function useExpItemOnInstance(itemId, uidValue){
   if(!ins){ alert('対象のモンスターが見つかりません。'); return; }
   const mon = by(ins.id);
   if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;alert(`${mon.name}はすでに Lv.MAX です！`);return;}
-  save.items[itemId]--;
-  ins.exp = (ins.exp||0) + it.expAmount;
   let msg = `${it.icon || '📦'} ${it.name}を${mon.name}に与えた！\nEXP +${it.expAmount}`;
-  while(!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)){
-    ins.exp -= needExp(ins.level);
-    ins.level++;
-    msg += `\n${mon.name}は Lv.${ins.level} に上がった！`;
-  }
-  if(isMaxLevel(ins.level))ins.exp=0;
-  checkEvolution(ins);
-  saveGame();
-  renderParty();
-  alert(msg);
-  if(pendingEvolutions.length) processNextEvolution();
+  if(!commitSaveMutation(()=>{
+    save.items[itemId]--;
+    ins.exp = (ins.exp||0) + it.expAmount;
+    while(!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)){
+      ins.exp -= needExp(ins.level);
+      ins.level++;
+      msg += `\n${mon.name}は Lv.${ins.level} に上がった！`;
+    }
+    if(isMaxLevel(ins.level))ins.exp=0;
+    checkEvolution(ins);
+  },{requireReadable:true}))return;
+  showCommittedSaveResult(()=>{
+    renderParty();
+    alert(msg);
+    if(pendingEvolutions.length) processNextEvolution();
+  });
 }
 function openBattleItemSelect() {
   if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
@@ -232,6 +235,7 @@ function chooseDefaultContractItem(){
   return 'contract_scroll';
 }
 function askUseContractScroll(itemId){
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(multiBattle?.active && !multiBattle.finished){
     alert('複数陣営バトルでは、戦闘終了後に倒した相手と契約できます。');
@@ -276,6 +280,7 @@ function postBattleContractStage(target,itemId,scope,guaranteed=false){
   postBattleContractRetry={target,itemId,scope,identity,stage};return stage;
 }
 function useContractScrollConfirmed(){
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(postBattleContractBusy)return;
   ensureContractScrollItem();
   const itemId=ITEM_BY_ID[pendingContractItemId]?.contract?pendingContractItemId:chooseDefaultContractItem();
@@ -284,6 +289,7 @@ function useContractScrollConfirmed(){
   return tryContractWithScroll(itemId,{tutorialGuarantee});
 }
 async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee=false}={}){
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||singleBattleContractAttempted||!battleRewardGranted||!isContractableUnit(enemy))return false;
   ensureContractScrollItem();

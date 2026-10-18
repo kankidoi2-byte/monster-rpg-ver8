@@ -24,7 +24,12 @@ for(const options of plain(after.run('singleHpCases()'))){
  const b=plain(await before.run(`singleHpScenario(${JSON.stringify(options)},false)`));
  assert(a.observations.every(o=>o.pHp>=0&&o.eHp>=0));
  if(b.observations.some(o=>o.pHp<0||o.eHp<0))detected++;
- delete a.observations;delete b.observations;assert.deepEqual(a,b,JSON.stringify(options));count++;
+ delete a.observations;delete b.observations;
+ // Guard + shield now use strongest-only defense (and the whole repeat attack).
+ // Keep immediate HP observations for these cases, compare terminal HP/consumption;
+ // exact new damage/charge behavior has its independent story-defense matrix.
+ if(options.guard&&options.shield){for(const key of ['events','actual','log']){delete a[key];delete b[key];}}
+ assert.deepEqual(a,b,JSON.stringify(options));count++;
 }
 assert(detected>=14,'test must detect the original transient bug');
 // Real save/parser and outcomes/attribution/rewards exercise the same prior fixture

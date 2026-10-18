@@ -304,9 +304,9 @@ async function performMultiAttack(actor,target,move) {
   const effectivePower=resolvedPower*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
   const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
-  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),guardMultiplier=guard?kokoroLinkPenetratedMultiplier(.55,penetration.rate):1,shieldMultiplier=shield?kokoroLinkPenetratedMultiplier(.5,penetration.rate):1;
-  const rawDamage=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map*guardMultiplier*shieldMultiplier));
-  const linkBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawDamage):{hpDamage:rawDamage,absorbed:0,barrierRemaining:0};
+  const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
+  const rawDamage=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map;
+  const linkBarrier=legacyAttackDefense(rawDamage,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
   const damage=linkBarrier.hpDamage;
   const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
@@ -326,8 +326,8 @@ async function performMultiAttack(actor,target,move) {
     if(Math.random()<chance.chance){
     if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true});
-    const rawSecond=Math.max(1,Math.floor((effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map));
-    const secondBarrier=defenderIsPlayer?resolvePlayerIncomingDamage(rawSecond):{hpDamage:rawSecond,absorbed:0,barrierRemaining:0};
+    const rawSecond=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map;
+    const secondBarrier=legacyAttackDefense(rawSecond,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
     const second=secondBarrier.hpDamage;const secondHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
     if(typeof battleHpResult==='function')battleHpResult(impactTargetId,secondHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:'追加攻撃',damage:second,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});
@@ -396,15 +396,16 @@ function grantMultiEnemyReward(entry,turnBonus){
 }
 function winMultiBattle(){
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('victory'))return;
-  if(battleRewardGranted)return;battleRewardGranted=true;if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();completeBattleTurn();resetBattleTransientEffects();multiBattle.finished=true;busy=true;
+  if(battleRewardGranted)return;
+  settleNormalVictory(true);
+}
+function prepareMultiVictoryReward(){
   const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus));
   const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
   if(!selectedMap?.goldenLand&&grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId))msg+='<br>🗺️ 黄金郷への地図を入手！';
-  msg+='<br>'+grantPartyExp(totalExp);save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',multi:true,enemies:multiBattle.enemies.map(entry=>entry.mon)});if(typeof progressActiveExpeditions==='function')progressActiveExpeditions();if(typeof recordWorldMapVictory==='function')recordWorldMapVictory();saveGame();
-  document.getElementById('log').innerHTML=msg;
-  showBattleOutcome({kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`});
-  renderMultiContractPanel();renderParty(); // Queued evolution opens afterBattleNext.
+  msg+='<br>'+grantPartyExp(totalExp,{saveNow:false,animate:false});save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',multi:true,enemies:multiBattle.enemies.map(entry=>entry.mon)});if(typeof progressActiveExpeditions==='function')progressActiveExpeditions(Math.random,{saveNow:false});if(typeof recordWorldMapVictory==='function')recordWorldMapVictory();
+  return {message:msg,outcome:{kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`}};
 }
 
 function renderMultiContractPanel(){
@@ -414,8 +415,9 @@ function renderMultiContractPanel(){
   const candidates=multiBattle.enemies.filter(entry=>entry.defeatedByPlayer&&isContractableUnit(entry.mon)&&!multiBattle.contractAttempts[entry.id]);
   panel.classList.remove('hidden');panel.innerHTML=`<h3>🤝 契約候補</h3>${candidates.length?candidates.map(entry=>`<button onclick="selectMultiBattleContractTarget('${entry.id}')">${entry.mon.name}と契約</button>`).join(''):'<p class="small">契約できる相手はいません（プレイヤーが倒した相手のみ）。</p>'}`;
 }
-function selectMultiBattleContractTarget(id){const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
+function selectMultiBattleContractTarget(id){if(normalVictoryPending())return;const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
 async function useMultiBattleContractScroll(itemId){
+  if(normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||!multiBattle?.active||!multiBattle.finished)return false;
   const battle=multiBattle,entry=multiEnemy(pendingMultiBattleContractId),it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;

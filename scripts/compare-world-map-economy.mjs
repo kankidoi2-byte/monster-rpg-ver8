@@ -98,6 +98,27 @@ function functionSource(source,name){
   assert.fail(`function ${name} is not balanced`);
 }
 
+// Compare the unchanged reward statements across the atomic-save extraction.
+// Storage/UI wrappers are covered by test-hunt-victory-save, not reward economics.
+function economicFunctionSource(source,name){
+  if(name==='win'||name==='winMultiBattle'){
+    const builder=name==='win'?'prepareSingleVictoryReward':'prepareMultiVictoryReward';
+    const extracted=source.includes(`function ${builder}(`);
+    let body=functionSource(source,extracted?builder:name);
+    const start=body.indexOf(name==='win'?'const turnBonusActive':'const turnBonus=');
+    const end=body.indexOf(extracted?'return {message:msg,outcome:':"document.getElementById('log')",start);
+    assert(start>=0&&end>start,'reward block boundaries must be explicit');
+    return body.slice(start,end)
+      .replace('grantPartyExp(expGain,{saveNow:false,animate:false})','grantPartyExp(expGain)')
+      .replace('grantPartyExp(totalExp,{saveNow:false,animate:false})','grantPartyExp(totalExp)')
+      .replace('progressActiveExpeditions(Math.random,{saveNow:false})','progressActiveExpeditions()')
+      .replace(/saveGame\(\);/g,'');
+  }
+  // This option changes only the write boundary; keep the entire progress body.
+  return functionSource(source.replace('randomFn=Math.random,{saveNow=true}={}','randomFn=Math.random'),name)
+    .replace('if(changed&&saveNow)saveGame()','if(changed)saveGame()');
+}
+
 function normalizedRuleSource(source,name){
   // Map-story rewards have an independent transaction path, covered by check:map-story.
   // Strip only its exact early victory dispatch when comparing NORMAL exploration.
@@ -318,8 +339,8 @@ for(const [file,name] of [
   ['js/expedition.js','progressActiveExpeditions'],['js/expedition.js','expeditionRewardPlan']
 ]){
   assert.equal(
-    normalizedRuleSource(functionSource(current.source[file],name),name),
-    normalizedRuleSource(functionSource(baseline.source[file],name),name),
+    normalizedRuleSource(economicFunctionSource(current.source[file],name),name),
+    normalizedRuleSource(economicFunctionSource(baseline.source[file],name),name),
     `${file}:${name} reward rule diverged`
   );
 }
