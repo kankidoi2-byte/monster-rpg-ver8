@@ -1162,6 +1162,9 @@ const ITEM_DEX_EXTRA = [
   {id:'doom_fragment', name:'滅亡のカケラ', icon:'🔻', price:0, desc:'滅亡の力が凝縮された危険なカケラ。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'}
 ];
 const ITEM_IMG = {
+  kilo_data: 'images/items/kilo_data_art_v1.webp',
+  mega_data: 'images/items/mega_data_art_v1.webp',
+  giga_data: 'images/items/giga_data_art_v1.webp',
   metal_ore: 'images/items/metal_ore_art_v1.webp',
   fine_metal_ore: 'images/items/fine_metal_ore_art_v1.webp',
   unstable_alchemy_matter: 'images/items/unstable_alchemy_matter_art_v1.webp',

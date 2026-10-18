@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261018-exp-item-artwork",date:"2026-10-18",category:"update",title:"経験値アイテムに専用画像を追加しました",body:"キロデータ・メガデータ・ギガデータに、それぞれ専用の画像を追加しました。"},
   {id:"20261018-evolution-battle-item-save",date:"2026-10-18",category:"fix",title:"進化と戦闘中の道具の保存を修正しました",body:"保存に失敗した場合、進化や道具の消費・効果を確定せず、再操作できるようにしました。保存済みの結果は、画面の表示に問題が起きても取り消しません。"},
   {id:"20261017-atomic-hunt-victory",date:"2026-10-17",category:"fix",title:"探索の勝利報酬の保存を修正しました",body:"探索の経験値・コイン・ドロップと遠征・世界地図の進行をまとめて保存します。保存できない場合は獲得を確定せず、同じ報酬で保存を再試行できます。再試行中は画面の再読み込みや終了をしないでください。"},
   {id:"20261017-grassland-fullscreen-dialogue",date:"2026-10-17",category:"update",title:"草原の会話画面を見やすくしました",body:"草原の背景を画面いっぱいに広げ、登場人物を大きく表示する会話画面に変更しました。下部の会話欄から「戻る」「会話スキップ」「話一覧へ」を操作できます。会話スキップは戦闘前後の確認画面まで進みます。"},
