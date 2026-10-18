@@ -65,13 +65,13 @@ async function singleHpScenario(options,strict=true){
   save.progress.tutorial=tutorialSaveDefaults({legacy:true});
   const ins=addInstance(isPlayer?'seralphia':'slime',10);save.party=[ins.uid];prepareBattleParty();
   beginChosenBattle('grassland',isPlayer?'slime':'seralphia','normal');
-  const originals={random:Math.random,playerAttackInstanceMultiplier,enemyDifficultyAttackMultiplier,huntMapAttackMultiplier,resolvePlayerIncomingDamage,consumeKokoroLinkRecoilGuard};
+  const originals={random:Math.random,playerAttackInstanceMultiplier,enemyDifficultyAttackMultiplier,huntMapAttackMultiplier,resolvePlayerIncomingDamage,skill110IncomingDamage:globalThis.skill110IncomingDamage,consumeKokoroLinkRecoilGuard};
   Math.random=()=>0;playerAttackInstanceMultiplier=()=>1;enemyDifficultyAttackMultiplier=()=>1;huntMapAttackMultiplier=()=>1;
   pAtk=eAtk=1;pFlareCharge=eFlareCharge=false;
   pGuard=!isPlayer&&guard;eGuard=isPlayer&&guard;pAquaShield=!isPlayer&&shield;eAquaShield=isPlayer&&shield;
   pHp=isPlayer?actorHp:targetHp;eHp=isPlayer?targetHp:actorHp;partyBattle[0].hp=pHp;
   consumeKokoroLinkRecoilGuard=()=>!!options.immune;
-  if(options.barrier||options.barrierZero)resolvePlayerIncomingDamage=damage=>({hpDamage:options.barrierZero?0:Math.max(0,damage-10),absorbed:options.barrierZero?damage:Math.min(10,damage),barrierRemaining:0});
+  if(options.barrier||options.barrierZero)skill110IncomingDamage=resolvePlayerIncomingDamage=damage=>({hpDamage:options.barrierZero?0:Math.max(0,damage-10),absorbed:options.barrierZero?damage:Math.min(10,damage),barrierRemaining:0});
   if(link&&isPlayer)kokoroLinkBattleState.linksByTargetUid.set(activeInstance.uid,{targetUid:activeInstance.uid,effects:{attackMultiplier:1},powerAbility:{id:'life_steal',charges:1,damageRate:.2,maxHpRateCap:.1}});
   const probe=installSingleHpProbe(strict);
   try{
@@ -82,7 +82,7 @@ async function singleHpScenario(options,strict=true){
       guards:[pGuard,eGuard,pAquaShield,eAquaShield],observations:probe.observations};
     if(effect==='repeat_attack'){
       const extra=probe.events.filter(e=>e[3].label==='追加攻撃');
-      if(extra.length!==(options.name==='repeat-first-ko'?0:1))throw Error('repeat count');
+      if(extra.length!==(probe.events[0]?.[2]===0?0:1))throw Error('repeat count');
     }
     if(!probe.observations.some(o=>o.stage==='assignment')||!probe.observations.some(o=>o.stage==='history'))throw Error('missing immediate/history observations');
     return result;

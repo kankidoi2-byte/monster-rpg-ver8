@@ -9,11 +9,11 @@ async function poweredModifierScenario({skillId,mode='single',direction='player'
   request.battleMode=mode==='multi'?'three_way':'single';request.secondEnemyId='slime';
   beginChosenBattle('grassland',isPlayer?'slime':owner,'normal',request);
   if(mode==='invasion'){activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='slime';activeHuntRequest.invasionTurn=0;if(!triggerInvasionIfDue())throw Error('invasion did not trigger');}
-  const originals={random:Math.random,playerAttackInstanceMultiplier,enemyDifficultyAttackMultiplier,huntMapAttackMultiplier,enemyKokoroLinkMisses,resolvePlayerIncomingDamage,appendMultiLog,battleHpResult:globalThis.battleHpResult};
+  const originals={random:Math.random,playerAttackInstanceMultiplier,enemyDifficultyAttackMultiplier,huntMapAttackMultiplier,enemyKokoroLinkMisses,resolvePlayerIncomingDamage,skill110IncomingDamage:globalThis.skill110IncomingDamage,appendMultiLog,battleHpResult:globalThis.battleHpResult};
   const hits=[],logs=[];
   appendMultiLog=message=>{logs.push(message);return originals.appendMultiLog(message);};
   Math.random=()=>0;playerAttackInstanceMultiplier=()=>1;enemyDifficultyAttackMultiplier=()=>1;huntMapAttackMultiplier=()=>1;enemyKokoroLinkMisses=()=>miss;
-  if(barrier)resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:999,barrierRemaining:0});
+  if(barrier)skill110IncomingDamage=resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:999,barrierRemaining:0});
   globalThis.battleHpResult=(...args)=>{hits.push([args[0],args[1],args[2],args[3]]);if(originals.battleHpResult)originals.battleHpResult(...args);};
   const initial=cap?(move[3]==='buff'?1.55:.7):1;
   pHp=eHp=500;pAtk=eAtk=initial;pGuard=eGuard=guard;pAquaShield=eAquaShield=shield;pFlareCharge=eFlareCharge=false;

@@ -135,13 +135,25 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium
       - name: Verify save failure boundaries in isolated profiles
-        run: node scripts/test-save-transactions-browser.mjs
+        run: |
+          node scripts/test-save-transactions-browser.mjs
+          node scripts/test-hunt-victory-save-browser.mjs
+      - name: Verify integrated published save flows with isolated profiles
+        if: github.event_name == 'pull_request' && github.head_ref == 'verify/integrated-public-20261018'
+        env:
+          GAME_TEST_URL: https://pactforge-studio.github.io/monster-rpg-ver8/
+        run: |
+          node scripts/test-save-transactions-browser.mjs
+          node scripts/test-hunt-victory-save-browser.mjs
+          node scripts/test-map-story-browser.mjs
       - name: Upload save transaction evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: save-transaction-evidence
-          path: artifacts/save-transactions
+          path: |
+            artifacts/save-transactions
+            artifacts/hunt-victory-save
 
   three-motion-compression:
     runs-on: ubuntu-latest

@@ -223,7 +223,7 @@ function grantContractorExp(amount,{source='other',eventId=null,awardedAt=null}=
   }
   const unlockedTitleIds=syncContractorRankTitles();
   if(newRank>oldRank)queueContractorRankUp(oldRank,newRank,unlockedTitleIds);
-  if(typeof refreshContractorRankUi==='function')refreshContractorRankUi();
+  if(!(typeof normalVictoryPreparing!=='undefined'&&normalVictoryPreparing)&&typeof refreshContractorRankUi==='function')refreshContractorRankUi();
   return {awarded:grantedAmount>0,reason:grantedAmount>0?'awarded':'max_rank',amount:grantedAmount,oldExp,newExp:state.exp,oldRank,newRank,reachedRanks,unlockedTitleIds};
 }
 

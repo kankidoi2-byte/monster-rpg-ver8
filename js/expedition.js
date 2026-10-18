@@ -184,10 +184,10 @@ function startExpedition(){
     renderExpedition();return false;
   }
 }
-function progressActiveExpeditions(randomFn=Math.random){
+function progressActiveExpeditions(randomFn=Math.random,{saveNow=true}={}){
   normalizeExpeditionSave();let changed=false;
   save.expeditions.active.forEach(entry=>{if(entry.status!=='active')return;const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId];if(!map||!distance)return;entry.progress=Math.min(entry.requiredWins,entry.progress+1);changed=true;if(entry.progress>=entry.requiredWins){entry.status='complete';entry.reward=expeditionRewardPlan(map,distance,entry.suitability,randomFn,1);}});
-  if(changed)saveGame();return changed;
+  if(changed&&saveNow)saveGame();return changed;
 }
 function grantExpeditionReward(entry,reward){
   save.coins=(save.coins||0)+(reward.coins||0);Object.entries(reward.items||{}).forEach(([id,count])=>{save.items[id]=(save.items[id]||0)+count;if(typeof registerItemDex==='function')registerItemDex(id);});
@@ -209,8 +209,13 @@ function claimExpedition(id){
 }
 function recallExpedition(id){
   const index=save.expeditions.active.findIndex(x=>x.id===id),entry=save.expeditions.active[index];if(!entry||entry.status!=='active')return;if(!confirm('途中帰還しますか？ 完了進捗分の50％だけ受け取ります。'))return;
-  if(entry.progress>0){const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId],factor=(entry.progress/entry.requiredWins)*.5;const reward=expeditionRewardPlan(map,distance,{...entry.suitability,greatRate:0},Math.random,factor);grantExpeditionReward(entry,reward);}
-  save.expeditions.active.splice(index,1);saveGame();renderExpedition();renderParty();if(typeof renderPartySetup==='function')renderPartySetup();setTimeout(processNextEvolution,250);
+  if(!commitSaveMutation(()=>{
+    if(entry.progress>0){const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId],factor=(entry.progress/entry.requiredWins)*.5;const reward=expeditionRewardPlan(map,distance,{...entry.suitability,greatRate:0},Math.random,factor);grantExpeditionReward(entry,reward);}
+    save.expeditions.active.splice(index,1);
+  },{requireReadable:true}))return;
+  showCommittedSaveResult(()=>{
+    renderExpedition();renderParty();if(typeof renderPartySetup==='function')renderPartySetup();setTimeout(processNextEvolution,250);
+  });
 }
 function expeditionRewardText(reward){if(!reward)return '完了時に確定';const items=Object.entries(reward.items||{}).map(([id,n])=>`${ITEM_BY_ID[id]?.icon||'📦'}${ITEM_BY_ID[id]?.name||id}×${n}`).join(' / ')||'アイテムなし';return `${reward.great?'🌟 大成功！ ':''}コイン${reward.coins}・各個体EXP ${reward.exp}・${items}`;}
 function expeditionEmptyMemberGuide(){
