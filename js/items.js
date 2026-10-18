@@ -167,6 +167,7 @@ function openBattleItemSelect() {
   if(typeof closeBattleSkillPanel==='function')closeBattleSkillPanel();
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
   updateItems();
+  battleItemMenuConsumed=false;
   show('battleItemSelect');
 }
 function renderBattleItemSelect(){
@@ -187,44 +188,45 @@ function battleItemUnavailableReason(id){
   return '';
 }
 function useBattleItemFromMenu(id){
-  if(!document.getElementById('battleItemSelect')?.classList.contains('active')||battleItemUnavailableReason(id))return;
+  if(battleItemMenuConsumed||!document.getElementById('battleItemSelect')?.classList.contains('active')||battleItemUnavailableReason(id))return;
   useBattleItem(id);
 }
+let battleItemSaveBusy = false, battleItemMenuConsumed = false;
 function useBattleItem(id) {
-  if(busy)return;
+  if(busy || battleItemSaveBusy)return;
   ensureContractScrollItem();
   if(ITEM_BY_ID[id]?.contract) { alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
   const it = ITEM_BY_ID[id];
-  if(!it){ alert('そのアイテムは使えません。'); return; }
+  if(!it || !['potion','upper_potion','attack_potion'].includes(id)){ alert('そのアイテムは使えません。'); return; }
   if (!player || !enemy) { alert('バトル中だけ使えます。'); return; }
   if ((save.items[id]||0) <= 0) { alert(`${it.name}を持っていない！`); return; }
 
-  let msg = '';
-  if (id === 'potion') {
-    const healing = adjustedBattleHealing(50);
-    const h = Math.min(healing, playerMaxHp()-pHp);
-    if (h <= 0) { alert('HPは満タンです。'); return; }
-    save.items[id]--;
-    pHp = Math.min(playerMaxHp(), pHp+healing);
-    if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
-    msg = `💊 回復薬を使った！ HPが${h}回復した！`;
-  } else if (id === 'upper_potion') {
-    const healing = adjustedBattleHealing(120);
-    const h = Math.min(healing, playerMaxHp()-pHp);
-    if (h <= 0) { alert('HPは満タンです。'); return; }
-    save.items[id]--;
-    pHp = Math.min(playerMaxHp(), pHp+healing);
-    if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
-    msg = `💉 上回復薬を使った！ HPが${h}回復した！`;
-  } else if (id === 'attack_potion') {
-    save.items[id]--;
-    pAtk = 1.6;
-    msg = `⚡ 力の薬を使った！ ${player.name}の攻撃力が強化上限の1.6倍になった！`;
-  }
-  saveGame(); updateItems(); update();
-  show('battle');
-  const log = document.getElementById('log');
-  if(log) log.innerHTML = msg;if(typeof captureBattleLog==='function')captureBattleLog();
+  const healing = id==='attack_potion' ? 0 : adjustedBattleHealing(id==='potion'?50:120);
+  const h = Math.min(healing, playerMaxHp()-pHp);
+  if(id!=='attack_potion' && h<=0){alert('HPは満タンです。');return;}
+  const nextHp = Math.min(playerMaxHp(),pHp+healing);
+  const msg = id==='attack_potion'
+    ? `⚡ 力の薬を使った！ ${player.name}の攻撃力が強化上限の1.6倍になった！`
+    : `${id==='potion'?'💊 回復薬':'💉 上回復薬'}を使った！ HPが${h}回復した！`;
+  battleItemSaveBusy = true;
+  try {
+    // Battle state is transient: apply it only after the inventory write commits.
+    if(!commitSaveMutation(()=>{save.items[id]--;},{requireReadable:true}))return;
+    battleItemMenuConsumed=true;
+    if(id==='attack_potion')pAtk=1.6;
+    else{
+      pHp=nextHp;
+      if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
+    }
+    showCommittedSaveResult(()=>{
+      // Close the input before fallible refreshes, preventing a stale menu retry.
+      show('battle');
+      updateItems(); update();
+      const log=document.getElementById('log');
+      if(log)log.innerHTML=msg;
+      if(typeof captureBattleLog==='function')captureBattleLog();
+    });
+  } finally { battleItemSaveBusy=false; }
 }
 function chooseDefaultContractItem(){
   ensureContractScrollItem();
