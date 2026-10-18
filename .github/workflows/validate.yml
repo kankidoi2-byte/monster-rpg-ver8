@@ -138,6 +138,7 @@ jobs:
         run: |
           node scripts/test-save-transactions-browser.mjs
           node scripts/test-hunt-victory-save-browser.mjs
+          node scripts/test-evolution-battle-item-save-browser.mjs
       - name: Verify integrated published save flows with isolated profiles
         if: github.event_name == 'pull_request' && github.head_ref == 'verify/integrated-public-20261018'
         env:
@@ -152,6 +153,7 @@ jobs:
         with:
           name: save-transaction-evidence
           path: |
+            artifacts/evolution-battle-item-save
             artifacts/save-transactions
             artifacts/hunt-victory-save
 

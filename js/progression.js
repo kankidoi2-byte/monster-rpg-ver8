@@ -57,7 +57,7 @@ function tryFusion(idx) {
   if(typeof grantContractorEvolution==='function')grantContractorEvolution({special:true});
 
 
-  }))return;
+  },{requireReadable:true}))return;
   showCommittedSaveResult(()=>{
   renderFusion();
   renderParty();
@@ -108,10 +108,10 @@ function processNextEvolution() {
   // Never replace an unresolved battle result or its contract animation.
   const outcome=document.getElementById('battleOutcome');
   if(typeof battleFeedback!=='undefined'&&battleFeedback.finished&&outcome&&!outcome.classList.contains('hidden'))return;
-  if (!pendingEvolutions.length) return;
-  currentEvolution = pendingEvolutions.shift();
+  if (!currentEvolution && !pendingEvolutions.length) return;
+  currentEvolution = currentEvolution || pendingEvolutions.shift();
   const ins = getInstance(currentEvolution.uid);
-  if (!ins) { processNextEvolution(); return; }
+  if (!ins) { currentEvolution=null; processNextEvolution(); return; }
   const from = by(currentEvolution.from);
   document.getElementById('evoVisual').innerHTML =
     `<div class="card">${vis(from)}<h2>${from.name}</h2><p>Lv.${ins.level}</p></div>` +
@@ -122,14 +122,18 @@ function processNextEvolution() {
     `<button onclick="cancelEvolution()" style="background:linear-gradient(135deg,#374151,#4b5563)">進化しない</button>`;
   show('evolution');
 }
+let evolutionSaveBusy = false;
 function confirmEvolution(toId) {
-  if (!currentEvolution) return;
+  if (evolutionSaveBusy || !currentEvolution) return;
   const ins = getInstance(currentEvolution.uid);
   if (!ins) { currentEvolution=null; processNextEvolution(); return; }
   // Ignore stale or invalid choices; only a currently eligible transition grants cards.
   if (ins.id !== currentEvolution.from || !currentEvolution.choices.includes(toId) ||
       !getEvoCandidates(ins).includes(toId)) return;
   const from = by(ins.id), to = by(toId), firstRegistration=!caughtHas(toId);
+  evolutionSaveBusy = true;
+  try {
+  if(!commitSaveMutation(()=>{
   ins.id = toId;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
   if (typeof grantEvolutionSkillCardsForInstance === 'function') grantEvolutionSkillCardsForInstance(ins);
@@ -138,12 +142,18 @@ function confirmEvolution(toId) {
     if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(toId);
   }
   if(typeof grantContractorEvolution==='function')grantContractorEvolution();
-  saveGame(); renderParty(); renderDex();
+  },{requireReadable:true}))return;
+  // Retire the committed choice before any fallible presentation.
   currentEvolution = null;
+  showCommittedSaveResult(()=>{
+  renderParty(); renderDex();
   alert(`✨ ${from.name}は${to.name}に進化した！`);
   pendingEvolutions.length ? processNextEvolution() : show('partySet');
+  });
+  } finally { evolutionSaveBusy = false; }
 }
 function cancelEvolution() {
+  if(evolutionSaveBusy)return;
   currentEvolution = null;
   pendingEvolutions.length ? processNextEvolution() : show('partySet');
 }
