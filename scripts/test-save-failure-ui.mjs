@@ -185,6 +185,37 @@ async function assertSuccessfulUi(page,kind,surface,expected){
   }
 }
 
+async function assertForegroundErrorNotice(page,label,reducedMotion=false){
+  // A visible class alone is insufficient: the entrance animation starts at
+  // opacity zero, and a retained modal can paint over an otherwise visible toast.
+  await page.waitForFunction(()=>{
+    const notice=document.getElementById('uiNotice');
+    if(!notice?.classList.contains('is-error'))return false;
+    const style=getComputedStyle(notice);
+    return Number(style.opacity)>=.99&&style.visibility==='visible'&&style.display!=='none';
+  },null,{timeout:1800});
+  const visual=await page.evaluate(()=>{
+    const notice=document.getElementById('uiNotice'),box=notice.getBoundingClientRect();
+    const inViewport=box.width>0&&box.height>0&&box.left>=0&&box.top>=0&&box.right<=innerWidth&&box.bottom<=innerHeight;
+    const originalStyle=notice.getAttribute('style');
+    let top;
+    try{
+      // Toasts intentionally do not intercept player input. Enable hit testing
+      // only for this synchronous probe, then restore the exact inline style.
+      notice.style.pointerEvents='auto';
+      top=document.elementFromPoint(box.left+box.width/2,box.top+box.height/2);
+    }finally{
+      if(originalStyle===null)notice.removeAttribute('style');
+      else notice.setAttribute('style',originalStyle);
+    }
+    const style=getComputedStyle(notice);
+    return {inViewport,foreground:top===notice||notice.contains(top),occludingElement:top?.id||top?.className||null,opacity:Number(style.opacity),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,animation:style.animationName};
+  });
+  assert(visual.inViewport&&visual.foreground&&visual.opacity>=.99,`${label}: error notice must be readable in the foreground: ${JSON.stringify(visual)}`);
+  assert.equal(visual.reducedMotion,reducedMotion,`${label}: expected motion preference is active`);
+  if(reducedMotion)assert.equal(visual.animation,'none',`${label}: reduced-motion error notice stays static`);
+}
+
 async function assertNoDuplicateGrant(page,kind,before,surface,dialogs){
   if(!['reward-single','reward-all','golden-map','rank-up-close'].includes(kind))return;
   const from=dialogs.length;
@@ -232,6 +263,9 @@ try{
       assert.equal(before.memory,before.disk,`${slot}/${kind}: initial memory and saved bytes`);
       const expected=expectedResult(before,kind,surface);
       for(let attempt=1;attempt<=3;attempt++){
+        // Reuse the second interruption to check OS reduced-motion behavior;
+        // restore normal motion before the interruption/reload on attempt 3.
+        await page.emulateMedia({reducedMotion:attempt===2?'reduce':'no-preference'});
         if(attempt===3){
           // Interrupt the failed flow by reloading, then fail once more and retry
           // the identical operation. No unsaved reward/reservation may reappear.
@@ -263,7 +297,8 @@ try{
         assert.equal(dialogs.length,dialogStart,`${slot}/${kind}: no success alert on failure`);
         assert.match(failed.notice.classes,/is-error/);assert.match(failed.notice.classes,/is-visible/);
         assert(await button.isVisible());assert(await button.isEnabled());
-        if(attempt===3)await page.screenshot({path:`${output}/profile${slot}-${kind}-failed.png`});
+        await assertForegroundErrorNotice(page,`${slot}/${kind}/failure-${attempt}`,attempt===2);
+        if(attempt>=2)await page.screenshot({path:`${output}/profile${slot}-${kind}${attempt===2?'-reduced-motion':''}-failed.png`});
       }
       await page.evaluate(()=>{saveFailureUi.fail=false;saveFailureUi.notices=[];});
       const dialogStart=dialogs.length;
@@ -301,7 +336,7 @@ try{
       assert.deepEqual(reloaded.other,before.other);
       assert.deepEqual(reloaded.ui,settled.ui,`${slot}/${kind}: committed UI survives reload`);
       await assertSuccessfulUi(page,kind,surface,expected);
-      report.cases.push({slot,operation:kind,result:'PASS',failedAttempts:3,interruptedFailureReload:true,sameButtonRetry:true,successfulPrimaryWrites:1,exactRollback:true,inactiveProfileUnchanged:true,uiCoherent:true,noFalseSuccess:true,reload:true});
+      report.cases.push({slot,operation:kind,result:'PASS',failedAttempts:3,interruptedFailureReload:true,sameButtonRetry:true,successfulPrimaryWrites:1,exactRollback:true,inactiveProfileUnchanged:true,uiCoherent:true,noFalseSuccess:true,noticeForeground:true,reducedMotionFailure:true,reload:true});
       console.log(`PASS profile ${slot}: ${kind} (3 failures, interruption/reload, one successful retry, final reload)`);
     }
     await context.close();
