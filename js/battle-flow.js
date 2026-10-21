@@ -78,7 +78,7 @@ function showBattleChoices() {
   }).filter(Boolean);
   let discoveredNewMap=false;
   preparedEntries.forEach(({map})=>{if(typeof registerMapDex==='function'&&registerMapDex(map.id))discoveredNewMap=true;});
-  if(discoveredNewMap)saveGame();
+  if(discoveredNewMap)/* save-result-allow: battle-choice-map-dex */saveGame();
   const recommended = preparedEntries.reduce((best, entry) => {
     const score = huntRecommendationScore(entry.request, entry.m);
     return !best || score > best.score ? {requestId:entry.request.requestId,score} : best;

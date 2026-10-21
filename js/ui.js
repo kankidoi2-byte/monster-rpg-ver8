@@ -99,6 +99,7 @@ const CONTRACTOR_EXP_SOURCE_LABELS=Object.freeze({
 });
 let contractorRankUpTimer=null;
 let contractorRankUpPreviousFocus=null;
+let contractorRewardSavePending=false;
 function contractorExpSourceLabel(source){return CONTRACTOR_EXP_SOURCE_LABELS[source]||'冒険の記録';}
 function updateContractorRankHeader(){
   if(typeof contractorRankProgress!=='function')return;
@@ -207,19 +208,32 @@ function contractorClaimNotice(result){
   if(itemCount)parts.push(`アイテム${itemCount}個`);
   return `Rank報酬${count>1?`${count}件`:''}を受け取りました${parts.length?`（${parts.join('・')}）`:''}。`;
 }
-function finishContractorRewardClaim(result){
+function finishContractorRewardClaim(claimReward){
+  let result,committed=false;
+  // Item registration can grant EXP and request a Rank redraw inside the claim.
+  // Keep that display unchanged until the whole reward has been saved.
+  contractorRewardSavePending=true;
+  try{committed=commitSaveMutation(()=>{result=claimReward();});}
+  finally{contractorRewardSavePending=false;}
+  if(!committed)return false;
   if(!result?.claimed)return false;
-  if(typeof saveGame==='function')saveGame();
-  if(typeof updateItems==='function')updateItems();
-  updateAppResourceBar();
-  updateContractorRankHeader();
-  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
-  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
-  if(typeof showUiNotice==='function')showUiNotice(contractorClaimNotice(result));
+  showCommittedSaveResult(()=>{
+    if(typeof updateItems==='function')updateItems();
+    updateAppResourceBar();
+    refreshContractorRankUi();
+    if(typeof showUiNotice==='function')showUiNotice(contractorClaimNotice(result));
+  });
   return true;
 }
-function claimContractorRewardUi(rank){return finishContractorRewardClaim(claimContractorRankReward(rank));}
-function claimAllContractorRewardsUi(){return finishContractorRewardClaim(claimAllContractorRankRewards());}
+function claimContractorRewardUi(rank){
+  const reward=contractorRankReward(rank);
+  if(!reward||!unclaimedContractorRankRewardRanks().includes(reward.rank))return false;
+  return finishContractorRewardClaim(()=>claimContractorRankReward(rank));
+}
+function claimAllContractorRewardsUi(){
+  if(!unclaimedContractorRankRewardRanks().length)return false;
+  return finishContractorRewardClaim(()=>claimAllContractorRankRewards());
+}
 function renderContractorTitles(){
   const content=document.getElementById('contractorTitleContent');
   if(!content||typeof contractorTitleById!=='function')return;
@@ -246,17 +260,24 @@ function renderContractorTitles(){
     <p class="contractor-title-note">称号は冒険の達成記録です。装備しても戦闘能力や利用できる機能は変わりません。</p>`;
 }
 function setContractorTitle(titleId){
-  const previous=equippedContractorTitle();
-  if(!equipContractorTitle(titleId||null)){
+  if(titleId&&(!contractorTitleById(titleId)||!ensureContractorState().unlockedTitleIds.includes(titleId))){
     if(typeof showUiNotice==='function')showUiNotice('未獲得の称号は装備できません。','warning');
     return false;
   }
-  if(typeof saveGame==='function')saveGame();
-  const current=equippedContractorTitle();
-  updateContractorRankHeader();
-  renderContractorTitles();
-  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
-  if(typeof showUiNotice==='function')showUiNotice(current?`称号「${current.name}」を装備しました。`:previous?'称号を外しました。':'称号未設定です。');
+  const previous=equippedContractorTitle();
+  let equipped=false;
+  if(!commitSaveMutation(()=>{equipped=equipContractorTitle(titleId||null);}))return false;
+  if(!equipped){
+    if(typeof showUiNotice==='function')showUiNotice('未獲得の称号は装備できません。','warning');
+    return false;
+  }
+  showCommittedSaveResult(()=>{
+    const current=equippedContractorTitle();
+    updateContractorRankHeader();
+    renderContractorTitles();
+    if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+    if(typeof showUiNotice==='function')showUiNotice(current?`称号「${current.name}」を装備しました。`:previous?'称号を外しました。':'称号未設定です。');
+  });
   return true;
 }
 function contractorRankUpCanPresent(){
@@ -284,18 +305,21 @@ function presentNextContractorRankUp(){
 function closeContractorRankUp(){
   const overlay=document.getElementById('contractorRankUpOverlay');
   if(!overlay||overlay.classList.contains('hidden'))return;
-  ensureContractorState().pendingRankUps.shift();
-  overlay.classList.add('hidden');
-  if(typeof saveGame==='function')saveGame();
-  updateContractorRankHeader();
-  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
-  if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
-  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
-  contractorRankUpPreviousFocus?.focus?.();
-  contractorRankUpPreviousFocus=null;
-  scheduleContractorRankUpPresentation();
+  if(!commitSaveMutation(()=>{ensureContractorState().pendingRankUps.shift();}))return false;
+  showCommittedSaveResult(()=>{
+    overlay.classList.add('hidden');
+    updateContractorRankHeader();
+    if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+    if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
+    if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
+    contractorRankUpPreviousFocus?.focus?.();
+    contractorRankUpPreviousFocus=null;
+    scheduleContractorRankUpPresentation();
+  });
+  return true;
 }
 function refreshContractorRankUi(){
+  if(contractorRewardSavePending)return;
   updateContractorRankHeader();
   if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
   if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();

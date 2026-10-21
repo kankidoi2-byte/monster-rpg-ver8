@@ -1,0 +1,92 @@
+[
+  {
+    "id": "battle-choice-map-dex",
+    "file": "js/battle-flow.js",
+    "function": "showBattleChoices",
+    "reason": "Map-dex discovery only. The registration stays in memory for the next successful save; do not block hunt selection. Reloading first can lose this discovery, which can be registered again."
+  },
+  {
+    "id": "expedition-progress",
+    "file": "js/expedition.js",
+    "function": "progressActiveExpeditions",
+    "reason": "Both runtime victory callers use saveNow:false and commit with the surrounding victory transaction. This optional standalone save retains progress and the already-rolled reward plan for the next successful save; no reward is claimed here."
+  },
+  {
+    "id": "startup-migration",
+    "file": "js/init.js",
+    "function": "<program>",
+    "reason": "Startup initialization/migration remains available in memory and is retried on startup or included in a later successful save. A failed write must not prevent opening the game or exporting its current save."
+  },
+  {
+    "id": "party-exp-helper",
+    "file": "js/progression.js",
+    "function": "grantPartyExp",
+    "reason": "Both runtime victory callers use saveNow:false and commit with their surrounding victory transaction. The optional standalone save retains EXP and evolution candidates in memory; do not change reward or evolution flow here."
+  },
+  {
+    "id": "export-current-save",
+    "file": "js/save.js",
+    "function": "exportSaveData",
+    "reason": "Export intentionally serializes current in-memory data even when browser storage fails. Blocking the download would remove the recovery path named by the storage-failure notice."
+  },
+  {
+    "id": "tutorial-step",
+    "file": "js/tutorial.js",
+    "function": "persistTutorialStep",
+    "reason": "Keep the current tutorial checkpoint in memory and let the next successful save include it. Do not block dialogue progression or add replay; reloading before recovery may return to the previous stored step."
+  },
+  {
+    "id": "tutorial-flow-start",
+    "file": "js/tutorial.js",
+    "function": "startTutorialFlow",
+    "reason": "Keep the selected tutorial step and chapter gate in memory for the next successful save. Preserve flow-start behavior rather than forcing a restart after a transient write failure."
+  },
+  {
+    "id": "tutorial-flow-checkpoint",
+    "file": "js/tutorial.js",
+    "function": "checkpointTutorialFlow",
+    "reason": "Keep the continueAt checkpoint in memory and allow the existing return-screen flow. A later successful save persists it; reloading first can return to the old checkpoint. Do not add tutorial retries."
+  },
+  {
+    "id": "tutorial-hunt-map-dex",
+    "file": "js/tutorial.js",
+    "function": "renderTutorialHuntChoice",
+    "reason": "This call registers the first hunt map in the dex, not a reward or tutorial completion. Keep the discovery in memory for the next successful save without blocking the required hunt."
+  },
+  {
+    "id": "tutorial-mock-outcome",
+    "file": "js/tutorial.js",
+    "function": "handleTutorialBattleOutcome",
+    "reason": "Preserve the existing Stella mock victory/retry tutorial checkpoint and battle cleanup. The next successful tutorial save includes it; requiring a replay after storage failure would change progression."
+  },
+  {
+    "id": "tutorial-victory-outcome",
+    "file": "js/tutorial.js",
+    "function": "handleTutorialBattleOutcome",
+    "reason": "This fallback stores a tutorial step only when the battle did not supply a committed victory checkpoint. Retain the step until the following successful tutorial save; do not add a battle replay or change rewards."
+  },
+  {
+    "id": "world-map-result",
+    "file": "js/world-map-flow.js",
+    "function": "recordWorldMapBattleResult",
+    "reason": "Defeat/retreat saves event lifetimes and cleared navigation, not rewards. Keep that state and the per-battle recorded flag in memory so it is not advanced twice; the next successful save persists it. Rolling back only this state would change event lifetime semantics."
+  },
+  {
+    "id": "world-map-navigation",
+    "file": "js/world-map.js",
+    "function": "persistWorldMapNavigation",
+    "reason": "Selection, difficulty, and scroll position are presentation state retained in memory and included in the next successful save. Do not block navigation or charge/grant anything because an optional navigation write failed."
+  },
+  {
+    "id": "world-map-location",
+    "file": "js/world-map.js",
+    "function": "showWorldMapLocation",
+    "reason": "Opening a location stores navigation and an eligible map-dex registration only. Keep both in memory for the next successful save; this is not an item spend, reward, or entry-resolution commit."
+  },
+  {
+    "id": "world-map-departure-dex",
+    "file": "js/world-map.js",
+    "function": "startWorldMapExploration",
+    "reason": "This save records map-dex discovery before constructing the hunt. The discovery remains in memory for a later successful save; do not prevent departure. Item-entry consumption remains in its existing checked battle-start transaction."
+  }
+]

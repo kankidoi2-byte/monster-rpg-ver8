@@ -122,6 +122,6 @@ function recordWorldMapBattleResult({saveNow=false}={}){
   const result=advanceWorldEventsAfterBattle(save.worldMap,request.worldMapEventKey);
   save.worldMap=result.state;
   for(const key of result.expiredKeys)clearWorldMapRuntimeEventSelection(key);
-  if(saveNow)saveGame();
+  if(saveNow)/* save-result-allow: world-map-result */saveGame();
   return result.expiredKeys;
 }

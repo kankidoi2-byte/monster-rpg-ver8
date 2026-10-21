@@ -76,7 +76,8 @@ expect(index.includes('id="contractorRankContent"') && read('js/ui.js').includes
 expect(index.includes('id="contractorRankUpOverlay"') && read('js/ui.js').includes('function closeContractorRankUp'), 'contractor Rank-up presentation is missing');
 expect(index.includes('id="contractorTitleContent"') && index.includes('onclick="showContractorTitles()"'), 'contractor title menu entry or screen is missing');
 expect(read('js/ui.js').includes('function renderContractorTitles') && read('js/ui.js').includes('function setContractorTitle'), 'contractor title equip UI is missing');
-expect(read('js/ui.js').includes('equipContractorTitle(titleId||null)') && read('js/ui.js').includes("if(typeof saveGame==='function')saveGame()"), 'contractor title selection must persist through the shared save path');
+const titleAction=uiSource.slice(uiSource.indexOf('function setContractorTitle('),uiSource.indexOf('function contractorRankUpCanPresent('));
+expect(/commitSaveMutation\(\(\)=>\{[^}]*equipContractorTitle\(titleId\|\|null\)/.test(titleAction) && titleAction.includes('showCommittedSaveResult('), 'contractor title selection must commit through the shared rollback path before success presentation');
 expect(index.includes('称号による能力補正はありません。') && read('js/ui.js').includes('装備しても戦闘能力や利用できる機能は変わりません。'), 'contractor titles must clearly remain cosmetic only');
 expect(index.includes('id="contractorRewardContent"') && read('js/ui.js').includes('function renderContractorRankRewards'), 'contractor Rank reward screen is missing');
 expect(read('js/ui.js').includes('function claimContractorRewardUi') && read('js/ui.js').includes('function claimAllContractorRewardsUi'), 'individual and bulk contractor Rank reward actions are missing');

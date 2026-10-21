@@ -36,24 +36,28 @@ function instanceAlchemySummary(ins){
   return `<div class="mini"><b>錬成個体：${ins.alchemy.archetypeLabel}</b><br><span class="small">HP ${pct(mod.hp)} / 攻撃 ${pct(mod.attack)} / 素早さ ${pct(mod.speed)}</span></div>`;
 }
 function toggleInstanceLock(uidValue){
-  const ins = getInstance(uidValue);
-  if(!ins) return;
-  ins.locked = !ins.locked;
-  saveGame();
-  renderParty();
-  if(typeof renderAlchemy === 'function' && document.getElementById('alchemy')?.classList.contains('active')) renderAlchemy();
+  if(!getInstance(uidValue))return false;
+  if(!commitSaveMutation(()=>{const ins=getInstance(uidValue);ins.locked=!ins.locked;}))return false;
+  showCommittedSaveResult(()=>{
+    renderParty();
+    if(typeof renderAlchemy === 'function' && document.getElementById('alchemy')?.classList.contains('active')) renderAlchemy();
+  });
+  return true;
 }
 function togglePartyMember(u) {
-  if (!save.party) save.party = [];
-  const idx = save.party.indexOf(u);
-  if (idx >= 0) {
-    save.party.splice(idx, 1);
-  } else {
+  if (!(save.party||[]).includes(u)) {
     if (typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(u)) { alert('遠征中のモンスターはパーティーに編成できません。'); return; }
-    if (save.party.length >= 3) { alert('パーティーは最大3体まで！'); return; }
-    if (getInstance(u)) save.party.push(u);
+    if ((save.party||[]).length >= 3) { alert('パーティーは最大3体まで！'); return; }
+    if (!getInstance(u))return false;
   }
-  saveGame(); renderPartySetup();
+  if(!commitSaveMutation(()=>{
+    if(!save.party)save.party=[];
+    const idx=save.party.indexOf(u);
+    if(idx>=0)save.party.splice(idx,1);
+    else save.party.push(u);
+  }))return false;
+  showCommittedSaveResult(()=>renderPartySetup());
+  return true;
 }
 function renderPartySetup() {
   const cur  = document.getElementById('currentPartyView');

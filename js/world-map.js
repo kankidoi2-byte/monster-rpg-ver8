@@ -62,7 +62,7 @@ function persistWorldMapNavigation({overviewScrollLeft=null,saveNow=true}={}) {
   const changed=!hadNavigation||current.mapId!==normalized.mapId||current.eventKey!==normalized.eventKey||
     current.difficultyId!==normalized.difficultyId||current.overviewScrollLeft!==normalized.overviewScrollLeft;
   save.worldMap={...base,navigation:normalized};
-  if(changed&&saveNow&&typeof saveGame==='function')saveGame();
+  if(changed&&saveNow&&typeof saveGame==='function')/* save-result-allow: world-map-navigation */saveGame();
   return changed;
 }
 function captureWorldMapScroll(list,{saveNow=false}={}) {
@@ -215,7 +215,7 @@ function showWorldMapLocation(mapId,eventKey=null) {
   worldMapSelectedId=mapId;worldMapSelectedEvent=eventKey;worldMapSelectedDifficulty=keepDifficulty;
   const list=document.getElementById('battleChoiceList');
   renderWorldMap(list,{saveNavigation:false});
-  if(typeof saveGame==='function')saveGame();
+  if(typeof saveGame==='function')/* save-result-allow: world-map-location */saveGame();
   list?.querySelector('[data-wm-back]')?.focus();
   return true;
 }
@@ -229,7 +229,7 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null) {
   if (!candidates.length) return false;
   if (!getPartyInstances().length) { alert('パーティーにモンスターを入れてください。');return false; }
   const mon=candidates[Math.floor(Math.random()*candidates.length)];
-  if (typeof registerMapDex==='function' && registerMapDex(mapId)) saveGame();
+  if (typeof registerMapDex==='function' && registerMapDex(mapId)) /* save-result-allow: world-map-departure-dex */saveGame();
   prepareBattleParty();
   const request=createHuntRequest({...map,enemyIds:candidates.map(value=>value.id)},mon,difficultyId,rollHuntConditionIds(difficultyId));
   request.worldMapExploration=true;
