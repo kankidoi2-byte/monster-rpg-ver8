@@ -12,7 +12,8 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Includes the full check suite and save-failure browser cases before UI smoke.
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
