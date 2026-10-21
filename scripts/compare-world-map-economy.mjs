@@ -116,6 +116,9 @@ function economicFunctionSource(source,name){
   }
   // This option changes only the write boundary; keep the entire progress body.
   return functionSource(source.replace('randomFn=Math.random,{saveNow=true}={}','randomFn=Math.random'),name)
+    // The audited ignored-save marker is a comment, not a reward-rule change.
+    // Match only this exact write boundary rather than stripping arbitrary code.
+    .replace('if(changed&&saveNow)/* save-result-allow: expedition-progress */saveGame()','if(changed)saveGame()')
     .replace('if(changed&&saveNow)saveGame()','if(changed)saveGame()');
 }
 
@@ -295,6 +298,12 @@ function accessComparison(snapshot){
     worldMapTargetEncounterRate:newTargetEncounters/ACCESS_SAMPLES
   };
 }
+
+// The new audit marker must not hide an actual reward/progress change.
+const expeditionFixture='function progressActiveExpeditions(randomFn=Math.random,{saveNow=true}={}){entry.progress+=1;if(changed&&saveNow)saveGame();return changed;}';
+const markedExpeditionFixture=expeditionFixture.replace('saveGame()','/* save-result-allow: expedition-progress */saveGame()');
+assert.equal(economicFunctionSource(markedExpeditionFixture,'progressActiveExpeditions'),economicFunctionSource(expeditionFixture,'progressActiveExpeditions'));
+assert.notEqual(economicFunctionSource(markedExpeditionFixture.replace('entry.progress+=1','entry.progress+=2'),'progressActiveExpeditions'),economicFunctionSource(expeditionFixture,'progressActiveExpeditions'));
 
 const baseline=loadRules(BASE_REV);
 const current=loadRules('working-tree');
