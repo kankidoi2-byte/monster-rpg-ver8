@@ -1,6 +1,6 @@
 /* Phase4A lifecycle regression. Media API mocked; not a playback test.
- * npm install --prefix /tmp/phase4a-dom jsdom
- * NODE_PATH=/tmp/phase4a-dom/node_modules node scripts/test-battle-idle-media-dom.mjs
+ * npm install --prefix /tmp/rpg-dom-deps --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+ * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-idle-viewport-dom.mjs
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -69,7 +69,7 @@ run("show('home')");assert(observer.disconnected);stale();observer.emit(r.media,
 pass('exit disconnects observer and rejects queued timer/observer callbacks');
 // Normal game path, no review registry injection.
 run("save=initSave();completeTutorial();save.instances=[];save.party=[];for(const id of ['gran_volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('volmoog');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','volmoog','easy',activeHuntRequest);show('battle');");
-r=rec();assert.equal(run('battleIdleLimit'),3);assert(r.config.src.endsWith('/gran_volmoog_v18_alpha.webm'));
+r=rec();assert.equal(run('battleIdleLimit'),3);assert.equal(r.config.src,run('BATTLE_IDLE_MEDIA.gran_volmoog.src'));
 assert.equal(r.media.style.getPropertyValue('--idle-position'),'50% 100%');assert.equal(r.media.style.getPropertyValue('--idle-scale'),'0.75');
 assert.equal(r.facing.style.transform,'scaleX(-1)');emit(r,1);await flush();assert(!r.video.paused);
 let rs=records();assert.equal(rs.length,2);

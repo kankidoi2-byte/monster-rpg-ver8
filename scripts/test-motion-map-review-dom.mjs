@@ -9,7 +9,7 @@ const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.mess
 const dom=new JSDOM(html,{url:'http://motion.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext(),run=s=>vm.runInContext(s,context);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){}});
-w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 w.HTMLMediaElement.prototype.canPlayType=()=> 'probably';
 Object.defineProperty(w.HTMLMediaElement.prototype,'paused',{get(){return this._paused!==false;}});
 w.HTMLMediaElement.prototype.pause=function(){this._paused=true;};
