@@ -25,7 +25,7 @@
     "check:kokoro-link-animation": "node scripts/test-kokoro-link-animation.mjs",
     "check:kokoro-link-analysis": "node scripts/test-kokoro-link-analysis.mjs",
     "check:notices": "node scripts/test-notices.mjs",
-    "check:images": "node scripts/check-image-sizes.mjs",
+    "check:images": "node scripts/check-image-sizes.mjs && node scripts/test-image-size-budgets.mjs",
     "check:ui-contract": "node scripts/test-ui-contract.mjs",
     "check:battle-switch": "node scripts/test-battle-switch.mjs",
     "check:battle-motion": "node scripts/test-battle-motion.mjs && node scripts/test-three-motion-compression.mjs && node scripts/test-motion-720-compression.mjs",
