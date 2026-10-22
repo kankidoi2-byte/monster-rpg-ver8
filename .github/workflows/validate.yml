@@ -222,3 +222,43 @@ jobs:
         with:
           name: grassland-story-evidence
           path: artifacts/skill-card-layout/grassland-story
+
+  dom-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated DOM test tools
+        run: npm install --prefix "$RUNNER_TEMP/dom-deps" --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+      - name: Verify battle and motion DOM regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export NODE_PATH="$RUNNER_TEMP/dom-deps/node_modules"
+          # Explicit allowlist: test-map-story-dom.mjs is outside request 07 (story hold).
+          tests=(
+            test-battle-idle-lifecycle-dom.mjs
+            test-battle-idle-media-dom.mjs
+            test-battle-idle-multi-dom.mjs
+            test-battle-idle-viewport-dom.mjs
+            test-battle-journey-dom.mjs
+            test-battle-stage-dom.mjs
+            test-battle-stage-multi-dom.mjs
+            test-battle-tutorial-dom.mjs
+            test-battle-ui-dom.mjs
+            test-battle-viewport-dom.mjs
+            test-gran-volmoog-review-dom.mjs
+            test-motion-asset-review-dom.mjs
+            test-motion-catalog-dom.mjs
+            test-motion-impact-dom.mjs
+            test-motion-map-review-dom.mjs
+            test-motion-operations-dom.mjs
+          )
+          for test in "${tests[@]}"; do
+            node "scripts/$test"
+            echo "PASS $test"
+          done

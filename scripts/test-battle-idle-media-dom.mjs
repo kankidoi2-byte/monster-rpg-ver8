@@ -1,6 +1,6 @@
 /* Phase4A lifecycle regression. Media API mocked; not a playback test.
- * npm install --prefix /tmp/phase4a-dom jsdom
- * NODE_PATH=/tmp/phase4a-dom/node_modules node scripts/test-battle-idle-media-dom.mjs
+ * npm install --prefix /tmp/rpg-dom-deps --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+ * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-idle-media-dom.mjs
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

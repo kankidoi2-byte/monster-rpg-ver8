@@ -1,6 +1,6 @@
 /* Optional real-DOM regression (not a layout/browser test).
- * npm install --prefix /tmp/phase3b-dom jsdom
- * NODE_PATH=/tmp/phase3b-dom/node_modules node scripts/test-battle-stage-multi-dom.mjs
+ * npm install --prefix /tmp/rpg-dom-deps --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+ * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-ui-dom.mjs
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3c.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
 w.structuredClone=structuredClone;w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};w.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
-w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
 const by=id=>d.getElementById(id);

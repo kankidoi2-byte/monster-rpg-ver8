@@ -1,6 +1,6 @@
 /* Phase4A lifecycle regression. Media API mocked; not a playback test.
- * npm install --prefix /tmp/phase4a-dom jsdom
- * NODE_PATH=/tmp/phase4a-dom/node_modules node scripts/test-battle-idle-media-dom.mjs
+ * npm install --prefix /tmp/rpg-dom-deps --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+ * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-motion-impact-dom.mjs
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
-w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
 const by=id=>d.getElementById(id);
@@ -50,7 +50,7 @@ for(const [label,move] of [['normal',['通常',10,'normal']],['repeat',['追撃'
  assert(records().every((r,i)=>r.video===original[i]),label+' media retention');
  pass(label+' real handler updates HP at each result and preserves media nodes');
 }
-const old=records();run('eHp=0;win()');assert(!d.querySelector('video'));assert(old.every(r=>r.disposed));setup();assert.equal(records().length,1);assert(!run('busy'));
+const old=records();run('eHp=0;win()');assert(!d.querySelector('video'));assert(old.every(r=>r.disposed));setup();assert.equal(records().length,2);assert.deepEqual(records().map(r=>r.config.src).sort(),Array.from(run('[BATTLE_IDLE_MEDIA.volmoog.src,BATTLE_IDLE_MEDIA.slime.src]')).sort());assert(!run('busy'));
 pass('knockout/result disposes; next battle starts unlocked');
 run("show('home')");dom.window.close();assert.equal(errors.length,0,errors.join('\n'));
 console.log(JSON.stringify({kind:'Real DOM and game handlers; media mocked; not visual timing/Android',checks,pass:checks.length},null,2));

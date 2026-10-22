@@ -1,6 +1,6 @@
 /* Optional real-DOM regression (not a layout/browser test).
- * npm install --prefix /tmp/phase3b-dom jsdom
- * NODE_PATH=/tmp/phase3b-dom/node_modules node scripts/test-battle-journey-dom.mjs
+ * npm install --prefix /tmp/rpg-dom-deps --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+ * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-journey-dom.mjs
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3c.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
 w.structuredClone=structuredClone;w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};w.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
-w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
+w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
 const by=id=>d.getElementById(id);
@@ -48,5 +48,6 @@ const contractButton=by('battleOutcomeActions').querySelector('button');assert(c
 const count=run('save.instances.length'),scrolls=run('save.items.contract_scroll');run('Math.random=()=>0');act(d.querySelector('#contractConfirm button[onclick="useContractScrollConfirmed()"]'));await settled();assert.equal(run('save.instances.length'),count+1);assert.equal(run('save.items.contract_scroll'),scrolls-1);assert(run('singleBattleContractAttempted'));assert.equal(run('activeScreenId()'),'battle');assert(run('pendingEvolutions.length>0'),'evolution remains queued during contract');assert.equal(run('loadSave().instances.length'),count+1);checks.push('contract success/remains on outcome/save');
 act(by('next'));resolveEvolution();run('Math.random=()=>.5');depart();run('eHp=1');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);
 act(by('battleOutcomeActions').querySelector('button'));const count2=run('save.instances.length'),scrolls2=run('save.items.contract_scroll');run('Math.random=()=>.99');act(d.querySelector('#contractConfirm button[onclick="useContractScrollConfirmed()"]'));await settled();assert.equal(run('save.instances.length'),count2);assert.equal(run('save.items.contract_scroll'),scrolls2-1);assert(run('singleBattleContractAttempted'));assert.equal(run('activeScreenId()'),'battle');checks.push('contract failure/attempt once/outcome retained');
-act(by('next'));run('Math.random=()=>.5');depart();run('pHp=1;partyBattle[activePartyIdx].hp=1;partyBattle.forEach((p,i)=>{if(i!==activePartyIdx){p.hp=0;p.fainted=true;}});eHp=100000;Math.random=()=>0;update()');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);assert(by('battleOutcome').classList.contains('is-defeat'));act(by('next'));depart();assert(!run('busy'));assert.equal(run('battleTurnCount'),0);assert(!d.querySelector('.battle-command-pad').hidden);checks.push('enemy attack/defeat/restart/cleared locks');
+// Keep enemy HP valid and select an attack (RNG 0 now selects the enemy guard skill).
+act(by('next'));run('Math.random=()=>.5');depart();run('pHp=1;partyBattle[activePartyIdx].hp=1;partyBattle.forEach((p,i)=>{if(i!==activePartyIdx){p.hp=0;p.fainted=true;}});eHp=enemyMaxHp();Math.random=()=>.99;update()');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);assert(by('battleOutcome').classList.contains('is-defeat'));act(by('next'));depart();assert(!run('busy'));assert.equal(run('battleTurnCount'),0);assert(!d.querySelector('.battle-command-pad').hidden);checks.push('enemy attack/defeat/restart/cleared locks');
 assert.equal(errors.length,0,errors.join('\n'));dom.window.close();console.log('PASS normal journey: '+checks.join('; '));
