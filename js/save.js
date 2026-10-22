@@ -605,7 +605,7 @@ function downloadTextFile(filename,text){
   const blob=new Blob([text],{type:'application/json'});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');
   anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function exportSaveData(){saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
+function exportSaveData(){/* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
 async function importSaveData(input){
   const file=input?.files?.[0];if(!file)return;

@@ -86,7 +86,7 @@ function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
     if (isMaxLevel(ins.level)) ins.exp=0;
     checkEvolution(ins);
   });
-  if(saveNow)saveGame();else syncItemDexFromInventory();
+  if(saveNow)/* save-result-allow: party-exp-helper */saveGame();else syncItemDexFromInventory();
   return msgs.join('<br>');
 }
 function getEvoCandidates(ins) {

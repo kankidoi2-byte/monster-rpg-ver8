@@ -187,7 +187,7 @@ function startExpedition(){
 function progressActiveExpeditions(randomFn=Math.random,{saveNow=true}={}){
   normalizeExpeditionSave();let changed=false;
   save.expeditions.active.forEach(entry=>{if(entry.status!=='active')return;const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId];if(!map||!distance)return;entry.progress=Math.min(entry.requiredWins,entry.progress+1);changed=true;if(entry.progress>=entry.requiredWins){entry.status='complete';entry.reward=expeditionRewardPlan(map,distance,entry.suitability,randomFn,1);}});
-  if(changed&&saveNow)saveGame();return changed;
+  if(changed&&saveNow)/* save-result-allow: expedition-progress */saveGame();return changed;
 }
 function grantExpeditionReward(entry,reward){
   save.coins=(save.coins||0)+(reward.coins||0);Object.entries(reward.items||{}).forEach(([id,count])=>{save.items[id]=(save.items[id]||0)+count;if(typeof registerItemDex==='function')registerItemDex(id);});

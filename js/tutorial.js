@@ -599,7 +599,7 @@ function persistTutorialStep(){
   if(!tutorialUiState.persist)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
   if(step)setTutorialStep(persistedTutorialStepId(step));
-  if(typeof saveGame==='function')saveGame();
+  if(typeof saveGame==='function')/* save-result-allow: tutorial-step */saveGame();
   updateTutorialMenuSummary();
 }
 function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null,checkpointSaved=false}={}){
@@ -617,7 +617,7 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null,c
     setTutorialStep(persistedStepId);
     const tutorialState=typeof currentTutorialState==='function'?currentTutorialState():null;
     if(tutorialState)tutorialState.chapterGate=false;
-    if(typeof saveGame==='function')saveGame();
+    if(typeof saveGame==='function')/* save-result-allow: tutorial-flow-start */saveGame();
   }
   renderTutorialStep();
   updateTutorialMenuSummary();
@@ -679,7 +679,7 @@ function checkpointTutorialFlow(step){
   const returnScreen=tutorialUiState.returnScreen;
   if(tutorialUiState.persist&&step?.continueAt){
     setTutorialStep(step.continueAt);
-    if(typeof saveGame==='function')saveGame();
+    if(typeof saveGame==='function')/* save-result-allow: tutorial-flow-checkpoint */saveGame();
   }
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
@@ -1601,7 +1601,7 @@ function renderTutorialHuntChoice(list){
   if(!map||!mon)return false;
   const difficulty=huntDifficulty(TUTORIAL_FIRST_HUNT.difficultyId);
   const request=registerHuntRequest(createHuntRequest(map,mon,difficulty.id,[]));
-  if(typeof registerMapDex==='function'&&registerMapDex(map.id)&&typeof saveGame==='function')saveGame();
+  if(typeof registerMapDex==='function'&&registerMapDex(map.id)&&typeof saveGame==='function')/* save-result-allow: tutorial-hunt-map-dex */saveGame();
   list.innerHTML=`<article class="enemy-choice-card difficulty-card-${difficulty.id}" data-tutorial-hunt="grassland-slime">
     <div class="hunt-card-visual"><img class="map-img" src="${mapPortraitImage(map)}" alt="${map.name}"><div class="hunt-card-shade"></div>${vis(mon)}
       <div class="hunt-card-badges"><span class="hunt-recommended">最初の依頼</span><span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span></div>
@@ -1678,7 +1678,7 @@ function handleTutorialBattleOutcome(kind,rewards={}, {victorySaved=false}={}){
     const cleared=kind==='victory';
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.advantageUsed=false;tutorialBattleSession.enemyQueue=[];
     setTutorialStep(cleared?'stella_mock_victory':'stella_mock_battle');
-    if(typeof saveGame==='function')saveGame();
+    if(typeof saveGame==='function')/* save-result-allow: tutorial-mock-outcome */saveGame();
     if(typeof endPartyRecovery==='function')endPartyRecovery();
     resumeTutorialMainFlowAfterEvent(cleared?'stella_mock_victory':'stella_mock_retry',tutorial.replaying);
     return true;
@@ -1688,7 +1688,7 @@ function handleTutorialBattleOutcome(kind,rewards={}, {victorySaved=false}={}){
     tutorialBattleSession.active=false;tutorialBattleSession.kind=null;tutorialBattleSession.enemyQueue=[];
     if(!victorySaved){
       setTutorialStep(rescue?'elna_rescue_complete':'first_contract');
-      if(typeof saveGame==='function')saveGame();
+      if(typeof saveGame==='function')/* save-result-allow: tutorial-victory-outcome */saveGame();
     }
     resumeTutorialMainFlowAfterEvent(nextStep,tutorial.replaying,{checkpointSaved:victorySaved});
     return true;

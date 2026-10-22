@@ -31,7 +31,7 @@ if(typeof MonsterAnalytics!=='undefined')MonsterAnalytics.start();
 const evolutionNativeMigrationInstances = [...(save.instances || [])];
 initStarters();
 migrateSkillSystem(evolutionNativeMigrationInstances);
-saveGame();
+/* save-result-allow: startup-migration */saveGame();
 renderParty();
 
 function chooseDifferentTitleMap(){
