@@ -160,29 +160,27 @@ function toggleExpeditionMember(uidValue){
   if(typeof handleTutorialExpeditionMemberSelected==='function')handleTutorialExpeditionMemberSelected(uidValue,expeditionSelectedUids.includes(uidValue));
 }
 function startExpedition(){
-  normalizeExpeditionSave();const snapshot=JSON.stringify(save),selectedSnapshot=[...expeditionSelectedUids];
+  normalizeExpeditionSave();
   const map=MAPS.find(x=>x.id===expeditionSelectedMapId),distance=EXPEDITION_DISTANCES[expeditionSelectedDistanceId];
   const members=expeditionSelectedUids.map(getInstance).filter(ins=>ins&&expeditionAvailableInstances().some(x=>x.uid===ins.uid));
   if(!map||!expeditionDestinations().some(x=>x.id===map.id)){alert('遠征先を選んでください。');return false;}
   if(!distance){alert('距離を選んでください。');return false;}if(!members.length){alert('派遣するモンスターを1～3体選んでください。');return false;}
   if(save.expeditions.active.length>=expeditionUnlockedSlots()){alert('使用できる遠征枠がありません。');return false;}
-  try{
+  let entry;
+  if(!commitSaveMutation(()=>{
     const suitability=expeditionSuitability(members.map(x=>x.uid),map);
     if(typeof registerMapDex==='function')registerMapDex(map.id);
-    const entry={id:`exp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`,mapId:map.id,distanceId:distance.id,memberUids:members.map(x=>x.uid),progress:0,requiredWins:distance.wins,status:'active',suitability,reward:null};
+    entry={id:`exp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`,mapId:map.id,distanceId:distance.id,memberUids:members.map(x=>x.uid),progress:0,requiredWins:distance.wins,status:'active',suitability,reward:null};
     save.expeditions.active.push(entry);
     if(typeof commitTutorialExpeditionDispatch==='function'&&!commitTutorialExpeditionDispatch(entry))throw new Error('tutorial_expedition_dispatch');
-    expeditionSelectedUids=[];
-    if(typeof saveGame==='function'&&!saveGame())throw new Error('expedition_save');
+  },{requireReadable:true}))return false;
+  // A refresh failure must not undo a dispatch that is already on disk.
+  expeditionSelectedUids=[];
+  showCommittedSaveResult(()=>{
     renderExpedition();renderParty();if(typeof renderPartySetup==='function')renderPartySetup();
     if(typeof handleTutorialExpeditionStarted==='function')handleTutorialExpeditionStarted(entry);
-    return true;
-  }catch(error){
-    save=JSON.parse(snapshot);expeditionSelectedUids=selectedSnapshot;
-    console.error('遠征を保存できませんでした。',error);
-    if(typeof showUiNotice==='function')showUiNotice('遠征を保存できませんでした。もう一度お試しください。','warning');
-    renderExpedition();return false;
-  }
+  });
+  return true;
 }
 function progressActiveExpeditions(randomFn=Math.random,{saveNow=true}={}){
   normalizeExpeditionSave();let changed=false;
