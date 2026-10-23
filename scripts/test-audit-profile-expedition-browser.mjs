@@ -44,6 +44,8 @@ async function seededContext(slot){
 }
 async function switchButton(page){
   await page.locator('[data-nav="more"]').click();
+  const management=page.locator('#moreMenu .save-management');
+  if(!await management.evaluate(element=>element.open))await management.locator(':scope > summary').click();
   return page.locator('.profile-panel button').filter({hasText:'に切替'});
 }
 async function snapshot(page){return page.evaluate(()=>({slot:MonsterProfiles.slot(),id:MonsterProfiles.current().id,coins:save.coins,key:MonsterProfiles.key(SAVE_KEY),memory:JSON.stringify(save),disk:localStorage.getItem(MonsterProfiles.key(SAVE_KEY))}));}
