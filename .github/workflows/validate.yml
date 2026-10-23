@@ -12,8 +12,8 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    # Includes the full check suite and save-failure browser cases before UI smoke.
-    timeout-minutes: 15
+    # Request 08: allow ~2x the measured slow-preparation + complete-suite budget (~19m).
+    timeout-minutes: 40
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -132,7 +132,8 @@ jobs:
 
   save-transactions:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Request 08: preparation alone exceeded 597s; retain room for all save checks.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v7
