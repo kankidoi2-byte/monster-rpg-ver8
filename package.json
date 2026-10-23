@@ -112,7 +112,7 @@
     "check:soul-contract": "node scripts/test-soul-contract-presentation.mjs && node scripts/test-soul-contract-transaction.mjs",
     "check:map-story": "node scripts/test-map-story.mjs",
     "check:save-game-results": "node scripts/check-save-game-results.mjs && node scripts/test-save-game-results.mjs",
-    "check:save-failure-ui": "node scripts/test-save-failure-ui.mjs",
+    "check:save-failure-ui": "node scripts/test-save-failure-ui.mjs && node scripts/test-audit-profile-expedition-browser.mjs",
     "check:save-failure-actions": "node scripts/test-save-failure-actions.mjs"
   },
   "engines": {
