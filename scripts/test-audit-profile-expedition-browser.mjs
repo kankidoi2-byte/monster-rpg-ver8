@@ -30,6 +30,8 @@ async function seededContext(slot){
     Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);
     const leader=addInstance('aquaron',1);addInstance('freigal',1);save.party=[leader.uid];
     save.contractor.legacyMigrationVersion=1;migrateSkillSystem();
+    // Keep the dispatch fault isolated from an unrelated first-map Rank-up overlay.
+    registerMapDex('grassland');save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);
     for(const n of [1,2]){
       const copy=JSON.parse(JSON.stringify(save));copy.coins=12000+n;
       copy.saveMeta.integrityHash=saveHash(copy);
