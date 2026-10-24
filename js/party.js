@@ -13,9 +13,10 @@ function renderParty() {
     <p class="small">錬成素材：${SHOP_ITEMS.filter(it=>it.alchemyMaterial).map(it=>`${it.icon} ${it.name} × ${save.items[it.id]||0}`).join(' / ')}</p></div></details>`;
   if (!save.instances.length) { el.innerHTML += "<div class='panel'>まだ手持ちがいない。</div>"; return; }
   const tutorialContractUid=typeof tutorialContractInstanceUid==='function'?tutorialContractInstanceUid():null;
+  const tutorialElnaUid=typeof tutorialElnaContractInstance==='function'?tutorialElnaContractInstance()?.uid:null;
   save.instances.forEach((ins, i) => {
     const m = by(ins.id); if (!m) return;
-    el.innerHTML += `<article class="monster-roster-card" data-monster-id="${m.id}" data-instance-uid="${ins.uid}"${ins.uid===tutorialContractUid?' data-tutorial-contract-instance="true"':''}>
+    el.innerHTML += `<article class="monster-roster-card" data-monster-id="${m.id}" data-instance-uid="${ins.uid}"${ins.uid===tutorialElnaUid?' data-tutorial-elna-instance="true"':''}${ins.uid===tutorialContractUid?' data-tutorial-contract-instance="true"':''}>
       <div class="monster-roster-visual">${vis(m)}<span>${ins.locked?'🔒':'個体'+(i+1)}</span></div>
       <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <details class="monster-roster-details"${openInstanceUids.has(ins.uid)?' open':''}><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>

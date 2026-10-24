@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261024-tutorial-evolved-companions",date:"2026-10-24",category:"fix",title:"進化後も序章を進められるようにしました",body:"フレイガル・アクアロン・エルナが進化していても、編成・育成・技の案内・遠征を続けられます。全体スキップ時も進化済みの仲間を引き継ぎます。"},
   {id:"20261021-save-failure-ui",date:"2026-10-21",category:"fix",title:"報酬の受取や編成の保存を修正しました",body:"Rank報酬の受取・称号・昇格のお知らせ・仲間の保護と編成・黄金郷への地図で、保存できなかった操作を成功として扱わず、同じ操作をやり直せるようにしました。"},
   {id:"20261018-exp-item-artwork",date:"2026-10-18",category:"update",title:"経験値アイテムに専用画像を追加しました",body:"キロデータ・メガデータ・ギガデータに、それぞれ専用の画像を追加しました。"},
   {id:"20261018-evolution-battle-item-save",date:"2026-10-18",category:"fix",title:"進化と戦闘中の道具の保存を修正しました",body:"保存に失敗した場合、進化や道具の消費・効果を確定せず、再操作できるようにしました。保存済みの結果は、画面の表示に問題が起きても取り消しません。"},

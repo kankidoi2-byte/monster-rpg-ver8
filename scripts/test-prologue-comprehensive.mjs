@@ -85,6 +85,7 @@ function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress'
     updateParty:()=>{},renderParty:()=>{},renderDex:()=>{},updateItems:()=>{},updateAppResourceBar:()=>{},
     showUiNotice:message=>context.notices.push(message),notices:[]
   });
+  vm.runInContext(tutorial.slice(tutorial.indexOf('function tutorialMonsterInLineage'),tutorial.indexOf('function tutorialInitialPartyReady')),context);
   vm.runInContext(tutorial.slice(skipStart,skipEnd),context);
   return context;
 }

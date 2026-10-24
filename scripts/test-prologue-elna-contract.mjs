@@ -74,6 +74,7 @@ function makeContext({saveSucceeds=true,replaying=false,existingElna=false}={}){
   context.setTutorialStep=stepId=>{context.save.progress.tutorial.stepId=stepId;};
   context.saveGame=()=>saveSucceeds;
   context.updateParty=()=>{};context.renderParty=()=>{};context.renderDex=()=>{};context.showUiNotice=()=>{};
+  vm.runInContext(tutorial.slice(tutorial.indexOf('function tutorialMonsterInLineage'),tutorial.indexOf('function tutorialInitialPartyReady')),context);
   vm.runInContext(tutorial.slice(fnStart,fnEnd),context);
   return context;
 }

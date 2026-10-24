@@ -438,6 +438,10 @@ function tutorialMonsterInLineage(monsterId,rootId){
     const monster=typeof by==='function'?by(id):null;
     if(monster?.evolution)pending.push(monster.evolution);
     for(const evolution of monster?.evolutions||[])pending.push(evolution?.to);
+    // Special evolutions preserve the same companion, too.
+    if(typeof FUSIONS!=='undefined')for(const fusion of FUSIONS){
+      if(fusion.from===id)pending.push(fusion.to);
+    }
   }
   return false;
 }
@@ -445,7 +449,7 @@ function tutorialInitialPartyReady(party=typeof getPartyInstances==='function'?g
   const members=party||[];
   return members.length===3
     &&TUTORIAL_STARTER_CONTRACT_IDS.every(rootId=>members.some(instance=>tutorialMonsterInLineage(instance?.id,rootId)))
-    &&members.some(instance=>instance?.id==='elna_beginner');
+    &&members.some(instance=>tutorialMonsterInLineage(instance?.id,'elna_beginner'));
 }
 function canConfirmTutorialParty(party){
   const stepId=tutorialCurrentStepId();
@@ -467,7 +471,7 @@ function handleTutorialPartySaved(){
 
 function tutorialElnaContractInstance(){
   if(!Array.isArray(save?.instances))return null;
-  const matches=save.instances.filter(instance=>instance?.id==='elna_beginner'&&instance?.guest!==true);
+  const matches=save.instances.filter(instance=>tutorialMonsterInLineage(instance?.id,'elna_beginner')&&instance?.guest!==true);
   return matches.find(instance=>instance.tutorialRole==='contract_body')
     ||matches.find(instance=>instance.tutorialContract===true)
     ||matches[matches.length-1]
@@ -771,7 +775,7 @@ function pauseTutorial(){
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
 }
 function tutorialSkipRewardInstance(id,extraFields=null){
-  const existing=Array.isArray(save?.instances)?save.instances.find(instance=>instance?.id===id&&instance?.guest!==true):null;
+  const existing=Array.isArray(save?.instances)?save.instances.find(instance=>tutorialMonsterInLineage(instance?.id,id)&&instance?.guest!==true):null;
   return existing||(typeof addInstance==='function'?addInstance(id,1,0,extraFields):null);
 }
 function commitTutorialFullSkip(){
@@ -796,7 +800,7 @@ function commitTutorialFullSkip(){
       if(typeof markTutorialOnce!=='function'||!markTutorialOnce(flag))throw new Error(`tutorial_skip_flag_${flag}`);
     }
     if(typeof setTutorialElnaGuestActive==='function')setTutorialElnaGuestActive(false);
-    const aquaron=starters.find(instance=>instance.id==='aquaron');
+    const aquaron=starters.find(instance=>tutorialMonsterInLineage(instance.id,'aquaron'));
     if(!aquaron)throw new Error('tutorial_skip_party_reward');
     save.party=[alchemyPartner.uid,aquaron.uid,elna.uid];
     save.progress.storyFlags={...(save.progress.storyFlags||{}),prologueCompleted:true};
@@ -1274,12 +1278,12 @@ function resolveTutorialExpeditionResumeStep(flowId,stepId,replay=false){
 function tutorialExpeditionPartyReady(party=typeof getPartyInstances==='function'?getPartyInstances():[]){
   const members=party||[],ids=members.map(instance=>instance?.id).filter(Boolean);
   const partyUids=new Set(members.map(instance=>instance?.uid).filter(Boolean));
-  return ids.length===3&&['galdra','aquaron','elna_beginner'].every(id=>ids.includes(id))
-    &&Array.isArray(save?.instances)&&save.instances.some(instance=>instance?.id==='freigal'&&!partyUids.has(instance.uid));
+  return ids.length===3&&['galdra','aquaron','elna_beginner'].every(rootId=>ids.some(id=>tutorialMonsterInLineage(id,rootId)))
+    &&Array.isArray(save?.instances)&&save.instances.some(instance=>tutorialMonsterInLineage(instance?.id,'freigal')&&!partyUids.has(instance.uid));
 }
 function tutorialExpeditionCandidateInstance(){
   const candidates=typeof expeditionAvailableInstances==='function'?expeditionAvailableInstances():[];
-  return candidates.find(instance=>instance.id==='freigal')||null;
+  return candidates.find(instance=>tutorialMonsterInLineage(instance.id,'freigal'))||null;
 }
 function shouldMarkTutorialExpeditionMember(uid){
   // Distance selection renders the expedition screen before the tutorial engine
@@ -1306,7 +1310,7 @@ function commitTutorialExpeditionDispatch(entry){
   if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
   if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length!==1)return false;
   const member=typeof getInstance==='function'?getInstance(entry.memberUids[0]):null;
-  if(member?.id!=='freigal'||!tutorialExpeditionPartyReady())return false;
+  if(!tutorialMonsterInLineage(member?.id,'freigal')||!tutorialExpeditionPartyReady())return false;
   entry.tutorialPrologue=true;
   if(typeof markTutorialExpeditionDispatched!=='function'||!markTutorialExpeditionDispatched())return false;
   if(typeof setTutorialStep==='function')setTutorialStep('expedition_active');
@@ -1786,7 +1790,7 @@ function prepareTutorialStep(step){
   }
   if(['growth_elna_details','growth_skill_open'].includes(step?.id)&&typeof renderParty==='function'){
     renderParty();
-    if(step.id==='growth_skill_open')document.querySelector('[data-monster-id="elna_beginner"] .monster-roster-details')?.setAttribute('open','');
+    if(step.id==='growth_skill_open')document.querySelector('[data-tutorial-elna-instance] .monster-roster-details')?.setAttribute('open','');
   }
   if(['first_contract','contract_confirm'].includes(step?.id)){
     setTutorialContractContext();
@@ -1843,8 +1847,8 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'home_growth_open',screenId:'dex',target:'[data-nav="monsters"]',advanceOnTarget:true,title:'育成へ',text:'ここを押すと、仲間の育成や技を確認できるぞ！',progressLabel:'GROWTH'},
   {id:'growth_tab_open',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成メニュー',text:'上の「育成」を押すと、仲間を強くする方法を選べるぞ！',progressLabel:'GROWTH'},
   {id:'home_growth_overview',screenId:'growthHub',target:'#growthMonsterButton',advanceOnTarget:true,title:'モンスター育成',text:'ここを押して、エルナの契約体を見てみよう！',progressLabel:'GROWTH'},
-  {id:'growth_elna_details',screenId:'party',target:'[data-monster-id="elna_beginner"] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。ここを押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
-  {id:'growth_skill_open',screenId:'party',target:'[data-monster-id="elna_beginner"] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
+  {id:'growth_elna_details',screenId:'party',target:'[data-tutorial-elna-instance] .monster-roster-details > summary',advanceOnTarget:true,title:'育成・個体情報',text:'レベルと経験値はカードで確認できる。ここを押すと、装備中の技や個体情報も見られるぞ！',progressLabel:'GROWTH'},
+  {id:'growth_skill_open',screenId:'party',target:'[data-tutorial-elna-instance] [data-tutorial-skill-edit]',advanceOnTarget:true,title:'技を変更',text:'ここを押すと、技カードを組み替えられるぞ！',progressLabel:'SKILL'},
   {id:'growth_return',screenId:'party',target:'[data-nav="growth"]',advanceOnTarget:true,title:'育成一覧へ戻ろう',text:'詳しい技編集は、このあと実際にカードを装備しながら覚えるぞ。育成を押して進化を確認しよう！',progressLabel:'GROWTH'},
   {id:'growth_evolution',screenId:'growthHub',target:'#growthEvolutionButton',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'進化',text:'レベル条件を満たすと進化できる。特殊な進化はここから条件を確認できるぞ！',progressLabel:'EVOLUTION',nextStepId:'home_requests'},
   {id:'home_requests',screenId:'home',target:'#homeAdventureButton',persistAs:'home_requests',advanceOnTarget:true,title:'依頼を見よう',text:'ここを押すと、討伐依頼と報酬を確認できるぞ！',progressLabel:'REQUEST'},
