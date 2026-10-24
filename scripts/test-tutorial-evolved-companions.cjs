@@ -1,6 +1,5 @@
 // Real runtime and disposable browser profiles: never reads player saves.
 const assert=require('node:assert/strict');
-const path=require('node:path');
 const {spawn}=require('node:child_process');
 const {chromium}=require('playwright');
 (async()=>{
@@ -64,7 +63,7 @@ const {chromium}=require('playwright');
    await page.locator('[data-tutorial-elna-instance] .monster-roster-details > summary').click();
    await page.waitForFunction(()=>tutorialCurrentStepId()==='growth_skill_open');
    await page.locator('[data-tutorial-elna-instance] [data-tutorial-skill-edit]').click();
-   await page.waitForFunction(()=>tutorialCurrentStepId()==='growth_return');
+   await page.waitForFunction(()=>tutorialCurrentStepId()==='growth_return').catch(async error=>{console.error('Growth transition diagnostics',await page.evaluate(()=>({step:tutorialCurrentStepId(),screen:activeScreenId(),editingSkillUid,pending:tutorialUiState.advancePendingStepId,saved:currentTutorialState().stepId})),errors);throw error;});
    assert.equal(await page.evaluate(()=>editingSkillUid),uids.e);
    assert.deepEqual(errors,[]);
    console.log(`PASS profile ${slot}: 40 evolution combinations, skip idempotence, saved checkpoint/reload, real expedition buttons, evolved Elna guide clicks`);
