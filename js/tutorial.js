@@ -598,7 +598,7 @@ function renderTutorialStep(){
   const bubble=document.getElementById('tutorialBubble');
   if(!overlay||!bubble)return;
   const partyGuide=step.id==='expedition_party_save'?tutorialExpeditionPartyGuide():null;
-  const view={...tutorialDialogueView(step),...partyGuide};
+  const view=partyGuide?{...tutorialDialogueView(step),...partyGuide}:tutorialDialogueView(step);
   renderTutorialStoryStep(view);
   bubble.scrollTop=0;
   clearTutorialTarget();
@@ -609,7 +609,7 @@ function renderTutorialStep(){
   ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
-  document.getElementById('tutorialTitle').textContent=tutorialResolvedText({text:view.speaker||view.title});
+  document.getElementById('tutorialTitle').textContent=tutorialResolvedText({text:view.speaker||partyGuide?.title||step.title});
   document.getElementById('tutorialText').textContent=tutorialResolvedText(view);
   renderTutorialDialogueChoices(step);
   const nameForm=document.getElementById('tutorialNameForm');
