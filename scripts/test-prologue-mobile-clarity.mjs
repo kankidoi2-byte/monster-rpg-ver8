@@ -12,13 +12,13 @@ const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
 
-assert.match(main,/id:'growth_skill_open'[^\n]+target:'\[data-monster-id="elna_beginner"\] \[data-tutorial-skill-edit\]'[^\n]+advanceOnTarget:true/,'the existing saved STEP must continue to target the real skill-edit button');
+assert.match(main,/id:'growth_skill_open'[^\n]+target:'\[data-tutorial-elna-instance\] \[data-tutorial-skill-edit\]'[^\n]+advanceOnTarget:true/,'the existing saved STEP must continue to target the real skill-edit button');
 assert.ok(party.includes('data-tutorial-skill-edit onclick="openSkillEdit('),'the highlighted element must execute the real skill editor action');
 assert.ok(!tutorial.includes('tutorial-growth-details-open')&&!css.includes('tutorial-growth-details-open'),'the retired replay-only promoted details control must be removed');
 assert.match(main,/id:'growth_elna_details'[^\n]+text:'レベルと経験値はカードで確認できる。ここを押すと/,'the revised text guides the highlighted real roster control');
 assert.ok(tutorial.includes("document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open')"),'only the skill-open STEP may promote the action above the mobile nav');
-assert.match(css,/body\.tutorial-growth-skill-open \[data-monster-id="elna_beginner"\]\{overflow:visible\}/,'the roster card must not clip the promoted action');
-assert.match(css,/body\.tutorial-growth-skill-open \[data-monster-id="elna_beginner"\] \[data-tutorial-skill-edit\]\{[^}]*position:fixed;[^}]*z-index:81;[^}]*bottom:calc\(var\(--ui-nav-height\) \+ 14px\);[^}]*width:min\(300px,calc\(100vw - 32px\)\)/,'the real action must remain visible and tappable above the fixed mobile nav');
+assert.match(css,/body\.tutorial-growth-skill-open \[data-tutorial-elna-instance\]\{overflow:visible\}/,'the roster card must not clip the promoted action');
+assert.match(css,/body\.tutorial-growth-skill-open \[data-tutorial-elna-instance\] \[data-tutorial-skill-edit\]\{[^}]*position:fixed;[^}]*z-index:81;[^}]*bottom:calc\(var\(--ui-nav-height\) \+ 14px\);[^}]*width:min\(300px,calc\(100vw - 32px\)\)/,'the real action must remain visible and tappable above the fixed mobile nav');
 
 assert.ok(!tutorial.includes('tutorial-stella-skill-action')&&!css.includes('tutorial-stella-skill-action'),'Stella skill actions must keep their normal card position and appearance during the tutorial');
 assert.ok(tutorial.includes("target.scrollIntoView?.({block:'center',inline:'nearest'})"),'the normal target button must be scrolled into view instead of being moved into a tutorial-only position');
