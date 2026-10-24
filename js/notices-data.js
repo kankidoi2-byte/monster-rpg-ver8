@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  Object.freeze({id:"20261025-expedition-party-guidance",date:"2026-10-25",category:"fix",title:"ガルドラの編成を順番に案内します",body:"序章の編成で、仲間を外す・ガルドラを入れる・保存する操作を順番に案内します。案内を閉じずに操作でき、途中から再開した場合や仲間が進化している場合も、次に必要なボタンを表示します。"}),
   {id:"20261024-tutorial-evolved-companions",date:"2026-10-24",category:"fix",title:"進化後も序章を進められるようにしました",body:"フレイガル・アクアロン・エルナが進化していても、編成・育成・技の案内・遠征を続けられます。全体スキップ時も進化済みの仲間を引き継ぎます。"},
   {id:"20261021-save-failure-ui",date:"2026-10-21",category:"fix",title:"報酬の受取や編成の保存を修正しました",body:"Rank報酬の受取・称号・昇格のお知らせ・仲間の保護と編成・黄金郷への地図で、保存できなかった操作を成功として扱わず、同じ操作をやり直せるようにしました。"},
   {id:"20261018-exp-item-artwork",date:"2026-10-18",category:"update",title:"経験値アイテムに専用画像を追加しました",body:"キロデータ・メガデータ・ギガデータに、それぞれ専用の画像を追加しました。"},

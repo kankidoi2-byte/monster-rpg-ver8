@@ -57,7 +57,10 @@ function togglePartyMember(u) {
     if(idx>=0)save.party.splice(idx,1);
     else save.party.push(u);
   }))return false;
-  showCommittedSaveResult(()=>renderPartySetup());
+  showCommittedSaveResult(()=>{
+    renderPartySetup();
+    if(typeof refreshTutorialPartyGuide==='function')refreshTutorialPartyGuide();
+  });
   return true;
 }
 function renderPartySetup() {

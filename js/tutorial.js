@@ -255,6 +255,11 @@ function ensureTutorialTargetVisible(target){
   if(!rect||rect.width<=0||rect.height<=0)return;
   const viewportHeight=window.innerHeight||document.documentElement.clientHeight;
   const viewportWidth=window.innerWidth||document.documentElement.clientWidth;
+  if(tutorialCurrentStepId()==='expedition_party_save'&&typeof window.scrollBy==='function'){
+    const safeTop=Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0)+24;
+    window.scrollBy({top:rect.top-safeTop,behavior:'instant'});
+    return;
+  }
   const skillSummary=document.querySelector('#skillEdit.active #skillEditTarget');
   const skillTop=skillSummary?Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0)+skillSummary.getBoundingClientRect().height+12:8;
   if(skillSummary && target.closest?.('#skillEdit') && typeof window.scrollBy==='function'){
@@ -315,6 +320,13 @@ function positionTutorialUi(){
     const safeBottom=Math.min(viewport.height,document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||viewport.height);
     const safeHole=hole?{...hole,top:hole.top-safeTop,bottom:hole.bottom-safeTop}:null;
     const safePlacement=calculateTutorialPlacement(safeHole,bubble.getBoundingClientRect(),{width:viewport.width,height:Math.max(0,safeBottom-safeTop)},{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
+    Object.assign(placement,safePlacement,{top:safePlacement.top+safeTop});
+  }
+  if(tutorialCurrentStepId()==='expedition_party_save'){
+    const safeTop=Math.max(0,document.querySelector('.app-topbar')?.getBoundingClientRect().bottom||0)+8;
+    const safeBottom=Math.min(viewport.height,document.querySelector('.app-bottom-nav')?.getBoundingClientRect().top||viewport.height)-8;
+    const safeHole=hole?{...hole,top:hole.top-safeTop,bottom:hole.bottom-safeTop}:null;
+    const safePlacement=calculateTutorialPlacement(safeHole,bubble.getBoundingClientRect(),{width:viewport.width,height:Math.max(0,safeBottom-safeTop)},{avoidTarget:true});
     Object.assign(placement,safePlacement,{top:safePlacement.top+safeTop});
   }
   bubble.style.left=`${placement.left}px`;
@@ -469,6 +481,38 @@ function handleTutorialPartySaved(){
   return true;
 }
 
+// Derive the next operation from the saved party. The existing STEP and all
+// mutations remain owned by the normal party buttons/save transaction.
+function tutorialExpeditionPartyGuide(){
+  const party=getPartyInstances();
+  const roots=['galdra','aquaron','elna_beginner'];
+  const matched=new Set();
+  const extra=party.find(instance=>{
+    const root=roots.find(id=>tutorialMonsterInLineage(instance.id,id));
+    if(!root||matched.has(root))return true;
+    matched.add(root);return false;
+  });
+  if(extra){
+    const name=by(extra.id)?.name||'この仲間';
+    return {uid:extra.uid,title:`${name}を控えにしよう`,text:`黄色い枠の「パーティーから外す」を押そう。案内は閉じずに操作できます。`};
+  }
+  const missing=roots.find(root=>!party.some(instance=>tutorialMonsterInLineage(instance.id,root)));
+  if(missing){
+    const candidates=(save.instances||[]).filter(instance=>instance.guest!==true&&tutorialMonsterInLineage(instance.id,missing));
+    const candidate=candidates.find(instance=>typeof isInstanceOnExpedition!=='function'||!isInstanceOnExpedition(instance.uid));
+    if(candidate){
+      const name=by(candidate.id)?.name||'この仲間';
+      return {uid:candidate.uid,title:`${name}を編成しよう`,text:`黄色い枠の「パーティーに入れる」を押そう。編成がそろったら、保存ボタンを案内します。`};
+    }
+    return {blocked:true,title:'編成する仲間を確認しよう',text:candidates.length?'必要な仲間が遠征中です。帰還後、この案内を再開して編成してください。':'必要な仲間が見つかりません。ガルドラ・アクアロン系統・エルナ系統の所持状況を確認してください。'};
+  }
+  if(!tutorialExpeditionPartyReady(party))return {blocked:true,title:'控えの仲間を確認しよう',text:'遠征へ送るフレイガル系統の仲間が必要です。所持状況を確認してください。'};
+  return {title:'3体を確認して保存しよう',text:'ガルドラ・アクアロン系統・エルナ系統がそろいました。「この編成を保存」を押すと、遠征の案内へ進みます。'};
+}
+function refreshTutorialPartyGuide(){
+  if(tutorialCurrentStepId()==='expedition_party_save'&&activeScreenId()==='partySet')renderTutorialStep();
+}
+
 function tutorialElnaContractInstance(){
   if(!Array.isArray(save?.instances))return null;
   const matches=save.instances.filter(instance=>tutorialMonsterInLineage(instance?.id,'elna_beginner')&&instance?.guest!==true);
@@ -553,16 +597,19 @@ function renderTutorialStep(){
   const overlay=document.getElementById('tutorialOverlay');
   const bubble=document.getElementById('tutorialBubble');
   if(!overlay||!bubble)return;
-  const view=tutorialDialogueView(step);
+  const partyGuide=step.id==='expedition_party_save'?tutorialExpeditionPartyGuide():null;
+  const view={...tutorialDialogueView(step),...partyGuide};
   renderTutorialStoryStep(view);
   bubble.scrollTop=0;
   clearTutorialTarget();
-  tutorialUiState.target=step.target?document.querySelector(step.target):null;
+  tutorialUiState.target=partyGuide?.uid
+    ?[...document.querySelectorAll('#partySelectList [data-party-uid]')].find(button=>button.dataset.partyUid===partyGuide.uid)||null
+    :partyGuide?.blocked?null:step.target?document.querySelector(step.target):null;
   tutorialUiState.target?.classList.add('tutorial-target-active');
   ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
   document.getElementById('tutorialProgressBar').style.width=`${(tutorialUiState.index+1)/tutorialUiState.steps.length*100}%`;
-  document.getElementById('tutorialTitle').textContent=tutorialResolvedText({text:view.speaker||step.title});
+  document.getElementById('tutorialTitle').textContent=tutorialResolvedText({text:view.speaker||view.title});
   document.getElementById('tutorialText').textContent=tutorialResolvedText(view);
   renderTutorialDialogueChoices(step);
   const nameForm=document.getElementById('tutorialNameForm');
