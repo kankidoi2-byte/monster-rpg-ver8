@@ -11,6 +11,9 @@ const {chromium}=require('playwright');
    const context=await browser.newContext({viewport:{width:slot===1?360:1366,height:slot===1?800:900},reducedMotion:'reduce'});
    await context.addInitScript(slot=>sessionStorage.setItem('mb_profile_tab_v1',String(slot)),slot);
    const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
+    await page.locator('#contractorRankUpOverlay button').click();
+   });
    await page.goto('http://127.0.0.1:4218/?legacy=1',{waitUntil:'networkidle'});
    await page.locator('#titleScreen').click();
    const results=await page.evaluate(()=>{
