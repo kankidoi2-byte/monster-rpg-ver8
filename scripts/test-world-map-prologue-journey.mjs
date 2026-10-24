@@ -39,6 +39,9 @@ const document={
   body:element('body'),documentElement:{clientWidth:390,clientHeight:844},activeElement:null,
   getElementById:id=>element(id),
   querySelector:selector=>selector==='.screen.active'?{id:activeScreen}:element(`selector:${selector}`),
+  querySelectorAll:selector=>selector==='#partySelectList [data-party-uid]'?context.saveView.instances.map(instance=>{
+    const button=element(`party:${instance.uid}`);button.dataset.partyUid=instance.uid;return button;
+  }):[],
   addEventListener(){},createElement:tag=>element(`created:${tag}`)
 };
 document.body.appendChild=()=>{};
