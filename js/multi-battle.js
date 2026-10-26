@@ -204,14 +204,19 @@ function startMultiBattleTurn(targetId) {
 }
 
 async function runMultiActions(actions,index) {
-  if(index===0)actions.storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
+  if(index===0){
+    actions.storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
+    actions.playerUid=activeInstance?.uid;
+  }
   if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(actions.storyToken))return;
   if (!multiBattle?.active || multiBattle.finished) return;
   if (index>=actions.length) { finishMultiBattleTurn(); return; }
   const action=actions[index];
   let result=null;
   if (action.kind==='player') {
-    if (pHp<=0) { runMultiActions(actions,index+1); return; }
+    // A reserve that replaces a fainted member did not choose this action.
+    // Match single battles: do not let it execute the previous member's skill.
+    if (pHp<=0 || activeInstance?.uid!==actions.playerUid) { runMultiActions(actions,index+1); return; }
     if(typeof beginBattleAction==='function')beginBattleAction(player,action.move,true);
     if (pSleepTurns>0) { pSleepTurns--; appendMultiLog(`💤 ${player.name}は眠っていて動けない！`); runMultiActions(actions,index+1); return; }
     if (pParalysisTurns>0) { pParalysisTurns--; if(Math.random()<.30){appendMultiLog(`⚡ ${player.name}は体がしびれて動けない！`);runMultiActions(actions,index+1);return;} }
