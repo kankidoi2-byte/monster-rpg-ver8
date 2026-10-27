@@ -301,6 +301,7 @@ function repairSave(payload,report=[]){
     if(!instanceUid||seenUids.has(instanceUid)){instanceUid=`repair_${Date.now().toString(36)}_${index.toString(36)}`;report.push('欠損・重複した個体UIDを再発行');}
     seenUids.add(instanceUid);entry.uid=instanceUid;entry.level=clampLevel(nonNegativeInteger(entry.level,1));entry.exp=isMaxLevel(entry.level)?0:nonNegativeInteger(entry.exp);entry.locked=entry.locked===true;
     if(Array.isArray(entry.alchemy?.exclusiveSkillIds))entry.alchemy.exclusiveSkillIds=entry.alchemy.exclusiveSkillIds.map(repairSkillId).filter(x=>typeof x==='string');
+    if(typeof by==='function' && by(entry.id)?.entityKind==='monster')entry.evolutionOffset=monsterEvolutionOffset(entry);
     payload.instances.push(entry);
   });
   if(!payload.saveMeta.migrations.includes('character_first_lock_v1')){
@@ -663,11 +664,28 @@ function insExp(id) {
   return ins?.exp || save.exp?.[id] || 0;
 }
 function caughtHas(id) { return save.instances.some(x => x.id === id) || save.caught.includes(id); }
+// One permanent timing offset per monster, shared by every normal evolution stage.
+// Old saves use UID only (never form ID), so reload/import cannot reroll the result.
+function monsterEvolutionOffset(ins){
+  if(by(ins?.id)?.entityKind !== 'monster')return 0;
+  if(Number.isInteger(ins.evolutionOffset) && ins.evolutionOffset>=-2 && ins.evolutionOffset<=2)return ins.evolutionOffset;
+  let hash=2166136261;
+  for(const ch of String(ins.uid||''))hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
+  return hash%5-2;
+}
+function instanceEvolutionRoutes(ins){
+  const mon=by(ins?.id);if(!mon)return [];
+  const routes=mon.evolutions || (mon.evolution?[{to:mon.evolution,level:mon.evolutionLevel}]:[]);
+  return routes.filter(route=>by(route.to)).map(route=>({
+    to:route.to,level:clampLevel(route.level+monsterEvolutionOffset(ins))
+  }));
+}
 function addInstance(id, level=1, exp=0, extraFields=null) {
   const firstRegistration=!save.caught.includes(id);
   const normalizedLevel=clampLevel(level);
   const ins = {uid:uid(), id, level:normalizedLevel, exp:isMaxLevel(normalizedLevel)?0:Math.max(0,Math.floor(Number(exp)||0)), locked:false};
   if(extraFields && typeof extraFields === 'object') Object.assign(ins, extraFields);
+  if(by(id)?.entityKind==='monster' && !Number.isInteger(ins.evolutionOffset))ins.evolutionOffset=Math.floor(Math.random()*5)-2;
   if(firstRegistration && isCharacterSaveId(id))ins.locked=true;
   normalizeInstanceSaveFields(ins);
   save.instances.push(ins);
@@ -684,6 +702,7 @@ function addInstance(id, level=1, exp=0, extraFields=null) {
 function normalizeInstanceSaveFields(ins){
   if(!ins || typeof ins !== 'object') return;
   if(typeof ins.locked !== 'boolean') ins.locked = false;
+  if(by(ins.id)?.entityKind==='monster')ins.evolutionOffset=monsterEvolutionOffset(ins);
   const config = ALCHEMY_MONSTER_CONFIGS[ins.id];
   if(!config) return;
   if(!ins.alchemy || typeof ins.alchemy !== 'object' || Array.isArray(ins.alchemy)) ins.alchemy = {};

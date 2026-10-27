@@ -17,7 +17,7 @@ try{
   // player. First-visit dialogue pagination has dedicated tutorial coverage.
   Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
   save.instances=[];save.party=[];save.equippedSkills={};
-  const ins=addInstance('spaquinn',3);save.party=[ins.uid];
+  const ins=addInstance('spaquinn',30,0,{evolutionOffset:0});save.party=[ins.uid];
   save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));show('home');
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));assert(await page.locator('#partySet').isVisible());

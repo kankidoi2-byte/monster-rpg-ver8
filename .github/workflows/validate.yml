@@ -55,6 +55,7 @@ jobs:
           node scripts/test-morglum-browser.mjs
           node scripts/test-seraphic-leaf-browser.mjs
           node scripts/test-crash-rush-browser.mjs
+          node scripts/test-individual-evolution-browser.mjs
           node scripts/test-evolution-skill-cards-browser.mjs
           node scripts/test-evolution-native-card-migration-browser.mjs
           node scripts/test-simultaneous-ko-browser.mjs

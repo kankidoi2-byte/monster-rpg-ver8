@@ -24,7 +24,7 @@ const checks=[];
 const act=node=>{assert(node,'UI action exists');assert(!node.disabled,'UI action enabled');const code=node.getAttribute('onclick');if(code)run(code);else node.click();};
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const settled=async(outcomeAllowed=false)=>{for(let i=0;i<200&&run('busy')&&!(outcomeAllowed&&run('battleFeedback.finished'));i++)await pause(50);assert(!run('busy')||(outcomeAllowed&&run('battleFeedback.finished')),'battle action unlocks or reaches outcome');};
-run(`save=initSave();completeTutorial();const tutorial=currentTutorialState();tutorial.guides={kokoroLink:true,invasion:true,threeWay:true,shopItems:true,evolutionFusion:true};save.instances=[];save.party=[];for(const id of ['elixion','aquaron','freigal']){const ins=addInstance(id,10);save.party.push(ins.uid);}save.items.contract_scroll=3;saveGame();Math.random=()=>.5;`);
+run(`save=initSave();completeTutorial();const tutorial=currentTutorialState();tutorial.guides={kokoroLink:true,invasion:true,threeWay:true,shopItems:true,evolutionFusion:true};save.instances=[];save.party=[];for(const id of ['elixion','aquaron','freigal']){const ins=addInstance(id,Math.max(10,by(id).evolutionLevel||1),0,{evolutionOffset:0});save.party.push(ins.uid);}save.items.contract_scroll=3;saveGame();Math.random=()=>.5;`);
 by('titleScreen').click();await pause(700);assert.equal(run('activeScreenId()'),'home');checks.push('title to home');
 act(by('homePartyEditButton'));assert.equal(run('activeScreenId()'),'partySet');
 act(by('partySetupSaveButton'));assert.equal(run('loadSave().party.length'),3);checks.push('party save/reload');

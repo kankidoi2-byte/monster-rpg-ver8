@@ -23,7 +23,7 @@ const item={id:'kilo_data',name:'キロデータ',expItem:true,expAmount:20};
 const context=vm.createContext({
   console,document:{getElementById:id=>nodes.get(id)||null},
   save:{instances:[{id:'m',uid:'first',level:1,exp:0},{id:'m',uid:'second',level:1,exp:0}],party:['first','second'],items:{kilo_data:3},coins:0,expeditions:{active:[]}},
-  by:()=>mon,ensureContractScrollItem(){},getDataItems:()=>[item],itemCountText:()=>'',itemInlineVisual:()=>'',
+  by:()=>mon,instanceEvolutionRoutes:()=>[],ensureContractScrollItem(){},getDataItems:()=>[item],itemCountText:()=>'',itemInlineVisual:()=>'',
   ITEM_DEX_BY_ID:{water_mirror:{}},ITEM_BY_ID:{kilo_data:item},SHOP_ITEMS:[],vis:()=>'',typesHtml:()=>'',
   isMaxLevel:level=>level>=100,needExp:()=>100,getEquippedSkillIds:()=>[],SKILL_BY_ID:{},equippedSkillCost:()=>0,skillCostLimitFor:()=>1,isCharacterUnit:()=>false,
   pendingEvolutions:[],checkEvolution(){},saveGame:()=>true,alert(){},setTimeout(){},
