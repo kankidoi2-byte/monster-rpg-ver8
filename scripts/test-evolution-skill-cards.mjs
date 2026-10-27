@@ -10,8 +10,8 @@ const report=[];
 function setup(route,second=false){
  r.context.route=route;
  r.run(`save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.instances=[];save.party=[];save.equippedSkills={};
- var ins=addInstance(route.from,route.level);ins.exp=17;ins.locked=true;ins.customGrowth={value:9};save.party=[ins.uid];
- if(${second}){var other=addInstance(route.from,route.level);save.party.push(other.uid);}
+ var ins=addInstance(route.from,route.level,0,{evolutionOffset:0});ins.exp=17;ins.locked=true;ins.customGrowth={value:9};save.party=[ins.uid];
+ if(${second}){var other=addInstance(route.from,route.level,0,{evolutionOffset:0});save.party.push(other.uid);}
  save.skillCards=Object.fromEntries(MOVE_CARDS.map(sk=>[sk.id,7]));
  if(route.special)save.items[route.item]=route.count*2;
  currentEvolution={uid:ins.uid,from:ins.id,choices:[route.to]};pendingEvolutions=[];

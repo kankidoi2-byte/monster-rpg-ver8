@@ -20,6 +20,7 @@ function renderParty() {
       <div class="monster-roster-visual">${vis(m)}<span>${ins.locked?'🔒':'個体'+(i+1)}</span></div>
       <div class="monster-roster-summary"><p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><h3>${m.name}</h3><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <details class="monster-roster-details"${openInstanceUids.has(ins.uid)?' open':''}><summary>育成・個体情報</summary><p><span class="instance-badge">個体${i+1}・${String(ins.uid).slice(-6)}</span></p>
+      ${instanceEvolutionSummary(ins)}
       ${instanceAlchemySummary(ins)}
       <div class="mini" data-tutorial-skill-summary><b>装備技</b><br>${getEquippedSkillIds(ins).map(id=>{const sk=SKILL_BY_ID[id]; return `<span class="${sk.type}">${sk.name}</span>`;}).join(' / ')}<br><span class="small">コスト ${equippedSkillCost(ins)}/${skillCostLimitFor(m,ins)}</span><br><button data-tutorial-skill-edit onclick="openSkillEdit('${ins.uid}')">🃏 技変更</button></div>
       <div class="mini">
@@ -29,6 +30,13 @@ function renderParty() {
       ${isCharacterUnit(m)?`<p class="small">${characterRecycleRewardText(ins)}</p><button onclick="recycleCharacter('${ins.uid}')" ${characterRecycleError(ins)?'disabled':''}>経験値アイテム＋コインに変換</button><p class="small">${characterRecycleError(ins)||'この個体を消費します。確定前に内容を確認できます。'}</p>`:''}
       <p>${m.desc}</p></details></article>`;
   });
+}
+function instanceEvolutionSummary(ins){
+  const routes=instanceEvolutionRoutes(ins);
+  if(!routes.length)return '';
+  return `<div class="mini instance-evolution-summary"><b>進化レベル</b><br>${routes.map(route=>
+    `${by(route.to).name}：Lv.${route.level}${ins.level>=route.level?'（条件達成）':''}`
+  ).join('<br>')}</div>`;
 }
 function instanceAlchemySummary(ins){
   if(!ins?.alchemy) return '';

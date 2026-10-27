@@ -90,11 +90,7 @@ function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
   return msgs.join('<br>');
 }
 function getEvoCandidates(ins) {
-  const m = by(ins.id); if (!m) return [];
-  const lv = ins.level;
-  if (m.evolutions) return m.evolutions.filter(e => lv >= e.level).map(e => e.to).filter(id=>by(id));
-  if (m.evolution && lv >= m.evolutionLevel) return [m.evolution].filter(id=>by(id));
-  return [];
+  return instanceEvolutionRoutes(ins).filter(route=>ins.level>=route.level).map(route=>route.to);
 }
 function checkEvolution(ins) {
   const choices = getEvoCandidates(ins);
@@ -112,6 +108,9 @@ function processNextEvolution() {
   currentEvolution = currentEvolution || pendingEvolutions.shift();
   const ins = getInstance(currentEvolution.uid);
   if (!ins) { currentEvolution=null; processNextEvolution(); return; }
+  if(ins.id!==currentEvolution.from){currentEvolution=null;processNextEvolution();return;}
+  currentEvolution.choices=getEvoCandidates(ins);
+  if(!currentEvolution.choices.length){currentEvolution=null;processNextEvolution();return;}
   const from = by(currentEvolution.from);
   document.getElementById('evoVisual').innerHTML =
     `<div class="card">${vis(from)}<h2>${from.name}</h2><p>Lv.${ins.level}</p></div>` +
