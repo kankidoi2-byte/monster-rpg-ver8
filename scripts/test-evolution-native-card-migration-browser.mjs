@@ -34,7 +34,11 @@ try{
  const snapshot=()=>page.evaluate(()=>({instances:save.instances,party:save.party,equippedSkills:save.equippedSkills,coins:save.coins,items:save.items,progress:save.progress,cards:save.skillCards,migrations:save.saveMeta.migrations}));
  await page.reload({waitUntil:'domcontentloaded'});
  const first=await snapshot();
- assert.equal(first.coins,fixture.coins);assert.deepEqual(first.instances,fixture.instances);
+ assert.equal(first.coins,fixture.coins);
+ // The approved additive evolution timing backfill must preserve every old field.
+ assert.deepEqual(first.instances.map(({evolutionOffset,...rest})=>rest),fixture.instances);
+ assert(first.instances.every(ins=>Number.isInteger(ins.evolutionOffset)&&Math.abs(ins.evolutionOffset)<=2));
+ assert.deepEqual(first.instances.map(ins=>ins.evolutionOffset),await page.evaluate(instances=>instances.map(monsterEvolutionOffset),fixture.instances));
  assert(first.migrations.includes('skill_system_110_v1'));
  assert(await page.evaluate(()=>Object.values(save.skillCards).reduce((a,b)=>a+b,0)===10+save.skill110Migration.basicAttackCompensation));
  assert(await page.evaluate(()=>save.instances.every(ins=>getEquippedSkillIds(ins).some(id=>SKILL_BY_ID[id].power>0)&&equippedSkillCost(ins)<=skillCostLimitFor(by(ins.id),ins))));
