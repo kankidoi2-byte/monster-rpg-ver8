@@ -82,6 +82,11 @@ function monsterMapEncounterNote(map, monster=null) {
   if (map.bossOnly || map.rareOnly) return '特殊な入口から探索すると出現';
   return '世界地図からこの場所を選んで探索すると出現';
 }
+function evolutionLevelDescription(mon,level){
+  return mon.entityKind==='monster'
+    ? `基準Lv.${level}（個体差Lv.${clampLevel(level-2)}〜${clampLevel(level+2)}）`
+    : `Lv.${level}`;
+}
 function monsterObtainEntries(m) {
   const entries = [];
   if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',icon:'✨',title:'キャラクターガチャ',note:'その他メニューから召喚・Lv.1で加入'});

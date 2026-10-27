@@ -11,12 +11,7 @@ const current=run('M');
 const baseline={};vm.createContext(baseline);
 vm.runInContext(applyStatusDataCopy(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'}))+';globalThis.units=M;',baseline);
 assert.equal(current.length,100);
-// Only approved monster evolution timing differs from the historical character rollout.
-// The dedicated evolution test independently checks this exact table and all offsets.
-const timing={freigal:14,aquaron:16,grassbeat:10,thornbeat:26,rikasheef:24,volteck:13,spaquinn:30,sylphin:12,zephyray:28,luxseed:18,luxiard:38,nocle:17,noclaid:37,orcana:22,orca_stream:42,volmoog:26,nemes:25,nemesia:48,kimeragna:45};
 for(const old of baseline.units){
- if(timing[old.id])old.evolutionLevel=timing[old.id];
- if(old.id==='highaquaron')old.evolutions.forEach(route=>{route.level=36});
  const unit=legacyUnitProjection(current.find(u=>u.id===old.id));
  if(old.id==='proto_icegolem'){
   // The subsequent Golem fix adds two normal attacks but retains all original fields and cards.

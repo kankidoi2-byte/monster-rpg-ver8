@@ -56,6 +56,7 @@ run(`var branch=addInstance('highaquaron',34,0,{evolutionOffset:-2});var summary
 assert.match(run('summary'),/シェンハイロン：Lv.34（条件達成）/);
 assert.match(run('summary'),/ティエンハイロン：Lv.34（条件達成）/);
 assert.equal(run("instanceEvolutionSummary({id:'freiwolf'})"),'');
+vm.runInContext(fs.readFileSync(new URL('../js/dex.js',import.meta.url),'utf8'),r.context);
 assert.equal(run("evolutionLevelDescription(by('freigal'),14)"),'基準Lv.14（個体差Lv.12〜16）');
 // Restore real persistence, prove actual saved payload and export/import preserve timing.
 run('saveGame=individualRealSaveGame');

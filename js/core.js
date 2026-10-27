@@ -457,25 +457,3 @@ function moveEffectText(mv, {includeBase=true}={}) {
   if (description) txt += (txt ? '。' : '') + description;
   return txt;
 }
-
-// One permanent timing offset per monster, shared by every normal evolution stage.
-// Old saves use UID only (never form ID), so reload/import cannot reroll the result.
-function monsterEvolutionOffset(ins){
-  if(by(ins?.id)?.entityKind !== 'monster')return 0;
-  if(Number.isInteger(ins.evolutionOffset) && ins.evolutionOffset>=-2 && ins.evolutionOffset<=2)return ins.evolutionOffset;
-  let hash=2166136261;
-  for(const ch of String(ins.uid||''))hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
-  return hash%5-2;
-}
-function instanceEvolutionRoutes(ins){
-  const mon=by(ins?.id);if(!mon)return [];
-  const routes=mon.evolutions || (mon.evolution?[{to:mon.evolution,level:mon.evolutionLevel}]:[]);
-  return routes.filter(route=>by(route.to)).map(route=>({
-    to:route.to,level:clampLevel(route.level+monsterEvolutionOffset(ins))
-  }));
-}
-function evolutionLevelDescription(mon,level){
-  return mon.entityKind==='monster'
-    ? `基準Lv.${level}（個体差Lv.${clampLevel(level-2)}〜${clampLevel(level+2)}）`
-    : `Lv.${level}`;
-}

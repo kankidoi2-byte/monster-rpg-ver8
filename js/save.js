@@ -664,6 +664,22 @@ function insExp(id) {
   return ins?.exp || save.exp?.[id] || 0;
 }
 function caughtHas(id) { return save.instances.some(x => x.id === id) || save.caught.includes(id); }
+// One permanent timing offset per monster, shared by every normal evolution stage.
+// Old saves use UID only (never form ID), so reload/import cannot reroll the result.
+function monsterEvolutionOffset(ins){
+  if(by(ins?.id)?.entityKind !== 'monster')return 0;
+  if(Number.isInteger(ins.evolutionOffset) && ins.evolutionOffset>=-2 && ins.evolutionOffset<=2)return ins.evolutionOffset;
+  let hash=2166136261;
+  for(const ch of String(ins.uid||''))hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
+  return hash%5-2;
+}
+function instanceEvolutionRoutes(ins){
+  const mon=by(ins?.id);if(!mon)return [];
+  const routes=mon.evolutions || (mon.evolution?[{to:mon.evolution,level:mon.evolutionLevel}]:[]);
+  return routes.filter(route=>by(route.to)).map(route=>({
+    to:route.to,level:clampLevel(route.level+monsterEvolutionOffset(ins))
+  }));
+}
 function addInstance(id, level=1, exp=0, extraFields=null) {
   const firstRegistration=!save.caught.includes(id);
   const normalizedLevel=clampLevel(level);
