@@ -50,14 +50,19 @@ assert.equal(run('Object.hasOwn(character,"evolutionOffset")'),false);
 assert.deepEqual(json(run('nextCharacter')),[{to:'elna_middle',level:2}]);
 run(`save=initSave();var special=addInstance('nemesion',1,0,{evolutionOffset:2});save.items.doom_fragment=1;save.party=[special.uid];renderFusion=()=>{};renderPartySetup=()=>{};tryFusion(FUSIONS.findIndex(f=>f.from==='nemesion'));`);
 assert.equal(run('special.id'),'doom_nemesion');assert.equal(run('special.evolutionOffset'),2);assert.equal(run('save.items.doom_fragment'),0);
-// Presentation exposes actual thresholds; encyclopedia shows ranges rather than one universal level.
+// The engine retains thresholds, but roster/dex presentation must not disclose them.
+r.context.typesHtml=()=>'';
 vm.runInContext(fs.readFileSync(new URL('../js/party.js',import.meta.url),'utf8'),r.context);
-run(`var branch=addInstance('highaquaron',34,0,{evolutionOffset:-2});var summary=instanceEvolutionSummary(branch)`);
-assert.match(run('summary'),/シェンハイロン：Lv.34（条件達成）/);
-assert.match(run('summary'),/ティエンハイロン：Lv.34（条件達成）/);
-assert.equal(run("instanceEvolutionSummary({id:'freiwolf'})"),'');
+run(`var branch=addInstance('highaquaron',34,0,{evolutionOffset:-2});renderParty()`);
+const roster=r.elements.get('partyList').innerHTML;
+assert.doesNotMatch(roster,/instance-evolution-summary|進化レベル|条件達成/);
+assert.match(roster,/Lv\.34/,'current level remains visible');
 vm.runInContext(fs.readFileSync(new URL('../js/dex.js',import.meta.url),'utf8'),r.context);
-assert.equal(run("evolutionLevelDescription(by('freigal'),14)"),'基準Lv.14（個体差Lv.12〜16）');
+const hints=json(run(`M.flatMap(mon=>monsterObtainEntries(mon).filter(e=>e.kind==='evolution'))`));
+assert(hints.length>0);
+assert(hints.every(e=>['育成によって進化','育成によって分岐進化'].includes(e.note)));
+assert(hints.every(e=>!/(?:Lv|レベル|基準|個体差)/.test(e.note)));
+assert.deepEqual(json(run('instanceEvolutionRoutes(branch).map(e=>e.level)')),[34,34]);
 // Restore real persistence, prove actual saved payload and export/import preserve timing.
 run('saveGame=individualRealSaveGame');
 assert(run('saveGame()'));
