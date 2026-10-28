@@ -82,11 +82,6 @@ function monsterMapEncounterNote(map, monster=null) {
   if (map.bossOnly || map.rareOnly) return '特殊な入口から探索すると出現';
   return '世界地図からこの場所を選んで探索すると出現';
 }
-function evolutionLevelDescription(mon,level){
-  return mon.entityKind==='monster'
-    ? `基準Lv.${level}（個体差Lv.${clampLevel(level-2)}〜${clampLevel(level+2)}）`
-    : `Lv.${level}`;
-}
 function monsterObtainEntries(m) {
   const entries = [];
   if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',icon:'✨',title:'キャラクターガチャ',note:'その他メニューから召喚・Lv.1で加入'});
@@ -98,8 +93,8 @@ function monsterObtainEntries(m) {
     entries.push({kind:'map',mapId:map.id,image:unlocked?mapPortraitImage(map):null,icon:'🔒',title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map,m):'探索先や特殊な入口を発見すると詳細が登録されます'});
   });
   M.forEach(from=>{
-    if (from.evolution === m.id) entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:`${evolutionLevelDescription(from,from.evolutionLevel)}で進化`});
-    (from.evolutions||[]).filter(e=>e.to===m.id).forEach(e=>entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:`${evolutionLevelDescription(from,e.level)}で分岐進化`}));
+    if (from.evolution === m.id) entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:'育成によって進化'});
+    (from.evolutions||[]).filter(e=>e.to===m.id).forEach(e=>entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:'育成によって分岐進化'}));
   });
   FUSIONS.filter(recipe=>recipe.to===m.id).forEach(recipe=>entries.push({
     kind:'fusion',icon:'🔮',title:`${by(recipe.from)?.name||recipe.from}から特殊進化`,note:`${recipe.itemName} × ${recipe.count}を使用`

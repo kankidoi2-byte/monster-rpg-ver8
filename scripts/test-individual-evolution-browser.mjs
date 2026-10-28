@@ -24,8 +24,9 @@ try{
   const fast=page.locator(`[data-instance-uid="${uid}"]`);
   await fast.locator('summary').click();
   await page.locator('.monster-roster-card').nth(1).locator('summary').click();
-  assert.match(await fast.locator('.instance-evolution-summary').innerText(),/ハイアクアロン：Lv.14/);
-  assert.match(await page.locator('.instance-evolution-summary').nth(1).innerText(),/ハイアクアロン：Lv.18/);
+  assert.equal(await page.locator('.instance-evolution-summary').count(),0);
+  assert.match(await fast.innerText(),/Lv\.13/,'current level remains visible');
+  assert.doesNotMatch(await page.locator('#partyList').innerText(),/進化レベル|条件達成|基準Lv|個体差Lv/);
   await page.screenshot({path:`${out}/roster-${viewport.width}.png`});
   // Advance through a real item action, then use the rendered evolution choice.
   await fast.locator('button').filter({hasText:'ギガデータ'}).click();
@@ -36,9 +37,13 @@ try{
   await page.evaluate(()=>{clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');show('party')});
   const details=page.locator(`[data-instance-uid="${uid}"] details`);
   if(!await details.evaluate(e=>e.open))await details.locator('summary').click();
-  assert.match(await details.locator('.instance-evolution-summary').innerText(),/シェンハイロン：Lv.34/);
-  assert.match(await details.locator('.instance-evolution-summary').innerText(),/ティエンハイロン：Lv.34/);
+  assert.equal(await details.locator('.instance-evolution-summary').count(),0);
+  assert.deepEqual(await page.evaluate(uid=>instanceEvolutionRoutes(getInstance(uid)).map(e=>e.level),uid),[34,34]);
   await page.screenshot({path:`${out}/evolved-${viewport.width}.png`});
+  await page.evaluate(()=>{show('dex');showDexDetail('shenhairon')});
+  assert.equal(await page.locator('#dexDetail .dex-obtain-evolution small').innerText(),'育成によって分岐進化');
+  await page.evaluate(()=>{show('characterDex');showCharacterDexDetail('elna_middle')});
+  assert.equal(await page.locator('#characterDexDetail .dex-obtain-evolution small').innerText(),'育成によって進化');
   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   const restored=await page.evaluate(uid=>getInstance(uid),uid);
   assert.deepEqual(restored,evolved,'saved individual and offset survive reload');
@@ -47,5 +52,5 @@ try{
   await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
   assert.deepEqual(errors,[]);await context.close();
  }
- console.log('PASS individual evolution browser: mobile/desktop roster, item trigger, real evolution choice, branch thresholds, save/reload, home/hunt/battle smoke.');
+ console.log('PASS individual evolution browser: mobile/desktop roster, item trigger, real evolution choice, hidden thresholds/monster and character dex, save/reload, home/hunt/battle smoke.');
 }finally{await browser?.close();server.kill()}
