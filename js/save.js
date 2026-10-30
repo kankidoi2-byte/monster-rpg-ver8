@@ -548,8 +548,8 @@ function completeReplacementRecovery(raw){
   refreshReplacementRecoveryStatus();
 }
 function replacementRecoveryStatusText(){
-  try{const {record}=readReplacementRecovery();return !record?'読込・復旧用の保管記録はありません。':record.status==='pending'?'未完了の読込・復旧記録があります。次の読込は停止中です。変更前・変更後候補を個別に書き出せます。自動では適用されません。':'読込・復旧記録を保管しています。各候補の書き出しは通常のセーブ読込で使えます。';}
-  catch(_error){return '確認できない読込・復旧記録があります。記録全体を書き出して保管してください。自動では変更・削除しません。';}
+  try{const {record}=readReplacementRecovery();return !record?'読込・復旧用の保管記録はありません。':record.status==='pending'?'途中で止まった読込があります。セーブ管理で書き出してください。':'読込・復旧記録があります。書き出すとセーブ読込で使えます。';}
+  catch(_error){return '読込・復旧記録を確認できません。記録全体を書き出してください。';}
 }
 function refreshReplacementRecoveryStatus(){
   try{const el=document.getElementById('replacementRecoveryStatus');if(el)el.textContent=replacementRecoveryStatusText();}catch(error){console.error(error);}
@@ -568,7 +568,7 @@ function exportReplacementRecovery(kind='all'){
 function acknowledgeReplacementRecovery(){
   try{
     const {raw,record}=readReplacementRecovery();if(!record)return;
-    if(replacementRecoveryExportedRaw!==raw){saveTransactionNotice('先に「読込・復旧データを書き出す」で変更前と変更後の候補を保管してください。');return;}
+    if(replacementRecoveryExportedRaw!==raw){saveTransactionNotice('先に「読込・復旧データを書き出す」で記録を保管してください。');return;}
     if(!confirm('書き出したファイルを保管しましたか？ 現在のセーブは変更せず、次の読込・復旧を許可します。次回の読込・復旧時にこの記録は置き換わります。'))return;
     if(safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)throw new Error('記録が更新されました。もう一度確認してください。');
     record.status='acknowledged';if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,JSON.stringify(record)))throw new Error('確認状態を保存できませんでした。');

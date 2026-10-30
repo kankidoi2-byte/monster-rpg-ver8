@@ -430,7 +430,7 @@ for(const mode of ['missing','throws','declines','rejects']){
   h.context.MonsterProfiles.afterSave=raw=>{after(raw);failProof=true;throw Error('afterSave hook fault');};
   h.context.localStorage.getItem=key=>{if(key===h.key&&failProof){failProof=false;throw Error('transient readback failure');}return get(key);};
   const result=h.run('rollCharacterGacha(1)');assert.equal(result.ok,false);assert(result.recovery);
-  assert.match(result.error,/保存状態を確認できない/);assert.doesNotMatch(result.error,/契約前の状態に戻しました/);
+  assert.match(result.error,/保存を確認できず、契約を止めました/);assert.doesNotMatch(result.error,/契約前の状態に戻しました/);
   assert.equal(h.run('save.coins'),2000);assert.equal(JSON.parse(h.storage.get(h.key)).coins,1900);
   const record=JSON.parse(h.storage.get(h.run('characterGachaRecoveryKey()')));
   assert.equal(record.status,'failed');assert.equal(record.after.instances.length,1);

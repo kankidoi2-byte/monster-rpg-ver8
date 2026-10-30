@@ -158,7 +158,7 @@ function renderContractorRank(){
     <section class="contractor-rank-card contractor-exp-guide">
       <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">HOW TO GROW</span><h2>Rankを上げる方法</h2></div></div>
       <div><span>⚔️<strong>討伐・ボス撃破</strong></span><span>🤝<strong>契約・図鑑登録</strong></span><span>✦<strong>進化・錬成</strong></span><span>🧭<strong>遠征完了</strong></span></div>
-      <p>Rankによる機能制限やモンスターの能力補正はありません。</p>
+      <p>Rankで能力や機能は変わらない</p>
     </section>`;
 }
 function contractorRewardItemMeta(itemId){return (typeof ITEM_BY_ID!=='undefined'&&ITEM_BY_ID[itemId])||{id:itemId,name:itemId,icon:'🎁'};}
@@ -257,7 +257,7 @@ function renderContractorTitles(){
       <small>獲得済み ${unlockedCount} / ${CONTRACTOR_TITLE_CATALOG.length}</small>
     </section>
     <section class="contractor-title-list" aria-label="称号一覧">${cards}</section>
-    <p class="contractor-title-note">称号は冒険の達成記録です。装備しても戦闘能力や利用できる機能は変わりません。</p>`;
+    `;
 }
 function setContractorTitle(titleId){
   if(titleId&&(!contractorTitleById(titleId)||!ensureContractorState().unlockedTitleIds.includes(titleId))){

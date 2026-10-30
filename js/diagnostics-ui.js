@@ -186,7 +186,6 @@
 
     const summary=element('pre','diagnostics-summary');
     summary.textContent=api.formatDiagnosticSummary(report);
-    const privacy=element('p','diagnostics-privacy','この画面の情報は端末内で生成され、外部へ自動送信されません。');
     const grid=element('div','diagnostics-grid');
 
     const environment=report?.environment||{};
@@ -232,7 +231,7 @@
     ]);
     renderErrors(grid,report?.errors||{});
 
-    container.append(hero,summary,privacy,grid);
+    container.append(hero,summary,grid);
     return true;
   }
 

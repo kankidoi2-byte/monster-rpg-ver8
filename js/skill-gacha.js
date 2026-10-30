@@ -92,7 +92,7 @@ function renderSkillGacha(){
   if(!rates) return;
   const kind='monster';
   const rows=skillGachaRates(kind).map(entry=>`<li><b>COST ${entry.cost}</b><span>${(entry.rate*100).toFixed(1)}%</span><small>${entry.cards.length}種類・1枚あたり約${(entry.rate/entry.cards.length*100).toFixed(2)}%</small></li>`).join('');
-  rates.innerHTML=`<article class="skill-gacha-pool"><h2>技カードガチャ</h2><p>モンスター・キャラクター共通の${skillGachaPool(kind).length}種類。装備できる技は属性・武器・身体で異なります。</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('monster',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('monster',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・上級以上1枚保証</small></button></div><p class="small">以下は通常抽選の確率です。10枚とも低級だった場合、最後の1枚を上級・超級から再抽選します。最強4技は合成限定です。「育成」の「技合成」で作成できます。</p><details><summary>コスト別の提供割合</summary><ul>${rows}</ul></details></article>`;
+  rates.innerHTML=`<article class="skill-gacha-pool"><h2>技カードガチャ</h2><p>モンスター・キャラクター共通の${skillGachaPool(kind).length}種類。装備できる技は属性・武器・身体で異なります。</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('monster',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('monster',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・上級以上1枚保証</small></button></div><details class="ui-copy-details"><summary>詳細（コスト別の提供割合）</summary><p class="small">以下は通常抽選の確率です。10枚とも低級だった場合、最後の1枚を上級・超級から再抽選します。最強4技は合成限定です。「育成」の「技合成」で作成できます。</p><ul>${rows}</ul></details></article>`;
 
 }
 function closeSkillGachaCardDetail(){

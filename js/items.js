@@ -6,7 +6,7 @@ function renderShop() {
   const section = document.getElementById('shop');
   if (!section) return;
   section.innerHTML = `
-    <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1><p>冒険と育成に必要なアイテムを購入できます。</p></div>
+    <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1></div>
     <p class="ui-coin-balance">所持コイン <strong id="coinView">${save.coins||0}</strong>枚</p>
     <div id="shopList" class="grid">
       ${SHOP_ITEMS.filter(it => it.shop !== false).map(it => `
@@ -67,7 +67,7 @@ function useGoldenLandMap(){
   if(!commitSaveMutation(()=>{reserved=reserveGoldenLandMap();}))return false;
   if(!reserved)return false;
   showCommittedSaveResult(()=>{
-    alert('黄金郷への地図を使用した！\n次の討伐依頼候補に黄金郷が確定で出現します。\n地図は黄金郷へ出発した時に消費されます。');
+    alert('黄金郷への地図を使用した！\n次の討伐依頼候補に黄金郷が確定で出現します。');
     if(typeof renderItemDex==='function')renderItemDex();
     if(typeof showItemDexDetail==='function')showItemDexDetail('golden_land_map');
   });
