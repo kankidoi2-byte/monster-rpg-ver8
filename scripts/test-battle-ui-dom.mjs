@@ -35,7 +35,7 @@ const before=snapshot(),p=by('pVis').querySelector('img');
 for(const expression of ['toggleBattleSkillPanel();battleUiBack()','openBattleSwitchPicker();battleUiBack()','toggleKokoroLinkPanel();battleUiBack()','openBattleItemSelect();show("battle")']){
  run(expression);assert.equal(snapshot(),before,expression);assert.equal(run('window.qaRolls'),0);assert.equal(by('pVis').querySelector('img'),p);
 }
-run('Math.random=window.qaRandom;toggleBattleSkillPanel()');assert.match(by('battleCompactInfo').textContent,/COST.*装備/);assert.match(by('battleCompactInfo').textContent,/対象：/);
+run('Math.random=window.qaRandom;toggleBattleSkillPanel()');assert.match(by('battleCompactInfo').textContent,/COSTは編成用。戦闘では減らない/);assert.match(by('battleCompactInfo').textContent,/対象：/);
 assert(d.querySelector('.battle-command-pad').hidden);run('battleUiBack()');assert.equal(d.activeElement.id,'battleSkillButton');
 // Item denial, success, stale double submission and exact persistence.
 run('openBattleItemSelect()');assert.match(by('battleItemList').textContent,/HPは満タン/);let n=run('save.items.potion');run('useBattleItemFromMenu("potion")');assert.equal(run('save.items.potion'),n);
