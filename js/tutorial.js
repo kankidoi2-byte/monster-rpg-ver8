@@ -1996,29 +1996,26 @@ registerTutorialFlow(TUTORIAL_SKILL_GACHA_FLOW_ID,[
   {id:'skill_gacha_draw',screenId:'skillGacha',target:'.skill-gacha-actions',title:'コインで技カードを獲得',text:'1回は100コイン、10回は900コインです。10回では上級以上の技が少なくとも1枚出ます。',progressLabel:'SKILL GACHA'},
   {id:'skill_gacha_rates',screenId:'skillGacha',target:'#skillGachaRateList',title:'種類と排出率を確認',text:'どちらの技ガチャからも共通の106種類を入手できます。最強4技は合成限定です。仲間の技編集で、適性とコストに合うカードを装備しよう。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
 ]);
-registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID,[
-  {id:'golden_land_intro',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'黄金郷への入口が現れました',text:'世界地図に現れる希少な入口です。ゴールド系モンスターだけが出現し、勝利すると難易度に応じた追加コインを獲得できます。',progressLabel:'GOLDEN LAND'},
-  {id:'golden_land_map',screenId:'battleChoices',target:'[data-tutorial-golden-land]',title:'地図と自然発見は別の入口',text:'道具の地図を使った入口は出発時に1枚消費します。探索で自然に見つけた入口は地図を消費しませんが、ほかで2戦すると閉じます。ゲームを閉じている間は進みません。',progressLabel:'GOLDEN LAND',nextLabel:'世界地図へ戻る'}
-]);
+// Golden-land feature guide retired. Keep the flow ID so existing callers safely return false.
 registerTutorialFlow(TUTORIAL_DEX_FLOW_ID,[
-  {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'5つの図鑑',text:'モンスター、キャラクター、マップ、アイテムの発見記録と、全技の性能を確認できます。項目を選ぶと詳細へ進みます。',progressLabel:'DEX'},
-  {id:'dex_records',screenId:'dexHub',target:'#dexHubGrid',title:'出会った情報が記録されます',text:'契約や進化、訪れたマップ、入手したアイテムが保存されます。モンスター図鑑では主な入手方法も確認できます。',progressLabel:'DEX',nextLabel:'図鑑を選ぶ'}
+  {id:'dex_categories',screenId:'dexHub',target:'#dexHubGrid',title:'5つの図鑑',text:'図鑑を選ぶと、それぞれの記録が開く。',progressLabel:'DEX'},
+  {id:'dex_records',screenId:'dexHub',target:'#dexHubGrid',title:'出会った情報が記録されます',text:'出会った仲間や土地、手に入れた道具が図鑑に記録される。',progressLabel:'DEX',nextLabel:'図鑑を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_SHOP_ITEMS_FLOW_ID,[
-  {id:'shop_buy',screenId:'shop',target:'#shopList',title:'コインでアイテムを購入',text:'回復薬、強化薬、契約書などを購入できます。価格と現在の所持数を確認して選んでください。',progressLabel:'SHOP & ITEMS'},
+  {id:'shop_buy',screenId:'shop',target:'#shopList',title:'コインでアイテムを購入',text:'コインで回復薬・強化薬・契約書を買える。',progressLabel:'SHOP & ITEMS'},
   {id:'shop_use',screenId:'shop',target:'#shopList',title:'アイテムごとに使う場所が違います',text:'回復・強化薬は戦闘中、契約書は勝利後、進化素材は合成で使います。入手した道具はアイテム図鑑にも記録されます。',progressLabel:'SHOP & ITEMS',nextLabel:'ショップへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_BATTLE_ITEMS_FLOW_ID,[
   {id:'battle_items_use',screenId:'battleItemSelect',target:'#battleItemList',title:'戦闘中に使うアイテム',text:'回復薬や強化薬は、使うと所持数が1個減ります。道具の使用では行動を消費しません。所持数と効果を確認してください。',progressLabel:'SHOP & ITEMS'},
-  {id:'battle_items_shop',screenId:'battleItemSelect',target:'#battleItemList',title:'道具はショップなどで入手',text:'ショップではコインで道具や契約書を購入できます。契約書はこの画面ではなく、勝利後の契約で使います。',progressLabel:'SHOP & ITEMS',nextLabel:'道具を選ぶ'}
+  {id:'battle_items_shop',screenId:'battleItemSelect',target:'#battleItemList',title:'道具はショップなどで入手',text:'契約書は勝利後の契約で使う。',progressLabel:'SHOP & ITEMS',nextLabel:'道具を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_CONTRACTOR_RANK_FLOW_ID,[
   {id:'rank_progress',screenId:'contractorRank',target:'#contractorRankContent',title:'契約者Rankは冒険全体の記録',text:'討伐、契約、図鑑、進化、錬成、遠征などで契約者EXPを獲得します。モンスターのレベルとは別です。',progressLabel:'CONTRACTOR RANK'},
-  {id:'rank_titles',screenId:'contractorRank',target:'.contractor-title-link',title:'Rankで称号や報酬を獲得',text:'称号はプロフィール表示を飾る記録で、装備しても能力補正はありません。Rankによる機能制限もありません。',progressLabel:'CONTRACTOR RANK',nextLabel:'Rankへ戻る'}
+  {id:'rank_titles',screenId:'contractorRank',target:'.contractor-title-link',title:'Rankで称号や報酬を獲得',text:'達成した称号を1つ飾れる',progressLabel:'CONTRACTOR RANK',nextLabel:'Rankへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[
   {id:'titles_equip',screenId:'contractorTitles',target:'#contractorTitleContent',title:'獲得した称号を1つ装備',text:'条件を達成した称号から、表示したいものを選べます。あとから何度でも変更できます。',progressLabel:'CONTRACTOR RANK'},
-  {id:'titles_cosmetic',screenId:'contractorTitles',target:'#contractorTitleContent',title:'称号に能力補正はありません',text:'称号は冒険の実績を示す表示要素です。装備しても戦闘能力や利用できる機能は変わりません。',progressLabel:'CONTRACTOR RANK',nextLabel:'称号へ戻る'}
+  {id:'titles_cosmetic',screenId:'contractorTitles',target:'#contractorTitleContent',title:'称号を飾る',text:'達成した称号を1つ飾れる',progressLabel:'CONTRACTOR RANK',nextLabel:'称号へ戻る'}
 ]);
 globalThis.GameDiagnostics?.registerTutorialProvider?.(tutorialDiagnosticsSnapshot);
 

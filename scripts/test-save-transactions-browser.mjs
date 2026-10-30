@@ -39,7 +39,7 @@ try{
   await page.evaluate(()=>{playContractAnimation=window.testAnimation;clearTutorialUi();save.progress.tutorial=tutorialSaveDefaults({legacy:true});ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');saveGame();});
   await page.evaluate(()=>{show('moreMenu');const old=initSave();old.coins=7;safeStorageSet(SAVE_BACKUP_KEY,JSON.stringify(old));const key=MonsterProfiles.key(SAVE_KEY),set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===key)throw new DOMException('Injected quota','QuotaExceededError');return set.call(this,k,v)};try{restoreLastKnownGood();}finally{Storage.prototype.setItem=set;}document.querySelector('.save-management').open=true;});
   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>{clearTutorialUi();show('moreMenu');document.querySelector('.save-management').open=true;});
-  assert.match(await page.locator('#replacementRecoveryStatus').textContent(),/未完了/);
+  assert.match(await page.locator('#replacementRecoveryStatus').textContent(),/途中で止まった読込があります。セーブ管理で書き出してください。/);
   for(const [kind,coins] of [['before',20000],['after',7],['backupBefore',7]]){
    const button=page.locator(`button[onclick="exportReplacementRecovery('${kind}')"]`);await button.scrollIntoViewIfNeeded();
    assert(await button.evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&r.height>=44;}));

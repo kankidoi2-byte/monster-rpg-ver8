@@ -194,7 +194,7 @@ function renderSkillButtons(){
   const rescueBasicAttack=(typeof isTutorialRescueBattleActive==='function'&&isTutorialRescueBattleActive())||(typeof isTutorialStellaMockBattleActive==='function'&&isTutorialStellaMockBattleActive())
     ? '<button onclick="turn(-1)" data-tutorial-normal-attack data-tutorial-stella-advantage class="skill-button normal" aria-label="通常攻撃、威力24、COST 0"><span>無属性</span><strong>通常攻撃</strong><small>威力 24 / COST 0</small></button>'
     : '';
-  el.innerHTML = '<p class="battle-panel-note">技を選ぶと実行します。COSTは装備枠のコストで、戦闘中には消費しません。</p>' + rescueBasicAttack + moves.map((mv,i) => {
+  el.innerHTML = '<p class="battle-panel-note">COSTは編成用。戦闘では減らない</p>' + rescueBasicAttack + moves.map((mv,i) => {
     const power = Number(mv[1]) || 0;
     const role = power > 0 ? `威力 ${power}` : '補助';
     const cost = Number.isFinite(mv[5]) ? Number(mv[5]) : skillCostFromMove(mv);

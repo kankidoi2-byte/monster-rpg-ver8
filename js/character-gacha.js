@@ -91,11 +91,11 @@ function inspectCharacterGachaRecovery(){
 function renderCharacterGachaRecoveryWarning(state=inspectCharacterGachaRecovery()){
   if(!state.blocked)return false;
   const target=document.getElementById('characterGachaResult');
-  const importedNote=state.record?.status==='baseline'?'<p>この復旧記録は、この端末で確認した読み込み済みセーブです。元の契約時点の記録ではありません。</p>':'';
-  if(target)target.innerHTML='<h2>契約のセーブ記録を確認してください</h2><p>現在のセーブと契約時の記録を照合できないため、新しい契約を停止しました。現在のデータを上書きしたり、仲間を再追加したりしていません。別の画面での更新や保存エラーがないか確認してください。</p>'+
-    (state.record?importedNote+'<p>復旧記録を書き出して保管できます。自動復元は行いません。保存に失敗した記録の場合、契約後の内容は確定済みとは限りません。</p><button type="button" onclick="exportCharacterGachaRecovery()">契約時のセーブを書き出す</button><button type="button" onclick="exportCharacterGachaRecovery(\'before\')">契約前のセーブを書き出す</button>':'<p>契約時の記録を読み取れません。現在のデータを書き出して保管してください。</p>')+
+  const importedNote=state.record?.status==='baseline'?'<p>この記録は、読み込んだセーブを基準にしています。</p>':'';
+  if(target)target.innerHTML='<h2>契約のセーブ記録を確認してください</h2><p>記録を照合できないため、契約を止めました。データは変わっていません。</p>'+
+    (state.record?importedNote+'<p>復旧記録を書き出して保管してください。保存に失敗した契約結果は確定済みとは限りません。</p><button type="button" onclick="exportCharacterGachaRecovery()">契約時のセーブを書き出す</button><button type="button" onclick="exportCharacterGachaRecovery(\'before\')">契約前のセーブを書き出す</button>':'<p>契約時の記録を読み取れません。現在のデータを書き出して保管してください。</p>')+
     '<button type="button" onclick="exportCharacterGachaRecovery(\'current\')">現在の保存済みセーブを書き出す（保存しない）</button>'+
-    (state.canEstablishBaseline?'<p>別の端末から読み込んだセーブの場合、元の契約時点の復旧記録はこの端末にありません。現在の保存済みセーブを確認し、この端末の基準として記録できます。</p><button type="button" onclick="establishCharacterGachaRecoveryBaseline()">読み込んだセーブをこの端末の基準にする</button>':'');
+    (state.canEstablishBaseline?'<p>この端末に契約の記録がありません。読み込んだセーブを基準として記録できます。</p><button type="button" onclick="establishCharacterGachaRecoveryBaseline()">読み込んだセーブをこの端末の基準にする</button>':'');
   document.querySelectorAll('[data-character-gacha-count]').forEach(button=>{button.disabled=true;});
   return true;
 }
@@ -111,7 +111,7 @@ function exportCharacterGachaRecovery(which='after'){
 }
 function establishCharacterGachaRecoveryBaseline(){
   if(isCharacterGachaPresenting()||!inspectCharacterGachaRecovery().canEstablishBaseline)return false;
-  if(!confirm('元の契約時点の復旧記録はこの端末にありません。現在の保存済みセーブを、この端末で今後の契約に使う基準として記録しますか？仲間・コイン・現在のセーブは変更しません。'))return false;
+  if(!confirm('この端末に契約の記録がありません。今のセーブを基準として記録しますか？'))return false;
   return withCharacterGachaLock(()=>{
     if(!inspectCharacterGachaRecovery().canEstablishBaseline)return false;
     const primary=readCharacterGachaStorage(characterGachaStorageKey());let snapshot=null;
@@ -144,7 +144,7 @@ function withCharacterGachaLock(action,failureResult){
   // A localStorage spinlock cannot close the check-then-write race across tabs.
   if(typeof navigator==='undefined')return action();
   if(!navigator.locks||typeof navigator.locks.request!=='function'){
-    alert('このブラウザでは安全な同時保存を利用できないため、契約を開始できません。対応する最新のブラウザで開き直してください。');
+    alert('このブラウザでは契約を開始できません。最新のブラウザで開き直してください。');
     return failureResult;
   }
   const pending={owner:save,key:characterGachaStorageKey()};
@@ -265,7 +265,7 @@ function commitCharacterGacha(count,randomFn=Math.random){
     if(typeof console!=='undefined')console.warn('Soul Contract transaction failed',error);
     save=previousSave;saveRecoveryReport=previousReport;
     rollbackCharacterGachaRecovery(recoveryRecord,recovery.raw,previousPrimary);
-    if(inspectCharacterGachaRecovery().blocked)return {ok:false,recovery:true,error:'保存状態を確認できないため新しい契約を停止しました。契約画面から復旧記録と現在の保存済みセーブを書き出して保管してください。'};
+    if(inspectCharacterGachaRecovery().blocked)return {ok:false,recovery:true,error:'保存を確認できず、契約を止めました。契約画面で復旧記録と今のセーブを書き出してください。'};
     return {ok:false,error:'保存できなかったため、コインと仲間を契約前の状態に戻しました。端末の空き容量やブラウザ設定を確認してください。'};
   }finally{
     characterGachaCommitting=false;
@@ -335,7 +335,7 @@ function acknowledgeCharacterGachaReceiptCommitted(){
   characterGachaCommitting=false;
   refreshCharacterGachaResources();
   renderCharacterGacha();
-  if(!saved)alert('結果の確認を保存できませんでした。仲間とコインは保存済みです。結果の記録を残しています。');
+  if(!saved)alert('結果の確認を保存できませんでした。仲間とコインは保存済みです。');
   return saved;
 }
 function rollCharacterGacha(count){

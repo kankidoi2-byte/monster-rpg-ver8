@@ -1,17 +1,17 @@
 /* World-map/battle adapter. Existing map IDs and battle rewards stay canonical. */
 const WORLD_EVENT_LABELS = Object.freeze({
-  elysia:['女神の降臨','光の平原に女神が降臨しています。女神との試練は契約の対象外です。通常の探索も続けられます。'],
-  crisis:['滅亡の星の接近','世界に異変が広がっています。挑戦するか、今回は見送るかを選べます。'],
+  elysia:['女神の降臨','光の平原に女神が降臨している。'],
+  crisis:['滅亡の星の接近','世界に異変が広がっている。'],
   rift:['偽竜の痕跡','危機への介入が世界の狭間への道を残しました。'],
   water_secret:['流水の秘境への道','水辺に秘境への道が開いています。'],
   starsea:['星の海への道','星空の平原から、遥かなる星の海へ向かえます。'],
   golden_land:['黄金郷への道','幻の黄金郷への入口を発見しました。']
 });
 const WORLD_EVENT_FIRST_GUIDES = Object.freeze({
-  elysia:['はじめての降臨','光の平原に、★4「光の女神エリシア」がまれに降臨します。女神との試練は契約できず、通常の探索はそのまま続けられます。'],
-  crisis:['はじめての世界危機','★5「滅亡の星ネメシオン」が世界へ影響を及ぼしています。自分で挑むか、今回は偽竜へ対処を任せるかを選べます。どちらを選んでも、偽竜の痕跡は残ります。'],
+  elysia:['はじめての降臨','光の平原に、★4「光の女神エリシア」が降臨した。'],
+  crisis:['はじめての世界危機','★5「滅亡の星ネメシオン」が世界へ影響を及ぼしている。'],
   rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜の痕跡です。世界の狭間で1体へ挑めます。ほかで3戦すると痕跡は消えます。'],
-  special_entrance:['はじめての特殊入口','探索で見つけた特殊な入口は、ほかで2戦すると閉じます。閉じても再び見つかることがあります。ゲームを閉じている間は進みません。']
+  special_entrance:['はじめての特殊入口','特殊な入口を見つけた。いつまでも開いているとは限らない。']
 });
 function clearResolvedWorldMapNavigation(state,eventKey){
   const next=typeof normalizeWorldMapSaveState==='function'

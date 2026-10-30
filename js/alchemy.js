@@ -407,7 +407,7 @@ function alchemyTendency(plan){
 function alchemyLuminaAdvice(plan, errors=[]){
   const bases = plan.selection.materialIds.map(alchemyBaseMaterialId);
   let short = 'まだ反応が定まっていないみたい。素材を変えると別の気配が見えるかも。';
-  let detail = '素材の種類と投入量によって、錬成結果の傾向と成功率が変化します。完成するモンスターそのものは錬成後まで分かりません。';
+  let detail = '何が生まれるかは、錬成するまで分からない。';
   if(plan.recipe?.recipeId === 'elixion_standard'){
     short = '賢金から生まれた無垢な錬成力と、神竜の気配が重なっているよ。';
     detail = '魔晶石と金属鉱石が核を形づくり、猛禽の羽と毒虫の甲殻が生命の輪郭を与えています。最高位の無属性竜へ届く可能性があります。';

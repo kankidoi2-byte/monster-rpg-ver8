@@ -93,13 +93,13 @@
 </section>
 
 <section id="homeFavoriteSelect" class="screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('home')">‹ ホーム</button><h1>お気に入りを選ぶ</h1><p>ホームに飾る仲間を選んでください。パーティーの編成は変わりません。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('home')">‹ ホーム</button><h1>お気に入りを選ぶ</h1><p>ホームに飾る仲間を選ぶ(編成はそのまま)</p></div>
   <div id="homeFavoriteOptions" class="home-favorite-options"></div>
 </section>
 
 <!-- ストーリーモード -->
 <section id="storyMode" class="screen story-mode-screen">
-  <div class="ui-page-heading story-page-heading"><button class="ui-back-link" onclick="show('home')">‹ ホーム</button><h1>ストーリー</h1><p>読みたい物語を選んでください。</p></div>
+  <div class="ui-page-heading story-page-heading"><button class="ui-back-link" onclick="show('home')">‹ ホーム</button><h1>ストーリー</h1></div>
   <div class="story-category-tabs" role="group" aria-label="物語の種類">
     <button id="storyCategory-main" type="button" aria-pressed="true" aria-controls="storyPanel-main" onclick="selectStoryCategory('main')">メイン</button>
     <button id="storyCategory-map" type="button" aria-pressed="false" aria-controls="storyPanel-map" onclick="selectStoryCategory('map')">マップ</button>
@@ -126,7 +126,7 @@
 
 <!-- 育成ハブ -->
 <section id="growthHub" class="screen ui-hub-screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1><p>モンスターを強くする方法を選んでください。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1></div>
   <div class="monster-section-tabs" role="group" aria-label="モンスター管理"><button type="button" aria-pressed="false" onclick="show('party')">一覧・編成</button><button type="button" aria-pressed="true" onclick="show('growthHub')">育成</button></div>
   <div class="ui-hub-grid">
     <button id="growthMonsterButton" onclick="show('party')"><span>♙</span><strong>モンスター育成</strong><small>経験値・技・個体詳細</small></button>
@@ -149,7 +149,7 @@
 
 <!-- その他メニュー -->
 <section id="moreMenu" class="screen ui-hub-screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">MENU</span><h1>メニュー</h1><p>冒険を支える機能と記録を確認できます。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">MENU</span><h1>メニュー</h1></div>
   <div class="ui-menu-list">
     <button onclick="showContractorRank()"><span>🏅</span><div><strong>契約者Rank</strong><small id="contractorRankMenuSummary">Rankと成長記録を確認</small></div><b>›</b></button>
     <button onclick="showContractorTitles()"><span>🎖️</span><div><strong>称号</strong><small id="contractorTitleMenuSummary">獲得した称号を装備</small></div><b>›</b></button>
@@ -167,7 +167,7 @@
 
 <!-- 契約者Rank -->
 <section id="contractorRank" class="screen contractor-rank-screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('moreMenu')">‹ メニュー</button><span class="ui-eyebrow">CONTRACTOR RANK</span><h1>契約者Rank</h1><p>冒険全体の歩みを示す記録です。機能制限や能力補正はありません。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('moreMenu')">‹ メニュー</button><span class="ui-eyebrow">CONTRACTOR RANK</span><h1>契約者Rank</h1><p>冒険全体の歩みの記録</p></div>
   <div id="contractorRankContent" class="contractor-rank-content" aria-live="polite"></div>
 </section>
 
@@ -179,19 +179,20 @@
 
 <!-- 称号 -->
 <section id="contractorTitles" class="screen contractor-title-screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('moreMenu')">‹ メニュー</button><span class="ui-eyebrow">TITLES</span><h1>称号</h1><p>獲得した称号から1つを選んで装備できます。称号による能力補正はありません。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('moreMenu')">‹ メニュー</button><span class="ui-eyebrow">TITLES</span><h1>称号</h1><p>称号を1つ選んで飾る(能力は変わらない)</p></div>
   <div id="contractorTitleContent" class="contractor-title-content" aria-live="polite"></div>
 </section>
 
 <!-- お知らせ -->
 <section id="notices" class="screen notice-screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">NEWS</span><h1>お知らせ</h1><p>ゲームの主な更新内容と重要な情報を確認できます。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">NEWS</span><h1>お知らせ</h1></div>
   <div id="noticeList" class="notice-list" aria-live="polite"></div>
 </section>
 
 <section id="diagnosticsScreen" class="screen diagnostics-screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('moreMenu')">‹ メニュー</button><span class="ui-eyebrow">DIAGNOSTICS</span><h1>診断</h1><p>ゲーム、端末、セーブ、各機能の現在状態を安全な要約で確認できます。</p></div>
-  <div class="diagnostics-toolbar" role="group" aria-label="診断の操作"><button type="button" onclick="refreshDiagnosticsScreen()">最新の状態へ更新</button><button type="button" onclick="copyDiagnosticSummary()">要約をコピー</button><button type="button" onclick="saveDiagnosticJson()">JSONを保存</button><button id="diagnosticsShareButton" type="button" onclick="shareDiagnosticSummary()">共有</button></div>\n  <p class="diagnostics-export-note">操作したときだけコピー・保存・OSの共有画面を開きます。共有先への送信は自動では行いません。</p>\n  <p id="diagnosticsActionStatus" class="diagnostics-action-status" role="status" aria-live="polite"></p>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('moreMenu')">‹ メニュー</button><span class="ui-eyebrow">DIAGNOSTICS</span><h1>診断</h1><p>端末内でのみ作成。外部へは送信しません。</p></div>
+  <div class="diagnostics-toolbar" role="group" aria-label="診断の操作"><button type="button" onclick="refreshDiagnosticsScreen()">最新の状態へ更新</button><button type="button" onclick="copyDiagnosticSummary()">要約をコピー</button><button type="button" onclick="saveDiagnosticJson()">JSONを保存</button><button id="diagnosticsShareButton" type="button" onclick="shareDiagnosticSummary()">共有</button></div>
+  <p id="diagnosticsActionStatus" class="diagnostics-action-status" role="status" aria-live="polite"></p>
   <div id="diagnosticsContent" class="diagnostics-content" aria-live="polite"></div>
 </section>
 
@@ -214,7 +215,7 @@
 <!-- パーティー設定 -->
 <section id="mapStory" class="screen"><div id="mapStoryContent"></div></section>
 <section id="partySet" class="screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">PARTY EDIT</span><h1>パーティー編成</h1><p>最大3体。画像を見ながら冒険へ連れていく仲間を選べます。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">PARTY EDIT</span><h1>パーティー編成</h1><p>最大3体</p></div>
   <div id="partyCurrentCard" class="party-current-card">
     <h2>現在のパーティー</h2>
     <div id="currentPartyView"></div>
@@ -255,7 +256,7 @@
 <!-- アイテム選択 -->
 <section id="battleItemSelect" class="screen">
   <h1>🎒 アイテム選択</h1>
-  <p class="small">回復薬や強化薬など、戦闘中に使う道具を選んでください。契約書は勝利後に使用できます。</p>
+  <p class="small">契約書は勝利後に使う</p>
   <div id="battleItemList"></div>
   <button id="battleItemBack" onclick="show('battle')" style="margin-top:12px;background:linear-gradient(135deg,#374151,#4b5563)">← 戻る</button>
 </section>
@@ -327,7 +328,7 @@
 <!-- 合成所 -->
 <section id="fusion" class="screen">
   <div class="panel ui-feature-panel">
-    <div class="ui-page-heading"><span class="ui-eyebrow">FUSION</span><h1>合成所</h1><p>モンスターとアイテムを組み合わせて特殊進化させます。</p></div>
+    <div class="ui-page-heading"><span class="ui-eyebrow">FUSION</span><h1>合成所</h1><p>モンスター+アイテムで特別な姿へ</p></div>
     <p id="fusionItemText" style="color:#a78bfa"></p>
     <div id="fusionList" class="grid"></div>
     <div id="fusionLog" class="log"></div>
@@ -337,7 +338,7 @@
 <!-- 錬成 -->
 <section id="alchemy" class="screen">
   <div class="panel alchemy-panel ui-feature-panel">
-    <div class="ui-page-heading"><span class="ui-eyebrow">ALCHEMY</span><h1>錬核錬成</h1><p>モンスター1体、4種類の素材、コインから新たな個体を生み出します。</p></div>
+    <div class="ui-page-heading"><span class="ui-eyebrow">ALCHEMY</span><h1>錬核錬成</h1><p>モンスター・素材・コインから新しい個体を生む</p></div>
     <button onclick="show('home')" class="secondary-button alchemy-home-button">← ホームへ戻る</button>
     <div id="alchemyForm"></div>
   </div>
@@ -358,7 +359,7 @@
 
 <!-- ショップ -->
 <section id="shop" class="screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1><p>冒険と育成に必要なアイテムを購入できます。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1></div>
   <p class="ui-coin-balance">所持コイン <strong id="coinView"></strong>枚</p>
   <div id="shopList" class="grid"></div>
 </section>
@@ -366,7 +367,7 @@
 <!-- アイテムガチャ -->
 <section id="itemGacha" class="screen">
   <div class="panel ui-feature-panel">
-    <div class="ui-page-heading"><button class="ui-back-link" onclick="show('gachaHub')">‹ ガチャ一覧</button><span class="ui-eyebrow">ITEM DRAW</span><h1>アイテムガチャ</h1><p>コイン100枚で、回復薬や契約書、育成アイテムを獲得できます。</p></div>
+    <div class="ui-page-heading"><button class="ui-back-link" onclick="show('gachaHub')">‹ ガチャ一覧</button><span class="ui-eyebrow">ITEM DRAW</span><h1>アイテムガチャ</h1><p>1回100コイン:回復薬・契約書・育成アイテム</p></div>
     <p>所持コイン：<span id="gachaCoinView"></span>枚</p>
     <button onclick="rollItemGacha()" style="font-size:16px;padding:14px 32px">🎰 100コインで回す</button>
     <div id="gachaResult" class="log"></div>
@@ -382,16 +383,15 @@
       <button data-character-gacha-count="1" onclick="rollCharacterGacha(1)">1回召喚<br><small>100コイン</small></button>
       <button data-character-gacha-count="10" onclick="rollCharacterGacha(10)">10連召喚<br><small>900コイン</small></button>
     </div>
-    <p class="small">Lv.1で加入。初入手の形態は自動ロック。同じ形態も別個体で残り、錬成や経験値アイテム＋コインへの変換に使えます。10連のレアリティ保証はありません。</p>
     <div id="characterGachaResult" aria-live="polite"></div>
-    <details><summary>排出キャラクター・確率</summary><p id="characterGachaPoolSummary"></p><div id="characterGachaRateList" class="character-gacha-grid"></div></details>
+    <details class="ui-copy-details"><summary>詳細（排出キャラクター・確率）</summary><p class="small">Lv.1で加入。初入手の形態は自動ロック。同じ形態も別個体で残り、錬成や経験値アイテム＋コインへの変換に使えます。10連のレアリティ保証はありません。</p><p id="characterGachaPoolSummary"></p><div id="characterGachaRateList" class="character-gacha-grid"></div></details>
   </div>
 </section>
 
 <!-- 技ガチャ -->
 <section id="skillGacha" class="screen">
   <div class="panel ui-feature-panel skill-gacha-panel">
-    <div class="ui-page-heading"><button class="ui-back-link" onclick="show('gachaHub')">‹ ガチャ一覧</button><span class="ui-eyebrow">SKILL DRAW</span><h1>技ガチャ</h1><p>モンスター・キャラクター共通の技カードを獲得できます。低級・上級・超級はコストによる分類です。</p></div>
+    <div class="ui-page-heading"><button class="ui-back-link" onclick="show('gachaHub')">‹ ガチャ一覧</button><span class="ui-eyebrow">SKILL DRAW</span><h1>技ガチャ</h1><p>低級・上級・超級はコストの区分</p></div>
     <p class="ui-coin-balance">所持コイン <strong id="skillGachaCoinView">0</strong>枚</p>
     <div class="skill-gacha-speed" role="group" aria-label="技ガチャの演出速度"><span>演出速度</span><button type="button" data-skill-gacha-speed="standard" aria-pressed="true" onclick="setSkillGachaPresentationSpeed('standard')">標準</button><button type="button" data-skill-gacha-speed="quick" aria-pressed="false" onclick="setSkillGachaPresentationSpeed('quick')">高速</button></div>
     <div id="skillGachaRateList" class="skill-gacha-pools"></div>
@@ -417,7 +417,7 @@
 
 <!-- 手持ち -->
 <section id="party" class="screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1><p>育てる仲間を選び、技や個体情報を確認できます。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">YOUR MONSTERS</span><h1>モンスター</h1></div>
   <div class="monster-section-tabs" role="group" aria-label="モンスター管理"><button type="button" aria-pressed="true" onclick="show('party')">一覧・編成</button><button type="button" data-nav="growth" aria-pressed="false" onclick="show('growthHub')">育成</button></div>
   <button class="monster-party-button" onclick="show('partySet')">パーティーを編成する ›</button>
   <div id="partyList" class="grid"></div>
@@ -427,7 +427,7 @@
 <!-- 技変更 -->
 <section id="skillEdit" class="screen">
   <div class="panel ui-feature-panel skill-edit-panel">
-    <div class="ui-page-heading"><span class="ui-eyebrow">SKILL DECK</span><h1>技カード変更</h1><p>コスト上限内で最大3枚。戦い方を短く組み替えられます。</p></div>
+    <div class="ui-page-heading"><span class="ui-eyebrow">SKILL DECK</span><h1>技カード変更</h1><p>コスト上限内で最大3枚</p></div>
     <div id="skillEditTarget" aria-label="編成対象と技の使用状況"></div>
     <div id="skillEditCurrent" class="grid"></div>
     <h2>所持技カード</h2>
@@ -495,7 +495,7 @@
 
 <!-- 図鑑 -->
 <section id="skillDex" class="screen ui-hub-screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">SKILL DEX</span><h1>技図鑑</h1><p>全技を閲覧できます。性能と使えるキャラを確認して、編成に役立てましょう。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">SKILL DEX</span><h1>技図鑑</h1></div>
   <details id="skillDexStatusHelp" class="panel">
     <summary>状態異常について</summary>
     <dl>
@@ -526,24 +526,24 @@
 </section>
 
 <section id="dexHub" class="screen ui-hub-screen">
-  <div class="ui-page-heading"><span class="ui-eyebrow">COLLECTION</span><h1>図鑑</h1><p>冒険で集めた記録を選んで閲覧できます。</p></div>
+  <div class="ui-page-heading"><span class="ui-eyebrow">COLLECTION</span><h1>図鑑</h1></div>
   <div id="dexHubGrid" class="ui-hub-grid dex-hub-grid"></div>
 </section>
 
 <section id="dex" class="screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">MONSTER DEX</span><h1>モンスター図鑑</h1><p>カードをタップすると出現マップと入手方法を確認できます。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">MONSTER DEX</span><h1>モンスター図鑑</h1><p>タップで出現マップと入手方法</p></div>
   <div id="dexDetail"></div>
   <div id="dexList" class="grid"></div>
 </section>
 
 <section id="characterDex" class="screen">
-  <div class="ui-page-heading"><button id="characterDexBackButton" class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">CHARACTER DEX</span><h1>キャラクター図鑑</h1><p>仲間となる人物と、その成長形態を確認できます。</p></div>
+  <div class="ui-page-heading"><button id="characterDexBackButton" class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">CHARACTER DEX</span><h1>キャラクター図鑑</h1></div>
   <div id="characterDexDetail"></div>
   <div id="characterDexList" class="grid"></div>
 </section>
 
 <section id="mapDex" class="screen">
-  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">MAP DEX</span><h1>マップ図鑑</h1><p>発見した土地の環境、出現モンスター、特殊な出来事を確認できます。</p></div>
+  <div class="ui-page-heading"><button class="ui-back-link" onclick="show('dexHub')">‹ 図鑑一覧</button><span class="ui-eyebrow">MAP DEX</span><h1>マップ図鑑</h1></div>
   <div id="mapDexDetail"></div>
   <div id="mapDexList" class="map-dex-grid"></div>
 </section>

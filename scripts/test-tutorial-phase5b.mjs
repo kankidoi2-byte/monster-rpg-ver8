@@ -22,7 +22,7 @@ guideIds.forEach(id=>assert.ok(saveSource.includes(`'${id}'`),`missing persisted
 
 const flowConstants=[
   'TUTORIAL_ALCHEMY_FLOW_ID','TUTORIAL_EXPEDITION_FLOW_ID','TUTORIAL_FUSION_FLOW_ID','TUTORIAL_EVOLUTION_FLOW_ID',
-  'TUTORIAL_SKILL_CARDS_FLOW_ID','TUTORIAL_SKILL_GACHA_FLOW_ID','TUTORIAL_GOLDEN_LAND_FLOW_ID','TUTORIAL_DEX_FLOW_ID',
+  'TUTORIAL_SKILL_CARDS_FLOW_ID','TUTORIAL_SKILL_GACHA_FLOW_ID','TUTORIAL_DEX_FLOW_ID',
   'TUTORIAL_SHOP_ITEMS_FLOW_ID','TUTORIAL_BATTLE_ITEMS_FLOW_ID','TUTORIAL_CONTRACTOR_RANK_FLOW_ID','TUTORIAL_CONTRACTOR_TITLES_FLOW_ID'
 ];
 const flowSlice=(constant,nextConstant)=>{
@@ -43,10 +43,11 @@ assert.ok(flows.TUTORIAL_EXPEDITION_FLOW_ID.includes('1〜3体')&&flows.TUTORIAL
 assert.ok(flows.TUTORIAL_EXPEDITION_FLOW_ID.includes('50％'),'expedition guidance must explain early-return rewards');
 assert.ok(flows.TUTORIAL_FUSION_FLOW_ID.includes('指定アイテム')&&flows.TUTORIAL_EVOLUTION_FLOW_ID.includes('必要レベル'),'evolution and fusion guidance must distinguish current requirements');
 assert.ok(flows.TUTORIAL_SKILL_CARDS_FLOW_ID.includes('所持枚数')&&flows.TUTORIAL_SKILL_GACHA_FLOW_ID.includes('100コイン')&&flows.TUTORIAL_SKILL_GACHA_FLOW_ID.includes('900コイン'),'skill guidance must explain finite cards and current gacha prices');
-assert.ok(flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('出発時に1枚消費')&&flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('自然に見つけた入口は地図を消費しません')&&flows.TUTORIAL_GOLDEN_LAND_FLOW_ID.includes('ほかで2戦すると閉じます'),'Golden Land guidance must distinguish map-item consumption from the current two-battle entrance lifetime');
-assert.ok(flows.TUTORIAL_DEX_FLOW_ID.includes('モンスター、キャラクター、マップ、アイテム'),'dex guidance must explain all four records');
-assert.ok(flows.TUTORIAL_SHOP_ITEMS_FLOW_ID.includes('回復薬、強化薬、契約書')&&flows.TUTORIAL_BATTLE_ITEMS_FLOW_ID.includes('勝利後の契約'),'shop and item guidance must distinguish item use locations');
-assert.ok(flows.TUTORIAL_CONTRACTOR_RANK_FLOW_ID.includes('モンスターのレベルとは別')&&flows.TUTORIAL_CONTRACTOR_TITLES_FLOW_ID.includes('能力補正はありません'),'Rank and title guidance must explain progression and cosmetic-only titles');
+assert.ok(!tutorial.includes('registerTutorialFlow(TUTORIAL_GOLDEN_LAND_FLOW_ID'), 'the retired Golden Land guide must not display steps');
+assert.ok(tutorial.includes("const TUTORIAL_GOLDEN_LAND_FLOW_ID='guide_golden_land'")&&tutorial.includes('if(!steps.length||tutorialUiState.active'), 'retired guide calls must safely stop before saving or starting a flow');
+assert.ok(flows.TUTORIAL_DEX_FLOW_ID.includes('図鑑を選ぶと')&&flows.TUTORIAL_DEX_FLOW_ID.includes('図鑑に記録される'),'dex guidance must retain its entry and record steps');
+assert.ok(flows.TUTORIAL_SHOP_ITEMS_FLOW_ID.includes('回復薬・強化薬・契約書')&&flows.TUTORIAL_BATTLE_ITEMS_FLOW_ID.includes('勝利後の契約'),'shop and item guidance must distinguish item use locations');
+assert.ok(flows.TUTORIAL_CONTRACTOR_RANK_FLOW_ID.includes('モンスターのレベルとは別')&&flows.TUTORIAL_CONTRACTOR_TITLES_FLOW_ID.includes('達成した称号を1つ飾れる'),'Rank and title guidance must explain progression and cosmetic-only titles');
 
 const screenGuideSlice=tutorial.slice(tutorial.indexOf('function tutorialFeatureGuideForScreen'),tutorial.indexOf('function tutorialFirstHuntIsPending'));
 [
@@ -71,7 +72,7 @@ assert.ok(skills.includes('availableSkillCount')&&skills.includes("if (arr.lengt
 assert.match(skillGacha,/SKILL_GACHA_SINGLE_COST = 100/,'single skill-gacha cost changed');
 assert.match(skillGacha,/SKILL_GACHA_TEN_COST = 900/,'ten-pull skill-gacha cost changed');
 assert.ok(state.includes('consumeReservedGoldenLandMap')&&battleFlow.includes('if (activeHuntRequest.goldenLandMapEntry)'),'Golden Land maps must still be consumed on departure');
-assert.ok(ui.includes('装備しても戦闘能力や利用できる機能は変わりません。')&&index.includes('称号による能力補正はありません。'),'titles must remain cosmetic only');
+assert.ok(ui.includes('Rankで能力や機能は変わらない')&&index.includes('称号を1つ選んで飾る(能力は変わらない)'),'titles must remain cosmetic only');
 assert.ok(notices.includes("id: '20260829-tutorial-growth-collection-guides'"),'the player-facing update must have a stable notice ID');
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1')&&index.includes('tutorial-action-guidance-1'),'changed browser scripts must have refreshed cache keys');
 

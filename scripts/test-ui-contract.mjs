@@ -78,7 +78,7 @@ expect(index.includes('id="contractorTitleContent"') && index.includes('onclick=
 expect(read('js/ui.js').includes('function renderContractorTitles') && read('js/ui.js').includes('function setContractorTitle'), 'contractor title equip UI is missing');
 const titleAction=uiSource.slice(uiSource.indexOf('function setContractorTitle('),uiSource.indexOf('function contractorRankUpCanPresent('));
 expect(/commitSaveMutation\(\(\)=>\{[^}]*equipContractorTitle\(titleId\|\|null\)/.test(titleAction) && titleAction.includes('showCommittedSaveResult('), 'contractor title selection must commit through the shared rollback path before success presentation');
-expect(index.includes('称号による能力補正はありません。') && read('js/ui.js').includes('装備しても戦闘能力や利用できる機能は変わりません。'), 'contractor titles must clearly remain cosmetic only');
+expect(index.includes('称号を1つ選んで飾る(能力は変わらない)') && read('js/ui.js').includes('Rankで能力や機能は変わらない'), 'contractor titles must clearly remain cosmetic only');
 expect(index.includes('id="contractorRewardContent"') && read('js/ui.js').includes('function renderContractorRankRewards'), 'contractor Rank reward screen is missing');
 expect(read('js/ui.js').includes('function claimContractorRewardUi') && read('js/ui.js').includes('function claimAllContractorRewardsUi'), 'individual and bulk contractor Rank reward actions are missing');
 expect(read('js/ui.js').includes('claimContractorRankReward(rank)') && read('js/ui.js').includes('claimAllContractorRankRewards()'), 'contractor Rank reward UI is not wired to the reward engine');
@@ -86,7 +86,7 @@ expect(index.includes('class="screen battle-screen"'), 'portrait-first battle sc
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(index.includes('class="battle-command-pad"'), 'five-way battle command pad is missing');
 expect(!index.includes('onclick="askUseContractScroll()">🤝 契約</button>'), 'contract must not remain as an independent battle command');
-expect(index.includes('契約書は勝利後に使用できます。'), 'battle item guidance must explain post-battle contracting');
+expect(index.includes('契約書は勝利後に使う'), 'battle item guidance must explain post-battle contracting');
 expect(read('js/battle-view.js').includes('function toggleBattleSkillPanel'), 'collapsible battle skill panel is missing');
 expect(!read('js/battle-view.js').includes('契約可'), 'battle command must not advertise contracting before victory');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
@@ -110,7 +110,7 @@ expect(dex.includes('function monsterObtainEntries'), 'monster dex acquisition-s
 expect(dex.includes('INITIAL_PARTY_IDS.includes(m.id)'), 'monster dex must derive initial acquisition from the shared initial-party definition');
 expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m))"), 'monster dex must preserve acquisition sources alongside skill links');
 expect(dex.includes('detailSection=renderUnitSkillList'), 'character dex must retain its skill list');
-expect(index.includes('カードをタップすると出現マップと入手方法を確認できます。'), 'monster dex guidance still describes the removed skill list');
+expect(index.includes('タップで出現マップと入手方法'), 'monster dex guidance still describes the removed skill list');
 expect(index.includes('onclick="show(\'dexHub\')"') && index.includes('<strong>図鑑</strong>'), 'unified dex hub menu entry is missing');
 expect(index.includes('id="dexHubGrid"') && dex.includes('function renderDexHub'), 'dex hub renderer is missing');
 expect(index.includes('id="mapDexList"') && dex.includes('function renderMapDex'), 'map dex screen or renderer is missing');

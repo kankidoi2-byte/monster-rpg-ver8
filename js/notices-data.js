@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:"20261030-less-ui-copy",date:"2026-10-30",category:"update",title:"画面の説明を短くしました",body:"メニューや図鑑、世界地図の説明を整理しました。契約・技ガチャ・技合成の補足と確率は「詳細」から確認できます。"},
   {id:"20261028-hidden-evolution-levels",date:"2026-10-28",category:"update",title:"進化条件の表示を調整しました",body:"進化に必要なレベルや個体差の数値を、育成画面・図鑑に表示しないようにしました。進化のタイミングは、仲間を育てながら見つけてみてください。"},
   {id:"20261027-individual-evolution",date:"2026-10-27",category:"update",title:"モンスターの進化レベルを見直しました",body:"モンスターごとに進化に必要な成長量を調整しました。同じ種類でも個体によって進化のタイミングが異なります。個体差は次の進化にも引き継ぎます。進化済みの姿・能力値・特殊進化の素材条件はそのままです。キャラクターの進化条件は今回の変更対象外です。"},
   Object.freeze({id:"20261025-expedition-party-guidance",date:"2026-10-25",category:"fix",title:"ガルドラの編成を順番に案内します",body:"序章の編成で、仲間を外す・ガルドラを入れる・保存する操作を順番に案内します。案内を閉じずに操作でき、途中から再開した場合や仲間が進化している場合も、次に必要なボタンを表示します。"}),
