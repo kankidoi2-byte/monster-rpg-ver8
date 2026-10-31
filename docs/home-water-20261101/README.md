@@ -2,7 +2,7 @@
 
 対象: `kankidoi2-byte/monster-rpg-ver8`、作業ブランチ `feat/home-water-20261101`。
 開始点: main `9bf5ac4641da809ad0ec17c120e93296d922bd57`。
-仕様: [ホーム画面 改修仕様書(採用案)｜ChatGPT向け実装依頼](https://docs.google.com/document/d/1cDXOwX80VgZnfPU_ptEwgrww66kHt07DOaynGkCb_-U/edit)。0章の参照先は7章として読んだ。
+仕様: 採用済みのホーム画面改修仕様書（2026-11-01）。0章の参照先は7章として読んだ。
 マージ・公開先更新は所有者の明示許可待ち。
 
 ## 実装前の導線確認とキャラクター案
@@ -100,3 +100,5 @@ node scripts/test-home-water-browser.mjs
 - 既存セーブキー・お気に入り保存処理・ストーリー本文・公開先は変更していない。本編へのマージ・公開は未実施。
 
 追加確認: CI専用DOM検査に旧ゴールドスライム倍率0.5の期待値が残っていたため、採用仕様の0.3へ更新した。ゲーム本体の追加変更はない。CIと同じ16個のDOM検査に `test-map-story-dom.mjs` を加えた計17個をローカルで実行し、すべてPASS（終了コード0）。本体・全体検査の入力を変更していないため、成功済みの `npm run check` は再利用した。
+
+公開前のCI整合修正: 白黒テーマ専用のブラウザー検査から旧ホームの見出し・額縁・変更ボタンへの依存を除去し、採用ホームは同じCIジョブ内で `test-home-water-browser.mjs` によって検査する。白黒画面の全ルート、200%表示、戦闘・契約演出への非干渉検査は継続する。変更ファイルに `scripts/test-monochrome-browser.mjs` と `.github/workflows/validate.yml` を含む。

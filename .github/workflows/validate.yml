@@ -88,7 +88,9 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium
       - name: Verify nonbattle monochrome layout and isolation
-        run: node scripts/test-monochrome-browser.mjs
+        run: |
+          node scripts/test-monochrome-browser.mjs
+          HOME_WATER_EVIDENCE=artifacts/nonbattle-theme/water-home node scripts/test-home-water-browser.mjs
       - name: Upload nonbattle monochrome evidence
         if: always()
         uses: actions/upload-artifact@v4
