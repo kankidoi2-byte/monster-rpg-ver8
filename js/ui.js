@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(id!=='battleChoices'&&typeof cleanupWorldMapViewport==='function')cleanupWorldMapViewport({reset:true});
   if(id!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();
   if(typeof cancelSoulContractPresentation==='function')cancelSoulContractPresentation();
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);

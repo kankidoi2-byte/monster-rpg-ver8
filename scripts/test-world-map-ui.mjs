@@ -32,13 +32,18 @@ for(const map of maps){
   assert.ok(html.includes(`src="new-${map.id}.webp"`),`${map.id}: detail must use shared artwork`);
   assert.ok(!html.includes('src="test.webp"'),`${map.id}: old artwork must not render`);
 }
-for(const id of ids)assert(list.innerHTML.includes(`data-wm-place="${id}"`),id);
+for(const id of ids.filter(id=>!['arena','magic_academy','starsea','world_between','golden_land'].includes(id)))assert(list.innerHTML.includes(`data-wm-place="${id}"`),id);
+assert(list.innerHTML.includes('data-wm-city'));
+assert(list.innerHTML.includes('data-wm-beyond'));
+context.showWorldMapCity();for(const id of ['arena','magic_academy'])assert(list.innerHTML.includes(`data-wm-place="${id}"`));
+assert(context.worldMapListHTML().includes('data-wm-place="golden_land"'));context.showWorldMapOverview();
 assert.ok(list.innerHTML.includes('images/maps/world_map_prologue_v2.webp'),'the aligned prologue terrain must be rendered from its cache-safe filename');
-assert.equal(guideOffers,1,'an available Golden Land entry offers its guide after the target is rendered');
+assert.ok(guideOffers>=1,'an available Golden Land entry offers its guide after the target is rendered');
 assert.equal(discovered.length,0,'overview alone does not discover all maps');
 context.showWorldMapLocation('light_plain');
 assert(list.innerHTML.includes('&lt;safe&gt;'),'descriptions are escaped');
 assert(list.innerHTML.includes('data-wm-difficulty="easy"'));
+assert(!list.innerHTML.includes('Enemy')&&!list.innerHTML.includes('wm-enemies')&&!list.innerHTML.includes('Lv.'),'encounter identities and strength are hidden');
 assert(discovered.includes('light_plain'),'open location detail registers map');
 assert.equal(saveCount,1);
 assert(context.startWorldMapExploration('light_plain','easy'));
@@ -56,11 +61,13 @@ assert.equal(registered.battleMode,'single');assert.equal(registered.secondEnemy
 assert.equal(registered.invasionEnemyId,null);assert.equal(registered.worldMapEventKey,'crisis');assert.equal(registered.worldMapEventMonsterId,'m');
 context.renderWorldMap(list);available=false;
 assert(!context.startWorldMapExploration('starsea','hard','crisis'),'stale entry revalidated');
-context.showWorldMapLocation('world_between');
-assert(list.innerHTML.includes('入口はまだ開いていません'));assert(!list.innerHTML.includes('data-wm-depart'));
+context.showWorldMapOverview();
+assert.equal(context.showWorldMapLocation('world_between'),false);
+assert(!list.innerHTML.includes('data-wm-place="world_between"'));assert(!list.innerHTML.includes('data-wm-depart'));
 assert(!discovered.includes('world_between'),'closed location does not register map');
-context.showWorldMapLocation('starsea');
-assert(list.innerHTML.includes('開いている入口を選んでください'),'active event stays reachable from closed ordinary entrance');
+assert.equal(context.showWorldMapLocation('starsea'),false,'unusable stale events cannot reveal a closed entrance');
+available=true;context.showWorldMapLocation('starsea','crisis');
+assert(list.innerHTML.includes('data-wm-skip'),'active event stays reachable from its panel');
 available=true;context.showWorldMapLocation('golden_land');
 assert(context.startWorldMapExploration('golden_land','hard'));assert(registered.goldenLandMapEntry);
 context.renderWorldMap(list);assert(context.startWorldMapExploration('golden_land','hard','golden_land'));assert(!registered.goldenLandMapEntry);

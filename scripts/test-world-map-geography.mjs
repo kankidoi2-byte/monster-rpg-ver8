@@ -46,30 +46,46 @@ for(const expected of [
   'effect-golden_land\" style=\"--wm-x:57%;--wm-y:79%'
 ]) assert.ok(effects.includes(expected),`missing aligned effect anchor: ${expected}`);
 
-assert.match(css,/\.wm-map-scroll\{[^}]*overflow:auto/,'the map remains horizontally scrollable');
-assert.match(css,/\.wm-map\{[^}]*min-width:640px/,'mobile view keeps a legible fixed map canvas');
-assert.match(css,/\.wm-pin\{[^}]*width:96px/,'mobile labels use the reduced collision width');
-assert.match(css,/@media\(max-width:600px\)\{\.wm-place-grid\{grid-template-columns:repeat\(2/);
-assert.match(css,/@media\(max-width:360px\)\{\.wm-place-grid\{grid-template-columns:1fr/);
-assert.match(css,/\.wm-city-pin\{[^}]*left:49%;top:38%/,'Royal Capital label remains centered on the city artwork');
-assert.ok(html.includes('css/world-map.css?v=world-map-3-consistency'));
-assert.ok(html.includes('js/world-map.js?v=world-map-3-consistency'));
 
-const mapWidth=640;
-const boxes=[
-  ...places.map(place=>({id:place.id,x:place.x*mapWidth/100,y:place.y*mapWidth/100,w:96,h:74})),
-  {id:'royal_capital',x:49*mapWidth/100,y:38*mapWidth/100,w:126,h:68}
-];
-for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){
-  const a=boxes[i],b=boxes[j];
-  const overlaps=Math.abs(a.x-b.x)<(a.w+b.w)/2&&Math.abs(a.y-b.y)<(a.h+b.h)/2;
-  assert.equal(overlaps,false,`640px map labels overlap: ${a.id} / ${b.id}`);
+const cameraContext=vm.createContext({Math,Number,Date});
+vm.runInContext(fs.readFileSync(new URL('../js/world-map-viewport.js',import.meta.url),'utf8'),cameraContext);
+const cameraRun=code=>vm.runInContext(code,cameraContext);
+assert.match(css,/\.wm-viewport\{[^}]*overflow:hidden;touch-action:none/,'one pointer viewport replaces double scrolling');
+assert.match(css,/width:30px;height:30px/,'pin disks retain a constant 30px diameter');
+assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'place list keeps two columns, including small phones');
+assert.ok(source.includes('x:49,y:38'),'capital retains its geographic anchor');
+assert.ok(html.includes('css/world-map.css?v=world-map-4-adopted'));
+assert.ok(html.includes('js/world-map-viewport.js?v=world-map-4-adopted'));
+assert.ok(html.includes('js/world-map.js?v=world-map-4-adopted'));
+for(const [width,height] of [[320,562],[360,522],[412,572],[390,766],[844,312]]){
+  for(const scale of [1,1.5,2.4,9,-1]){
+    const c=cameraRun(`worldMapClampCamera({scale:${scale},x:9999,y:-9999},${width},${height})`);
+    assert(c.scale>=1&&c.scale<=2.4);
+    assert.equal(c.size,Math.max(width,height)*c.scale);
+    assert(c.x<=0&&c.y<=0&&c.x+c.size>=width&&c.y+c.size>=height,'drag limits cover every edge');
+    for(const place of [...places,{id:'royal_capital',x:49,y:38}]){
+      const centered=cameraContext.worldMapCameraForPoint(c,place,width,height,Math.min(height*.6,350));
+      assert(centered.x<=0&&centered.y<=0&&centered.x+centered.size>=width&&centered.y+centered.size>=height);
+      const px=centered.x+centered.size*place.x/100,py=centered.y+centered.size*place.y/100;
+      assert(px>=0&&px<=width,`${place.id} remains horizontally reachable`);
+      assert(py>=0&&py<height,`${place.id} remains vertically reachable`);
+    }
+  }
 }
-for(const viewportWidth of [320,360,390,430]){
-  assert.ok(mapWidth>viewportWidth,`${viewportWidth}px uses the horizontal map scroller`);
-  assert.equal(mapWidth-viewportWidth,[320,280,250,210][[320,360,390,430].indexOf(viewportWidth)]);
-  for(const box of boxes)
-    assert.ok(box.x-box.w/2>=0&&box.x+box.w/2<=mapWidth,`${box.id} remains inside the map at ${viewportWidth}px`);
+const before={scale:1.5,x:-200,y:-200};
+const after=cameraContext.worldMapZoomAt(before,2,{x:180,y:250},412,572);
+assert(Math.abs((180-before.x)/(572*1.5)-(180-after.x)/after.size)<1e-9,'pinch/wheel anchors the point under the pointer');
+console.log('World map geography passed: canonical positions and event anchors, constant-size pins, bounds and reachable locations across five viewport sizes.');
+// Replace the old 640px-card collision check with actual disk/name geometry.
+// Invisible offscreen pins are reached by dragging or the two-column list.
+for(const size of [480,522,572,766,1152]){
+ const labels=[...places,{id:'royal_capital',x:49,y:38}].flatMap(p=>{
+  const x=p.x*size/100,y=p.y*size/100,city=p.id==='royal_capital';
+  return [{id:p.id,part:'disk',x,y,w:city?40:30,h:city?40:30},
+   {id:p.id,part:'name',x,y:y+(city?30:26),w:108,h:16}];
+ });
+ for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++){
+  const a=labels[i],b=labels[j];if(a.id===b.id)continue;
+  assert(!(Math.abs(a.x-b.x)<(a.w+b.w)/2&&Math.abs(a.y-b.y)<(a.h+b.h)/2),`${size}px visual collision: ${a.id}/${a.part} and ${b.id}/${b.part}`);
+ }
 }
-
-console.log('World map geography passed: aligned terrain, 14 non-overlapping mobile pins, south-side Kaen Village, lake-to-mouth waterway, submerged trench and six event anchors.');

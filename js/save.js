@@ -89,10 +89,16 @@ function normalizeWorldMapNavigationState(value){
   return {...source,mapId,eventKey,difficultyId,
     overviewScrollLeft:Math.min(100000,nonNegativeInteger(source.overviewScrollLeft))};
 }
+function normalizeWorldMapDiscoveryState(value){
+  const source=isSaveObject(value)?value:{};
+  const ids=new Set((typeof MAPS!=='undefined'?MAPS:[]).map(map=>map.id));
+  const clean=list=>Array.isArray(list)?[...new Set(list.filter(id=>ids.has(id)))]:[];
+  return {...source,initialized:source.initialized===true,known:clean(source.known),pending:clean(source.pending)};
+}
 function normalizeWorldMapSaveState(value){
   const base=typeof normalizeWorldMapState==='function'
     ?normalizeWorldMapState(value):(isSaveObject(value)?{...value}:{});
-  return {...base,navigation:normalizeWorldMapNavigationState(base.navigation)};
+  return {...base,navigation:normalizeWorldMapNavigationState(base.navigation),discovery:normalizeWorldMapDiscoveryState(base.discovery)};
 }
 
 function contractorSaveDefaults(){

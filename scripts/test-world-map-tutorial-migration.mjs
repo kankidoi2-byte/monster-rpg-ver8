@@ -158,8 +158,8 @@ for(const stepId of ['stella_intro','stella_mock_battle','lumina_intro','lumina_
   assertInProgressFixture(stepId,`later prologue checkpoint ${stepId}`);
 for(const prefix of ['stella_world_map_','lumina_world_map_']){
   const facilityGuideSteps=mainStepIds.filter(id=>id.startsWith(prefix));
-  assert.deepEqual(facilityGuideSteps,[`${prefix}open`,`${prefix}academy`,`${prefix}visit`],
-    `${prefix} must retain all three resumable facility checkpoints`);
+  assert.deepEqual(facilityGuideSteps,[`${prefix}open`,`${prefix}city`,`${prefix}academy`,`${prefix}visit`],
+    `${prefix} must retain all four resumable facility checkpoints`);
   facilityGuideSteps.forEach(stepId=>assertInProgressFixture(stepId,`facility world-map checkpoint ${stepId}`));
 }
 
