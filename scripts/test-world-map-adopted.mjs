@@ -53,3 +53,10 @@ assert.equal(run('worldMapSelectedId'),null,'expired selected entrance closes it
 assert(!root.innerHTML.includes('data-wm-beyond'));
 context.showWorldMapCity();assert(root.innerHTML.includes('data-wm-place="magic_academy"'));
 console.log('Adopted world map: hidden entrances, events, Normal/rescue Easy, additive discovery/save rollback, no encounter spoilers, two Golden Land routes and expiration passed.');
+
+// A synthetic click from the drag stays suppressed inside the map. A deliberate
+// tap on the overlaid list is a different control and must still work immediately.
+context.worldMapIgnoreClick=()=>true;
+const listButton={hasAttribute:name=>name==='data-wm-list'};
+root.onclick({target:{closest:selector=>selector==='button'?listButton:null}});
+assert.equal(run('worldMapPanelMode'),'list','drag suppression never blocks the overlaid list');

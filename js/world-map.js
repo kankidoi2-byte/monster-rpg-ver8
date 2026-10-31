@@ -196,7 +196,7 @@ function renderWorldMap(list,{saveNavigation=true}={}) {
   if(typeof worldMapDismissOverviewIntro==='function'&&list.innerHTML)worldMapDismissOverviewIntro();
   if(worldMapSelectedId&&worldMapSelectedEvent&&typeof worldMapAcknowledgeEventGuide==='function')worldMapAcknowledgeEventGuide(worldMapSelectedEvent);
   list.onclick=event=>{
-    if(typeof worldMapIgnoreClick==='function'&&worldMapIgnoreClick())return;
+    if(typeof worldMapIgnoreClick==='function'&&worldMapIgnoreClick()&&event.target.closest('.wm-viewport'))return;
     const button=event.target.closest('button');
     if(!button||!list.contains(button)){
       if(event.target.closest('.wm-viewport'))showWorldMapOverview();

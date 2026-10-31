@@ -146,8 +146,8 @@ async function verifyAdoptedMap(page,entry,name){
  const inspect=()=>page.evaluate(()=>{
   const vp=document.querySelector('.screen.active .wm-viewport'),r=vp.getBoundingClientRect();
   const terrain=vp.querySelector('.wm-map').getBoundingClientRect(),s=getComputedStyle(vp);
-  const pin=vp.querySelector('[data-wm-point]:not([hidden])')?.getBoundingClientRect();
-  return {camera:{...worldMapCamera},view:{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height},terrain:{left:terrain.left,top:terrain.top,right:terrain.right,bottom:terrain.bottom},overflow:s.overflow,touch:s.touchAction,pinWidth:pin?.width};
+  const pin=vp.querySelector('[data-wm-point]'),visiblePin=vp.querySelector('[data-wm-point]:not([hidden])');
+  return {camera:{...worldMapCamera},view:{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height},terrain:{left:terrain.left,top:terrain.top,right:terrain.right,bottom:terrain.bottom},overflow:s.overflow,touch:s.touchAction,pinWidth:pin?Number.parseFloat(getComputedStyle(pin).width):null,pinParentTransform:getComputedStyle(vp.querySelector('.wm-pins')).transform,visiblePinWidth:visiblePin?.getBoundingClientRect().width};
  });
  const checkBounds=geometry=>verify(geometry.terrain.left<=geometry.view.left+1&&geometry.terrain.top<=geometry.view.top+1&&geometry.terrain.right>=geometry.view.right-1&&geometry.terrain.bottom>=geometry.view.bottom-1,`${name}: camera covers all four viewport edges`);
  const before=await inspect();checkBounds(before);
@@ -162,7 +162,7 @@ async function verifyAdoptedMap(page,entry,name){
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const zoomed=await inspect();checkBounds(zoomed);
  verify(zoomed.camera.scale>before.camera.scale&&zoomed.camera.scale<=2.4,`${name}: wheel zoom is bounded`);
- verify(zoomed.pinWidth===before.pinWidth,`${name}: camera zoom does not scale pin targets`);
+ verify(before.pinWidth===44&&zoomed.pinWidth===before.pinWidth&&zoomed.pinParentTransform==='none'&&(!zoomed.visiblePinWidth||zoomed.visiblePinWidth===44),`${name}: camera zoom does not scale pin targets ${JSON.stringify({before:before.pinWidth,after:zoomed.pinWidth,visible:zoomed.visiblePinWidth,transform:zoomed.pinParentTransform})}`);
  // Check all current destinations via actual controls. Closed locations must
  // not acquire a list row; offscreen pins retain this alternate entry route.
  await page.locator('[data-wm-list]').click();
