@@ -64,5 +64,12 @@ try{
  assert.equal(await page.locator('#home video').count(),0);assert(await page.locator('.home-water-monster img').isVisible());report.checks.push('unsupported codec poster');
  await page.evaluate(async()=>{renderHome();await new Promise(requestAnimationFrame);waterHomeRecord.video.onerror();});
  assert(await page.locator('.home-water-monster img').isVisible());assert.equal(await page.locator('#home video[src]').count(),0);report.checks.push('load/playback error poster');
+ const cinematic=await page.evaluate(()=>{
+  const overlay=document.getElementById('contractAnimation'),link=document.querySelector('link[href*="css/nonbattle-theme.css"]');
+  overlay.classList.remove('hidden');
+  const colors=()=>[overlay,overlay.firstElementChild].map(el=>{const s=getComputedStyle(el);return [s.color,s.borderColor];});
+  link.disabled=true;const before=colors();link.disabled=false;const after=colors();overlay.classList.add('hidden');return {before,after};
+ });
+ assert.deepEqual(cinematic.after,cinematic.before);report.checks.push('home ink does not leak into contract cinematic');
  assert.deepEqual(errors,[]);console.log(JSON.stringify(report,null,2));
 }finally{fs.writeFileSync(output+'/report.json',JSON.stringify(report,null,2));await browser.close();server?.kill();}
