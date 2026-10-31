@@ -1,0 +1,44 @@
+{
+  "layouts": [
+    {
+      "width": 412,
+      "height": 650,
+      "species": 50,
+      "smallContained": 42,
+      "allControlsClickable": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "species": 50,
+      "smallContained": 42,
+      "allControlsClickable": true
+    },
+    {
+      "width": 360,
+      "height": 600,
+      "species": 50,
+      "smallContained": 42,
+      "allControlsClickable": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "species": 50,
+      "smallContained": 42,
+      "allControlsClickable": true
+    }
+  ],
+  "checks": [
+    "50 species × 4 viewport sizes; controls above oversized monsters; character frame",
+    "transparent video plays and tap bounces",
+    "favorite selection/save/reload",
+    "rank/notices/read indicator/expedition/dex shortcuts; media disposed on exit",
+    "monster navigation -> party edit -> save",
+    "home battle -> world map -> easy battle start",
+    "reduced-motion transparent poster",
+    "unsupported codec poster",
+    "load/playback error poster"
+  ],
+  "errors": []
+}

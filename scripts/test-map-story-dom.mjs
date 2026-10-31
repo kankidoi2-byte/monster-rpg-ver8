@@ -16,7 +16,7 @@ const click=selector=>{const n=d.querySelector(selector);assert(n,selector);asse
 const tick=()=>new Promise(resolve=>setTimeout(resolve,5));
 run(`save=initSave();completeTutorial();save.instances=[];save.party=[];for(const id of ['galdra','freigal','aquaron']){const ins=addInstance(id,1);save.party.push(ins.uid);}saveGame();playBattleSkillMotion=async()=>false;finishBattleSkillMotion=async()=>false;battleMotionDelay=async()=>{};`);
 d.getElementById('titleScreen').click();await new Promise(resolve=>setTimeout(resolve,700));assert.equal(run('activeScreenId()'),'home');
-click('#homePartyEditButton');assert.equal(run('activeScreenId()'),'partySet');click('#partySetupSaveButton');assert.equal(run('loadSave().party.length'),3);
+click('#homePartyEditButton');assert.equal(run('activeScreenId()'),'party');click('.monster-party-button');assert.equal(run('activeScreenId()'),'partySet');click('#partySetupSaveButton');assert.equal(run('loadSave().party.length'),3);
 run('openBattleHub();showWorldMapLocation("grassland")');assert.equal(run('activeScreenId()'),'battleChoices');
 click('#battleChoiceList button[onclick="openMapStory()"]');assert.equal(run('activeScreenId()'),'mapStory');assert.equal(d.querySelectorAll('.map-story-card').length,11);
 for(let number=1;number<=11;number++){

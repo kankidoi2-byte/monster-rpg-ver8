@@ -59,7 +59,7 @@ try{
     const finish=(error)=>{clearTimeout(timer);error?reject(error):resolve();};
     server.stdout.once('data',()=>finish());server.once('error',finish);server.once('exit',code=>finish(Error('Audit server exited: '+code)));
   });
-  browser=await chromium.launch({headless:true});
+  browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
   for(const slot of [1,2]){
     report.activeCase=`profile-${slot}`;
     const context=await seededContext(slot);
@@ -92,7 +92,7 @@ try{
     const expeditionContext=await seededContext(slot);const page=await newPage(expeditionContext);
     // Smoke-check the existing home/party navigation before opening the affected feature.
     await page.evaluate(()=>show('home'));assert(await page.locator('#home').isVisible());
-    await page.locator('#homePartyEditButton').click();assert(await page.locator('#partySet').isVisible());
+    await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('.monster-party-button').click();assert(await page.locator('#partySet').isVisible());
     await page.locator('[data-nav="more"]').click();await page.locator('#expeditionNav').click();
     assert(await page.locator('#expedition').isVisible());
     await page.locator('[data-tutorial-expedition-map="grassland"]').click();

@@ -20,7 +20,7 @@ try{
  await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];if(contractorRankUpTimer)clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;closeContractorRankUp();saveGame();show('home');});
- await page.locator('#homePartyEditButton').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();
+ await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('.monster-party-button').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();
  // Home story catalog uses the existing map-story gate and progress without save writes.
  await page.locator('#homeAdventureButton').click();
  await page.locator('#storyCategory-map').click();

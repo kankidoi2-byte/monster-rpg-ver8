@@ -1,4 +1,4 @@
-/* Provisional visual sizes: ★1=.35–.45 (slime=.30), ★2=.50, ★3=.75, ★4=1.00, ★5=1.20.
+/* Provisional visual sizes: ★1=.35–.45 (slime=.30), ★2=.50 (slime_gold=.30), ★3=.75, ★4=1.00, ★5=1.20.
  * Ratios apply to contained full-loop bounds; gameplay rarity and saves are unchanged. */
 /* Independent display lifetimes; bounded feature-branch registrations, default budget 3. */
 const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
@@ -33,8 +33,8 @@ const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   src:'images/monsters/motion/slime_gold_v1_alpha.webm',
   poster:'images/monsters/motion/slime_gold_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
-  layout:Object.freeze({x:0.5,y:1,scale:0.5}),
-  sourceBounds:Object.freeze({width:720,height:640,x:47,y:65,right:664,bottom:559})
+  layout:Object.freeze({x:0.5,y:1,scale:0.3}),
+  sourceBounds:Object.freeze({width:720,height:640,x:47,y:65,right:664,bottom:562})
 }),false_dragon_beta:Object.freeze({
 
   src:'images/monsters/motion/false_dragon_beta_v2_720_alpha.webm',
@@ -275,7 +275,7 @@ galdra:Object.freeze({
   src:'images/monsters/motion/slime_adopted_crf28_alpha.webm',poster:'images/monsters/motion/slime_adopted_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:0.3}),
-  sourceBounds:Object.freeze({width:720,height:640,x:45,y:50,right:669,bottom:563})
+  sourceBounds:Object.freeze({width:720,height:640,x:45,y:50,right:669,bottom:572})
 }),
 alchemion:Object.freeze({
   src:'images/monsters/motion/alchemion_v1_720_alpha.webm',poster:'images/monsters/motion/alchemion_v1_static.webp',
