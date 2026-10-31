@@ -83,6 +83,7 @@ node scripts/test-home-water-browser.mjs
 | `js/notices-data.js` | プレイヤー向けのお知らせ追加 |
 | `images/maps/home_water_mirror_v1.webp` | 採用の水面背景 |
 | `package.json` | 配置検査を `npm run check` に追加 |
+| `scripts/test-battle-idle-media-dom.mjs` | CI専用のサイズ検査を採用仕様のゴールドスライム倍率0.3へ更新 |
 | `scripts/test-home-water.mjs` | 50体の配置式、サイズ、境界、導線と容量の検査 |
 | `scripts/test-home-water-browser.mjs` | 実ブラウザーの配置・押下・保存・再読込・ポスター検査 |
 | `scripts/test-audit-profile-expedition-browser.mjs` | 新しい編成経路、Chromium実行パス指定への対応 |
@@ -97,3 +98,5 @@ node scripts/test-home-water-browser.mjs
 - `git diff --check`: **PASS**。
 - 検査環境: Node.js 24.22.1 / Chromium 153のヘッドレス実行。実機Galaxy・Safariの確認は未実施。
 - 既存セーブキー・お気に入り保存処理・ストーリー本文・公開先は変更していない。本編へのマージ・公開は未実施。
+
+追加確認: CI専用DOM検査に旧ゴールドスライム倍率0.5の期待値が残っていたため、採用仕様の0.3へ更新した。ゲーム本体の追加変更はない。CIと同じ16個のDOM検査に `test-map-story-dom.mjs` を加えた計17個をローカルで実行し、すべてPASS（終了コード0）。本体・全体検査の入力を変更していないため、成功済みの `npm run check` は再利用した。
