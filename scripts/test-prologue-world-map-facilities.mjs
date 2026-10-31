@@ -16,8 +16,8 @@ const assertOrdered=ids=>{
     previous=index;
   }
 };
-assertOrdered(['request_reward_received','stella_intro','stella_world_map_open','stella_world_map_academy','stella_world_map_visit','stella_encounter']);
-assertOrdered(['stella_mock_victory','lumina_intro','lumina_world_map_open','lumina_world_map_academy','lumina_world_map_visit','lumina_encounter']);
+assertOrdered(['request_reward_received','stella_intro','stella_world_map_open','stella_world_map_city','stella_world_map_academy','stella_world_map_visit','stella_encounter']);
+assertOrdered(['stella_mock_victory','lumina_intro','lumina_world_map_open','lumina_world_map_city','lumina_world_map_academy','lumina_world_map_visit','lumina_encounter']);
 
 assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_intro'[^\n]+chapterBreak:true/,
   'the published request-to-Stella chapter checkpoint must remain intact');
@@ -29,6 +29,7 @@ assert.match(main,/id:'lumina_intro'[^\n]+persistAs:'lumina_intro'[^\n]+nextStep
   'the existing Lumina checkpoint leads from capital pursuit into the map route');
 
 for(const prefix of ['stella','lumina']){
+  assert.match(main,new RegExp(`id:'${prefix}_world_map_city'[^\\n]+target:'\\[data-wm-city\\]'[^\\n]+advanceOnTarget:true`));
   assert.match(main,new RegExp(`id:'${prefix}_world_map_open'[^\\n]+target:'\\[data-nav="battle"\\]'[^\\n]+advanceOnTarget:true`));
   assert.match(main,new RegExp(`id:'${prefix}_world_map_academy'[^\\n]+target:'\\[data-wm-place="magic_academy"\\]'[^\\n]+advanceOnTarget:true`));
   assert.match(main,new RegExp(`id:'${prefix}_world_map_visit'[^\\n]+target:'\\[data-wm-facility-visit\\]'[^\\n]+externalAdvance:true`));
@@ -49,7 +50,8 @@ const context=vm.createContext({
   showUiNotice:(message,kind)=>notices.push({message,kind}),
   activeScreenId:()=> 'battleChoices',
   showWorldMapOverview:()=>{rendered.push('overview');return true;},
-  showWorldMapLocation:mapId=>{rendered.push(mapId);return true;}
+  showWorldMapLocation:mapId=>{rendered.push(mapId);return true;},
+  showWorldMapCity:()=>{rendered.push('city');return true;}
 });
 vm.runInContext(tutorial.slice(facilityStart,facilityEnd),context);
 const locationGuardStart=tutorial.indexOf('function handleTutorialWorldMapLocationSelection');
@@ -68,7 +70,7 @@ assert.equal(vm.runInContext("prepareTutorialWorldMapFacilityStep('lumina_world_
 assert.deepEqual(rendered,['overview','magic_academy'],'facility detail must be rebuilt after an interrupted reload');
 currentStep='lumina_world_map_academy';
 assert.equal(vm.runInContext("prepareTutorialWorldMapFacilityStep('lumina_world_map_academy')",context),true);
-assert.deepEqual(rendered,['overview','magic_academy','overview'],'facility selection must resume from the world overview');
+assert.deepEqual(rendered,['overview','magic_academy','overview','city'],'facility selection must resume with the capital panel open');
 assert.equal(vm.runInContext("handleTutorialWorldMapLocationSelection('forest',null)",context),true,'an off-route location is rejected');
 assert.equal(vm.runInContext("handleTutorialWorldMapLocationSelection('magic_academy',null)",context),false,'the guided academy remains selectable');
 assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('magic_academy','easy',null)",context),true,'selection cannot leak into random exploration');

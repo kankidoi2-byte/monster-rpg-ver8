@@ -33,6 +33,7 @@ function huntRecommendationScore(request, monster) {
   return bestMatchup * 10 + levelMargin - (request.difficultyId === 'extreme' ? .5 : 0);
 }
 function showBattleChoices() {
+  if(typeof cleanupWorldMapViewport==='function')cleanupWorldMapViewport({reset:true});
   if(normalVictoryPending()){show('battle');return;}
   activeHuntRequest = null;
   resetHuntRequestChoices();

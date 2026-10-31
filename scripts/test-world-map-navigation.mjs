@@ -49,9 +49,8 @@ assert.equal(damaged.overviewScrollLeft,0);assert.equal(damaged.futureFlag,2);
 
 run("save.worldMap.navigation={mapId:null,eventKey:null,difficultyId:null,overviewScrollLeft:245};worldMapNavigationHydrated=false");
 assert(run('renderWorldMap(document.getElementById("battleChoiceList"))'));
-assert.equal(scroller.scrollLeft,245,'overview horizontal position is restored');
-scroller.scrollLeft=511;scroller.onscroll();
-assert.equal(run('save.worldMap.navigation.overviewScrollLeft'),511,'settled scrolling is saved');
+assert.equal(run('save.worldMap.navigation.overviewScrollLeft'),245,'legacy horizontal scroll retains its original stored value; the camera does not repurpose it');
+assert.ok(list.innerHTML.includes('wm-viewport'),'the new map viewport is rendered');
 
 assert(run("showWorldMapLocation('grassland')"));
 assert.equal(run('save.worldMap.navigation.mapId'),'grassland');
