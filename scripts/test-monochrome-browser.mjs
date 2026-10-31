@@ -79,13 +79,13 @@ async function capture(page,name,{validate=true}={}){
   const screen=document.querySelector('.screen.active');
   const candidates=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title'),...document.querySelectorAll('.app-topbar,.app-bottom-nav,.app-topbar button,.app-bottom-nav button,.app-topbar input,.app-topbar select')];
   const overflow=candidates.filter(el=>{
-   if(el.closest('.wm-map-scroll'))return false; // Tested as a clipped, reachable pan surface below.
+   if(el.closest('.wm-map-scroll,.wm-viewport'))return false; // Each clipped navigation surface is tested for bounds and reachability below.
    const r=el.getBoundingClientRect();return r.width&&r.height&&(r.left < -1||r.right>innerWidth+1);
   }).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,text:el.textContent.slice(0,80),left:r.left,right:r.right,width:r.width};});
   return {screen:screen.id,family:screen.dataset.themeFamily,bodyFamily:document.body.dataset.nonbattleTheme,
    horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow,
    geometry:{viewport:innerWidth,documentScrollWidth:document.documentElement.scrollWidth,documentClientWidth:document.documentElement.clientWidth,bodyScrollWidth:document.body.scrollWidth,zoom:getComputedStyle(document.documentElement).zoom},
-   overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
+   overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll,.wm-viewport');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
  });
  entry.mapScrollers=[];
  for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible').all()){
@@ -119,7 +119,8 @@ async function capture(page,name,{validate=true}={}){
    uncovered:hit===el||el.contains(hit),hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
  }));
  for(const control of entry.chromeControls)verify(control.inViewport&&control.uncovered,`${name}: global navigation control reachable ${JSON.stringify(control)}`);
- const control=page.locator('.screen.active button:visible:not([disabled])').first();
+ await verifyAdoptedMap(page,entry,name);
+ const control=page.locator('.screen.active.world-map-root button:visible:not([disabled]),.screen.active button:visible:not([disabled]):not(.wm-viewport button)').first();
  if(await control.count()){
   // 'IfNeeded' accepts a control hidden under a sticky header as in-view.
   // Center it as a user scroll would, then sample after layout settles.
@@ -137,6 +138,58 @@ async function capture(page,name,{validate=true}={}){
   verify(entry.layout.overflow.length===0,`${name}: controls/headings overflow ${JSON.stringify(entry.layout.overflow)}`);
   verify(entry.layout.family&&entry.layout.family===entry.layout.bodyFamily,`${name}: active family matches body`);
  }
+}
+
+async function verifyAdoptedMap(page,entry,name){
+ if(!await page.locator('.screen.active .wm-viewport').count())return;
+ const view=page.locator('.screen.active .wm-viewport');
+ const inspect=()=>page.evaluate(()=>{
+  const vp=document.querySelector('.screen.active .wm-viewport'),r=vp.getBoundingClientRect();
+  const terrain=vp.querySelector('.wm-map').getBoundingClientRect(),s=getComputedStyle(vp);
+  const pin=vp.querySelector('[data-wm-point]:not([hidden])')?.getBoundingClientRect();
+  return {camera:{...worldMapCamera},view:{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height},terrain:{left:terrain.left,top:terrain.top,right:terrain.right,bottom:terrain.bottom},overflow:s.overflow,touch:s.touchAction,pinWidth:pin?.width};
+ });
+ const checkBounds=geometry=>verify(geometry.terrain.left<=geometry.view.left+1&&geometry.terrain.top<=geometry.view.top+1&&geometry.terrain.right>=geometry.view.right-1&&geometry.terrain.bottom>=geometry.view.bottom-1,`${name}: camera covers all four viewport edges`);
+ const before=await inspect();checkBounds(before);
+ verify(before.overflow==='hidden'&&before.touch==='none',`${name}: map is a clipped pointer surface`);
+ const x=before.view.left+before.view.width/2,y=before.view.top+before.view.height*.55;
+ await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-80,y,{steps:8});await page.mouse.up();
+ const dragged=await inspect();checkBounds(dragged);
+ verify(dragged.camera.x!==before.camera.x,`${name}: dragging pans the map`);
+ verify(await page.locator('.wm-sheet').count()===0,`${name}: ending a drag does not select a place`);
+ await page.mouse.move(x,y);await page.mouse.wheel(0,-400);
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const zoomed=await inspect();checkBounds(zoomed);
+ verify(zoomed.camera.scale>before.camera.scale&&zoomed.camera.scale<=2.4,`${name}: wheel zoom is bounded`);
+ verify(zoomed.pinWidth===before.pinWidth,`${name}: camera zoom does not scale pin targets`);
+ // Check all current destinations via actual controls. Closed locations must
+ // not acquire a list row; offscreen pins retain this alternate entry route.
+ await page.locator('[data-wm-list]').click();
+ const actual=await page.locator('.wm-sheet [data-wm-place]').evaluateAll(nodes=>nodes.map(node=>node.dataset.wmPlace).sort());
+ const expected=await page.evaluate(()=>MAPS.filter(map=>worldMapVisible(map)&&!['arena','magic_academy'].includes(map.id)).map(map=>map.id).sort());
+ verify(JSON.stringify(actual)===JSON.stringify(expected),`${name}: list contains exactly the open destinations`);
+ const nodes=[];
+ for(const id of actual){
+  await page.locator('[data-wm-list]').click();
+  await page.locator(`.wm-sheet [data-wm-place="${id}"]`).click();
+  const depart=page.locator('.wm-sheet [data-wm-depart]');
+  await depart.scrollIntoViewIfNeeded();
+  const target=await depart.evaluate(el=>{
+   const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+   return {uncovered:hit===el||el.contains(hit),visible:r.top>=0&&r.bottom<=innerHeight};
+  });
+  verify(target.uncovered&&target.visible,`${name}: ${id} departure is reachable in its panel`);
+  verify(await page.locator('.wm-sheet .wm-enemies').count()===0,`${name}: ${id} reveals no encounter list`);
+  nodes.push({id,...target});
+ }
+ // Capital facilities are nested behind the capital rather than duplicated in the list.
+ for(const id of ['arena','magic_academy']){
+  await page.locator('[data-wm-list]').click();await page.locator('.wm-sheet [data-wm-city]').click();
+  await page.locator(`.wm-sheet [data-wm-place="${id}"]`).click();
+  verify(await page.locator('.wm-sheet [data-wm-depart]').count()===1,`${name}: capital facility ${id} is reachable`);
+ }
+ entry.mapViewport={before,dragged,zoomed,nodes};
+ await page.evaluate(()=>{cleanupWorldMapViewport({reset:true});showWorldMapOverview();});
 }
 async function styles(page,selector,{rootOnly=false}={}){
  return page.locator(selector).evaluateAll((nodes,rootOnly)=>nodes.flatMap(root=>rootOnly?[root]:[root,...root.querySelectorAll('*')]).map(el=>{
