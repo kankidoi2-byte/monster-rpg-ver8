@@ -45,6 +45,7 @@ function renderNoticePreview() {
   const preview = document.getElementById('homeNoticePreview');
   const notice = latestGameNotice();
   if (!preview || !notice) return;
+  if(document.getElementById('homeQuickLinks')){updateNoticeIndicators();return;}
   preview.innerHTML = `<button type="button" class="home-notice-button" onclick="showNotices()" aria-label="お知らせを開く">
     <span>お知らせ</span><span class="notice-menu-dot" data-notice-unread aria-label="未読あり"></span>
   </button>`;

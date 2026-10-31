@@ -70,6 +70,7 @@ function show(id) {
   scheduleContractorRankUpPresentation();
   if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
+  if(typeof syncWaterHomeMedia==='function')syncWaterHomeMedia();
   if(typeof applyNonbattleTheme==='function')applyNonbattleTheme(document.querySelector('.screen.active')?.id || id);
 }
 function openBattleHub(){
@@ -110,6 +111,7 @@ function updateContractorRankHeader(){
   const titleSummary=document.getElementById('contractorTitleMenuSummary');
   const unlockedTitleCount=Array.isArray(save?.contractor?.unlockedTitleIds)?CONTRACTOR_TITLE_CATALOG.filter(entry=>save.contractor.unlockedTitleIds.includes(entry.id)).length:0;
   if(view)view.textContent=`Rank ${progress.rank}`;
+  if(typeof syncWaterHomeRank==='function')syncWaterHomeRank();
   if(summary)summary.textContent=`Rank ${progress.rank}・${title?.name||'称号未設定'}`;
   if(titleSummary)titleSummary.textContent=title?`装備中：${title.name}`:`${unlockedTitleCount}個獲得・称号未設定`;
 }
@@ -354,8 +356,7 @@ function renderHomeFavorite(){
   const stage=document.getElementById('homeFavoriteStage');
   if(!stage)return;
   const mon=homeFavoriteMonster();
-  const caption=`<div class="home-favorite-caption"><div><strong>${mon?mon.name:'あなたの冒険が始まる'}</strong></div></div>`;
-  stage.innerHTML=`<button type="button" class="home-favorite-change" onclick="show('homeFavoriteSelect')">お気に入り変更</button><div class="home-favorite-art">${mon?`<div class="home-portrait-frame">${vis(mon, `onload="this.parentElement.style.setProperty('--portrait-ratio',this.naturalWidth/this.naturalHeight)"`)}${caption}</div>`:`<div class="home-favorite-empty">最初の仲間を迎えよう${caption}</div>`}</div>`;
+  if(typeof renderWaterHomeFavorite==='function')renderWaterHomeFavorite(stage,mon);
 }
 function renderHomeFavoriteOptions(){
   const list=document.getElementById('homeFavoriteOptions');
@@ -385,33 +386,8 @@ function selectHomeFavorite(id){
 function renderHome(){
   if(typeof renderNonbattleHomeContext==='function')renderNonbattleHomeContext();
   renderHomeFavorite();
-  const partyPreview = document.getElementById('homePartyPreview');
-  const growthPreview = document.getElementById('homeGrowthPreview');
-  const expeditionPreview = document.getElementById('homeExpeditionPreview');
-  if (typeof renderNoticePreview === 'function') renderNoticePreview();
+  if (typeof updateNoticeIndicators === 'function') updateNoticeIndicators();
   if (typeof renderHomeStoryCard === 'function') renderHomeStoryCard();
-  const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
-  if(partyPreview){
-    partyPreview.innerHTML = party.length ? party.map((ins,index)=>{
-      const mon=by(ins.id);
-      if(!mon) return '';
-      return `<button class="home-party-member ${index===0?'is-leader':''}" onclick="show('partySet')">${index===0?'<span>LEADER</span>':''}${vis(mon)}<strong>${mon.name}</strong><small>Lv.${ins.level||1}</small></button>`;
-    }).join('') : `<button class="home-empty-party" onclick="show('partySet')"><strong>パーティーを編成する</strong><small>最初の仲間を選びましょう</small></button>`;
-  }
-  if(growthPreview){
-    const lead=party[0];
-    const mon=lead ? by(lead.id) : null;
-    const atMax=lead ? isMaxLevel(lead.level) : false;
-    const needed=lead&&!atMax ? needExp(lead.level||1) : 0;
-    const current=Number(lead?.exp||0);
-    const rate=needed ? Math.max(0,Math.min(100,current/needed*100)) : 0;
-    growthPreview.innerHTML = mon ? `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>${atMax?`${mon.name}は Lv.MAX`:`${mon.name}のレベルアップまで`}</strong><div class="home-progress"><span style="width:${atMax?100:rate}%"></span></div><small>${atMax?'最大レベル到達':`あと${Math.max(0,needed-current)} EXP`}</small></div><button onclick="show('party')">確認</button>` : `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>仲間を選ぶと成長目標が表示されます</strong></div>`;
-  }
-  if(expeditionPreview){
-    const active=Array.isArray(save?.expeditions?.active) ? save.expeditions.active : [];
-    const completed=active.filter(entry=>entry?.status==='complete').length;
-    expeditionPreview.innerHTML = `<button type="button" onclick="showExpedition()"><small>${completed?'報酬あり':active.length?'派遣中':'控えの仲間と冒険'}</small><strong>遠征</strong><span>${completed?`${completed}件 受け取る ›`:active.length?'状況を見る ›':'派遣する ›'}</span></button>`;
-  }
 }
 function showTypeChart() {
   show('typeChart');
