@@ -153,9 +153,10 @@ async function verifyAdoptedMap(page,entry,name){
  const before=await inspect();checkBounds(before);
  verify(before.overflow==='hidden'&&before.touch==='none',`${name}: map is a clipped pointer surface`);
  const x=before.view.left+before.view.width/2,y=before.view.top+before.view.height*.55;
- await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-80,y,{steps:8});await page.mouse.up();
+ const canPanX=before.camera.size>before.view.width+1;
+ await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-(canPanX?80:0),y-(canPanX?0:80),{steps:8});await page.mouse.up();
  const dragged=await inspect();checkBounds(dragged);
- verify(dragged.camera.x!==before.camera.x,`${name}: dragging pans the map`);
+ verify(canPanX?dragged.camera.x!==before.camera.x:dragged.camera.y!==before.camera.y,`${name}: dragging pans along the available axis`);
  verify(await page.locator('.wm-sheet').count()===0,`${name}: ending a drag does not select a place`);
  await page.mouse.move(x,y);await page.mouse.wheel(0,-400);
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
