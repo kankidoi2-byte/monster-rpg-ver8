@@ -3,6 +3,17 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4249'],{stdio:['ignore','pipe','inherit']});let browser;
+// Historical saved configuration; new installs must not seed these quests.
+const configuredQuests=[
+  {id:"q1",nm:"筋トレ",sub:"心も体も、より強く",cat:"str",unit:"分",step:5,per:20,exp:80,cost:20},
+  {id:"q2",nm:"ランニング",sub:"一歩ずつ、遠くへ",cat:"end",unit:"分",step:5,per:30,exp:90,cost:30},
+  {id:"q3",nm:"単語・熟語",sub:"言葉で、世界を広げる",cat:"int",unit:"分",step:5,per:15,exp:50,cost:15,subject:"英語",node:"単語・熟語"},
+  {id:"q4",nm:"Part5 文法",sub:"型を体に入れる",cat:"int",unit:"問",step:1,per:10,exp:50,cost:15,subject:"英語",node:"文法 Part5"},
+  {id:"q5",nm:"学科の復習",sub:"免許まで、あと少し",cat:"int",unit:"分",step:5,per:20,exp:60,cost:20,subject:"運転免許",node:"学科"},
+  {id:"q6",nm:"創作",sub:"つくることで、人生を豊かに",cat:"cre",unit:"分",step:10,per:30,exp:70,cost:30},
+  {id:"q7",nm:"部屋を整える",sub:"足場を固める",cat:"life",unit:"回",step:1,per:1,exp:30,cost:10},
+  {id:"q8",nm:"休養も冒険の準備",sub:"よく休み、また進もう",cat:"rest",unit:"回",step:1,per:1,exp:30,cost:0,max:1}
+];
 const out='/tmp/life-quest-qa';fs.mkdirSync(out,{recursive:true});
 try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject)});
@@ -20,7 +31,27 @@ try{
   });
   const before=await page.evaluate(()=>localStorage.getItem(MonsterProfiles.key(SAVE_KEY)));
   await page.evaluate(()=>show('moreMenu'));await page.locator('#englishStudyMenuButton').click();await page.waitForURL('**/life-quest/');
-  assert.equal(await page.locator('.tile').count(),8);assert.equal(await page.locator('#lvnum').textContent(),'1');
+  assert.equal(await page.locator('.tile').count(),0,'fresh install has no default quests');
+  assert.match(await page.locator('.qhead').innerText(),/0\/0 達成/);
+  assert.equal(await page.locator('#lvnum').textContent(),'1');
+  await page.screenshot({path:out+'/empty-'+viewport.width+'.png'});
+  await page.locator('[data-tab="skill"]').click();assert.equal(await page.locator('.tree').count(),0);
+  await page.locator('[data-tab="quest"]').click();assert.equal(await page.locator('.qrow').count(),0);
+  await page.locator('#f-nm').fill('自分のクエスト');await page.locator('#addq button').click();
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),1);assert.match(await page.locator('.tile').innerText(),/自分のクエスト/);
+  assert.equal(await page.locator('#lvnum').textContent(),'1');
+  // Previously auto-created defaults are cleared only when untouched and unrecorded.
+  await page.evaluate(quests=>localStorage.setItem('lifequest.v1',JSON.stringify({v:2,sample:false,quests,hist:{}})),configuredQuests);
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),0,'untouched stored defaults also become empty');
+  await page.evaluate(quests=>localStorage.setItem('lifequest.v1',JSON.stringify({v:2,sample:false,quests,hist:{'2026-11-01':{q1:5}}})),configuredQuests);
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),8,'recorded defaults must remain');
+  assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/5\/20/);
+  await page.evaluate(quests=>{quests[0].nm='自分の筋トレ';localStorage.setItem('lifequest.v1',JSON.stringify({v:2,sample:false,quests,hist:{}}))},configuredQuests);
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),8,'customized saved quests must remain');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth),true,'phone has no page scroll');
   const click=async(id,n)=>{for(let i=0;i<n;i++)await page.locator('.tile[data-inc="'+id+'"]').click({force:true});};
   await click('q1',1);assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/5\/20/);

@@ -275,7 +275,8 @@ const ICONS={
 };
 const SKILLS=LifeQuestRewards.skills;
 // unit: 単位 / step: ±1回の量 / per: 目標量 / exp: 目標量あたりのEXP / cost: 目標量あたりのスタミナ
-const DEFAULT_QUESTS=[
+// Recognize only untouched auto-created quests from the first release. Never seed them.
+const LEGACY_DEFAULT_QUESTS=[
   {id:"q1",nm:"筋トレ",sub:"心も体も、より強く",cat:"str",unit:"分",step:5,per:20,exp:80,cost:20},
   {id:"q2",nm:"ランニング",sub:"一歩ずつ、遠くへ",cat:"end",unit:"分",step:5,per:30,exp:90,cost:30},
   {id:"q3",nm:"単語・熟語",sub:"言葉で、世界を広げる",cat:"int",unit:"分",step:5,per:15,exp:50,cost:15,subject:"英語",node:"単語・熟語"},
@@ -293,6 +294,13 @@ function migrate(o){
     q.exp=r?30:Math.max(20,Math.round(q.per*3.2/10)*10);q.cost=r?0:q.per;if(r)q.max=1}});
   const qm=Object.fromEntries(o.quests.map(q=>[q.id,q]));
   for(const d in o.hist){const v=o.hist[d];if(Array.isArray(v)){const n={};v.forEach(id=>{if(qm[id])n[id]=qm[id].per});o.hist[d]=n}}
+  const untouchedDefaults=o.sample!==true&&o.quests.length===LEGACY_DEFAULT_QUESTS.length&&o.quests.every(q=>{
+    const original=LEGACY_DEFAULT_QUESTS.find(x=>x.id===q.id);
+    return original&&Object.keys(q).length===Object.keys(original).length&&Object.keys(original).every(k=>q[k]===original[k]);
+  });
+  const hasActivity=Object.values(o.hist).some(day=>Object.values(day||{}).some(a=>Number(a)>0))||
+    Object.values(o.rewardDays||{}).some(rows=>Array.isArray(rows)&&rows.some(r=>Number(r.amount)>0));
+  if(untouchedDefaults&&!hasActivity)o.quests=[];
   return o;
 }
 
@@ -300,7 +308,7 @@ const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Str
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 let TODAY=new Date(); let TK=dkey(TODAY);
 
-function seed(){return {v:2,sample:false,quests:DEFAULT_QUESTS.map(q=>({...q})),hist:{}}}
+function seed(){return {v:2,sample:false,quests:[],hist:{}}}
 function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.quests&&o.hist)return migrate(o)}}catch(e){}return seed()}
 function save(){try{
   LifeQuestRewards.capture(S,TK);
