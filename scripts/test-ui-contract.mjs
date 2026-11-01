@@ -28,7 +28,8 @@ for(const screen of ['party','partySet','growthHub','fusion','alchemy','evolutio
 const bottomNav=index.match(/<nav class="app-bottom-nav"[\s\S]*?<\/nav>/)?.[0]||'';
 expect([...bottomNav.matchAll(/data-nav="([^"]+)"/g)].map(match=>match[1]).join(',')==='home,monsters,battle,gacha,more','bottom navigation must keep five ordered destinations');
 expect((index.match(/data-nav="growth"/g)||[]).length===1,'the tutorial growth target must uniquely identify the roster tab');
-expect((index.match(/‹ ガチャ一覧/g)||[]).length===3,'each draw screen must return to the draw hub');
+expect(!index.includes('‹ ガチャ一覧'),'the adopted view must not return through a removed list');
+for(const tab of ['character','skill','item'])expect(index.includes(`data-gacha-tab="${tab}"`),tab+' tab is reachable');
 
 const saveKey = 'mb_v95c';
 expect(index.includes('<title>モンスターバトル Ver8.0</title>'), 'browser title must use the public game name');
@@ -49,7 +50,7 @@ expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 
 const screenIds = [
   'home', 'gachaHub', 'growthHub', 'moreMenu', 'contractorRank', 'contractorRankRewards', 'contractorTitles', 'notices', 'diagnosticsScreen', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
-  'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
+  'alchemyConfirm', 'alchemyResult', 'shop', 'party',
   'skillEdit', 'typeChart', 'dexHub', 'dex', 'characterDex', 'mapDex', 'itemDex'
 ];
 screenIds.forEach(id => {
@@ -128,7 +129,7 @@ expect(read('js/multi-battle.js').includes('isContractableUnit(entry.mon)'), 'mu
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
 expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');
 expect(read('js/items.js').includes('shop-item-card'), 'shared shop item cards are missing');
-expect(index.includes('onclick="showSkillGacha()"'), 'skill-gacha menu entry is missing');
+expect(index.includes('data-gacha-tab="skill"') && read('js/gacha-ui.js').includes("skillGacha:'skill'"), 'skill-gacha direct tab and legacy route are required');
 expect(read('js/skill-gacha.js').includes('function performSkillGacha'), 'skill-gacha draw logic is missing');
 expect(read('js/ui.js').includes('function showUiNotice'), 'shared reward notice is missing');
 expect(read('js/ui.js').includes('function replayUiMotion'), 'shared UI motion helper is missing');

@@ -6,7 +6,7 @@ const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.
 const out='artifacts/skill-card-layout/status-descriptions';fs.mkdirSync(out,{recursive:true});
 try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
- browser=await chromium.launch({headless:true});
+ browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const [width,height] of [[320,568],[390,844],[430,932],[844,390]]){
   const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
   // Fixture collection changes can legitimately queue rank-up notices between screens.
@@ -34,7 +34,7 @@ try{
    await clickSummary(page.locator('#skillDexDetail summary').filter({hasText:'数値・詳しい効果'}));
    await check('#skillDexDetail .skill-dex-numbers',row.detail);
    assert(row.detail.includes(`${Math.round(row.chance*100)}%`),'numeric status probability is present');
-   await page.evaluate(source=>{clearTutorialUi();save.instances=[];save.party=[];const ins=addInstance(source,100);save.party=[ins.uid];save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(s=>[s.id,10]));openSkillEdit(ins.uid);},row.source);await check('#skillCardList .skill-effect-text',row.text);
+   await page.evaluate(source=>{clearTutorialUi();save.instances=[];save.party=[];const ins=addInstance(source,100);save.party=[ins.uid];save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(s=>[s.id,10]));openSkillEdit(ins.uid);},row.source);await check(`#skillCardList [data-skill-card-id="${row.id}"] .tcg-description`,row.text);
    const equipmentDetail=page.locator(`#skillCardList [data-skill-card-id="${row.id}"] .skill-numeric-detail`);
    assert.equal(await equipmentDetail.evaluate(el=>el.open),false,'equipment detail starts collapsed');
    await clickSummary(equipmentDetail.locator('summary'));

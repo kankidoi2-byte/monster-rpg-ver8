@@ -60,7 +60,8 @@ async function route(page,id){
   show(id);
  },id);
  await page.waitForTimeout(350);
- assert(await page.locator(`#${id}`).isVisible(),`${id} route is visible`);
+ if(['itemGacha','skillGacha','characterGacha'].includes(id)){assert(await page.locator('#gachaHub').isVisible());assert.equal(await page.evaluate(()=>gachaTab),{itemGacha:'item',skillGacha:'skill',characterGacha:'character'}[id]);}
+ else assert(await page.locator(`#${id}`).isVisible(),`${id} route is visible`);
 }
 async function capture(page,name,{validate=true}={}){
  // Route changes intentionally preserve gameplay scroll. Normalize the two QA
@@ -336,8 +337,8 @@ try{
   await page.screenshot({path:`${out}/${width}x${height}-contract-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
   await page.evaluate(()=>document.querySelector('#contractAnimation').classList.add('hidden'));
   await route(page,'skillGacha');
-  await page.evaluate(()=>{const overlay=document.querySelector('#skillGachaPresentation');overlay.hidden=false;overlay.setAttribute('aria-hidden','false');});
-  await preservation(page,'#skillGachaPresentation','skill gacha cinematic');
+  await page.evaluate(()=>{const card=SKILL110_CATALOG.find(s=>s.cost>10&&s.cost<=20);showGachaResult('skill',{count:1,kind:'monster'},[{card,isNew:true}]);});
+  await preservation(page,'#gachaResultOverlay','adopted skill result overlay');
   await page.screenshot({path:`${out}/${width}x${height}-skill-gacha-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
   assert.equal(errors.length,0,errors.join('\n'));
   await baselineContext.close();await context.close();

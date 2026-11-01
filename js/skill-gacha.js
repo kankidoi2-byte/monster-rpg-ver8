@@ -167,6 +167,10 @@ function revealSkillGachaCards(token,index=0){
   setTimeout(()=>revealSkillGachaCards(token,index+1),delay+(entries[index].card.cost>=5?180:0));
 }
 function presentSkillGachaResult(result,entries){
+  if(typeof playGachaCinema==='function'){
+    const owner=save;
+    playGachaCinema('skill',result,entries,()=>{if(save===owner)showGachaResult('skill',result,entries);});return;
+  }
   if(typeof document==='undefined') return;
   const overlay=document.getElementById('skillGachaPresentation');
   const cards=document.getElementById('skillGachaPresentationCards');

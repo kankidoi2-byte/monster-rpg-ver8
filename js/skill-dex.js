@@ -41,6 +41,7 @@ const SKILL_DEX_CARD_PALETTE=Object.freeze({
 });
 function skillDexCardMarkup(sk){
   const types=skillTypes(sk),colors=types.map(type=>SKILL_DEX_CARD_PALETTE[type]||SKILL_DEX_CARD_PALETTE.normal);
+  if(typeof tcgSkillCardMarkup==='function')return `<button class="move-box skill-dex-card ${skillCardClass(types)}" data-skill-dex-id="${sk.id}" onclick="showSkillDexDetail('${sk.id}')">${tcgSkillCardMarkup(sk)}<span class="skill-dex-cta">詳細を見る ›</span></button>`;
   return `<button class="move-box skill-dex-card ${skillCardClass(types)}" style="--dex-fill-a:${colors[0][0]};--dex-fill-b:${(colors[1]||colors[0])[0]};--dex-edge:${colors[0][1]}" data-skill-dex-id="${sk.id}" onclick="showSkillDexDetail('${sk.id}')">
     <span class="skill-card-title">${sk.name}</span>
     <span class="skill-cost-badge">COST ${sk.cost}</span>
@@ -64,7 +65,7 @@ function showSkillDexDetail(id,focus=true){
   const learners=skillDexLearners(sk),eligible=skillDexEligibleUnits(sk);
   const acquisition=sk.acquisition==='synthesis'?'合成限定':'技カードガチャ（モンスター・キャラクター共通）、技合成の抽選。初期装備などからも入手できます。';
   const aptitude=skillDexAptitude(sk);
-  detail.innerHTML=`<article class="panel ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}<p>${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||'追加効果なし。'}</p>
+  detail.innerHTML=`<article class="panel ${skillCardClass(skillTypes(sk))}">${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}<p>${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||'追加効果なし。'}</p>
     <p>適性：${aptitude}</p><details><summary>数値・詳しい効果</summary><p class="skill-dex-numbers">${sk.detailedDesc||skillCardEffect(skillToMove(sk.id))||'追加効果はありません。'}</p></details>
     <h3>入手方法</h3><p>${acquisition}</p>
     <details><summary>初期装備に持つユニット（${learners.length}体）</summary><div class="skill-dex-units">${skillDexUnitLinks(learners)}</div></details>

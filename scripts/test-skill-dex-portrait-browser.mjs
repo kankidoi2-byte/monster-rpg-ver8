@@ -18,15 +18,15 @@ async function measure(page){
   const rgb=raw=>{const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.fillStyle=raw;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data].slice(0,3);};
   const lum=c=>c.map(x=>{const s=x/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;}).reduce((a,x,i)=>a+x*[.2126,.7152,.0722][i],0);
   const contrast=(a,b)=>{const x=lum(rgb(a)),y=lum(rgb(b));return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
-  const selectors=['.skill-card-title','.skill-cost-badge','.skill-type-line','.skill-dex-performance','.skill-dex-description','.skill-dex-cta'];
+  const selectors=['.skill-card-title','.skill-cost-badge','.tcg-art','.tcg-type','.tcg-description','.tcg-power'];
   const count=document.getElementById('skillDexCount'),countStyle=getComputedStyle(count);
   return {count:{text:count.textContent,opacity:countStyle.opacity,display:countStyle.display,visibility:countStyle.visibility,contrast:contrast(countStyle.color,countStyle.backgroundColor),background:countStyle.backgroundColor,withinViewport:count.getBoundingClientRect().left>=0&&count.getBoundingClientRect().right<=innerWidth+1,rect:rect(count),overflow:count.scrollWidth>count.clientWidth+1},overflow:document.documentElement.scrollWidth>innerWidth+1,cards:[...document.querySelectorAll('#skillDexList .skill-dex-card')].map(el=>{
-   const style=getComputedStyle(el),a=style.getPropertyValue('--dex-fill-a').trim(),b=style.getPropertyValue('--dex-fill-b').trim()||a;
-   const parts=selectors.map(selector=>{const node=el.querySelector(selector);if(!node)return {selector,missing:true};const cs=getComputedStyle(node);return {selector,text:node.textContent,rect:rect(node),dimensions:{scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,scrollHeight:node.scrollHeight,clientHeight:node.clientHeight},flexShrink:cs.flexShrink,overflow:node.scrollWidth>node.clientWidth+2||node.scrollHeight>node.clientHeight+2,ellipsis:cs.textOverflow==='ellipsis'||!['none','0',''].includes(cs.webkitLineClamp),hidden:cs.display==='none'||cs.visibility==='hidden',contrast:selector==='.skill-cost-badge'?contrast(cs.color,cs.backgroundColor):(a?Math.min(contrast(cs.color,a),contrast(cs.color,b)):null)};});
+   const style=getComputedStyle(el.querySelector('.tcg-card')),artStyle=getComputedStyle(el.querySelector('.tcg-art')),a=artStyle.getPropertyValue('--art-color').trim(),b=artStyle.getPropertyValue('--art-second').trim()||a;
+   const parts=selectors.map(selector=>{const node=el.querySelector(selector);if(!node)return {selector,missing:true};const cs=getComputedStyle(node);return {selector,text:node.textContent,rect:rect(node),dimensions:{scrollWidth:node.scrollWidth,clientWidth:node.clientWidth,scrollHeight:node.scrollHeight,clientHeight:node.clientHeight},flexShrink:cs.flexShrink,scrollable:['auto','scroll'].includes(cs.overflowY),overflow:node.scrollWidth>node.clientWidth+2||node.scrollHeight>node.clientHeight+2,ellipsis:cs.textOverflow==='ellipsis'||!['none','0',''].includes(cs.webkitLineClamp),hidden:cs.display==='none'||cs.visibility==='hidden',contrast:selector==='.tcg-art'?null:contrast(cs.color,selector==='.skill-cost-badge'?cs.backgroundColor:selector==='.tcg-description'?'#f7efd6':'#f3f5f7')};});
    const sk=SKILL_BY_ID[el.dataset.skillDexId];
    // CSSOM may expand double-position stops and normalize the zero endpoint to 0px. Only zero px is equivalent to a percentage endpoint.
    const stops=[...style.backgroundImage.matchAll(/(rgba?\([^)]*\))\s+([\d.]+)(%|px)(?:\s+([\d.]+)(%|px))?/g)].flatMap(match=>[[match[2],match[3]],[match[4],match[5]]].filter(([at])=>at!==undefined).map(([at,unit])=>({color:rgb(match[1]),at:unit==='%'||Number(at)===0?Number(at):`${at}${unit}`})));
-   const edge=style.getPropertyValue('--dex-edge').trim();
+   const edge=style.borderTopColor;
    return {id:sk.id,name:sk.name,types:skillTypes(sk),cost:sk.cost,power:sk.power,description:sk.customDesc||sk.description||'',dimensions:{scrollWidth:el.scrollWidth,clientWidth:el.clientWidth,scrollHeight:el.scrollHeight,clientHeight:el.clientHeight},tier:skillDexTier(sk.cost),typeLabel:skillTypeLabel(skillTypes(sk)),rect:rect(el),parts,background:style.backgroundImage,fillA:a,fillB:b,fillARGB:rgb(a),fillBRGB:rgb(b),gradientStops:stops,edgeRGB:rgb(edge),borderRGB:rgb(style.borderTopColor),border:style.borderColor,text:el.textContent,overflow:el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2};
   })};
  });
@@ -44,29 +44,25 @@ function verifyLayout(metrics,label,{phone=false,expectedCount=110}={}){
  for(const card of metrics.cards){
   const key=`${label}/${card.id} ${card.name}`;
   assert(!card.overflow,`${key}: card clipping`);
-  assert(card.fillA,`${key}: full background palette missing`);
-  assert.match(card.background,/^linear-gradient\(135deg,/,`${key}: actual full-card diagonal background`);
-  assert.deepEqual(card.gradientStops,[{color:card.fillARGB,at:0},{color:card.fillARGB,at:50},{color:card.fillBRGB,at:50},{color:card.fillBRGB,at:100}],`${key}: computed background must use exact palette fills and hard 50% split`);
-  assert.deepEqual(card.borderRGB,card.edgeRGB,`${key}: actual attribute-colored border`);
-  if(card.types.length===1)assert.deepEqual(card.fillARGB,card.fillBRGB,`${key}: single attribute uses uniform full fill`);
-  if(card.types.length>1){assert.notEqual(card.fillA,card.fillB,`${key}: dual attribute colors`);assert.match(card.background,/linear-gradient/,`${key}: full diagonal background`);}
+  assert(card.fillA,`${key}: attribute art color missing`);
+  assert.match(card.background,/linear-gradient/,`${key}: TCG metallic frame missing`);
+  if(card.types.length>1)assert.notEqual(card.fillA,card.fillB,`${key}: dual art colors`);
   let previous;
   for(const part of card.parts){
    assert(!part.missing,`${key}: ${part.selector} missing`);
-   assert(!part.overflow&&!part.ellipsis&&!part.hidden,`${key}: ${part.selector} information clipped or hidden`);
+   assert((!part.overflow||(part.selector==='.tcg-description'&&part.scrollable))&&!part.ellipsis&&!part.hidden,`${key}: ${part.selector} information clipped or hidden`);
    assert(part.rect.x>=card.rect.x-1&&part.rect.right<=card.rect.right+1&&part.rect.y>=card.rect.y-1&&part.rect.bottom<=card.rect.bottom+1,`${key}: ${part.selector} outside card`);
-   if(previous)assert(part.rect.y>=previous.rect.bottom-1,`${key}: wrong vertical order ${part.selector}`);
-   previous=part;
-   assert(part.contrast>=4.5,`${key}: ${part.selector} contrast ${part.contrast}`);
+   if(previous&&part.selector!=='.skill-cost-badge')assert(part.rect.y>=previous.rect.bottom-1,`${key}: wrong vertical order ${part.selector}`);
+   if(part.selector!=='.skill-cost-badge')previous=part;
+   assert(part.contrast===null||part.contrast>=4.5,`${key}: ${part.selector} contrast ${part.contrast}`);
   }
-  const [title,cost,type,performance,description,cta]=card.parts;
+  const [title,cost,art,type,description,power]=card.parts;
   assert.equal(compact(title.text),compact(card.name),`${key}: complete name`);
   assert(compact(cost.text).includes(`COST${card.cost}`),`${key}: cost`);
-  assert.equal(compact(type.text),compact(card.typeLabel),`${key}: attribute only, all attributes`);
-  assert(compact(performance.text).includes(card.power===0?'補助技':`威力${card.power}`),`${key}: performance preserved`);
+  for(const t of card.types)assert(type.text.includes(card.typeLabel.split(' / ')[card.types.indexOf(t)].replace(/^[^\p{L}]+/u,'')),`${key}: all attributes`);
+  assert(compact(power.text).includes(card.power===0?'補助':`威力${card.power}`),`${key}: performance preserved`);
   assert(compact(description.text).includes(compact(card.description)),`${key}: full description preserved`);
   assert(card.text.includes(card.tier),`${key}: tier preserved`);
-  assert.match(cta.text,/詳細を見る/);
   let row=rows.find(r=>Math.abs(r[0].rect.y-card.rect.y)<2);if(!row){row=[];rows.push(row);}row.push(card);
  }
  for(const row of rows){
@@ -113,7 +109,7 @@ async function screenshotExamples(page,label){
 }
 try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
- browser=await chromium.launch({headless:true});
+ browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const [width,height] of [[320,568],[360,800],[390,844],[430,932],[844,390],[1280,900]]){
   const page=await browser.newPage({viewport:{width,height}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
@@ -150,12 +146,12 @@ try{
   assert(focusStyle.outline!=='none'||focusStyle.shadow!=='none','visible keyboard focus');
   await page.keyboard.press('Enter');assert.match(await page.locator('#skillDexDetail').textContent(),/オーバーリバース/);
   await page.locator('#skillDexSearch').fill('存在しない技名');assert.equal(await target.count(),0);assert.match(await page.locator('#skillDexList').textContent(),/条件に合う技はありません/);
-  await page.locator('#skillDexSearch').fill('アペクスストーム');await target.locator('.skill-dex-cta').click();assert.match(await page.locator('#skillDexDetail').textContent(),/アペクスストーム/);
+  await page.locator('#skillDexSearch').fill('アペクスストーム');await target.click();assert.match(await page.locator('#skillDexDetail').textContent(),/アペクスストーム/);
   await page.evaluate(()=>{skillDexSelectedId=null;document.getElementById('skillDexDetail').innerHTML='';resetSkillDexFilters();});
   // Every card, including the last, can reach a point not blocked by the fixed chrome.
   for(const card of await page.locator('[data-skill-dex-id]').all()){
-   await card.locator('.skill-dex-cta').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));await settle(page);
-   assert(await card.locator('.skill-dex-cta').evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);return !!hit&&(el.contains(hit)||el.closest('button').contains(hit));}),'CTA not occluded by fixed chrome');
+   await card.evaluate(el=>{const r=el.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+r.height/2-innerHeight/2,behavior:'instant'});});await settle(page);
+   const tap=await card.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);return {ok:!!hit&&(el.contains(hit)||el.closest('button').contains(hit)),id:el.closest('button').dataset.skillDexId,rect:r.toJSON(),hit:hit?.outerHTML.slice(0,300),scrollY,innerHeight};});assert(tap.ok,'TCG card tap target: '+JSON.stringify(tap));
   }
   if(width<=430){
    await page.evaluate(()=>document.documentElement.style.fontSize='200%');await settle(page);

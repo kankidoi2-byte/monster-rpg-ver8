@@ -1,0 +1,119 @@
+/* Only the adopted gacha route and body-level dialogs; battle styles are isolated. */
+body:has(#gachaHub.active){background:#faf8f2;padding-bottom:0;overflow:hidden}
+body:has(#gachaHub.active)::before{display:none}
+body:has(#gachaHub.active)>.app-topbar{position:fixed;top:0;left:0;right:0;max-width:480px;margin:auto;height:74px;z-index:25;background:none;border:0;box-shadow:none;display:flex;justify-content:space-between;padding:8px 12px;backdrop-filter:none;pointer-events:none}
+body:has(#gachaHub.active) .app-brand{display:none}
+body:has(#gachaHub.active) .app-topbar :is(.contractor-rank,.app-resource){pointer-events:auto;color:#1c2230;background:#ffffffcf;border:1px solid #b08d5566;border-radius:16px;padding:6px 12px}
+body:has(#gachaHub.active) .contractor-rank strong{font:700 20px 'Yu Mincho',serif}
+body:has(#gachaHub.active) .home-rank-progress{display:block;height:3px;background:#1c223020}
+body:has(#gachaHub.active)>.app-bottom-nav{background:#ffffffed;border-color:#b08d5570;z-index:30}
+#gachaHub#gachaHub#gachaHub.active{position:fixed;inset:74px 0 calc(var(--ui-nav-height,78px) + env(safe-area-inset-bottom,0px));max-width:480px;width:100%;height:auto;min-height:0;padding:0 12px 6px;margin:auto;background:none!important;display:flex;flex-direction:column;gap:9px;animation:none;color:#1c2230;box-sizing:border-box}
+#gachaHub#gachaHub#gachaHub *{box-sizing:border-box}
+#gachaHub#gachaHub#gachaHub button{margin:0;min-height:44px;font-family:'Yu Mincho','Hiragino Mincho ProN',serif;box-shadow:none;cursor:pointer}
+#gachaTabs{display:flex;gap:6px;flex:none}
+#gachaHub#gachaHub#gachaHub #gachaTabs button{flex:1;background:#fff9;color:#1c2230;border:1px solid #b08d5566;border-radius:20px;font-size:13px;padding:8px 2px}
+#gachaHub#gachaHub#gachaHub #gachaTabs [aria-selected=true]{background:#171c28!important;color:#f7e9ca!important;border-color:#b08d55}
+#gachaBanner{position:relative;flex:1;min-height:60px;overflow:hidden;border-radius:18px;border:1px solid #b08d55;background:radial-gradient(ellipse at 50% 35%,#344659,#07121f 75%);touch-action:pan-y;user-select:none}
+#gachaBanner .gacha-vera{width:100%;height:100%;object-fit:cover;object-position:center 28%;pointer-events:none}
+#gachaBanner[data-kind=item]{background:radial-gradient(ellipse,#fffdf2,#e6dcc3)}
+.gacha-banner-label{position:absolute;inset:auto 0 0;background:linear-gradient(transparent,#07111eed 50%);padding:54px 16px 18px;color:#fff;text-align:left;pointer-events:none}
+#gachaHub#gachaHub#gachaHub .gacha-banner-label h1{color:#fff;margin:8px 0 0;font:700 clamp(24px,7vw,34px)/1.1 'Yu Mincho',serif}
+.gacha-banner-label>span{font:12px/1.4 system-ui;color:#f3db9e;border-bottom:1px solid #d2ae6977;padding:3px 0}
+.gacha-fan{position:absolute;inset:15% 14% 18%;display:grid;place-items:center;pointer-events:none}
+.gacha-fan i{position:absolute;width:55%;aspect-ratio:63/88;border:4px double #c4a460;border-radius:7px;background:repeating-conic-gradient(from 5deg at 50% 50%,#e8d08722 0 4deg,transparent 4deg 12deg),radial-gradient(#243957,#091320);transform:rotate(-21deg) translateX(-28%);box-shadow:0 12px 25px #0006}
+.gacha-fan i:nth-child(2){transform:rotate(21deg) translateX(28%)}.gacha-fan i:nth-child(3){transform:translateY(7%)}
+.gacha-fan b{position:absolute;top:10%;font-size:clamp(60px,24vw,110px);color:#f6d58b;text-shadow:0 0 20px #ffe6a499}
+.gacha-item-scatter{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:15px;transform:rotate(-8deg);pointer-events:none}
+.gacha-item-scatter img{width:100%;max-height:100px;object-fit:contain;filter:drop-shadow(0 5px 6px #493b3b33)}
+#gachaHub#gachaHub#gachaHub .gacha-draw-actions{display:flex;gap:10px;flex:none}
+#gachaHub#gachaHub#gachaHub .gacha-draw-actions button{width:42%;border:1px solid #b08d55;border-radius:12px;background:#fff;color:#1c2230;padding:9px;font-size:21px}
+#gachaHub#gachaHub#gachaHub .gacha-draw-actions button:last-child{width:58%;background:#171c28!important;color:#f7e9ca!important;border:3px double #b08d55}
+#gachaHub#gachaHub#gachaHub .gacha-draw-actions small{display:block;font:12px/1.4 system-ui;margin-top:3px}
+#gachaHub#gachaHub#gachaHub button:disabled{opacity:.42;cursor:default}
+#gachaHub#gachaHub#gachaHub .gacha-rates-link{align-self:flex-end;padding:0 8px;background:none;border:0;color:#6c5a3a;text-decoration:underline;min-height:28px;font:11px system-ui}
+#gachaHub#gachaHub#gachaHub [data-gacha-panel]{flex:none;max-height:28vh;overflow:auto}
+#gachaHub#gachaHub#gachaHub [data-gacha-panel][hidden],#gachaHub#gachaHub#gachaHub .is-mirrored-result{display:none!important}
+#gachaHub#gachaHub#gachaHub #characterGachaResult:empty{display:none}
+.gacha-modal{position:fixed;inset:0;z-index:11010;background:#07111ebd;color:#1c2230;display:grid;place-items:center;isolation:isolate;font-family:system-ui,sans-serif}
+.gacha-modal[hidden],.gacha-modal [hidden]{display:none!important}
+.gacha-modal *,.gacha-cinema *{box-sizing:border-box}
+.gacha-modal button,.gacha-cinema button{min-height:44px;border:1px solid #b08d55;border-radius:10px;padding:8px 12px;background:#fff;color:#1c2230;cursor:pointer;font:14px/1.35 system-ui;box-shadow:none;margin:0}
+.gacha-modal button:focus-visible,.gacha-cinema button:focus-visible,#gachaHub#gachaHub#gachaHub button:focus-visible{outline:3px solid #4b9bd2;outline-offset:2px}
+.gacha-rates-modal{place-items:end center}
+.gacha-sheet{width:min(100%,480px);max-height:80dvh;overflow:auto;background:#faf8f2;border-radius:22px 22px 0 0;padding:18px 18px max(24px,env(safe-area-inset-bottom));box-shadow:0 -8px 40px #0004}
+.gacha-sheet>button{float:right}.gacha-sheet h2{font-family:'Yu Mincho',serif;margin:10px 0 20px}.gacha-sheet p{font-size:13px;line-height:1.7}.gacha-sheet ul{padding:0;list-style:none}.gacha-sheet li{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid #b08d5522;font-size:12px;padding:10px 0}.gacha-sheet small{width:100%;color:#596475}
+.gacha-results{background:radial-gradient(ellipse at 50% 25%,#fffdf6,#e8e4d9)}
+.gacha-result-body{position:relative;width:min(100%,650px);height:100%;max-height:100dvh;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 10px max(16px,env(safe-area-inset-bottom));gap:12px}
+.gacha-result-body h2{text-align:center;font:700 24px/1.3 'Yu Mincho',serif;color:#1c2230;margin:12px 0}
+.gacha-result-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,auto));align-content:center;align-items:center;gap:22px 7px;flex:1;min-height:0}
+.gacha-modal .gacha-result-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:100%;max-height:100%;min-width:0;min-height:0;border:2px solid #c8c3b7;padding:4px 2px;background:#fffaf1;color:#1c2230;box-shadow:0 5px 12px #1c223015;border-radius:7px;overflow:visible}
+.gacha-result-card>img{width:100%!important;height:auto!important;max-height:18vh;object-fit:contain!important;border-radius:4px!important}
+.gacha-result-card strong{font:600 clamp(8px,2.4vw,12px)/1.35 'Yu Mincho',serif;overflow-wrap:anywhere}.gacha-result-card>small{font-size:9px;color:#8c6c26}
+.gacha-result-card.tier-gold,.gacha-result-card.tier-rainbow{border-color:#c59c38;box-shadow:0 0 12px #dec56d88}
+.gacha-result-card.tier-gold::after,.gacha-result-card.tier-rainbow::after{content:'';position:absolute;inset:-2px;border:1px solid #fff1b6;border-radius:7px;pointer-events:none;animation:gacha-gold-glow 2.4s ease-in-out infinite}
+.gacha-result-card.tier-silver{border-color:#9fa9b2}
+.gacha-new{position:absolute;left:0;top:-14px;z-index:2;color:#a36c15;background:#fff8df;border-radius:4px;padding:0 3px;font:800 10px/1.4 system-ui}
+.gacha-result-grid.is-single{display:flex;align-items:center;justify-content:center}
+.gacha-result-grid.is-single .gacha-result-card{width:min(65vw,280px);max-height:100%;padding:10px;overflow:auto}
+.gacha-result-grid.is-single .gacha-result-card>img{max-height:50vh;width:100%!important}.gacha-result-grid.is-single strong{font-size:18px}
+.gacha-result-actions{display:flex;gap:10px;flex:none}.gacha-result-actions button{flex:1}.gacha-result-actions button:last-child{background:#171c28;color:#f4dfb0}.gacha-result-actions button:disabled{opacity:.4}
+.gacha-detail{position:absolute;inset:0;background:#f6f2e9f5;z-index:5;overflow:auto;display:flex;align-items:center;flex-direction:column;padding:18px;gap:12px;text-align:center}
+.gacha-detail>button{align-self:flex-end}.gacha-detail>img{width:min(90%,350px)!important;height:auto!important;max-height:65vh;object-fit:contain}.gacha-detail p{font-size:14px}.gacha-detail .tcg-card{width:min(80vw,330px);flex:none}
+.gacha-cinema{position:fixed;inset:0;z-index:11000;background:#05121e;color:#fff;overflow:hidden;isolation:isolate}
+.gacha-cinema>canvas{width:100%;height:100%;position:absolute;inset:0}
+.gacha-cinema-controls{position:absolute;inset:max(10px,env(safe-area-inset-top)) 12px auto;display:flex;gap:8px;align-items:center;color:#fff}
+.gacha-cinema-controls>span{flex:1;font:13px 'Yu Mincho',serif}.gacha-cinema .gacha-cinema-controls button{background:#05121ecc;color:#fff;border-color:#d6bd83}
+.gacha-cinema-cards{position:absolute;top:30%;left:15%;right:15%;bottom:12%;display:grid;place-items:center;pointer-events:none}
+.gacha-cinema-cards.is-ten{left:3%;right:3%;top:30%;bottom:14%;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:7px}
+.cinema-skill-back{aspect-ratio:63/88;width:min(60vw,250px);max-width:100%;border:3px double var(--preview-color,#d5c18a);border-radius:6px;display:grid;place-items:center;background:repeating-conic-gradient(#c9af6b22 0 3deg,transparent 3deg 15deg),#142439;box-shadow:0 0 16px color-mix(in srgb,var(--preview-color,#d5c18a),transparent 55%);color:#d6bf81;font-size:45px}
+.cinema-skill-back.is-revealed{border:0;background:none;box-shadow:none}.cinema-skill-back .tcg-card{width:100%;height:100%}.cinema-skill-back.is-promoting{animation:gacha-gold-glow .2s infinite}
+.item-cinema-grid>div{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;color:#fff;font:12px/1.4 system-ui}.item-cinema-grid img{width:100%;max-height:32vh;object-fit:contain}.item-cinema-grid.is-ten img{max-height:18vh}.item-cinema-grid .tier-gold,.item-cinema-grid .tier-rainbow{filter:drop-shadow(0 0 10px #f7d479)}
+.tcg-card{position:relative;display:flex;flex-direction:column;aspect-ratio:63/88;width:100%;padding:5%;border:3px solid #a6b2bb;border-radius:7px;background:linear-gradient(125deg,#f4f8fb,#a0adb9 35%,#eff3f4 57%,#697d8e);color:#1c2230;text-align:left;overflow:hidden;isolation:isolate;transform:perspective(650px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .12s;box-sizing:border-box}
+.tcg-upper{border-color:#4c87b0;background:linear-gradient(125deg,#d6eeff,#36678e 40%,#b9dff4 60%,#3a637e)}.tcg-super{border-color:#c2993e;background:linear-gradient(125deg,#fff4c1,#b18732 40%,#f8e3a1 60%,#ae8130)}
+.tcg-head{display:flex;align-items:center;gap:4px;background:#ffffffe0;border-radius:3px;padding:4%;min-height:17%;flex:none}.tcg-head .skill-card-title{font:700 clamp(9px,2.7vw,17px)/1.3 'Yu Mincho',serif;color:#1c2230;flex:1;overflow-wrap:anywhere;margin:0}.tcg-head .skill-cost-badge{background:var(--art-color);border:1px solid #fff9;border-radius:50%;color:#142032;display:grid;place-items:center;font:700 14px/1 system-ui;min-width:25px;width:25px;height:25px;position:static;padding:0}
+.tcg-art{display:grid;place-items:center;position:relative;flex:1;min-height:30%;margin:4% 0;background:repeating-conic-gradient(from 12deg at 50% 50%,#ffffff0a 0 4deg,transparent 4deg 20deg),radial-gradient(ellipse,#ffffff30,#07121ecf 80%),linear-gradient(130deg,var(--art-color),var(--art-second));border:1px solid #ffffff70;overflow:hidden}
+.tcg-silhouette{display:block;position:absolute;inset:8%;background:var(--art-color);mask-size:contain;mask-position:center;mask-repeat:no-repeat;-webkit-mask-size:contain;-webkit-mask-position:center;-webkit-mask-repeat:no-repeat;filter:drop-shadow(0 2px 1px #0009)}
+.tcg-upper .tcg-silhouette{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px #cfeeff)}.tcg-super .tcg-silhouette{filter:drop-shadow(0 0 1px #ffda65) drop-shadow(0 0 3px #ffe085) drop-shadow(0 0 9px #ffcc53)}
+.tcg-kanji{font:600 clamp(35px,16vw,72px)/1 'Yu Mincho',serif;color:var(--art-color);text-shadow:0 0 12px currentColor}
+.tcg-type{font:10px/1.35 system-ui;background:#fff9;padding:3px;display:flex;justify-content:space-between;gap:3px;flex-wrap:wrap}.tcg-type b{white-space:nowrap}
+.tcg-description{flex:none;min-height:20%;max-height:28%;overflow:auto;margin-top:4%;padding:5%;background:#f7efd6;color:#28313b;font:12px/1.45 system-ui;border:1px solid #7b62394d}
+.tcg-power{font:700 11px/1.3 system-ui;text-align:right;color:#142032;margin-top:4px}
+.tcg-holo{position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(115deg,transparent 15%,#86e8ff55 30%,#e8a4ff55 40%,#fff6bf77 50%,transparent 65%);background-position:var(--holo-x,0%) 0;background-size:220% 100%;mix-blend-mode:screen}
+.tcg-upper .tcg-holo{opacity:.15}.tcg-super .tcg-holo{opacity:.55;animation:tcg-holo 4s linear infinite}
+.tcg-compact{padding:4%;border-width:2px;border-radius:4px}.tcg-compact .tcg-head{padding:2%;min-height:25%;gap:2px}.tcg-compact .skill-card-title{font-size:clamp(7px,2.2vw,12px);line-height:1.3}.tcg-compact .skill-cost-badge{font-size:9px;min-width:14px;width:14px;height:14px}.tcg-compact .tcg-type{font-size:7px;padding:2px}.tcg-compact .tcg-kanji{font-size:clamp(22px,8vw,42px)}
+.gacha-result-card:has(.tcg-card){padding:0;border:0;background:none;box-shadow:none}.gacha-result-grid.is-single .gacha-result-card:has(.tcg-card){padding:0;overflow:visible;width:min(60vw,260px);max-height:100%}
+#skillDexList .skill-dex-card:has(.tcg-card){padding:0!important;border:0!important;background:none!important;aspect-ratio:63/88;overflow:visible;display:block;min-width:0}
+#skillDexList .skill-dex-card .tcg-card{height:100%}.skill-dex-card .skill-dex-cta{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@keyframes tcg-holo{to{background-position:200% 0}}@keyframes gacha-gold-glow{50%{box-shadow:0 0 16px #ffe9a7;filter:brightness(1.15)}}
+@media(max-width:360px){.gacha-result-grid{gap:4px}.gacha-result-body{padding-left:6px;padding-right:6px}.gacha-result-card strong{font-size:8px}.tcg-description{font-size:10px}.gacha-result-grid.is-single .gacha-result-card:has(.tcg-card){width:min(68vw,240px)}}
+@media(orientation:landscape) and (max-height:540px){#gachaHub#gachaHub#gachaHub.active{inset:64px 0 calc(var(--ui-nav-height,64px) + env(safe-area-inset-bottom,0px));max-width:760px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:44px 1fr 28px}#gachaTabs{grid-column:1/3}#gachaBanner{grid-column:1;grid-row:2/4;height:100%}#gachaHub#gachaHub#gachaHub .gacha-draw-actions{grid-column:2;grid-row:2;align-items:center}#gachaHub#gachaHub#gachaHub .gacha-rates-link{grid-column:2;grid-row:3;justify-self:end}.gacha-result-body{max-width:740px;gap:4px;padding:5px 12px}.gacha-result-body h2{font-size:16px;margin:0}.gacha-result-grid{gap:6px;grid-template-columns:repeat(5,minmax(0,1fr))}.gacha-result-card>img{max-height:19vh!important}.gacha-result-card strong{font-size:8px}.gacha-result-card:has(.tcg-card){max-width:68px;justify-self:center}.gacha-result-grid.is-single .gacha-result-card{width:210px;max-height:65vh;flex-direction:row}.gacha-result-grid.is-single .gacha-result-card:has(.tcg-card){width:130px;max-width:130px}.gacha-cinema-cards{top:15%;bottom:7%;left:35%;right:35%}.gacha-cinema-cards.is-ten{top:25%;bottom:7%;left:20%;right:20%}.cinema-skill-back{max-height:55vh;width:auto}.item-cinema-grid img{max-height:30vh}.gacha-result-actions{max-width:400px;width:100%;align-self:center}}
+@media(prefers-reduced-motion:reduce){.gacha-cinema *,.gacha-modal *{animation:none!important;transition:none!important}.tcg-card{transform:none!important}.tcg-holo{animation:none!important}}
+
+body:has(#gachaRatesSheet:not([hidden])) #tutorialOverlay{z-index:11020}
+body:has(#tutorialOverlay:not(.hidden)) .gacha-sheet{max-height:65dvh}
+#skillDex#skillDex #skillDexList .skill-dex-card>.tcg-card{background:linear-gradient(125deg,#f4f8fb,#a0adb9 35%,#eff3f4 57%,#697d8e);color:#1c2230;flex-shrink:0;padding:5%;margin:0;white-space:normal;text-shadow:none}
+#skillDex#skillDex #skillDexList .skill-dex-card>.tcg-upper{background:linear-gradient(125deg,#d6eeff,#36678e 40%,#b9dff4 60%,#3a637e)}
+#skillDex#skillDex #skillDexList .skill-dex-card>.tcg-super{background:linear-gradient(125deg,#fff4c1,#b18732 40%,#f8e3a1 60%,#ae8130)}
+#skillDex#skillDex #skillDexList .tcg-head .skill-card-title{color:#1c2230;font:700 clamp(9px,2.7vw,17px)/1.3 'Yu Mincho',serif}
+#skillDex#skillDex #skillDexList .tcg-head .skill-cost-badge{display:grid;place-items:center;min-width:25px;width:25px;height:25px;min-height:25px;border-radius:50%;padding:0;font:700 14px/1 system-ui;background:var(--art-color);color:#142032;border-color:#fff9}
+
+#skillEdit#skillEdit .card:has(>.tcg-card){display:flex;flex-direction:column;gap:8px;aspect-ratio:auto;padding:7px!important;border:0!important;background:#f5f1e9!important;min-width:0}
+#skillEdit#skillEdit .card>.tcg-card{width:100%;flex:none}
+#skillEdit#skillEdit .card:has(>.tcg-card)>.skill-effect-text{display:none}
+#skillEdit#skillEdit .card:has(>.tcg-card) .skill-numeric-detail{color:#1c2230;background:#fff;padding:6px}
+#skillDexDetail .panel>.tcg-card{max-width:310px;margin:0 auto 12px}
+
+.tcg-cost-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.tcg-card .skill-type-line{color:#1c2230;margin:0;font:10px/1.35 system-ui}
+.tcg-compact .skill-type-line{font-size:7px}
+
+.tcg-card .tcg-head{margin:0;align-items:center}
+#skillDex#skillDex #skillDexList .skill-dex-card:has(.tcg-card){min-height:0;aspect-ratio:63/88}
+#skillDex#skillDex #skillDexList .tcg-card .tcg-type{font:10px/1.35 system-ui;color:#1c2230;flex:none;margin:0;padding:3px;border:0}
+#skillDex#skillDex #skillDexList .tcg-card .tcg-head{margin:0;gap:4px;padding:4%;min-height:17%}
+.tcg-card .tcg-kanji{font-size:clamp(24px,10vw,60px)}
+.tcg-compact .tcg-kanji{font-size:clamp(18px,6vw,36px)}
+.tcg-card .tcg-art{min-height:20%}
+.tcg-card .tcg-power{flex:none}
+
+.gacha-result-card.tier-gold::after,.gacha-result-card.tier-rainbow::after{background:linear-gradient(115deg,transparent 36%,#fff8 48%,transparent 60%);background-size:250% 100%;animation:gacha-gold-glow 2.4s ease-in-out infinite,tcg-holo 3s linear infinite}

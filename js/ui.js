@@ -31,9 +31,17 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
+  if(typeof gachaCinema!=='undefined'&&gachaCinema)gachaCinema.finish();
+  if(typeof closeGachaRates==='function')closeGachaRates();
+  if(id==='gachaHub'&&document.querySelector('.screen.active')?.id!=='gachaHub'&&typeof gachaTab!=='undefined')gachaTab='character';
+  const gachaLogicalId=id;
+  const gachaTarget=typeof gachaRoute==='function'&&gachaRoute(id);
+  if(gachaTarget)id='gachaHub';
   if(id!=='battleChoices'&&typeof cleanupWorldMapViewport==='function')cleanupWorldMapViewport({reset:true});
-  if(id!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();
+  if(gachaLogicalId!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();
   if(typeof cancelSoulContractPresentation==='function')cancelSoulContractPresentation();
+  if(typeof gachaResultSession!=='undefined'&&gachaResultSession)dismissGachaResult(false);
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
@@ -67,7 +75,8 @@ function show(id) {
   if (id === 'battleItemSelect') renderBattleItemSelect();
   if (id === 'skillEdit') renderSkillEdit();
   if (id === 'moreMenu' && typeof updateTutorialMenuSummary === 'function') updateTutorialMenuSummary();
-  if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(id);
+  if(gachaTarget)openGachaTab(typeof gachaTarget==='string'?gachaTarget:gachaTab,{guide:false});
+  if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(gachaTarget&&gachaTab==='skill'?'skillGacha':id);
   scheduleContractorRankUpPresentation();
   if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
@@ -285,7 +294,7 @@ function setContractorTitle(titleId){
 }
 function contractorRankUpCanPresent(){
   const active=document.querySelector('.screen.active')?.id;
-  return !(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
+  return !(typeof gachaResultBlocksRank==='function'&&gachaResultBlocksRank())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
 }
 function scheduleContractorRankUpPresentation(){
   clearTimeout(contractorRankUpTimer);

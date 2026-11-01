@@ -14,7 +14,7 @@ const NONBATTLE_SCREEN_THEMES = Object.freeze({
   home:'home',homeFavoriteSelect:'home',party:'party',partySet:'party',
   growthHub:'growth',evolution:'growth',fusion:'growth',alchemy:'growth',alchemyConfirm:'growth',alchemyResult:'growth',skillEdit:'growth',skillSynthesis:'growth',
   dexHub:'dex',dex:'dex',characterDex:'dex',mapDex:'dex',itemDex:'dex',skillDex:'dex',typeChart:'dex',
-  gachaHub:'gacha',itemGacha:'gacha',characterGacha:'gacha',skillGacha:'gacha',
+  gachaHub:'gacha',
   storyMode:'story',mapStory:'story',tutorialRequestReport:'story',tutorialStellaCard:'story',battleChoices:'story',
   expedition:'growth',shop:'menu',moreMenu:'menu',contractorRank:'menu',contractorRankRewards:'menu',contractorTitles:'menu',notices:'settings',diagnosticsScreen:'settings'
 });
