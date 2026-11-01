@@ -16,7 +16,7 @@ try{
   if(process.env.PROLOGUE_TEST_WIDTH&&width!==+process.env.PROLOGUE_TEST_WIDTH)continue;
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage();page.setDefaultTimeout(5000);
-  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[]};reports.push(report);
+  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[]};reports.push(report);
   page.on('pageerror',e=>report.pageErrors.push(e.message));
   page.on('dialog',async d=>{report.dialogs.push(d.message());await d.dismiss()});
   const recordRank=async()=>{
@@ -73,6 +73,19 @@ try{
      console.error('TARGET FAILURE',await page.evaluate(()=>({step:tutorialCurrentStepId(),target:tutorialUiState.target?.outerHTML?.slice(0,400),rect:tutorialUiState.target?.getBoundingClientRect().toJSON(),bubble:document.getElementById('tutorialBubble').getBoundingClientRect().toJSON(),hit:(()=>{const r=tutorialUiState.target?.getBoundingClientRect();return r&&document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.outerHTML?.slice(0,500)})()})));throw error;
     });
     report.targets.push(await page.evaluate(()=>{const el=tutorialUiState.target,r=el.getBoundingClientRect();return {step:tutorialCurrentStepId(),rect:r.toJSON(),hit:document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.tagName}}));
+   }
+   if(state.id==='expedition_active'){
+    const samples=await page.evaluate(async()=>{
+     const points=[];
+     for(let i=0;i<24;i++){
+      await new Promise(requestAnimationFrame);
+      const target=tutorialUiState.target.getBoundingClientRect(),bubble=document.getElementById('tutorialBubble').getBoundingClientRect();
+      points.push([target.top+target.height/2,bubble.top]);
+     }
+     return points.slice(-12);
+    });
+    for(const axis of [0,1])assert(Math.max(...samples.map(p=>p[axis]))-Math.min(...samples.map(p=>p[axis]))<1,'target and guide must settle before tapping, without alternating scroll positions');
+    report.stabilityChecks.push({step:state.id,samples});
    }
    if(state.id==='growth_skill_open'&&!report.sheetChecks.length){
     assert(await page.locator('.roster-sheet-close').isDisabled());

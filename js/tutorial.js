@@ -301,6 +301,11 @@ function tutorialVisibleBounds(target,includeSkillSummary=true){
   }
   return {top,bottom,inChrome};
 }
+function tutorialTargetGuideClearance(targetHeight,safeHeight,bubbleHeight){
+  // A tall card must leave enough room for the guide. A fixed 48px clearance
+  // can be just too large with a different font, making two positions alternate.
+  return targetHeight>safeHeight/2?Math.min(48,Math.max(8,safeHeight-bubbleHeight-24)):targetHeight/2;
+}
 function scrollTutorialTargetBy(target,delta){
   if(Math.abs(delta)<=1)return;
   let scroller=target.parentElement;
@@ -377,12 +382,14 @@ function positionTutorialUi(){
     if(!tutorialVisibleBounds(tutorialUiState.target).inChrome&&Math.max(above,below)<naturalBubbleHeight){
       // Move the target toward an edge before shortening the guide. This
       // leaves room for both the target center and the guide's Next button.
-      const clearance=rect.height>(bounds.bottom-bounds.top)/2?48:rect.height/2;
+      const clearance=tutorialTargetGuideClearance(rect.height,bounds.bottom-bounds.top,naturalBubbleHeight);
       const desired=above>=below?bounds.bottom-clearance:bounds.top+clearance;
-      scrollTutorialTargetBy(tutorialUiState.target,center-desired);
+      const desiredDelta=center-desired;
+      scrollTutorialTargetBy(tutorialUiState.target,desiredDelta);
       rect=tutorialUiState.target.getBoundingClientRect();
       const movedCenter=rect.top+rect.height/2;
-      if(Math.max(movedCenter-bounds.top-16,bounds.bottom-movedCenter-16)<naturalBubbleHeight){
+      const movedRoom=Math.max(movedCenter-bounds.top-16,bounds.bottom-movedCenter-16);
+      if(Math.abs(desiredDelta)>1&&movedRoom<naturalBubbleHeight&&movedRoom<=Math.max(above,below)+1){
         // At the start/end of a page or a sheet, scrolling in one direction
         // can be clamped. Try the other edge rather than clipping Next.
         const opposite=above>=below?bounds.top+clearance:bounds.bottom-clearance;
@@ -2175,7 +2182,7 @@ function handleTutorialViewportScroll(event){
 // Screen renderers may replace a highlighted button after an operation or
 // resume. Rebind its DOM node without advancing or rewriting the saved STEP.
 if(typeof MutationObserver==='function')new MutationObserver(()=>{
-  if(tutorialUiState.active&&tutorialUiState.target?.isConnected===false)scheduleTutorialPosition();
+  if(window.document?.documentElement?.isConnected&&tutorialUiState.active&&tutorialUiState.target?.isConnected===false)scheduleTutorialPosition();
 }).observe(document.body,{childList:true,subtree:true});
 window.addEventListener('resize',scheduleTutorialPosition);
 window.addEventListener('scroll',handleTutorialViewportScroll,true);

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {parse} from 'acorn';
 const source=fs.readFileSync(new URL('../js/tutorial.js',import.meta.url),'utf8');
-const names=new Set(['tutorialVisibleBounds','scrollTutorialTargetBy','ensureTutorialTargetVisible']);
+const names=new Set(['tutorialVisibleBounds','scrollTutorialTargetBy','ensureTutorialTargetVisible','tutorialTargetGuideClearance']);
 const helpers=parse(source,{ecmaVersion:'latest'}).body.filter(n=>n.type==='FunctionDeclaration'&&names.has(n.id.name)).map(n=>source.slice(n.start,n.end)).join('\n');
 function scenario({height=640,top=550,targetHeight=60,navTarget=false,hidden=false,nested=false,sticky=false}={}){
  let y=top,scrolls=0;
@@ -35,3 +35,9 @@ for(const step of ['growth_skill_open','growth_elna_details','expedition_member'
  assert.equal(vm.runInContext('rosterSheetCloseBlocked()',c),step==='growth_skill_open');
 }
 console.log('PASS tutorial visibility: fixed header/nav/protruding battle button, hidden chrome, nested scroll, stable visible targets, navigation targets, scoped sheet guard.');
+
+const geometry=vm.createContext({});vm.runInContext(helpers,geometry);
+for(const guideHeight of [320,330,340,350]){
+ const clearance=vm.runInContext(`tutorialTargetGuideClearance(206,391,${guideHeight})`,geometry);
+ assert(391-clearance-16>=guideHeight,'CI 360px expedition card must fit the guide without alternating between edges');
+}

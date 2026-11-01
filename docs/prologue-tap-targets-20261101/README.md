@@ -65,3 +65,9 @@ node scripts/test-prologue-tap-through-browser.mjs
 - `TUTORIAL_VIEWPORT_WIDTH=360 node scripts/check-tutorial-stella-browser.cjs`も合格。敗北後の説明省略、報酬が変わらないこと、保存・再読み込みを検査。
 - 序章の遷移テーブルは開始点とバイト単位で同一。ステップID・`persistAs`・`js/save.js`に変更なし。
 - `browser-results.json`に対象中央の座標・保存地点・通知表示時の画面とchapterGate・再戦時の遷移先を記録。PNGは実際の検査画面。Galaxy実機は未確認。
+
+## 公開前のCI環境差への対応
+
+CIの360×640では文字の寸法差により、遠征進行中のカードと吹き出しが上下の配置を往復していた。大きなカードの余白を吹き出しの実測高さから計算し、移動余地がない場合だけ逆方向を試すよう修正。通し検査ではこの場面の対象と吹き出しを24フレーム測り、最後の12フレームが1px未満で安定してから中央をタップする検査を追加した。
+
+また、DOMを閉じた後のMutationObserverが再配置を予約していたため、文書が接続されている場合だけ再配置する。CIで失敗した`test-battle-tutorial-dom.mjs`を同じjsdom 26.1.0で再現し、修正後の正常終了を確認した。検査の省略や待ち時間の延長で回避していない。
