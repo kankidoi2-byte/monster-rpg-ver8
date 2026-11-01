@@ -37,6 +37,7 @@ try{
   const countBefore=await page.evaluate(()=>save.instances.length);
   await page.getByRole('button',{name:'まとめて変換',exact:true}).click();assert.equal(await page.locator('.app-bottom-nav').isVisible(),false);
   for(const uid of [ids.leader,ids.locked,ids.away])assert.equal(await page.locator(`[data-instance-uid="${uid}"]`).getAttribute('aria-disabled'),'true');
+  await page.locator(`[data-instance-uid="${ids.strong}"]`).click();
   await page.getByRole('button',{name:'重複',exact:true}).click();await page.getByRole('button',{name:'重複分を選ぶ（1体残す）',exact:true}).click();
   assert.equal(await page.locator(`[data-instance-uid="${ids.strong}"]`).getAttribute('aria-pressed'),'false');
   assert.equal(await page.locator(`[data-instance-uid="${ids.first}"]`).getAttribute('aria-pressed'),'true');

@@ -115,14 +115,22 @@ function rosterTap(uid){
   if(rosterUi.selected.has(uid))rosterUi.selected.delete(uid);else rosterUi.selected.add(uid);
   renderParty();document.querySelector?.(`[data-instance-uid="${uid}"]`)?.focus?.();
 }
+function rosterDuplicateKeepers(){
+  // Existing order breaks level ties: the oldest owned individual stays.
+  const keep=new Map();for(const ins of save.instances){const prev=keep.get(ins.id);if(!prev||ins.level>prev.level)keep.set(ins.id,ins);}return keep;
+}
 function rosterSelectableVisible(){
   const visible=rosterVisibleInstances();if(rosterUi.filter!=='duplicates')return visible.filter(i=>!rosterRecycleError(i));
-  // Keep the strongest owned copy, even when its lock/party state already protects it.
-  const keep=new Map();for(const ins of save.instances){const prev=keep.get(ins.id);if(!prev||ins.level>prev.level)keep.set(ins.id,ins);}
+  const keep=rosterDuplicateKeepers();
   return visible.filter(i=>keep.get(i.id)?.uid!==i.uid&&!rosterRecycleError(i));
 }
 function rosterAllVisibleSelected(){const eligible=rosterSelectableVisible();return eligible.length>0&&eligible.every(i=>rosterUi.selected.has(i.uid));}
-function rosterSelectVisible(){const eligible=rosterSelectableVisible(),clear=rosterAllVisibleSelected();for(const ins of eligible)if(clear)rosterUi.selected.delete(ins.uid);else rosterUi.selected.add(ins.uid);renderParty();}
+function rosterSelectVisible(){
+  const eligible=rosterSelectableVisible(),clear=rosterAllVisibleSelected();
+  // Enforce the promised keeper even if it was manually selected earlier.
+  if(rosterUi.filter==='duplicates')for(const ins of rosterDuplicateKeepers().values())rosterUi.selected.delete(ins.uid);
+  for(const ins of eligible)if(clear)rosterUi.selected.delete(ins.uid);else rosterUi.selected.add(ins.uid);renderParty();
+}
 function openRosterDetail(uid){ensureRosterState();if(!getInstance(uid))return false;rosterUi.returnFocus=document.activeElement;rosterUi.detailUid=uid;rosterUi.confirmation=null;renderRosterSheet();rosterFocusSheet();return true;}
 function closeRosterSheet(){rosterUi.confirmation=null;rosterUi.detailUid=null;renderRosterSheet();const focus=document.querySelector?.(`[data-instance-uid="${rosterUi.returnFocus?.dataset?.instanceUid}"]`);(focus||rosterUi.returnFocus)?.focus?.();if(typeof scheduleContractorRankUpPresentation==='function')scheduleContractorRankUpPresentation();}
 function rosterFocusSheet(){document.querySelector?.('#rosterSheetHost [data-sheet-focus]')?.focus?.();}

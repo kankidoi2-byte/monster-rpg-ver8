@@ -43,7 +43,8 @@ assert.match(nodes.get('rosterSheetHost').innerHTML,/手持ちを0体にはで�
 assert(!run('confirmRosterRecycle()'));
 run(`openRosterConfirmation([b.uid]);b.locked=true;`);assert(!run('confirmRosterRecycle()'),'confirmation never consumes a newly protected individual');
 run(`b.locked=false;openRosterConfirmation([b.uid]);save.coins++;`);assert(!run('confirmRosterRecycle()'),'state changes require a fresh preview');
-run(`startRosterSelection();setRosterView('filter','duplicates');rosterSelectVisible();`);
+run(`startRosterSelection();setRosterView('filter','duplicates');rosterUi.selected.add(c.uid);rosterSelectVisible();`);
+assert(!run('rosterUi.selected.has(c.uid)'),'bulk duplicate selection removes a manually selected keeper');
 assert.deepEqual(json('[...rosterUi.selected]'),[run('b.uid'),run('a.uid')],'highest-level copy remains; newest sort only affects presentation');
 run(`endRosterSelection();c.level=1;startRosterSelection();rosterUi.filter='duplicates';rosterSelectVisible();`);
 assert(!run('rosterUi.selected.has(a.uid)'),'oldest copy survives a level tie');assert(run('rosterUi.selected.has(b.uid)&&rosterUi.selected.has(c.uid)'));
