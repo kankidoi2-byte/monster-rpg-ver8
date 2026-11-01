@@ -1,0 +1,1395 @@
+{
+  "source": "User-adopted original artwork, 2026-11-01",
+  "processing": "512x512 lossless WebP alpha masks; black/white threshold 128 removes paper texture, 16-level antialiased edges; geometry and orientation unchanged",
+  "runtimeBytes": 281020,
+  "assets": [
+    {
+      "category": "牙",
+      "file": "01_fang.png",
+      "original_filename": "1000012771.png",
+      "sha256": "64b5943b7d6dc86b5628fd4cca623ca1b7dc2e0ec89f91257f77cb1395a46209",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "runtimeAsset": "images/skills/fang_silhouette_20261101.webp",
+      "runtimeBytes": 7898
+    },
+    {
+      "category": "爪",
+      "file": "02_claw.png",
+      "original_filename": "1000012772.png",
+      "sha256": "e11b97d723ca61e52b40f84e8502287e7d18e4cc6a9c2548d95e0dc4e57c59e9",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "runtimeAsset": "images/skills/claw_silhouette_20261101.webp",
+      "runtimeBytes": 6754
+    },
+    {
+      "category": "剣",
+      "file": "03_sword.png",
+      "original_filename": "1000012780.png",
+      "sha256": "607f808fe186373cfc46e258057bf73526150f2c8506e7d4bcfea5bb2beb1f05",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/sword_silhouette_20261101.webp",
+      "runtimeBytes": 10162
+    },
+    {
+      "category": "回復",
+      "file": "04_healing.png",
+      "original_filename": "1000012784.png",
+      "sha256": "217ff13322fb05f12dd7e449389350875c41d109c36070d8561e85cb076be2bf",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/healing_silhouette_20261101.webp",
+      "runtimeBytes": 11758
+    },
+    {
+      "category": "混乱",
+      "file": "05_confusion.png",
+      "original_filename": "1000012785.png",
+      "sha256": "2e9ed138dce2d9fb95bc0a51f6773772834619da0583834f3c5fd4f376ae66fc",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/confusion_silhouette_20261101.webp",
+      "runtimeBytes": 6560
+    },
+    {
+      "category": "防御",
+      "file": "06_guard.png",
+      "original_filename": "1000012786.png",
+      "sha256": "c5a5834082ea283e3668f4f528c9b4a18cfc12e5c948bc35b6925cd815935b00",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/guard_silhouette_20261101.webp",
+      "runtimeBytes": 9292
+    },
+    {
+      "category": "尾",
+      "file": "07_tail.png",
+      "original_filename": "1000012789.png",
+      "sha256": "579bd8efba48189148a2e3d839a7f426a1a97ea3a536502ee38927000b2d3a08",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/tail_silhouette_20261101.webp",
+      "runtimeBytes": 9014
+    },
+    {
+      "category": "角",
+      "file": "08_horn.png",
+      "original_filename": "1000012791.png",
+      "sha256": "f278200ccab4981274b23a295d8b620191ef8ea7dded1e32503ccf6c1ca341a0",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/horn_silhouette_20261101.webp",
+      "runtimeBytes": 5468
+    },
+    {
+      "category": "拳",
+      "file": "09_fist.png",
+      "original_filename": "1000012793.png",
+      "sha256": "295f4bb7031de1048e13e30a956f312e2d4c06a7865055664a7ae08815fada59",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/fist_silhouette_20261101.webp",
+      "runtimeBytes": 13110
+    },
+    {
+      "category": "突進",
+      "file": "10_charge.png",
+      "original_filename": "1000012795.png",
+      "sha256": "c56a8e10dbaca4c38ef28f16a9ad330bf474eaba365cf7ba1d9857f6cc9e4c27",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/charge_silhouette_20261101.webp",
+      "runtimeBytes": 12276
+    },
+    {
+      "category": "弾・射撃",
+      "file": "11_projectile.png",
+      "original_filename": "1000012796.png",
+      "sha256": "1050f4e6d364f0bf23c8438cb9ad0cc8692ca5e023b37ae4ae415eab6a4a94f8",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/projectile_silhouette_20261101.webp",
+      "runtimeBytes": 6512
+    },
+    {
+      "category": "光線・砲撃",
+      "file": "12_beam.png",
+      "original_filename": "1000012797.png",
+      "sha256": "945413c6dd2944be16f359ac5c164513b1e2f1a7b88732a01006f4a85ae3ff4e",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/beam_silhouette_20261101.webp",
+      "runtimeBytes": 8806
+    },
+    {
+      "category": "波動",
+      "file": "13_wave.png",
+      "original_filename": "1000012798.png",
+      "sha256": "3a5a087e6ab34d1b3397124d441e7234159900db35e236890465e1abef0cdc52",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/wave_silhouette_20261101.webp",
+      "runtimeBytes": 16378
+    },
+    {
+      "category": "斬撃",
+      "file": "14_slash.png",
+      "original_filename": "1000012799.png",
+      "sha256": "86e86b4b229c32468c6656d1ddd5c93917c3ffede026fd743b2942e8065ef3eb",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/slash_silhouette_20261101.webp",
+      "runtimeBytes": 7774
+    },
+    {
+      "category": "嵐・放出",
+      "file": "15_storm_release.png",
+      "original_filename": "1000012800.png",
+      "sha256": "16546899268955b3f4c9b102e35917779f67d08ab1359279ddd965427fc554c4",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/storm_release_silhouette_20261101.webp",
+      "runtimeBytes": 19964
+    },
+    {
+      "category": "雷撃",
+      "file": "16_lightning.png",
+      "original_filename": "1000012801.png",
+      "sha256": "81bfa99b6eb2356d64b8d42d75e0e9f8f35f83ac551bae08e83fc94e6147c0a4",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/lightning_silhouette_20261101.webp",
+      "runtimeBytes": 15144
+    },
+    {
+      "category": "咆哮",
+      "file": "17_roar.png",
+      "original_filename": "1000012802.png",
+      "sha256": "7288450087862c73a15847bef32028406172b657b3e16f7d80ee12abfb073b78",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/roar_silhouette_20261101.webp",
+      "runtimeBytes": 17880
+    },
+    {
+      "category": "吸収",
+      "file": "18_absorption.png",
+      "original_filename": "1000012803.png",
+      "sha256": "a0436b4a7d98f87807006221469a437b11d24ff18c7a3141b667157e6a14eaae",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/absorption_silhouette_20261101.webp",
+      "runtimeBytes": 13160
+    },
+    {
+      "category": "強化",
+      "file": "19_enhancement.png",
+      "original_filename": "1000012804.png",
+      "sha256": "9df2f108a822289e6ee6a5eb5ecef88ccc1fc8d6f0638793b64edf68f58b3d45",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/enhancement_silhouette_20261101.webp",
+      "runtimeBytes": 29022
+    },
+    {
+      "category": "威圧",
+      "file": "20_intimidation.png",
+      "original_filename": "1000012805.png",
+      "sha256": "6becaba024af5d8b168b1b6ccd2debe6dc552417a1553ecc9f189684823d6c27",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/intimidation_silhouette_20261101.webp",
+      "runtimeBytes": 14782
+    },
+    {
+      "category": "弱体化",
+      "file": "21_weakening.png",
+      "original_filename": "1000012809.png",
+      "sha256": "f0feb5baa6e82c35552d8e280926a1bfef541f169457849a1b185d815e4c5fc9",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/weakening_silhouette_20261101.webp",
+      "runtimeBytes": 17490
+    },
+    {
+      "category": "解除",
+      "file": "22_dispel.png",
+      "original_filename": "1000012810.png",
+      "sha256": "1961b82cc61154abbd38489982a8005e78e80485f7225d825a388e8b0b2d9530",
+      "size": [
+        1536,
+        1536
+      ],
+      "mode": "RGB",
+      "runtimeAsset": "images/skills/dispel_silhouette_20261101.webp",
+      "runtimeBytes": 21816
+    }
+  ],
+  "assignments": [
+    {
+      "skillId": "s110_001",
+      "skillName": "一撃",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_002",
+      "skillName": "強打",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_003",
+      "skillName": "身構える",
+      "category": "防御",
+      "asset": "06_guard.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "身構えて次の攻撃を軽減する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_004",
+      "skillName": "小回復",
+      "category": "回復",
+      "asset": "04_healing.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "自分のHPを少し回復する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_005",
+      "skillName": "毒払い",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "自分の毒を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_006",
+      "skillName": "しびれ取り",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "自分の麻痺を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_007",
+      "skillName": "気付け",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "自分の混乱を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_008",
+      "skillName": "気合溜め",
+      "category": "強化",
+      "asset": "19_enhancement.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "気合を入れて自分の攻撃力を上げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_009",
+      "skillName": "威圧",
+      "category": "威圧",
+      "asset": "20_intimidation.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を威圧して攻撃力を下げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_010",
+      "skillName": "集中",
+      "category": "強化",
+      "asset": "19_enhancement.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "集中して次の攻撃を強める。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_011",
+      "skillName": "立て直し",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "自分の毒・麻痺・混乱を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_012",
+      "skillName": "打ち消し",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手の攻撃力強化を打ち消す。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_013",
+      "skillName": "火花の舞",
+      "category": "嵐・放出",
+      "asset": "15_storm_release.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_014",
+      "skillName": "火炎弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_015",
+      "skillName": "爆炎チャージ",
+      "category": "突進",
+      "asset": "10_charge.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "激しく突撃する。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_016",
+      "skillName": "水流弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_017",
+      "skillName": "大波召喚",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_018",
+      "skillName": "吸水",
+      "category": "吸収",
+      "asset": "18_absorption.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "攻撃して相手のHPを吸収する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_019",
+      "skillName": "リーフカッター",
+      "category": "斬撃",
+      "asset": "14_slash.png",
+      "tier": "低級",
+      "element": "grass",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_020",
+      "skillName": "森の一撃",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "grass",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_021",
+      "skillName": "ポイズンニードル",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "grass",
+      "description": "毒針で攻撃する。毒にすることがある。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_022",
+      "skillName": "雷撃",
+      "category": "雷撃",
+      "asset": "16_lightning.png",
+      "tier": "低級",
+      "element": "thunder",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_023",
+      "skillName": "雷光弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "thunder",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_024",
+      "skillName": "サンダーボルト",
+      "category": "雷撃",
+      "asset": "16_lightning.png",
+      "tier": "低級",
+      "element": "thunder",
+      "description": "雷で攻撃する。麻痺させることがある。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_025",
+      "skillName": "突風",
+      "category": "嵐・放出",
+      "asset": "15_storm_release.png",
+      "tier": "低級",
+      "element": "wind",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_026",
+      "skillName": "ゼファーカッター",
+      "category": "斬撃",
+      "asset": "14_slash.png",
+      "tier": "低級",
+      "element": "wind",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_027",
+      "skillName": "追い風の封書",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "wind",
+      "description": "風で攻撃し、次の攻撃に集中する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_028",
+      "skillName": "光雫弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "light",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_029",
+      "skillName": "祈光弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "light",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_030",
+      "skillName": "癒しの光弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "light",
+      "description": "光で攻撃し、自分のHPも回復する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_031",
+      "skillName": "影打ち",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "dark",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_032",
+      "skillName": "闇の波動",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "低級",
+      "element": "dark",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_033",
+      "skillName": "呪いの視線",
+      "category": "威圧",
+      "asset": "20_intimidation.png",
+      "tier": "低級",
+      "element": "dark",
+      "description": "闇で攻撃し、相手の攻撃力を下げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_034",
+      "skillName": "星屑弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "star",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_035",
+      "skillName": "スターライトレイ",
+      "category": "光線・砲撃",
+      "asset": "12_beam.png",
+      "tier": "低級",
+      "element": "star",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_036",
+      "skillName": "イリュージョン",
+      "category": "混乱",
+      "asset": "05_confusion.png",
+      "tier": "低級",
+      "element": "star",
+      "description": "幻で攻撃する。混乱させることがある。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_037",
+      "skillName": "夜滑り",
+      "category": "突進",
+      "asset": "10_charge.png",
+      "tier": "低級",
+      "element": "dragon",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": "名前から滑り込む動作として突進に割当。"
+    },
+    {
+      "skillId": "s110_038",
+      "skillName": "竜気弾",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "低級",
+      "element": "dragon",
+      "description": "属性の力で相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_039",
+      "skillName": "蒼竜の咆哮",
+      "category": "咆哮",
+      "asset": "17_roar.png",
+      "tier": "低級",
+      "element": "dragon",
+      "description": "咆哮で攻撃し、自分の攻撃力を上げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_040",
+      "skillName": "斬りつけ",
+      "category": "剣",
+      "asset": "03_sword.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_041",
+      "skillName": "連続斬り",
+      "category": "剣",
+      "asset": "03_sword.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "連続で相手を斬りつける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_042",
+      "skillName": "渾身斬り",
+      "category": "剣",
+      "asset": "03_sword.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_043",
+      "skillName": "フレイムクロー",
+      "category": "爪",
+      "asset": "02_claw.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_044",
+      "skillName": "竜のひっかき",
+      "category": "爪",
+      "asset": "02_claw.png",
+      "tier": "低級",
+      "element": "dragon",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_045",
+      "skillName": "星雲の爪",
+      "category": "爪",
+      "asset": "02_claw.png",
+      "tier": "低級",
+      "element": "star",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_046",
+      "skillName": "火炎牙",
+      "category": "牙",
+      "asset": "01_fang.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_047",
+      "skillName": "影牙",
+      "category": "牙",
+      "asset": "01_fang.png",
+      "tier": "低級",
+      "element": "dark",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_048",
+      "skillName": "炎狼牙",
+      "category": "牙",
+      "asset": "01_fang.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_049",
+      "skillName": "しっぽ打ち",
+      "category": "尾",
+      "asset": "07_tail.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_050",
+      "skillName": "幼竜の尾",
+      "category": "尾",
+      "asset": "07_tail.png",
+      "tier": "低級",
+      "element": "dragon",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_051",
+      "skillName": "ストリームテイル",
+      "category": "尾",
+      "asset": "07_tail.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_052",
+      "skillName": "ソーンホーン",
+      "category": "角",
+      "asset": "08_horn.png",
+      "tier": "低級",
+      "element": "grass",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_053",
+      "skillName": "溶岩角",
+      "category": "角",
+      "asset": "08_horn.png",
+      "tier": "低級",
+      "element": "fire",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_054",
+      "skillName": "ルクスホーン",
+      "category": "角",
+      "asset": "08_horn.png",
+      "tier": "低級",
+      "element": "light",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_055",
+      "skillName": "氷の拳",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_056",
+      "skillName": "石造拳",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_057",
+      "skillName": "氷塊拳",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_058",
+      "skillName": "たいあたり",
+      "category": "突進",
+      "asset": "10_charge.png",
+      "tier": "低級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_059",
+      "skillName": "若葉の突進",
+      "category": "突進",
+      "asset": "10_charge.png",
+      "tier": "低級",
+      "element": "grass",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_060",
+      "skillName": "蒼海の突進",
+      "category": "突進",
+      "asset": "10_charge.png",
+      "tier": "低級",
+      "element": "water",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_061",
+      "skillName": "捨て身打ち",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "反動を顧みず強く打ちつける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_062",
+      "skillName": "応急治療",
+      "category": "回復",
+      "asset": "04_healing.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "応急処置で自分のHPを回復する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_063",
+      "skillName": "鉄壁の構え",
+      "category": "防御",
+      "asset": "06_guard.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "守りを固めて次の攻撃を大きく軽減する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_064",
+      "skillName": "奮起",
+      "category": "強化",
+      "asset": "19_enhancement.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "混乱を振り払い、自分の攻撃力を上げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_065",
+      "skillName": "崩しの一撃",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "攻撃して相手の強化を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_066",
+      "skillName": "再起",
+      "category": "回復",
+      "asset": "04_healing.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "HPを回復し、毒・麻痺・混乱を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_067",
+      "skillName": "灼熱光砲",
+      "category": "光線・砲撃",
+      "asset": "12_beam.png",
+      "tier": "上級",
+      "element": "fire",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_068",
+      "skillName": "焼き直し",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "上級",
+      "element": "fire",
+      "description": "相手を攻撃する。相手の強化を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_069",
+      "skillName": "ハイドロスパイラル",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "上級",
+      "element": "water",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_070",
+      "skillName": "命流採水",
+      "category": "吸収",
+      "asset": "18_absorption.png",
+      "tier": "上級",
+      "element": "water",
+      "description": "相手を攻撃する。相手のHPを吸収する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_071",
+      "skillName": "ガイアスラッシュ",
+      "category": "斬撃",
+      "asset": "14_slash.png",
+      "tier": "上級",
+      "element": "grass",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_072",
+      "skillName": "トキシックガーデン",
+      "category": "嵐・放出",
+      "asset": "15_storm_release.png",
+      "tier": "上級",
+      "element": "grass",
+      "description": "相手を攻撃する。毒にすることがある。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_073",
+      "skillName": "ボルテックストーム",
+      "category": "雷撃",
+      "asset": "16_lightning.png",
+      "tier": "上級",
+      "element": "thunder",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_074",
+      "skillName": "サンダーストーム",
+      "category": "雷撃",
+      "asset": "16_lightning.png",
+      "tier": "上級",
+      "element": "thunder",
+      "description": "相手を攻撃する。麻痺にすることがある。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_075",
+      "skillName": "暴風刃",
+      "category": "斬撃",
+      "asset": "14_slash.png",
+      "tier": "上級",
+      "element": "wind",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_076",
+      "skillName": "峡谷の風便",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "上級",
+      "element": "wind",
+      "description": "相手を攻撃する。相手の強化を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_077",
+      "skillName": "ジャッジメント",
+      "category": "光線・砲撃",
+      "asset": "12_beam.png",
+      "tier": "上級",
+      "element": "light",
+      "description": "相手を攻撃する。",
+      "assignmentNote": "裁きの光として光線・砲撃に割当。"
+    },
+    {
+      "skillId": "s110_078",
+      "skillName": "浄光のメス",
+      "category": "解除",
+      "asset": "22_dispel.png",
+      "tier": "上級",
+      "element": "light",
+      "description": "相手を攻撃する。相手の強化を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_079",
+      "skillName": "ノクスエクリプス",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "上級",
+      "element": "dark",
+      "description": "相手を攻撃する。",
+      "assignmentNote": "闇の広がりとして波動に割当。"
+    },
+    {
+      "skillId": "s110_080",
+      "skillName": "衰弱の呪印",
+      "category": "弱体化",
+      "asset": "21_weakening.png",
+      "tier": "上級",
+      "element": "dark",
+      "description": "相手を攻撃する。相手の攻撃力を下げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_081",
+      "skillName": "アストラルフレア",
+      "category": "嵐・放出",
+      "asset": "15_storm_release.png",
+      "tier": "上級",
+      "element": "star",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_082",
+      "skillName": "星幕の迷路",
+      "category": "混乱",
+      "asset": "05_confusion.png",
+      "tier": "上級",
+      "element": "star",
+      "description": "相手を攻撃する。混乱にすることがある。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_083",
+      "skillName": "蒼天龍波",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "上級",
+      "element": "dragon",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_084",
+      "skillName": "蝕月咆哮",
+      "category": "咆哮",
+      "asset": "17_roar.png",
+      "tier": "上級",
+      "element": "dragon",
+      "description": "相手を攻撃する。相手の攻撃力を下げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_085",
+      "skillName": "白銀連斬",
+      "category": "剣",
+      "asset": "03_sword.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_086",
+      "skillName": "ボルテッククロー",
+      "category": "爪",
+      "asset": "02_claw.png",
+      "tier": "上級",
+      "element": "thunder",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_087",
+      "skillName": "夜天竜牙",
+      "category": "牙",
+      "asset": "01_fang.png",
+      "tier": "上級",
+      "element": "dark",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_088",
+      "skillName": "竜の尾撃",
+      "category": "尾",
+      "asset": "07_tail.png",
+      "tier": "上級",
+      "element": "dragon",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_089",
+      "skillName": "火口崩し",
+      "category": "突進",
+      "asset": "10_charge.png",
+      "tier": "上級",
+      "element": "fire",
+      "description": "相手を攻撃する。自分も反動を受ける。",
+      "assignmentNote": "体当たりによる崩しとして突進に割当。"
+    },
+    {
+      "skillId": "s110_090",
+      "skillName": "巨岩クラッシュ",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "上級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_091",
+      "skillName": "紅蓮光砲",
+      "category": "光線・砲撃",
+      "asset": "12_beam.png",
+      "tier": "超級",
+      "element": "fire",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_092",
+      "skillName": "オルカアビス",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "超級",
+      "element": "water",
+      "description": "相手を攻撃する。",
+      "assignmentNote": "水・深淵のうねりとして波動に割当。"
+    },
+    {
+      "skillId": "s110_093",
+      "skillName": "古森の波動",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "超級",
+      "element": "grass",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_094",
+      "skillName": "過負荷の蒼雷",
+      "category": "雷撃",
+      "asset": "16_lightning.png",
+      "tier": "超級",
+      "element": "thunder",
+      "description": "相手を攻撃する。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_095",
+      "skillName": "アペクスストーム",
+      "category": "嵐・放出",
+      "asset": "15_storm_release.png",
+      "tier": "超級",
+      "element": "wind",
+      "description": "相手を攻撃する。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_096",
+      "skillName": "コード・アルファ",
+      "category": "光線・砲撃",
+      "asset": "12_beam.png",
+      "tier": "超級",
+      "element": "light",
+      "description": "相手を攻撃する。",
+      "assignmentNote": "技名だけでは形状を特定できないため、既定案の光線・砲撃に割当。"
+    },
+    {
+      "skillId": "s110_097",
+      "skillName": "総決算の影札",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "超級",
+      "element": "dark",
+      "description": "相手を攻撃する。弱った相手には効果が高い。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_098",
+      "skillName": "コスモスアーク",
+      "category": "斬撃",
+      "asset": "14_slash.png",
+      "tier": "超級",
+      "element": "star",
+      "description": "相手を攻撃する。",
+      "assignmentNote": "弧状の斬撃として斬撃に割当。"
+    },
+    {
+      "skillId": "s110_099",
+      "skillName": "終焉竜波",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "超級",
+      "element": "dragon",
+      "description": "相手を攻撃する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_100",
+      "skillName": "大回復",
+      "category": "回復",
+      "asset": "04_healing.png",
+      "tier": "超級",
+      "element": "normal",
+      "description": "自分のHPを回復する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_101",
+      "skillName": "不退の構え",
+      "category": "防御",
+      "asset": "06_guard.png",
+      "tier": "超級",
+      "element": "normal",
+      "description": "次の攻撃を軽減する。自分の攻撃力を上げる。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_102",
+      "skillName": "清浄の守り",
+      "category": "防御",
+      "asset": "06_guard.png",
+      "tier": "超級",
+      "element": "normal",
+      "description": "次の攻撃を軽減する。自分の状態異常を解除する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_103",
+      "skillName": "エリクシオン・ノヴァ",
+      "category": "波動",
+      "asset": "13_wave.png",
+      "tier": "超級",
+      "element": "normal",
+      "description": "相手を攻撃する。",
+      "assignmentNote": "ノヴァの広がりとして波動に割当。"
+    },
+    {
+      "skillId": "s110_104",
+      "skillName": "錬核崩砕",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "超級",
+      "element": "normal",
+      "description": "相手を攻撃する。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_105",
+      "skillName": "アポカリプスノヴァ",
+      "category": "嵐・放出",
+      "asset": "15_storm_release.png",
+      "tier": "超級",
+      "element": "star",
+      "description": "相手を攻撃する。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_106",
+      "skillName": "終焉の一斉射撃",
+      "category": "弾・射撃",
+      "asset": "11_projectile.png",
+      "tier": "超級",
+      "element": "fire",
+      "description": "相手を攻撃する。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_107",
+      "skillName": "オーバーブレイク",
+      "category": "拳",
+      "asset": "09_fist.png",
+      "tier": "最強",
+      "element": "normal",
+      "description": "相手の守りを貫く一撃。自分も反動を受ける。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_108",
+      "skillName": "オーバードレイン",
+      "category": "吸収",
+      "asset": "18_absorption.png",
+      "tier": "最強",
+      "element": "normal",
+      "description": "強烈な攻撃で相手のHPを吸収する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_109",
+      "skillName": "オーバードライブ",
+      "category": "強化",
+      "asset": "19_enhancement.png",
+      "tier": "最強",
+      "element": "normal",
+      "description": "攻撃力を高め、次の攻撃と守りを強化する。",
+      "assignmentNote": ""
+    },
+    {
+      "skillId": "s110_110",
+      "skillName": "オーバーリバース",
+      "category": "回復",
+      "asset": "04_healing.png",
+      "tier": "最強",
+      "element": "normal",
+      "description": "HPと状態を回復し、態勢を立て直す。",
+      "assignmentNote": ""
+    }
+  ]
+}

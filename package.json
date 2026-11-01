@@ -118,7 +118,7 @@
     "check:save-failure-actions": "node scripts/test-save-failure-actions.mjs",
     "check:tutorial-evolution": "node scripts/test-tutorial-evolution.mjs && node scripts/test-tutorial-evolved-companions.cjs",
     "check:expedition-party-guide": "node scripts/test-expedition-party-guide.mjs && node scripts/test-expedition-party-guide-browser.cjs",
-    "check:gacha-adopted": "node scripts/test-gacha-adopted.mjs"
+    "check:gacha-adopted": "node scripts/test-gacha-adopted.mjs && node scripts/test-skill-silhouettes.mjs"
   },
   "engines": {
     "node": ">=20"
