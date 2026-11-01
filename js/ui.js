@@ -395,6 +395,7 @@ function selectHomeFavorite(id){
   return true;
 }
 function renderHome(){
+  if(typeof renderLifeQuestRewards==='function')renderLifeQuestRewards();
   if(typeof renderNonbattleHomeContext==='function')renderNonbattleHomeContext();
   renderHomeFavorite();
   if (typeof updateNoticeIndicators === 'function') updateNoticeIndicators();

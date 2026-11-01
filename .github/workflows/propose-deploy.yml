@@ -85,7 +85,7 @@ jobs:
             echo "::error::Published $deployed is not an ancestor of $SHA; refusing to propose."; exit 1
           fi
           # Only files copied to the public site matter (see the deployment workflow).
-          changed=$(git diff --name-only "$deployed" "$SHA" -- index.html url-transfer.html js css images)
+          changed=$(git diff --name-only "$deployed" "$SHA" -- index.html url-transfer.html js css images english life-quest)
           if [ -z "$changed" ]; then
             echo "No runtime changes since $deployed"; echo "needed=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
@@ -102,7 +102,7 @@ jobs:
             git log --first-parent --format='- %s (%h)' "$deployed..$SHA"
             echo
             echo "### 公開されるファイルの変更数"
-            echo "$(echo "$changed" | wc -l) files (index.html / js / css / images)"
+            echo "$(echo "$changed" | wc -l) files (index.html / js / css / images / english / life-quest)"
             echo
             echo "このPRは自動作成です。**マージは手動**で行ってください。マージすると公開と公開後テストが走ります。"
           } > ../pr-body.md
