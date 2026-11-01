@@ -63,7 +63,7 @@ const {chromium}=require('playwright');
    assert.deepEqual(await page.evaluate(()=>save.instances.map(x=>x.id)),['freiwolf','tienhairon','elna_water','galdra']);
    // Both spotlight and real click follow the same evolved Elna instance.
    await page.evaluate(()=>{clearTutorialUi();startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'growth_elna_details',persist:true})});
-   await page.locator('[data-tutorial-elna-instance] .monster-roster-details > summary').click();
+   await page.locator('#partyList [data-tutorial-elna-instance]').click();
    await page.waitForFunction(()=>tutorialCurrentStepId()==='growth_skill_open');
    const skillButton=page.locator('[data-tutorial-elna-instance] [data-tutorial-skill-edit]');
    await page.mouse.move(0,0);

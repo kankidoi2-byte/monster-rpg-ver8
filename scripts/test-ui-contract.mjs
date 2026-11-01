@@ -105,7 +105,7 @@ expect(read('js/multi-battle.js').includes('function handleMultiEnemyCard'), 'th
 expect(read('css/ui-redesign.css').includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'side-by-side three-way enemy layout is missing');
 expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), 'quest recommendation scoring is missing');
 expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
-expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
+expect(read('js/party.js').includes('roster-icon'), 'five-column roster icons are missing');
 expect(dex.includes('monster-dex-card'), 'monster-first dex cards are missing');
 expect(dex.includes('function monsterObtainEntries'), 'monster dex acquisition-source renderer is missing');
 expect(dex.includes('INITIAL_PARTY_IDS.includes(m.id)'), 'monster dex must derive initial acquisition from the shared initial-party definition');

@@ -47,8 +47,8 @@ async function openSurface(page,kind){
       screen='contractorRank';selector='#contractorRankUpOverlay button[onclick="closeContractorRankUp()"]';
       surfaces=['contractorRankContent'];
     }else if(kind==='lock'||kind==='unlock'){
-      screen='party';selector=`#partyList button[onclick="toggleInstanceLock('${unit.uid}')"]`;
-      surfaces=['partyList'];
+      screen='party';selector=`#rosterSheetHost button[onclick="toggleInstanceLock('${unit.uid}')"]`;
+      surfaces=['partyList','rosterSheetHost'];
     }else if(kind.startsWith('party-')){
       screen='partySet';selector=`#partySelectList button[data-party-uid="${unit.uid}"]`;
       surfaces=['currentPartyView','partySelectList'];
@@ -58,7 +58,7 @@ async function openSurface(page,kind){
     }
     show(screen);
     if(kind==='golden-map')showItemDexDetail('golden_land_map');
-    if(kind==='lock'||kind==='unlock')document.querySelector(`[data-instance-uid="${unit.uid}"] details`).open=true;
+    if(kind==='lock'||kind==='unlock')openRosterDetail(unit.uid);
     if(kind==='rank-up-close')presentNextContractorRankUp();
     clearTimeout(contractorRankUpTimer);
     return {screen,selector,surfaces,uid:unit.uid,titleId,catalogExp:CONTRACTOR_ACTION_EXP.dexRegistration,rewards:CONTRACTOR_RANK_REWARD_CATALOG.filter(reward=>kind==='reward-single'?reward.rank===20:reward.rank<=20)};

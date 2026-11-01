@@ -22,21 +22,23 @@ try{
    if(!saveGame())throw Error('seed save failed');show('party');return fast.uid;
   });
   const fast=page.locator(`[data-instance-uid="${uid}"]`);
-  await fast.locator('summary').click();
-  await page.locator('.monster-roster-card').nth(1).locator('summary').click();
+  await fast.click();
+  await page.locator('#rosterSheetHost button').filter({hasText:'閉じる'}).click();
+  await fast.click();
   assert.equal(await page.locator('.instance-evolution-summary').count(),0);
   assert.match(await fast.innerText(),/Lv\.13/,'current level remains visible');
   assert.doesNotMatch(await page.locator('#partyList').innerText(),/進化レベル|条件達成|基準Lv|個体差Lv/);
   await page.screenshot({path:`${out}/roster-${viewport.width}.png`});
   // Advance through a real item action, then use the rendered evolution choice.
-  await fast.locator('button').filter({hasText:'ギガデータ'}).click();
+  await page.locator('#rosterSheetHost summary').click();
+  await page.locator('#rosterSheetHost button').filter({hasText:'ギガデータ'}).click();
   await page.locator('#evolution').waitFor({state:'visible'});
   await page.locator('#evoChoices button').filter({hasText:'ハイアクアロンに進化する'}).click();
   const evolved=await page.evaluate(uid=>getInstance(uid),uid);
   assert.equal(evolved.id,'highaquaron');assert.equal(evolved.evolutionOffset,-2);
   await page.evaluate(()=>{clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');show('party')});
-  const details=page.locator(`[data-instance-uid="${uid}"] details`);
-  if(!await details.evaluate(e=>e.open))await details.locator('summary').click();
+  await page.locator(`[data-instance-uid="${uid}"]`).click();
+  const details=page.locator('#rosterSheetHost');
   assert.equal(await details.locator('.instance-evolution-summary').count(),0);
   assert.deepEqual(await page.evaluate(uid=>instanceEvolutionRoutes(getInstance(uid)).map(e=>e.level),uid),[34,34]);
   await page.screenshot({path:`${out}/evolved-${viewport.width}.png`});

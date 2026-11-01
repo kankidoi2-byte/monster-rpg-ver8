@@ -1209,6 +1209,15 @@ const CHARACTER_RECYCLE_REWARDS = Object.freeze({
   5:Object.freeze({itemId:'giga_data',count:2,coins:80})
 });
 
+// Approved monster-only rewards: surplus contracts supplement training data.
+const MONSTER_RECYCLE_REWARDS = Object.freeze({
+  1:Object.freeze({itemId:'kilo_data',count:1,coins:2}),
+  2:Object.freeze({itemId:'kilo_data',count:2,coins:5}),
+  3:Object.freeze({itemId:'mega_data',count:1,coins:10}),
+  4:Object.freeze({itemId:'mega_data',count:2,coins:20}),
+  5:Object.freeze({itemId:'giga_data',count:1,coins:40})
+});
+
 /* Approved 110-skill catalog. New IDs preserve every legacy record. */
 const SKILL110_CATALOG = [
   {"id":"s110_001","name":"一撃","cost":1,"power":24,"type":"normal","types":["normal"],"effect":"tactical","chance":null,"tactical":{},"form":"generic","requirements":{"entityKinds":["monster","character"],"requiredAll":[]},"universal":true,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:generic","element:normal"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},

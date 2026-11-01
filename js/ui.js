@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
   if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
   if(typeof gachaCinema!=='undefined'&&gachaCinema)gachaCinema.finish();
   if(typeof closeGachaRates==='function')closeGachaRates();
@@ -294,7 +295,7 @@ function setContractorTitle(titleId){
 }
 function contractorRankUpCanPresent(){
   const active=document.querySelector('.screen.active')?.id;
-  return !(typeof gachaResultBlocksRank==='function'&&gachaResultBlocksRank())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
+  return !(typeof rosterUi!=='undefined'&&(rosterUi.selecting||rosterUi.detailUid||rosterUi.confirmation))&&!(typeof gachaResultBlocksRank==='function'&&gachaResultBlocksRank())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
 }
 function scheduleContractorRankUpPresentation(){
   clearTimeout(contractorRankUpTimer);
