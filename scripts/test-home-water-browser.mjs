@@ -53,7 +53,7 @@ try{
   await page.evaluate(()=>show('home'));await page.locator(selector).click();assert(await page.locator('#'+screen).isVisible());assert.equal(await page.evaluate(()=>waterHomeRecord),null);
  }
  await page.evaluate(()=>show('home'));assert.equal(await page.locator('[data-notice-unread]').first().isHidden(),true);report.checks.push('rank/notices/read indicator/expedition/dex shortcuts; media disposed on exit');
- await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('.monster-party-button').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();report.checks.push('monster navigation -> party edit -> save');
+ await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('#rosterActions [data-roster-party]').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();report.checks.push('monster navigation -> party edit -> save');
  await page.evaluate(()=>show('home'));await page.locator('.home-battle-button').click();assert(await page.locator('#battleChoices').isVisible());
  await page.locator('[data-wm-place="grassland"]').first().click();await page.locator('[data-wm-difficulty="easy"]').first().click();await page.locator('[data-wm-depart]').first().click();assert(await page.locator('#battle').isVisible());report.checks.push('home battle -> world map -> easy battle start');
  await page.evaluate(()=>{show('home');save.homeFavoriteId='freigal';renderHome();});
