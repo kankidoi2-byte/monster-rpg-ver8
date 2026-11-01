@@ -372,3 +372,8 @@ body.title-mode>.menu,body.title-mode>.screen{visibility:hidden;pointer-events:n
   #bossCautionOverlay.active,.caution-frame,.caution-main,
   #bossCautionOverlay::before,#bossCautionOverlay::after{animation:none}
 }
+
+/* Life Quest inbox sits above the home action buttons. */
+#lifeQuestRewardBox[hidden]{display:none}
+#lifeQuestRewardBox{position:absolute;z-index:6;bottom:calc(var(--ui-nav-height,78px) + 180px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(90%,360px);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid #7ce7de;border-radius:12px;background:rgba(8,20,30,.92);color:#e4ffff;font-size:12px}
+#lifeQuestRewardBox button{padding:7px 12px;border:1px solid #7ce7de;border-radius:8px;background:#173e44;color:#e4ffff}
