@@ -295,7 +295,7 @@ function setContractorTitle(titleId){
 }
 function contractorRankUpCanPresent(){
   const active=document.querySelector('.screen.active')?.id;
-  return !(typeof rosterUi!=='undefined'&&(rosterUi.selecting||rosterUi.detailUid||rosterUi.confirmation))&&!(typeof gachaResultBlocksRank==='function'&&gachaResultBlocksRank())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
+  return !(typeof tutorialDefersRankUpPresentation==='function'&&tutorialDefersRankUpPresentation())&&!(typeof rosterUi!=='undefined'&&(rosterUi.selecting||rosterUi.detailUid||rosterUi.confirmation))&&!(typeof gachaResultBlocksRank==='function'&&gachaResultBlocksRank())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
 }
 function scheduleContractorRankUpPresentation(){
   clearTimeout(contractorRankUpTimer);
