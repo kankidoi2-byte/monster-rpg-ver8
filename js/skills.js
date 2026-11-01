@@ -262,7 +262,7 @@ function renderSkillEdit({preservePosition=false}={}){
   current.innerHTML = equipped.map((id,idx) => {
     const sk = SKILL_BY_ID[id];
     const tutorialTarget=typeof shouldMarkTutorialStellaUnequip==='function'&&shouldMarkTutorialStellaUnequip(ins.uid)?' data-tutorial-stella-unequip':'';
-    return `<div class="card ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}${skillCardEffect(skillToMove(id))}<button${tutorialTarget} onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
+    return `<div class="card ${skillCardClass(skillTypes(sk))}">${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}${skillCardEffect(skillToMove(id))}<button${tutorialTarget} onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
   }).join('') || '<div class="card">技が未装備です。</div>';
   const skillPool = typeof SKILL110_CATALOG !== 'undefined' ? SKILL110_CATALOG : (mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS);
   const filteredCards = skillPool.filter(sk => {
@@ -299,7 +299,7 @@ function renderSkillEdit({preservePosition=false}={}){
     if(avail<=0)reasons.push((save.skillCards[sk.id]||0)>0?'所持カードは全て使用中：同じ技を外すか追加で入手':'未所持：技カードの入手が必要');
     const reason = can ? '装備する' : '装備できません';
     const tutorialTarget=typeof shouldMarkTutorialStellaSkillCard==='function'&&shouldMarkTutorialStellaSkillCard(sk.id,ins.uid);
-    return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${skillCardHeader(sk)}${skillCardStats(sk)}<p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p>${skillCardEffect(skillToMove(sk.id))}${reasons.length?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:''}<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
+    return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}<p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p>${skillCardEffect(skillToMove(sk.id))}${reasons.length?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:''}<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
   }).join('') || '<div class="card" role="status">条件に合う技カードがありません。検索・絞り込みを変更してください。</div>';
   restoreSkillEditPosition(position);
 }

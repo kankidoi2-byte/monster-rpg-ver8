@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4175'],{stdio:['ignore','pipe','inherit']});
 await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
 const out='artifacts/skill-card-layout';fs.mkdirSync(out,{recursive:true});
 const results=[];
 try{

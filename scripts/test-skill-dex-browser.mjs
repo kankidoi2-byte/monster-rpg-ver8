@@ -6,7 +6,7 @@ const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.
 const out='artifacts/skill-card-layout/skill-dex';fs.mkdirSync(out,{recursive:true});
 try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
- browser=await chromium.launch({headless:true});
+ browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const [width,height] of [[320,568],[390,844],[430,932],[844,390]]){
   const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
   await page.goto('http://127.0.0.1:4184/?legacy=1',{waitUntil:'networkidle'});

@@ -587,9 +587,10 @@ async function confirmTutorialElnaContract(){
 function renderTutorialStep(){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
+  if(step?.id==='skill_gacha_rates'&&typeof openGachaRates==='function'&&typeof gachaTab!=='undefined'&&gachaTab==='skill'){openGachaRates();const guide=document.getElementById('tutorialOverlay');if(guide)guide.inert=false;}
   if(!step){finishTutorialFlow();return;}
   prepareTutorialStep(step);
-  if(step.screenId&&activeScreenId()!==step.screenId){
+  if(step.screenId&&activeScreenId()!==step.screenId&&!(typeof GACHA_ROUTES!=='undefined'&&GACHA_ROUTES[step.screenId]===gachaTab&&activeScreenId()==='gachaHub')){
     show(step.screenId);
     setTimeout(renderTutorialStep,0);
     return;
@@ -880,6 +881,7 @@ function requestTutorialSkip(){
   updateTutorialMenuSummary();
 }
 function clearTutorialUi(){
+  if(typeof closeGachaRates==='function')closeGachaRates();
   const overlay=document.getElementById('tutorialOverlay');
   clearTutorialTarget();
   overlay?.classList.add('hidden');overlay?.setAttribute('aria-hidden','true');
@@ -1997,8 +1999,8 @@ registerTutorialFlow(TUTORIAL_SKILL_CARDS_FLOW_ID,[
   {id:'skill_inventory',screenId:'skillEdit',target:'#skillCardList',title:'技カードは所持枚数ぶん使えます',text:'属性や区分などの条件を満たすカードだけ装備できます。技ガチャではコインを使って新しいカードを獲得できます。',progressLabel:'SKILL CARDS',nextLabel:'技編集へ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_SKILL_GACHA_FLOW_ID,[
-  {id:'skill_gacha_draw',screenId:'skillGacha',target:'.skill-gacha-actions',title:'コインで技カードを獲得',text:'1回は100コイン、10回は900コインです。10回では上級以上の技が少なくとも1枚出ます。',progressLabel:'SKILL GACHA'},
-  {id:'skill_gacha_rates',screenId:'skillGacha',target:'#skillGachaRateList',title:'種類と排出率を確認',text:'どちらの技ガチャからも共通の106種類を入手できます。最強4技は合成限定です。仲間の技編集で、適性とコストに合うカードを装備しよう。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
+  {id:'skill_gacha_draw',screenId:'skillGacha',target:'.gacha-draw-actions',title:'コインで技カードを獲得',text:'1回は100コイン、10回は900コインです。10回では上級以上の技が少なくとも1枚出ます。',progressLabel:'SKILL GACHA'},
+  {id:'skill_gacha_rates',screenId:'skillGacha',target:'#gachaRatesTitle',title:'種類と排出率を確認',text:'技タブから共通の106種類を入手できます。最強4技は合成限定です。仲間の技編集で、適性とコストに合うカードを装備しよう。',progressLabel:'SKILL GACHA',nextLabel:'ガチャへ戻る'}
 ]);
 // Golden-land feature guide retired. Keep the flow ID so existing callers safely return false.
 registerTutorialFlow(TUTORIAL_DEX_FLOW_ID,[

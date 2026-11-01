@@ -91,6 +91,8 @@ function inspectCharacterGachaRecovery(){
 function renderCharacterGachaRecoveryWarning(state=inspectCharacterGachaRecovery()){
   if(!state.blocked)return false;
   const target=document.getElementById('characterGachaResult');
+  target?.classList?.remove('is-mirrored-result');
+  if(typeof gachaResultSession!=='undefined'&&gachaResultSession?.kind==='character')dismissGachaResult(false);
   const importedNote=state.record?.status==='baseline'?'<p>この記録は、読み込んだセーブを基準にしています。</p>':'';
   if(target)target.innerHTML='<h2>契約のセーブ記録を確認してください</h2><p>記録を照合できないため、契約を止めました。データは変わっていません。</p>'+
     (state.record?importedNote+'<p>復旧記録を書き出して保管してください。保存に失敗した契約結果は確定済みとは限りません。</p><button type="button" onclick="exportCharacterGachaRecovery()">契約時のセーブを書き出す</button><button type="button" onclick="exportCharacterGachaRecovery(\'before\')">契約前のセーブを書き出す</button>':'<p>契約時の記録を読み取れません。現在のデータを書き出して保管してください。</p>')+
@@ -283,12 +285,16 @@ function renderCharacterGacha(){
     button.disabled=isCharacterGachaPresenting()||!pool.length||(save.coins||0)<cost;
   });
   recoverCharacterGachaReceipt();
+  if(typeof gachaResultSession!=='undefined'&&!gachaResultSession&&!isCharacterGachaPresenting()&&document.getElementById('gachaHub')?.classList.contains('active')&&gachaTab==='character'){const receipt=characterGachaReceiptResult();if(receipt&&!inspectCharacterGachaRecovery().blocked)renderCharacterGachaResults(receipt,{recovered:true});}
+  if(typeof refreshGachaBanner==='function')refreshGachaBanner();
 }
 function renderCharacterGachaResults(result,{recovered=false}={}){
   const target=document.getElementById('characterGachaResult');
   if(!target)return false;
+  target.classList?.remove('is-mirrored-result');
   target.innerHTML=`<h2>${result.count}体が仲間になりました</h2>${recovered?'<p>保存済みの契約結果です。コインや仲間の追加処理は行っていません。</p>':''}<div class="character-gacha-grid">${result.entries.map(({unit,isNew,instance})=>`<article class="character-gacha-card">${vis(unit)}<strong>${unit.name}</strong><small>${unit.rarity} / Lv.1</small><span>${isNew?'NEW・図鑑登録':'同じ形態の別個体を獲得'}${instance.locked?'・🔒 自動ロック':''}</span></article>`).join('')}</div><button onclick="show('partySet')">編成する</button><button type="button" onclick="acknowledgeCharacterGachaReceipt()">結果を確認して閉じる</button>`;
   characterGachaSeenReceipt={owner:save,id:result.receiptId};
+  if(typeof showGachaResult==='function'){target.classList.add('is-mirrored-result');showGachaResult('character',result,result.entries);}
   if(typeof replayUiMotion==='function')replayUiMotion(target,'ui-reward-pop',850);
   target.scrollIntoView?.({block:'start'});
   return true;
@@ -302,6 +308,7 @@ function recoverCharacterGachaReceipt(){
     // Retain unsupported/corrupt receipts for export and diagnosis. Never replace
     // them with a new draw, silently clear them, or guess missing acquisitions.
     const target=document.getElementById('characterGachaResult');
+    target?.classList?.remove('is-mirrored-result');
     if(target)target.textContent='保存された契約結果を読み取れません。セーブ管理からデータを書き出して保管してください。';
     return null;
   }

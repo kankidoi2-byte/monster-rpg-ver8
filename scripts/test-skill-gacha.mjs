@@ -91,9 +91,9 @@ const htmlSource=read('index.html');
 const cssSource=read('css/ui-redesign.css');
 assert(skillGachaSource.includes("matchMedia('(prefers-reduced-motion: reduce)')"),'presentation must respect reduced-motion preference');
 assert(skillGachaSource.includes('skipSkillGachaPresentation')&&skillGachaSource.includes('repeatSkillGachaPresentation')&&skillGachaSource.includes('openSkillInventoryFromGacha'),'presentation actions are incomplete');
-assert(htmlSource.includes('id="skillGachaPresentation"')&&htmlSource.includes('data-skill-gacha-speed="quick"'),'presentation overlay or speed control is missing');
+assert(htmlSource.includes('id="gachaResultOverlay"')&&read('js/gacha-cinematic.js').includes('data-speed')&&read('js/gacha-cinematic.js').includes('スキップ'),'adopted overlay, speed and skip controls are required');
 assert(!htmlSource.includes('id="skillGachaResult"')&&!skillGachaSource.includes('renderSkillGachaResults'),'persistent skill-card result list must be removed');
-assert(htmlSource.includes('id="skillGachaCardDetail"')&&skillGachaSource.includes('openSkillGachaCardDetail'),'tap-only card detail is missing');
+assert(htmlSource.includes('id="gachaResultDetail"')&&read('js/gacha-ui.js').includes('openGachaResultDetail'),'tap-only full card detail is required');
 assert(cssSource.includes('.skill-gacha-presentation')&&cssSource.includes('.skill-gacha-card-inner'),'presentation styles are missing');
 
 console.log('Skill gacha validation passed (106 shared cards, upper+ guarantee, ultimate exclusion, persistence rollback and presentation).');

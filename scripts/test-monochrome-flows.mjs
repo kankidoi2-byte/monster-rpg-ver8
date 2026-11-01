@@ -58,15 +58,16 @@ export async function runMonochromeFlows(page,out,record){
 
  await page.evaluate(()=>{show('skillGacha');setSkillGachaPresentationSpeed('quick');});
  const drawBefore=await page.evaluate(()=>({coins:save.coins,count:Object.values(save.skillCards).reduce((sum,n)=>sum+n,0),cost:SKILL_GACHA_SINGLE_COST}));
- await click(page.locator('#skillGachaRateList .skill-gacha-actions button').first());
- await page.locator('#skillGachaPresentation').waitFor({state:'visible'});
- await page.locator('#skillGachaPresentation.is-complete').waitFor({timeout:15000});
- assert.equal(await page.locator('#skillGachaPresentation [data-skill-gacha-card]').count(),1);
+ await click(page.locator('[data-gacha-draw]').first());
+ await page.locator('.gacha-cinema [data-modal-close]').click();
+ await page.locator('#gachaResultOverlay').waitFor({state:'visible'});
+ await page.locator('#gachaResultOverlay:not([hidden])').waitFor({timeout:15000});
+ assert.equal(await page.locator('#gachaResultCards>button').count(),1);
  assert.equal(await page.evaluate(()=>save.coins),drawBefore.coins-drawBefore.cost);
  assert.equal(await page.evaluate(()=>Object.values(save.skillCards).reduce((sum,n)=>sum+n,0)),drawBefore.count+1);
  await pass('gacha-draw-result');
- await click(page.locator('#skillGachaPresentation button[onclick="closeSkillGachaPresentation()"]'));
- assert(await page.locator('#skillGachaPresentation').isHidden());
+ await click(page.locator('#gachaResultOverlay [data-modal-close]'));
+ assert(await page.locator('#gachaResultOverlay').isHidden());
 
  await page.evaluate(()=>{
   selectedAlchemyMaterialIds=[];selectedAlchemyMaterialCounts=[];selectedAlchemyCatalystUid='';

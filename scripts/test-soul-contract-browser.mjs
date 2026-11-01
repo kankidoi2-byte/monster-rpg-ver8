@@ -12,22 +12,22 @@ async function fixture(page){
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.coins=10000;save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);if(!saveGame())throw Error('fixture save failed');show('characterGacha');});
 }
 async function fixedDraw(page,ids){
- return page.evaluate(async ids=>{const original=pickCharacterGachaUnit;let i=0;pickCharacterGachaUnit=()=>{const id=ids[i++];return M.find(m=>m.id===id);};const before={coins:save.coins,count:save.instances.length};try{const result=await rollCharacterGacha(ids.length);if(!result?.ok)throw Error('Draw failed: '+JSON.stringify(result));}finally{pickCharacterGachaUnit=original;}return before;},ids);
+ return page.evaluate(async ids=>{const original=pickCharacterGachaUnit;let i=0;pickCharacterGachaUnit=()=>{const id=ids[i++];return M.find(m=>m.id===id);};if(typeof gachaResultSession!=='undefined'&&gachaResultSession)await closeGachaResult();const before={coins:save.coins,count:save.instances.length};try{const result=await rollCharacterGacha(ids.length);if(!result?.ok)throw Error('Draw failed: '+JSON.stringify(result));}finally{pickCharacterGachaUnit=original;}return before;},ids);
 }
 async function screenshot(page,name){await page.screenshot({path:`${out}/${name}.png`});report.screenshots.push(`${name}.png`);write();}
 async function waitStage(page,stage){await page.waitForFunction(stage=>document.querySelector('#soulContractPresentation')?.dataset.stage===stage,stage,{timeout:15000});}
 try{
- await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});browser=await chromium.launch({headless:true});
+ await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const [width,height] of [[320,568],[360,800],[390,844],[430,932],[844,390]]){
   const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,deviceScaleFactor:2});
   await context.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
   const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>{report.cases.push({dialog:d.message()});d.dismiss();});page.on('console',m=>{if(m.type()==='warning'||m.type()==='error')console.log('BROWSER',m.text());});await fixture(page);
-  const before=await fixedDraw(page,['character_vera_3']);await waitStage(page,'souls');
+  const before=await fixedDraw(page,['character_vera_3']);await waitStage(page,'response');
   assert.equal(await page.locator('.soul-orbit .soul-star').count(),1);
-  await waitStage(page,'gold');await screenshot(page,`${width}-gold-contract`);
+  await page.waitForFunction(()=>['gold','promotion'].includes(document.querySelector('#soulContractPresentation')?.dataset.stage));await screenshot(page,`${width}-gold-contract`);
   assert.equal(await page.locator('#soulContractPresentation').getAttribute('data-rarity'),'3');
   assert.equal(await page.locator('.soul-document svg text').count(),0,'contract contains original paths rather than readable language');
-  await waitStage(page,'reveal');await page.waitForTimeout(450);
+  await waitStage(page,'portrait');await page.waitForTimeout(100);
   assert.equal(await page.locator('.soul-name').textContent(),await page.evaluate(()=>M.find(x=>x.id==='character_vera_3').name));
   assert(await page.locator('.soul-portrait img').evaluate(img=>img.complete&&img.naturalWidth>0),'latest game artwork loaded');
   const bounds=await page.locator('.soul-skip,.soul-caption,.soul-progress,.soul-portrait img').evaluateAll(nodes=>nodes.map(el=>{const r=el.getBoundingClientRect();return {name:el.className,x:r.x,y:r.y,right:r.right,bottom:r.bottom,height:r.height};}));
@@ -37,7 +37,7 @@ try{
   await screenshot(page,`${width}-reveal`);
   await page.locator('.soul-skip').click();assert.equal(await page.locator('#soulContractPresentation').count(),0);
   assert.equal(await page.evaluate(()=>save.coins),before.coins-100);assert.equal(await page.evaluate(()=>save.instances.length),before.count+1);
-  assert.equal(await page.evaluate(()=>document.body.style.overflow),'');assert.equal(await page.locator('body>[inert]').count(),0);
+  assert.equal(await page.evaluate(()=>document.body.style.overflow),'hidden');assert(await page.locator('#gachaResultOverlay').isVisible());await page.locator('#gachaResultOverlay [data-modal-close]').click();await page.locator('#gachaResultOverlay').waitFor({state:'hidden'});assert.equal(await page.evaluate(()=>document.body.style.overflow),'');assert.equal(await page.locator('body>[inert]').count(),0);
   report.cases.push({name:`single-gold-${width}x${height}`,result:'PASS'});
   // Navigation cancellation leaves committed result intact and unblocks keyboard.
   await fixedDraw(page,['elna_beginner']);await page.evaluate(()=>show('home'));assert.equal(await page.locator('#soulContractPresentation').count(),0);assert(await page.locator('#home').isVisible());
@@ -48,14 +48,14 @@ try{
   const context=await browser.newContext({viewport:{width:390,height:844},recordVideo:{dir:out,size:{width:390,height:844}}});await context.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
   const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>{report.cases.push({dialog:d.message()});d.dismiss();});page.on('console',m=>{if(m.type()==='warning'||m.type()==='error')console.log('BROWSER',m.text());});await fixture(page);
   await page.evaluate(()=>{window.soulEvents=[];window.soulObserver=new MutationObserver(records=>{const el=document.querySelector('#soulContractPresentation');if(el&&records.some(r=>r.type==='attributes'&&r.attributeName==='data-stage'&&r.target===el))window.soulEvents.push({stage:el.dataset.stage,index:Number(el.dataset.index),unit:el.dataset.unitId,gold:el.classList.contains('is-gold'),lit:el.querySelectorAll('.soul-progress .is-lit').length});});window.soulObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-stage']});});
-  const before=await fixedDraw(page,ids);await waitStage(page,'souls');assert.equal(await page.locator('.soul-star').count(),ids.length);
+  const before=await fixedDraw(page,ids);await waitStage(page,ids.length===10?'souls':'response');assert.equal(await page.locator('.soul-star').count(),ids.length);
   await screenshot(page,`${name}-soul-stars`);
   // Repeated calls during animation cannot spend or award again.
   await page.evaluate(()=>{rollCharacterGacha(1);rollCharacterGacha(10);});
-  await page.locator('#soulContractPresentation').waitFor({state:'detached',timeout:90000});await page.waitForTimeout(500);
+  while(await page.locator('#soulContractPresentation').count()){if(await page.locator('.soul-next').isVisible())await page.locator('.soul-next').click();else await page.waitForTimeout(80);}await page.waitForTimeout(500);
   const events=await page.evaluate(()=>{window.soulObserver.disconnect();return window.soulEvents;});
   const reveals=events.filter(e=>e.stage==='reveal');assert.deepEqual(reveals.map(e=>e.unit),ids);assert.deepEqual(reveals.map(e=>e.lit),ids.map((_,i)=>i),'progress advances once per completed prior contract');
-  assert.deepEqual(events.filter(e=>e.stage==='gold').map(e=>e.index),ids.map((id,i)=>id==='character_vera_3'?i:-1).filter(i=>i>=0));
+  assert.deepEqual(events.filter(e=>e.stage==='gold'||e.stage==='promotion').map(e=>e.index),ids.map((id,i)=>id==='character_vera_3'?i:-1).filter(i=>i>=0));
   assert.equal(await page.evaluate(()=>save.coins),before.coins-(ids.length===10?900:100));assert.equal(await page.evaluate(()=>save.instances.length),before.count+ids.length);
   assert.equal(await page.locator('#characterGachaResult article').count(),ids.length);
   if(await page.locator('#contractorRankUpOverlay').isVisible()){await page.locator('#contractorRankUpOverlay button').click();await page.waitForTimeout(200);}
@@ -69,7 +69,7 @@ try{
  const failed=await page.evaluate(async()=>{const original=safeStorageSet;const before=JSON.stringify(save);safeStorageSet=(key,value)=>key===SAVE_KEY?false:original(key,value);try{await rollCharacterGacha(1);}finally{safeStorageSet=original;}return {same:JSON.stringify(save)===before,overlay:!!document.querySelector('#soulContractPresentation')};});assert(failed.same&&!failed.overlay,'failed save rolls back and starts no cinematic');report.cases.push({name:'storage-failure-rollback',result:'PASS'});
  // Canvas initialization failure must keep a usable skip path and release inert.
  const originalContext=await page.evaluate(()=>{window.originalCanvasGetContext=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(){throw Error('injected canvas fault');};return true;});
- await fixedDraw(page,['elna_beginner']);await page.locator('.soul-skip').click();assert.equal(await page.locator('#soulContractPresentation').count(),0);assert.equal(await page.locator('body>[inert]').count(),0);await page.evaluate(()=>HTMLCanvasElement.prototype.getContext=window.originalCanvasGetContext);report.cases.push({name:'canvas-initialization-fallback-cleanup',result:'PASS'});
+ await fixedDraw(page,['elna_beginner']);await page.locator('.soul-skip').click();assert.equal(await page.locator('#soulContractPresentation').count(),0);assert(await page.locator('#gachaResultOverlay').isVisible());await page.locator('#gachaResultOverlay [data-modal-close]').click();await page.locator('#gachaResultOverlay').waitFor({state:'hidden'});assert.equal(await page.locator('body>[inert]').count(),0);await page.evaluate(()=>HTMLCanvasElement.prototype.getContext=window.originalCanvasGetContext);report.cases.push({name:'canvas-initialization-fallback-cleanup',result:'PASS'});
  await page.emulateMedia({reducedMotion:'reduce'});await fixedDraw(page,['stella_apprentice']);await page.locator('#soulContractPresentation').waitFor({state:'detached',timeout:10000});report.cases.push({name:'reduced-motion-completes',result:'PASS'});
  await context.close();
  // Reproduce the stale ordinary writer's final write after a successful draw.

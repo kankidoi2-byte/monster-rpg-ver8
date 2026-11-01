@@ -121,21 +121,19 @@ function pickGachaItem(){
   }
   return ITEM_GACHA_POOL[ITEM_GACHA_POOL.length-1].id;
 }
-function rollItemGacha(){
+function rollItemGacha(count=1){
+  if(count!==1&&count!==10)return;
   ensureContractScrollItem();
-  if((save.coins||0) < ITEM_GACHA_COST){
-    alert('コインが足りない！');
-    return;
-  }
-  const itemId = pickGachaItem();
-  const it = ITEM_BY_ID[itemId];
-  if(!commitSaveMutation(()=>{save.coins-=ITEM_GACHA_COST;save.items[itemId]=(save.items[itemId]||0)+1;}))return;
+  if((save.coins||0)<ITEM_GACHA_COST*count){alert('コインが足りない！');return;}
+  const seen=new Set(save.itemDex||[]);
+  const entries=Array.from({length:count},()=>{const id=pickGachaItem(),item=ITEM_BY_ID[id],isNew=!seen.has(id);seen.add(id);return {item,isNew};});
+  if(!commitSaveMutation(()=>{save.coins-=ITEM_GACHA_COST*count;entries.forEach(({item})=>{save.items[item.id]=(save.items[item.id]||0)+1;});}))return;
   showCommittedSaveResult(()=>{
-  const result = document.getElementById('gachaResult');
-  if(result){result.innerHTML = `🎰 ガチャを回した！<br>✨ ${itemInlineVisual(it)} ${it.name}を入手！`;if(typeof replayUiMotion==='function')replayUiMotion(result,'ui-reward-pop',850);}
-  if(typeof showUiNotice==='function')showUiNotice(`${it.name}を入手！`);
-  updateItems();
-  renderItemGacha();
+    updateItems();renderItemGacha();
+    if(typeof refreshGachaBanner==='function')refreshGachaBanner();
+    const owner=save;
+    if(typeof playGachaCinema==='function')playGachaCinema('item',{count},entries,()=>{if(save===owner)showGachaResult('item',{count},entries);});
+    else{const result=document.getElementById('gachaResult');if(result)result.innerHTML=entries.map(({item})=>`${itemInlineVisual(item)} ${item.name}を入手！`).join('<br>');}
   });
 }
 function useExpItemOnInstance(itemId, uidValue){

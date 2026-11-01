@@ -119,7 +119,9 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium
       - name: Verify Soul Contract runtime and interruption safety
-        run: node scripts/test-soul-contract-browser.mjs
+        run: |
+          node scripts/test-soul-contract-browser.mjs
+          GACHA_EVIDENCE=artifacts/soul-contract/adopted node scripts/test-gacha-adopted-browser.mjs
       - name: Upload Soul Contract browser evidence
         if: always()
         uses: actions/upload-artifact@v4

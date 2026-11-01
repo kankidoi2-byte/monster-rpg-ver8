@@ -84,7 +84,7 @@ function monsterMapEncounterNote(map, monster=null) {
 }
 function monsterObtainEntries(m) {
   const entries = [];
-  if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',icon:'✨',title:'キャラクターガチャ',note:'その他メニューから召喚・Lv.1で加入'});
+  if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',icon:'✨',title:'キャラクターガチャ',note:'ガチャ→キャラクター・Lv.1で加入'});
   if (INITIAL_PARTY_IDS.includes(m.id)) entries.push({
     kind:'initial',icon:'🎒',title:'初期メンバー',note:'ゲーム開始時から仲間'
   });

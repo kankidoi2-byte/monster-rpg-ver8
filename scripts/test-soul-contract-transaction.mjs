@@ -310,7 +310,7 @@ for(const mode of ['acquisition','save']){
   assert.equal((await pending).ok,false);assert.equal(h.snapshot(),before);
   assert.equal(h.primaryWrites(),0);assert.equal(h.callbacks.length,0);
   assert.equal(h.run('isCharacterGachaPresenting()'),false);
-  assert(read('ui').includes("if(id!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();"));
+  assert(read('ui').includes("if(gachaLogicalId!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();"));
 }
 
 // Browsers without Web Locks (or denied/rejected lock acquisition) must fail

@@ -19,7 +19,7 @@ function playSoulContractPresentation(result,onFinish){
   const overlay=document.createElement('div');overlay.id='soulContractPresentation';overlay.className='soul-contract';
   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','キャラクター契約演出');
   const count=result.entries.length;
-  overlay.innerHTML=`<canvas class="soul-sky" aria-hidden="true"></canvas><div class="soul-cinematic"><div class="soul-orbit" aria-hidden="true">${result.entries.map((_,i)=>`<i class="soul-star" style="--i:${i};--count:${count}"></i>`).join('')}</div><div class="soul-response" aria-hidden="true">✦</div><div class="soul-document" aria-hidden="true">${soulContractGlyphs()}<i class="soul-paper-sheen"></i></div><div class="soul-release" aria-hidden="true"></div><div class="soul-portrait"></div><div class="soul-caption"><div class="soul-name"></div><div class="soul-rarity"></div><div class="soul-seal" aria-hidden="true">⌁ ⋔ ⟐ ⋮ ⌁</div></div></div><div class="soul-controls"><span class="soul-counter" aria-live="polite"></span><button type="button" class="soul-skip">スキップ</button></div><div class="soul-progress" aria-label="契約済みの数">${result.entries.map((_,i)=>`<span data-soul-progress="${i}" aria-hidden="true">✦</span>`).join('')}</div>`;
+  overlay.innerHTML=`<canvas class="soul-sky" aria-hidden="true"></canvas><div class="soul-cinematic"><div class="soul-orbit" aria-hidden="true">${result.entries.map((_,i)=>`<i class="soul-star" style="--i:${i};--count:${count}"></i>`).join('')}</div><div class="soul-response" aria-hidden="true">✦</div><div class="soul-document" aria-hidden="true">${soulContractGlyphs()}<i class="soul-paper-sheen"></i></div><div class="soul-release" aria-hidden="true"></div><div class="soul-portrait"></div><div class="soul-caption"><div class="soul-name"></div><div class="soul-rarity"></div><div class="soul-seal" aria-hidden="true">⌁ ⋔ ⟐ ⋮ ⌁</div></div></div><div class="soul-controls"><span class="soul-counter" aria-live="polite"></span><button type="button" class="soul-speed">×1</button><button type="button" class="soul-skip">スキップ</button></div><div class="soul-progress" aria-label="契約済みの数">${result.entries.map((_,i)=>`<span data-soul-progress="${i}" aria-hidden="true">✦</span>`).join('')}</div>`;
   document.body.append(overlay);document.body.style.overflow='hidden';
   // Prevent background keyboard activation without changing game navigation.
   const backgrounds=[...document.body.children].filter(el=>el!==overlay&&el.tagName!=='SCRIPT');
@@ -28,7 +28,10 @@ function playSoulContractPresentation(result,onFinish){
   const canvas=overlay.querySelector('canvas');
   let ctx=null;try{ctx=canvas.getContext('2d');}catch(_error){/* Flat navy fallback when Canvas is unavailable. */}
   let stopped=false,raf=0,timer=0,wake=null,lastFrame=0,frameCount=0;
-  let width=0,height=0;
+  let width=0,height=0,speed=1,waitRemaining=0,waitClock=0,waitForTap=false;
+  const promotions=result.entries.map(e=>typeof gachaPromotion==='function'&&gachaPromotion(soulContractRarity(e.unit)===3));
+  const firstGold=result.entries.findIndex(e=>soulContractRarity(e.unit)===3);
+  if(firstGold>=0)overlay.querySelectorAll('.soul-star')[firstGold].classList.add('is-gold-star');
   const stars=Array.from({length:100},(_,i)=>({x:((i*73+17)%101)/101,y:((i*41+9)%103)/103,r:i%13===0?1.8:i%5===0?1.15:.55,phase:i*1.7}));
   function resize(){const r=overlay.getBoundingClientRect();width=r.width;height=r.height;const dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.ceil(width*dpr);canvas.height=Math.ceil(height*dpr);ctx?.setTransform(dpr,0,0,dpr,0,0);paint(0);}
   function paint(time){
@@ -36,12 +39,30 @@ function playSoulContractPresentation(result,onFinish){
     for(const s of stars){const x=s.x*width,y=s.y*height,alpha=.42+.25*Math.sin(time*.00065+s.phase);ctx.globalAlpha=alpha;
       if(s.r>1){const glow=ctx.createRadialGradient(x,y,0,x,y,s.r*7);glow.addColorStop(0,'#d9eeff');glow.addColorStop(.18,'#bddeef');glow.addColorStop(1,'#b0d0ef00');ctx.fillStyle=glow;ctx.fillRect(x-s.r*7,y-s.r*7,s.r*14,s.r*14);}
       ctx.fillStyle='#e5f4ff';ctx.beginPath();ctx.arc(x,y,s.r,0,Math.PI*2);ctx.fill();
-    }ctx.globalAlpha=1;frameCount++;
+    }ctx.globalAlpha=1;
+    if(typeof drawGachaRing==='function'){
+      const stage=overlay.dataset.stage,gold=overlay.classList.contains('is-gold'),color=gold?'#f7d27c':'#badff2',active=['charge','hold','gold','promotion','reveal'].includes(stage);
+      drawGachaRing(ctx,width/2,height*.44,Math.min(width,height),reduced?0:time,color,active?2:.25);
+      if(!reduced&&['charge','hold','gold','promotion'].includes(stage)){
+        const glow=ctx.createRadialGradient(width/2,height*.44,0,width/2,height*.44,Math.min(width,height)*.25);
+        glow.addColorStop(0,gold?'#fff2b8cc':'#d9f1ffbb');glow.addColorStop(1,'#ffffff00');ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);
+        for(let i=0;i<45;i++){const p=(time*.00055+i*.137)%1,a=i*2.399,r=(1-p)*Math.min(width,height)*.6;ctx.fillStyle=color;ctx.globalAlpha=p;ctx.fillRect(width/2+Math.cos(a)*r,height*.44+Math.sin(a)*r,2,2);}ctx.globalAlpha=1;
+        ctx.fillStyle=gold?'#ffdb7833':'#c9e9ff22';ctx.fillRect(width*.47,0,width*.06,height*.44);
+      }
+      if(!reduced&&gold&&stage==='portrait'){for(let i=0;i<24;i++){const x=(i*89%101)/101*width,y=((time*.025+i*37)%height);ctx.fillStyle='#f5d68b';ctx.globalAlpha=.3+.4*Math.sin(i+time*.002)**2;ctx.fillRect(x,height-y,2,2);}ctx.globalAlpha=1;}
+      if(!reduced&&['reveal','promotion'].includes(stage))drawGachaBurst(ctx,width,height,Math.min(1,(performance.now()-Number(overlay.dataset.stageTime||0))*speed/500),color);
+    }
+    frameCount++;
   }
   function frame(time){if(stopped)return;if(time-lastFrame>33&&!document.hidden){paint(time);lastFrame=time;}raf=requestAnimationFrame(frame);}
-  function delay(ms){return new Promise(resolve=>{wake=resolve;timer=setTimeout(()=>{wake=null;resolve();},reduced?Math.min(ms,180):ms);});}
+  function delay(ms){return new Promise(resolve=>{wake=resolve;waitRemaining=reduced?Math.min(ms,120):ms;waitClock=performance.now();const tick=()=>{const now=performance.now();waitRemaining-=Math.min(100,now-waitClock)*speed;waitClock=now;if(waitRemaining<=0){wake=null;resolve();}else timer=setTimeout(tick,16);};timer=setTimeout(tick,16);});}
+  function nextPortrait(){if(!waitForTap)return;waitForTap=false;overlay.classList.remove('is-waiting-next');const resume=wake;wake=null;resume?.();}
+  function tapWait(){if(reduced)return delay(150);waitForTap=true;overlay.classList.add('is-waiting-next');return new Promise(resolve=>wake=resolve);}
+  overlay.querySelector('.soul-speed').onclick=e=>{speed=speed===1?2:1;e.currentTarget.textContent=`×${speed}`;overlay.style.setProperty('--soul-speed',speed);};
+  overlay.querySelector('.soul-cinematic').addEventListener('click',nextPortrait);
+  const next=document.createElement('button');next.type='button';next.className='soul-next';next.textContent='タップで次へ';next.onclick=nextPortrait;overlay.querySelector('.soul-caption').append(next);
   const skip=()=>finish();
-  const key=event=>{if(event.key==='Escape'){event.preventDefault();finish();}if(event.key==='Tab'){event.preventDefault();overlay.querySelector('.soul-skip').focus();}};
+  const key=event=>{if(event.key==='Escape'){event.preventDefault();finish();}if(event.key==='Tab'){const buttons=[...overlay.querySelectorAll('button')].filter(b=>b.getClientRects().length);event.preventDefault();const i=buttons.indexOf(document.activeElement);buttons[(i+(event.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}if(event.key==='Enter'&&event.target===overlay)nextPortrait();};
   const pageHide=()=>finish();
   function finish(){if(stopped)return;stopped=true;clearTimeout(timer);wake?.();wake=null;cancelAnimationFrame(raf);
     window.removeEventListener('resize',resize);window.removeEventListener('pagehide',pageHide);overlay.removeEventListener('keydown',key);
@@ -51,13 +72,13 @@ function playSoulContractPresentation(result,onFinish){
   soulContractPresentation={finish,get frames(){return frameCount;},resultId:result.receiptId||null};
   overlay.querySelector('.soul-skip').addEventListener('click',skip,{once:true});overlay.addEventListener('keydown',key);window.addEventListener('pagehide',pageHide);window.addEventListener('resize',resize);
   resize();if(!reduced)raf=requestAnimationFrame(frame);overlay.querySelector('.soul-skip').focus({preventScroll:true});
-  function stage(name,index){overlay.dataset.stage=name;overlay.dataset.index=String(index);overlay.querySelector('.soul-counter').textContent=index<0?`0 / ${count}`:`${index+1} / ${count}`;}
+  function stage(name,index){overlay.dataset.stage=name;overlay.dataset.stageTime=String(performance.now());if(typeof gachaAudioCue==='function')gachaAudioCue(name,'character');overlay.dataset.index=String(index);overlay.querySelector('.soul-counter').textContent=index<0?`0 / ${count}`:`${index+1} / ${count}`;}
   async function run(){
     stage('intro',-1);await delay(1100);if(stopped)return;
-    stage('souls',-1);await delay(1250);if(stopped)return;
+    if(count===10){stage('souls',-1);await delay(1500);if(stopped)return;}
     for(let i=0;i<count;i++){
       const entry=result.entries[i],rarity=soulContractRarity(entry.unit),gold=rarity===3;
-      overlay.classList.toggle('is-gold',gold);overlay.dataset.unitId=entry.unit.id;overlay.dataset.rarity=String(rarity);
+      overlay.classList.toggle('is-gold',gold&&!promotions[i]);overlay.dataset.promotion=String(!!promotions[i]);overlay.dataset.unitId=entry.unit.id;overlay.dataset.rarity=String(rarity);
       const portrait=overlay.querySelector('.soul-portrait');portrait.replaceChildren();
       const src=typeof IMG!=='undefined'&&entry.unit.imgKey?IMG[entry.unit.imgKey]:null;
       if(src){const img=new Image();img.src=src;img.alt=entry.unit.name;img.decoding='async';portrait.append(img);}
@@ -65,15 +86,16 @@ function playSoulContractPresentation(result,onFinish){
       overlay.querySelector('.soul-name').textContent=entry.unit.name;
       overlay.querySelector('.soul-rarity').textContent=`${'★'.repeat(rarity)} / Lv.${entry.instance?.level||1}`;
       overlay.querySelector('.soul-seal').textContent='⌁ ⋔ ⟐ ⋮ ⌁';
-      stage('response',i);await delay(i===0||gold?650:120);if(stopped)return;
-      stage('paper',i);await delay(i===0||gold?1300:230);if(stopped)return;
-      stage(gold?'gold':'charge',i);await delay(gold?1550:i===0?800:180);if(stopped)return;
-      stage('hold',i);await delay(gold?320:180);if(stopped)return;
+      stage('response',i);await delay(i===0||gold?800:320);if(stopped)return;
+      stage('paper',i);await delay(i===0||gold?1350:430);if(stopped)return;
+      if(gold){overlay.classList.add('is-gold');stage(promotions[i]?'promotion':'gold',i);await delay(promotions[i]?1100:700);if(stopped)return;}
+      stage('charge',i);await delay(gold?1300:i===0?900:380);if(stopped)return;
+      stage('hold',i);await delay(gold?380:i===0?220:90);if(stopped)return;
       stage('reveal',i);await delay(160);if(stopped)return;
       overlay.querySelector('.soul-seal').textContent='契約成立';
       overlay.querySelector(`[data-soul-progress="${i}"]`).classList.add('is-lit');
       overlay.querySelector('.soul-progress').setAttribute('aria-label',`${count}体中${i+1}体と契約成立`);
-      await delay(gold?1800:count===1?1300:650);if(stopped)return;
+      stage('portrait',i);if(i===0||gold||count===1)await tapWait();else await delay(900);if(stopped)return;
     }
     finish();
   }
