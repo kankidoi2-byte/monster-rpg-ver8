@@ -250,6 +250,48 @@ function clearTutorialTarget(){
   tutorialUiState.target?.classList.remove('tutorial-target-active');
   tutorialUiState.target=null;
 }
+// Fixed app chrome can occlude a target even while it is inside the viewport.
+// Include the battle button that protrudes above the bottom navigation.
+function tutorialVisibleBounds(target,includeSkillSummary=true){
+  const height=window.innerHeight||document.documentElement.clientHeight;
+  const visibleRect=element=>{
+    const rect=element?.getBoundingClientRect?.();
+    if(!rect||rect.width<=0||rect.height<=0)return null;
+    if(typeof getComputedStyle==='function'){
+      const style=getComputedStyle(element);
+      if(style.visibility==='hidden'||style.display==='none')return null;
+    }
+    return rect;
+  };
+  const nav=document.querySelector('.app-bottom-nav');
+  const header=document.querySelector('.app-topbar');
+  const inChrome=Boolean(target&&(nav?.contains?.(target)||header?.contains?.(target)));
+  if(inChrome)return {top:8,bottom:height-8,inChrome};
+  const headerRect=visibleRect(header),navRect=visibleRect(nav);
+  const battleRect=navRect?visibleRect(nav?.querySelector?.('.app-battle-nav')):null;
+  let top=Math.max(8,(headerRect?.bottom||0)+8);
+  const bottom=Math.min(height-8,navRect?Math.min(navRect.top,battleRect?.top??navRect.top)-8:height-8);
+  const skillSummary=document.querySelector('#skillEdit.active #skillEditTarget');
+  if(includeSkillSummary&&skillSummary&&target?.closest?.('#skillEdit'))top=Math.max(top,skillSummary.getBoundingClientRect().bottom+8);
+  const status=target?.closest?.('#expedition')?document.querySelector('#expedition .expedition-status'):null;
+  const statusRect=visibleRect(status);
+  if(statusRect&&!status.contains?.(target)&&typeof getComputedStyle==='function'){
+    const style=getComputedStyle(status);
+    if(style.position==='sticky'&&statusRect.top<=parseFloat(style.top)+1)top=Math.max(top,statusRect.bottom+8);
+  }
+  return {top,bottom,inChrome};
+}
+function scrollTutorialTargetBy(target,delta){
+  if(Math.abs(delta)<=1)return;
+  let scroller=target.parentElement;
+  while(scroller&&scroller!==document.body){
+    const style=typeof getComputedStyle==='function'?getComputedStyle(scroller):null;
+    if(style&&/(auto|scroll)/.test(style.overflowY)&&scroller.scrollHeight>scroller.clientHeight)break;
+    scroller=scroller.parentElement;
+  }
+  if(scroller&&scroller!==document.body)scroller.scrollBy({top:delta,behavior:'instant'});
+  else window.scrollBy?.({top:delta,behavior:'instant'});
+}
 function ensureTutorialTargetVisible(target){
   const rect=target?.getBoundingClientRect?.();
   if(!rect||rect.width<=0||rect.height<=0)return;
@@ -266,18 +308,33 @@ function ensureTutorialTargetVisible(target){
     window.scrollBy({top:rect.top-skillTop,behavior:'instant'});
     return;
   }
-  if(rect.top<8||rect.bottom>viewportHeight-8||rect.left<4||rect.right>viewportWidth-4){
+  const bounds=tutorialVisibleBounds(target);
+  if(bounds.inChrome)return;
+  const center=rect.top+rect.height/2;
+  const oversized=rect.height>(bounds.bottom-bounds.top)/2;
+  if((oversized?(center<bounds.top||center>bounds.bottom):(rect.top<bounds.top||rect.bottom>bounds.bottom))||rect.left<4||rect.right>viewportWidth-4){
     if(viewportWidth>viewportHeight&&rect.height<viewportHeight/2&&target.style){
       const previousMargin=target.style.scrollMarginTop;
-      const headerBottom=document.querySelector('.app-topbar')?.getBoundingClientRect?.().bottom||0;
-      target.style.scrollMarginTop=`${Math.max(12,headerBottom+12)}px`;
+      target.style.scrollMarginTop=`${bounds.top+4}px`;
       target.scrollIntoView?.({block:'start',inline:'nearest'});
       target.style.scrollMarginTop=previousMargin;
     }else target.scrollIntoView?.({block:'center',inline:'nearest'});
+    // scrollIntoView uses the whole viewport. Correct for fixed chrome, using
+    // the nearest scrolling sheet/list when the target is inside one.
+    const moved=target.getBoundingClientRect();
+    const delta=moved.top+moved.height/2-(bounds.top+bounds.bottom)/2;
+    scrollTutorialTargetBy(target,delta);
   }
 }
 function positionTutorialUi(){
   if(!tutorialUiState.active)return;
+  if(tutorialUiState.target?.isConnected===false){
+    const step=tutorialUiState.steps[tutorialUiState.index];
+    const partyGuide=step?.id==='expedition_party_save'?tutorialExpeditionPartyGuide():null;
+    clearTutorialTarget();
+    tutorialUiState.target=resolveTutorialTarget(step,partyGuide);
+    tutorialUiState.target?.classList.add('tutorial-target-active');
+  }
   const bubble=document.getElementById('tutorialBubble');
   const spotlight=document.getElementById('tutorialSpotlight');
   const arrow=document.getElementById('tutorialArrow');
@@ -287,8 +344,33 @@ function positionTutorialUi(){
   const rightShade=document.querySelector('.tutorial-shade-right');
   const bottomShade=document.querySelector('.tutorial-shade-bottom');
   if(!bubble)return;
+  ensureTutorialTargetVisible(tutorialUiState.target);
   const viewport={width:window.innerWidth,height:window.innerHeight};
-  const rect=tutorialUiState.target?.getBoundingClientRect?.()||null;
+  bubble.style.visibility='hidden';
+  bubble.style.maxHeight='calc(100svh - 20px)';
+  const naturalBubbleHeight=bubble.getBoundingClientRect().height;
+  let rect=tutorialUiState.target?.getBoundingClientRect?.()||null;
+  if(rect&&rect.width>0&&rect.height>0){
+    const bounds=tutorialVisibleBounds(tutorialUiState.target,false);
+    const center=rect.top+rect.height/2;
+    const above=center-bounds.top-16,below=bounds.bottom-center-16;
+    if(!tutorialVisibleBounds(tutorialUiState.target).inChrome&&Math.max(above,below)<naturalBubbleHeight){
+      // Move the target toward an edge before shortening the guide. This
+      // leaves room for both the target center and the guide's Next button.
+      const clearance=rect.height>(bounds.bottom-bounds.top)/2?48:rect.height/2;
+      const desired=above>=below?bounds.bottom-clearance:bounds.top+clearance;
+      scrollTutorialTargetBy(tutorialUiState.target,center-desired);
+      rect=tutorialUiState.target.getBoundingClientRect();
+      const movedCenter=rect.top+rect.height/2;
+      if(Math.max(movedCenter-bounds.top-16,bounds.bottom-movedCenter-16)<naturalBubbleHeight){
+        // At the start/end of a page or a sheet, scrolling in one direction
+        // can be clamped. Try the other edge rather than clipping Next.
+        const opposite=above>=below?bounds.top+clearance:bounds.bottom-clearance;
+        scrollTutorialTargetBy(tutorialUiState.target,movedCenter-opposite);
+        rect=tutorialUiState.target.getBoundingClientRect();
+      }
+    }
+  }
   let hole=null;
   if(rect&&rect.width>0&&rect.height>0){
     const pad=8;
@@ -308,8 +390,6 @@ function positionTutorialUi(){
     [leftShade,rightShade,bottomShade].forEach(element=>setTutorialShadeRect(element,0,0,0,0));
     spotlight?.classList.add('is-empty');
   }
-  bubble.style.visibility='hidden';
-  bubble.style.maxHeight='calc(100svh - 20px)';
   const placement=overlay?.classList.contains('is-story-step')&&!hole
     ?calculateTutorialStoryPlacement(bubble.getBoundingClientRect(),viewport)
     :calculateTutorialPlacement(hole,bubble.getBoundingClientRect(),viewport,{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
@@ -328,6 +408,21 @@ function positionTutorialUi(){
     const safeHole=hole?{...hole,top:hole.top-safeTop,bottom:hole.bottom-safeTop}:null;
     const safePlacement=calculateTutorialPlacement(safeHole,bubble.getBoundingClientRect(),{width:viewport.width,height:Math.max(0,safeBottom-safeTop)},{avoidTarget:true});
     Object.assign(placement,safePlacement,{top:safePlacement.top+safeTop});
+  }
+  if(rect){
+    const center={x:rect.left+rect.width/2,y:rect.top+rect.height/2};
+    const height=bubble.getBoundingClientRect().height;
+    if(center.x>=placement.left&&center.x<=placement.left+bubble.getBoundingClientRect().width&&center.y>=placement.top&&center.y<=placement.top+height){
+      // Keep the guide controls readable too. When a tall card leaves too
+      // little room beside the loadout summary, the guide may cover that
+      // summary but must leave the highlighted card's center clear.
+      const bounds=tutorialVisibleBounds(tutorialUiState.target,false);
+      const above=Math.max(0,center.y-16-bounds.top),below=Math.max(0,bounds.bottom-center.y-16);
+      const useBelow=below>=above;
+      placement.maxHeight=Math.max(0,useBelow?below:above);
+      placement.top=useBelow?center.y+16:center.y-16-Math.min(height,above);
+      placement.side=useBelow?'below':'above';
+    }
   }
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
@@ -383,6 +478,7 @@ function renderTutorialStoryStep(step){
   const effect=document.getElementById('tutorialStoryEffect');
   const story=Boolean(step?.scene||step?.portrait);
   document.body.classList.toggle('tutorial-growth-skill-open',step?.id==='growth_skill_open');
+  document.querySelector('#rosterSheetHost .roster-sheet-close')?.toggleAttribute('disabled',step?.id==='growth_skill_open');
   overlay?.classList.toggle('is-story-step',story);
   overlay?.classList.toggle('is-dialogue-pages',Boolean(step?.dialogue));
   // Full-body portraits support narrative dialogue, but they obscure the game
@@ -584,6 +680,11 @@ async function confirmTutorialElnaContract(){
   return true;
 }
 
+function resolveTutorialTarget(step,partyGuide){
+  return partyGuide?.uid
+    ?[...document.querySelectorAll('#partySelectList [data-party-uid]')].find(button=>button.dataset.partyUid===partyGuide.uid)||null
+    :partyGuide?.blocked?null:step?.target?document.querySelector(step.target):null;
+}
 function renderTutorialStep(){
   if(!tutorialUiState.active)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
@@ -603,9 +704,7 @@ function renderTutorialStep(){
   renderTutorialStoryStep(view);
   bubble.scrollTop=0;
   clearTutorialTarget();
-  tutorialUiState.target=partyGuide?.uid
-    ?[...document.querySelectorAll('#partySelectList [data-party-uid]')].find(button=>button.dataset.partyUid===partyGuide.uid)||null
-    :partyGuide?.blocked?null:step.target?document.querySelector(step.target):null;
+  tutorialUiState.target=resolveTutorialTarget(step,partyGuide);
   tutorialUiState.target?.classList.add('tutorial-target-active');
   ensureTutorialTargetVisible(tutorialUiState.target);
   document.getElementById('tutorialProgressLabel').textContent=step.progressLabel;
@@ -2045,6 +2144,11 @@ function handleTutorialViewportScroll(event){
   if(bubble&&(event.target===bubble||bubble.contains(event.target)))return;
   scheduleTutorialPosition();
 }
+// Screen renderers may replace a highlighted button after an operation or
+// resume. Rebind its DOM node without advancing or rewriting the saved STEP.
+if(typeof MutationObserver==='function')new MutationObserver(()=>{
+  if(tutorialUiState.active&&tutorialUiState.target?.isConnected===false)scheduleTutorialPosition();
+}).observe(document.body,{childList:true,subtree:true});
 window.addEventListener('resize',scheduleTutorialPosition);
 window.addEventListener('scroll',handleTutorialViewportScroll,true);
 updateTutorialMenuSummary();
