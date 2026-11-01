@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261102-life-quest-empty-start',date:'2026-11-02',category:'update',title:'Life Questを空の状態から始められます',body:'初回はクエストを0件にしました。未変更・未記録の初期クエストも解除します。「クエスト」から自分の活動を追加できます。追加・変更したクエストや記録は残ります。'},
   {id:'20261102-life-quest',date:'2026-11-02',category:'update',title:'Life Questを追加しました',body:'メニューから毎日の筋トレ・勉強・創作・休養を記録できます。活動でレベルやスキルが育ち、コインやアイテムをホームの受け取りボックスで受け取れます。英語学習の入口をLife Questに変更しました。'},
   {id:'20261101-prologue-chapter-flow',date:'2026-11-01',category:'fix',title:'序章の続きを進めやすくしました',body:'序章の各話一覧を開いた状態で表示し、続きへ進むボタンを見つけやすくしました。ランクアップのお知らせは案内の区切りで表示します。同じプレイ中に操作説明を終えた戦闘の再挑戦では、説明を省いて戦いを再開できます。'},
   {id:'20261101-prologue-visible-targets',date:'2026-11-01',category:'fix',title:'序章の案内ボタンを押しやすくしました',body:'図鑑や遠征などで、案内するボタンが下のメニューに隠れる問題を修正しました。「技を変更」の案内中は詳細画面を開いたままにし、続けて操作できるようにしました。'},
