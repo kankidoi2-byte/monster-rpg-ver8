@@ -92,4 +92,13 @@ try{
   console.log(`PASS roster browser ${viewport.width}: 5 columns, overflow, detail/data/lock, protected selection, duplicate keeper, single confirmation/cancel, mixed save/reload, prefs, quota rollback/retry, stale-tab/inactive-profile safety, home/party/hunt/battle smoke.`);
   await context.close();
  }
+ // Accessibility reflow in a very short landscape/split viewport.
+ const tinyContext=await browser.newContext({viewport:{width:422,height:195},reducedMotion:'reduce'}),tiny=await tinyContext.newPage();
+ tiny.on('dialog',d=>d.accept());await tiny.goto('http://127.0.0.1:4232/?legacy=1',{waitUntil:'networkidle'});await tiny.locator('#titleScreen').click();await tiny.locator('#titleScreen').waitFor({state:'detached'});
+ await tiny.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});for(let i=0;i<10;i++)addInstance('freigal');save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('party')});
+ for(const control of await tiny.locator('.roster-chips button,#rosterActions button').all()){
+  await control.evaluate(el=>el.scrollIntoView({block:'center',inline:'center',behavior:'instant'}));
+  assert(await control.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return hit===el||el.contains(hit)}),'short viewport controls remain reachable');
+ }
+ await tinyContext.close();console.log('PASS short roster reflow: 422x195, every filter and footer action reachable.');
 }finally{await browser?.close();server.kill()}

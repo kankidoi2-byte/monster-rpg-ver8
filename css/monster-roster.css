@@ -75,3 +75,9 @@ body:has(#party.active #rosterSheetHost .roster-sheet-backdrop)>:is(.app-topbar,
   body:has(#party.active) .contractor-rank strong{font-size:16px}
   body:has(#party.active) .app-topbar .app-resource{padding:5px 6px;font-size:10px}
 }
+/* In an exceptionally short split/zoom viewport, allow reaching every control. */
+@media(max-height:340px){
+  #party#party#party.active{display:block;overflow-y:auto;overscroll-behavior:contain}
+  #party#party#party #partyList{min-height:80px;max-height:32vh;margin:6px 0}
+  #party #rosterControls{margin-top:6px}
+}
