@@ -120,7 +120,7 @@
     "check:tutorial-evolution": "node scripts/test-tutorial-evolution.mjs && node scripts/test-tutorial-evolved-companions.cjs",
     "check:expedition-party-guide": "node scripts/test-expedition-party-guide.mjs && node scripts/test-expedition-party-guide-browser.cjs",
     "check:gacha-adopted": "node scripts/test-gacha-adopted.mjs && node scripts/test-skill-silhouettes.mjs",
-    "check:tutorial-targets": "node scripts/test-tutorial-target-visibility.mjs && node scripts/test-prologue-chapter-flow.mjs",
+    "check:tutorial-targets": "node scripts/test-tutorial-target-visibility.mjs && node scripts/test-prologue-chapter-flow.mjs && node scripts/test-tutorial-expedition-stability-browser.mjs",
     "check:prologue-taps": "node scripts/test-prologue-tap-through-browser.mjs"
   },
   "engines": {

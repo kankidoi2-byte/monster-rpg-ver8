@@ -379,7 +379,13 @@ function positionTutorialUi(){
     const bounds=tutorialVisibleBounds(tutorialUiState.target,false);
     const center=rect.top+rect.height/2;
     const above=center-bounds.top-16,below=bounds.bottom-center-16;
-    if(!tutorialVisibleBounds(tutorialUiState.target).inChrome&&Math.max(above,below)<naturalBubbleHeight){
+    const guideSize=bubble.getBoundingClientRect();
+    const proposed=calculateTutorialPlacement({...rect,top:rect.top-8,bottom:rect.bottom+8,left:rect.left-8,right:rect.right+8,width:rect.width+16,height:rect.height+16},guideSize,viewport,{avoidTarget:tutorialStepRequiresAction(tutorialUiState.steps[tutorialUiState.index])});
+    const centerX=rect.left+rect.width/2;
+    const wouldCoverCenter=centerX>=proposed.left&&centerX<=proposed.left+guideSize.width&&center>=proposed.top&&center<=proposed.top+Math.min(naturalBubbleHeight,proposed.maxHeight);
+    // Scrolling can engage/disengage a sticky header. Keep an already clear,
+    // readable placement instead of chasing a different safe rectangle forever.
+    if(!tutorialVisibleBounds(tutorialUiState.target).inChrome&&(wouldCoverCenter||proposed.maxHeight<naturalBubbleHeight-1)&&Math.max(above,below)<naturalBubbleHeight){
       // Move the target toward an edge before shortening the guide. This
       // leaves room for both the target center and the guide's Next button.
       const clearance=tutorialTargetGuideClearance(rect.height,bounds.bottom-bounds.top,naturalBubbleHeight);
