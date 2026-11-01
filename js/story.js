@@ -103,6 +103,8 @@ function renderStoryMode(){
   const cleared=PROLOGUE_STORY_EPISODES.filter((_,index)=>['completed','skipped'].includes(storyEpisodeState(index,snapshot))).length;
   const progress=document.getElementById('storyChapterProgress');
   if(progress)progress.textContent=snapshot.tutorial.status==='skipped'?'スキップ済み':snapshot.finished?`${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`:`続き：第${episode.number}話 ・ ${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`;
+  const chapter=document.getElementById('storyPrologueChapter');
+  if(chapter)chapter.open=!snapshot.finished;
   continueCard.hidden=snapshot.finished;
   continueCard.classList.toggle('is-complete',snapshot.finished);
   continueCard.innerHTML=snapshot.finished?'':`<div><span>つづきから</span><h2>第${episode.number}話　${episode.title}</h2></div><button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'再開する'} ›</button>`;

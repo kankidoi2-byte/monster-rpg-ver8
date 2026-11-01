@@ -7,7 +7,7 @@
       ],
       "distinctSteps": 95,
       "targetCenterChecks": 64,
-      "coordinateTaps": 172,
+      "coordinateTaps": 173,
       "visitedSteps": [
         "intro_gnosis",
         "gnosis_call_2",
@@ -171,16 +171,34 @@
         "expedition_dispatch: 206,544.83 (BUTTON)",
         "expedition_active: 206,326 (P)"
       ],
+      "chapterChecks": [
+        "elna_encounter",
+        "home_party",
+        "stella_intro",
+        "lumina_intro",
+        "expedition_intro"
+      ],
+      "rankDismissals": [
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        },
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        }
+      ],
+      "retrySkips": [],
       "reloads": [],
       "pauses": [],
       "retreats": [],
       "sheetChecks": [
         ".roster-sheet-close",
         ".roster-sheet-backdrop"
-      ],
-      "rankDismissals": [
-        "dex_character_back",
-        "stella_intro"
       ],
       "pageErrors": [],
       "dialogs": []
@@ -191,8 +209,8 @@
         640
       ],
       "distinctSteps": 95,
-      "targetCenterChecks": 65,
-      "coordinateTaps": 176,
+      "targetCenterChecks": 64,
+      "coordinateTaps": 175,
       "visitedSteps": [
         "intro_gnosis",
         "gnosis_call_2",
@@ -353,20 +371,37 @@
         "expedition_distance: 180,165.84 (BUTTON)",
         "expedition_member: 180,480.85 (BUTTON)",
         "expedition_suitability: 180,285.88 (LI)",
-        "expedition_suitability: 180,285.88 (LI)",
         "expedition_dispatch: 180,404.88 (BUTTON)",
         "expedition_active: 180,239 (P)"
       ],
+      "chapterChecks": [
+        "elna_encounter",
+        "home_party",
+        "stella_intro",
+        "lumina_intro",
+        "expedition_intro"
+      ],
+      "rankDismissals": [
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        },
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        }
+      ],
+      "retrySkips": [],
       "reloads": [],
       "pauses": [],
       "retreats": [],
       "sheetChecks": [
         ".roster-sheet-close",
         ".roster-sheet-backdrop"
-      ],
-      "rankDismissals": [
-        "dex_character_back",
-        "stella_intro"
       ],
       "pageErrors": [],
       "dialogs": []
@@ -379,7 +414,7 @@
         640
       ],
       "distinctSteps": 98,
-      "targetCenterChecks": 135,
+      "targetCenterChecks": 137,
       "coordinateTaps": 280,
       "visitedSteps": [
         "intro_gnosis",
@@ -511,15 +546,7 @@
         "battle_skill: 179.98,459 (STRONG)",
         "battle_choose_skill: 267.5,501.48 (STRONG)",
         "battle_free: 180,486 (BUTTON)",
-        "elna_rescue_retry: 180,555 (BUTTON)",
-        "battle_enemy: 259.2,72 (H2)",
-        "battle_actor_open: 92.49,533 (STRONG)",
-        "battle_actor_select: 180,558.39 (BUTTON)",
-        "battle_target: 259.2,144.63 (IMG)",
-        "battle_attack_open: 179.98,459 (STRONG)",
-        "battle_normal_attack: 92.5,501.48 (STRONG)",
-        "battle_skill: 179.98,459 (STRONG)",
-        "battle_choose_skill: 267.5,501.48 (STRONG)",
+        "elna_rescue_retry: 180,588.59 (BUTTON)",
         "battle_free: 180,486 (BUTTON)",
         "home_party: 110.39,601.5 (SPAN)",
         "party_save: 184,412 (BUTTON)",
@@ -563,9 +590,6 @@
         "stella_mock_advantage: 92.5,501.48 (STRONG)",
         "stella_mock_free: 180,486 (BUTTON)",
         "stella_mock_retry: 180,588.59 (BUTTON)",
-        "stella_mock_enemy: 259.2,72 (H2)",
-        "stella_mock_skill_open: 179.98,459 (STRONG)",
-        "stella_mock_advantage: 92.5,501.48 (STRONG)",
         "stella_mock_free: 180,486 (BUTTON)",
         "lumina_world_map_open: 179.99,587 (BUTTON)",
         "lumina_world_map_city: 209.5,204.03 (BUTTON)",
@@ -605,8 +629,22 @@
         "expedition_destination: 180,301.88 (BUTTON)",
         "expedition_distance: 180,165.84 (BUTTON)",
         "expedition_member: 180,480.85 (BUTTON)",
-        "expedition_suitability: 180,285.88 (LI)",
-        "expedition_suitability: 180,454.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
         "expedition_dispatch: 180,404.88 (BUTTON)",
         "expedition_home_open: 137,114 (circle)",
         "expedition_destination: 180,301.88 (BUTTON)",
@@ -614,9 +652,33 @@
         "expedition_member: 180,481.85 (BUTTON)",
         "expedition_member: 180,480.85 (BUTTON)",
         "expedition_suitability: 180,285.88 (LI)",
-        "expedition_suitability: 180,454.88 (LI)",
         "expedition_dispatch: 180,404.88 (BUTTON)",
         "expedition_active: 180,239 (P)"
+      ],
+      "chapterChecks": [
+        "elna_encounter",
+        "home_party",
+        "stella_intro",
+        "lumina_intro",
+        "expedition_intro"
+      ],
+      "rankDismissals": [
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        },
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        }
+      ],
+      "retrySkips": [
+        "battle_free",
+        "stella_mock_free"
       ],
       "reloads": [
         {
@@ -672,10 +734,6 @@
         ".roster-sheet-close",
         ".roster-sheet-backdrop"
       ],
-      "rankDismissals": [
-        "elna_rescue_start",
-        "stella_intro"
-      ],
       "pageErrors": [],
       "dialogs": []
     }
@@ -687,7 +745,7 @@
         640
       ],
       "distinctSteps": 95,
-      "targetCenterChecks": 82,
+      "targetCenterChecks": 83,
       "coordinateTaps": 216,
       "visitedSteps": [
         "intro_gnosis",
@@ -866,10 +924,33 @@
         "expedition_distance: 180,165.84 (BUTTON)",
         "expedition_member: 180,481.85 (BUTTON)",
         "expedition_member: 180,480.85 (BUTTON)",
-        "expedition_suitability: 180,285.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
+        "expedition_suitability: 180,455.88 (LI)",
         "expedition_dispatch: 180,404.88 (BUTTON)",
-        "expedition_active: 180,239 (P)"
+        "expedition_active: 180,407 (P)"
       ],
+      "chapterChecks": [
+        "elna_encounter",
+        "home_party",
+        "stella_intro",
+        "lumina_intro",
+        "expedition_intro"
+      ],
+      "rankDismissals": [
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        },
+        {
+          "active": false,
+          "step": null,
+          "screen": "storyMode",
+          "chapterGate": true
+        }
+      ],
+      "retrySkips": [],
       "reloads": [],
       "pauses": [
         "menu_dex_open",
@@ -884,10 +965,6 @@
       "sheetChecks": [
         ".roster-sheet-close",
         ".roster-sheet-backdrop"
-      ],
-      "rankDismissals": [
-        null,
-        "stella_intro"
       ],
       "pageErrors": [],
       "dialogs": []

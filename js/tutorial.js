@@ -28,6 +28,26 @@ const tutorialUiState={
 };
 // Presentation-only state: never serialized into a player's save.
 const tutorialDialogueState={step:null,page:0,lockedUntil:0,renderToken:0};
+// Presentation only: reloading conservatively restores the existing lessons.
+let tutorialRankUpWaitScreen=null;
+const tutorialBattleLessonState={seen:new Set(),retryKind:null};
+function tutorialDefersRankUpPresentation(){
+  return tutorialUiState.active||Boolean(tutorialRankUpWaitScreen&&tutorialRankUpWaitScreen===activeScreenId());
+}
+function recordTutorialBattleLesson(step){
+  const kind=step?.id==='battle_free'?'elna_rescue':step?.id==='stella_mock_free'?'stella_mock':null;
+  if(kind&&tutorialBattleSession.active&&tutorialBattleSession.kind===kind)tutorialBattleLessonState.seen.add(kind);
+}
+function rememberTutorialBattleRetry(outcome){
+  const kind=tutorialBattleSession.kind;
+  tutorialBattleLessonState.retryKind=outcome!=='victory'&&tutorialBattleLessonState.seen.has(kind)?kind:null;
+}
+function tutorialRetryBattleGuideStep(step,nextStepId){
+  const kind=step?.transition==='start_elna_rescue'?'elna_rescue':step?.transition==='start_stella_mock_battle'?'stella_mock':null;
+  if(!kind||tutorialBattleLessonState.retryKind!==kind||!tutorialBattleLessonState.seen.has(kind))return nextStepId;
+  tutorialBattleLessonState.retryKind=null;
+  return kind==='elna_rescue'?'battle_free':'stella_mock_free';
+}
 const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
 const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true,tutorialRole:'person'});
@@ -690,6 +710,7 @@ function renderTutorialStep(){
   const step=tutorialUiState.steps[tutorialUiState.index];
   if(step?.id==='skill_gacha_rates'&&typeof openGachaRates==='function'&&typeof gachaTab!=='undefined'&&gachaTab==='skill'){openGachaRates();const guide=document.getElementById('tutorialOverlay');if(guide)guide.inert=false;}
   if(!step){finishTutorialFlow();return;}
+  recordTutorialBattleLesson(step);
   prepareTutorialStep(step);
   if(step.screenId&&activeScreenId()!==step.screenId&&!(typeof GACHA_ROUTES!=='undefined'&&GACHA_ROUTES[step.screenId]===gachaTab&&activeScreenId()==='gachaHub')){
     show(step.screenId);
@@ -885,8 +906,12 @@ function tutorialNext(actionCompleted=false,choiceId=null){
   if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return;
   if(!tutorialStepCanAdvance(step))return;
   if(step?.transition&&!runTutorialTransition(step.transition))return;
-  if(step?.waitForEvent){persistTutorialStep();clearTutorialUi();updateTutorialMenuSummary();return;}
-  const nextStepId=tutorialShouldUseReplayNextStep(step)&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
+  if(step?.waitForEvent){
+    const waitScreen=activeScreenId();
+    persistTutorialStep();clearTutorialUi();tutorialRankUpWaitScreen=waitScreen;updateTutorialMenuSummary();return;
+  }
+  let nextStepId=tutorialShouldUseReplayNextStep(step)&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
+  nextStepId=tutorialRetryBattleGuideStep(step,nextStepId);
   if(step?.chapterBreak&&nextStepId){checkpointTutorialChapter(nextStepId);return;}
   if(nextStepId){
     const nextIndex=tutorialStepIndex(tutorialUiState.steps,nextStepId);
@@ -920,6 +945,7 @@ function pauseTutorial(){
   if(tutorialElnaContractBusy||!tutorialUiState.active)return;
   const returnScreen=tutorialUiState.returnScreen;
   clearTutorialUi();restoreTutorialReturnScreen(returnScreen);updateTutorialMenuSummary();
+  if(typeof scheduleContractorRankUpPresentation==='function')scheduleContractorRankUpPresentation();
 }
 function tutorialSkipRewardInstance(id,extraFields=null){
   const existing=Array.isArray(save?.instances)?save.instances.find(instance=>tutorialMonsterInLineage(instance?.id,id)&&instance?.guest!==true):null;
@@ -980,6 +1006,7 @@ function requestTutorialSkip(){
   updateTutorialMenuSummary();
 }
 function clearTutorialUi(){
+  tutorialRankUpWaitScreen=null;
   if(typeof closeGachaRates==='function')closeGachaRates();
   const overlay=document.getElementById('tutorialOverlay');
   clearTutorialTarget();
@@ -1826,6 +1853,7 @@ function handleTutorialBattleOutcome(kind,rewards={}, {victorySaved=false}={}){
   if(!tutorialBattleSession.active)return false;
   const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
   if(!tutorial||(tutorial.status!=='in_progress'&&!tutorial.replaying)){tutorialBattleSession.active=false;tutorialBattleSession.kind=null;return false;}
+  if(typeof rememberTutorialBattleRetry==='function')rememberTutorialBattleRetry(kind);
   const rescue=tutorialBattleSession.kind==='elna_rescue';
   const stellaMock=tutorialBattleSession.kind==='stella_mock';
   if(stellaMock){

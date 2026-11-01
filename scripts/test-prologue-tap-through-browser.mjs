@@ -16,14 +16,20 @@ try{
   if(process.env.PROLOGUE_TEST_WIDTH&&width!==+process.env.PROLOGUE_TEST_WIDTH)continue;
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage();page.setDefaultTimeout(5000);
-  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[]};reports.push(report);
+  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[]};reports.push(report);
   page.on('pageerror',e=>report.pageErrors.push(e.message));
   page.on('dialog',async d=>{report.dialogs.push(d.message());await d.dismiss()});
+  const recordRank=async()=>{
+   const state=await page.evaluate(()=>({active:tutorialUiState.active,step:tutorialCurrentStepId(),screen:activeScreenId(),chapterGate:currentTutorialState().chapterGate}));
+   assert.equal(state.active,false,'rank-up must never cover active tutorial guidance');
+   assert.notEqual(state.screen,'alchemyResult','rank-up must wait for alchemy result guidance');
+   report.rankDismissals.push(state);
+   await page.screenshot({path:`${out}/${width}-rank-boundary-${report.rankDismissals.length}.png`});
+  };
   const tap=async selector=>{
-   // Chapter 5's rank-presentation change is awaiting approval. Dismiss its
-   // real modal if it appears between two taps, including just after Pause.
+   // Pending rank-ups are shown at a chapter break, after Pause, or on completion.
    if(selector!=='#contractorRankUpOverlay button'&&await page.locator('#contractorRankUpOverlay:not(.hidden)').isVisible()){
-    report.rankDismissals.push(await page.evaluate(()=>tutorialCurrentStepId()));
+    await recordRank();
     await tap('#contractorRankUpOverlay button');
    }
    const point=await page.locator(selector).first().evaluate(el=>{
@@ -37,12 +43,12 @@ try{
   const isVisible=selector=>page.locator(selector).first().isVisible();
   await page.goto(`http://127.0.0.1:${port}/?legacy=1`,{waitUntil:'networkidle'});
   await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
-  let last='',repeats=0,complete=false;
+  let last='',repeats=0,complete=false,expectedRetryFree=null;
   const reloaded=new Set(),paused=new Set(),retreated=new Set();
   for(let n=0;n<650;n++){
    await page.waitForTimeout(120);
    if(await isVisible('#contractorRankUpOverlay:not(.hidden)')){
-    report.rankDismissals.push(await page.evaluate(()=>tutorialCurrentStepId()));await tap('#contractorRankUpOverlay button');continue;
+    await recordRank();await tap('#contractorRankUpOverlay button');continue;
    }
    const state=await page.evaluate(()=>{
     const step=tutorialUiState.steps[tutorialUiState.index];
@@ -52,6 +58,11 @@ try{
    if(key===last)repeats++;else {last=key;repeats=0;console.log(width,state.id||state.screen,state.page)}
    assert(repeats<35,`Stalled ${key}`);
    if(state.id&&!report.steps.includes(state.id))report.steps.push(state.id);
+   if(expectedRetryFree){
+    const first=expectedRetryFree==='battle_free'?'battle_enemy':'stella_mock_enemy';
+    assert.notEqual(state.id,first,'learned retry must skip the repeated battle explanation');
+    if(state.id===expectedRetryFree){report.retrySkips.push(state.id);expectedRetryFree=null;}
+   }
    if(state.target){
     // Allow async rendering/animations to settle without moving the viewport ourselves.
     await page.waitForFunction(()=>{
@@ -79,7 +90,9 @@ try{
    if(['menu_dex_open','expedition_destination','stella_skill_open','stella_attribute_intro','lumina_execute','expedition_dispatch'].includes(state.id))await page.screenshot({path:`${out}/${width}-${state.id}.png`});
    if(process.env.PROLOGUE_TEST_RELOAD==='1'&&['battle_choose_skill','battle_free','growth_skill_open','stella_skill_equip','stella_mock_free','lumina_execute','lumina_wait','expedition_member','expedition_active'].includes(state.id)&&!reloaded.has(state.id)){
     reloaded.add(state.id);report.reloads.push({from:state.id,saved:await page.evaluate(()=>currentTutorialState().stepId)});
-    await page.reload({waitUntil:'networkidle'});await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);continue;
+    await page.reload({waitUntil:'networkidle'});await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
+    const saved=report.reloads.at(-1).saved;
+    await page.waitForFunction(id=>tutorialCurrentStepId()===id,saved);continue;
    }
    if(process.env.PROLOGUE_TEST_PAUSE==='1'&&['menu_dex_open','growth_skill_open','stella_skill_equip','lumina_execute','expedition_member','expedition_dispatch','expedition_active'].includes(state.id)&&!paused.has(state.id)){
     paused.add(state.id);report.pauses.push(state.id);await tap('.tutorial-pause');
@@ -89,11 +102,11 @@ try{
      await page.touchscreen.tap(width/2,4);assert.equal(await page.locator('.roster-sheet').count(),0);
     }
     await tap('[data-nav="home"]');await tap('#homeAdventureButton');
-    if(!await page.locator('#storyPrologueChapter').evaluate(el=>el.open))await tap('#storyPrologueChapter summary');
+    assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open),'unfinished prologue must expose Continue without expanding details');
     await tap('#storyContinueCard button');continue;
    }
    if(process.env.PROLOGUE_TEST_RETREAT==='1'&&['battle_free','stella_mock_free'].includes(state.id)&&!retreated.has(state.id)){
-    retreated.add(state.id);report.retreats.push(state.id);await tap('#tutorialNextButton');
+    retreated.add(state.id);report.retreats.push(state.id);expectedRetryFree=state.id;await tap('#tutorialNextButton');
     await page.waitForFunction(()=>!busy);await tap('#battleEscapeButton');continue;
    }
    if(state.id==='prologue_complete')complete=true;
@@ -108,7 +121,10 @@ try{
     else await page.waitForTimeout(250);
    }else if(complete&&state.status==='completed')break;
    else if(state.screen==='storyMode'){
-    if(!await page.locator('#storyPrologueChapter').evaluate(el=>el.open))await tap('#storyPrologueChapter summary');
+    report.chapterChecks.push(await page.evaluate(()=>currentTutorialState().stepId));
+    await page.waitForTimeout(550);
+    if(report.chapterChecks.length===1)await page.screenshot({path:`${out}/${width}-story-open.png`});
+    assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open),'unfinished prologue must expose Continue without expanding details');
     await tap('#storyContinueCard button');
    }else if(state.screen==='battle'){
     if(state.busy){await page.waitForTimeout(300);continue;}
@@ -120,6 +136,10 @@ try{
    else throw Error(`Unhandled UI ${key}`);
   }
   assert(complete,'must reach final episode');
+  await page.waitForTimeout(550);
+  while(await isVisible('#contractorRankUpOverlay:not(.hidden)')){await recordRank();await tap('#contractorRankUpOverlay button');await page.waitForTimeout(550);}
+  assert.equal(await page.evaluate(()=>save.contractor.pendingRankUps.length),0,'all queued rank notices remain available through chapter/pause/completion');
+  if(process.env.PROLOGUE_TEST_RETREAT==='1')assert.deepEqual(report.retrySkips.sort(),['battle_free','stella_mock_free']);
   assert.equal(await page.evaluate(()=>currentTutorialState().status),'completed');
   assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.dialogs,[]);
   await page.screenshot({path:`${out}/${width}-complete.png`});

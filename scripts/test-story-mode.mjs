@@ -40,12 +40,13 @@ const context=vm.createContext({
   tutorialCurrentStepId:()=>checkpoint
 });
 vm.runInContext(story,context);
-for(const status of ['not_started','completed','skipped']){
+for(const status of ['not_started','in_progress','completed','skipped']){
   tutorialState={status,stepId:'intro_gnosis'};
   const before=JSON.stringify(tutorialState);
   vm.runInContext('renderStoryMode();renderHomeStoryCard();',context);
   assert.equal(elements.get('homeAdventureTitle').textContent,'ストーリー');
-  assert.equal(elements.get('storyContinueCard').hidden,status!=='not_started');
+  assert.equal(elements.get('storyContinueCard').hidden,['completed','skipped'].includes(status));
+  assert.equal(elements.get('storyPrologueChapter').open,!['completed','skipped'].includes(status),'unfinished prologue exposes its continuation; completed/skipped returns to collapsed chapters');
   assert.equal((elements.get('storyEpisodeList').innerHTML.match(/<article /g)||[]).length,6);
   for(const selected of ['character','side','map','main']){
     vm.runInContext(`selectStoryCategory('${selected}')`,context);

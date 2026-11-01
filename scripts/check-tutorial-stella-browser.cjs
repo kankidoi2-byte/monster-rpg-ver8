@@ -45,9 +45,7 @@ const assert=require('node:assert/strict');
       await page.waitForFunction(()=>!busy);await next();
       await page.evaluate(()=>{partyBattle.forEach(v=>{v.hp=0;v.fainted=true;});losePartyBattle();});
       await at('stella_mock_retry');await page.locator('#next').click();await at('stella_mock_battle');
-      await next();await at('stella_mock_enemy');await next();await at('stella_mock_skill_open');
-      await page.locator('#battleSkillButton').click();await at('stella_mock_advantage');
-      await page.locator('[data-tutorial-normal-attack]').click();await at('stella_mock_free');
+      await next();await at('stella_mock_free');
       await page.waitForFunction(()=>!busy);await next();
       // Play to victory using only the always-available neutral normal attack.
       let turns=1;
