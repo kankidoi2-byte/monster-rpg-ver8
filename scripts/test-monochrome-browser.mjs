@@ -80,16 +80,16 @@ async function capture(page,name,{validate=true}={}){
   const screen=document.querySelector('.screen.active');
   const candidates=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title'),...document.querySelectorAll('.app-topbar,.app-bottom-nav,.app-topbar button,.app-bottom-nav button,.app-topbar input,.app-topbar select')];
   const overflow=candidates.filter(el=>{
-   if(el.closest('.wm-map-scroll,.wm-viewport'))return false; // Each clipped navigation surface is tested for bounds and reachability below.
+   if(el.closest('.wm-map-scroll,.wm-viewport,.roster-chips'))return false; // Each clipped navigation surface is tested for bounds and reachability below.
    const r=el.getBoundingClientRect();return r.width&&r.height&&(r.left < -1||r.right>innerWidth+1);
   }).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,text:el.textContent.slice(0,80),left:r.left,right:r.right,width:r.width};});
   return {screen:screen.id,family:screen.dataset.themeFamily,bodyFamily:document.body.dataset.nonbattleTheme,
    horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow,
    geometry:{viewport:innerWidth,documentScrollWidth:document.documentElement.scrollWidth,documentClientWidth:document.documentElement.clientWidth,bodyScrollWidth:document.body.scrollWidth,zoom:getComputedStyle(document.documentElement).zoom},
-   overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll,.wm-viewport');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
+   overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll,.wm-viewport,.roster-chips');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
  });
  entry.mapScrollers=[];
- for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible').all()){
+ for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible,.screen.active .roster-chips:visible').all()){
   const geometry=await scroller.evaluate(el=>{
    const r=el.getBoundingClientRect();return {left:r.left,right:r.right,viewport:innerWidth,overflowX:getComputedStyle(el).overflowX,clientWidth:el.clientWidth,scrollWidth:el.scrollWidth};
   });
@@ -103,7 +103,7 @@ async function capture(page,name,{validate=true}={}){
    await node.evaluate(el=>el.scrollIntoView({block:'center',inline:'center',behavior:'instant'}));
    const measurement=await node.evaluate(async el=>{
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-    const r=el.getBoundingClientRect(),clip=el.closest('.wm-map-scroll').getBoundingClientRect();
+    const r=el.getBoundingClientRect(),clip=el.closest('.wm-map-scroll,.roster-chips').getBoundingClientRect();
     const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
     return {text:el.textContent.slice(0,80),insideClip:r.left>=clip.left-1&&r.right<=clip.right+1,
      insideViewport:r.left>=-1&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight,uncovered:hit===el||el.contains(hit)};

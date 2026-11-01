@@ -128,7 +128,10 @@ function rosterAllVisibleSelected(){const eligible=rosterSelectableVisible();ret
 function rosterSelectVisible(){
   const eligible=rosterSelectableVisible(),clear=rosterAllVisibleSelected();
   // Enforce the promised keeper even if it was manually selected earlier.
-  if(rosterUi.filter==='duplicates')for(const ins of rosterDuplicateKeepers().values())rosterUi.selected.delete(ins.uid);
+  if(rosterUi.filter==='duplicates'){
+    const visibleIds=new Set(rosterVisibleInstances().map(ins=>ins.id));
+    for(const [id,ins] of rosterDuplicateKeepers())if(visibleIds.has(id))rosterUi.selected.delete(ins.uid);
+  }
   for(const ins of eligible)if(clear)rosterUi.selected.delete(ins.uid);else rosterUi.selected.add(ins.uid);renderParty();
 }
 function openRosterDetail(uid){ensureRosterState();if(!getInstance(uid))return false;rosterUi.returnFocus=document.activeElement;rosterUi.detailUid=uid;rosterUi.confirmation=null;renderRosterSheet();rosterFocusSheet();return true;}

@@ -65,3 +65,13 @@ body:has(#party.active #rosterSheetHost .roster-sheet-backdrop)>:is(.app-topbar,
 #party#party#party button:focus-visible,#party select:focus-visible{outline:3px solid #326e9c;outline-offset:2px}
 @media(max-width:360px){#party#party#party.active{padding-inline:8px}#party#party#party #partyList{gap:5px}.roster-sort{width:86px}#party .roster-level{font-size:9px;padding-inline:2px}#party .roster-level small{font-size:6px}}
 @media(max-height:540px){#party#party#party.active{top:64px;gap:4px}#party#party#party #rosterActions{min-height:50px;padding-block:4px}}
+
+/* Narrow accessibility reflow: retain a scrollable filter row and sort control. */
+@media(max-width:280px){
+  #party#party#party.active{padding-inline:6px}
+  .roster-sort{width:44px}.roster-sort>span{display:none}
+  body:has(#party.active)>.app-topbar{padding-inline:6px}
+  body:has(#party.active) .app-topbar .contractor-rank{min-width:0;padding:4px 6px}
+  body:has(#party.active) .contractor-rank strong{font-size:16px}
+  body:has(#party.active) .app-topbar .app-resource{padding:5px 6px;font-size:10px}
+}
