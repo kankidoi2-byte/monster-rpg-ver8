@@ -220,7 +220,8 @@ function confirmAllGifts(){
   try{
     const gifts=pendingGifts().filter(g=>giftFilter==='all'||g.source===giftFilter);if(!gifts.length)return;
     const rewards=giftCombineRewards(gifts);
-    openGiftDialog('一括受け取りの確認',`<p>${gifts.length}件のプレゼントを受け取ります。</p><div class="gift-rewards">${giftRewardCards(rewards)}</div>`,gifts.map(g=>g.key));
+    const skillCount=rewards.filter(r=>r.kind==='skill').reduce((n,r)=>n+BigInt(r.count),0n);
+    openGiftDialog('一括受け取りの確認',`<p>${gifts.length}件のプレゼントを受け取ります。</p>${skillCount?'<p>技カード 合計'+skillCount.toLocaleString('ja-JP')+'枚</p>':''}<div class="gift-rewards">${giftRewardCards(rewards)}</div>`,gifts.map(g=>g.key));
   }catch(error){showUiNotice('報酬を読み込めません。','error');}
 }
 function showGiftResult(rewards){openGiftDialog('受け取りました',`<div class="gift-rewards">${giftRewardCards(rewards)}</div>`);}
