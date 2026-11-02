@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  const feedbackPreviousScreen=document.querySelector('.screen.active')?.id;
   if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
   if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
   if(typeof gachaCinema!=='undefined'&&gachaCinema)gachaCinema.finish();
@@ -48,6 +49,7 @@ function show(id) {
   const target = document.getElementById(id);
   if (!target) return;
   target.classList.add('active');
+  if(typeof MonsterFeedback!=='undefined')MonsterFeedback.screenChanged(id,feedbackPreviousScreen);
   replayUiMotion(target, 'ui-screen-enter', 320);
   updateAppNavigation(id);
   updateAppResourceBar();
@@ -345,7 +347,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution','skillSynthesis'].includes(screenId)) return 'monsters';
-  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
+  if(['feedbackBox','moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
