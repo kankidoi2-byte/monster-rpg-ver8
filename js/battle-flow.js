@@ -396,7 +396,7 @@ function prepareSingleVictoryReward(){
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions(Math.random,{saveNow:false});
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
   return {message:msg,outcome:{
-    kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain, bless,
+    kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain, ...(bless?{bless}:{}),
     materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   }};

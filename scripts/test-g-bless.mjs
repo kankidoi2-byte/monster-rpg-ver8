@@ -31,7 +31,7 @@ r.run(`save.gBless={v:1,on:true,weekKey:'2000-01-01',week:0,reserve:17};ensureGB
 for(const kind of ['single','three','invasion']){
  const off=fixture(kind,false),on=fixture(kind,true);
  for(const q of [off,on])q.run(`settleNormalVictory(${kind!=='single'})`);
- assert.equal(on.run('save.gBless.week'),1,kind);assert.equal(off.run('save.gBless.week'),2);
+ assert.equal(on.run('save.gBless.week'),1,kind);assert.equal(off.run('save.gBless.week'),2);assert.equal(off.run('Object.hasOwn(auditOutcome,"bless")'),false,'off outcome remains identical');
  const count=kind==='single'?1:2;
  assert.equal(on.run('auditOutcome.exp'),Math.round(41*1.8*1.5*1.5)*count);
  assert.equal(on.run('auditOutcome.coins'),Math.round(13*1.8*1.5*2)*count);

@@ -56,8 +56,14 @@ try{
   const click=async(id,n)=>{for(let i=0;i<n;i++)await page.locator('.tile[data-inc="'+id+'"]').click({force:true});};
   await click('q1',1);assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/5\/20/);
   await page.locator('.minus[data-inc="q1"]').click();assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/0\/20/);
+  // The toast lasts 3.6 seconds; observe its actual insertion so slow test
+  // machines need not finish twenty independent clicks before it disappears.
+  await page.evaluate(()=>{
+   window.lifeQuestToastSeen=false;
+   new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.matches('.toast')&&n.getBoundingClientRect().height>0)))window.lifeQuestToastSeen=true;}).observe(document.body,{childList:true});
+  });
   await click('q1',20); // 5 achievements displayed, only 3 count for rewards.
-  await page.waitForTimeout(600);assert(await page.locator('.lvup').count()>0);assert(await page.locator('.toast').count()>0);
+  await page.locator('.lvup').first().waitFor({state:'visible'});assert(await page.locator('.lvup').count()>0);assert(await page.evaluate(()=>lifeQuestToastSeen));
   assert.match(await page.locator('.reward-next').innerText(),/720枚/);
   await page.locator('.overlay').evaluateAll(els=>els.forEach(e=>e.remove()));
   assert.equal(await page.locator('.tile[data-inc="q1"] .isdone').count(),0);
