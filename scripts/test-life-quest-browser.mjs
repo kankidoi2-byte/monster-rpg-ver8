@@ -26,7 +26,7 @@ try{
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{
    clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
-   save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];addInstance('aquaron',5);save.party=[save.instances[0].uid];save.coins=17;
+   save=initSave();save.giftClaimedIds=DEV_GIFTS.map(g=>g.id);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];addInstance('aquaron',5);save.party=[save.instances[0].uid];save.coins=17;
    if(!saveGame())throw Error('fixture save');show('home');
   });
   const before=await page.evaluate(()=>localStorage.getItem(MonsterProfiles.key(SAVE_KEY)));

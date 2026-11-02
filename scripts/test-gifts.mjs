@@ -4,8 +4,14 @@ import vm from 'node:vm';
 const c=vm.createContext({console,Math,Date,Intl,setInterval(){},window:{addEventListener(){}},document:{addEventListener(){},getElementById(){return null}}});
 for(const f of ['js/data.js','js/core.js','js/gifts-data.js','js/gifts.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c,{filename:f});
 const run=s=>vm.runInContext(s,c);
-assert.equal(run('DEV_GIFTS.length'),0,'initial developer gifts stay empty');
+const opening=JSON.parse(run('JSON.stringify(DEV_GIFTS.find(g=>g.id==="20261102-present-box-open"))'));
+assert.deepEqual(opening,{
+ id:'20261102-present-box-open',title:'プレゼントBOX開設記念',letter:'プレゼントBOXを開きました。ちゃんと届いていますか？',startAt:'2026-11-02',until:'2026-11-30',
+ rewards:[{kind:'coins',amount:5000},{kind:'item',id:'rainbow_contract_scroll',count:3},{kind:'item',id:'giga_data',count:5},{kind:'item',id:'upper_potion',count:10},{kind:'item',id:'fine_magic_crystal',count:2}]
+},'approved opening gift: exact letter, period, item mapping and quantities');
 assert.deepEqual(Array.from(run('validateDeveloperGifts(DEV_GIFTS)')),[]);
+// Synthetic validator cases must not depend on the current live campaigns.
+run('DEV_GIFTS.splice(0,DEV_GIFTS.length)');
 run(`globalThis.sample={id:'test',title:'混在',letter:'手紙\\n改行',startAt:'2026-11-02',until:'2026-11-30',rewards:[{kind:'coins',amount:5},{kind:'item',id:'rainbow_contract_scroll',count:3},{kind:'monster',id:'false_dragon_alfa',level:30},{kind:'character',id:'character_vera_3',level:1},{kind:'skill',id:'s110_110',count:2}]}`);
 assert.equal(run('giftDeveloperErrors(sample).length'),0);
 for(const expr of ["({...sample,id:''})","({...sample,startAt:'2026-02-30'})","({...sample,until:'2026-11-01'})","({...sample,until:undefined})","({...sample,rewards:[]})","({...sample,rewards:[{kind:'item',id:'missing',count:1}]})","({...sample,rewards:[{kind:'skill',id:'missing',count:1}]})","({...sample,rewards:[{kind:'monster',id:'elna_beginner',level:1}]})","({...sample,rewards:[{kind:'character',id:'freigal',level:1}]})","({...sample,rewards:[{kind:'monster',id:'freigal',level:101}]})","({...sample,rewards:[{kind:'monster',id:'freigal',level:0}]})","({...sample,rewards:[{kind:'coins',amount:-1}]})","({...sample,rewards:[{kind:'coins',amount:1.5}]})","({...sample,rewards:[{kind:'skill',id:'s110_110',count:0}]})"]){assert(run(`giftDeveloperErrors(${expr}).length>0`),expr);}
