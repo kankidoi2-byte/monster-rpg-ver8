@@ -1,12 +1,23 @@
-/* Monster Battle owns claiming; Life Quest only owns its independent inbox. */
+/* Life Quest owns its append-only inbox; Monster Battle owns receipts.
+ * v0 saves claimed the entire prefix, keeping only the last 500 IDs.
+ * v1 receipts are individual and never expire with the display history.
+ */
+function lifeQuestClaimedSet(entries){
+  const claimed=new Set(save.lifeQuestClaimedIds||[]);
+  if(save.giftReceiptVersion!==1){
+    const last=entries.reduce((n,e,i)=>claimed.has(e?.id)?i:n,-1);
+    entries.slice(0,last+1).forEach(e=>{if(typeof e?.id==='string')claimed.add(e.id)});
+  }
+  return claimed;
+}
+function migrateLifeQuestGiftReceipts(entries){
+  if(save.giftReceiptVersion===1)return;
+  save.lifeQuestClaimedIds=[...lifeQuestClaimedSet(entries)];
+  save.giftReceiptVersion=1;
+}
 function pendingLifeQuestRewards(){
-  const box=LifeQuestRewards.sync();
-  const claimed=new Set(save.lifeQuestClaimedIds||[]),seen=new Set();
-  // Entries are append-only. The newest retained receipt also covers the
-  // already-claimed prefix after the 500-ID receipt window rolls forward.
-  const lastClaimed=box.entries.reduce((last,e,i)=>claimed.has(e?.id)?i:last,-1);
-  return box.entries.filter((e,index)=>{
-    if(index<=lastClaimed)return false;
+  const box=LifeQuestRewards.sync(),claimed=lifeQuestClaimedSet(box.entries),seen=new Set();
+  return box.entries.filter(e=>{
     if(!e||typeof e.id!=='string'||!e.id||seen.has(e.id)||claimed.has(e.id))return false;
     seen.add(e.id);return true;
   });
@@ -22,32 +33,11 @@ function lifeQuestRewardTotal(entries){
   }
   return total;
 }
-function renderLifeQuestRewards(){
-  const el=document.getElementById('lifeQuestRewardBox');if(!el)return;
-  try{
-    const entries=pendingLifeQuestRewards();el.hidden=!entries.length;
-    el.innerHTML=entries.length?'<span>Life Quest ・ '+entries.length+'件</span><button type="button" onclick="claimLifeQuestRewards()">受け取る</button>':'';
-  }catch(error){el.hidden=false;el.textContent='Life Questの報酬を読み込めません。';}
+function refreshLifeQuestGiftUi(){
+  if(typeof refreshGiftUi==='function')refreshGiftUi();
 }
-function claimLifeQuestRewards(){
-  let entries;
-  try{entries=pendingLifeQuestRewards()}catch(error){showUiNotice('報酬を読み込めません。','error');return false;}
-  if(!entries.length){renderLifeQuestRewards();return false;}
-  const total=lifeQuestRewardTotal(entries);
-  const before=captureSaveTransaction();
-  save.coins+=total.coins;
-  for(const [id,n] of Object.entries(total.items))save.items[id]=(save.items[id]||0)+n;
-  save.lifeQuestClaimedIds=[...(save.lifeQuestClaimedIds||[]),...entries.map(e=>e.id)].slice(-500);
-  if(!saveGame()){
-    rollbackSaveTransaction(before);
-    showUiNotice('保存できなかったため、報酬を受け取れませんでした。','error');return false;
-  }
-  showCommittedSaveResult(()=>{renderLifeQuestRewards();
-  showUiNotice(['コイン '+total.coins+'枚',...Object.entries(total.items).map(([id,n])=>ITEM_DEX_BY_ID[id].name+' ×'+n)].join(' / '));
-  if(typeof updateItems==='function')updateItems();});
-  return true;
-}
-window.addEventListener('pageshow',()=>{if(document.getElementById('home')?.classList.contains('active'))renderLifeQuestRewards()});
-window.addEventListener('storage',e=>{if(['lifequest.v1','lifequest_rewards_v1'].includes(e.key)&&document.getElementById('home')?.classList.contains('active'))renderLifeQuestRewards()});
-
-window.addEventListener('focus',()=>{if(document.getElementById('home')?.classList.contains('active'))renderLifeQuestRewards()});
+window.addEventListener('pageshow',refreshLifeQuestGiftUi);
+window.addEventListener('focus',refreshLifeQuestGiftUi);
+window.addEventListener('storage',e=>{
+  if(['lifequest.v1','lifequest_rewards_v1'].includes(e.key)||e.key===null)refreshLifeQuestGiftUi();
+});

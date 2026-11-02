@@ -74,17 +74,21 @@ try{
   await page.clock.setFixedTime(new Date('2026-11-02T00:05:00+09:00'));
   await page.goto('http://127.0.0.1:4249/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('home')});
-  assert(await page.locator('#lifeQuestRewardBox').isVisible());
-  assert(await page.evaluate(()=>{const b=document.getElementById('lifeQuestRewardBox').getBoundingClientRect(),n=document.getElementById('homeNamePlate').getBoundingClientRect(),a=document.getElementById('homeActions').getBoundingClientRect();return b.bottom<=n.top&&b.bottom<=a.top&&b.left>=0&&b.right<=innerWidth;}),'inbox clears the home name and action buttons');
-  await page.screenshot({path:out+'/inbox-'+viewport.width+'.png'});
+  assert(await page.locator('#giftUnreadCount').isVisible());
+  await page.locator('#homeGiftButton').click();
+  assert(await page.locator('#giftBox').isVisible());
   const amounts=await page.evaluate(()=>{const e=JSON.parse(localStorage.getItem('lifequest_rewards_v1')).entries;return {daily:e.find(e=>e.id==='daily-2026-11-01').coins,coins:save.coins,rainbow:save.items.rainbow_contract_scroll,expected:e.reduce((n,e)=>n+e.coins,0)}});
   assert.equal(amounts.daily,720);
+  await page.locator('#giftClaimAll').click();
   const snapshot=await page.evaluate(()=>JSON.stringify(save));
   await page.evaluate(()=>{window.realLQSet=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===MonsterProfiles.key(SAVE_KEY))throw Error('quota');return window.realLQSet.call(this,k,v)}});
-  await page.locator('#lifeQuestRewardBox button').click();assert.equal(await page.evaluate(()=>JSON.stringify(save)),snapshot);
+  assert.equal(await page.evaluate(()=>claimGifts(pendingGifts().map(g=>g.key))),false);assert.equal(await page.evaluate(()=>JSON.stringify(save)),snapshot);
   await page.evaluate(()=>Storage.prototype.setItem=window.realLQSet);
-  await page.locator('#lifeQuestRewardBox button').click();assert.equal(await page.evaluate(()=>save.coins),amounts.coins+amounts.expected);assert.equal(await page.evaluate(()=>save.items.rainbow_contract_scroll),amounts.rainbow+1);
-  assert.equal(await page.locator('#lifeQuestRewardBox').isVisible(),false);
+  await page.locator('#giftDialogClaim').click();
+  await page.getByRole('heading',{name:'受け取りました',exact:true}).waitFor();
+  assert.equal(await page.evaluate(()=>save.coins),amounts.coins+amounts.expected);assert.equal(await page.evaluate(()=>save.items.rainbow_contract_scroll),amounts.rainbow+1);
+  await page.locator('#giftDialogClose').click();
+  assert.equal(await page.locator('#giftUnreadCount').isVisible(),false);
   const claimed=await page.evaluate(()=>JSON.stringify(save));await page.evaluate(()=>show('home'));assert.equal(await page.evaluate(()=>JSON.stringify(save)),claimed);
   await page.screenshot({path:out+'/claimed-'+viewport.width+'.png'});
   // Current schema save with the additive field missing must load safely.

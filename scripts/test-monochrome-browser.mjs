@@ -303,7 +303,7 @@ try{
    await capture(page,`${width}x${height}-${detail}`);
   }
   assert.equal(await page.evaluate(()=>{show('home');return document.querySelector('#homeAdventureKicker').textContent;}),'序章クリア');
-  assert.equal(await page.locator('#homeQuickLinks button').count(),4,'adopted water home shortcuts');
+  assert.equal(await page.locator('#homeQuickLinks button').count(),5,'adopted water home shortcuts');
   for(const variant of ['empty','many','long']){
    await fixture(page,variant);
    for(const id of ['party','partySet','skillDex',...(variant==='empty'?[]:['skillEdit'])]){
