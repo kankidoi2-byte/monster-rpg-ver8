@@ -65,13 +65,14 @@ try{
   await page.evaluate(()=>saveGame());await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>save.gBless.reserve),17);
   // All header controls remain reachable on floating headers and at 200% zoom/reflow.
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);save.contractor.pendingRankUps=[];document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
+  const settleHeader=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   const headerReachable=()=>page.locator('.app-topbar button:visible').evaluateAll(es=>es.every(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.left>=0&&r.right<=innerWidth&&e.contains(hit)}));
   for(const id of ['gachaHub','battleChoices']){
    await page.evaluate(id=>show(id),id);await page.locator('#gBlessChip').click();assert(await page.locator('#gBlessDialog').isVisible());await page.locator('#gBlessDialog .gb-close').click();assert(await headerReachable(),id+' header');
   }
   await page.evaluate(()=>document.documentElement.style.zoom='2');
-  for(const id of ['partySet','skillDex','shop']){await page.evaluate(id=>show(id),id);await page.waitForFunction(()=>document.body.classList.contains('gb-header-stacked'));assert(await headerReachable(),id+' 200%');}
-  await page.evaluate(()=>document.documentElement.style.zoom='');await page.setViewportSize({width:160,height:640});await page.evaluate(()=>show('party'));await page.waitForFunction(()=>document.body.classList.contains('gb-header-stacked'));assert(await headerReachable(),'roster narrow reflow');
+  for(const id of ['partySet','skillDex','shop']){await page.evaluate(id=>show(id),id);await settleHeader();await page.waitForFunction(()=>document.body.classList.contains('gb-header-stacked'));assert(await headerReachable(),id+' 200%');}
+  await page.evaluate(()=>document.documentElement.style.zoom='');await page.setViewportSize({width:160,height:640});await page.evaluate(()=>show('party'));await settleHeader();await page.waitForFunction(()=>document.body.classList.contains('gb-header-stacked'));assert(await headerReachable(),'roster narrow reflow');
   await ctx.close();
  }
  assert.deepEqual(errors,[]);console.log('PASS G-BLESS browser: chip/tutorial, persistent toggle, 320/360/412/430px sheet/header and floating/200%-zoom/reflow reachability, real gift/history, G-ICHOR rollback/use, next-day Life Quest +10/old entries/once, JST Monday boundary and reload.');
