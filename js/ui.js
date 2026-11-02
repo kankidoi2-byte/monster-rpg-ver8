@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(typeof closeRoadmapSheet==='function')closeRoadmapSheet();
   if(id!=='giftBox'&&typeof closeGiftDialog==='function')closeGiftDialog();
   const feedbackPreviousScreen=document.querySelector('.screen.active')?.id;
   if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
@@ -58,6 +59,7 @@ function show(id) {
   if (id === 'home') renderHome();
   if (id === 'homeFavoriteSelect') renderHomeFavoriteOptions();
   if (id === 'giftBox' && typeof renderGiftBox === 'function') renderGiftBox();
+  if (id === 'roadmap' && typeof renderRoadmap === 'function') renderRoadmap();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
   if (id === 'party')    renderParty();
   if (id === 'skillDex') renderSkillDex();
@@ -349,7 +351,7 @@ function appNavigationSection(screenId){
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
   if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution','skillSynthesis'].includes(screenId)) return 'monsters';
-  if(['feedbackBox','moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
+  if(['roadmap','feedbackBox','moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
