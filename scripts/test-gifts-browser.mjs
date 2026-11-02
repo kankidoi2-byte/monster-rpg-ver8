@@ -12,6 +12,11 @@ try{
  for(const viewport of [{width:412,height:780},{width:360,height:640}]){
   const context=await browser.newContext({viewport,timezoneId:'Asia/Tokyo',reducedMotion:'reduce'});
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+  // Acquisitions can queue a Rank-up after a receipt dialog closes. This suite
+  // tests gift flows; isolate the unrelated timed overlay without editing saves.
+  await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
+   await page.evaluate(()=>{clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
+  });
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.clock.setFixedTime(new Date('2026-11-02T03:00:00+09:00'));
   await page.goto(origin,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
