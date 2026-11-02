@@ -34,7 +34,7 @@
 - 状態・戦闘: `js/save.js`, `js/state.js`, `js/battle-flow.js`, `js/multi-battle.js`, `js/battle-view.js`
 - アイテム・報酬: `js/data.js`, `js/gifts.js`, `life-quest/rewards.js`, `life-quest/index.html`
 - 案内: `js/notices-data.js`, `js/roadmap-data.js`
-- 検査: `package.json`, `scripts/test-g-bless.mjs`, `scripts/test-g-bless-browser.mjs`, `scripts/test-roadmap.mjs`, `scripts/test-roadmap-browser.mjs`, `scripts/test-gifts-browser.mjs`（受取後のランクアップ演出による検査の偶発的な操作妨害を隔離。セーブは変更しない）, `scripts/test-life-quest-browser.mjs`（短時間で消えるトーストを、固定待機時間に依存せず実際の挿入時に検証）
+- 検査: `package.json`, `scripts/test-g-bless.mjs`, `scripts/test-g-bless-browser.mjs`, `scripts/test-roadmap.mjs`, `scripts/test-roadmap-browser.mjs`, `scripts/test-gifts-browser.mjs`（受取後のランクアップ演出による検査の偶発的な操作妨害を隔離。セーブは変更しない）, `scripts/test-life-quest-browser.mjs`（短時間で消えるトーストを、固定待機時間に依存せず実際の挿入時に検証。レベルアップ画面を閉じて20回の入力を実操作）, `scripts/test-tutorial-phase5a.mjs`（敵ごとの報酬呼び出しの検査に、勝利共通の加護判定引数を反映）
 - この報告: `docs/g-bless-acceptance-20261102.md`
 
 ## 検査コマンド

@@ -53,17 +53,25 @@ try{
   await page.reload({waitUntil:'networkidle'});
   assert.equal(await page.locator('.tile').count(),8,'customized saved quests must remain');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth),true,'phone has no page scroll');
-  const click=async(id,n)=>{for(let i=0;i<n;i++)await page.locator('.tile[data-inc="'+id+'"]').click({force:true});};
+  await page.addLocatorHandler(page.locator('.overlay:has(.lvup)').first(),async()=>{
+   await page.locator('.overlay:has(.lvup)').first().click();
+  });
+  const click=async(id,n)=>{for(let i=0;i<n;i++)await page.locator('.tile[data-inc="'+id+'"]').click();};
   await click('q1',1);assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/5\/20/);
   await page.locator('.minus[data-inc="q1"]').click();assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/0\/20/);
   // The toast lasts 3.6 seconds; observe its actual insertion so slow test
   // machines need not finish twenty independent clicks before it disappears.
   await page.evaluate(()=>{
-   window.lifeQuestToastSeen=false;
-   new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.matches('.toast')&&n.getBoundingClientRect().height>0)))window.lifeQuestToastSeen=true;}).observe(document.body,{childList:true});
+   window.lifeQuestToastSeen=false;window.lifeQuestLevelUpSeen=false;
+   new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes){
+    if(n.nodeType!==1)continue;
+    if(n.matches('.toast')&&n.getBoundingClientRect().height>0)window.lifeQuestToastSeen=true;
+    if(n.matches('.lvup')||n.querySelector('.lvup'))window.lifeQuestLevelUpSeen=true;
+   }}).observe(document.body,{childList:true});
   });
   await click('q1',20); // 5 achievements displayed, only 3 count for rewards.
-  await page.locator('.lvup').first().waitFor({state:'visible'});assert(await page.locator('.lvup').count()>0);assert(await page.evaluate(()=>lifeQuestToastSeen));
+  await page.waitForFunction(()=>window.lifeQuestToastSeen&&window.lifeQuestLevelUpSeen);assert(await page.evaluate(()=>lifeQuestLevelUpSeen&&lifeQuestToastSeen));
+  assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/100\/20/);
   assert.match(await page.locator('.reward-next').innerText(),/720枚/);
   await page.locator('.overlay').evaluateAll(els=>els.forEach(e=>e.remove()));
   assert.equal(await page.locator('.tile[data-inc="q1"] .isdone').count(),0);
