@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261102-present-box-opening-gift',date:'2026-11-02',category:'update',title:'プレゼントBOX開設記念をお届けしました',body:'11月30日まで、プレゼントBOXでコイン5,000枚・虹の契約書×3・ギガデータ×5・上回復薬×10・上質な魔晶石×2を受け取れます。受け取りは1回限り。序章チュートリアル中は、完了後に受け取れます。'},
   {id:'20261102-present-box',date:'2026-11-02',category:'update',title:'プレゼントBOXを追加しました',body:'ホーム右端とメニューからプレゼントBOXを開けます。Life Questの報酬は1件ずつ、またはまとめて受け取れます。受け取り履歴から中身も確認できます。序章チュートリアル中は閲覧でき、完了後に受け取れます。'},
   {id:"20261102-feedback-box",date:"2026-11-02",category:"update",title:"意見箱を追加しました",body:"メニューから不具合・改善要望・感想を開発者へ送れます。通信できないときは、あとで自動送信します。"},
   {id:'20261102-life-quest-empty-start',date:'2026-11-02',category:'update',title:'Life Questを空の状態から始められます',body:'初回はクエストを0件にしました。未変更・未記録の初期クエストも解除します。「クエスト」から自分の活動を追加できます。追加・変更したクエストや記録は残ります。'},
