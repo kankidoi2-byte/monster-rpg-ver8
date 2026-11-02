@@ -20,6 +20,7 @@ function fixture(kind='single',on=true){
  return r;
 }
 const r=fixture();
+assert.equal(r.run('gBlessTotalText({week:100,reserve:Number.MAX_SAFE_INTEGER})'),(BigInt(Number.MAX_SAFE_INTEGER)+100n).toLocaleString('ja-JP'));
 for(const [date,key] of [['2026-11-01T18:59:59.999Z','2026-10-26'],['2026-11-01T19:00:00Z','2026-11-02'],['2026-11-08T18:59:59Z','2026-11-02'],['2026-11-08T19:00:00Z','2026-11-09']])assert.equal(r.run(`gBlessWeekKey(Date.parse('${date}'))`),key);
 for(const value of ['null','{}',`{on:'yes',week:-1,reserve:1.5}`,`{on:true,week:101,reserve:'3'}`,`{week:NaN,reserve:Infinity}`]){
  const s=JSON.parse(r.run(`JSON.stringify(normalizeGBless(${value}))`));assert.equal(s.week,100);assert.equal(s.reserve,0);

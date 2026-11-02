@@ -24,6 +24,8 @@ function normalizeGBless(value,now=Date.now()){
 }
 function ensureGBless(){return save.gBless=normalizeGBless(save.gBless);}
 function gBlessTotal(s=ensureGBless()){return Math.min(Number.MAX_SAFE_INTEGER,s.week+s.reserve);}
+// Format the combined count exactly even when week + reserve exceeds the safe-number range.
+function gBlessTotalText(s=ensureGBless()){return (BigInt(s.week)+BigInt(s.reserve)).toLocaleString('ja-JP');}
 function gBlessUnlocked(){
   const t=save?.progress?.tutorial;
   return Boolean(t&&!t.replaying&&(t.completed||t.skipped||t.status==='completed'||t.status==='skipped'));
@@ -34,7 +36,7 @@ function beginGBlessVictory(){
     &&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active);
   const used=Boolean(eligible&&s.on&&gBlessTotal(s)>0);
   if(used){if(s.week>0)s.week-=G_BLESS_RULES.cost;else s.reserve-=G_BLESS_RULES.cost;if(!gBlessTotal(s))s.on=false;}
-  return used?{baseExp:0,baseCoins:0,remaining:gBlessTotal(s)}:null;
+  return used?{baseExp:0,baseCoins:0,remaining:gBlessTotalText(s)}:null;
 }
 function gBlessHuntReward(base,turnBonus,kind,bless){
   if(!bless)return huntRewardAmount(base,turnBonus);

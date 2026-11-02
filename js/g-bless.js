@@ -7,14 +7,14 @@ function renderGBless(){
   const s=pending?(save.gBless||normalizeGBless(null)):ensureGBless(),total=gBlessTotal(s);
   chip.hidden=!gBlessUnlocked();chip.disabled=pending;
   chip.classList.toggle('on',s.on);chip.style.setProperty('--p',s.week);
-  document.getElementById('gBlessChipText').textContent='G-BLESS '+total.toLocaleString('ja-JP');
-  chip.setAttribute('aria-label','G-BLESS 加護 '+total.toLocaleString('ja-JP')+'、'+(s.on?'オン':'オフ'));
+  document.getElementById('gBlessChipText').textContent='G-BLESS '+gBlessTotalText(s);
+  chip.setAttribute('aria-label','G-BLESS 加護 '+gBlessTotalText(s)+'、'+(s.on?'オン':'オフ'));
   if(!document.getElementById('gBlessDialog')?.open)return;
   const sw=document.getElementById('gBlessSwitch');sw.disabled=!total||pending;sw.classList.toggle('on',s.on);sw.setAttribute('aria-checked',String(s.on));
   document.getElementById('gBlessToggle').classList.toggle('on',s.on);
   document.getElementById('gBlessToggleTitle').textContent=s.on?'G-BLESSを使っています':'G-BLESSを使う';
   document.getElementById('gBlessToggleHint').textContent=!total?'加護がありません。週の回復を待つか、予備を増やそう':s.on?'勝つたびに1つ消費しています':'オンの間、勝つたびに1つ消費';
-  for(const [id,n] of [['gBlessTotal',total],['gBlessWeek',s.week],['gBlessReserve',s.reserve]])document.getElementById(id).textContent=n.toLocaleString('ja-JP');
+  for(const [id,n] of [['gBlessTotal',gBlessTotalText(s)],['gBlessWeek',s.week],['gBlessReserve',s.reserve]])document.getElementById(id).textContent=n.toLocaleString('ja-JP');
   const remaining=Math.max(0,Date.parse(s.weekKey+'T04:00:00+09:00')+7*86400000-Date.now()),hours=Math.ceil(remaining/3600000);
   document.getElementById('gBlessReset').textContent=`（あと${Math.floor(hours/24)}日${hours%24}時間）`;
   const scale=Math.max(G_BLESS_RULES.week,s.week+s.reserve);
