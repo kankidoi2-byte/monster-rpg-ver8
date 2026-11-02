@@ -1,0 +1,134 @@
+/* Adopted prototype, scoped so battle and existing cards keep their styles. */
+:is(#roadmap,#roadmapDialogRoot){--ink:#1c2230;--sub:#5b6474;--gold:#b08d55;--gold2:#d8bd86;--night:#171c28;--pearl:rgba(255,255,255,.82);--line:rgba(28,34,48,.12);
+--story:#7a4fc4;--art:#d0567e;--sys:#2f9e78;--done:#9a8a6a;--bg:#eef1f5;--cols:minmax(0,1.38fr) minmax(0,1fr) minmax(0,1fr);color:var(--ink);text-align:left;font-family:system-ui,sans-serif}
+#roadmap{padding:0;max-width:440px;margin:0 auto;background:#eef2f7!important}
+:is(#roadmap,#roadmapDialogRoot) *{box-sizing:border-box}
+:is(#roadmap,#roadmapDialogRoot) :is(h1,h2,h3,h4,p){margin:0}
+:is(#roadmap,#roadmapDialogRoot) button{font:inherit;color:inherit;margin:0;transform:none;min-width:0;letter-spacing:normal}
+#roadmap .ui-back-link{margin:10px 14px}
+:is(#roadmap,#roadmapDialogRoot) .hero{position:relative;margin:14px 14px 4px;border-radius:20px;overflow:hidden;height:150px;background:var(--night);color:#fff;box-shadow:0 10px 26px rgba(23,28,40,.22)}
+:is(#roadmap,#roadmapDialogRoot) .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+:is(#roadmap,#roadmapDialogRoot) .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(23,28,40,0) 15%,rgba(23,28,40,.9) 100%)}
+:is(#roadmap,#roadmapDialogRoot) .hero .tx{position:absolute;left:16px;right:16px;bottom:13px;z-index:2}
+:is(#roadmap,#roadmapDialogRoot) .hero .en{font-size:10px;letter-spacing:.32em;color:var(--gold2);font-weight:700}
+:is(#roadmap,#roadmapDialogRoot) .hero h1{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:26px;letter-spacing:.06em;margin-top:2px}
+:is(#roadmap,#roadmapDialogRoot) .hero p{font-size:12px;opacity:.88;margin-top:3px;line-height:1.5}
+:is(#roadmap,#roadmapDialogRoot) .lanes-h{position:sticky;top:54px;z-index:15;display:grid;grid-template-columns:var(--cols);gap:6px;padding:8px 14px;background:linear-gradient(#eef2f7 75%,rgba(238,242,247,0))}
+:is(#roadmap,#roadmapDialogRoot) .lh{border:0;cursor:pointer;border-radius:12px;padding:6px 6px 6px 8px;background:#fff;box-shadow:0 2px 8px rgba(23,28,40,.07);display:flex;align-items:center;gap:6px;text-align:left;border-top:3px solid var(--c);transition:opacity .2s}
+:is(#roadmap,#roadmapDialogRoot) .lh i{font-style:normal;font-size:15px}
+:is(#roadmap,#roadmapDialogRoot) .lh b{font-size:12.5px;font-weight:900;display:block;line-height:1.2}
+:is(#roadmap,#roadmapDialogRoot) .lh small{font-size:9.5px;color:var(--sub);font-weight:700;display:block}
+:is(#roadmap,#roadmapDialogRoot) .lh.dim{opacity:.4}
+:is(#roadmap,#roadmapDialogRoot) .board{position:relative;display:grid;grid-template-columns:var(--cols);column-gap:6px;padding:0 14px 20px}
+:is(#roadmap,#roadmapDialogRoot) .rail{grid-row:1/-1;position:relative;pointer-events:none;z-index:0}
+:is(#roadmap,#roadmapDialogRoot) .rail:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:3px;border-radius:4px;background:var(--c);opacity:.35}
+:is(#roadmap,#roadmapDialogRoot) .rail.story:before{width:6px;left:7px;opacity:.55}
+:is(#roadmap,#roadmapDialogRoot) .rail.end:before{background:linear-gradient(var(--c) 70%,transparent)}
+:is(#roadmap,#roadmapDialogRoot) .band{grid-column:1/-1;z-index:2;display:flex;align-items:baseline;gap:8px;margin:16px 0 9px;padding:2px 0}
+:is(#roadmap,#roadmapDialogRoot) .band .tag{font-size:11px;font-weight:900;color:#fff;background:var(--ink);padding:3px 10px;border-radius:99px;flex:none;box-shadow:0 0 0 4px #eef2f7}
+:is(#roadmap,#roadmapDialogRoot) .band h2{background:#eef2f7;padding:0 6px;border-radius:6px}
+:is(#roadmap,#roadmapDialogRoot) .band h2{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:17px}
+:is(#roadmap,#roadmapDialogRoot) .band small{margin-left:auto;font-size:10.5px;color:var(--sub)}
+:is(#roadmap,#roadmapDialogRoot) .band.b0 .tag{background:#e0543f}:is(#roadmap,#roadmapDialogRoot) .band.b1 .tag{background:#3f74c9}:is(#roadmap,#roadmapDialogRoot) .band.b2 .tag{background:#8a8fa0}
+:is(#roadmap,#roadmapDialogRoot) .cell{z-index:1;display:flex;flex-direction:column;gap:7px;padding-left:18px;position:relative;transition:opacity .2s;min-width:0}
+:is(#roadmap,#roadmapDialogRoot) .cell.story{padding-left:20px}
+:is(#roadmap,#roadmapDialogRoot) .cell.dim{opacity:.28}
+:is(#roadmap,#roadmapDialogRoot) .node{position:relative}
+:is(#roadmap,#roadmapDialogRoot) .node:before{content:"";position:absolute;left:-15px;top:14px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--c);z-index:2}
+:is(#roadmap,#roadmapDialogRoot) .cell.story .node.main:before{left:-19px;width:16px;height:16px;top:12px;border-width:4px}
+:is(#roadmap,#roadmapDialogRoot) .node.wip:before{background:var(--c);animation:roadmapPulse 1.8s infinite}
+@keyframes roadmapPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c) 45%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 0%,transparent)}}
+:is(#roadmap,#roadmapDialogRoot) .card{position:relative;width:100%;border:0;cursor:pointer;text-align:left;border-radius:13px;background:var(--pearl);box-shadow:0 3px 10px rgba(23,28,40,.08);padding:9px;display:flex;flex-direction:column;gap:3px;border-left:3px solid var(--c);min-height:72px}
+:is(#roadmap,#roadmapDialogRoot) .card .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,#fff);font-size:16px;overflow:hidden;margin-bottom:2px}
+:is(#roadmap,#roadmapDialogRoot) .card .ic img{width:100%;height:100%;object-fit:cover}
+:is(#roadmap,#roadmapDialogRoot) .card h4{font-size:12.5px;font-weight:900;line-height:1.3}
+:is(#roadmap,#roadmapDialogRoot) .card p{font-size:10.5px;color:var(--sub);line-height:1.4}
+:is(#roadmap,#roadmapDialogRoot) .wipb{display:inline-block;align-self:flex-start;font-size:9.5px;font-weight:900;color:#fff;background:#e0543f;border-radius:99px;padding:1px 7px;margin-bottom:2px}
+:is(#roadmap,#roadmapDialogRoot) .main .card{overflow:hidden;min-height:150px;padding:0;border-left:0;background:var(--night);color:#fff;box-shadow:0 6px 16px rgba(23,28,40,.2);outline:2px solid color-mix(in srgb,var(--story) 70%,#fff);outline-offset:-2px}
+:is(#roadmap,#roadmapDialogRoot) .main .card .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6}
+:is(#roadmap,#roadmapDialogRoot) .main .card .chr{position:absolute;right:-10px;bottom:0;height:100%;width:80%;object-fit:cover;object-position:center 25%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);mask-image:linear-gradient(90deg,transparent,#000 45%)}
+:is(#roadmap,#roadmapDialogRoot) .main .card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(23,28,40,0) 25%,rgba(23,28,40,.92) 100%)}
+:is(#roadmap,#roadmapDialogRoot) .main .card .tx{position:absolute;left:10px;right:10px;bottom:9px;z-index:2}
+:is(#roadmap,#roadmapDialogRoot) .main .card .k{font-size:9.5px;font-weight:900;letter-spacing:.14em;color:var(--gold2)}
+:is(#roadmap,#roadmapDialogRoot) .main .card h4{font-family:"Shippori Mincho B1",serif;font-size:16px;line-height:1.25;margin-top:1px}
+:is(#roadmap,#roadmapDialogRoot) .main .card p{color:#fff;opacity:.85;font-size:10.5px}
+:is(#roadmap,#roadmapDialogRoot) .main .card .wipb{position:absolute;top:8px;left:8px;z-index:3}
+:is(#roadmap,#roadmapDialogRoot) .mystery .card{background:repeating-linear-gradient(135deg,#232838 0 10px,#1c2130 10px 20px)}
+:is(#roadmap,#roadmapDialogRoot) .mystery .card .q{position:absolute;inset:0;display:grid;place-items:center;font-family:"Shippori Mincho B1",serif;font-size:28px;font-weight:800;letter-spacing:.3em;color:rgba(216,189,134,.55);padding-bottom:34px}
+:is(#roadmap,#roadmapDialogRoot) .side{position:relative;margin-left:14px}
+:is(#roadmap,#roadmapDialogRoot) .side:before{content:"";position:absolute;left:-27px;top:-9px;width:24px;height:27px;border-left:2px dashed color-mix(in srgb,var(--story) 60%,#fff);border-bottom:2px dashed color-mix(in srgb,var(--story) 60%,#fff);border-bottom-left-radius:10px}
+:is(#roadmap,#roadmapDialogRoot) .side .card{min-height:0;background:rgba(255,255,255,.6);border:1.5px dashed color-mix(in srgb,var(--story) 45%,#fff);box-shadow:none;padding:7px 8px;flex-direction:row;align-items:center;gap:7px}
+:is(#roadmap,#roadmapDialogRoot) .side .card .ic{width:26px;height:26px;margin:0;flex:none}
+:is(#roadmap,#roadmapDialogRoot) .side .card h4{font-size:11.5px}
+:is(#roadmap,#roadmapDialogRoot) .side .card p{font-size:9.5px}
+:is(#roadmap,#roadmapDialogRoot) .side .om{font-size:9px;font-weight:900;color:var(--story);background:color-mix(in srgb,var(--story) 12%,#fff);border-radius:6px;padding:1px 5px;display:inline-block;margin-bottom:1px}
+:is(#roadmap,#roadmapDialogRoot) .empty{height:6px}
+:is(#roadmap,#roadmapDialogRoot) .done-wrap{padding:6px 14px 120px}
+:is(#roadmap,#roadmapDialogRoot) .done-h{display:flex;align-items:baseline;gap:8px;margin:6px 0 9px}
+:is(#roadmap,#roadmapDialogRoot) .done-h .tag{font-size:11px;font-weight:900;color:#fff;background:var(--done);padding:3px 10px;border-radius:99px}
+:is(#roadmap,#roadmapDialogRoot) .done-h h2{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:17px}
+:is(#roadmap,#roadmapDialogRoot) .done-list{background:var(--pearl);border-radius:14px;box-shadow:0 3px 10px rgba(23,28,40,.06);overflow:hidden}
+:is(#roadmap,#roadmapDialogRoot) .done-list div{display:flex;align-items:center;gap:9px;padding:9px 12px;border-top:1px solid var(--line)}
+:is(#roadmap,#roadmapDialogRoot) .done-list div:first-child{border-top:0}
+:is(#roadmap,#roadmapDialogRoot) .done-list .ck{width:18px;height:18px;border-radius:50%;background:var(--done);color:#fff;display:grid;place-items:center;font-size:10px;flex:none}
+:is(#roadmap,#roadmapDialogRoot) .done-list .lt{width:7px;height:7px;border-radius:50%;flex:none}
+:is(#roadmap,#roadmapDialogRoot) .done-list span{font-size:12.5px;font-weight:700}
+:is(#roadmap,#roadmapDialogRoot) .done-list em{margin-left:auto;font-style:normal;font-size:10.5px;color:var(--sub)}
+:is(#roadmap,#roadmapDialogRoot) .more{display:block;margin:8px auto 0;font-size:12px;font-weight:700;color:var(--sub);background:none;border:0;cursor:pointer}
+:is(#roadmap,#roadmapDialogRoot) .note{margin:18px 2px 0;font-size:11px;color:var(--sub);line-height:1.6}
+:is(#roadmap,#roadmapDialogRoot) .mask{position:fixed;inset:0;z-index:50;background:rgba(15,18,26,.5);opacity:0;pointer-events:none;transition:.25s}
+:is(#roadmap,#roadmapDialogRoot) .mask.open{opacity:1;pointer-events:auto}
+:is(#roadmap,#roadmapDialogRoot) .sheet{position:fixed;left:50%;bottom:0;z-index:51;width:100%;max-width:440px;transform:translate(-50%,105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);background:#fff;border-radius:22px 22px 0 0;overflow:hidden;max-height:86vh;display:flex;flex-direction:column}
+:is(#roadmap,#roadmapDialogRoot) .sheet.open{transform:translate(-50%,0)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .art{position:relative;height:170px;background:var(--night);flex:none;overflow:hidden}
+:is(#roadmap,#roadmapDialogRoot) .sheet .art .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8;filter:blur(2px)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .art .chr{position:absolute;left:50%;transform:translateX(-50%);top:0;height:100%;aspect-ratio:1;object-fit:cover;object-position:center 30%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .art .emo{position:absolute;inset:0;display:grid;place-items:center;font-size:60px}
+:is(#roadmap,#roadmapDialogRoot) .sheet .art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,#fff 100%)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .body{padding:4px 18px 22px;overflow:auto}
+:is(#roadmap,#roadmapDialogRoot) .sheet .chips{display:flex;gap:6px;flex-wrap:wrap}
+:is(#roadmap,#roadmapDialogRoot) .sheet .chip{font-size:11px;font-weight:900;color:#fff;background:var(--c);padding:3px 9px;border-radius:99px}
+:is(#roadmap,#roadmapDialogRoot) .sheet .chip.st{background:var(--ink)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .chip.om{background:#fff;color:var(--story);border:1.5px dashed var(--story)}
+:is(#roadmap,#roadmapDialogRoot) .sheet h3{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:21px;margin:8px 0 6px}
+:is(#roadmap,#roadmapDialogRoot) .sheet .lead{font-size:14px;line-height:1.7}
+:is(#roadmap,#roadmapDialogRoot) .sheet .syn{margin-top:12px;padding:14px 15px;border-radius:12px;background:linear-gradient(160deg,#1f2433,#2b2445);color:#f3ecdf;border:1px solid rgba(216,189,134,.4)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .syn b{display:block;font-family:"Shippori Mincho B1",serif;font-size:14px;color:var(--gold2);letter-spacing:.1em;margin-bottom:6px}
+:is(#roadmap,#roadmapDialogRoot) .sheet .syn p{font-family:"Shippori Mincho B1",serif;font-size:13.5px;line-height:1.9}
+:is(#roadmap,#roadmapDialogRoot) .sheet ul{margin:12px 0 0;padding:12px 14px;list-style:none;background:#f5f7fa;border-radius:12px}
+:is(#roadmap,#roadmapDialogRoot) .sheet li{font-size:12.5px;line-height:1.6;padding-left:14px;position:relative}
+:is(#roadmap,#roadmapDialogRoot) .sheet li:before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--c)}
+:is(#roadmap,#roadmapDialogRoot) .sheet .close{margin-top:16px;width:100%;padding:12px;border-radius:12px;border:0;background:var(--ink);color:#fff;font-weight:900;cursor:pointer}
+
+#roadmap .lanes-h{top:58px}
+#roadmap .lh{min-width:0;gap:4px;padding:6px 4px}
+#roadmap .lh span{min-width:0}
+#roadmap .band{flex-wrap:wrap;gap:4px}
+#roadmap .band small{margin-left:0}
+#roadmap .side .card{flex-direction:column;align-items:flex-start;gap:3px}
+#roadmap .side .card>div{min-width:0}
+#roadmap .main .card{background:var(--night)!important;color:#fff!important}
+#roadmap .mystery .card{background:repeating-linear-gradient(135deg,#232838 0 10px,#1c2130 10px 20px)!important}
+#roadmap :is(.hero h1,.main h4){color:#fff;-webkit-text-fill-color:currentColor;background:none}
+#roadmap .rail.story:before{background:linear-gradient(var(--c) 85%,transparent)}
+#roadmap .done-list em{flex:none}
+#roadmap .done-list div>span:nth-child(2){min-width:0}
+#roadmapDialogRoot .mask{z-index:150}
+#roadmapDialogRoot .sheet{z-index:151;visibility:hidden;pointer-events:none}
+#roadmapDialogRoot .sheet.open{visibility:visible;pointer-events:auto}
+#roadmapDialogRoot .sheet .body{padding-bottom:calc(22px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+#roadmapDialogRoot .sheet .close{background:var(--ink);color:#fff}
+#roadmapDialogRoot .sheet .q{font-family:serif;color:var(--gold2);font-size:40px;letter-spacing:.3em}
+#roadmap button:focus-visible,#roadmapDialogRoot button:focus-visible{outline:3px solid #3f74c9;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#roadmap .node.wip:before{animation:none}#roadmapDialogRoot :is(.mask,.sheet){transition:none}}
+/* Opt out of the shared button/card surfaces within this custom presentation. */
+#roadmap.roadmap-screen{background:#eef2f7!important}
+#roadmap#roadmap#roadmap button.card{border:0!important;border-left:3px solid var(--c)!important;padding:9px!important;min-height:72px!important;border-radius:13px;line-height:normal;box-shadow:0 3px 10px rgba(23,28,40,.08)!important}
+#roadmap#roadmap#roadmap .main button.card{min-height:150px!important;padding:0!important;border:0!important;box-shadow:0 6px 16px rgba(23,28,40,.2)!important}
+#roadmap#roadmap#roadmap .side button.card{min-height:0!important;padding:7px 8px!important;border:1.5px dashed color-mix(in srgb,var(--story) 45%,#fff)!important;background:rgba(255,255,255,.6)!important;box-shadow:none!important}
+#roadmap#roadmap#roadmap .lh{border:0!important;border-top:3px solid var(--c)!important;border-radius:12px;box-shadow:0 2px 8px rgba(23,28,40,.07)!important}
+#roadmap#roadmap#roadmap .more{border:0!important;background:none!important;min-height:44px;padding:8px;box-shadow:none!important}
+#roadmap.roadmap-screen .main h4,#roadmap.roadmap-screen .hero h1{color:#fff!important}
+
+#roadmap#roadmap#roadmap .main .card{background:var(--night)!important;color:#fff!important}
+#roadmap#roadmap#roadmap .mystery .card{background:repeating-linear-gradient(135deg,#232838 0 10px,#1c2130 10px 20px)!important}
