@@ -106,6 +106,7 @@ function openHomeAdventure(){
   if(typeof openStoryMode==='function')openStoryMode();
 }
 function updateAppResourceBar(){
+  if(typeof renderGBless==='function')renderGBless();
   const coinView = document.getElementById('appCoinView');
   if(coinView) coinView.textContent = Number(save?.coins || 0).toLocaleString('ja-JP');
 }

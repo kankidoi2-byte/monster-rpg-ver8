@@ -10,7 +10,7 @@ function giftDeadline(g){return g.until===null?Infinity:giftDateStart(g.until)+8
 function giftRewardValid(r){
   if(!r||typeof r!=='object')return false;
   const positive=n=>Number.isSafeInteger(n)&&n>0;
-  if(r.kind==='coins')return positive(r.amount);
+  if(['coins','bless'].includes(r.kind))return positive(r.amount);
   if(r.kind==='item')return typeof r.id==='string'&&Object.hasOwn(ITEM_DEX_BY_ID,r.id)&&positive(r.count);
   if(r.kind==='skill')return typeof r.id==='string'&&Object.hasOwn(SKILL_BY_ID,r.id)&&!SKILL_BY_ID[r.id].deprecated&&positive(r.count);
   if(['monster','character'].includes(r.kind)){
@@ -48,6 +48,7 @@ function lifeQuestGiftEntries(){
   return pendingLifeQuestRewards().map(e=>{
     const total=lifeQuestRewardTotal([e]),rewards=[];
     if(total.coins)rewards.push({kind:'coins',amount:total.coins});
+    if(Number.isSafeInteger(e.bless)&&e.bless>0)rewards.push({kind:'bless',amount:e.bless});
     for(const [id,count] of Object.entries(total.items))rewards.push({kind:'item',id,count});
     let title=String(e.label||'Life Questの報酬');
     title=title.replace(/^\d{4}-(\d{2})-(\d{2})のEXP$/,(_,m,d)=>`${Number(m)}/${Number(d)} のEXP`);
@@ -84,11 +85,11 @@ function giftCombineRewards(gifts){
     if(['monster','character'].includes(r.kind)){rows.push(r);continue;}
     const key=r.kind+':'+(r.id||'');
     if(index.has(key)){
-      const row=index.get(key),field=r.kind==='coins'?'amount':'count';row[field]+=r[field];
+      const row=index.get(key),field=['coins','bless'].includes(r.kind)?'amount':'count';row[field]+=r[field];
       if(!Number.isSafeInteger(row[field]))throw Error('報酬の数が上限を超えています。');
     }else{index.set(key,r);rows.push(r);}
   }
-  const order={monster:0,character:0,skill:1,item:2,coins:3};return rows.sort((a,b)=>order[a.kind]-order[b.kind]);
+  const order={monster:0,character:0,skill:1,item:2,coins:3,bless:4};return rows.sort((a,b)=>order[a.kind]-order[b.kind]);
 }
 function giftAddSafe(current,amount){
   const n=(current||0)+amount;if(!Number.isSafeInteger(n)||n<0)throw Error('所持数が上限を超えています。');return n;
@@ -106,6 +107,7 @@ function commitGiftClaim(keys,identity,owner){
     migrateLifeQuestGiftReceipts(LifeQuestRewards.sync().entries);
     for(const r of rewards){
       if(r.kind==='coins')save.coins=giftAddSafe(save.coins,r.amount);
+      else if(r.kind==='bless'){const state=ensureGBless();state.reserve=giftAddSafe(state.reserve,r.amount);}
       else if(r.kind==='item'){
         save.items[r.id]=giftAddSafe(save.items[r.id],r.count);registerItemDex(r.id);
       }else if(r.kind==='skill'){
@@ -150,18 +152,19 @@ function giftDateLabel(s){
 }
 function giftSender(g){return g.source==='developer'?'開発者（土井さん）':'Life Quest';}
 function giftIcon(g){return g.source==='developer'?'✉':'✦';}
-function giftRewardName(r){return r.kind==='coins'?'コイン':r.kind==='item'?ITEM_DEX_BY_ID[r.id]?.name:r.kind==='skill'?SKILL_BY_ID[r.id]?.name:by(r.id)?.name;}
+function giftRewardName(r){return r.kind==='bless'?'G-BLESS 予備の加護':r.kind==='coins'?'コイン':r.kind==='item'?ITEM_DEX_BY_ID[r.id]?.name:r.kind==='skill'?SKILL_BY_ID[r.id]?.name:by(r.id)?.name;}
 function giftRewardArt(r){
+  if(r.kind==='bless')return '<span aria-hidden="true">✦</span>';
   if(r.kind==='coins')return '<span class="gift-coin" aria-hidden="true">●</span>';
   if(r.kind==='skill')return `<span class="gift-skill-thumb" aria-hidden="true">✧</span>`;
   if(r.kind==='item'){
     const src=typeof ITEM_IMG!=='undefined'?ITEM_IMG[r.id]:null;
-    return src?`<img src="${giftEscape(src)}" alt="">`:'<span aria-hidden="true">◇</span>';
+    return src?`<img src="${giftEscape(src)}" alt="">`:`<span aria-hidden="true">${giftEscape(ITEM_DEX_BY_ID[r.id]?.icon||'◇')}</span>`;
   }
   const unit=by(r.id),src=unit?.imgKey&&IMG[unit.imgKey];
   return src?`<img src="${giftEscape(src)}" alt="">`:`<span aria-hidden="true">${giftEscape(unit?.icon||'◇')}</span>`;
 }
-function giftRewardQuantity(r){return ['monster','character'].includes(r.kind)?'Lv.'+r.level:'×'+(r.kind==='coins'?r.amount:r.count).toLocaleString('ja-JP');}
+function giftRewardQuantity(r){if(r.kind==='bless')return '+'+r.amount.toLocaleString('ja-JP');return ['monster','character'].includes(r.kind)?'Lv.'+r.level:'×'+(r.kind==='coins'?r.amount:r.count).toLocaleString('ja-JP');}
 function giftRewardCards(rewards){
   return rewards.map(r=>`<article class="gift-reward-card ${r.kind==='skill'?'gift-skill-card':''}">${r.isNew?'<b class="gift-new">NEW</b>':''}${r.kind==='skill'?tcgSkillCardMarkup(SKILL_BY_ID[r.id]):'<div class="gift-card-art">'+giftRewardArt(r)+'</div>'}<strong>${giftEscape(giftRewardName(r))}</strong><span>${['monster','character'].includes(r.kind)?by(r.id).rarity+' ・ ':''}${giftRewardQuantity(r)}</span></article>`).join('');
 }

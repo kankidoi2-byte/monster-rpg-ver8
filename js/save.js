@@ -7,6 +7,41 @@ const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
 
+const G_BLESS_RULES=Object.freeze({week:100,coins:2,exp:1.5,cost:1});
+// Shift JST by four hours so every week starts at Monday 04:00 JST.
+function gBlessWeekKey(now=Date.now()){
+  const d=new Date(now+5*3600000);
+  d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);
+  return d.toISOString().slice(0,10);
+}
+function normalizeGBless(value,now=Date.now()){
+  const s=isSaveObject(value)?value:{},key=gBlessWeekKey(now);
+  const week=Number.isSafeInteger(s.week)&&s.week>=0&&s.week<=G_BLESS_RULES.week?s.week:G_BLESS_RULES.week;
+  const reserve=Number.isSafeInteger(s.reserve)&&s.reserve>=0?s.reserve:0;
+  const result={v:1,on:s.on===true,weekKey:key,week:s.weekKey===key?week:G_BLESS_RULES.week,reserve};
+  if(!result.week&&!result.reserve)result.on=false;
+  return result;
+}
+function ensureGBless(){return save.gBless=normalizeGBless(save.gBless);}
+function gBlessTotal(s=ensureGBless()){return Math.min(Number.MAX_SAFE_INTEGER,s.week+s.reserve);}
+function gBlessUnlocked(){
+  const t=save?.progress?.tutorial;
+  return Boolean(t&&!t.replaying&&(t.completed||t.skipped||t.status==='completed'||t.status==='skipped'));
+}
+function beginGBlessVictory(){
+  const s=ensureGBless();
+  const eligible=activeHuntRequest&&activeHuntRequest.source!=='map_story'&&gBlessUnlocked()
+    &&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active);
+  const used=Boolean(eligible&&s.on&&gBlessTotal(s)>0);
+  if(used){if(s.week>0)s.week-=G_BLESS_RULES.cost;else s.reserve-=G_BLESS_RULES.cost;if(!gBlessTotal(s))s.on=false;}
+  return used?{baseExp:0,baseCoins:0,remaining:gBlessTotal(s)}:null;
+}
+function gBlessHuntReward(base,turnBonus,kind,bless){
+  if(!bless)return huntRewardAmount(base,turnBonus);
+  bless[kind==='coins'?'baseCoins':'baseExp']+=huntRewardAmount(base,turnBonus);
+  return huntRewardAmount(base,turnBonus,G_BLESS_RULES[kind]);
+}
+
 const TUTORIAL_VERSION = 2;
 const TUTORIAL_GUIDE_IDS = Object.freeze([
   'threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion',
@@ -134,10 +169,11 @@ function normalizeMapStories(value){
 }
 function initSave() {
   return {
+    gBless:normalizeGBless(null),
     schemaVersion:SAVE_SCHEMA_VERSION,
     saveMeta:{migrations:['character_first_lock_v1',...(skill110MigrationAvailable() ? ['skill_system_110_v1','equipped_skill_cards_v1','evolution_native_cards_v1'] : [])], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
-    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
+    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0, g_ichor:0},
     lifeQuestClaimedIds:[], giftReceiptVersion:1, giftClaimedIds:[], giftHistory:[], coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
     contractor:contractorSaveDefaults(),
@@ -292,6 +328,7 @@ function migrateSkill110Save(payload, report=[]){
 }
 function repairSave(payload,report=[]){
   captureSkill110Backup(payload);
+  payload.gBless=normalizeGBless(payload.gBless);
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
   if(!isSaveObject(payload.saveMeta))payload.saveMeta={...defaults.saveMeta,migrations:[]};
   if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];

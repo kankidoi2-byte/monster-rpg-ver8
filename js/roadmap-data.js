@@ -33,14 +33,13 @@ const ROADMAP = (function(){
       lead:'序章の続きに登場する人物の立ち絵を用意します。',points:['ガチャで出会う仲間たちが、物語の中にも登場','序章ストーリーと並行して制作中']},
     {id:'bgm',lane:'art',stage:'later',title:'BGM',sub:'ゲームに音楽を',icon:'🎵',
       lead:'ゲームにBGMを追加します。',points:['ホーム・バトル・ストーリーなど場面ごとの曲','オン／オフの切り替え']},
-    {id:'money',lane:'sys',stage:'now',wip:true,title:'金策',sub:'コインを稼げるクエストや場所を作る',iconImg:'images/monsters/slime_gold_20260920.webp',
-      lead:'コインを稼ぐための専用のクエストや場所を追加します。',points:['コインが多めに手に入るクエスト／場所','強化やガチャに使うコイン不足を解消']},
     {id:'status',lane:'sys',stage:'next',title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
       lead:'モンスターやキャラクターのステータスを確認できるようにします。',points:['HP・攻撃などの能力値を確認','モンスターとキャラクターの両方に対応','進化のタイミングは秘密のまま。育てて見つけよう']},
     {id:'evo',lane:'sys',stage:'next',title:'キャラクターの進化レベル',sub:'キャラも個体ごとの進化に',iconImg:'images/monsters/elna_middle_20261004.webp',
       lead:'モンスターと同じように、キャラクターの進化にも個体差を取り入れます。',points:['同じキャラクターでも、進化するタイミングが少しずつ違う','育てながら進化の瞬間を見つける楽しみ']}
   ],
   done:[
+    {id:'money',lane:'sys',stage:'now',title:'金策',sub:'G-BLESS(グノーシスの加護)',note:'G-BLESSを追加',lead:'使っている間、バトルで手に入るコインや経験値が増える『G-BLESS』を追加します。',points:['オンの間、コインや経験値が増える','毎週回復。Life Questでも貯められる','使うタイミングは自分で選べる']},
     {title:'開発ロードマップ画面',lane:'sys',note:'この画面'},
     {title:'プレゼントBOX',lane:'sys',note:'追加'},
     {title:'意見箱',lane:'sys',note:'追加'},

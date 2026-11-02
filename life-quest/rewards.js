@@ -32,7 +32,7 @@ function sync(s,now=new Date()){
  if(!s){const raw=localStorage.getItem(STATE);if(!raw)return readBox();s=JSON.parse(raw);}
  if(!Array.isArray(s.quests)||!s.hist||typeof s.hist!=='object')throw Error('Invalid Life Quest state');
  const today=day(now),box=readBox(),before=JSON.stringify(box),ids=new Set(box.entries.map(e=>e.id));
- const add=(id,label,coins,items={},source='lifequest')=>{if(ids.has(id))return;ids.add(id);box.entries.push({id,createdAt:now.toISOString(),source,label,coins,items});};
+ const add=(id,label,coins,items={},source='lifequest',bless=0)=>{if(ids.has(id))return;ids.add(id);box.entries.push({id,createdAt:now.toISOString(),source,label,coins,items,...(bless?{bless}:{})});};
  const dates=[...new Set([...Object.keys(s.hist),...Object.keys(s.rewardDays||{})])].filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)&&k<=today).sort();
  let total=0,streak=0,prev=null;const counts={},unlocked=new Set();
  for(const k of dates){
@@ -41,7 +41,7 @@ function sync(s,now=new Date()){
   const active=qs.filter(q=>positive(q.amount)&&positive(q.per));
   const exp=active.reduce((n,q)=>n+xp(q),0);
   if(k<today&&exp>0){add('daily-'+k,k+'のEXP',exp*3,{},'daily');
-   if(qs.length&&qs.every(q=>q.amount>=q.per))add('complete-'+k,k+' 全目標達成',0,{mega_data:2},'complete');}
+   if(qs.length&&qs.every(q=>q.amount>=q.per))add('complete-'+k,k+' 全目標達成',0,{mega_data:2},'complete',10);}
   if(!active.length)continue;
   const next=prev?new Date(prev+'T00:00:00'):null;if(next)next.setDate(next.getDate()+1);
   streak=next&&day(next)===k?streak+1:1;prev=k;

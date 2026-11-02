@@ -347,12 +347,13 @@ function win() {
   settleNormalVictory(false);
 }
 function prepareSingleVictoryReward(){
+  const bless=beginGBlessVictory();
   const turnBonusActive = hasHuntCondition('swift_clear');
   const turnBonusSucceeded = huntTurnBonusSucceeded();
   const baseExpGain = enemy.expBonus || (35 + Math.floor(Math.random()*25));
   const baseCoinGain = enemy.coinBonus || (8 + Math.floor(Math.random()*10));
-  const expGain = huntRewardAmount(baseExpGain, turnBonusSucceeded);
-  const coinGain = huntRewardAmount(baseCoinGain, turnBonusSucceeded);
+  const expGain = gBlessHuntReward(baseExpGain,turnBonusSucceeded,'exp',bless);
+  const coinGain = gBlessHuntReward(baseCoinGain,turnBonusSucceeded,'coins',bless);
   let displayedCoinGain = coinGain;
   save.coins += coinGain;
   let msg = `🏆 ${enemy.name}を倒した！<br>`;
@@ -368,6 +369,7 @@ function prepareSingleVictoryReward(){
     const bonus = goldenLandCoinBonus(activeHuntRequest?.difficultyId);
     save.coins += bonus;
     displayedCoinGain += bonus;
+    if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}
     msg += `<br>💰 黄金郷ボーナス：コイン${bonus}枚獲得！`;
   } else if (grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId)) {
     msg += '<br>🗺️ 黄金郷への地図を入手！';
@@ -394,7 +396,7 @@ function prepareSingleVictoryReward(){
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions(Math.random,{saveNow:false});
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
   return {message:msg,outcome:{
-    kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain,
+    kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain, bless,
     materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   }};
