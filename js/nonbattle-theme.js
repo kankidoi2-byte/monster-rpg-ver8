@@ -16,7 +16,7 @@ const NONBATTLE_SCREEN_THEMES = Object.freeze({
   dexHub:'dex',dex:'dex',characterDex:'dex',mapDex:'dex',itemDex:'dex',skillDex:'dex',typeChart:'dex',
   gachaHub:'gacha',
   storyMode:'story',mapStory:'story',tutorialRequestReport:'story',tutorialStellaCard:'story',battleChoices:'story',
-  expedition:'growth',shop:'menu',moreMenu:'menu',contractorRank:'menu',contractorRankRewards:'menu',contractorTitles:'menu',notices:'settings',diagnosticsScreen:'settings'
+  expedition:'growth',shop:'menu',moreMenu:'menu',contractorRank:'menu',contractorRankRewards:'menu',contractorTitles:'menu',feedbackBox:'settings',notices:'settings',diagnosticsScreen:'settings'
 });
 let nonbattlePreviousScreenId=null;
 function applyNonbattleTheme(id){
