@@ -39,6 +39,15 @@ function pickSkillGachaCard(kind,minCost=1,randomFn=Math.random){
   const cardRoll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0));
   return selected.cards[Math.floor(cardRoll*selected.cards.length)] || selected.cards[0] || null;
 }
+// Shared acquisition path for skill gacha and present rewards. Ownership is
+// also the runtime's skill encyclopedia discovery source.
+function grantSkillCards(id,count=1){
+  if(!Object.hasOwn(SKILL_BY_ID,id)||SKILL_BY_ID[id].deprecated||!Number.isSafeInteger(count)||count<=0)throw Error('技カードの内容が不正です。');
+  if(!save.skillCards||typeof save.skillCards!=='object')save.skillCards={};
+  const next=Math.max(0,Math.floor(Number(save.skillCards[id])||0))+count;
+  if(!Number.isSafeInteger(next))throw Error('技カードの所持数が上限を超えています。');
+  save.skillCards[id]=next;
+}
 function performSkillGacha(kind,count,randomFn=Math.random){
   const normalizedKind=skillGachaKind(kind);
   const drawCount=count===10 ? 10 : count===1 ? 1 : 0;
@@ -53,7 +62,7 @@ function performSkillGacha(kind,count,randomFn=Math.random){
   if(cards.length!==drawCount || cards.some(card=>!card)) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
   if(!save.skillCards || typeof save.skillCards!=='object') save.skillCards={};
   save.coins-=coinCost;
-  cards.forEach(card=>{save.skillCards[card.id]=Math.max(0,Math.floor(Number(save.skillCards[card.id])||0))+1;});
+  cards.forEach(card=>grantSkillCards(card.id));
   return {ok:true,kind:normalizedKind,count:drawCount,coinCost,cards};
 }
 function showSkillGacha(){ show('skillGacha'); }

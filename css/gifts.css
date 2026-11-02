@@ -1,0 +1,66 @@
+/* Gift BOX: parchment/ink surfaces, scoped to avoid changing other screens. */
+#home#home#home #giftUnreadCount{position:absolute;right:-7px;top:-4px;min-width:19px;padding:0 3px;height:20px;box-sizing:content-box;display:grid;place-items:center;border:2px solid white;border-radius:16px;background:#cb404b;color:white;font:700 10px/20px system-ui}
+#home#home#home #giftUnreadCount[hidden]{display:none}
+body:has(#giftBox#giftBox#giftBox.active){overflow:hidden;padding-bottom:0}
+#giftBox#giftBox#giftBox.gift-screen.active{box-sizing:border-box;display:flex;flex-direction:column;height:calc(100dvh - 58px - var(--ui-nav-height,78px) - env(safe-area-inset-bottom,0px));min-height:0;max-width:480px;margin:0 auto;padding:10px 14px 0;overflow:hidden;color:#242936;background:#faf9f6!important}
+#giftBox#giftBox#giftBox button,#giftDialog button{font-family:system-ui,sans-serif;cursor:pointer}
+#giftBox#giftBox#giftBox button:disabled,#giftDialog button:disabled{opacity:.45;cursor:default}
+#giftBox#giftBox#giftBox .gift-heading{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 0 12px}
+#giftBox#giftBox#giftBox .gift-heading>button{border:0;background:none!important;box-shadow:none;color:#626879!important;padding:4px;font-size:12px;min-height:32px;width:auto}
+#giftBox#giftBox#giftBox h1{font:700 22px/1.3 'Yu Mincho','Noto Serif CJK JP',serif;margin:0;width:100%;color:#242936}
+#giftBox#giftBox#giftBox .gift-tabs{display:flex;flex:none;gap:0;border-bottom:1px solid #ddd8cf}
+#giftBox#giftBox#giftBox .gift-tabs button{flex:1;width:auto;border:0;border-radius:0;box-shadow:none;background:none!important;color:#777!important;font-size:13px;padding:12px 0}
+#giftBox#giftBox#giftBox .gift-tabs [aria-selected="true"]{border-bottom:2px solid #a78a58;color:#252b3b!important;font-weight:700}
+#giftBox#giftBox#giftBox .gift-tabs b{font:700 10px/18px system-ui;display:inline-block;border-radius:20px;min-width:18px;background:#cb404b;color:white;vertical-align:middle;margin-left:4px;padding:0 3px}
+#giftBox#giftBox#giftBox .gift-tabs b[hidden]{display:none}
+#giftBox#giftBox#giftBox .gift-filters{display:flex;flex:none;gap:6px;padding:12px 0;flex-wrap:wrap}
+#giftBox#giftBox#giftBox .gift-filters button{width:auto;min-height:30px;padding:5px 10px;border:1px solid #dcd7d0;border-radius:18px;box-shadow:none;font-size:11px;background:#fff!important;color:#535969!important}
+#giftBox#giftBox#giftBox .gift-filters [aria-pressed="true"]{background:#252b3b!important;color:#fff!important;border-color:#252b3b}
+#giftBox#giftBox#giftBox .gift-filters span{opacity:.7;margin-left:4px}
+#giftBox#giftBox#giftBox .gift-hint{flex:none;margin:0 0 8px;font-size:11px;color:#795e30}
+#giftBox#giftBox#giftBox .gift-hint[hidden]{display:none}
+#giftBox#giftBox#giftBox .gift-list{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:10px}
+#giftBox#giftBox#giftBox .gift-row{display:flex;align-items:center;gap:7px;padding:13px 0;border-bottom:1px solid #e6e2dc;min-width:0}
+#giftBox#giftBox#giftBox .gift-row-details{display:flex;align-items:flex-start;flex:1;min-width:0;gap:9px;margin:0;padding:2px 0;border:0;box-shadow:none;background:transparent!important;text-align:left;color:#242936!important;width:auto}
+#giftBox#giftBox#giftBox .gift-sender-icon{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:11px;font-size:20px;background:#f0e8f5;color:#8c5a9e}
+#giftBox#giftBox#giftBox .gift-sender-icon.lifequest{background:#e9f2e8;color:#5b8e61}
+#giftBox#giftBox#giftBox .gift-row-copy{display:flex;flex-direction:column;gap:4px;min-width:0;width:100%}
+#giftBox#giftBox#giftBox .gift-row-copy>small{font:10px/1.5 system-ui;color:#747987;overflow-wrap:anywhere}
+#giftBox#giftBox#giftBox .gift-row-copy .gift-soon{color:#bd3f4c}
+#giftBox#giftBox#giftBox .gift-row-copy>strong{font:700 14px/1.5 'Yu Mincho','Noto Serif CJK JP',serif;overflow-wrap:anywhere;color:#242936}
+#giftBox#giftBox#giftBox .gift-thumbs{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+#giftBox#giftBox#giftBox .gift-thumbs>span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:27px;max-width:39px}
+#giftBox#giftBox#giftBox .gift-thumbs img{width:26px;height:26px;object-fit:contain;border-radius:4px}
+#giftBox#giftBox#giftBox .gift-thumbs small{font:8px/1.3 system-ui;color:#606676;overflow-wrap:anywhere;max-width:39px}
+#giftBox#giftBox#giftBox .gift-claim{width:auto;flex:none;font-size:10px;padding:8px;min-height:34px;border:1px solid #c5b18b;border-radius:7px;box-shadow:none;background:#fffaf0!important;color:#66512d!important}
+#giftBox#giftBox#giftBox .gift-bottom{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #d9d3c8;background:#faf9f6;font-size:12px;color:#777}
+#giftBox#giftBox#giftBox #giftClaimAll{width:auto;min-height:40px;padding:10px 25px;border:0;border-radius:8px;background:#252b3b!important;color:#fff!important;font-size:12px}
+#giftBox#giftBox#giftBox #giftClaimAll[hidden]{display:none}
+#giftBox#giftBox#giftBox .gift-empty{padding:45px 8px;color:#777;text-align:center;font-size:12px}
+.gift-coin{color:#b18c39;font-size:25px;line-height:28px}
+.gift-skill-thumb{display:grid;place-items:center;width:22px;height:26px;border:1px solid #ad9566;border-radius:3px;color:#9f7c37;background:#f1eadb}
+#giftDialog{box-sizing:border-box;position:fixed;inset:0;width:calc(100% - 24px);max-width:460px;max-height:calc(100dvh - 32px);padding:20px 16px 12px;margin:auto;border:1px solid #c9bc9e;border-radius:18px;box-shadow:0 16px 70px #0004;background:#faf9f6;color:#242936;overflow:hidden}
+#giftDialog[open]{display:flex;flex-direction:column}
+#giftDialog::backdrop{background:#10172788;backdrop-filter:blur(3px)}
+#giftDialog h2{flex:none;font:700 20px/1.5 'Yu Mincho','Noto Serif CJK JP',serif;margin:0 0 14px;color:#242936;overflow-wrap:anywhere}
+#giftDialog .gift-dialog-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+#giftDialog .gift-letter{font-size:13px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;padding:14px;background:#fff;border:1px solid #e6dfd1;border-radius:8px;color:#454958}
+#giftDialog .gift-detail-meta{font:11px/1.8 system-ui;color:#747987}
+#giftDialog .gift-rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:4px 0 16px}
+#giftDialog .gift-reward-card{position:relative;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:12px 8px;border:1px solid #e2d9c7;border-radius:10px;background:white;color:#242936;text-align:center}
+#giftDialog .gift-card-art{width:100%;height:105px;display:grid;place-items:center}
+#giftDialog .gift-card-art img{width:100%;height:100%;object-fit:contain;max-height:105px}
+#giftDialog .gift-reward-card>strong{font:600 11px/1.5 system-ui;overflow-wrap:anywhere}
+#giftDialog .gift-reward-card>span{font-size:11px;color:#8b7446}
+#giftDialog .gift-new{position:absolute;z-index:3;top:4px;left:4px;border-radius:3px;background:#c44856;color:white;padding:2px 5px;font:700 9px/1.3 system-ui}
+#giftDialog .gift-dialog-actions{display:flex;flex:none;gap:10px;padding-top:12px;border-top:1px solid #e4ded3}
+#giftDialog .gift-dialog-actions button{flex:1;min-height:42px;border:1px solid #cfc7b8;border-radius:8px;font-size:12px;background:white;color:#555}
+#giftDialog #giftDialogClaim{background:#252b3b;color:white;border:0}
+#giftDialog #giftDialogClaim[hidden]{display:none}
+@media(max-width:375px){#giftBox#giftBox#giftBox.gift-screen.active{padding-left:10px;padding-right:10px}#giftBox#giftBox#giftBox .gift-row-details{gap:6px}#giftBox#giftBox#giftBox .gift-row-copy>strong{font-size:12px}#giftBox#giftBox#giftBox .gift-sender-icon{width:28px;height:30px}#giftBox#giftBox#giftBox .gift-claim{padding:8px 6px}}
+
+#giftBox#giftBox#giftBox .gift-heading>button{min-height:32px!important;padding:4px!important;border:0!important;font-weight:500;letter-spacing:0}
+#giftBox#giftBox#giftBox h1{display:flex;align-items:center;gap:9px;font-size:21px}
+#giftBox#giftBox#giftBox h1 svg{width:23px;height:23px;flex:none;stroke:#a78a58}
+#giftBox#giftBox#giftBox .gift-row-details{border:0!important;border-radius:0;min-height:44px}
+#giftBox#giftBox#giftBox .gift-claim{min-height:44px}

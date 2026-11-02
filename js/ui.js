@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(id!=='giftBox'&&typeof closeGiftDialog==='function')closeGiftDialog();
   const feedbackPreviousScreen=document.querySelector('.screen.active')?.id;
   if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
   if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
@@ -56,6 +57,7 @@ function show(id) {
   updateContractorRankHeader();
   if (id === 'home') renderHome();
   if (id === 'homeFavoriteSelect') renderHomeFavoriteOptions();
+  if (id === 'giftBox' && typeof renderGiftBox === 'function') renderGiftBox();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
   if (id === 'party')    renderParty();
   if (id === 'skillDex') renderSkillDex();
@@ -397,7 +399,7 @@ function selectHomeFavorite(id){
   return true;
 }
 function renderHome(){
-  if(typeof renderLifeQuestRewards==='function')renderLifeQuestRewards();
+  if(typeof refreshGiftUi==='function')refreshGiftUi();
   if(typeof renderNonbattleHomeContext==='function')renderNonbattleHomeContext();
   renderHomeFavorite();
   if (typeof updateNoticeIndicators === 'function') updateNoticeIndicators();
