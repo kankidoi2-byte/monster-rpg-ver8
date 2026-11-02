@@ -18,7 +18,7 @@
 | 8 | Life Questの完了報酬にbless:10を追加。翌日以降にプレゼントBOXで予備+10と既存メガデータ×2を受取。過去の作成済み報酬は変更せず、二重受取なし。 |
 | 9 | 単体・三つ巴・乱入の保存失敗でセーブ全体が元に戻り、報酬表示も未確定。再試行で一度だけ保存・消費。プレゼント受取・アイテム使用の失敗も巻き戻し。 |
 | 10 | 既存の有効セーブの全項目を比較し、gBlessと新規アイテムg_ichorの既定値以外を保持。セーブキーmb_v95c・既存ID・スキーマ番号は維持。 |
-| 11 | Chromiumの360/412/430px縦画面で資源バーの重なり、横スクロール、シートの文字はみ出し、確認画面、勝利表示を確認。Android実機での直接検証は未実施。 |
+| 11 | Chromiumの320/360/412/430px縦画面で資源バーの重なり、横スクロール、シートの文字はみ出し、確認画面、勝利表示を確認。世界地図・ガチャのチップ押下、および200%拡大・狭幅再配置も検査。Android実機での直接検証は未実施。 |
 
 ## 保存の構成
 
@@ -34,7 +34,7 @@
 - 状態・戦闘: `js/save.js`, `js/state.js`, `js/battle-flow.js`, `js/multi-battle.js`, `js/battle-view.js`
 - アイテム・報酬: `js/data.js`, `js/gifts.js`, `life-quest/rewards.js`, `life-quest/index.html`
 - 案内: `js/notices-data.js`, `js/roadmap-data.js`
-- 検査: `package.json`, `scripts/test-g-bless.mjs`, `scripts/test-g-bless-browser.mjs`, `scripts/test-roadmap.mjs`, `scripts/test-roadmap-browser.mjs`, `scripts/test-gifts-browser.mjs`（受取後のランクアップ演出による検査の偶発的な操作妨害を隔離。セーブは変更しない）, `scripts/test-life-quest-browser.mjs`（短時間で消えるトーストを、固定待機時間に依存せず実際の挿入時に検証。レベルアップ画面を閉じて20回の入力を実操作）, `scripts/test-tutorial-phase5a.mjs`（敵ごとの報酬呼び出しの検査に、勝利共通の加護判定引数を反映）
+- 検査: `package.json`, `scripts/test-g-bless.mjs`, `scripts/test-g-bless-browser.mjs`, `scripts/test-roadmap.mjs`, `scripts/test-roadmap-browser.mjs`, `scripts/test-gifts-browser.mjs`（受取後のランクアップ演出による検査の偶発的な操作妨害を隔離。セーブは変更しない）, `scripts/test-life-quest-browser.mjs`（短時間で消えるトーストを、固定待機時間に依存せず実際の挿入時に検証。レベルアップ画面を閉じて20回の入力を実操作）, `scripts/test-tutorial-phase5a.mjs`（敵ごとの報酬呼び出しの検査に、勝利共通の加護判定引数を反映）, `scripts/compare-world-map-economy.mjs`（加護オフの実関数を旧倍率と比較し、既存の報酬式検査も維持）
 - この報告: `docs/g-bless-acceptance-20261102.md`
 
 ## 検査コマンド

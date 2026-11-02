@@ -1,5 +1,12 @@
 /* G-BLESS presentation. Gameplay state and constants live in save.js. */
 let gBlessReturnFocus=null,gBlessConfirmOwner=null,gBlessConfirmIdentity=null;
+function syncGBlessHeader(){
+  const header=document.querySelector('.app-topbar'),rank=header?.querySelector('.contractor-rank'),group=header?.querySelector('.app-resource-group');
+  if(!header||!rank||!group)return;
+  const stacked=header.offsetHeight>0&&!document.getElementById('gBlessChip').hidden&&group.getBoundingClientRect().top>=rank.getBoundingClientRect().bottom-.5;
+  document.body.classList.toggle('gb-header-stacked',stacked);
+  document.documentElement.style.setProperty('--g-bless-bar-height',header.offsetHeight+'px');
+}
 function renderGBless(){
   const chip=document.getElementById('gBlessChip');if(!chip)return;
   // Do not mutate a pending victory receipt while its save is being retried.
@@ -9,6 +16,7 @@ function renderGBless(){
   chip.classList.toggle('on',s.on);chip.style.setProperty('--p',s.week);
   document.getElementById('gBlessChipText').textContent='G-BLESS '+gBlessTotalText(s);
   chip.setAttribute('aria-label','G-BLESS 加護 '+gBlessTotalText(s)+'、'+(s.on?'オン':'オフ'));
+  syncGBlessHeader();
   if(!document.getElementById('gBlessDialog')?.open)return;
   const sw=document.getElementById('gBlessSwitch');sw.disabled=!total||pending;sw.classList.toggle('on',s.on);sw.setAttribute('aria-checked',String(s.on));
   document.getElementById('gBlessToggle').classList.toggle('on',s.on);
@@ -58,3 +66,5 @@ for(const id of ['gBlessDialog','gBlessIchorDialog']){
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderGBless();});
 setInterval(()=>{if(!document.hidden)renderGBless();},60000);
+
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(syncGBlessHeader).observe(document.querySelector('.app-topbar'));
