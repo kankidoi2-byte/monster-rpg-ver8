@@ -22,7 +22,9 @@ try{
   await page.locator('#roadmapMenuButton').click();assert(await page.locator('#roadmap.active').isVisible());
   assert.equal(await page.locator('#roadmap .lh').count(),3);assert.equal(await page.locator('#roadmap .band').count(),3);assert.equal(await page.locator('#roadmap .cell').count(),9);
   assert(await page.locator('#roadmap .rail').evaluateAll(rails=>rails.every(r=>{const b=r.parentElement.getBoundingClientRect(),x=r.getBoundingClientRect();return Math.abs(x.top-b.top)<2&&Math.abs(x.bottom-(b.bottom-20))<2;})));
-  assert.equal(await page.locator('#roadmap .wipb').count(),2);
+  const expectedWip=await page.evaluate(()=>ROADMAP.items.filter(item=>item.wip).map(item=>item.id).sort());
+  const displayedWip=await page.locator('#roadmap .wipb').evaluateAll(badges=>badges.map(b=>b.closest('.card').dataset.id).sort());
+  assert.deepEqual(displayedWip,expectedWip);
   assert(await page.locator('#roadmap .node.wip').evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n,'::before').animationName==='none'&&getComputedStyle(n,'::before').backgroundColor!=='rgb(255, 255, 255)')));
   assert.equal(await page.locator('#roadmap .main').count(),3);assert.equal(await page.locator('#roadmap .side').count(),2);
   assert(await page.locator('#roadmap .side .card').evaluateAll(cards=>cards.every(c=>getComputedStyle(c).borderStyle==='dashed'&&c.getBoundingClientRect().height<150)));
