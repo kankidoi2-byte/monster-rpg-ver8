@@ -302,6 +302,10 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   next.textContent = typeof activeHuntRequest !== 'undefined' && activeHuntRequest?.worldMapExploration
     ? '探索先へ戻る ›'
     : victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
+  if(!victory&&typeof worldMapBattleSavePending==='function'&&worldMapBattleSavePending()){
+    document.getElementById('battleOutcomeNote').textContent='世界地図を保存できませんでした。';
+    next.textContent='保存を再試行して探索先へ戻る ›';
+  }
   setTimeout(() => outcome.classList.remove('is-revealing'), 850);
   if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
 }

@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261104-feedback-world-map-retry',date:'2026-11-04',category:'fix',title:'意見箱の再送と世界地図の保存を修正',body:'送信できなかった意見は控えで確認できます。敗北・撤退時に世界地図を保存できなかった場合は、結果画面から再試行できます。'},
   {id:'20261104-save-and-lifequest',date:'2026-11-04',category:'fix',title:'セーブ復旧とLife Questの記録を修正',body:'破損時のバックアップと新しい形式のセーブを保護しました。Life Questを複数の画面で使ったときの記録、バックアップ読込、プレゼントの受け取りを改善しました。'},
   {id:'20261102-g-bless',date:'2026-11-03',category:'update',title:'G-BLESSを追加しました',body:'オンにしている間、通常の探索・討伐で手に入るコインが2倍、経験値が1.5倍になります。勝つたびに加護を1つ使い、毎週月曜4:00に回復します。Life Questで1日の目標をすべて達成すると、予備の加護が増えます。'},
   {id:'20261102-roadmap',date:'2026-11-02',category:'update',title:'開発ロードマップを追加しました',body:'メニューから、これから追加される予定を見られるようになりました。時期は決めず、作る順番だけをお知らせします。'},

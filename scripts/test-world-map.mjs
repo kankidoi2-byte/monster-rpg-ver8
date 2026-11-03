@@ -55,6 +55,10 @@ assert.equal(c.returnedToMap,true,'failed save aborts battle start');
 console.log('World map adapter passed: 19 maps, rarity gates, events, save defaults, item preservation, victory dedupe and tutorial exclusion.');
 
 run("save.progress.tutorial.status='completed';save.worldMap=normalizeWorldMapState({active:{water_secret:{},elysia:{}}});activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'easy'};recordWorldMapBattleResult({saveNow:true});recordWorldMapBattleResult({saveNow:true});");
+assert.equal(run('save.worldMap.active.water_secret.remainingBattles'),2,'failed writes leave event lifetime untouched');
+assert.equal(run('activeHuntRequest.worldMapExpiryPending'),true);
+assert(!run('activeHuntRequest.worldMapExpiryRecorded'));
+run('saveGame=()=>true;recordWorldMapBattleResult({saveNow:true});recordWorldMapBattleResult({saveNow:true});');
 assert.equal(run('save.worldMap.active.water_secret.remainingBattles'),1,'loss/retreat result only ages once');
 run("save.worldMap=normalizeWorldMapState(JSON.parse(JSON.stringify(save.worldMap)));activeHuntRequest={worldMapExploration:true,worldMapEventKey:'water_secret'};recordWorldMapBattleResult();");
 assert.equal(run('save.worldMap.active.water_secret.remainingBattles'),1,'failed challenge preserves its entrance');

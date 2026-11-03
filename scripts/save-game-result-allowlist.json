@@ -66,12 +66,6 @@
     "reason": "This fallback stores a tutorial step only when the battle did not supply a committed victory checkpoint. Retain the step until the following successful tutorial save; do not add a battle replay or change rewards."
   },
   {
-    "id": "world-map-result",
-    "file": "js/world-map-flow.js",
-    "function": "recordWorldMapBattleResult",
-    "reason": "Defeat/retreat saves event lifetimes and cleared navigation, not rewards. Keep that state and the per-battle recorded flag in memory so it is not advanced twice; the next successful save persists it. Rolling back only this state would change event lifetime semantics."
-  },
-  {
     "id": "world-map-navigation",
     "file": "js/world-map.js",
     "function": "persistWorldMapNavigation",

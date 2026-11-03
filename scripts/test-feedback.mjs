@@ -29,6 +29,35 @@ const rejected=setup();rejected.open();rejected.setMode(401);await rejected.subm
 const broken=setup();broken.context.localStorage.setItem=()=>{throw Error('満杯');};broken.open();await broken.submit('保存失敗');assert.equal(broken.calls.length,0,'never transmit without durable outbox');
 
 const deferred=setup();deferred.open();deferred.setMode('offline');await deferred.submit('昨日からの予約');deferred.setMode(429);await deferred.api.flush();assert.equal(deferred.read().queue.length,1);assert(deferred.read().queue[0].notBefore);deferred.setMode(401);const retained=deferred.read();retained.queue[0].notBefore=null;deferred.storage.set('mb_feedback_v1_profile-0',JSON.stringify(retained));await deferred.api.flush();assert.equal(deferred.read().queue.length,1,'do not discard previously queued body on auth error');
+// An invalid queued item is terminal only for its own UUID.
+for(const status of [400,413]){
+ const send=setup();send.setMode('offline');send.open();
+ await send.submit('拒否される控え');send.open();await send.submit('次の意見');
+ const [first,second]=send.read().queue.map(q=>q.payload.id),attempts=[];
+ send.context.fetch=async(_url,opts)=>{
+  const {id}=JSON.parse(opts.body);attempts.push(id);
+  return Response.json({accepted:1},{status:id===first?status:200});
+ };
+ await send.api.flush();await send.api.flush();
+ assert.deepEqual(attempts,[first,second]);assert.equal(send.read().queue.length,0);
+ const failed=send.read().history.find(h=>h.id===first);
+ assert.equal(failed.state,'rejected');assert.equal(failed.body,'拒否される控え');assert(failed.reason);
+ assert.equal(send.read().history.find(h=>h.id===second).state,'sent');assert.equal(send.read().quota.count,1);
+}
+for(const status of [401,403]){
+ const auth=setup();auth.open();auth.setMode('offline');
+ await auth.submit('認証後に送る');auth.open();await auth.submit('後続');
+ const ids=auth.read().queue.map(q=>q.payload.id);auth.calls.length=0;
+ auth.setMode(status);await auth.api.flush();
+ assert.deepEqual(auth.calls.map(c=>c.id),[ids[0]]);assert.equal(auth.read().queue.length,2);
+ assert.equal(auth.read().history.find(h=>h.id===ids[0]).state,'auth');
+ auth.setMode(200);await auth.api.flush();assert.deepEqual(auth.calls.slice(1).map(c=>c.id),ids);
+ assert(auth.read().history.every(h=>h.state==='sent'&&!h.reason));
+}
+const backoff=setup();backoff.open();backoff.setMode('offline');await backoff.submit('予約1');backoff.open();await backoff.submit('予約2');
+backoff.setMode(429);backoff.calls.length=0;await backoff.api.flush();await backoff.api.flush();
+assert.equal(backoff.calls.length,1,'retryAt applies to all queued items in the profile');
+assert.equal(backoff.read().queue.length,2);
 const afterAck=setup();afterAck.open();const set=afterAck.context.localStorage.setItem;let writes=0;afterAck.context.localStorage.setItem=(k,v)=>{if(k.startsWith('mb_feedback_v1_')&&++writes>1)throw Error('post-ack failure');set(k,v);};await afterAck.submit('応答後に保存できない');assert.equal(afterAck.read().queue.length,1);assert.equal(afterAck.read().history[0].state,'wait');assert(afterAck.find('.done'));
 
 // Japanese-day rollover and bounded receipts across five actual send days.

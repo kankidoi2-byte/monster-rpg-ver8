@@ -14,7 +14,11 @@ function prepareBattleParty(storyInstances=null) {
   player = partyBattle[0].mon;
   pHp = partyBattle[0].hp;
 }
+function worldMapBattleSavePending(){
+  return typeof activeHuntRequest!=='undefined'&&activeHuntRequest?.worldMapExpiryPending===true;
+}
 function startBattleFromParty() {
+  if(worldMapBattleSavePending()){show('battle');return;}
   if(normalVictoryPending())return;
   const party = getPartyInstances();
   if (!party.length) { alert('パーティーにモンスターを入れてください。'); return; }
@@ -34,7 +38,7 @@ function huntRecommendationScore(request, monster) {
 }
 function showBattleChoices() {
   if(typeof cleanupWorldMapViewport==='function')cleanupWorldMapViewport({reset:true});
-  if(normalVictoryPending()){show('battle');return;}
+  if(normalVictoryPending()||worldMapBattleSavePending()){show('battle');return;}
   activeHuntRequest = null;
   resetHuntRequestChoices();
   resetBattleTurnCounter();
@@ -144,7 +148,7 @@ function playBossCaution(mon, onComplete){
   }, 1800);
 }
 function startChosenBattle(mapId, enemyId, difficultyId='normal', requestId=null){
-  if(normalVictoryPending())return;
+  if(normalVictoryPending()||worldMapBattleSavePending())return;
   if(bossCautionPlaying) return;
   const chosenEnemy = by(enemyId);
   if(!chosenEnemy) return;
@@ -158,7 +162,7 @@ function startChosenBattle(mapId, enemyId, difficultyId='normal', requestId=null
   }
 }
 function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) {
-  if(normalVictoryPending())return;
+  if(normalVictoryPending()||worldMapBattleSavePending())return;
   selectedMap = MAPS.find(m => m.id === mapId) || MAPS[0];
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
@@ -210,6 +214,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
 }
 function afterBattleNext() {
   if(normalVictoryPending())return;
+  if(worldMapBattleSavePending()&&recordWorldMapBattleResult({saveNow:true})===null)return;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle()){resumeMapStoryAfterBattle();return;}
   singleBattleContractAttempted = false;
   postBattleContractRetry = null;
