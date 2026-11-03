@@ -110,7 +110,9 @@ function renderParty(){
 function startRosterSelection(){ensureRosterState();rosterUi.selecting=true;rosterUi.detailUid=null;rosterUi.confirmation=null;rosterUi.selected.clear();renderParty();}
 function endRosterSelection(){rosterUi.selecting=false;rosterUi.selected.clear();rosterUi.confirmation=null;renderParty();if(typeof scheduleContractorRankUpPresentation==='function')scheduleContractorRankUpPresentation();}
 function findRosterButton(uid){
-  return Array.from(document.querySelectorAll('#partyList [data-instance-uid]')).find(button=>button.dataset.instanceUid===uid);
+  if(!uid)return null;
+  const buttons=document.querySelectorAll?.('#partyList [data-instance-uid]')||[];
+  return Array.from(buttons).find(button=>button.dataset.instanceUid===uid);
 }
 function rosterTap(uid){
   if(!rosterUi.selecting){openRosterDetail(uid);return;}
