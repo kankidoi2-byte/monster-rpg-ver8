@@ -122,7 +122,17 @@ function economicFunctionSource(source,name){
     .replace('if(changed&&saveNow)saveGame()','if(changed)saveGame()');
 }
 
+// Compare the ordinary reward path with G-BLESS off. Keep every unrelated
+// economy statement intact; the live off helper is also compared below.
+function gBlessOffRuleSource(source){
+  return source
+    .replace(/gBlessHuntReward\((\w+),\s*(\w+),'(?:exp|coins)',bless\)/g,'huntRewardAmount($1,$2)')
+    .replace('function grantMultiEnemyReward(entry,turnBonus,bless=null)','function grantMultiEnemyReward(entry,turnBonus)')
+    .replace('grantMultiEnemyReward(entry,turnBonus,bless)','grantMultiEnemyReward(entry,turnBonus)')
+    .replace('if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}','');
+}
 function normalizedRuleSource(source,name){
+  source=gBlessOffRuleSource(source);
   // Map-story rewards have an independent transaction path, covered by check:map-story.
   // Strip only its exact early victory dispatch when comparing NORMAL exploration.
   source=source.replace(/if\(typeof mapStoryOutcome==='function'&&mapStoryOutcome\('victory'\)\)return;/g,'');
@@ -307,6 +317,18 @@ assert.notEqual(economicFunctionSource(markedExpeditionFixture.replace('entry.pr
 
 const baseline=loadRules(BASE_REV);
 const current=loadRules('working-tree');
+// A reward change hidden inside the new helper must still fail this audit.
+vm.runInContext(functionSource(fs.readFileSync(new URL('../js/save.js',import.meta.url),'utf8'),'gBlessHuntReward'),current.context);
+let gBlessOffParityChecks=0;
+for(const difficultyId of ['easy','normal','hard','extreme'])for(const swiftClear of [false,true])for(const base of [1,8,13,35,41,60,99,1000])for(const kind of ['coins','exp']){
+  const bindings={base,swiftClear,kind,difficultyId};
+  const expression=`activeHuntRequest={rewardMultiplier:HUNT_DIFFICULTIES[difficultyId].rewardMultiplier};`;
+  canonicalValue(current,expression,bindings);canonicalValue(baseline,expression,bindings);
+  assert.equal(canonicalValue(current,'gBlessHuntReward(base,swiftClear,kind,null)',bindings),canonicalValue(baseline,'huntRewardAmount(base,swiftClear)',bindings),'G-BLESS off must preserve the actual historical reward');gBlessOffParityChecks++;
+}
+assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base+1,turn,'coins',bless)"),'huntRewardAmount(base,turn)');
+assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless);save.coins++"),gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless)"));
+
 const baselineSnapshot=canonicalSnapshot(baseline);
 const currentSnapshot=canonicalSnapshot(current);
 
@@ -367,7 +389,7 @@ assert.deepEqual(worldMapMode.expeditionTotals,oldMode.expeditionTotals,'expedit
 
 const access=accessComparison(baselineSnapshot);
 const report={
-  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,contractParityChecks,
+  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,contractParityChecks,gBlessOffParityChecks,
   baselineRevision:BASE_REV,currentHead:CURRENT_HEAD,currentHeadTree:CURRENT_HEAD_TREE,
   battleSeed:`0x${BATTLE_SEED.toString(16)}`,accessSeed:`0x${ACCESS_SEED.toString(16)}`,
   baselineRewardRules:{...oldMode.totals,expeditionRewards:oldMode.expeditionTotals},

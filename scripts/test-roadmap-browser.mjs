@@ -22,7 +22,7 @@ try{
   await page.locator('#roadmapMenuButton').click();assert(await page.locator('#roadmap.active').isVisible());
   assert.equal(await page.locator('#roadmap .lh').count(),3);assert.equal(await page.locator('#roadmap .band').count(),3);assert.equal(await page.locator('#roadmap .cell').count(),9);
   assert(await page.locator('#roadmap .rail').evaluateAll(rails=>rails.every(r=>{const b=r.parentElement.getBoundingClientRect(),x=r.getBoundingClientRect();return Math.abs(x.top-b.top)<2&&Math.abs(x.bottom-(b.bottom-20))<2;})));
-  assert.equal(await page.locator('#roadmap .wipb').count(),3);
+  assert.equal(await page.locator('#roadmap .wipb').count(),2);
   assert(await page.locator('#roadmap .node.wip').evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n,'::before').animationName==='none'&&getComputedStyle(n,'::before').backgroundColor!=='rgb(255, 255, 255)')));
   assert.equal(await page.locator('#roadmap .main').count(),3);assert.equal(await page.locator('#roadmap .side').count(),2);
   assert(await page.locator('#roadmap .side .card').evaluateAll(cards=>cards.every(c=>getComputedStyle(c).borderStyle==='dashed'&&c.getBoundingClientRect().height<150)));
@@ -36,7 +36,7 @@ try{
    assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
   }
   await page.locator('[data-id="lore"]').click();await page.keyboard.press('Escape');assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
-  assert.equal(await page.locator('#doneList>div').count(),4);await page.locator('#more').click();assert.equal(await page.locator('#doneList>div').count(),10);
+  assert.equal(await page.locator('#doneList>div').count(),4);await page.locator('#more').click();assert.equal(await page.locator('#doneList>div').count(),11);
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no page horizontal scroll');
   assert(await page.locator('#roadmap').evaluate(root=>[...root.querySelectorAll('.card h4,.card p,.lh,.band,.done-list')].every(el=>el.scrollWidth<=el.clientWidth+1)),'no text horizontal overflow');
   await page.screenshot({path:`${out}/roadmap-${width}.png`,fullPage:true});
@@ -48,9 +48,9 @@ try{
  }
  // Change only the data file response: stage and completed-list updates need no renderer edit.
  const page=await browser.newPage();
- await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'money',lane:'sys',stage:'now'","id:'money',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
+ await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'status',lane:'sys',stage:'next'","id:'status',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
  await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
- assert.equal(await page.locator('[data-id="money"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
+ assert.equal(await page.locator('[data-id="status"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
  assert.equal(await page.locator('#doneList>div').first().locator('span').nth(1).innerText(),'追加テスト');
  assert.deepEqual(errors,[]);console.log('PASS roadmap acceptance 1–9: navigation, grid/rails, WIP, main/side, focus, all sheets/synopsis, data-only updates, 360/412/430px, loaded save and zero game-save writes.');
 }finally{await browser?.close();server.kill();}

@@ -74,7 +74,7 @@ assert.match(state,/const INVASION_RATES = Object\.freeze\(\{easy:0, normal:\.10
 assert.ok(state.includes('return 2 + Math.min(2, Math.floor(randomFn() * 3))'),'invasion must still occur on turns 2–4');
 assert.match(multi,/targets=\[\{kind:'player'[\s\S]*?\.filter\(entry=>entry\.id!==actor\.id\)/,'enemies must still be able to attack one another');
 assert.ok(multi.includes('entry.defeatedByPlayer&&isContractableUnit(entry.mon)'),'only player-defeated enemies may remain contract candidates');
-assert.ok(multi.includes('multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus))')&&multi.includes('報酬2体分'),'multi-battle rewards must remain the existing two-enemy rewards');
+assert.ok(multi.includes('multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus,bless))')&&multi.includes('報酬2体分'),'multi-battle rewards must remain the existing two-enemy rewards');
 assert.ok(kokoro.includes('kokoroLinkBattleState.usedSourceUids.add(uid)')&&kokoro.includes('linksByTargetUid.set(targetUid,link)'),'Kokoro Link use and battle-lifetime state must remain in the existing engine');
 assert.ok(notices.includes("id: '20260829-tutorial-battle-feature-guides'"),'the player-facing update must have a stable notice ID');
 

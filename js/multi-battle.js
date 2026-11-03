@@ -391,10 +391,10 @@ function finishMultiBattleTurn(){
   busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
 
-function grantMultiEnemyReward(entry,turnBonus){
+function grantMultiEnemyReward(entry,turnBonus,bless=null){
   if(entry.rewardGranted)return {exp:0,coins:0,message:''};entry.rewardGranted=true;
   const baseExp=entry.mon.expBonus||(35+Math.floor(Math.random()*25)),baseCoins=entry.mon.coinBonus||(8+Math.floor(Math.random()*10));
-  const exp=huntRewardAmount(baseExp,turnBonus),coins=huntRewardAmount(baseCoins,turnBonus);save.coins+=coins;let message=`<b>${entry.mon.name}</b>：EXP ${exp}・コイン${coins}枚`;
+  const exp=gBlessHuntReward(baseExp,turnBonus,'exp',bless),coins=gBlessHuntReward(baseCoins,turnBonus,'coins',bless);save.coins+=coins;let message=`<b>${entry.mon.name}</b>：EXP ${exp}・コイン${coins}枚`;
   if(entry.mon.dropItem&&Math.random()<(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1)){save.items[entry.mon.dropItem]=(save.items[entry.mon.dropItem]||0)+1;message+=`・${entry.mon.dropItemName||entry.mon.dropItem}入手`;}
   const material=grantAlchemyMaterialReward();if(material)message+=`・${material.name}入手`;
   return {exp,coins,message};
@@ -405,12 +405,13 @@ function winMultiBattle(){
   settleNormalVictory(true);
 }
 function prepareMultiVictoryReward(){
-  const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus));
+  const bless=beginGBlessVictory();
+  const turnBonus=huntTurnBonusSucceeded(), rewards=multiBattle.enemies.map(entry=>grantMultiEnemyReward(entry,turnBonus,bless));
   const totalExp=rewards.reduce((sum,r)=>sum+r.exp,0);let msg=`🏆 ${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`+rewards.map(r=>r.message).join('<br>');
   if(hasHuntCondition('swift_clear'))msg+=turnBonus?`<br>⏱️ ${battleTurnCount}ターンで迅速討伐達成！`:`<br>⌛ 迅速討伐失敗（8ターン以内）`;
   if(!selectedMap?.goldenLand&&grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId))msg+='<br>🗺️ 黄金郷への地図を入手！';
   msg+='<br>'+grantPartyExp(totalExp,{saveNow:false,animate:false});save.history.wins=(save.history.wins||0)+1;save.history.logs=save.history.logs||[];save.history.logs.push(`${multiBattle.enemies.map(e=>e.mon.name).join('・')}との${multiBattle.invasion?'乱入戦':'三つ巴'}に勝利`);if(save.history.logs.length>30)save.history.logs=save.history.logs.slice(-30);if(typeof grantContractorBattleWin==='function')grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',multi:true,enemies:multiBattle.enemies.map(entry=>entry.mon)});if(typeof progressActiveExpeditions==='function')progressActiveExpeditions(Math.random,{saveNow:false});if(typeof recordWorldMapVictory==='function')recordWorldMapVictory();
-  return {message:msg,outcome:{kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`}};
+  return {message:msg,outcome:{...(bless?{bless}:{}),kind:'victory',title:multiBattle.invasion?'乱入戦を制覇！':'三つ巴を制覇！',exp:totalExp,coins:rewards.reduce((sum,r)=>sum+r.coins,0),note:`${battleTurnCount}ターンで勝利・報酬2体分`}};
 }
 
 function renderMultiContractPanel(){

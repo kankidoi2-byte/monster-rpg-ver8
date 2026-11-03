@@ -260,10 +260,10 @@ function huntTurnRemaining() {
 function huntTurnBonusSucceeded() {
   return hasHuntCondition('swift_clear') && battleTurnCount <= 8;
 }
-function huntRewardAmount(baseAmount, turnBonusSucceeded=false) {
+function huntRewardAmount(baseAmount, turnBonusSucceeded=false, extraMultiplier=1) {
   const rewardMultiplier = Number(activeHuntRequest?.rewardMultiplier) || 1;
   const turnMultiplier = turnBonusSucceeded ? 1.5 : 1;
-  return Math.max(1, Math.round((Number(baseAmount) || 0) * rewardMultiplier * turnMultiplier));
+  return Math.max(1, Math.round((Number(baseAmount) || 0) * rewardMultiplier * turnMultiplier * extraMultiplier));
 }
 let pendingEvolutions = [], currentEvolution = null;
 let bossCautionPlaying = false;
