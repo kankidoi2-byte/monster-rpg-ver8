@@ -23,6 +23,14 @@ function capture(s,k){
  s.rewardDays[k]=rows(s,k);
 }
 function xp(q){return Math.round(positive(q.exp)*Math.min(positive(q.amount),positive(q.per)*3)/(positive(q.per)||1));}
+// Total EXP before level L is 30*(L-1)^2 + 130*(L-1).
+// Bound work and the number of level gifts before processing an imported record.
+function levelProgress(total){
+ if(!Number.isSafeInteger(total)||total<0||total>1000000000)throw Error('累計EXPが対応範囲を超えています。');
+ const completed=Math.floor((Math.sqrt(16900+120*total)-130)/60);
+ const L=completed+1;
+ return {L,e:total-(30*completed+130)*completed,n:100+60*L};
+}
 function dailyCoins(s,k){return rows(s,k).reduce((n,q)=>n+xp(q),0)*3;}
 function readBox(){
  const raw=localStorage.getItem(KEY);if(!raw)return {v:1,entries:[],highestLevel:1,skillIds:[],streakIds:[]};
@@ -54,7 +62,7 @@ function sync(s,now=new Date()){
    if(!box.streakIds.includes(id)){add(id,'連続'+n+'日',0,{rainbow_contract_scroll:n===7?1:n===14?2:3,...(n===30?{giga_data:1}:{})},'streak');box.streakIds.push(id)}
   }
  }
- let lv=1;while(total>=100+60*lv){total-=100+60*lv;lv++}
+ const lv=levelProgress(total).L;
  const highest=Math.max(1,box.highestLevel||1);
  for(let n=highest+1;n<=lv;n++)add('level-'+n,'Lv.'+n,900,{rainbow_contract_scroll:1},'level');
  box.highestLevel=Math.max(highest,lv);box.skillIds=box.skillIds||[];
@@ -62,5 +70,5 @@ function sync(s,now=new Date()){
  if(JSON.stringify(box)!==before)localStorage.setItem(KEY,JSON.stringify(box));
  return box;
 }
-root.LifeQuestRewards={skills,day,capture,dailyCoins,readBox,sync};
+root.LifeQuestRewards={skills,day,capture,dailyCoins,readBox,sync,levelProgress};
 })(globalThis);

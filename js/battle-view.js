@@ -302,6 +302,10 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   next.textContent = typeof activeHuntRequest !== 'undefined' && activeHuntRequest?.worldMapExploration
     ? '探索先へ戻る ›'
     : victory ? '次の討伐依頼へ ›' : '依頼を選び直す ›';
+  if(!victory&&typeof worldMapBattleSavePending==='function'&&worldMapBattleSavePending()){
+    document.getElementById('battleOutcomeNote').textContent='世界地図を保存できませんでした。';
+    next.textContent='保存を再試行して探索先へ戻る ›';
+  }
   setTimeout(() => outcome.classList.remove('is-revealing'), 850);
   if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
 }
@@ -423,7 +427,7 @@ function renderKokoroLinkPanel(){
     if(!preview)return '';
     const effects=preview.effects;
     const disabled=source.used||!!current||!targetEligible;
-    return `<button class="kokoro-link-source${source.used?' is-used':''}" onclick="activateKokoroLinkFromBattle('${source.uid}')" ${disabled?'disabled':''}>`+
+    return `<button class="kokoro-link-source${source.used?' is-used':''}" data-uid="${escapeGameHtml(source.uid)}" onclick="activateKokoroLinkFromBattle(this.dataset.uid)" ${disabled?'disabled':''}>`+
       `<span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
       `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
       `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+

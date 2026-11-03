@@ -47,7 +47,7 @@ async function openSurface(page,kind){
       screen='contractorRank';selector='#contractorRankUpOverlay button[onclick="closeContractorRankUp()"]';
       surfaces=['contractorRankContent'];
     }else if(kind==='lock'||kind==='unlock'){
-      screen='party';selector=`#rosterSheetHost button[onclick="toggleInstanceLock('${unit.uid}')"]`;
+      screen='party';selector=`#rosterSheetHost button[data-roster-action="lock"][data-uid="${unit.uid}"]`;
       surfaces=['partyList','rosterSheetHost'];
     }else if(kind.startsWith('party-')){
       screen='partySet';selector=`#partySelectList button[data-party-uid="${unit.uid}"]`;

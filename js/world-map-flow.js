@@ -116,12 +116,21 @@ function recordWorldMapVictory(){
 function recordWorldMapBattleResult({saveNow=false}={}){
   const request=activeHuntRequest;
   if(!request?.worldMapExploration||request.worldMapExpiryRecorded)return [];
-  request.worldMapExpiryRecorded=true;
   const tutorial=save.progress?.tutorial;
   if(tutorial&&!['completed','skipped'].includes(tutorial.status))return [];
   const result=advanceWorldEventsAfterBattle(save.worldMap,request.worldMapEventKey);
-  save.worldMap=result.state;
+  if(saveNow){
+    // Keep the remaining battles, navigation and receipt in sync on failure.
+    if(!commitSaveMutation(()=>{save.worldMap=result.state;},{requireReadable:true})){
+      request.worldMapExpiryPending=true;
+      return null;
+    }
+  }else{
+    // Normal victories already commit this candidate with all battle rewards.
+    save.worldMap=result.state;
+  }
+  delete request.worldMapExpiryPending;
+  request.worldMapExpiryRecorded=true;
   for(const key of result.expiredKeys)clearWorldMapRuntimeEventSelection(key);
-  if(saveNow)/* save-result-allow: world-map-result */saveGame();
   return result.expiredKeys;
 }

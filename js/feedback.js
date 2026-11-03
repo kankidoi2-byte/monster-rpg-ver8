@@ -66,27 +66,65 @@
    if(error){const e=el('p','err',error);e.setAttribute('role','alert');form.append(e);}const send=el('button','send','送る');send.type='submit';send.id='fb-send';form.append(send,el('p','quota'));form.onsubmit=e=>{e.preventDefault();void submit();};host.append(form);
   }
   const hist=el('section','panel hist');hist.append(el('h2','','送った意見'));if(!s.history.length)hist.append(el('p','empty','まだ送った意見はありません。'));
-  for(const h of s.history){const row=el('div','hist-item'),meta=el('div','meta');meta.append(chip(h.kind),el('span','',stamp(h.createdAt)),el('span','chip '+(h.state==='sent'?'sent':'wait'),h.state==='sent'?'届きました':'送信待ち'));row.append(meta,el('p','',h.body));hist.append(row);}host.append(hist);refresh();
+  const labels={sent:'届きました',wait:'送信待ち',rejected:'送信失敗',auth:'認証待ち'};
+  for(const h of s.history){
+   const row=el('div','hist-item'),meta=el('div','meta');
+   meta.append(chip(h.kind),el('span','',stamp(h.createdAt)),el('span','chip '+(h.state==='sent'?'sent':'wait'),labels[h.state]||labels.wait));
+   row.append(meta,el('p','',h.body));
+   if(h.reason)row.append(el('small','err',h.reason));
+   hist.append(row);
+  }
+  host.append(hist);refresh();
  }
  async function transmit(p,item){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
   try{const response=await fetch(ENDPOINT,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({...item.payload,token:p.token}),signal:controller.signal});
    if(response.ok){let result;try{result=await response.json();}catch(_){return {state:'wait'};}return result.accepted===1?{state:'sent',day:result.day,remaining:result.remaining}:{state:'wait'};}
    if(response.status===429){let result={};try{result=await response.json();}catch(_){}return {state:'wait',limited:true,notBefore:typeof result.retryAt==='string'&&Number.isFinite(Date.parse(result.retryAt))?result.retryAt:nextDay()};}
-   if([400,401,403,413].includes(response.status))return {state:'rejected',error:response.status===401?'プロフィールの認証を確認できませんでした。':'送れませんでした。内容と通信先を確認してください。'};
+   if([401,403].includes(response.status))return {state:'auth',error:'プロフィールの認証を確認できませんでした。'};
+   if([400,413].includes(response.status))return {state:'rejected',error:'送れませんでした。内容を確認してください。'};
    return {state:'wait'};
   }catch(_){return {state:'wait'};}finally{clearTimeout(timer);}
  }
  function applyResult(id,item,result){
   const s=read(id),h=s.history.find(x=>x.id===item.payload.id),q=s.queue.find(x=>x.payload.id===item.payload.id);
-  if(result.state==='sent'){if(result.day===day()&&Number.isInteger(result.remaining)&&result.remaining>=0&&result.remaining<=5)s.quota={day:day(),count:Math.max(s.quota.day===day()?s.quota.count:0,5-result.remaining)};if(h)h.state='sent';s.queue=s.queue.filter(x=>x.payload.id!==item.payload.id);}
-  else if(result.state==='rejected'){s.history=s.history.filter(x=>x.id!==item.payload.id);s.queue=s.queue.filter(x=>x.payload.id!==item.payload.id);if(s.quota.day===day(item.reservedAt))s.quota.count=Math.max(0,s.quota.count-1);}
-  else if(result.notBefore){if(q)q.notBefore=result.notBefore;s.blockedUntil=result.notBefore;}
+  if(!q)return;
+  if(result.state==='sent'){
+   if(result.day===day()&&Number.isInteger(result.remaining)&&result.remaining>=0&&result.remaining<=5)
+    s.quota={day:day(),count:Math.max(s.quota.day===day()?s.quota.count:0,5-result.remaining)};
+   if(h){h.state='sent';delete h.reason;}
+   s.queue=s.queue.filter(x=>x.payload.id!==item.payload.id);
+  }else if(result.state==='rejected'||result.state==='cancelled'){
+   s.history=s.history.filter(x=>x.id!==item.payload.id);
+   if(result.state==='rejected'){
+    const receipt={...(h||item.payload),state:'rejected',reason:result.error};
+    s.history=[receipt,...s.history].slice(0,20);
+   }
+   s.queue=s.queue.filter(x=>x.payload.id!==item.payload.id);
+   if(s.quota.day===day(item.reservedAt))s.quota.count=Math.max(0,s.quota.count-1);
+  }else if(result.state==='auth'){
+   const receipt=h||{...item.payload};
+   receipt.state='auth';receipt.reason=result.error;
+   if(!h)s.history=[receipt,...s.history].slice(0,20);
+  }
+  if(result.notBefore){q.notBefore=result.notBefore;s.blockedUntil=result.notBefore;}
   write(id,s);
  }
  async function flush(){
   const p=profile();if(!p||global.MonsterProfiles?.available?.()===false)return;
-  try{await scopedLock(p.id,async()=>{const s=read(p.id);for(const item of s.queue.slice(0,20)){if(item.notBefore&&Date.parse(item.notBefore)>Date.now())continue;const result=await transmit(p,item);if(result.state!=='rejected')applyResult(p.id,item,result);if(result.error){error=result.error;break;}if(result.state==='wait')break;}});if(root()?.classList.contains('active')&&!sending){render();}}catch(_){/* Storage/network failures never block game startup. */}
+  try{
+   await scopedLock(p.id,async()=>{
+    const s=read(p.id);
+    if(Date.parse(s.blockedUntil)>Date.now())return;
+    for(const item of s.queue.slice(0,20)){
+     if(Date.parse(item.notBefore)>Date.now())continue;
+     const result=await transmit(p,item);
+     applyResult(p.id,item,result);
+     if(result.state==='auth'||result.state==='wait')break;
+    }
+   });
+   if(root()?.classList.contains('active')&&!sending)render();
+  }catch(_){/* Storage/network failures never block game startup. */}
  }
  async function submit(){
   if(sending||!draft.kind||draft.body.trim().length<2||draft.body.length>1000)return;
@@ -96,7 +134,10 @@
    const at=Date.now(),payload={id:crypto.randomUUID(),profileId:p.id,...context(),kind:draft.kind,screen:draft.screen,body:draft.body.trim(),createdAt:new Date(at).toISOString()};
    const item={payload,reservedAt:at};s.queue.push(item);s.history.unshift({...payload,state:'wait'});s.history=s.history.slice(0,20);s.quota={day:day(),count:(s.quota.day===day()?s.quota.count:0)+1};write(p.id,s);staged=true;
    const result=await transmit(p,item);
-   if(result.limited){applyResult(p.id,item,{state:'rejected'});staged=false;const current=read(p.id);current.blockedUntil=result.notBefore;write(p.id,current);throw Error('今日はもう送れません');}
+   if(result.limited||result.state==='auth'){
+    applyResult(p.id,item,{state:'cancelled',notBefore:result.notBefore});
+    staged=false;throw Error(result.error||'今日はもう送れません');
+   }
    applyResult(p.id,item,result);if(result.error){staged=false;throw Error(result.error);}
    completion=result.state;draft={kind:null,screen:classify(contextScreen),body:''};
   });}catch(e){if(staged){completion='wait';draft={kind:null,screen:classify(contextScreen),body:''};}else error=e.message||'控えを保存できませんでした。もう一度お試しください。';}finally{sending=false;render();}

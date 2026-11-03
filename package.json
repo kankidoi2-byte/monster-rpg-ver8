@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check:world-map": "node scripts/test-world-map-adopted.mjs && node scripts/test-world-map-viewport.mjs && node scripts/test-world-events.mjs && node scripts/test-world-map.mjs && node scripts/test-world-map-ui.mjs && node scripts/test-world-map-geography.mjs && node scripts/test-world-map-navigation.mjs && node scripts/test-world-map-dex.mjs && node scripts/test-prologue-world-map-path.mjs && node scripts/test-prologue-world-map-facilities.mjs && node scripts/test-world-map-facility-ui.mjs && node scripts/test-world-map-tutorial-migration.mjs && node scripts/test-world-map-prologue-journey.mjs && node scripts/test-world-map-downgrade-safety.mjs",
+    "check:world-map": "node scripts/test-world-map-adopted.mjs && node scripts/test-world-map-viewport.mjs && node scripts/test-world-events.mjs && node scripts/test-world-map.mjs && node scripts/test-world-map-ui.mjs && node scripts/test-world-map-geography.mjs && node scripts/test-world-map-navigation.mjs && node scripts/test-world-map-dex.mjs && node scripts/test-prologue-world-map-path.mjs && node scripts/test-prologue-world-map-facilities.mjs && node scripts/test-world-map-facility-ui.mjs && node scripts/test-world-map-tutorial-migration.mjs && node scripts/test-world-map-prologue-journey.mjs && node scripts/test-world-map-downgrade-safety.mjs && node scripts/test-world-map-result-retry-browser.mjs",
     "check:world-map-economy": "node scripts/compare-world-map-economy.mjs",
     "dev": "node scripts/dev-server.mjs",
     "check:story-mode": "node scripts/test-story-mode.mjs",
@@ -124,7 +124,7 @@
     "check:tutorial-targets": "node scripts/test-tutorial-target-visibility.mjs && node scripts/test-prologue-chapter-flow.mjs && node scripts/test-tutorial-expedition-stability-browser.mjs",
     "check:prologue-taps": "node scripts/test-prologue-tap-through-browser.mjs",
     "check:feedback": "node scripts/test-feedback.mjs",
-    "check:gifts": "node scripts/test-gifts.mjs && node scripts/test-gifts-browser.mjs",
+    "check:gifts": "node scripts/test-review-top10.mjs && node scripts/test-gifts.mjs && node scripts/test-gifts-browser.mjs",
     "check:roadmap": "node scripts/test-roadmap.mjs && node scripts/test-roadmap-browser.mjs",
     "check:g-bless": "node scripts/test-g-bless.mjs && node scripts/test-g-bless-browser.mjs"
   },

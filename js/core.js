@@ -1,3 +1,6 @@
+function escapeGameHtml(value){
+  return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 function normalizeMoveTypes(value){
   const arr = Array.isArray(value) ? value : [value || 'normal'];
   return [...new Set(arr.filter(Boolean))];

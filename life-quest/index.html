@@ -257,7 +257,7 @@ textarea{min-height:90px;font-family:ui-monospace,monospace;font-size:11px}
 <div class="app" id="app"></div>
 <nav aria-label="メニュー"><div class="wrap" id="tabs"></div></nav>
 
-<script src="rewards.js?v=1-g-bless-20261102-1"></script>
+<script src="rewards.js?v=1-g-bless-20261102-1-review-20261104"></script>
 <script>
 (function(){
 const KEY="lifequest.v1";
@@ -309,14 +309,77 @@ const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 let TODAY=new Date(); let TK=dkey(TODAY);
 
 function seed(){return {v:2,sample:false,quests:[],hist:{}}}
-function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.quests&&o.hist)return migrate(o)}}catch(e){}return seed()}
-function save(){try{
-  LifeQuestRewards.capture(S,TK);
-  localStorage.setItem(KEY,JSON.stringify(S));
-  LifeQuestRewards.sync(S);
-  return true;
-}catch(e){showStorageError();return false;}}
-function showStorageError(){let el=document.getElementById('storageError');if(!el){el=document.createElement('p');el.id='storageError';el.setAttribute('role','alert');document.body.appendChild(el)}el.textContent='保存できません。空き容量とブラウザの保存設定を確認してください。';}
+const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
+const validId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,128}$/.test(id)&&!(id in Object.prototype);
+const bounded=(n,min,max)=>Number.isFinite(n)&&n>=min&&n<=max;
+const validDate=k=>/^\d{4}-\d{2}-\d{2}$/.test(k)&&Number.isFinite(Date.parse(k))&&new Date(k).toISOString().slice(0,10)===k;
+function validateQuest(q){
+  if(!record(q)||!validId(q.id)||!Object.hasOwn(CATS,q.cat)||typeof q.nm!=='string'||
+     !['分','回','問','ページ','km'].includes(q.unit)||!bounded(q.per,1,999)||!bounded(q.step,1,q.per)||
+     !bounded(q.exp,0,100000)||!bounded(q.cost,0,100000)||
+     (q.max!=null&&!bounded(q.max,1,1000000))||
+     ['node','sub','subject'].some(key=>q[key]!=null&&typeof q[key]!=='string'))throw Error('クエストの形式を確認してください。');
+}
+function validateState(state){
+  if(!record(state)||!Array.isArray(state.quests)||!record(state.hist)||
+     (state.rewardDays!=null&&!record(state.rewardDays)))throw Error('記録の形式を確認してください。');
+  state.quests.forEach(validateQuest);
+  const byId=new Map(state.quests.map(q=>[q.id,q]));
+  if(byId.size!==state.quests.length)throw Error('クエストIDが重複しています。');
+  let total=0;
+  for(const [date,values] of Object.entries(state.hist)){
+    if(!validDate(date)||!record(values))throw Error('記録の日付を確認してください。');
+    for(const [id,a] of Object.entries(values)){
+      if(!validId(id)||!bounded(a,0,1000000))throw Error('記録量を確認してください。');
+      if(byId.has(id))total+=expFor(byId.get(id),a);
+    }
+  }
+  LifeQuestRewards.levelProgress(total);
+  for(const [date,rows] of Object.entries(state.rewardDays||{})){
+    if(!validDate(date)||!Array.isArray(rows))throw Error('報酬記録の日付を確認してください。');
+    for(const q of rows){validateQuest(q);if(!bounded(q.amount,0,1000000))throw Error('報酬記録量を確認してください。');}
+  }
+  return state;
+}
+function parseState(raw){return raw===null?seed():validateState(migrate(JSON.parse(raw)));}
+function showStorageError(message='保存できません。空き容量とブラウザの保存設定を確認してください。'){
+  let el=document.getElementById('storageError');
+  if(!el){el=document.createElement('p');el.id='storageError';el.setAttribute('role','alert');document.body.appendChild(el);}
+  el.textContent=message;
+}
+let displayedRaw=null;
+function load(){
+  try{displayedRaw=localStorage.getItem(KEY);return parseState(displayedRaw);}
+  catch(error){showStorageError('記録を読み込めません。記録タブから元のデータを書き出せます。');return seed();}
+}
+// All tab writes read the current state INSIDE the same origin lock.
+// Replacements also compare the exact bytes shown before confirmation.
+async function changeState(change,{expected,replace=false}={}){
+  try{
+    if(!navigator.locks?.request)throw Error('記録の保存にはWeb Locks対応ブラウザが必要です。');
+    return await navigator.locks.request(KEY,()=>{
+      const raw=localStorage.getItem(KEY);
+      if(expected!==undefined&&expected!==raw)throw Error('別の画面で更新されました。内容を確認して再度操作してください。');
+      const current=replace?null:parseState(raw);
+      const next=change(current);
+      if(!next)return false;
+      LifeQuestRewards.capture(next,TK);
+      validateState(next);
+      const serialized=JSON.stringify(next);
+      localStorage.setItem(KEY,serialized);
+      S=next;displayedRaw=serialized;
+      document.getElementById('storageError')?.remove();
+      return true;
+    });
+  }catch(error){showStorageError(error.message);return false;}
+}
+window.addEventListener('storage',e=>{
+  if(e.key!==KEY&&e.key!==null)return;
+  // Keep typed text and the revision displayed in an open import prompt.
+  // Queued edits always re-read the current data under the write lock.
+  if(document.querySelector('.overlay.confirm')||document.activeElement?.matches('input, textarea, select'))return;
+  S=load();render();
+});
 function refreshDay(){const now=new Date(),key=dkey(now);if(key!==TK){TODAY=now;TK=key;render()}}
 window.addEventListener('focus',refreshDay);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay()});
@@ -324,8 +387,7 @@ setInterval(refreshDay,30000);
 let S=load();
 let tab="home";
 
-const need=L=>100+L*60;
-function levelOf(total){let L=1,e=total;while(e>=need(L)){e-=need(L);L++}return{L,e,n:need(L)}}
+const levelOf=total=>LifeQuestRewards.levelProgress(total);
 
 function compute(){
   const qmap=Object.fromEntries(S.quests.map(q=>[q.id,q]));
@@ -400,11 +462,11 @@ function viewHome(C){
   const d=TODAY; const wd="日月火水木金土"[d.getDay()];
   const chips=["str","end","int","cre","life"].map(c=>`<div class="chip" style="--k:${CATS[c].k}"><span class="ci">${ICONS[c]}</span><b class="v" data-s="${c}">${C.stats[c]}</b><small>${CATS[c].nm}</small></div>`).join("");
   const tiles=S.quests.map(q=>{const a=today[q.id]||0; const on=a>=q.per; const pct=Math.min(100,a/q.per*100);
-    return `<div class="tile ${on?"isdone":""} ${a>0?"some":""}" style="--k:${CATS[q.cat].k};--p:${pct}%" role="button" tabindex="0" data-inc="${q.id}" data-d="1" aria-label="${esc(q.nm)} ${a}${q.unit}。タップで${q.step}${q.unit}追加">
-      <div class="tt">${ic(q.cat)}<div class="tn"><b>${esc(q.nm)}</b><small>${q.subject?esc(q.subject)+" ・ ":""}+${q.step}${q.unit}/タップ</small></div></div>
-      <div class="tb"><span class="amt"><b>${a}</b>/${q.per}${q.unit}${on?' <span class="chk">✓</span>':""}</span><span class="tx">${a?"+"+expFor(q,a):"+"+q.exp}<small>EXP</small></span></div>
+    return `<div class="tile ${on?"isdone":""} ${a>0?"some":""}" style="--k:${CATS[q.cat].k};--p:${pct}%" role="button" tabindex="0" data-inc="${esc(q.id)}" data-d="1" aria-label="${esc(q.nm)} ${a}${esc(q.unit)}。タップで${q.step}${esc(q.unit)}追加">
+      <div class="tt">${ic(q.cat)}<div class="tn"><b>${esc(q.nm)}</b><small>${q.subject?esc(q.subject)+" ・ ":""}+${q.step}${esc(q.unit)}/タップ</small></div></div>
+      <div class="tb"><span class="amt"><b>${a}</b>/${q.per}${esc(q.unit)}${on?' <span class="chk">✓</span>':""}</span><span class="tx">${a?"+"+expFor(q,a):"+"+q.exp}<small>EXP</small></span></div>
       <div class="tp"><i></i></div>
-      ${a?`<button class="minus" data-inc="${q.id}" data-d="-1" aria-label="${esc(q.nm)}を${q.step}${q.unit}減らす">−</button>`:""}
+      ${a?`<button class="minus" data-inc="${esc(q.id)}" data-d="-1" aria-label="${esc(q.nm)}を${q.step}${esc(q.unit)}減らす">−</button>`:""}
     </div>`}).join("");
   const todayExp=Object.entries(today).reduce((s,[id,a])=>s+(C.qmap[id]?expFor(C.qmap[id],a):0),0);
   const doneN=S.quests.filter(q=>(today[q.id]||0)>=q.per).length;
@@ -431,7 +493,7 @@ function viewHome(C){
 }
 
 function viewQuest(){
-  const rows=S.quests.map(q=>`<div class="qrow">${ic(q.cat)}<div class="mid"><b>${esc(q.nm)}</b><small>${CATS[q.cat].nm}${q.subject?" ・ "+esc(q.subject)+(q.node?" / "+esc(q.node):""):""} ・ 目標${q.per}${q.unit}で+${q.exp} EXP ・ ${q.step}${q.unit}ずつ</small></div><button class="del" data-del="${q.id}">削除</button></div>`).join("");
+  const rows=S.quests.map(q=>`<div class="qrow">${ic(q.cat)}<div class="mid"><b>${esc(q.nm)}</b><small>${CATS[q.cat].nm}${q.subject?" ・ "+esc(q.subject)+(q.node?" / "+esc(q.node):""):""} ・ 目標${q.per}${esc(q.unit)}で+${q.exp} EXP ・ ${q.step}${esc(q.unit)}ずつ</small></div><button class="del" data-del="${esc(q.id)}">削除</button></div>`).join("");
   return `<div class="sec"><h2>クエスト</h2><span class="note">毎日のクエスト ${S.quests.length}件</span></div>
   ${hud(rows,"card")}
   ${hud(`<div class="lbl" style="margin-bottom:8px">新しいクエスト</div>
@@ -449,7 +511,7 @@ function viewQuest(){
 }
 
 function viewSkill(C){
-  const subj={}; S.quests.filter(q=>q.subject).forEach(q=>{(subj[q.subject]=subj[q.subject]||[]).push(q)});
+  const subj=Object.create(null); S.quests.filter(q=>q.subject).forEach(q=>{(subj[q.subject]=subj[q.subject]||[]).push(q)});
   const trees=Object.entries(subj).map(([s,qs])=>{const n=Math.floor(qs.reduce((a,q)=>a+(C.qcnt[q.id]||0),0));
     return `<div class="tree"><h3>${esc(s)}<span>Lv.${Math.floor(n/5)+1} ・ ${n}回</span></h3><div class="nodes">${qs.map(q=>{const c=Math.floor(C.qcnt[q.id]||0);const r=c%5;
       return `<div class="node"><b>${esc(q.node||q.nm)}</b><small>達成${c}回 ・ 次の段階まで${5-r}</small><div class="pips">${[0,1,2,3,4].map(i=>`<i class="${i<r?"on":""}"></i>`).join("")}</div></div>`}).join("")}</div></div>`}).join("");
@@ -470,7 +532,7 @@ function viewLog(C){
    <p class="why" style="margin-top:6px">上端が黄色い日は休養した日です。</p>`,"card")}
   ${hud(`<div class="lbl" style="margin-bottom:8px">バックアップ</div>
    <p class="why" style="margin:0 0 8px">記録はこのブラウザに保存されます。消える前に、下の文字列をコピーしてどこかに保管してください。</p>
-   <textarea id="bk-out" readonly>${esc(JSON.stringify(S))}</textarea>
+   <textarea id="bk-out" readonly>${esc(displayedRaw??JSON.stringify(S))}</textarea>
    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" data-act="copy">コピー</button></div>
    <label class="why" style="display:block;margin-top:12px">読み込む(保管した文字列を貼り付け)<textarea id="bk-in"></textarea></label>
    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" data-act="import">読み込む</button></div>`,"card")}`;
@@ -478,7 +540,7 @@ function viewLog(C){
 
 const NAV=[["home","ホーム",'<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'],["quest","クエスト",'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/>'],["skill","スキル",'<path d="M12 2l8.5 5v10L12 22l-8.5-5V7z"/><path d="M12 7l4 8H8z"/>'],["log","記録",'<path d="M4 20V12M10 20V8M16 20V4M21 20H3"/>']];
 function render(){
-  try{LifeQuestRewards.sync(S)}catch(e){showStorageError()}
+  try{if(displayedRaw!==null&&localStorage.getItem(KEY)===displayedRaw)LifeQuestRewards.sync(S)}catch(e){showStorageError("報酬を読み込めません。記録タブで内容を確認してください。")}
   const C=compute();
   const app=document.getElementById("app");
   app.className="app"+(tab==="home"?" home":"");
@@ -502,17 +564,27 @@ function skillToast(sk){const t=document.createElement("div");t.className="toast
   t.innerHTML=hud(`<div style="display:flex;gap:12px;align-items:center">${ic(sk.cat)}<div><div class="lbl" style="color:var(--cyan)">SKILL UNLOCKED</div><b style="font-size:18px">${esc(sk.nm)}</b><div class="why">${esc(sk.ds)}</div></div></div>`);
   document.body.appendChild(t);setTimeout(()=>t.remove(),3600)}
 
-document.addEventListener("click",e=>{
+document.addEventListener("click",async e=>{
   refreshDay();
   const b=e.target.closest("button,[data-inc]"); if(!b) return;
   if(b.dataset.tab){tab=b.dataset.tab;render();window.scrollTo(0,0);return}
   if(b.dataset.inc){
-    const before=compute(); const day=S.hist[TK]=S.hist[TK]||{}; const id=b.dataset.inc; const q=before.qmap[id]; const dir=+b.dataset.d;
-    const old=day[id]||0; let nv=Math.max(0,old+dir*q.step); if(q.max) nv=Math.min(q.max,nv);
-    if(nv===old) return; if(nv) day[id]=nv; else delete day[id];
-    const g0=document.getElementById("qgrid"); const gy=g0?g0.scrollTop:0;
-    save(); const after=render(); const g1=document.getElementById("qgrid"); if(g1) g1.scrollTop=gy;
-    const gain=expFor(q,nv)-expFor(q,old);
+    const id=b.dataset.inc,dir=Number(b.dataset.d),before=compute();
+    const gy=document.getElementById("qgrid")?.scrollTop||0;
+    let gain=0;
+    const saved=await changeState(current=>{
+      const q=current.quests.find(x=>x.id===id);
+      if(!q)return null;
+      const day=current.hist[TK]??={};
+      const old=day[id]||0;
+      const nv=Math.min(q.max??Infinity,Math.max(0,old+dir*q.step));
+      if(nv===old)return null;
+      if(nv)day[id]=nv;else delete day[id];
+      gain=expFor(q,nv)-expFor(q,old);
+      return current;
+    });
+    if(!saved)return;
+    const after=render();const grid=document.getElementById("qgrid");if(grid)grid.scrollTop=gy;
     const nb=document.querySelector(`.tile[data-inc="${id}"]`); if(nb) nb.focus({preventScroll:true});
     if(dir>0){ if(nb){ floatExp(nb,`+${gain} EXP`); nb.classList.add("hit"); }
       document.querySelectorAll(".chip .v").forEach(v=>{if(after.stats[v.dataset.s]>before.stats[v.dataset.s])v.classList.add("up")});
@@ -522,26 +594,37 @@ document.addEventListener("click",e=>{
     return;
   }
   if(b.dataset.del){const q=S.quests.find(x=>x.id===b.dataset.del);
-    confirmBox(`「${esc(q.nm)}」を削除しますか？ 過去の記録とEXPも消えます。`,"削除",()=>{S.quests=S.quests.filter(x=>x.id!==q.id);save();render()});return}
+    confirmBox(`「${esc(q.nm)}」を削除しますか？ 過去の記録とEXPも消えます。`,"削除",async()=>{if(await changeState(current=>{current.quests=current.quests.filter(x=>x.id!==q.id);return current;}))render();});return}
   const act=b.dataset.act;
-  if(act==="reset") confirmBox("サンプルの記録を消して、今日から始めますか？ クエストはそのまま残ります。","リセット",()=>{S={v:1,sample:false,quests:S.quests,hist:{}};save();render()});
+  if(act==="reset"){
+    const expected=displayedRaw;
+    confirmBox("サンプルの記録を消して、今日から始めますか？ クエストはそのまま残ります。","リセット",async()=>{
+      if(await changeState(current=>({...seed(),quests:current.quests}),{expected}))render();
+    });
+  }
   if(act==="copy"){const t=document.getElementById("bk-out");const done=()=>{b.textContent="コピーしました";setTimeout(()=>b.textContent="コピー",1500)};
     navigator.clipboard?.writeText(t.value).then(done,()=>{t.select();b.textContent="選択しました。長押しでコピー"}) ?? (t.select())}
-  if(act==="import"){const raw=document.getElementById("bk-in").value.trim();let o=null;try{o=JSON.parse(raw)}catch(err){}
-    if(!o||!o.quests||!o.hist){b.textContent="読み込めません。文字列を確認してください";return}
-    confirmBox("今の記録を、貼り付けた記録で置き換えますか？","置き換える",()=>{try{S=migrate(o);save();render()}catch(e){b.textContent="読み込めません。文字列を確認してください"}})}
+  if(act==="import"){
+    const raw=document.getElementById("bk-in").value.trim(),expected=displayedRaw;
+    let imported;
+    try{if(raw.length>5000000)throw Error();imported=parseState(raw);}
+    catch(error){b.textContent="読み込めません。文字列を確認してください";return;}
+    confirmBox("今の記録を、貼り付けた記録で置き換えますか？","置き換える",async()=>{
+      if(await changeState(()=>imported,{expected,replace:true}))render();
+    });
+  }
 });
 document.addEventListener("keydown",e=>{const t=e.target.closest&&e.target.closest(".tile");
   if(t&&e.target===t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();t.click()}});
-document.addEventListener("submit",e=>{
+document.addEventListener("submit",async e=>{
   if(e.target.id!=="addq")return; e.preventDefault();
   const g=id=>document.getElementById(id).value.trim();
   const cat=g("f-cat"), unit=g("f-unit"), per=Math.max(1,+g("f-per")||1), step=Math.max(1,Math.min(per,+g("f-step")||1));
   const exp=unit==="分"?Math.max(20,Math.round(per*3.2/10)*10):unit==="km"?Math.max(20,Math.round(per*20/10)*10):50;
   const cost=cat==="rest"?0:unit==="分"?per:unit==="km"?per*6:15;
-  const q={id:"q"+Date.now().toString(36),nm:g("f-nm"),sub:"",cat,unit,per,step,exp,cost};
+  const q={id:"q"+crypto.randomUUID(),nm:g("f-nm"),sub:"",cat,unit,per,step,exp,cost};
   if(g("f-sub")){q.subject=g("f-sub");q.node=g("f-node")||q.nm; if(cat!=="int") q.cat="int"}
-  S.quests.push(q);save();render();
+  if(await changeState(current=>{current.quests.push(q);return current;}))render();
 });
 document.addEventListener("change",e=>{if(e.target.id==="f-cat"){document.getElementById("f-subwrap").style.opacity=e.target.value==="int"?1:.45}
   if(e.target.id==="f-unit"){const m=e.target.value==="分";document.getElementById("f-step").value=m?5:1;document.getElementById("f-per").value=m?15:(e.target.value==="回"?1:10)}});
