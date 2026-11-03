@@ -90,6 +90,15 @@ try{
   await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
   assert.deepEqual(errors,[]);assert.equal(dialogs.filter(t=>/元には戻|変換しますか/.test(t)).length,0);
   console.log(`PASS roster browser ${viewport.width}: 5 columns, overflow, detail/data/lock, protected selection, duplicate keeper, single confirmation/cancel, mixed save/reload, prefs, quota rollback/retry, stale-tab/inactive-profile safety, home/party/hunt/battle smoke.`);
+  const oddUid=`qa'");window.uidInjected=1;//`;
+  await page.evaluate(uid=>{
+    save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+    const unit=addInstance('freiwolf',5);unit.uid=uid;save.party=[];renderPartySetup();
+    const control=[...document.querySelectorAll('[data-party-uid]')].find(b=>b.dataset.partyUid===uid);
+    if(!control)throw Error('UID attribute lost');
+    control.click();
+  },oddUid);
+  assert(await page.evaluate(uid=>save.party.includes(uid)&&!window.uidInjected,oddUid));
   await context.close();
  }
  // Accessibility reflow in a very short landscape/split viewport.

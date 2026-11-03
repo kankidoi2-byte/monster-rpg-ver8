@@ -6,6 +6,8 @@ const SAVE_SCHEMA_VERSION = 4;
 const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
+let protectedPrimaryRaw = null;
+let rejectedPrimaryRaw = null;
 
 const G_BLESS_RULES=Object.freeze({week:100,coins:2,exp:1.5,cost:1});
 // Shift JST by four hours so every week starts at Monday 04:00 JST.
@@ -188,7 +190,7 @@ function initSave() {
 function normalizeAlchemyResonance(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;}
 function isSaveObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
 function safeStorageGet(key){try{return localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);}catch(error){lastSaveError=error;return null;}}
-function safeStorageSet(key,value){try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageSet(key,value){try{if(typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return false;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
 function safeStorageRemove(key){try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
 function saveHash(payload){
   const copy=JSON.parse(JSON.stringify(payload));
@@ -422,9 +424,37 @@ function repairSave(payload,report=[]){
 }
 function parseAndPrepareSave(raw,report=[]){const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))report.push('整合性ハッシュの不一致を検出');return repairSave(migrateSave(parsed,report),report);}
 function loadSave(){
-  const raw=safeStorageGet(SAVE_KEY);if(!raw)return initSave();
-  try{const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))saveRecoveryReport.push('整合性ハッシュの不一致を検出');const prepared=repairSave(migrateSave(parsed,saveRecoveryReport),saveRecoveryReport);if(!safeStorageGet(SAVE_BACKUP_KEY))safeStorageSet(SAVE_BACKUP_KEY,raw);return prepared;}
-  catch(error){safeStorageSet(SAVE_CORRUPT_KEY,raw);const backup=safeStorageGet(SAVE_BACKUP_KEY);if(backup&&typeof confirm==='function'&&confirm('セーブデータが破損しています。直前のバックアップから復旧しますか？')){try{saveRecoveryReport.push('破損データをバックアップから復旧');return parseAndPrepareSave(backup,saveRecoveryReport);}catch(_backupError){}}saveRecoveryReport.push(`破損データを隔離して初期化: ${error.message}`);if(typeof alert==='function')alert('破損したセーブを隔離し、新規データで起動します。メニューの「セーブ管理」から破損内容をコピーできます。');return initSave();}
+  protectedPrimaryRaw=null;
+  rejectedPrimaryRaw=null;
+  const raw=safeStorageGet(SAVE_KEY);
+  if(raw===null)return initSave();
+  try{
+    const parsed=JSON.parse(raw);
+    if(Number.isInteger(parsed?.schemaVersion)&&parsed.schemaVersion>SAVE_SCHEMA_VERSION){
+      protectedPrimaryRaw=raw;
+      const message='このセーブは新しいバージョン用です。この枠の保存を停止しました。セーブ管理から元データを書き出せます。';
+      saveRecoveryReport.push(message);
+      if(typeof alert==='function')alert(message);
+      return initSave();
+    }
+    const prepared=parseAndPrepareSave(raw,saveRecoveryReport);
+    if(!safeStorageGet(SAVE_BACKUP_KEY))safeStorageSet(SAVE_BACKUP_KEY,raw);
+    return prepared;
+  }catch(error){
+    rejectedPrimaryRaw=raw;
+    if(!safeStorageSet(SAVE_CORRUPT_KEY,raw))protectedPrimaryRaw=raw;
+    const backup=safeStorageGet(SAVE_BACKUP_KEY);
+    if(backup&&typeof confirm==='function'&&confirm('セーブデータが破損しています。直前のバックアップから復旧しますか？')){
+      try{
+        const restored=parseAndPrepareSave(backup,saveRecoveryReport);
+        saveRecoveryReport.push('破損データをバックアップから復旧');
+        return restored;
+      }catch(backupError){saveRecoveryReport.push(backupError.message);}
+    }
+    saveRecoveryReport.push(error.message);
+    if(typeof alert==='function')alert(protectedPrimaryRaw!==null?'破損データを退避できません。元データを保護するため保存を停止しました。':'破損したセーブを隔離して新規データで起動します。');
+    return initSave();
+  }
 }
 let save = loadSave();
 globalThis.GameDiagnostics?.registerSaveProvider?.(() => save);
@@ -628,6 +658,7 @@ function acknowledgeReplacementRecovery(){
   }catch(error){saveTransactionNotice(error.message);}
 }
 function saveGame({requireBackup=false,requireReadable=false}={}) {
+  if(protectedPrimaryRaw!==null)return false;
   if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
@@ -642,12 +673,13 @@ function saveGame({requireBackup=false,requireReadable=false}={}) {
   if((requireBackup||requireReadable)&&lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
   let replacementRecord=null;
   if(requireBackup){try{replacementRecord=stageReplacementRecovery(previous,raw);}catch(error){saveTransactionNotice(error.message);return false;}}
-  if(previous){const backedUp=safeStorageSet(SAVE_BACKUP_KEY,previous);if(requireBackup&&!backedUp){saveTransactionNotice('バックアップを保存できないため、データの置換を中止しました。');return false;}}
+  if(previous&&previous!==rejectedPrimaryRaw){const backedUp=safeStorageSet(SAVE_BACKUP_KEY,previous);if(requireBackup&&!backedUp){saveTransactionNotice('バックアップを保存できないため、データの置換を中止しました。');return false;}}
   if(!safeStorageSet(SAVE_KEY,raw)){
     const message='セーブの保存に失敗しました。端末の空き容量やブラウザ設定を確認し、セーブ管理からデータを書き出してください。';
     saveTransactionNotice(message);
     return false;
   }
+  rejectedPrimaryRaw=null;
   if(replacementRecord)completeReplacementRecovery(replacementRecord);
   if(!previous)safeStorageSet(SAVE_BACKUP_KEY,raw);
   if(typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(raw);
@@ -658,7 +690,13 @@ function downloadTextFile(filename,text){
   const blob=new Blob([text],{type:'application/json'});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');
   anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function exportSaveData(){/* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
+function exportSaveData(){
+  if(protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false){
+    const raw=protectedPrimaryRaw??safeStorageGet(SAVE_KEY);
+    if(raw!==null)downloadTextFile('monster-battle-original-save.json',raw);
+    return;
+  }
+  /* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
 async function importSaveData(input){
   const file=input?.files?.[0];if(!file)return;
@@ -817,6 +855,7 @@ function ensureContractScrollItem(){
   if(save.items.doom_fragment==null) save.items.doom_fragment=0;
 }
 function resetSave() {
+  if(protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
   if (confirm('セーブデータを削除しますか？\n序章の最初から再スタートします。')) {
     const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
     safeStorageRemove(SAVE_KEY);

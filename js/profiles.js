@@ -5,16 +5,24 @@
   let state=null, slot=1, baseline=null, conflict=false, available=true;
   const uuid=()=>crypto.randomUUID();
   try{
+    const pinned=sessionStorage.getItem(PICK);
+    slot=Number(pinned)===2?2:1;
     const raw=localStorage.getItem(META);
-    if(raw){state=JSON.parse(raw);if(state.version!==1||!Array.isArray(state.profiles)||state.profiles.length!==2||state.profiles.some((x,i)=>x.slot!==i+1||typeof x.id!=='string'||typeof x.token!=='string'))throw Error('プロフィール情報を読み込めません。');}
+    if(raw!==null){
+      const candidate=JSON.parse(raw);
+      if(candidate?.version!==1||!Array.isArray(candidate.profiles)||candidate.profiles.length!==2||
+         candidate.profiles.some((p,i)=>p?.slot!==i+1||typeof p.id!=='string'||typeof p.token!=='string'))
+        throw Error('プロフィール情報を読み込めません。');
+      state=candidate;
+    }
     else{state={version:1,selected:1,profiles:[1,2].map(n=>({slot:n,id:uuid(),token:uuid()+uuid(),name:n===1?'プレイヤー1':'プレイヤー2'}))};localStorage.setItem(META,JSON.stringify(state));}
-    const requested=Number(sessionStorage.getItem(PICK)||state.selected);slot=requested===2?2:1;
+    const requested=Number(pinned||state.selected);slot=requested===2?2:1;
     // Pin this tab before other tabs can change the shared default selection.
     sessionStorage.setItem(PICK,String(slot));
     baseline=localStorage.getItem(key(BASE));
   }catch(error){available=false;console.error('Profile storage unavailable',error);}
   function key(k){return slot===1?k:(k.startsWith(BASE)?`${BASE}_profile2${k.slice(BASE.length)}`:k);}
-  function current(){return state?.profiles.find(p=>p.slot===slot)||null;}
+  function current(){return available?(state?.profiles.find(p=>p.slot===slot)||null):null;}
   function persist(){const fresh=JSON.parse(localStorage.getItem(META)||JSON.stringify(state));fresh.profiles=fresh.profiles.map(p=>p.slot===slot?current():p);fresh.selected=state.selected;localStorage.setItem(META,JSON.stringify(fresh));state=fresh;}
   function notify(text){if(typeof alert==='function')alert(text);}
   function canSwitch(){return !(typeof evolutionSaveBusy!=='undefined'&&evolutionSaveBusy)&&!(typeof battleItemSaveBusy!=='undefined'&&battleItemSaveBusy)&&!(typeof normalVictoryPending==='function'&&normalVictoryPending())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&(typeof busy==='undefined'||!busy||document.getElementById('battle')?.classList.contains('is-finished'));}
@@ -26,7 +34,7 @@
     switchTo(n){
       if(!available||![1,2].includes(n)||n===slot)return false;
       if(!canSwitch()){notify('戦闘や演出が終わってから切り替えてください。');return false;}
-      if(typeof saveGame==='function'&&!saveGame())return false;
+      if(typeof saveGame==='function'&&!(typeof protectedPrimaryRaw!=='undefined'&&protectedPrimaryRaw!==null)&&!saveGame())return false;
       const previousSelected=state.selected;let preferenceSaved=false;
       try{
         state.selected=n;persist();preferenceSaved=true;

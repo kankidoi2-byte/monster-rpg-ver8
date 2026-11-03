@@ -1,4 +1,5 @@
 /* Present BOX. All acquisitions and receipts commit in one save transaction. */
+let lifeGiftReadFailed=false;
 let giftTab='pending',giftFilter='all',giftClaimBusy=false,giftDialogReturnFocus=null;
 const giftEscape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function giftDateStart(s){
@@ -59,7 +60,9 @@ function lifeQuestGiftEntries(){
   }).filter(g=>g.rewards.length&&g.rewards.every(giftRewardValid));
 }
 function pendingGifts(now=Date.now()){
-  return [...developerGiftEntries(now),...lifeQuestGiftEntries()].sort((a,b)=>{
+  let lifeGifts=[];
+  try{lifeGifts=lifeQuestGiftEntries();lifeGiftReadFailed=false;}catch(error){lifeGiftReadFailed=true;}
+  return [...developerGiftEntries(now),...lifeGifts].sort((a,b)=>{
     const deadline=giftDeadline(a)-giftDeadline(b);
     return (Number.isNaN(deadline)?0:deadline)||(Date.parse(b.createdAt)||0)-(Date.parse(a.createdAt)||0);
   });
@@ -104,7 +107,7 @@ function commitGiftClaim(keys,identity,owner){
     if(!ids.length||selected.some(g=>!g))return {ok:false,error:'プレゼントの状態が変わりました。一覧を確認してください。'};
     const rewards=giftCombineRewards(selected),known=new Set(save.caught||[]),knownSkills=giftKnownSkillIds();
     snapshot=captureSaveTransaction();
-    migrateLifeQuestGiftReceipts(LifeQuestRewards.sync().entries);
+    if(selected.some(g=>g.source==='lifequest'))migrateLifeQuestGiftReceipts(LifeQuestRewards.sync().entries);
     for(const r of rewards){
       if(r.kind==='coins')save.coins=giftAddSafe(save.coins,r.amount);
       else if(r.kind==='bless'){const state=ensureGBless();state.reserve=giftAddSafe(state.reserve,r.amount);}
@@ -150,7 +153,8 @@ async function claimGifts(keys){
 function giftDateLabel(s){
   const n=Date.parse(s);return Number.isFinite(n)?new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'numeric',day:'numeric'}).format(n):'—';
 }
-function giftSender(g){return g.source==='developer'?'開発者（土井さん）':'Life Quest';}
+function giftSource(g){return ['developer','lifequest'].includes(g.source)?g.source:'unknown';}
+function giftSender(g){return {developer:'開発者（土井さん）',lifequest:'Life Quest',unknown:'不明'}[giftSource(g)];}
 function giftIcon(g){return g.source==='developer'?'✉':'✦';}
 function giftRewardName(r){return r.kind==='bless'?'G-BLESS 予備の加護':r.kind==='coins'?'コイン':r.kind==='item'?ITEM_DEX_BY_ID[r.id]?.name:r.kind==='skill'?SKILL_BY_ID[r.id]?.name:by(r.id)?.name;}
 function giftRewardArt(r){
@@ -170,7 +174,7 @@ function giftRewardCards(rewards){
 }
 function giftRow(g,history=false){
   const soon=g.until!==null&&giftDeadline(g)-Date.now()<=14*86400000;
-  return `<article class="gift-row"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${giftEscape(g.title)}の詳細"><span class="gift-sender-icon ${g.source}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受領 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${giftEscape(g.title)}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
+  return `<article class="gift-row"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${giftEscape(g.title)}の詳細"><span class="gift-sender-icon ${giftSource(g)}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受領 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${giftEscape(g.title)}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
 }
 function refreshGiftUi(){
   const badge=document.getElementById('giftUnreadCount');if(!badge)return;
@@ -183,6 +187,7 @@ function refreshGiftUi(){
 function renderGiftBox(entries){
   try{
     entries=entries||pendingGifts();const history=giftTab==='history',all=history?giftHistoryEntries():entries;
+    document.getElementById('giftSourceWarning').hidden=!lifeGiftReadFailed;
     const filtered=all.filter(g=>giftFilter==='all'||g.source===giftFilter);
     document.getElementById('giftPendingTab').innerHTML='受け取れる <b'+(entries.length?'':' hidden')+'>'+entries.length+'</b>';
     for(const [id,active] of [['giftPendingTab',!history],['giftHistoryTab',history]])document.getElementById(id).setAttribute('aria-selected',String(active));

@@ -18,7 +18,7 @@ function renderShop() {
           <button onclick="buyItem('${it.id}')">購入</button>
         </article>`).join('')}
       <details class="shop-history"><summary>📊 バトル履歴・通算${save.history.wins||0}勝</summary>
-        <div>${(save.history.logs||[]).slice(-5).reverse().map(l=>`<div class="history-entry">${l}</div>`).join('') || '<p class="small">まだ履歴がありません。</p>'}</div>
+        <div>${(save.history.logs||[]).slice(-5).reverse().map(l=>`<div class="history-entry">${escapeGameHtml(l)}</div>`).join('') || '<p class="small">まだ履歴がありません。</p>'}</div>
       </details>
     </div>`;
 }

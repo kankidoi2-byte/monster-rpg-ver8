@@ -423,7 +423,7 @@ function renderKokoroLinkPanel(){
     if(!preview)return '';
     const effects=preview.effects;
     const disabled=source.used||!!current||!targetEligible;
-    return `<button class="kokoro-link-source${source.used?' is-used':''}" onclick="activateKokoroLinkFromBattle('${source.uid}')" ${disabled?'disabled':''}>`+
+    return `<button class="kokoro-link-source${source.used?' is-used':''}" data-uid="${escapeGameHtml(source.uid)}" onclick="activateKokoroLinkFromBattle(this.dataset.uid)" ${disabled?'disabled':''}>`+
       `<span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
       `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
       `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+
