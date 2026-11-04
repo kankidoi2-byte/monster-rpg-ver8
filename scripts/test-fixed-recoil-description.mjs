@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import {retiredReservations} from './retired-dex-reservations-baseline.mjs';
 import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import {applyStatusDataCopy,applyStatusCoreCopy} from './status-description-copy-baseline.mjs';
@@ -36,7 +37,7 @@ async function scenario({skillId,mode='single',actor='player',targetHp=3,guarded
  return {mode,actor,targetHp,guarded,zeroDamage,recoil:before-after};
 }
 const base='d0d67c85fcdb3ccc426c8774736d330302bd62e4';
-const original=file=>execFileSync('git',['show',base+':js/'+file+'.js'],{encoding:'utf8'});
+const original=file=>applyRenamedMonsterIds(execFileSync('git',['show',base+':js/'+file+'.js'],{encoding:'utf8'}));
 const r=runtime();vm.runInContext(fs.readFileSync(new URL('js/dex.js',root),'utf8'),r.context);
 const old=runtime({data:()=>applyStatusDataCopy(original('data')),core:()=>applyStatusCoreCopy(original('core'))});
 const cards=JSON.parse(JSON.stringify(r.run('MOVE_CARDS.filter(s=>s.effect==="recoil")')));

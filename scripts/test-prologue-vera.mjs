@@ -1,10 +1,11 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {execFileSync} from 'node:child_process';
 import {runtime} from '../tools/balance-audit/runtime.mjs';
 const baselineRef='ecc9d97621fb405d341071b75938e03db43c76df';
-const old=vm.createContext({});vm.runInContext(execFileSync('git',['show',`${baselineRef}:js/data.js`],{encoding:'utf8'})+';globalThis.oldUnits=M;',old);
+const old=vm.createContext({});vm.runInContext(applyRenamedMonsterIds(execFileSync('git',['show',`${baselineRef}:js/data.js`],{encoding:'utf8'}))+';globalThis.oldUnits=M;',old);
 const r=runtime(),run=r.run,plain=x=>JSON.parse(JSON.stringify(x));
 const noamIds=[2,3,4].map(n=>`character_noam_${n}`),veraIds=[3,4,5].map(n=>`character_vera_${n}`);
 for(const id of noamIds)assert.equal(run(`by('${id}')`),undefined,'Noam must not be registered');

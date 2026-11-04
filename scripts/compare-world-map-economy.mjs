@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
@@ -10,7 +11,6 @@ const ACCESS_SEED=0x5bacc355;
 const ACCESS_SAMPLES=100000;
 const SOURCE_FILES=['js/data.js','js/core.js','js/state.js','js/items.js','js/contract-animation.js','js/expedition.js'];
 const AUDIT_FILES=[...SOURCE_FILES,'js/battle-flow.js','js/multi-battle.js'];
-const MONSTER_ID_ALIASES=vm.runInNewContext(fs.readFileSync(new URL('../js/data.js',import.meta.url),'utf8')+';MONSTER_ID_ALIASES');
 const CURRENT_HEAD=gitRevision('HEAD');
 const CURRENT_HEAD_TREE=gitRevision('HEAD^{tree}');
 const NEUTRAL_EXPECTATIONS=Object.freeze({
@@ -30,7 +30,7 @@ function sourceAt(revision,file){
   if(revision==='working-tree')return fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
   const source=execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
   // Compare historical rules under current names without modifying the archive.
-  return Object.entries(MONSTER_ID_ALIASES).reduce((text,[oldId,newId])=>text.replaceAll(oldId,newId),source);
+  return applyRenamedMonsterIds(source);
 }
 
 function mulberry32(seed){

@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import {applyStatusDataCopy} from './status-description-copy-baseline.mjs';
 import assert from 'node:assert/strict';
@@ -9,7 +10,7 @@ const r=runtime();
 const run=r.run;
 const current=run('M');
 const baseline={};vm.createContext(baseline);
-vm.runInContext(applyStatusDataCopy(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'}))+';globalThis.units=M;',baseline);
+vm.runInContext(applyStatusDataCopy(applyRenamedMonsterIds(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'})))+';globalThis.units=M;',baseline);
 assert.equal(current.length,100);
 for(const old of baseline.units){
  const unit=legacyUnitProjection(current.find(u=>u.id===old.id));

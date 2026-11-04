@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 // 720px battle idle motion release: every registered video is either the approved 720px encode
 // or explicitly listed as already small enough. Previous files are retained for cached clients.
 import fs from 'node:fs';
@@ -7,9 +8,7 @@ import crypto from 'node:crypto';
 const read=p=>fs.readFileSync(p,'utf8');
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 // Keep the published manifest intact; resolve historical names only in this test.
-const aliases=vm.runInNewContext(read('js/data.js')+';MONSTER_ID_ALIASES');
-const manifest=JSON.parse(read('docs/motion-compression-720-20261011/manifest.json'),(key,value)=>
- typeof value==='string'?Object.entries(aliases).reduce((text,[oldId,newId])=>text.replaceAll(oldId,newId),value):value);
+const manifest=JSON.parse(applyRenamedMonsterIds(read('docs/motion-compression-720-20261011/manifest.json')));
 const media=vm.runInNewContext(read('js/battle-idle-media.js').split('// 5s')[0]+';BATTLE_IDLE_MEDIA');
 const catalog=vm.runInNewContext(read('tools/motion-review/catalog-data.generated.js')+';MOTION_CATALOG');
 assert.match(read('index.html'),/battle-idle-media\.js\?v=[^"]*motion-720-20261011[^"]*"/,'cache revision');
