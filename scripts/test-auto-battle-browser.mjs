@@ -7,6 +7,10 @@ try{
  await new Promise((ok,fail)=>{server.stdout.once('data',ok);server.once('error',fail)});
  browser=await chromium.launch();
  const page=await browser.newPage({viewport:{width:360,height:800},reducedMotion:'reduce'});
+ // Real victories can surface a delayed rank notice before the next map click.
+ await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
+   await page.locator('#contractorRankUpOverlay button').click();
+ });
  const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(e.message)});
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  const boot=async()=>{await page.goto('http://127.0.0.1:4298/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
