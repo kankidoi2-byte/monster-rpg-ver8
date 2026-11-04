@@ -134,7 +134,7 @@ function battleAnatomyFamily(form){
   return BATTLE_BLUNT_FORMS.includes(form)?'blunt':'';
 }
 function battleMotionDelay(ms){
-  return new Promise(resolve => setTimeout(resolve,ms));
+  return new Promise(resolve => setTimeout(resolve,typeof autoSpeed==='function'?ms/autoSpeed():ms));
 }
 // Fractions are the arrival/contact keyframes in ui-redesign.css, not effect endings.
 const BATTLE_MOTION_CONTACT=Object.freeze({breath:.32,beam:.24,sword:.24,claw:.28,fang:.42,magic:.78,blade:.82,charge:.64,strike:.38,body:.64,tail:.34,horn:.38,fist:.58,wing:.34,fin:.34,leg:.34,beak:.38,club:.58,dagger:.38,roar:.78,wave:.80,projectile:.82,lightning:.44,field:.48,mystic:.55,guard:.48,heal:.45,buff:.48,debuff:.48,shield:.52,sleep:.42});
@@ -170,7 +170,8 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
   const start={x:sourceCenter.x+ux*sourceInset,y:sourceCenter.y+uy*sourceInset};
   const end={x:targetCenter.x-ux*targetInset,y:targetCenter.y-uy*targetInset};
   const dx=end.x-start.x,dy=end.y-start.y,distance=Math.max(12,Math.hypot(dx,dy));
-  const {duration,contact}=battleMotionTiming(motion);
+  const timing=battleMotionTiming(motion);
+  const duration=timing.duration/(typeof autoSpeed==='function'?autoSpeed():1),contact=timing.contact;
   const types=normalizeMoveTypes(motion.types),primary=types[0]||'normal',secondary=types[1]||primary;
   const effect=document.createElement('i'),melee=BATTLE_MELEE_FORMS.includes(motion.form),collision=BATTLE_COLLISION_FORMS.includes(motion.form),anatomy=BATTLE_ANATOMY_FORMS.includes(motion.form),arcane=BATTLE_ARCANE_FORMS.includes(motion.form);
   const targetLocal=melee||collision||anatomy||arcane||support,anatomyFamily=anatomy?battleAnatomyFamily(motion.form):'';
@@ -306,6 +307,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
     document.getElementById('battleOutcomeNote').textContent='世界地図を保存できませんでした。';
     next.textContent='保存を再試行して探索先へ戻る ›';
   }
+  if(!victory&&typeof autoLost==='function')autoLost(kind);
   setTimeout(() => outcome.classList.remove('is-revealing'), 850);
   if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
 }

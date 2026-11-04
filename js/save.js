@@ -171,8 +171,21 @@ function normalizeMapStories(value){
     participantUids:Array.isArray(r.participantUids)?[...new Set(r.participantUids.filter(x=>typeof x==='string'))]:[]}:null;
   maps.grassland_whose={...source,version:1,episodes,resume};return maps;
 }
+function normalizeAutoBattle(raw){
+  const keyOk=key=>typeof key==='string'&&/^[a-z0-9_]+:(easy|normal|hard|extreme)$/.test(key);
+  const unique=(list,test)=>Array.isArray(list)?[...new Set(list.filter(test))]:[];
+  const defeated={};
+  for(const [key,list] of Object.entries(isSaveObject(raw?.defeated)?raw.defeated:{})){
+    if(keyOk(key))defeated[key]=unique(list,id=>typeof id==='string'&&/^[a-z0-9_]+$/.test(id));
+  }
+  const s=raw?.settings;
+  return {v:1,defeated,unlocked:unique(raw?.unlocked,keyOk),settings:{
+    times:[1,5,10,20].includes(s?.times)?s.times:5,contract:s?.contract==='pause'?'pause':'skip',
+    stopOnBlessEmpty:s?.stopOnBlessEmpty!==false,stopOnNewDex:s?.stopOnNewDex===true,speed:s?.speed===1?1:2}};
+}
 function initSave() {
   return {
+    autoBattle:normalizeAutoBattle(null),
     gBless:normalizeGBless(null),
     schemaVersion:SAVE_SCHEMA_VERSION,
     saveMeta:{migrations:['character_first_lock_v1',...(skill110MigrationAvailable() ? ['skill_system_110_v1','equipped_skill_cards_v1','evolution_native_cards_v1'] : [])], lastSavedAt:null, integrityHash:null},
@@ -332,6 +345,7 @@ function migrateSkill110Save(payload, report=[]){
 }
 function repairSave(payload,report=[]){
   captureSkill110Backup(payload);
+  payload.autoBattle=normalizeAutoBattle(payload.autoBattle);
   payload.gBless=normalizeGBless(payload.gBless);
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
   if(!isSaveObject(payload.saveMeta))payload.saveMeta={...defaults.saveMeta,migrations:[]};

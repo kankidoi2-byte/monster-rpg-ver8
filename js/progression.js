@@ -147,12 +147,14 @@ function confirmEvolution(toId) {
   showCommittedSaveResult(()=>{
   renderParty(); renderDex();
   alert(`✨ ${from.name}は${to.name}に進化した！`);
-  pendingEvolutions.length ? processNextEvolution() : show('partySet');
+  if(pendingEvolutions.length)processNextEvolution();
+  else if(typeof autoEvolutionFinished!=='function'||!autoEvolutionFinished())show('partySet');
   });
   } finally { evolutionSaveBusy = false; }
 }
 function cancelEvolution() {
   if(evolutionSaveBusy)return;
   currentEvolution = null;
-  pendingEvolutions.length ? processNextEvolution() : show('partySet');
+  if(pendingEvolutions.length)processNextEvolution();
+  else if(typeof autoEvolutionFinished!=='function'||!autoEvolutionFinished())show('partySet');
 }

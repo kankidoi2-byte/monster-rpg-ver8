@@ -49,7 +49,7 @@ function beginBattleAction(actor,move,isPlayer){
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.results.clear();document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
   const log=document.getElementById('log');if(log)log.innerHTML='';battleFeedback.lastLog='';
-  battleFeedback.action=`${isPlayer?'味方':'敵'}・${actor.name}の「${move[0]}」`;
+  battleFeedback.action=`${typeof autoSpeed==='function'&&autoRun?.phase==='fight'&&!autoRun.manual?'[AUTO] ':''}${isPlayer?'味方':'敵'}・${actor.name}の「${move[0]}」`;
   battleHistoryEntry(battleFeedback.action,'action');
   renderBattleInputState();
 }
@@ -64,7 +64,7 @@ function renderBattleInputState(){
   const processing=busy||finished;
   screen.classList.toggle('is-processing',processing);
   const dock=screen.querySelector('.battle-command-dock');
-  if(dock){dock.inert=processing;dock.setAttribute('aria-busy',String(busy&&!finished));}
+  if(dock){dock.inert=processing&&!(typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&!autoRun.manual);dock.setAttribute('aria-busy',String(busy&&!finished));}
   const label=document.getElementById('battleInputLabel');if(label)label.textContent=finished?'戦闘終了':busy?'行動中':'操作可能';
   const title=document.getElementById('battleCommandTitle');
   const selecting=!document.getElementById('commands')?.classList.contains('hidden');

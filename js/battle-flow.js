@@ -213,6 +213,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function afterBattleNext() {
+  if(typeof autoRun!=='undefined'&&autoRun)return;
   if(normalVictoryPending())return;
   if(worldMapBattleSavePending()&&recordWorldMapBattleResult({saveNow:true})===null)return;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle()){resumeMapStoryAfterBattle();return;}
@@ -435,6 +436,7 @@ function prepareNormalVictory(receipt){
     activeHuntRequest=request?structuredClone(request):request;
     multiBattle=battle?structuredClone(battle):battle;
     normalVictoryPreparing=true;
+    if(typeof autoRecordVictory==='function')autoRecordVictory(receipt.multi);
     const result=receipt.multi?prepareMultiVictoryReward():prepareSingleVictoryReward();
     // Include catalog/rank effects of all drops before the single primary write.
     syncItemDexFromInventory();
@@ -520,6 +522,7 @@ function settleNormalVictory(multi){
         const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',candidate.outcome,{victorySaved:true});
         if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
       }
+      if(typeof autoVictoryCommitted==='function')autoVictoryCommitted(receipt,candidate.outcome);
       if(typeof refreshContractorRankUi==='function')refreshContractorRankUi();
       renderParty();
     });
