@@ -59,6 +59,9 @@ try{
  await page.evaluate(()=>{showBattleChoices();showWorldMapLocation('grassland');worldMapSelectedDifficulty='normal';renderWorldMap(document.getElementById('battleChoiceList'));});
  assert(await sw.isEnabled());assert.match(await page.locator('[data-wm-difficulty="normal"]').innerText(),/討伐 \d+\/\d+ ✓/);
  await sw.click();await assertMobileLayout('.ab-sheet');
+ await page.getByRole('button',{name:'10回',exact:true}).click();
+ assert.equal(await page.evaluate(()=>save.autoBattle.settings.times),10);
+ await page.getByRole('button',{name:'5回',exact:true}).click();
  // A high-level test party makes the five real fights reproducible. Preserve random damage/rewards.
  await page.evaluate(()=>{
    const map=MAPS.find(m=>m.id==='grassland');save.autoBattle.unlocked.push('grassland:easy');
@@ -135,6 +138,16 @@ try{
  await boot();
  assert.deepEqual(await page.evaluate(()=>[save.history.wins,save.coins,save.items.contract_scroll]),partial);
  assert.equal(await page.evaluate(()=>autoRun),null);
+ await encounter();
+ await page.evaluate(()=>{autoControl('end');autoControl('end');if(autoRun.stop)throw Error('stop not cancelled');autoControl('end');eHp=0;win();});
+ await page.waitForSelector('#autoSummary[open]');
+ assert.match(await page.locator('#autoSummary').innerText(),/この戦闘で終了/);
+ await page.getByRole('button',{name:/もう一度/}).click();
+ assert(await page.evaluate(()=>autoRun?.phase==='fight'&&autoRun.battles.length===0));
+ await page.evaluate(()=>{activeHuntRequest.worldMapEventKey='elysia';syncBattleUi()});
+ assert.match(await page.locator('#autoSummary').innerText(),/オート対象外/);
+ await page.getByRole('button',{name:'手動で戦闘を続ける'}).click();
+ assert(await page.locator('#autoControls').isHidden());
  assert.deepEqual(errors,[]);
  console.log('PASS real victory rollback/retry, old save, 360/412/430px map, locked roster, complete Normal unlock, manual/auto, five real battles, rewards, G-BLESS and reload.');
 }finally{await browser?.close();server.kill();}

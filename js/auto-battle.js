@@ -1,6 +1,11 @@
 // Only progress and preferences persist. A run and its timers belong to one battle/profile.
 let autoRun=null,autoSheetKey=null,autoTimer=null,autoAfterEvolution=null;
-const autoRules={field:{targets:(map,difficulty)=>worldMapCandidates(map,difficulty)}};
+const autoRules={
+  field:{
+    targets:(map,difficulty)=>worldMapCandidates(map,difficulty),
+    complete:({targets,known})=>targets.length>0&&targets.every(m=>known.has(m.id))
+  }
+};
 function autoField(map,eventKey){
   return map&&!eventKey&&!map.goldenLand&&!map.bossOnly&&!map.rareOnly&&gBlessUnlocked()
     &&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active);
@@ -21,7 +26,7 @@ function autoRecordVictory(multi){
   const kills=multi?multiBattle.enemies.filter(e=>e.defeatedByPlayer).map(e=>e.mon.id):[enemy.id];
   for(const m of p.targets)if(kills.includes(m.id))p.known.add(m.id);
   if(p.known.size)save.autoBattle.defeated[p.key]=[...p.known];
-  if(!p.open&&p.targets.length&&p.targets.every(m=>p.known.has(m.id)))save.autoBattle.unlocked.push(p.key);
+  if(!p.open&&autoRules.field.complete(p))save.autoBattle.unlocked.push(p.key);
 }
 function autoDifficultyLabel(map,d,event){
   if(!autoField(map,event))return '';
@@ -47,11 +52,27 @@ function autoSheet(map,d,event){
   const p=autoProgress(map,d.id),s=save.autoBattle.settings;
   if(p.key!==autoSheetKey||!p.open)autoSheetKey=null;
   const on=!!autoSheetKey;
-  const option=(key,value,label)=>'<button type="button" aria-pressed="'+(s[key]===value)+'" onclick="autoChangeSetting(\''+key+'\','+(typeof value==='number'?value:"'"+value+"'")+');autoRefreshSheet()">'+label+'</button>';
-  const toggle=(key,label)=>'<label><input type="checkbox" '+(s[key]?'checked':'')+' onchange="autoChangeSetting(\''+key+'\',this.checked);autoRefreshSheet()"> '+label+'</label>';
-  const settings='<div class="ab-options"><b>回数</b><div>'+[1,5,10,20].map(n=>option('times',n,n+'回')).join('')+'</div><b>戦闘後の契約</b><div>'+option('contract','skip','契約しない')+option('contract','pause','止めて契約する')+'</div><b>止める条件</b><label><input type="checkbox" checked disabled> 負けたら止める（いつも）</label>'+toggle('stopOnBlessEmpty','G-BLESSがなくなったら')+toggle('stopOnNewDex','図鑑にいないモンスターに会ったら')+'</div>';
-  const locked='<p>🔒 '+d.label+'に出てくる相手をすべて倒すと使えます（あと'+(p.targets.length-p.count)+'体）</p><div class="ab-roster">'+p.targets.map(m=>'<span class="'+(p.known.has(m.id)?'':'ab-shadow')+'">'+(IMG[m.imgKey]?'<img src="'+IMG[m.imgKey]+'" alt="">':'<i>'+m.icon+'</i>')+'<small>'+(p.known.has(m.id)?'✓ '+m.name:'？')+'</small></span>').join('')+'</div>';
-  return '<section class="ab-sheet"><button role="switch" aria-checked="'+on+'" onclick="autoToggleSheet()" '+(p.open?'':'disabled')+'>⏩ オートで周回　'+(on?'ON':'OFF')+'</button>'+(p.open?(on?settings:''):locked)+'</section>';
+  const option=(key,value,label)=>`<button type="button" aria-pressed="${s[key]===value}"
+    value="${value}" onclick="autoChangeSetting('${key}',${key==='times'?'Number(this.value)':'this.value'});autoRefreshSheet()">${label}</button>`;
+  const toggle=(key,label)=>`<label><input type="checkbox" ${s[key]?'checked':''}
+    onchange="autoChangeSetting('${key}',this.checked);autoRefreshSheet()"> ${label}</label>`;
+  let body='';
+  if(!p.open){
+    const roster=p.targets.map(m=>{
+      const known=p.known.has(m.id);
+      const art=IMG[m.imgKey]?`<img src="${IMG[m.imgKey]}" alt="">`:`<i>${m.icon||'◆'}</i>`;
+      return `<span class="${known?'':'ab-shadow'}">${art}<small>${known?'✓ '+m.name:'？'}</small></span>`;
+    }).join('');
+    body=`<p>🔒 ${d.label}に出てくる相手をすべて倒すと使えます（あと${p.targets.length-p.count}体）</p><div class="ab-roster">${roster}</div>`;
+  }else if(on){
+    body=`<div class="ab-options"><b>回数</b>
+      <div>${[1,5,10,20].map(n=>option('times',n,n+'回')).join('')}</div>
+      <b>戦闘後の契約</b><div>${option('contract','skip','契約しない')}${option('contract','pause','止めて契約する')}</div>
+      <b>止める条件</b><label><input type="checkbox" checked disabled> 負けたら止める（いつも）</label>
+      ${toggle('stopOnBlessEmpty','G-BLESSがなくなったら')}${toggle('stopOnNewDex','図鑑にいないモンスターに会ったら')}</div>`;
+  }
+  return `<section class="ab-sheet"><button role="switch" aria-checked="${on}" onclick="autoToggleSheet()" ${p.open?'':'disabled'}>
+    ⏩ オートで周回　${on?'ON':'OFF'}</button>${body}</section>`;
 }
 function autoNewRun(map,d,times){
   return {map,d,times,settings:{...save.autoBattle.settings},identity:saveTransactionIdentity(),phase:'depart',manual:false,
@@ -122,6 +143,11 @@ function autoSyncBattle(){
   const controls=document.getElementById('autoControls');
   if(!controls)return;
   const r=autoRun,screen=document.getElementById('battle'),panel=document.querySelector('#battleMapBanner>.panel');
+  if(r?.phase==='fight'&&activeHuntRequest&&screen.classList.contains('active')&&
+      r.request===activeHuntRequest&&!autoEligible()&&!battleFeedback.finished){
+    r.reason='オート対象外の戦闘';
+    autoSummary(true);
+  }
   const ready=screen.classList.contains('active')&&!battleFeedback.finished&&!screen.classList.contains('is-finished')&&autoEligible();
   const participating=r?.request===activeHuntRequest&&r?.phase==='fight';
   const visible=ready&&(participating||(!r&&autoProgress(selectedMap,activeHuntRequest.difficultyId).open));
