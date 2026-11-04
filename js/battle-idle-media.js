@@ -301,6 +301,22 @@ kimeragna_apex:Object.freeze({
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:121,y:88,right:869,bottom:850})
 })});
+// Full-body character cutouts share the monster geometry, without video decoders.
+// Keep card/encyclopedia artwork in IMG; these assets belong to home and battle.
+const BATTLE_STATIC_MEDIA=Object.freeze(Object.fromEntries([
+  ['elna_beginner',1254,1254,153,4,875,1251],
+  ['elna_middle',1024,1536,17,20,998,1498],
+  ['elna_advanced',1024,1536,14,30,1011,1479],
+  ['elna_water',1024,1536,19,97,1020,1500],
+  ['elna_kaen',1024,1536,0,8,1022,1534]
+].map(([id,width,height,x,y,right,bottom])=>[id,Object.freeze({
+  poster:`images/monsters/${id}_fullbody_20261104.webp`,
+  allyFlip:false,enemyFlip:true,
+  // Human characters keep one stature across growth stages.
+  layout:Object.freeze({x:0.5,y:1,scale:0.75}),
+  sourceBounds:Object.freeze({width,height,x,y,right,bottom})
+})])));
+function battleDisplayMedia(id){return BATTLE_STATIC_MEDIA[id]||BATTLE_IDLE_MEDIA[id];}
 // 5s of eligible foreground waiting, not wall time spent on another screen.
 // Phase4A measured ~275ms locally; no slow-device evidence justifies a new value yet.
 const BATTLE_IDLE_WAIT_MS=5000;
@@ -319,7 +335,7 @@ function battleIdleCandidates(){
     const entry=multiBattle?.active?multiBattle.enemies.find(e=>`${e.id}Vis`===u.vis):null;
     const mon=u.vis==='pVis'?player:entry?.mon||enemy;
     return {...u,mon,key:`${battleFeedback.sequence}:${u.key}:${entry?battleStageKey(entry):mon.id}`};
-  }).filter(u=>u.hp>0&&BATTLE_IDLE_MEDIA[u.mon.id]);
+  }).filter(u=>u.hp>0&&battleDisplayMedia(u.mon.id));
 }
 function battleIdleCurrent(r){
   return battleIdleOwned(r)&&r.media.isConnected&&r.video.isConnected&&
@@ -513,6 +529,7 @@ function battleIdleStageSizePlan(configs,stageWidth){
 }
 function clearBattleIdleSizes(){
   for(const r of battleIdleSizeDisplays.values()){
+    r.layoutObserver?.disconnect();
     clearBattleIdleBoundsFit(r);r.media.classList.remove('has-idle-size');
     r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
     r.img.setAttribute('src',r.originalSrc);r.facing.style.removeProperty('transform');
@@ -525,11 +542,11 @@ function clearBattleIdleSizes(){
 function syncBattleIdleSizes(candidates){
   const arena=document.querySelector('#battle .battle-arena');
   const enemies=candidates.filter(u=>u.vis!=='pVis');
-  const enemyConfigs=enemies.map(u=>BATTLE_IDLE_MEDIA[u.mon.id]);
+  const enemyConfigs=enemies.map(u=>battleDisplayMedia(u.mon.id));
   const ally=candidates.find(u=>u.vis==='pVis');
   const compactHeight=Number(arena?.dataset.compactHeight);
   const plan=compactHeight>0&&typeof battleCompactSizePlan==='function'
-    ?battleCompactSizePlan(enemyConfigs,ally&&BATTLE_IDLE_MEDIA[ally.mon.id],arena?.clientWidth,compactHeight,Number(arena?.dataset.enemyHud)||64,multiBattle?.active?2:1)
+    ?battleCompactSizePlan(enemyConfigs,ally&&battleDisplayMedia(ally.mon.id),arena?.clientWidth,compactHeight,Number(arena?.dataset.enemyHud)||64,multiBattle?.active?2:1)
     :battleIdleStageSizePlan(enemyConfigs,arena?.clientWidth);
   if(plan){arena.dataset.sizeUnit=String(plan.unit);arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
     if(plan.allyHeight&&plan.enemyHeight){
@@ -542,6 +559,7 @@ function syncBattleIdleSizes(candidates){
   }
   for(const [key,r] of battleIdleSizeDisplays){
     if(!candidates.some(u=>u.key===key&&document.getElementById(u.vis)?.querySelector('.battle-static-media')===r.media)){
+      r.layoutObserver?.disconnect();
       clearBattleIdleBoundsFit(r);r.media.classList.remove('has-idle-size');r.facing.style.removeProperty('transform');
       r.img.setAttribute('src',r.originalSrc);battleIdleSizeDisplays.delete(key);
     }
@@ -550,7 +568,14 @@ function syncBattleIdleSizes(candidates){
     const media=document.getElementById(u.vis)?.querySelector('.battle-static-media'),img=media?.querySelector('img');
     if(!img)continue;
     let r=battleIdleSizeDisplays.get(u.key);
-    if(!r){r={key:u.key,media,img,config:BATTLE_IDLE_MEDIA[u.mon.id],facing:media.parentElement,originalSrc:img.getAttribute('src')||''};battleIdleSizeDisplays.set(u.key,r);}
+    if(!r){
+      r={key:u.key,media,img,config:battleDisplayMedia(u.mon.id),facing:media.parentElement,originalSrc:img.getAttribute('src')||''};
+      battleIdleSizeDisplays.set(u.key,r);
+      if(!r.config.src&&typeof ResizeObserver==='function'){
+        r.layoutObserver=new ResizeObserver(()=>{if(battleIdleSizeDisplays.get(r.key)===r)applyBattleIdleLayout(r);});
+        r.layoutObserver.observe(media);
+      }
+    }
     media.classList.add('has-idle-size');img.src=r.config.poster;
     r.facing.style.transform=(u.vis==='pVis'?r.config.allyFlip:r.config.enemyFlip)?'scaleX(-1)':'';
     applyBattleIdleLayout(r);
@@ -565,8 +590,9 @@ function syncBattleIdleMedia(){
   if(battleIdlePageHidden){disposeBattleIdleMedia();return;}
   const candidates=battleIdleCandidates();
   // Stable incumbents first; new slots follow battleCombatants (ally, enemy A, B).
-  const ordered=[...candidates.filter(u=>battleIdleRecords.has(u.key)),
-    ...candidates.filter(u=>!battleIdleRecords.has(u.key))];
+  const animated=candidates.filter(u=>BATTLE_IDLE_MEDIA[u.mon.id]);
+  const ordered=[...animated.filter(u=>battleIdleRecords.has(u.key)),
+    ...animated.filter(u=>!battleIdleRecords.has(u.key))];
   const selected=ordered.slice(0,battleIdleLimit);
   for(const r of [...battleIdleRecords.values()]){
     const u=selected.find(u=>u.key===r.key);

@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261104-elna-fullbody',date:'2026-11-04',category:'update',title:'エルナの全身立ち絵を追加しました',body:'初級・中級・上級・流水・華炎のエルナを、ホームとバトルで背景のない全身立ち絵にしました。'},
   {id:'20261103-auto-battle',date:'2026-11-04',category:'update',title:'オートバトルを追加しました',body:'通常探索で同じ難易度の相手をすべて討伐すると、最大20回まで自動で周回できます。途中で手動に切り替えたり、契約のチャンスで止めたりできます。'},
   {id:'20261104-feedback-world-map-retry',date:'2026-11-04',category:'fix',title:'意見箱の再送と世界地図の保存を修正',body:'送信できなかった意見は控えで確認できます。敗北・撤退時に世界地図を保存できなかった場合は、結果画面から再試行できます。'},
   {id:'20261104-save-and-lifequest',date:'2026-11-04',category:'fix',title:'セーブ復旧とLife Questの記録を修正',body:'破損時のバックアップと新しい形式のセーブを保護しました。Life Questを複数の画面で使ったときの記録、バックアップ読込、プレゼントの受け取りを改善しました。'},
