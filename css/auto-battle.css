@@ -1,0 +1,15 @@
+.ab-sheet,.ab-dialog{box-sizing:border-box;padding:14px;border:1px solid #92bdcf;border-radius:14px;background:#f2faff;color:#163449}
+.ab-sheet{margin:10px 0}.ab-sheet button,.ab-dialog button,#autoControls button,.ab-offer button{min-height:42px;padding:6px 10px;white-space:normal}
+.ab-sheet button[aria-pressed=true],.ab-sheet button[aria-checked=true],.ab-sheet:has([aria-checked=true])~.wm-depart{background:#13667c;color:white}
+.ab-options,.ab-offer{display:grid;gap:6px;margin:8px 0}.ab-options>div,.ab-roster{display:flex;flex-wrap:wrap;gap:4px}
+.ab-options label{padding:4px 0}.ab-roster>span{width:52px;text-align:center}.ab-roster img,.ab-roster i{width:38px;height:38px;object-fit:contain;display:block;margin:auto}
+.ab-shadow :is(img,i){filter:brightness(0)}.ab-clear{color:#177450}
+#autoBadge{color:#8beaff;font-size:12px}#autoBadge.paused{color:#ffe98b}
+#battle.ab-running .battle-command-pad{display:none!important}#autoControls:not([hidden]){display:flex;flex-wrap:wrap;gap:4px}#autoControls button{flex:1;font-size:12px}
+.ab-bars{display:flex;gap:2px;width:100%}.ab-bars i{flex:1;height:4px;background:#758399}.ab-bars .won{background:#43cc99}.ab-bars .current{background:#91eaff;animation:ab-pulse 1s infinite alternate}
+@keyframes ab-pulse{to{opacity:.45}}@media(prefers-reduced-motion:reduce){.ab-bars .current{animation:none}}
+.ab-dialog{width:min(92vw,420px);max-height:80dvh;overflow:auto}.ab-dialog::backdrop{background:#081628b8}.ab-dialog h3{border-bottom:1px solid #abc}.ab-dialog p{overflow-wrap:anywhere}.ab-dialog button{margin:3px}.ab-offer{padding:8px}.ab-offer img{max-width:100%;object-fit:contain}
+
+#contractConfirm.ab-contract .panel>:not(#autoContractChoices){display:none}.ab-contract #autoContractChoices{display:grid;gap:8px}
+
+.ab-bars .lost{background:#df5a58}#battle.ab-running.is-processing #autoControls{pointer-events:auto}

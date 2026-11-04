@@ -44,6 +44,7 @@ function battleUiSkillInfo(move){
 }
 function syncBattleUi(){
   const screen=document.getElementById('battle');if(!screen)return;
+  if(typeof autoSyncBattle==='function')autoSyncBattle();
   const active=screen.classList.contains('active');
   const processing=busy||battleFeedback.finished||screen.classList.contains('is-finished');
   if(battleFeedback.finished||screen.classList.contains('is-finished'))battleUiClear();

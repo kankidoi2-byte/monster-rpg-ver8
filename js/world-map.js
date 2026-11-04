@@ -170,7 +170,7 @@ function worldMapDetailHTML(map,eventKey=null) {
     ${['arena','magic_academy'].includes(map.id)?worldMapFacilityTabsHTML(map.id):''}<p>${worldMapEscape(map.desc)}</p>
     ${entries.length>1?`<div class="wm-entries" role="group" aria-label="入口">${entries.map(entry=>`<button type="button" data-wm-place="${map.id}"${entry.key?` data-wm-event="${entry.key}"`:''} aria-pressed="${entry.key===eventKey}">${worldMapEscape(entry.title)}</button>`).join('')}</div>`:''}
     ${event?`<aside class="wm-event-notice${event.guideUnread?' is-first-guide':''}" role="status">${event.guideUnread?`<small>NEW GUIDE</small><strong>${worldMapEscape(event.guideTitle||event.title)}</strong><p>${worldMapEscape(event.guideDescription||'')}</p>`:''}<strong>${worldMapEscape(event.title)}</strong><p>${worldMapEscape(event.description||'')}</p>${event.key==='crisis'?'<button type="button" class="wm-skip" data-wm-skip>今回は対処を任せる</button>':''}</aside>`:''}
-    ${facilityVisit?`<div class="wm-facility-visit"><p>${worldMapEscape(facilityVisit.description)}</p><button type="button" class="wm-depart" data-wm-facility-visit="${map.id}">${worldMapEscape(facilityVisit.label)}</button></div>`:available?`<fieldset class="wm-difficulty"><legend class="wm-sr-only">探索の難易度</legend>${difficulties.map(value=>`<button type="button" data-wm-difficulty="${value.id}" aria-pressed="${value.id===difficulty?.id}">${worldMapEscape(value.label)}<small>報酬×${worldMapEscape(value.rewardText)}</small></button>`).join('')}</fieldset>${difficulty?`<p class="wm-danger">${worldMapEscape(difficulty.danger)}</p>`:''}${map.goldenLand&&!eventKey&&goldenLandMapIsReady()?'<p class="wm-entry-note">出発時に「黄金郷への地図」を1枚消費します。</p>':''}<button type="button" class="wm-depart" data-wm-depart${hasCandidates?'':' disabled'}>出発</button>`:''}
+    ${facilityVisit?`<div class="wm-facility-visit"><p>${worldMapEscape(facilityVisit.description)}</p><button type="button" class="wm-depart" data-wm-facility-visit="${map.id}">${worldMapEscape(facilityVisit.label)}</button></div>`:available?`<fieldset class="wm-difficulty"><legend class="wm-sr-only">探索の難易度</legend>${difficulties.map(value=>`<button type="button" data-wm-difficulty="${value.id}" aria-pressed="${value.id===difficulty?.id}">${worldMapEscape(value.label)}<small>報酬×${worldMapEscape(value.rewardText)}</small>${typeof autoDifficultyLabel==='function'?autoDifficultyLabel(map,value.id,eventKey):''}</button>`).join('')}</fieldset>${difficulty?`<p class="wm-danger">${worldMapEscape(difficulty.danger)}</p>`:''}${map.goldenLand&&!eventKey&&goldenLandMapIsReady()?'<p class="wm-entry-note">出発時に「黄金郷への地図」を1枚消費します。</p>':''}${typeof autoSheet==='function'&&difficulty?autoSheet(map,difficulty,eventKey):''}<button type="button" class="wm-depart" data-wm-depart${hasCandidates?'':' disabled'}>${typeof autoDepartureLabel==='function'?autoDepartureLabel(map,difficulty,eventKey):'出発'}</button>`:''}
     <div class="wm-story-entry">${typeof mapStoryEntryHtml==='function'?mapStoryEntryHtml(map):''}</div><details class="wm-ecology"><summary>生態系</summary><p>${worldMapEscape(map.ecosystem)}</p></details></div></article>`;
 }
 function worldMapPanelHTML() {
@@ -214,7 +214,7 @@ function renderWorldMap(list,{saveNavigation=true}={}) {
     }else if(button.hasAttribute('data-wm-facility-visit')){
       if(typeof handleTutorialWorldMapFacilityVisit==='function')handleTutorialWorldMapFacilityVisit(button.dataset.wmFacilityVisit);
     }else if(button.hasAttribute('data-wm-depart')){
-      persistWorldMapNavigation();startWorldMapExploration(worldMapSelectedId,worldMapSelectedDifficulty,worldMapSelectedEvent);
+      persistWorldMapNavigation();startWorldMapExploration(worldMapSelectedId,worldMapSelectedDifficulty,worldMapSelectedEvent,true);
     }else if(button.hasAttribute('data-wm-skip')){
       if(typeof worldMapSkipCrisis==='function'&&worldMapSkipCrisis()){worldMapSelectedEvent=null;renderWorldMap(list);}
     }
@@ -248,7 +248,7 @@ function showWorldMapLocation(mapId,eventKey=null) {
   return true;
 }
 
-function startWorldMapExploration(mapId,difficultyId,eventKey=null) {
+function startWorldMapExploration(mapId,difficultyId,eventKey=null,fromSheet=false) {
   if (worldMapDeparting || (typeof bossCautionPlaying!=='undefined'&&bossCautionPlaying)) return false;
   if(typeof handleTutorialWorldMapDeparture==='function'&&handleTutorialWorldMapDeparture(mapId,difficultyId,eventKey))return true;
   const map=MAPS.find(value=>value.id===mapId);
@@ -267,6 +267,8 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null) {
   request.goldenLandMapEntry=!!(map.goldenLand&&!eventKey&&goldenLandMapIsReady());
   if (eventKey) { request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null; }
   registerHuntRequest(request);
+  if(fromSheet&&typeof autoPrepareDeparture==='function')autoPrepareDeparture();
+  if(typeof autoBindDeparture==='function')autoBindDeparture(map,request,eventKey);
   worldMapDeparting=true;
   startChosenBattle(map.id,mon.id,difficultyId,request.requestId);
   return true;

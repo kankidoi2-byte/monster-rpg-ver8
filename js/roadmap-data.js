@@ -33,9 +33,7 @@ const ROADMAP = (function(){
       lead:'序章の続きに登場する人物の立ち絵を用意します。',points:['ガチャで出会う仲間たちが、物語の中にも登場','序章ストーリーと並行して制作中']},
     {id:'bgm',lane:'art',stage:'later',title:'BGM',sub:'ゲームに音楽を',icon:'🎵',
       lead:'ゲームにBGMを追加します。',points:['ホーム・バトル・ストーリーなど場面ごとの曲','オン／オフの切り替え']},
-    {id:'auto',lane:'sys',stage:'now',wip:true,title:'オートバトル',sub:'一度勝った戦いを自動で',icon:'⏩',
-      lead:'バトルを自動で進めるオート機能を追加します。',
-      points:['一度勝ったマップと難易度で使える','2倍速にも対応','序章・チュートリアルの戦闘では使えない']},
+
     {id:'status',lane:'sys',stage:'next',title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
       lead:'モンスターやキャラクターのステータスを確認できるようにします。',points:['HP・攻撃などの能力値を確認','モンスターとキャラクターの両方に対応','進化のタイミングは秘密のまま。育てて見つけよう']},
     {id:'evo',lane:'sys',stage:'next',title:'キャラクターの進化レベル',sub:'キャラも個体ごとの進化に',iconImg:'images/monsters/elna_middle_20261004.webp',
@@ -45,6 +43,9 @@ const ROADMAP = (function(){
       points:['キロ／メガ／ギガデータや、錬成の素材を集めやすく','オートと組み合わせて周回しやすく']}
   ],
   done:[
+    {id:'auto',lane:'sys',stage:'now',note:'追加',title:'オートバトル',sub:'討伐済みの探索を自動で',icon:'⏩',
+      lead:'バトルを自動で進めるオート機能を追加しました。',
+      points:['同じマップ・難易度の相手を全員倒すと解放','2倍速にも対応','序章・チュートリアルの戦闘では使えない']},
     {id:'money',lane:'sys',stage:'now',title:'金策',sub:'G-BLESS(グノーシスの加護)',note:'G-BLESSを追加',lead:'使っている間、バトルで手に入るコインや経験値が増える『G-BLESS』を追加します。',points:['オンの間、コインや経験値が増える','毎週回復。Life Questでも貯められる','使うタイミングは自分で選べる']},
     {title:'開発ロードマップ画面',lane:'sys',note:'この画面'},
     {title:'プレゼントBOX',lane:'sys',note:'追加'},

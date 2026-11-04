@@ -38,7 +38,7 @@ try{
    assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
   }
   await page.locator('[data-id="lore"]').click();await page.keyboard.press('Escape');assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
-  assert.equal(await page.locator('#doneList>div').count(),4);await page.locator('#more').click();assert.equal(await page.locator('#doneList>div').count(),11);
+  assert.equal(await page.locator('#doneList>div').count(),4);await page.locator('#more').click();assert.equal(await page.locator('#doneList>div').count(),await page.evaluate(()=>ROADMAP.done.length));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no page horizontal scroll');
   assert(await page.locator('#roadmap').evaluate(root=>[...root.querySelectorAll('.card h4,.card p,.lh,.band,.done-list')].every(el=>el.scrollWidth<=el.clientWidth+1)),'no text horizontal overflow');
   await page.screenshot({path:`${out}/roadmap-${width}.png`,fullPage:true});
