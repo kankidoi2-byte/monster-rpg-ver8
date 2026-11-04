@@ -36,10 +36,10 @@ assert.match(encounter('starsea','nemesion').note,/入口.*Hard/);
 for(const id of ['false_dragon_alfa']){
   assert.match(encounter('world_between',id).note,/討伐.*対処を任せる.*痕跡/);
 }
-assert.ok(encounter('volcano','false_dragon_beta'),'アシュレイアは火山に出現する');
-assert.equal(encounter('world_between','false_dragon_beta'),undefined,'アシュレイアは世界の狭間に出現しない');
-assert.ok(encounter('forest','false_dragon_gamma'),'モルグラムは森林に出現する');
-assert.equal(encounter('world_between','false_dragon_gamma'),undefined,'モルグラムは世界の狭間に出現しない');
+assert.ok(encounter('volcano','ashleia'),'アシュレイアは火山に出現する');
+assert.equal(encounter('world_between','ashleia'),undefined,'アシュレイアは世界の狭間に出現しない');
+assert.ok(encounter('forest','morglum'),'モルグラムは森林に出現する');
+assert.equal(encounter('world_between','morglum'),undefined,'モルグラムは世界の狭間に出現しない');
 assert.doesNotMatch(JSON.stringify(initial),/出現率|[0-9]+[％%]/,'old map-refresh probabilities must not be displayed');
 assert.match(initial.golden_land.events.join(' '),/出発時に1枚消費/);
 assert(!initial.starsea.events.includes('三つ巴バトル'),'event-only entrance uses a single battle');

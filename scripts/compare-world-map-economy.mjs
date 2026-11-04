@@ -10,6 +10,7 @@ const ACCESS_SEED=0x5bacc355;
 const ACCESS_SAMPLES=100000;
 const SOURCE_FILES=['js/data.js','js/core.js','js/state.js','js/items.js','js/contract-animation.js','js/expedition.js'];
 const AUDIT_FILES=[...SOURCE_FILES,'js/battle-flow.js','js/multi-battle.js'];
+const MONSTER_ID_ALIASES=vm.runInNewContext(fs.readFileSync(new URL('../js/data.js',import.meta.url),'utf8')+';MONSTER_ID_ALIASES');
 const CURRENT_HEAD=gitRevision('HEAD');
 const CURRENT_HEAD_TREE=gitRevision('HEAD^{tree}');
 const NEUTRAL_EXPECTATIONS=Object.freeze({
@@ -27,7 +28,9 @@ function gitRevision(expression){
 
 function sourceAt(revision,file){
   if(revision==='working-tree')return fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
-  return execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
+  const source=execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
+  // Compare historical rules under current names without modifying the archive.
+  return Object.entries(MONSTER_ID_ALIASES).reduce((text,[oldId,newId])=>text.replaceAll(oldId,newId),source);
 }
 
 function mulberry32(seed){
@@ -338,7 +341,7 @@ assert.deepEqual(currentSnapshot.rates,baselineSnapshot.rates,'three-way/invasio
 assert.deepEqual(currentSnapshot.materialDrops,baselineSnapshot.materialDrops,'material drop table diverged');
 assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,'contract scroll rule diverged');
 const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
-  ['false_dragon_beta','false_dragon_gamma'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
+  ['ashleia','morglum'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
 );
 // New prologue allies are deliberately additive and never enter map enemy pools.
 // Preserve parity for every legacy record and validate exactly the approved additions.

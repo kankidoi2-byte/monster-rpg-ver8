@@ -1062,13 +1062,13 @@ const MOTION_CATALOG={
       "sourceState": "透過動画の所在記録あり"
     },
     {
-      "id": "false_dragon_beta",
+      "id": "ashleia",
       "no": 39,
       "name": "アシュレイア",
       "art": "images/monsters/ashleia_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/false_dragon_beta_v2_720_alpha.webm",
-        "poster": "images/monsters/motion/false_dragon_beta_v2_static.webp",
+        "src": "images/monsters/motion/ashleia_v2_720_alpha.webm",
+        "poster": "images/monsters/motion/ashleia_v2_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": true,
         "enemyFlip": false,
@@ -1090,13 +1090,13 @@ const MOTION_CATALOG={
       "sourceState": "透過動画の所在記録あり"
     },
     {
-      "id": "false_dragon_gamma",
+      "id": "morglum",
       "no": 40,
       "name": "モルグラム",
       "art": "images/monsters/morgram_20260920.webp",
       "motion": {
-        "src": "images/monsters/motion/false_dragon_gamma_v1_720_alpha.webm",
-        "poster": "images/monsters/motion/false_dragon_gamma_v1_static.webp",
+        "src": "images/monsters/motion/morglum_v1_720_alpha.webm",
+        "poster": "images/monsters/motion/morglum_v1_static.webp",
         "type": "video/webm; codecs=\"vp9\"",
         "allyFlip": false,
         "enemyFlip": true,

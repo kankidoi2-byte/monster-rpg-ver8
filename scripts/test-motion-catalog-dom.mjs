@@ -9,12 +9,12 @@ const $=id=>d.getElementById(id),change=id=>$(id).dispatchEvent(new w.Event('cha
 assert.equal(run('catalogRows.length'),50);const count=run('catalogRows.filter(r=>r.motion).length');assert.equal(count,50);assert.equal(d.querySelectorAll('.card').length,count);assert.equal(d.querySelectorAll('video[src]').length,0);
 $('filter').value='all';change('filter');assert.equal(d.querySelectorAll('.card').length,50);
 run("inspect('slime_gold')");assert.equal(d.querySelectorAll('video[src]').length,0);await run('playSelected()');assert(playing);assert($('motion').src.endsWith('slime_gold_v1_alpha.webm'));
-run("inspect('false_dragon_gamma')");assert(!playing);assert(!$('motion').hasAttribute('src'));assert.equal($('still').style.transform,'scaleX(-1)');$('side').click();assert.equal($('still').style.transform,'');
+run("inspect('morglum')");assert(!playing);assert(!$('motion').hasAttribute('src'));assert.equal($('still').style.transform,'scaleX(-1)');$('side').click();assert.equal($('still').style.transform,'');
 $('note').value='右側の腕を確認';change('note');d.querySelector('[data-mark=issue]').click();assert.equal(run("reviewOf(selected).mark"),'issue');assert(w.localStorage.getItem('monster-motion-review-v1').includes('右側の腕'));
 $('filter').value='issue';change('filter');assert.equal(d.querySelectorAll('.card').length,1);assert(run('exportReport()').includes('モルグラム：気になる ／ 右側の腕を確認'));
 await run('playSelected()');Object.defineProperty(d,'hidden',{configurable:true,value:true});d.dispatchEvent(new w.Event('visibilitychange'));assert(!playing);Object.defineProperty(d,'hidden',{configurable:true,value:false});d.dispatchEvent(new w.Event('visibilitychange'));assert(!playing);
 rejectPlay=true;await run('playSelected()');assert($('motion').hidden);assert(!$('motion').hasAttribute('src'));assert($('playStatus').textContent.includes('再生できません'));
 run("catalogRows[0].motion=null; inspect(catalogRows[0].id)");assert($('reviewFields').disabled);assert($('play').disabled);assert($('battleLink').hidden);assert(!d.querySelector('video[src]'));
 $('close').click();assert(!$('inspector').open);assert.equal(w.localStorage.getItem('mb_v95c'),'unchanged');
-run("reviews.false_dragon_gamma.fingerprint='old-asset'");assert.equal(run("reviewOf(catalogRows.find(r=>r.id==='false_dragon_gamma')).mark"),'unreviewed');
+run("reviews.morglum.fingerprint='old-asset'");assert.equal(run("reviewOf(catalogRows.find(r=>r.id==='morglum')).mark"),'unreviewed');
 console.log(JSON.stringify({total:50,registered:count,noVideoPrefetch:true,singlePlayer:true,sourceRelease:true,hiddenPause:true,errorFallback:true,reviewPersistence:true,assetVersionInvalidatesMark:true,unregisteredNotAccepted:true,saveUntouched:true,scope:'DOM and mocked media; real device appearance/decoder not tested'},null,2));dom.window.close();

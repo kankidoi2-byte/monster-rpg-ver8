@@ -19,7 +19,7 @@ const apex=by('kimeragna_apex');assert(apex.evolutionOnly);assert.equal(apex.rar
 assert.deepEqual([...by('elixion').types],['normal','dragon']);assert.deepEqual([...by('galdra').types],['normal','dragon']);assert.equal(by('galdra').dexNo,46);assert.equal(by('astralepis').dexNo,38);
 assert(!x.ALCHEMY_ALL_FAILURE_CANDIDATES.some(s=>['elna_advanced','stella_wizard','lumina_wizard'].includes(s.monsterId)));
 for(const id of ['elixion_standard','galdra_standard'])assert(x.ALCHEMY_RECIPES.some(r=>r.recipeId===id));
-for(const [id,name,no,dex,type,map,level] of [['false_dragon_beta','アシュレイア',30,39,'fire','volcano',92],['false_dragon_gamma','モルグラム',31,40,'grass','forest',94]]){
+for(const [id,name,no,dex,type,map,level] of [['ashleia','アシュレイア',30,39,'fire','volcano',92],['morglum','モルグラム',31,40,'grass','forest',94]]){
  const m=by(id);assert.equal(m.name,name);assert.equal(m.no,no);assert.equal(m.dexNo,dex);assert.equal(m.rarity,'★★★★');assert.equal(m.types.join(','),type);assert.equal(m.huntLevels.hard,level);assert.equal(x.MAPS.filter(a=>a.enemyIds?.includes(id)).map(a=>a.id).join(','),map);
  assert.deepEqual([...m.legacyMoves.map(mv=>mv[8])],[1,2,3].map(n=>`skill_${id}_0${n}`));
  for(const level of [1,50]){const ids=x.defaultSkillIdsForMonster(m,{level});assert(ids.some(id=>x.SKILL_BY_ID[id].power>0));assert(ids.reduce((n,id)=>n+x.SKILL_BY_ID[id].cost,0)<=x.skillCostLimitFor(m,{level}));}

@@ -6,10 +6,13 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 const read=p=>fs.readFileSync(p,'utf8');
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
-const manifest=JSON.parse(read('docs/motion-compression-720-20261011/manifest.json'));
+// Keep the published manifest intact; resolve historical names only in this test.
+const aliases=vm.runInNewContext(read('js/data.js')+';MONSTER_ID_ALIASES');
+const manifest=JSON.parse(read('docs/motion-compression-720-20261011/manifest.json'),(key,value)=>
+ typeof value==='string'?Object.entries(aliases).reduce((text,[oldId,newId])=>text.replaceAll(oldId,newId),value):value);
 const media=vm.runInNewContext(read('js/battle-idle-media.js').split('// 5s')[0]+';BATTLE_IDLE_MEDIA');
 const catalog=vm.runInNewContext(read('tools/motion-review/catalog-data.generated.js')+';MOTION_CATALOG');
-assert.match(read('index.html'),/battle-idle-media\.js\?v=[^"]*motion-720-20261011"/,'cache revision');
+assert.match(read('index.html'),/battle-idle-media\.js\?v=[^"]*motion-720-20261011[^"]*"/,'cache revision');
 const ids=Object.keys(media);
 assert.equal(ids.length,50);
 assert.equal(manifest.entries.length+manifest.unchanged.length,50);

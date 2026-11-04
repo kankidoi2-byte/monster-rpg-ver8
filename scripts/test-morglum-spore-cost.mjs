@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
 
-const id='skill_false_dragon_gamma_01';
+const id='skill_morglum_01';
 const current='["胞子弾",82,"grass",null,null,4,';
 const previous='["胞子弾",82,"grass",null,null,null,';
 const before=runtime({data:source=>{assert.equal(source.split(current).length,2);return source.replace(current,previous);}});
@@ -34,10 +34,10 @@ const combo=json(after.run(`MOVE_CARDS.filter(card=>['胞子弾','守りを固�
 assert.equal(combo.length,3);
 assert.equal(after.run(`(${JSON.stringify(combo)}).reduce((sum,id)=>sum+SKILL_BY_ID[id].cost,0)`),8);
 assert(after.run(`(${JSON.stringify(combo)}).every(id=>SKILL_BY_ID[id].deprecated)`),'legacy combo remains readable but not newly equippable');
-assert.equal(after.run(`skillCostLimitFor(by('false_dragon_gamma'),{level:1})`),8);
+assert.equal(after.run(`skillCostLimitFor(by('morglum'),{level:1})`),8);
 for(const r of [before,after]){
   const inventory=Object.fromEntries(oldCards.filter(card=>!card.id.startsWith('s110_')).map(card=>[card.id,7]));
-  const fixture={saveMeta:{migrations:['equipped_skill_cards_v1']},instances:[{uid:'morg-1',id:'false_dragon_gamma',level:1,exp:7},{uid:'morg-16',id:'false_dragon_gamma',level:16,exp:22},{uid:'starter',id:'freigal',level:4,exp:3}],party:['morg-16','starter','morg-1'],skillCards:inventory,equippedSkills:{'morg-1':[id],'morg-16':[id,'skill_false_dragon_gamma_03'],starter:['skill_freigal_01']}};
+  const fixture={saveMeta:{migrations:['equipped_skill_cards_v1']},instances:[{uid:'morg-1',id:'morglum',level:1,exp:7},{uid:'morg-16',id:'morglum',level:16,exp:22},{uid:'starter',id:'freigal',level:4,exp:3}],party:['morg-16','starter','morg-1'],skillCards:inventory,equippedSkills:{'morg-1':[id],'morg-16':[id,'skill_morglum_03'],starter:['skill_freigal_01']}};
   r.context.fixtureRaw=JSON.stringify(fixture);
   r.run('save=parseAndPrepareSave(fixtureRaw,[]);migrateSkillSystem()');
   const fields='({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})';
@@ -53,8 +53,8 @@ let damageComparisons=0;
 for(const defender of ['slime','aquaron','grassbeat','nemesion','doom_nemesion'])for(const level of [1,16,100])for(const guard of [false,true])for(const seed of [1,42,1234]){
   for(const r of [before,after]){
     r.context.Math.random=seeded(seed);
-    r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('false_dragon_gamma',${level});save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('${defender}');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);pHp=1000;eHp=1000;pAtk=eAtk=1;pGuard=false;eGuard=${guard};pAquaShield=eAquaShield=false;pFlareCharge=eFlareCharge=false;`);
-    await r.run(`doAttack(by('false_dragon_gamma'),enemy,skillToMove('${id}'),true)`);
+    r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('morglum',${level});save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('${defender}');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);pHp=1000;eHp=1000;pAtk=eAtk=1;pGuard=false;eGuard=${guard};pAquaShield=eAquaShield=false;pFlareCharge=eFlareCharge=false;`);
+    await r.run(`doAttack(by('morglum'),enemy,skillToMove('${id}'),true)`);
   }
   assert.equal(after.run('eHp'),before.run('eHp'),'identical damage with identical random seed');
   damageComparisons++;

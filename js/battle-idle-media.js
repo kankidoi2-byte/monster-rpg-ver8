@@ -35,17 +35,17 @@ const BATTLE_IDLE_MEDIA=Object.freeze({volmoog:Object.freeze({
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:0.3}),
   sourceBounds:Object.freeze({width:720,height:640,x:47,y:65,right:664,bottom:562})
-}),false_dragon_beta:Object.freeze({
+}),ashleia:Object.freeze({
 
-  src:'images/monsters/motion/false_dragon_beta_v2_720_alpha.webm',
-  poster:'images/monsters/motion/false_dragon_beta_v2_static.webp',
+  src:'images/monsters/motion/ashleia_v2_720_alpha.webm',
+  poster:'images/monsters/motion/ashleia_v2_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:true,enemyFlip:false,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:65,y:137,right:898,bottom:845})
-}),false_dragon_gamma:Object.freeze({
+}),morglum:Object.freeze({
 
-  src:'images/monsters/motion/false_dragon_gamma_v1_720_alpha.webm',
-  poster:'images/monsters/motion/false_dragon_gamma_v1_static.webp',
+  src:'images/monsters/motion/morglum_v1_720_alpha.webm',
+  poster:'images/monsters/motion/morglum_v1_static.webp',
   type:'video/webm; codecs="vp9"',allyFlip:false,enemyFlip:true,
   layout:Object.freeze({x:0.5,y:1,scale:1}),
   sourceBounds:Object.freeze({width:960,height:960,x:90,y:85,right:886,bottom:885})
