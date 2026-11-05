@@ -1,11 +1,14 @@
 // Historical feature tests keep checking their original data contracts even after
 // the separately tested 110-skill migration replaces live move lists and aptitude tags.
 export function legacyUnitProjection(unit,old){
- const {legacyMoves,legacyTags,skill110CandidateIds,atk,def,legacyBaseHp,...rest}=JSON.parse(JSON.stringify(unit));
+ const {legacyMoves,legacyTags,skill110CandidateIds,...rest}=JSON.parse(JSON.stringify(unit));
  if(legacyMoves)rest.moves=legacyMoves;
  if(legacyTags)rest.tags=legacyTags;
- if(old){
-  rest.hp=legacyBaseHp;
+ if(old?.moves){
+  rest.hp=rest.legacyBaseHp;
+  delete rest.legacyBaseHp;
+  delete rest.atk;
+  delete rest.def;
   rest.spd=old.spd;
   rest.moves=rest.moves.map((move,i)=>{
    const description=old.moves[i]?.[6];
