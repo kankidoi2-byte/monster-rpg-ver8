@@ -3,7 +3,10 @@ async function simultaneousKoScenario({mode='single',cause='player-recoil',reser
   const assert=(ok,message)=>{if(!ok)throw Error(`${mode}/${cause}/${reserve}/${enemiesRemain}: ${message}`);};
   if(typeof clearTutorialUi==='function')clearTutorialUi();
   save=initSave();save.instances=[];save.party=[];
-  if(typeof tutorialSaveDefaults==='function')save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  if(typeof tutorialSaveDefaults==='function'){
+    save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+    for(const guide of Object.keys(save.progress.tutorial.guides||{}))save.progress.tutorial.guides[guide]=true;
+  }
   // Evolved units keep unrelated evolution dialogs out of the outcome matrix.
   save.party.push(addInstance('freiwolf',10).uid);
   if(reserve)save.party.push(addInstance('freiwolf',10).uid);

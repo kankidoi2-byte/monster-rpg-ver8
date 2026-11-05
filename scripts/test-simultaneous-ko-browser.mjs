@@ -35,8 +35,8 @@ try{
   if(result.outcome==='victory'){
     assert(await page.locator('#battle.is-finished').isVisible());
     if(mode!=='single'){
-      const buttons=await page.locator('#multiContractPanel button').count();
-      assert.equal(buttons,cause==='enemy-recoil'?0:1,'only player kills are contract candidates');
+      const candidates=await page.locator('#battleOutcomeActions .br-contract:visible').count();
+      assert.equal(candidates,cause==='enemy-recoil'?0:1,'only player kills are contract candidates');
     }
     if(cause==='poison'&&reserve){
       await page.screenshot({path:`${out}/${mode}-poison-reserve.png`,fullPage:true});
@@ -53,7 +53,7 @@ try{
  for(const mode of ['multi','invasion'])for(const reserve of [false,true])for(const poison of [false,true]){
   if(await page.locator('#next').isVisible())await page.locator('#next').click();
   results.push(await page.evaluate(opts=>simultaneousKoEnemyAttribution(opts),{mode,reserve,poison}));
-  assert.equal(await page.locator('#multiContractPanel button').count(),0,'enemy kills/poison never become contract candidates');
+  assert.equal(await page.locator('#battleOutcomeActions .br-contract:visible').count(),0,'enemy kills/poison never become contract candidates');
  }
  assert.equal(errors.length,0,errors.join('\n'));
  fs.writeFileSync(`${out}/results.json`,JSON.stringify({result:'PASS',count:results.length,errors,results},null,2)+'\n');
