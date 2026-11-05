@@ -30,7 +30,7 @@ function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="
 function setup(){run(`save=initSave();completeTutorial();save.instances=[];save.party=[];
   for(const id of ['volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('volmoog');
-  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
+  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','volmoog','easy',activeHuntRequest);show('battle');setBattleIdleLimit(3);`);}
 
 function multi(){setup();run(`ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('volmoog'),'enemy_a'),createMultiEnemy(by('volmoog'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle()`);checkIds();}

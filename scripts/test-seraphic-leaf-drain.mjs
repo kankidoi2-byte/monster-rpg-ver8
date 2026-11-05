@@ -33,7 +33,7 @@ for(const input of [id,alias]){
 }
 function setup(r,{actor='player',hp=75,actorHp=10,half=false,link=false,guard=false,defender='slime',seed=42}={}){
  r.context.Math.random=seeded(seed);
- r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('${actor==='player'?'seralphia':defender}',1);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('${actor==='player'?defender:'seralphia'}');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.conditions=${half?'[{id:"healing_half"}]':'[]'};
+ r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('${actor==='player'?'seralphia':defender}',1);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('${actor==='player'?defender:'seralphia'}');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.conditions=${half?'[{id:"healing_half"}]':'[]'};
  pHp=${actor==='player'?actorHp:hp};eHp=${actor==='player'?hp:actorHp};pAtk=eAtk=1;pGuard=eGuard=${guard};pAquaShield=eAquaShield=pFlareCharge=eFlareCharge=false;
  var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:enemyMaxHp(),attack:1,alive:true,guard:eGuard,aquaShield:false,flareCharge:false};
  var entryB={id:'enemy_b',kind:'enemy',mon:by('${defender}'),hp:${hp},maxHp:1000,attack:1,alive:true,guard:${guard},aquaShield:false,flareCharge:false};multiBattle={enemies:[entryA,entryB],log:[]};

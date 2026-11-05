@@ -34,7 +34,7 @@ function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="
 function setup(){run(`setBattleIdleLimit(1);save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};save.instances=[];save.party=[];
   for(const id of ['volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
-  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
+  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
 // Bounds containment is numeric/DOM evidence, not real browser layout or feet.
 const layoutCases=run(`Object.entries(BATTLE_IDLE_MEDIA).map(([id,c])=>({id,bounds:c.sourceBounds,layout:c.layout,rarity:by(id).rarity.length}))`);

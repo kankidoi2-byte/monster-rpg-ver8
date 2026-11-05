@@ -32,7 +32,7 @@ try{
   for(const level of [1,10,50,100])for(const shortage of [800,5,0]){
    const result=await page.evaluate(async({mode,side,level,shortage,skillId})=>{
     clearTutorialUi();save.instances[0].level=side==='player'?level:99;prepareBattleParty();
-    const request=createHuntRequest(MAPS[0],by('slime'),'normal',[]);
+    const request=createHuntRequest(MAPS[0],by('slime'),'normal',[],{allowOvertier:false});
     request.battleMode=mode==='multi'?'three_way':'single';request.secondEnemyId='goblin';request.conditions=[];
     beginChosenBattle('grassland','slime','normal',request);
     if(mode==='invasion'){

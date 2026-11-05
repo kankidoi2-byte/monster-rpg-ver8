@@ -48,7 +48,7 @@ function tutorialRetryBattleGuideStep(step,nextStepId){
   tutorialBattleLessonState.retryKind=null;
   return kind==='elna_rescue'?'battle_free':'stella_mock_free';
 }
-const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'});
+const TUTORIAL_FIRST_HUNT=Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'d1'});
 const TUTORIAL_STARTER_CONTRACT_IDS=Object.freeze(['freigal','aquaron']);
 const TUTORIAL_ELNA_GUEST=Object.freeze({uid:'tutorial_guest_elna',id:'elna_beginner',sourceId:'elna_beginner',level:1,exp:0,locked:true,guest:true,tutorialRole:'person'});
 const TUTORIAL_RESCUE_ENEMY_IDS=Object.freeze(['slime','slime']);
@@ -57,7 +57,7 @@ const TUTORIAL_ALCHEMY_SUPPLY_REWARD=Object.freeze({
   materials:Object.freeze(['monster_bone','magic_crystal','unstable_alchemy_matter','raptor_feather'])
 });
 const TUTORIAL_STELLA_SKILL_ID='s110_041';
-const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'easy'});
+const TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'d1'});
 const TUTORIAL_LUMINA_ALCHEMY=Object.freeze({
   recipeId:'galdra_standard',displayName:'ルミナの入門錬成',resultId:'galdra',
   coinOptionId:'high',coins:250,
@@ -1154,7 +1154,7 @@ function tutorialRescueRequest(){
   const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
   const slime=by(TUTORIAL_FIRST_HUNT.enemyId);
   if(!map||!slime)return null;
-  const request=createHuntRequest(map,slime,TUTORIAL_FIRST_HUNT.difficultyId,[]);
+  const request=createHuntRequest(map,slime,TUTORIAL_FIRST_HUNT.difficultyId,[],{allowOvertier:false,enemyLevel:1,hpMultiplier:.85,attackMultiplier:.85});
   request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null;
   request.tutorialRescue=true;request.enemyIds=[...TUTORIAL_RESCUE_ENEMY_IDS];
   return registerHuntRequest(request);
@@ -1218,7 +1218,7 @@ function tutorialStellaMockRequest(){
   const map=MAPS.find(entry=>entry.id===TUTORIAL_STELLA_MOCK.mapId);
   const target=by(TUTORIAL_STELLA_MOCK.enemyId);
   if(!map||!target)return null;
-  const request=createHuntRequest(map,target,TUTORIAL_STELLA_MOCK.difficultyId,[]);
+  const request=createHuntRequest(map,target,TUTORIAL_STELLA_MOCK.difficultyId,[],{allowOvertier:false,enemyLevel:1,hpMultiplier:.85,attackMultiplier:.85});
   request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null;
   request.tutorialStellaMock=true;
   return registerHuntRequest(request);
@@ -1794,7 +1794,7 @@ function renderTutorialHuntChoice(list){
   const mon=by(TUTORIAL_FIRST_HUNT.enemyId);
   if(!map||!mon)return false;
   const difficulty=huntDifficulty(TUTORIAL_FIRST_HUNT.difficultyId);
-  const request=registerHuntRequest(createHuntRequest(map,mon,difficulty.id,[]));
+  const request=registerHuntRequest(createHuntRequest(map,mon,difficulty.id,[],{allowOvertier:false,enemyLevel:1,hpMultiplier:.85,attackMultiplier:.85}));
   if(typeof registerMapDex==='function'&&registerMapDex(map.id)&&typeof saveGame==='function')/* save-result-allow: tutorial-hunt-map-dex */saveGame();
   list.innerHTML=`<article class="enemy-choice-card difficulty-card-${difficulty.id}" data-tutorial-hunt="grassland-slime">
     <div class="hunt-card-visual"><img class="map-img" src="${mapPortraitImage(map)}" alt="${map.name}"><div class="hunt-card-shade"></div>${vis(mon)}
@@ -1813,7 +1813,7 @@ function preparedTutorialHuntRequest(requestId){
   const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
   const mon=by(TUTORIAL_FIRST_HUNT.enemyId);
   if(!map||!mon)return null;
-  return registerHuntRequest(createHuntRequest(map,mon,TUTORIAL_FIRST_HUNT.difficultyId,[]));
+  return registerHuntRequest(createHuntRequest(map,mon,TUTORIAL_FIRST_HUNT.difficultyId,[],{allowOvertier:false,enemyLevel:1,hpMultiplier:.85,attackMultiplier:.85}));
 }
 function startTutorialHunt(requestId){
   const request=preparedTutorialHuntRequest(requestId);
@@ -1913,7 +1913,7 @@ function setTutorialContractContext(){
   const target=by(TUTORIAL_FIRST_HUNT.enemyId);
   const map=MAPS.find(entry=>entry.id===TUTORIAL_FIRST_HUNT.mapId);
   if(!target||!map)return false;
-  enemy=structuredClone(target);selectedMap=map;activeHuntRequest=createHuntRequest(map,target,TUTORIAL_FIRST_HUNT.difficultyId,[]);
+  enemy=structuredClone(target);selectedMap=map;activeHuntRequest=createHuntRequest(map,target,TUTORIAL_FIRST_HUNT.difficultyId,[],{allowOvertier:false,enemyLevel:1,hpMultiplier:.85,attackMultiplier:.85});
   battleRewardGranted=true;singleBattleContractAttempted=false;pendingContractItemId='contract_scroll';
   return true;
 }

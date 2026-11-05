@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const BASE_REV='d31cfccd37219549d25df9f85c62db559aa649f3';
-const RUN_DATE='2026-09-06';
+const RUN_DATE='2026-11-05';
 const BATTLE_SEED=0x5b202609;
 const ACCESS_SEED=0x5bacc355;
 const ACCESS_SAMPLES=100000;
@@ -129,7 +129,7 @@ function economicFunctionSource(source,name){
 // economy statement intact; the live off helper is also compared below.
 function gBlessOffRuleSource(source){
   return source
-    .replace(/gBlessHuntReward\((\w+),\s*(\w+),'(?:exp|coins)',bless\)/g,'huntRewardAmount($1,$2)')
+    .replace(/gBlessHuntReward\((\w+),\s*(\w+),'(?:exp|coins)',bless(?:,entry\.rewardMultiplier)?\)/g,'huntRewardAmount($1,$2)')
     .replace('function grantMultiEnemyReward(entry,turnBonus,bless=null)','function grantMultiEnemyReward(entry,turnBonus)')
     .replace('grantMultiEnemyReward(entry,turnBonus,bless)','grantMultiEnemyReward(entry,turnBonus)')
     .replace('if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}','');
@@ -157,7 +157,7 @@ function normalizedRuleSource(source,name){
     .replace("if(typeofcompleteTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory()){return;}","if(typeofcompleteTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory())return;");
 }
 
-function simulateTwentyWins(rules,grasslandEnemyIds=null){
+function simulateTwentyWins(rules,grasslandEnemyIds=null,encounterRules=rules){
   const originalGrasslandEnemyIds=canonicalValue(rules,`[...MAPS.find(map=>map.id==='grassland').enemyIds]`);
   if(grasslandEnemyIds)canonicalValue(rules,`MAPS.find(map=>map.id==='grassland').enemyIds=[...grasslandEnemyIds]`,{grasslandEnemyIds});
   const random=mulberry32(BATTLE_SEED);
@@ -175,13 +175,13 @@ function simulateTwentyWins(rules,grasslandEnemyIds=null){
 
   for(let index=0;index<20;index++){
     const difficultyId=index<10?'normal':'hard';
-    const candidateIds=canonicalValue(rules,`huntCandidatesFor(MAPS.find(map=>map.id==='grassland'),difficultyId).map(mon=>mon.id)`,{difficultyId});
+    const candidateIds=canonicalValue(encounterRules,`huntCandidatesFor(MAPS.find(map=>map.id==='grassland'),difficultyId).map(mon=>mon.id)`,{difficultyId});
     const enemyId=candidateIds[Math.floor(random()*candidateIds.length)];
-    const mode=canonicalValue(rules,'rollHuntBattleMode(difficultyId,randomFn)',{difficultyId,randomFn:random});
-    const secondEnemyId=mode==='single'?null:canonicalValue(rules,`chooseSecondHuntEnemy(MAPS.find(map=>map.id==='grassland'),enemyId,difficultyId,randomFn)?.id||null`,{difficultyId,enemyId,randomFn:random});
+    const mode=canonicalValue(encounterRules,'rollHuntBattleMode(difficultyId,randomFn)',{difficultyId,randomFn:random});
+    const secondEnemyId=mode==='single'?null:canonicalValue(encounterRules,`chooseSecondHuntEnemy(MAPS.find(map=>map.id==='grassland'),enemyId,difficultyId,randomFn)?.id||null`,{difficultyId,enemyId,randomFn:random});
     const resolvedMode=secondEnemyId?mode:'single';
-    if(resolvedMode==='invasion_pending')canonicalValue(rules,'rollInvasionTurn(randomFn)',{randomFn:random});
-    const conditionIds=canonicalValue(rules,'rollHuntConditionIds(difficultyId,randomFn)',{difficultyId,randomFn:random});
+    if(resolvedMode==='invasion_pending')canonicalValue(encounterRules,'rollInvasionTurn(randomFn)',{randomFn:random});
+    const conditionIds=canonicalValue(encounterRules,'rollHuntConditionIds(difficultyId,randomFn)',{difficultyId,randomFn:random});
     const swiftClear=conditionIds.includes('swift_clear');
     const rewardMultiplier=canonicalValue(rules,'huntDifficulty(difficultyId).rewardMultiplier',{difficultyId});
     canonicalValue(rules,'activeHuntRequest={difficultyId,rewardMultiplier,conditions:conditionIds.map(id=>({id}))}',{difficultyId,rewardMultiplier,conditionIds});
@@ -325,10 +325,23 @@ vm.runInContext(functionSource(fs.readFileSync(new URL('../js/save.js',import.me
 let gBlessOffParityChecks=0;
 for(const difficultyId of ['easy','normal','hard','extreme'])for(const swiftClear of [false,true])for(const base of [1,8,13,35,41,60,99,1000])for(const kind of ['coins','exp']){
   const bindings={base,swiftClear,kind,difficultyId};
-  const expression=`activeHuntRequest={rewardMultiplier:HUNT_DIFFICULTIES[difficultyId].rewardMultiplier};`;
+  const expression=`activeHuntRequest={rewardMultiplier:huntDifficulty(difficultyId).rewardMultiplier};`;
   canonicalValue(current,expression,bindings);canonicalValue(baseline,expression,bindings);
   assert.equal(canonicalValue(current,'gBlessHuntReward(base,swiftClear,kind,null)',bindings),canonicalValue(baseline,'huntRewardAmount(base,swiftClear)',bindings),'G-BLESS off must preserve the actual historical reward');gBlessOffParityChecks++;
 }
+// The first enemy may carry a stronger/nushi bonus; the second enemy must use
+// its own ordinary multiplier. Check the newly explicit parameter numerically
+// before normalizing that exact call-site difference for historical source parity.
+let perEnemyMultiplierChecks=0;
+for(const multiplier of [.7,1,1.4,1.8,2.4,3,1.5,7.2])for(const swiftClear of [false,true])for(const base of [1,13,41,99])for(const kind of ['coins','exp']){
+  const bindings={base,swiftClear,kind,multiplier};
+  canonicalValue(current,'activeHuntRequest={rewardMultiplier:99}',bindings);
+  const expected=Math.max(1,Math.round(base*multiplier*(swiftClear?1.5:1)));
+  assert.equal(canonicalValue(current,'gBlessHuntReward(base,swiftClear,kind,null,multiplier)',bindings),expected,'per-enemy reward must not inherit first-enemy multiplier');
+  perEnemyMultiplierChecks++;
+}
+assert.match(current.source['js/multi-battle.js'],/gBlessHuntReward\(baseExp,turnBonus,'exp',bless,entry\.rewardMultiplier\)/);
+assert.match(current.source['js/multi-battle.js'],/gBlessHuntReward\(baseCoins,turnBonus,'coins',bless,entry\.rewardMultiplier\)/);
 assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base+1,turn,'coins',bless)"),'huntRewardAmount(base,turn)');
 assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless);save.coins++"),gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless)"));
 
@@ -336,8 +349,21 @@ const baselineSnapshot=canonicalSnapshot(baseline);
 const currentSnapshot=canonicalSnapshot(current);
 
 // Descriptions changed for the world-map presentation, so compare only economy-bearing records.
-assert.deepEqual(currentSnapshot.difficulties,baselineSnapshot.difficulties,'difficulty/reward rules diverged');
-assert.deepEqual(currentSnapshot.rates,baselineSnapshot.rates,'three-way/invasion rates diverged');
+// The adopted five-tier balance intentionally changes encounter distribution.
+// Assert the new tuning explicitly, rather than relabeling it as historical parity.
+const expectedTiers=[
+ ['d1',[1,6],[1,2],.7,0,0,0,0],['d2',[6,18],[1,2,3],1,.05,.02,200,0],
+ ['d3',[18,32],[2,3],1.4,.10,.03,300,0],['d4',[32,46],[2,3,4],1.8,.15,.04,450,.01],
+ ['d5',[46,60],[3,4],2.4,.20,.05,600,.015],['extreme',[100,100],[5],3,.30,.08,1000,.03]
+];
+assert.deepEqual(Object.keys(currentSnapshot.difficulties),expectedTiers.map(t=>t[0]));
+for(const [id,levels,rarities,reward,modeRate,goldenRate,coins,mapRate] of expectedTiers){
+ const d=currentSnapshot.difficulties[id];
+ assert.deepEqual(d.levelRange,levels);assert.deepEqual(d.rarities,rarities);
+ assert.equal(d.rewardMultiplier,reward);assert.equal(d.hpMultiplier,id==='extreme'?1.3:1);assert.equal(d.attackMultiplier,id==='extreme'?1.3:1);
+ assert.equal(currentSnapshot.rates.threeWay[id],modeRate);assert.equal(currentSnapshot.rates.invasion[id],modeRate);
+ assert.equal(d.goldenLandRate,goldenRate);assert.equal(d.goldenLandCoins,coins);assert.equal(d.goldenLandMapRate,mapRate);
+}
 assert.deepEqual(currentSnapshot.materialDrops,baselineSnapshot.materialDrops,'material drop table diverged');
 assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,'contract scroll rule diverged');
 const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
@@ -382,7 +408,8 @@ for(const [file,name] of [
 // Keep the encounter roster fixed so this check isolates reward-rule parity from intentional habitat changes.
 const baselineGrasslandEnemyIds=baselineSnapshot.maps.find(map=>map.id==='grassland').enemyIds;
 const oldMode=simulateTwentyWins(baseline,baselineGrasslandEnemyIds);
-const worldMapMode=simulateTwentyWins(current,baselineGrasslandEnemyIds);
+const worldMapMode=simulateTwentyWins(current,baselineGrasslandEnemyIds,baseline);
+const adoptedMode=simulateTwentyWins(current,baselineGrasslandEnemyIds);
 assert.equal(oldMode.battles.length,20);
 assert.equal(worldMapMode.battles.length,20);
 assert.equal(oldMode.totals.normalWins,10);
@@ -392,19 +419,21 @@ assert.deepEqual(worldMapMode.expeditionTotals,oldMode.expeditionTotals,'expedit
 
 const access=accessComparison(baselineSnapshot);
 const report={
-  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,contractParityChecks,gBlessOffParityChecks,
+  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,contractParityChecks,gBlessOffParityChecks,perEnemyMultiplierChecks,
   baselineRevision:BASE_REV,currentHead:CURRENT_HEAD,currentHeadTree:CURRENT_HEAD_TREE,
   battleSeed:`0x${BATTLE_SEED.toString(16)}`,accessSeed:`0x${ACCESS_SEED.toString(16)}`,
   baselineRewardRules:{...oldMode.totals,expeditionRewards:oldMode.expeditionTotals},
-  currentRewardRules:{...worldMapMode.totals,expeditionRewards:worldMapMode.expeditionTotals},
+  currentRewardRulesWithHistoricalEncounterControls:{...worldMapMode.totals,expeditionRewards:worldMapMode.expeditionTotals},
+  adoptedTierEncounterSample:{scope:'10 difficulty II + 10 difficulty IV wins, no overtier, fixed legacy roster; not win-rate or full balance simulation',...adoptedMode.totals,expeditionRewards:adoptedMode.expeditionTotals},
+  adoptedTiers:expectedTiers.map(([id])=>currentSnapshot.difficulties[id]),
   virtualContractLimitations:['inventory-not-checked','ui-not-exercised','target-choice-not-exercised','defeatedByPlayer-not-exercised'],
   specialEventBattleMode:{includedInTwentyWinComparison:false,currentRule:'single-fixed',classification:'intentional-specification-difference'},
-  neutralPerWinExpectations:NEUTRAL_EXPECTATIONS,
-  grasslandCoinAccessRisk:GRASSLAND_COIN_RISK,
-  access,
-  balanceDecision:'user-review-required-before-publication',
+  historicalNeutralPerWinExpectations:NEUTRAL_EXPECTATIONS,
+  historicalGrasslandCoinAccessRisk:GRASSLAND_COIN_RISK,
+  historicalWorldMapAccessComparison:access,
+  balanceDecision:'adopted-tier-specification; this audit does not establish publication readiness',
   browserTwentyWinPlaythrough:'not-verified'
 };
 
-console.log('World-map reward-rule parity passed: 20 wins per rule set (10 Normal + 10 Hard).');
+console.log('World-map shared reward-formula parity passed under historical encounter controls; adopted tier distribution reported separately.');
 console.log(JSON.stringify(report,null,2));

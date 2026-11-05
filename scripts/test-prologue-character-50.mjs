@@ -71,7 +71,7 @@ for(const u of added){
   assert(html.startsWith('<img') && html.includes(run('IMG[by(testId).imgKey]')),'Released character renders artwork');
   assert(!html.includes('character-artwork-pending'));
  }
- run(`save=initSave();save.instances=[];save.party=[];var testIns=addInstance(testId,1);save.party=[testIns.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);beginChosenBattle('grassland','slime','normal',activeHuntRequest);`);
+ run(`save=initSave();save.instances=[];save.party=[];var testIns=addInstance(testId,1);save.party=[testIns.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});beginChosenBattle('grassland','slime','normal',activeHuntRequest);`);
  assert.equal(run('player.id'),u.id);
  assert(run('save.equippedSkills[testIns.uid].length>0'));
  for(const move of u.moves){
@@ -113,7 +113,7 @@ for(const u of added.filter(u=>!u.evolutionOnly)){
  run('migrateSkillSystem()');
  assert.equal(run('JSON.stringify(save.skillCards)'),reloaded,'reload must not duplicate skill cards');
  // Exercise inherited attack through actual battle processing after both evolutions.
- run("prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','easy',activeHuntRequest);");
+ run("prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','easy',activeHuntRequest);");
  const hpBefore=run('eHp');
  await run('doAttack(player,enemy,getEquippedMovesForInstance(activeInstance)[0],true)');
  assert(run('eHp')<hpBefore,'inherited attack deals damage in battle');

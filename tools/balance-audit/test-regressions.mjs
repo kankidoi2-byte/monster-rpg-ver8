@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import {runtime} from './runtime.mjs';
 const r=runtime(),run=r.run;
+r.context.Math.random=()=>.5;
 // Same difficulty, different species: each participant must use its defined level.
-run(`activeHuntRequest=createHuntRequest(MAPS[0],by('slime'),'normal',[]);`);
+run(`activeHuntRequest=createHuntRequest(MAPS[0],by('slime'),'normal',[],{allowOvertier:false});`);
 assert.equal(run(`createMultiEnemy(by('seralphia'),'enemy_b').level`),run(`huntLevelFor(by('seralphia'),'normal')`),'second enemy must use its species level');
 assert.equal(run(`createMultiEnemy(by('seralphia'),'enemy_b').maxHp`),run(`Math.round(maxHp(by('seralphia'),huntLevelFor(by('seralphia'),'normal')))`));
 // Preserve the already-fought enemy, including an explicit request-level override.
@@ -18,7 +19,7 @@ run(`save=initSave();save.coins=0;save.items={};var entry=createMultiEnemy(by('s
 assert.equal(run(`JSON.stringify(save)`),run('before'));
 assert.equal(run('second.coins'),0);
 console.log('PASS: species levels, existing HP/level override, poison credit, reward idempotency');
-run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('freigal',30);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');eHp=1;eStatus='poison';ePoisonTurns=2;activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);multiBattle={active:true,finished:false,enemies:[createExistingMultiEnemy(),createMultiEnemy(by('seralphia'),'enemy_b')],contractAttempts:{}};startBattleTurn();finishMultiBattleTurn();`);
+run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('freigal',30);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');eHp=1;eStatus='poison';ePoisonTurns=2;activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});multiBattle={active:true,finished:false,enemies:[createExistingMultiEnemy(),createMultiEnemy(by('seralphia'),'enemy_b')],contractAttempts:{}};startBattleTurn();finishMultiBattleTurn();`);
 assert.equal(run('multiBattle.enemies[0].alive'),false);
 assert.equal(run('multiBattle.enemies[0].defeatedByPlayer'),true,'poison KO after invasion must retain contract eligibility');
 // Compare actual single / multi attack processing on the same inputs, including modifiers.
@@ -36,8 +37,8 @@ console.log('PASS: poison KO attribution, single/multi damage/drain/guard parity
 // Different levels and species catch using the lead enemy's level for a second
 // enemy or reading an owned instance's level for a wild unit of the same species.
 run(`activeInstance=addInstance('freigal',10);player=by('freigal');enemy=by('slime');
-  activeHuntRequest=createHuntRequest(MAPS[0],enemy,'normal',[]);
-  var wild=createMultiEnemy(by('goblin'),'enemy_b');
+  activeHuntRequest=createHuntRequest(MAPS[0],enemy,'d2',[],{enemyLevel:5});
+  const originalLevel=huntLevelFor;huntLevelFor=()=>7;var wild=createMultiEnemy(by('goblin'),'enemy_b');huntLevelFor=originalLevel;
   activeInstance.alchemy={statModifiers:{hp:1.1,speed:1.1}};
   pAtk=eAtk=1;pGuard=eGuard=pAquaShield=eAquaShield=pFlareCharge=eFlareCharge=false;
   eHp=wild.hp=1000;wild.maxHp=1000;var statMove=['検証',24,'normal','repeat_attack',1];`);

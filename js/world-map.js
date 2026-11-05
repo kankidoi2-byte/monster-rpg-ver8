@@ -35,7 +35,7 @@ function worldMapNavigationForUI() {
     ...source,
     mapId,
     eventKey:mapId&&typeof source.eventKey==='string'?source.eventKey:null,
-    difficultyId:mapId&&['easy','normal','hard','extreme'].includes(source.difficultyId)?source.difficultyId:null,
+    difficultyId:mapId&&['d1','d2','d3','d4','d5','extreme'].includes(source.difficultyId)?source.difficultyId:null,
     overviewScrollLeft:Number.isFinite(Number(source.overviewScrollLeft))&&Number(source.overviewScrollLeft)>=0?Math.min(100000,Math.floor(Number(source.overviewScrollLeft))):0
   };
 }
@@ -162,7 +162,7 @@ function worldMapDetailHTML(map,eventKey=null) {
   const available=worldMapCanEnter(map,eventKey);
   const difficulties=available?worldMapDifficultiesForUI(map,eventKey):[];
   const rescue=typeof tutorialCurrentStepId==='function'&&['rescue_world_map_grassland','rescue_world_map_depart'].includes(tutorialCurrentStepId())&&map.id==='grassland';
-  const difficulty=difficulties.find(value=>value.id===(rescue?'easy':worldMapSelectedDifficulty))||difficulties.find(value=>value.id==='normal')||difficulties[0];
+  const difficulty=difficulties.find(value=>value.id===(rescue?'d1':worldMapSelectedDifficulty))||difficulties.find(value=>value.id==='d2')||difficulties[0];
   worldMapSelectedDifficulty=difficulty?.id||null;
   const hasCandidates=difficulty&&worldMapCandidatesForUI(map,difficulty.id,eventKey).length>0;
   const entries=[...(worldMapCanEnter(map)?[{key:null,title:map.goldenLand?'地図で入る':'通常探索'}]:[]),...events];
@@ -260,7 +260,7 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null,fromSheet=fal
   const mon=candidates[Math.floor(Math.random()*candidates.length)];
   if (typeof registerMapDex==='function' && registerMapDex(mapId)) /* save-result-allow: world-map-departure-dex */saveGame();
   prepareBattleParty();
-  const request=createHuntRequest({...map,enemyIds:candidates.map(value=>value.id)},mon,difficultyId,rollHuntConditionIds(difficultyId));
+  const request=createHuntRequest(map,mon,difficultyId,rollHuntConditionIds(difficultyId),{candidatesFor:(_map,id)=>worldMapCandidatesForUI(map,id,eventKey)});
   request.worldMapExploration=true;
   request.worldMapEventKey=eventKey;
   request.worldMapEventMonsterId=mon.id;
@@ -270,6 +270,6 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null,fromSheet=fal
   if(fromSheet&&typeof autoPrepareDeparture==='function')autoPrepareDeparture();
   if(typeof autoBindDeparture==='function')autoBindDeparture(map,request,eventKey);
   worldMapDeparting=true;
-  startChosenBattle(map.id,mon.id,difficultyId,request.requestId);
+  startChosenBattle(map.id,request.enemyId,difficultyId,request.requestId);
   return true;
 }

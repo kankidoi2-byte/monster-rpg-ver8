@@ -10,11 +10,28 @@ let pFlareCharge = false, eFlareCharge = false;
 let pAquaShield = false, eAquaShield = false;
 let activeInstance = null;
 let partyBattle = [], activePartyIdx = 0, selectedMap = null;
-const HUNT_DIFFICULTIES = Object.freeze({
-  easy:Object.freeze({id:'easy', label:'Easy', fixedLevel:1, rarities:Object.freeze([1]), hpMultiplier:.85, attackMultiplier:.85, attackText:'0.85', rewardMultiplier:.7, rewardText:'0.7', weight:20, danger:'危険度：低。Lv.1の★1だけが現れる入門依頼。'}),
-  normal:Object.freeze({id:'normal', label:'Normal', rarities:Object.freeze([1,2,3]), hpMultiplier:1, attackMultiplier:1, attackText:'1.0', rewardMultiplier:1, rewardText:'1.0', weight:45, danger:'危険度：標準。★1～★3が種族ごとの固定Lvで現れる依頼。'}),
-  hard:Object.freeze({id:'hard', label:'Hard', rarities:Object.freeze([2,3,4]), hpMultiplier:1.15, attackMultiplier:1.15, attackText:'1.15', rewardMultiplier:1.8, rewardText:'1.8', weight:25, danger:'危険度：高。★2～★4が種族ごとの固定Lvで現れる依頼。'}),
-  extreme:Object.freeze({id:'extreme', label:'Extreme', fixedLevel:MAX_LEVEL, rarities:Object.freeze([5]), hpMultiplier:1.30, attackMultiplier:1.30, attackText:'1.30', rewardMultiplier:3, rewardText:'3.0', weight:10, danger:'危険度：極大。Lv.100の★5だけが現れる最高難度依頼。'})
+// The single tuning table for field difficulty, encounters and rewards.
+const HUNT_DIFFICULTIES = Object.freeze(Object.fromEntries([
+  ['d1','Ⅰ',[1,6],[1,2],.7,20,0,0,0,0,0,0,5],
+  ['d2','Ⅱ',[6,18],[1,2,3],1,30,.05,.05,.02,200,0,.3,8],
+  ['d3','Ⅲ',[18,32],[2,3],1.4,25,.10,.10,.03,300,0,1,12],
+  ['d4','Ⅳ',[32,46],[2,3,4],1.8,15,.15,.15,.04,450,.01,1,16],
+  ['d5','Ⅴ',[46,60],[3,4],2.4,10,.20,.20,.05,600,.015,1,22],
+  ['extreme','Extreme',[MAX_LEVEL,MAX_LEVEL],[5],3,10,.30,.30,.08,1000,.03,2,35]
+].map(([id,shortLabel,levelRange,rarities,rewardMultiplier,weight,threeWayRate,invasionRate,goldenLandRate,goldenLandCoins,goldenLandMapRate,conditionCount,contractorExp])=>{
+  const extreme=id==='extreme';
+  return [id,Object.freeze({id,label:extreme?shortLabel:`難易度${shortLabel}`,shortLabel,
+    levelRange:Object.freeze(levelRange),rarities:Object.freeze(rarities),
+    ...(extreme?{fixedLevel:MAX_LEVEL}:{}),hpMultiplier:extreme?1.3:1,attackMultiplier:extreme?1.3:1,
+    attackText:extreme?'1.30':'1.0',rewardMultiplier,rewardText:rewardMultiplier.toFixed(1),weight,
+    threeWayRate,invasionRate,goldenLandRate,goldenLandCoins,goldenLandMapRate,conditionCount,contractorExp,
+    danger:extreme?'危険度：極大。Lv.100の★5だけが現れる最高難度依頼。':`Lv.${levelRange[0]}〜${levelRange[1]}・★${rarities.join('・★')}の相手が現れる依頼。`
+  })];
+})));
+const HUNT_LEGACY_DIFFICULTY_IDS = Object.freeze({easy:'d1',normal:'d2',hard:'d4'});
+const HUNT_OVERTIER = Object.freeze({
+  rankMin:1,rankMax:50,chanceMin:.10,chanceMax:.20,rewardMultiplier:1.5,
+  nushi:Object.freeze({levelRange:Object.freeze([61,70]),rarities:Object.freeze([3,4]),hpMultiplier:3,attackMultiplier:1.8,rewardMultiplier:3})
 });
 const HUNT_MAP_BOOST_TYPES = Object.freeze({
   grassland:'grass', volcano:'fire', lake:'water', seikai_irie:'water',
@@ -34,11 +51,14 @@ let singleBattleContractAttempted = false;
 let multiBattle = null;
 let pendingMultiBattleContractId = null;
 
-const THREE_WAY_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
-const INVASION_RATES = Object.freeze({easy:0, normal:.10, hard:.20, extreme:.30});
-const GOLDEN_LAND_RATES = Object.freeze({easy:0, normal:.03, hard:.05, extreme:.08});
-const GOLDEN_LAND_COIN_BONUSES = Object.freeze({easy:0, normal:300, hard:600, extreme:1000});
-const GOLDEN_LAND_MAP_HUNT_RATES = Object.freeze({easy:0, normal:0, hard:.01, extreme:.03});
+function huntDifficultyValues(property){
+  return Object.freeze(Object.fromEntries(Object.values(HUNT_DIFFICULTIES).map(d=>[d.id,d[property]])));
+}
+const THREE_WAY_RATES = huntDifficultyValues('threeWayRate');
+const INVASION_RATES = huntDifficultyValues('invasionRate');
+const GOLDEN_LAND_RATES = huntDifficultyValues('goldenLandRate');
+const GOLDEN_LAND_COIN_BONUSES = huntDifficultyValues('goldenLandCoins');
+const GOLDEN_LAND_MAP_HUNT_RATES = huntDifficultyValues('goldenLandMapRate');
 
 function rollGoldenLand(difficultyId, randomFn=Math.random) {
   return randomFn() < (GOLDEN_LAND_RATES[huntDifficulty(difficultyId).id] || 0);
@@ -96,14 +116,17 @@ function huntMonsterRarity(mon) {
 function isHuntMonsterEligible(mon, difficultyId) {
   return !!mon && huntDifficulty(difficultyId).rarities.includes(huntMonsterRarity(mon));
 }
-function huntLevelFor(mon, difficultyId) {
+function huntLevelFor(mon, difficultyId, randomFn=Math.random) {
   const difficulty = huntDifficulty(difficultyId);
-  if (Number.isFinite(difficulty.fixedLevel)) return clampLevel(difficulty.fixedLevel);
-  const configured = Number(mon?.huntLevels?.[difficulty.id]);
-  if (Number.isFinite(configured)) return clampLevel(configured);
-  const rarity = huntMonsterRarity(mon);
-  const fallback = difficulty.id === 'normal' ? {1:10,2:22,3:40}[rarity] : {2:50,3:70,4:85}[rarity];
-  return clampLevel(fallback || 1);
+  return huntRandomLevel(difficulty.levelRange,randomFn);
+}
+function huntRandomLevel(range,randomFn=Math.random){
+  const [low,high]=range;
+  return clampLevel(low+Math.min(high-low,Math.max(0,Math.floor(randomFn()*(high-low+1)))));
+}
+function huntOvertierChance(rank){
+  const value=Math.max(HUNT_OVERTIER.rankMin,Math.min(HUNT_OVERTIER.rankMax,Number(rank)||1));
+  return HUNT_OVERTIER.chanceMin+(HUNT_OVERTIER.chanceMax-HUNT_OVERTIER.chanceMin)*(value-HUNT_OVERTIER.rankMin)/(HUNT_OVERTIER.rankMax-HUNT_OVERTIER.rankMin);
 }
 function huntCandidatesFor(map, difficultyId) {
   return (map?.enemyIds || []).map(id => by(id)).filter(mon => isHuntMonsterEligible(mon, difficultyId));
@@ -111,7 +134,7 @@ function huntCandidatesFor(map, difficultyId) {
 function availableHuntDifficulties(map) {
   const specialOnly = !!(map?.bossOnly || map?.rareOnly || map?.goldenLand);
   return Object.values(HUNT_DIFFICULTIES).filter(difficulty =>
-    (!specialOnly || difficulty.id === 'hard' || difficulty.id === 'extreme') && huntCandidatesFor(map, difficulty.id).length
+    (!specialOnly || ['d4','d5','extreme'].includes(difficulty.id)) && huntCandidatesFor(map, difficulty.id).length
   );
 }
 function chooseSecondHuntEnemy(map, firstEnemyId, difficultyId='normal', randomFn=Math.random) {
@@ -135,8 +158,8 @@ function multiEnemyCardAction(entry, pendingMoveIndex) {
   return 'details';
 }
 
-function huntDifficulty(id='normal') {
-  return HUNT_DIFFICULTIES[id] || HUNT_DIFFICULTIES.normal;
+function huntDifficulty(id='d2') {
+  return HUNT_DIFFICULTIES[HUNT_LEGACY_DIFFICULTY_IDS[id] || id] || HUNT_DIFFICULTIES.d2;
 }
 function createHuntCondition(map, conditionId) {
   if (conditionId === 'map_boost') {
@@ -158,10 +181,8 @@ function createHuntCondition(map, conditionId) {
 }
 function rollHuntConditionIds(difficultyId, randomFn=Math.random) {
   const difficulty = huntDifficulty(difficultyId);
-  let count = 0;
-  if (difficulty.id === 'normal') count = randomFn() < .30 ? 1 : 0;
-  if (difficulty.id === 'hard') count = 1;
-  if (difficulty.id === 'extreme') count = 2;
+  const configured=difficulty.conditionCount;
+  const count=configured<1?(randomFn()<configured?1:0):configured;
   const pool = [...HUNT_CONDITION_IDS];
   const selected = [];
   while (selected.length < count && pool.length) {
@@ -170,31 +191,53 @@ function rollHuntConditionIds(difficultyId, randomFn=Math.random) {
   }
   return selected;
 }
-function createHuntRequest(map, mon, difficultyId='normal', conditionIds=[]) {
+function createHuntRequest(map, mon, difficultyId='d2', conditionIds=[], options={}) {
   const difficulty = huntDifficulty(difficultyId);
-  const enemyLevel = huntLevelFor(mon, difficulty.id);
-  const enemyHp = Math.max(1, Math.round(maxHp(mon, enemyLevel) * difficulty.hpMultiplier));
+  const randomFn=options.randomFn||Math.random;
+  const candidatesFor=options.candidatesFor||huntCandidatesFor;
+  let encounter=difficulty, overtier=null;
+  const rank=options.contractorRank??(typeof contractorRankFromExp==='function'&&typeof save!=='undefined'?contractorRankFromExp(save.contractor?.exp):1);
+  // Scripted/fixed-level battles and secondary enemies explicitly opt out.
+  if(options.allowOvertier!==false&&!Number.isFinite(options.enemyLevel)&&difficulty.id!=='extreme'&&randomFn()<huntOvertierChance(rank)){
+    const next=difficulty.id==='d5'?HUNT_OVERTIER.nushi:HUNT_DIFFICULTIES[`d${Number(difficulty.id.slice(1))+1}`];
+    const pool=candidatesFor(map,difficulty.id==='d5'?'d5':next.id).filter(candidate=>next.rarities.includes(huntMonsterRarity(candidate)));
+    if(pool.length){
+      mon=pool[Math.min(pool.length-1,Math.max(0,Math.floor(randomFn()*pool.length)))];
+      encounter=next;overtier=difficulty.id==='d5'?'nushi':'stronger';
+    }
+  }
+  const enemyLevel=Number.isFinite(options.enemyLevel)?clampLevel(options.enemyLevel):huntRandomLevel(encounter.levelRange,randomFn);
+  const hpMultiplier=options.hpMultiplier??encounter.hpMultiplier;
+  const attackMultiplier=options.attackMultiplier??encounter.attackMultiplier;
+  const enemyHp = Math.max(1, Math.round(maxHp(mon, enemyLevel) * hpMultiplier));
+  const rewardMultiplier=Number((difficulty.rewardMultiplier*(overtier==='nushi'?HUNT_OVERTIER.nushi.rewardMultiplier:overtier?HUNT_OVERTIER.rewardMultiplier:1)).toFixed(4));
   const conditions = [...new Set(conditionIds)].map(id => createHuntCondition(map, id)).filter(Boolean);
-  const rolledMode = map?.goldenLand ? 'single' : rollHuntBattleMode(difficulty.id);
-  const secondEnemy = rolledMode !== 'single' ? chooseSecondHuntEnemy(map, mon?.id, difficulty.id) : null;
+  const rolledMode = map?.goldenLand ? 'single' : rollHuntBattleMode(difficulty.id,randomFn);
+  const secondaryCandidates=rolledMode!=='single'?candidatesFor(map,difficulty.id):[];
+  const different=secondaryCandidates.filter(candidate=>candidate.id!==mon?.id);
+  const secondaryPool=different.length?different:secondaryCandidates;
+  const secondEnemy=secondaryPool.length?secondaryPool[Math.min(secondaryPool.length-1,Math.floor(randomFn()*secondaryPool.length))]:null;
   const battleMode = secondEnemy ? rolledMode : 'single';
   return {
     difficultyId:difficulty.id,
     difficultyLabel:difficulty.label,
     danger:difficulty.danger,
+    overtier,
+    encounterDifficultyId:overtier==='nushi'?'nushi':encounter.id,
+    encounterLabel:overtier==='nushi'?'ヌシ':overtier?'格上':null,
     enemyLevel,
     enemyHp,
-    attackMultiplier:difficulty.attackMultiplier,
-    attackText:difficulty.attackText,
-    rewardMultiplier:difficulty.rewardMultiplier,
-    rewardText:difficulty.rewardText,
+    attackMultiplier,
+    attackText:attackMultiplier===difficulty.attackMultiplier?difficulty.attackText:String(attackMultiplier),
+    rewardMultiplier,
+    rewardText:overtier?String(rewardMultiplier):difficulty.rewardText,
     conditions,
     mapId:map?.id || null,
     enemyId:mon?.id || null,
     battleMode,
     secondEnemyId:battleMode === 'three_way' ? secondEnemy?.id || null : null,
     invasionEnemyId:battleMode === 'invasion_pending' ? secondEnemy?.id || null : null,
-    invasionTurn:battleMode === 'invasion_pending' ? rollInvasionTurn() : null,
+    invasionTurn:battleMode === 'invasion_pending' ? rollInvasionTurn(randomFn) : null,
     goldenLandMapEntry:false
   };
 }
@@ -221,7 +264,7 @@ function rollHuntDifficulty(map) {
     roll -= difficulty.weight;
     if (roll < 0) return difficulty;
   }
-  return pool[pool.length - 1] || HUNT_DIFFICULTIES.normal;
+  return pool[pool.length - 1] || HUNT_DIFFICULTIES.d2;
 }
 function enemyDifficultyAttackMultiplier() {
   return Number(activeHuntRequest?.attackMultiplier) || 1;
@@ -260,8 +303,7 @@ function huntTurnRemaining() {
 function huntTurnBonusSucceeded() {
   return hasHuntCondition('swift_clear') && battleTurnCount <= 8;
 }
-function huntRewardAmount(baseAmount, turnBonusSucceeded=false, extraMultiplier=1) {
-  const rewardMultiplier = Number(activeHuntRequest?.rewardMultiplier) || 1;
+function huntRewardAmount(baseAmount, turnBonusSucceeded=false, extraMultiplier=1, rewardMultiplier=Number(activeHuntRequest?.rewardMultiplier)||1) {
   const turnMultiplier = turnBonusSucceeded ? 1.5 : 1;
   return Math.max(1, Math.round((Number(baseAmount) || 0) * rewardMultiplier * turnMultiplier * extraMultiplier));
 }

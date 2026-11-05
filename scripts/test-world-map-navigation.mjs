@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const ids=['grassland','volcano','lake','seikai_irie','kaiyu_kaiiki','deep_sea_end','snow_mountain','forest','light_plain','starry_plain','highland_ruins','arena','magic_academy','ruined_village','starsea','water_secret','world_between','kaen_village','golden_land'];
 const maps=ids.map(id=>({id,name:id,image:'test.webp',desc:'desc',region:'region',chapter:'序章',ecosystem:'eco',enemyIds:['m'],goldenLand:id==='golden_land'}));
 const storage=new Map();
-const difficulties={easy:{id:'easy',label:'Easy',rewardText:'.7',danger:'easy'},hard:{id:'hard',label:'Hard',rewardText:'1.8',danger:'hard'}};
+const difficulties={d1:{id:'d1',label:'難易度Ⅰ',rewardText:'.7',danger:'d1'},d4:{id:'d4',label:'難易度Ⅳ',rewardText:'1.8',danger:'d4'}};
 const scroller={scrollLeft:0,onscroll:null};
 const focusTarget={focus(){}};
 let hasOverview=false;
@@ -54,27 +54,27 @@ assert.ok(list.innerHTML.includes('wm-viewport'),'the new map viewport is render
 
 assert(run("showWorldMapLocation('grassland')"));
 assert.equal(run('save.worldMap.navigation.mapId'),'grassland');
-assert.equal(run('save.worldMap.navigation.difficultyId'),'easy','first available difficulty becomes the safe default');
-const difficultyButton={dataset:{wmDifficulty:'hard'},hasAttribute:name=>name==='data-wm-difficulty'};
+assert.equal(run('save.worldMap.navigation.difficultyId'),'d1','first available difficulty becomes the safe default');
+const difficultyButton={dataset:{wmDifficulty:'d4'},hasAttribute:name=>name==='data-wm-difficulty'};
 list.onclick({target:{closest:()=>difficultyButton}});
-assert.equal(run('save.worldMap.navigation.difficultyId'),'hard','difficulty changes are saved');
-assert.ok(list.innerHTML.includes('data-wm-difficulty="hard" aria-pressed="true"'));
+assert.equal(run('save.worldMap.navigation.difficultyId'),'d4','difficulty changes are saved');
+assert.ok(list.innerHTML.includes('data-wm-difficulty="d4" aria-pressed="true"'));
 
 run('worldMapSelectedId=null;worldMapSelectedEvent=null;worldMapSelectedDifficulty=null;worldMapNavigationHydrated=false');
 assert(run('renderWorldMap(document.getElementById("battleChoiceList"))'));
 assert.ok(list.innerHTML.includes('<h2>grassland</h2>'),'reload returns to the selected location detail');
-assert.ok(list.innerHTML.includes('data-wm-difficulty="hard" aria-pressed="true"'),'reload restores the selected difficulty');
+assert.ok(list.innerHTML.includes('data-wm-difficulty="d4" aria-pressed="true"'),'reload restores the selected difficulty');
 
 run("save.worldMap.active.crisis={mapId:'starsea',monsterId:'doom_nemesion'}");
 vm.runInContext(fs.readFileSync(new URL('../js/world-map-flow.js',import.meta.url),'utf8'),context);
-run("save.worldMap.navigation={...save.worldMap.navigation,mapId:'starsea',eventKey:'crisis',difficultyId:'hard'};worldMapSelectedEvent='crisis';saveGame=()=>false");
+run("save.worldMap.navigation={...save.worldMap.navigation,mapId:'starsea',eventKey:'crisis',difficultyId:'d4'};worldMapSelectedEvent='crisis';saveGame=()=>false");
 assert.equal(run('worldMapSkipCrisis()'),false,'failed persistence aborts crisis skip');
 assert.equal(run('save.worldMap.navigation.eventKey'),'crisis');
 assert.equal(run('worldMapSelectedEvent'),'crisis','failed persistence keeps the visible event route');
 run('saveGame=()=>{saveCalls++;return true}');
-run("save.worldMap.navigation={...save.worldMap.navigation,mapId:'starsea',eventKey:'crisis',difficultyId:'hard'};worldMapSelectedEvent='crisis';save.worldMap=clearResolvedWorldMapNavigation(save.worldMap,'crisis');clearWorldMapRuntimeEventSelection('crisis')");
+run("save.worldMap.navigation={...save.worldMap.navigation,mapId:'starsea',eventKey:'crisis',difficultyId:'d4'};worldMapSelectedEvent='crisis';save.worldMap=clearResolvedWorldMapNavigation(save.worldMap,'crisis');clearWorldMapRuntimeEventSelection('crisis')");
 assert.equal(run('save.worldMap.navigation.mapId'),'starsea','resolved events keep the useful location context');
-assert.equal(run('save.worldMap.navigation.difficultyId'),'hard');
+assert.equal(run('save.worldMap.navigation.difficultyId'),'d4');
 assert.equal(run('save.worldMap.navigation.eventKey'),null,'resolved event routes cannot resume as stale entrances');
 assert.equal(run('worldMapSelectedEvent'),null);
 
@@ -94,11 +94,11 @@ function bootSaveContext(){
   return c;
 }
 const firstBoot=bootSaveContext();
-vm.runInContext("save.worldMap.navigation={mapId:'grassland',eventKey:null,difficultyId:'hard',overviewScrollLeft:733};saveGame()",firstBoot);
+vm.runInContext("save.worldMap.navigation={mapId:'grassland',eventKey:null,difficultyId:'d4',overviewScrollLeft:733};saveGame()",firstBoot);
 const stored=JSON.parse(reloadStorage.get('mb_v95c'));
 assert.equal(stored.worldMap.navigation.overviewScrollLeft,733,'the primary save contains navigation preferences');
 const reloaded=bootSaveContext();
 assert.equal(vm.runInContext('save.worldMap.navigation.mapId',reloaded),'grassland');
-assert.equal(vm.runInContext('save.worldMap.navigation.difficultyId',reloaded),'hard');
+assert.equal(vm.runInContext('save.worldMap.navigation.difficultyId',reloaded),'d4');
 assert.equal(vm.runInContext('save.worldMap.navigation.overviewScrollLeft',reloaded),733,'a fresh boot restores persisted navigation');
 console.log('World map navigation persistence passed: legacy defaults, repair, location/difficulty reload, horizontal scroll and stale-event cleanup.');

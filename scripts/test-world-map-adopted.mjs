@@ -16,7 +16,7 @@ const context=vm.createContext({
  save:{worldMap:{navigation:{overviewScrollLeft:321},active:{},guides:{map_intro:false}},items:{golden_land_map:2}},
  worldMapActiveEvents:()=>events,
  worldMapEntryAvailable:(map,key)=>key?events.some(e=>e.key===key&&e.mapId===map.id):map.goldenLand?ready:!map.bossOnly&&!map.rareOnly,
- worldMapAvailableDifficulties:()=>['easy','normal','hard'].map(id=>({id,label:id,rewardText:id,danger:id+'-danger'})),
+ worldMapAvailableDifficulties:()=>['d1','d2','d4'].map(id=>({id,label:id,rewardText:id,danger:id+'-danger'})),
  worldMapCandidates:()=>[{id:'secret-id',name:'SECRET ENEMY',level:99}],
  mapPortraitImage:()=> 'portrait.webp',tutorialCurrentStepId:()=>step,
  goldenLandMapIsReady:()=>ready,saveGame:()=>!fail
@@ -39,10 +39,10 @@ assert.equal(run('save.worldMap.discovery.pending.length'),0);
 context.renderWorldMap(root);assert.equal(run('save.worldMap.discovery.pending.length'),0,'completed glow does not repeat');
 assert.equal(run('save.worldMap.navigation.overviewScrollLeft'),321,'the old navigation field is never repurposed');
 context.showWorldMapLocation('grassland');
-assert.equal(run('worldMapSelectedDifficulty'),'normal');
+assert.equal(run('worldMapSelectedDifficulty'),'d2');
 assert(!root.innerHTML.includes('SECRET ENEMY')&&!root.innerHTML.includes('secret-id')&&!root.innerHTML.includes('Lv.'));
 step='rescue_world_map_depart';context.showWorldMapLocation('grassland');
-assert.equal(run('worldMapSelectedDifficulty'),'easy','the deterministic rescue overrides Normal');step='';
+assert.equal(run('worldMapSelectedDifficulty'),'d1','the deterministic rescue overrides difficulty II');step='';
 events=[{key:'golden_land',mapId:'golden_land',title:'黄金郷の道'}];ready=true;
 context.showWorldMapLocation('golden_land');
 assert(root.innerHTML.includes('地図で入る')&&root.innerHTML.includes('data-wm-event="golden_land"'));
@@ -52,7 +52,7 @@ events=[];ready=false;context.renderWorldMap(root);
 assert.equal(run('worldMapSelectedId'),null,'expired selected entrance closes its panel');
 assert(!root.innerHTML.includes('data-wm-beyond'));
 context.showWorldMapCity();assert(root.innerHTML.includes('data-wm-place="magic_academy"'));
-console.log('Adopted world map: hidden entrances, events, Normal/rescue Easy, additive discovery/save rollback, no encounter spoilers, two Golden Land routes and expiration passed.');
+console.log('Adopted world map: hidden entrances, events, difficulty II/rescue I, additive discovery/save rollback, no encounter spoilers, two Golden Land routes and expiration passed.');
 
 // A synthetic click from the drag stays suppressed inside the map. A deliberate
 // tap on the overlaid list is a different control and must still work immediately.

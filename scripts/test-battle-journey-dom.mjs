@@ -37,7 +37,7 @@ function depart(){
  assert.equal(run('activeScreenId()'),'battleChoices');
  if(!d.querySelector('[data-wm-place="grassland"]'))run('showWorldMapOverview()');
  act(d.querySelector('[data-wm-place="grassland"]'));
- act(d.querySelector('[data-wm-difficulty="easy"]'));act(d.querySelector('[data-wm-depart]'));
+ act(d.querySelector('[data-wm-difficulty="d1"]'));act(d.querySelector('[data-wm-depart]'));
  assert.equal(run('activeScreenId()'),'battle');assert(run('activeHuntRequest.worldMapExploration'));assert(!run('busy'));assert(!by('battle').classList.contains('is-finished'));checks.push('world map/easy departure');
 }
 depart();

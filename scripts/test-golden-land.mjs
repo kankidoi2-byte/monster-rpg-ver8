@@ -5,27 +5,19 @@ import vm from 'node:vm';
 const context = vm.createContext({console,MAX_LEVEL:100});
 vm.runInContext(fs.readFileSync(new URL('../js/state.js', import.meta.url), 'utf8'), context);
 
-assert.equal(context.rollGoldenLand('easy', () => 0), false, 'Easy must not naturally reveal Golden Land');
-assert.equal(context.rollGoldenLand('normal', () => .0299), true, 'Normal Golden Land rate must be 3%');
-assert.equal(context.rollGoldenLand('normal', () => .03), false, 'Normal rate must exclude 3% or above');
-assert.equal(context.rollGoldenLand('hard', () => .0499), true, 'Hard Golden Land rate must be 5%');
-assert.equal(context.rollGoldenLand('hard', () => .05), false, 'Hard rate must exclude 5% or above');
-assert.equal(context.rollGoldenLand('extreme', () => .0799), true, 'Extreme Golden Land rate must be 8%');
-assert.equal(context.rollGoldenLand('extreme', () => .08), false, 'Extreme rate must exclude 8% or above');
-assert.equal(context.goldenLandCoinBonus('normal'), 300, 'Normal bonus must be 300 coins');
-assert.equal(context.goldenLandCoinBonus('hard'), 600, 'Hard bonus must be 600 coins');
-assert.equal(context.goldenLandCoinBonus('extreme'), 1000, 'Extreme bonus must be 1,000 coins');
-assert.equal(context.rollGoldenLandMapFromHunt('normal', () => 0), false, 'Normal must not drop a map');
-assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .0099), true, 'Hard map rate must be 1%');
-assert.equal(context.rollGoldenLandMapFromHunt('hard', () => .01), false, 'Hard must exclude 1% or above');
-assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .0299), true, 'Extreme map rate must be 3%');
-assert.equal(context.rollGoldenLandMapFromHunt('extreme', () => .03), false, 'Extreme must exclude 3% or above');
+for(const [id,rate,coins,mapRate] of [['d1',0,0,0],['d2',.02,200,0],['d3',.03,300,0],['d4',.04,450,.01],['d5',.05,600,.015],['extreme',.08,1000,.03]]){
+  assert.equal(context.rollGoldenLand(id,()=>Math.max(0,rate-.0001)),rate>0,`${id} Golden Land lower boundary`);
+  assert.equal(context.rollGoldenLand(id,()=>rate),false,`${id} Golden Land upper boundary`);
+  assert.equal(context.goldenLandCoinBonus(id),coins,`${id} coin bonus`);
+  assert.equal(context.rollGoldenLandMapFromHunt(id,()=>Math.max(0,mapRate-.0001)),mapRate>0,`${id} map lower boundary`);
+  assert.equal(context.rollGoldenLandMapFromHunt(id,()=>mapRate),false,`${id} map upper boundary`);
+}
 context.save = {items:{golden_land_map:0},goldenLandMapReady:false};
 context.registerItemDex = id => { context.registeredItemId = id; };
-assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .0099), true, 'a winning Hard hunt must grant the map on a successful roll');
+assert.equal(context.grantGoldenLandMapFromHuntWin('d4', () => .0099), true, 'a winning difficulty IV hunt must grant the map on a successful roll');
 assert.equal(context.save.items.golden_land_map, 1, 'the shared hunt reward path must add exactly one map');
 assert.equal(context.registeredItemId, 'golden_land_map', 'the granted map must be registered in the item encyclopedia');
-assert.equal(context.grantGoldenLandMapFromHuntWin('hard', () => .01), false, 'a failed hunt roll must not grant another map');
+assert.equal(context.grantGoldenLandMapFromHuntWin('d4', () => .01), false, 'a failed hunt roll must not grant another map');
 assert.equal(context.save.items.golden_land_map, 1, 'a failed hunt roll must leave inventory unchanged');
 context.save = {items:{golden_land_map:2},goldenLandMapReady:false};
 assert.equal(context.reserveGoldenLandMap(), true, 'a held map must be reservable');

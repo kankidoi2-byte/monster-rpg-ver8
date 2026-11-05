@@ -56,7 +56,7 @@ try{
  for(const id of ids){
   await page.evaluate(id=>{
    save.party=[save.instances.find(i=>i.id===id).uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by(id);
-   activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';
+   activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
    beginChosenBattle(selectedMap.id,id,'normal',activeHuntRequest);show('battle');
   },id);
   await page.locator('#pVis img').evaluate(el=>el.decode());

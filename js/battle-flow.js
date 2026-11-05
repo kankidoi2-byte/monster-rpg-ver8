@@ -1,3 +1,10 @@
+function battleOvertierLabel(request=activeHuntRequest){
+  return request?.overtier==='nushi'?'ヌシ':request?.overtier==='stronger'?'格上':'';
+}
+function battleOvertierLog(){
+  const label=battleOvertierLabel();
+  return label?`⚠️ ${label}の相手だ！<br>`:'';
+}
 function prepareBattleParty(storyInstances=null) {
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   const savedParty = storyInstances || getPartyInstances();
@@ -60,12 +67,12 @@ function showBattleChoices() {
   const mapEntryReady = goldenLandMapIsReady();
   const triggeredSpecials = special.filter(sm => Math.random() < (sm.appearRate||0.1))
     .map(map => ({map, difficulty:rollHuntDifficulty(map)}));
-  const lastDifficulty = entries[2]?.difficulty || HUNT_DIFFICULTIES.normal;
+  const lastDifficulty = entries[2]?.difficulty || HUNT_DIFFICULTIES.d2;
   if (!mapEntryReady && goldenLand && rollGoldenLand(lastDifficulty.id)) {
     triggeredSpecials.push({map:goldenLand, difficulty:lastDifficulty});
   }
   if (mapEntryReady && goldenLand) {
-    const forcedDifficulty = ['hard','extreme'].includes(lastDifficulty.id) ? lastDifficulty : HUNT_DIFFICULTIES.hard;
+    const forcedDifficulty = ['d4','d5','extreme'].includes(lastDifficulty.id) ? lastDifficulty : HUNT_DIFFICULTIES.d4;
     const forcedEntry = {map:goldenLand, difficulty:forcedDifficulty, goldenLandMapEntry:true};
     if (entries.length >= 3) entries[2] = forcedEntry; else entries.push(forcedEntry);
   } else if (triggeredSpecials.length) {
@@ -85,7 +92,7 @@ function showBattleChoices() {
   preparedEntries.forEach(({map})=>{if(typeof registerMapDex==='function'&&registerMapDex(map.id))discoveredNewMap=true;});
   if(discoveredNewMap)/* save-result-allow: battle-choice-map-dex */saveGame();
   const recommended = preparedEntries.reduce((best, entry) => {
-    const score = huntRecommendationScore(entry.request, entry.m);
+    const score = huntRecommendationScore({...entry.request,enemyLevel:entry.difficulty.levelRange[0],enemyHp:maxHp(entry.m,entry.difficulty.levelRange[0])*entry.difficulty.hpMultiplier,rewardMultiplier:entry.difficulty.rewardMultiplier}, entry.m);
     return !best || score > best.score ? {requestId:entry.request.requestId,score} : best;
   }, null)?.requestId;
   list.innerHTML = preparedEntries.map(({map,difficulty,goldenLandMapEntry,m,request}) => {
@@ -93,22 +100,22 @@ function showBattleChoices() {
     const hasInvasion = request.battleMode === 'invasion_pending' && request.invasionEnemyId;
     const isRecommended = request.requestId === recommended;
     return `<article class="enemy-choice-card difficulty-card-${difficulty.id}${isRecommended?' is-recommended':''}" ${map.goldenLand?'data-tutorial-golden-land':''}>
-      <div class="hunt-card-visual"><img class="map-img" src="${mapPortraitImage(map)}" alt="${map.name}"><div class="hunt-card-shade"></div>${vis(m)}
+      <div class="hunt-card-visual"><img class="map-img" src="${mapPortraitImage(map)}" alt="${map.name}"><div class="hunt-card-shade"></div>
         <div class="hunt-card-badges">${isRecommended?'<span class="hunt-recommended">おすすめ</span>':''}<span class="hunt-difficulty difficulty-${difficulty.id}">${difficulty.label}</span></div>
-        <div class="hunt-card-title"><small>${map.name}</small><h2>${m.name}</h2><p>${m.rarity} ${typesHtml(m.types)}</p></div>
+        <div class="hunt-card-title"><small>${map.name}</small><h2>${difficulty.label}の探索</h2><p>出会う相手は出発後に分かります</p></div>
       </div>
       <div class="hunt-card-body">
-        <div class="hunt-primary-rewards"><span><small>ENEMY</small><strong>Lv.${request.enemyLevel}</strong></span><span><small>REWARD</small><strong>×${request.rewardText}</strong></span></div>
+        <div class="hunt-primary-rewards"><span><small>ENEMY</small><strong>Lv.${difficulty.levelRange.join("〜")}</strong></span><span><small>REWARD</small><strong>×${difficulty.rewardText}</strong></span></div>
         ${secondEnemy ? `<div class="three-way-preview"><b>⚔️ 三つ巴バトル</b><span>敵2体分の報酬を獲得できる</span></div>` : ''}
         ${hasInvasion ? '<div class="three-way-preview"><b>❗ 不穏な気配</b><span>戦闘中に別の敵が現れる可能性あり</span></div>' : ''}
         ${goldenLandMapEntry?'<p class="hunt-map-notice">🗺️ 地図で出現確定・出発時に1枚消費</p>':''}
         <details class="hunt-card-details"><summary>依頼の詳細を見る</summary>
-          <p class="hunt-danger">${difficulty.danger}</p><p>${m.desc}</p>
-          <div class="hunt-stats"><span>推定HP ${request.enemyHp}</span><span>攻撃 ×${request.attackText}</span></div>
-          ${m.bossClass?`<p>🔥 ${m.bossClass}</p>`:''}${map.rareOnly?'<p>✨ 特殊マップ</p>':''}${map.goldenLand?'<p>💰 ゴールド系モンスター限定</p>':''}
+          <p class="hunt-danger">${difficulty.danger}</p>
+          <div class="hunt-stats"><span>攻撃 ×${difficulty.attackText}</span></div>
+          ${map.rareOnly?'<p>✨ 特殊マップ</p>':''}${map.goldenLand?'<p>💰 ゴールド系モンスター限定</p>':''}
           ${huntConditionsHtml(request)}
         </details>
-        <button class="hunt-accept-button" onclick="startChosenBattle('${map.id}','${m.id}','${difficulty.id}','${request.requestId}')">この依頼へ出発 ›</button>
+        <button class="hunt-accept-button" onclick="startChosenBattle('${map.id}','${request.enemyId}','${difficulty.id}','${request.requestId}')">この依頼へ出発 ›</button>
       </div></article>`;
   }).join('');
   if(preparedEntries.some(entry=>entry.map.goldenLand)&&typeof offerGoldenLandTutorialGuide==='function')setTimeout(offerGoldenLandTutorialGuide,0);
@@ -168,6 +175,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   if (!enemy) return;
   activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
   if(activeHuntRequest.source==='map_story')enemy=createMapStoryEnemy(activeHuntRequest.enemies[0]);
+  else if(activeHuntRequest.enemyId&&activeHuntRequest.enemyId!==enemy.id)enemy=structuredClone(by(activeHuntRequest.enemyId));
   if (activeHuntRequest.goldenLandMapEntry) {
     const previousMapCount=save.items.golden_land_map;
     if (!consumeReservedGoldenLandMap()) {
@@ -210,7 +218,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   show('battle');
   setupBattle();
   document.getElementById('log').innerHTML =
-    `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
+    `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${battleOvertierLog()}${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function afterBattleNext() {
   if(typeof autoRun!=='undefined'&&autoRun)return;

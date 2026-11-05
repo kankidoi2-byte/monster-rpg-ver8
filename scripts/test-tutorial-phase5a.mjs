@@ -69,8 +69,11 @@ assert.match(multi,/function beginThreeWayBattle\([\s\S]*?startTutorialFeatureGu
 assert.match(multi,/function triggerInvasionIfDue\([\s\S]*?busy = false;\s*if\(typeof startTutorialFeatureGuide==='function'\)startTutorialFeatureGuide\('invasion',TUTORIAL_INVASION_FLOW_ID\)/,'the invasion guide must trigger after the invader arrives');
 assert.ok(battleView.includes("!panel.classList.contains('hidden')&&typeof startTutorialFeatureGuide==='function'"),'the Kokoro Link guide must trigger only when its real panel opens');
 
-assert.match(state,/const THREE_WAY_RATES = Object\.freeze\(\{easy:0, normal:\.10, hard:\.20, extreme:\.30\}\)/,'three-way rates must remain unchanged');
-assert.match(state,/const INVASION_RATES = Object\.freeze\(\{easy:0, normal:\.10, hard:\.20, extreme:\.30\}\)/,'invasion rates must remain unchanged');
+const ratesContext=vm.createContext({MAX_LEVEL:100});
+vm.runInContext(state,ratesContext);
+for(const table of ['THREE_WAY_RATES','INVASION_RATES']){
+  assert.deepEqual(JSON.parse(vm.runInContext(`JSON.stringify(${table})`,ratesContext)),{d1:0,d2:.05,d3:.10,d4:.15,d5:.20,extreme:.30},'battle-feature guide must not modify the adopted tier rates');
+}
 assert.ok(state.includes('return 2 + Math.min(2, Math.floor(randomFn() * 3))'),'invasion must still occur on turns 2–4');
 assert.match(multi,/targets=\[\{kind:'player'[\s\S]*?\.filter\(entry=>entry\.id!==actor\.id\)/,'enemies must still be able to attack one another');
 assert.ok(multi.includes('entry.defeatedByPlayer&&isContractableUnit(entry.mon)'),'only player-defeated enemies may remain contract candidates');

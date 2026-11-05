@@ -10,7 +10,7 @@ function setup({invasion=false,reserves=1,hp=1}={}){
     var first=addInstance('freigal',1);first.uid='first';save.party.push(first.uid);
     for(var i=0;i<config.reserves;i++){var reserve=addInstance('aquaron',1);reserve.uid='reserve-'+i;save.party.push(reserve.uid);}
     prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
-    activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);
+    activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});
     multiBattle={active:true,finished:false,invasion:config.invasion,enemies:[createMultiEnemy(enemy,'enemy_a'),createMultiEnemy(by('goblin'),'enemy_b')],contractAttempts:{}};
     pHp=config.hp;busy=true;startBattleTurn();
     var observed=[],realAttack=performMultiAttack;

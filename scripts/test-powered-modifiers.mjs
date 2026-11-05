@@ -2,7 +2,10 @@ import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:asser
 import {runtime} from '../tools/balance-audit/runtime.mjs';
 const base='77730b58f4d9dca1dfd39d484cf8a6510aac484a';
 const fixture=fs.readFileSync(new URL('./powered-modifier-fixture.js',import.meta.url),'utf8');
-const make=old=>{const patches=old?Object.fromEntries(['battle-rules','multi-battle'].map(n=>[n,()=>execFileSync('git',['show',base+':js/'+n+'.js'],{encoding:'utf8'})])):{};const r=runtime(patches);vm.runInContext(fixture,r.context);return r;};
+const make=old=>{const patches=old?Object.fromEntries(['battle-rules','multi-battle'].map(n=>[n,()=>execFileSync('git',['show',base+':js/'+n+'.js'],{encoding:'utf8'})])):{};const r=runtime(patches);
+// Isolate modifier effects from the newly randomized field encounters.
+r.run(`const fixtureCreateHuntRequest=createHuntRequest;createHuntRequest=(map,mon,id,conditions)=>fixtureCreateHuntRequest(map,mon,id,conditions,{allowOvertier:false,enemyLevel:10});huntLevelFor=()=>10;`);
+vm.runInContext(fixture,r.context);return r;};
 const before=make(true),after=make(false),plain=x=>JSON.parse(JSON.stringify(x));let count=0,reproduced=0;
 for(const opts of plain(after.run('poweredModifierCases()'))){
  const a=plain(await after.run(`poweredModifierScenario(${JSON.stringify(opts)})`));

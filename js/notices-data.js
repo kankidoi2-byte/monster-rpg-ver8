@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261105-difficulty-tiers',date:'2026-11-05',category:'update',title:'探索の難易度を5段階に見直しました',body:'難易度Ⅰ〜Ⅴから相手の強さを選べます。どのマップも同じ難易度の目安になり、ときどき格上の相手が現れます。これまでのオート解放記録は引き継がれます。Extremeはこれまでどおりです。'},
   {id:'20261105-monster-status',date:'2026-11-05',category:'update',title:'仲間のステータスを確認できるようになりました',body:'モンスター一覧の詳細から、現在の能力値や装備している技を見られます。一覧の順に前後の仲間へ切り替えられます。'},
   Object.freeze({id:"20261105-battle-result-contrast",date:"2026-11-05",category:"fix",title:"バトル結果画面の文字を見やすくしました",body:"暗い背景でも、勝敗や報酬、仲間の名前・レベル、契約の案内を読みやすくしました。"}),
   {id:'20261105-battle-stats',date:'2026-11-05',category:'update',title:'仲間の能力値を見直しました',body:'HP・攻撃・防御・素早さがレベルに応じて伸びます。バトルのダメージに攻撃と防御が反映され、回復量は最大HPに応じて変わります。'},

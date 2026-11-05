@@ -113,7 +113,7 @@ function updateAppResourceBar(){
   if(coinView) coinView.textContent = Number(save?.coins || 0).toLocaleString('ja-JP');
 }
 const CONTRACTOR_EXP_SOURCE_LABELS=Object.freeze({
-  battle_easy:'Easy討伐勝利',battle_normal:'Normal討伐勝利',battle_hard:'Hard討伐勝利',battle_extreme:'Extreme討伐勝利',multi_battle_bonus:'三つ巴・乱入戦勝利',
+  battle_easy:'難易度Ⅰ討伐勝利',battle_normal:'難易度Ⅱ討伐勝利',battle_hard:'難易度Ⅳ討伐勝利',battle_d1:'難易度Ⅰ討伐勝利',battle_d2:'難易度Ⅱ討伐勝利',battle_d3:'難易度Ⅲ討伐勝利',battle_d4:'難易度Ⅳ討伐勝利',battle_d5:'難易度Ⅴ討伐勝利',battle_extreme:'Extreme討伐勝利',multi_battle_bonus:'三つ巴・乱入戦勝利',
   contract_success:'契約成功',first_species_contract:'初めての種族と契約',dex_registration:'モンスター図鑑登録',item_dex_registration:'アイテム図鑑登録',map_dex_registration:'マップ図鑑登録',dex_milestone:'図鑑登録数達成',
   evolution:'進化',special_evolution:'特殊進化・合成',alchemy_success:'錬成成功',expedition_short:'短距離遠征',expedition_medium:'中距離遠征',expedition_long:'長距離遠征',boss_first_win:'ボス初回撃破',
   legacy_activity:'これまでの冒険記録',legacy_dex_milestone:'これまでの図鑑達成'

@@ -26,8 +26,8 @@ async function scenario({skillId,mode='single',actor='player',targetHp=3,guarded
  var activeHuntRequest={enemyLevel:1};var activeInstance={id:player.id,level:1};var activePartyIdx=0;
  var pHp=${isPlayer?1000:targetHp},eHp=${isPlayer?targetHp:1000},pAtk=1,eAtk=1,pGuard=false,eGuard=false,pAquaShield=false,eAquaShield=false,pFlareCharge=false,eFlareCharge=false;
  var partyBattle=[{hp:pHp}];
- var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
- var entryB={id:'enemy_b',kind:'enemy',mon:by('slime'),hp:${targetHp},maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
+ var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:1000,attackMultiplier:1,rewardMultiplier:1,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
+ var entryB={id:'enemy_b',kind:'enemy',mon:by('slime'),hp:${targetHp},maxHp:1000,attackMultiplier:1,rewardMultiplier:1,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
  var multiBattle={enemies:[entryA,entryB]};var testMove=skillToMove('${skillId}');`);
  if(zeroDamage)r.context.skill110IncomingDamage=r.context.resolvePlayerIncomingDamage=()=>({hpDamage:0,absorbed:140,barrierRemaining:0});
  const before=r.run(actor==='player'?'pHp':mode==='single'?'eHp':'entryA.hp');

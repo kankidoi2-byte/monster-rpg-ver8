@@ -48,8 +48,8 @@ assert.deepEqual(loaded.caught,['ashleia','morglum']);
 assert.equal(loaded.homeFavoriteId,'morglum');
 assert.deepEqual(loaded.levels,{ashleia:51,morglum:52});
 assert.deepEqual(loaded.exp,{ashleia:101,morglum:102});
-assert.deepEqual(loaded.autoBattle.defeated,{'volcano:hard':['ashleia'],'forest:hard':['morglum']});
-assert.deepEqual(loaded.autoBattle.unlocked,fixture.autoBattle.unlocked);
+assert.deepEqual(loaded.autoBattle.defeated,{'volcano:d4':['ashleia'],'forest:d4':['morglum']});
+assert.deepEqual(loaded.autoBattle.unlocked,fixture.autoBattle.unlocked.map(key=>key.replace(':hard',':d4')));
 const expectedCards={};
 for(const [id,count] of Object.entries(fixture.skillCards)){
   const next=skills[id]||id;expectedCards[next]=(expectedCards[next]||0)+count;
