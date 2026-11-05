@@ -125,7 +125,7 @@ const fixtureHealing=(amount,maximum=310)=>Math.floor(amount*maximum/353);
 function setup(mode='single'){
  b(`save=initSave();save.instances=[];save.party=[];var fighter=addInstance('character_bordo_4',10);save.party=[fighter.uid];
  prepareBattleParty();selectedMap=MAPS[0];enemy=by('character_bordo_4');
- activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';
+ activeHuntRequest=createHuntRequest(selectedMap,enemy,'d2',[],{allowOvertier:false,enemyLevel:10});activeHuntRequest.battleMode='single';
  beginChosenBattle('grassland',enemy.id,'normal',activeHuntRequest);
  activeHuntRequest.enemyLevel=10;activeHuntRequest.enemyHp=playerMaxHp();activeHuntRequest.attackMultiplier=1;
  pHp=300;eHp=300;pAtk=eAtk=1;pGuard=eGuard=false;pAquaShield=eAquaShield=false;

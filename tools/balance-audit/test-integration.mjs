@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runtime} from './runtime.mjs';
 const r=runtime(),run=r.run;
+r.context.Math.random=()=>.5;
 let levels=0;
-for(const difficulty of ['easy','normal','hard','extreme']){
+for(const difficulty of ['d1','d2','d3','d4','d5','extreme']){
   run(`activeHuntRequest=createHuntRequest(MAPS[0],by('slime'),${JSON.stringify(difficulty)},[]);`);
   for(const id of run('M.map(m=>m.id)')){
     r.context.testId=id;
@@ -26,9 +27,9 @@ function setupTest(){save=initSave();save.instances=[];save.party=[];const ins=a
 setupTest();var originalMax=enemyMaxHp();triggerInvasionIfDue();`);
 assert.equal(run('multiBattle.enemies[0].hp'),1);
 assert.equal(run('multiBattle.enemies[0].maxHp'),run('originalMax'));
-assert.match(r.elements.get('battleMapBanner').innerHTML,/敵A Lv\.5 \/ 敵B Lv\.46/);
+assert.match(r.elements.get('battleMapBanner').innerHTML,/敵A Lv\.12 \/ 敵B Lv\.12/);
 run('multiBattle.enemies.forEach(e=>e.detailsOpen=true);updateMultiBattleView()');
-assert.match(r.elements.get('multiEnemyGrid').innerHTML,/Lv\.46/);
+assert.match(r.elements.get('multiEnemyGrid').innerHTML,/Lv\.12/);
 run('startBattleTurn();finishMultiBattleTurn()');
 assert.equal(run('multiBattle.enemies[0].defeatedByPlayer'),true);
 run('multiBattle.enemies[1].hp=0;multiBattle.enemies[1].alive=false;multiBattle.enemies[1].defeatedByPlayer=false;winMultiBattle();');

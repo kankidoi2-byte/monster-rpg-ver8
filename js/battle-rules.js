@@ -579,7 +579,7 @@ async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEn
       const boost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,resolvedPower):{multiplier:1};
       const penetration=actorIsPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0};
       const attack=actor.attack*(actorIsPlayer?playerAttackInstanceMultiplier():enemyKokoroLinkAttackMultiplier(actorKey));
-      const difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier();
+      const difficulty=actorIsPlayer?1:(actorEntry?.attackMultiplier??enemyDifficultyAttackMultiplier());
       const reduction=Math.max(skillGuardReduction(target.guard),target.shield?.5:0);
       const defense=config.ignoreDefense?1:kokoroLinkPenetratedMultiplier(1-reduction,penetration.rate);
       const typeMultiplier=kokoroLinkPenetratedMultiplier(r,penetration.rate);

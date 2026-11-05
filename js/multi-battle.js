@@ -21,10 +21,14 @@ function setMultiBattleLayout(active) {
 function createMultiEnemy(mon, factionId) {
   const storySpec=activeHuntRequest?.source==='map_story'?activeHuntRequest.enemies[factionId==='enemy_b'?1:0]:null;
   if(storySpec)mon=createMapStoryEnemy(storySpec);
-  const level = storySpec?.level || huntLevelFor(mon, activeHuntRequest?.difficultyId || 'normal');
-  const max = Math.max(1, Math.round(maxHp(mon, level) * (storySpec?1:(Number(huntDifficulty(activeHuntRequest?.difficultyId).hpMultiplier) || 1))));
+  const primary=factionId==='enemy_a';
+  const difficulty=huntDifficulty(activeHuntRequest?.difficultyId);
+  const level=storySpec?.level||(primary?activeHuntRequest?.enemyLevel:null)||huntLevelFor(mon,difficulty.id);
+  const max=primary&&!storySpec&&activeHuntRequest?.enemyHp?activeHuntRequest.enemyHp:Math.max(1,Math.round(maxHp(mon,level)*(storySpec?1:difficulty.hpMultiplier)));
+  const attackMultiplier=storySpec?(Number(activeHuntRequest?.attackMultiplier)||1):primary?(Number(activeHuntRequest?.attackMultiplier)||difficulty.attackMultiplier):difficulty.attackMultiplier;
+  const rewardMultiplier=primary?(Number(activeHuntRequest?.rewardMultiplier)||difficulty.rewardMultiplier):difficulty.rewardMultiplier;
   return {
-    id:factionId, factionId, mon:structuredClone(mon), level, hp:max, maxHp:max,
+    id:factionId, factionId, mon:structuredClone(mon), level, hp:max, maxHp:max, attackMultiplier, rewardMultiplier,
     attack:1, guard:false, status:null, poisonTurns:0, paralysisTurns:0,
     confusionTurns:0, sleepTurns:0, flareCharge:false, aquaShield:false,
     poisonSourceIsPlayer:false, alive:true, defeatedByPlayer:false, rewardGranted:false
@@ -60,7 +64,7 @@ function beginThreeWayBattle() {
   setupMultiBattle();
   document.getElementById('log').innerHTML =
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br>`+
-    `⚔️ <b>${multiBattle.enemies[0].mon.name}</b>と<b>${multiBattle.enemies[1].mon.name}</b>が互いを警戒している！<br>${player.name}、三つ巴を制せ！`;if(typeof captureBattleLog==='function')captureBattleLog();
+    `⚔️ <b>${multiBattle.enemies[0].mon.name}</b>と<b>${multiBattle.enemies[1].mon.name}</b>が互いを警戒している！<br>${battleOvertierLog()}${player.name}、三つ巴を制せ！`;if(typeof captureBattleLog==='function')captureBattleLog();
   if(activeHuntRequest.source==='map_story')mapStoryBattleBanner();
   else if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('threeWay',TUTORIAL_THREE_WAY_FLOW_ID);
 }
@@ -154,7 +158,7 @@ function updateMultiBattleView() {
     return `<article id="${entry.id}Card" class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" role="button" tabindex="0" aria-label="${cardLabel}" aria-expanded="${entry.detailsOpen?'true':'false'}" onclick="handleMultiEnemyCard('${entry.id}')" onkeydown="handleMultiEnemyCardKey(event,'${entry.id}')">`+
       `<div class="multi-enemy-label">${enemyLabel}</div>`+
       `<div class="multi-enemy-visual" id="${entry.id}Vis">${vis(entry.mon)}</div>`+
-      `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
+      `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}${entry.id==='enemy_a'&&battleOvertierLabel()?`【${battleOvertierLabel()}】`:''}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
       `<div id="${entry.id}Status" class="battle-status" aria-label="${enemyLabel}の有効状態"></div>`+
       `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp-trail" style="width:${pct}%" aria-hidden="true"></div><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+
       `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':activeHuntRequest?.source==='map_story'?'その場を離れた':'💀 撃破済み'}</p>`+
@@ -311,7 +315,7 @@ async function performMultiAttack(actor,target,move) {
   const penetration=actorIsPlayer&&typeof consumeKokoroLinkPenetration==='function'?consumeKokoroLinkPenetration(activeInstance,power):{rate:0,penetrated:false};
   const effectivePower=resolvedPower*powerBoost.multiplier;
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
-  const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
+  const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:(actor.attackMultiplier??huntDifficulty(activeHuntRequest?.difficultyId).attackMultiplier), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
   const actorLevel=actorIsPlayer?activeInstance?.level:actor.level;
   const targetLevel=defenderIsPlayer?activeInstance?.level:targetEntry.level;
@@ -400,7 +404,7 @@ function finishMultiBattleTurn(){
 function grantMultiEnemyReward(entry,turnBonus,bless=null){
   if(entry.rewardGranted)return {exp:0,coins:0,message:''};entry.rewardGranted=true;
   const baseExp=entry.mon.expBonus||(35+Math.floor(Math.random()*25)),baseCoins=entry.mon.coinBonus||(8+Math.floor(Math.random()*10));
-  const exp=gBlessHuntReward(baseExp,turnBonus,'exp',bless),coins=gBlessHuntReward(baseCoins,turnBonus,'coins',bless);save.coins+=coins;let message=`<b>${entry.mon.name}</b>：EXP ${exp}・コイン${coins}枚`;
+  const exp=gBlessHuntReward(baseExp,turnBonus,'exp',bless,entry.rewardMultiplier),coins=gBlessHuntReward(baseCoins,turnBonus,'coins',bless,entry.rewardMultiplier);save.coins+=coins;let message=`<b>${entry.mon.name}</b>：EXP ${exp}・コイン${coins}枚`;
   if(entry.mon.dropItem&&Math.random()<(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1)){save.items[entry.mon.dropItem]=(save.items[entry.mon.dropItem]||0)+1;message+=`・${entry.mon.dropItemName||entry.mon.dropItem}入手`;}
   const material=grantAlchemyMaterialReward();if(material)message+=`・${material.name}入手`;
   return {exp,coins,message};

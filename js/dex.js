@@ -73,12 +73,12 @@ function renderDexHub(){
   grid.innerHTML=cards.map(card=>`<button${card.id?` id="${card.id}"`:''} onclick="show('${card.screen}')"><span>${card.icon}</span><strong>${card.title}</strong><small>${card.desc}</small><b class="dex-hub-count">${card.count} / ${card.total}</b></button>`).join('');
 }
 function monsterMapEncounterNote(map, monster=null) {
-  if (map.id==='light_plain' && monster?.id==='hikari') return '光の平原のNormal・Hard探索勝利後、まれに降臨（Hard限定・戦闘後の契約不可）';
-  if (map.id==='starsea' && monster?.id==='doom_nemesion') return '通常探索のNormal・Hard勝利後、まれに世界の危機として出現（Extreme限定）';
+  if (map.id==='light_plain' && monster?.id==='hikari') return '光の平原の難易度Ⅱ〜Ⅴ・Extreme探索勝利後、まれに降臨（難易度Ⅳ・Ⅴ・戦闘後の契約不可）';
+  if (map.id==='starsea' && monster?.id==='doom_nemesion') return '通常探索の難易度Ⅱ〜Ⅴ・Extreme勝利後、まれに世界の危機として出現（Extreme限定）';
   if (map.id==='world_between') return '世界の危機を討伐、または対処を任せると残る偽竜の痕跡から遭遇（Extreme限定）';
   if (map.goldenLand) return '通常探索勝利で入口を発見、または地図を使用して入場（出発時に1枚消費）';
-  if (map.id==='starsea') return '通常探索のNormal・Hard勝利後、星の海への入口を発見すると遭遇（Hard限定）';
-  if (map.id==='water_secret') return '通常探索のNormal・Hard勝利後、秘境への入口を発見すると遭遇（Hard限定）';
+  if (map.id==='starsea') return '通常探索の難易度Ⅱ〜Ⅴ・Extreme勝利後、星の海への入口を発見すると遭遇（難易度Ⅳ・Ⅴ）';
+  if (map.id==='water_secret') return '通常探索の難易度Ⅱ〜Ⅴ・Extreme勝利後、秘境への入口を発見すると遭遇（難易度Ⅳ・Ⅴ）';
   if (map.bossOnly || map.rareOnly) return '特殊な入口から探索すると出現';
   return '世界地図からこの場所を選んで探索すると出現';
 }
@@ -164,17 +164,17 @@ function mapDexUnlocked(mapId){return typeof save!=='undefined'&&Array.isArray(s
 // Do not use worldMapAvailableDifficulties here: it depends on the current save.
 function mapDexDifficulties(map){return availableHuntDifficulties(map).map(difficulty=>difficulty.label);}
 function mapDexEvents(map){
-  if(map.goldenLand)return ['探索勝利で入口発見・地図でも入場可能','地図は出発時に1枚消費','Hardコインボーナス'];
-  if(map.id==='starsea')return ['探索勝利で星の海への入口発見（Hard）','滅亡の星 ネメシオンの危機（Extreme）','入口・危機は画面を閉じても保持'];
+  if(map.goldenLand)return ['探索勝利で入口発見・地図でも入場可能','地図は出発時に1枚消費','難易度Ⅳコインボーナス'];
+  if(map.id==='starsea')return ['探索勝利で星の海への入口発見（難易度Ⅳ・Ⅴ）','滅亡の星 ネメシオンの危機（Extreme）','入口・危機は画面を閉じても保持'];
   if(map.id==='world_between')return ['危機を討伐しても対処を任せても偽竜の痕跡が残る','偽竜との遭遇（Extreme）','痕跡は画面を閉じても保持'];
-  if(map.id==='water_secret')return ['探索勝利で秘境への入口発見（Hard）','入口は画面を閉じても保持'];
+  if(map.id==='water_secret')return ['探索勝利で秘境への入口発見（難易度Ⅳ・Ⅴ）','入口は画面を閉じても保持'];
   const events=['三つ巴バトル','戦闘中の乱入'];
-  if(map.id==='light_plain')events.unshift('Normal・Hard探索勝利後、光の女神エリシアがまれに降臨（Hard・契約不可）');
+  if(map.id==='light_plain')events.unshift('難易度Ⅱ〜Ⅴ・Extreme探索勝利後、光の女神エリシアがまれに降臨（難易度Ⅳ・Ⅴ・契約不可）');
   else if(map.bossOnly||map.rareOnly)events.unshift('特殊な入口から探索');
   return events;
 }
 function mapEnemyFrequencyLabel(map,id){
-  if(map.id==='light_plain'&&id==='hikari')return 'まれに降臨・Hard限定';
+  if(map.id==='light_plain'&&id==='hikari')return 'まれに降臨・難易度Ⅳ・Ⅴ';
   if(map.id==='starsea'&&id==='doom_nemesion')return '世界の危機・Extreme限定';
   if(map.id==='world_between')return '危機後の痕跡・Extreme限定';
   if(map.bossOnly||map.rareOnly||map.goldenLand)return '特殊な入口から遭遇';

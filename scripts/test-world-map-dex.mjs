@@ -11,14 +11,14 @@ const value=source=>JSON.parse(JSON.stringify(run(source)));
 run('let save={mapDex:MAPS.map(map=>map.id),worldMap:{active:{}}};');
 const difficulties=value('Object.fromEntries(MAPS.map(map=>[map.id,mapDexDifficulties(map)]))');
 assert.equal(Object.keys(difficulties).length,19);
-for(const id of ['grassland','volcano','lake','seikai_irie','snow_mountain','forest','light_plain','starry_plain','highland_ruins','arena','ruined_village']){
-  assert.deepEqual(difficulties[id],['Easy','Normal','Hard'],id);
-}
-for(const id of ['kaiyu_kaiiki','deep_sea_end','magic_academy','kaen_village'])assert.deepEqual(difficulties[id],['Normal','Hard'],id);
-assert.deepEqual(difficulties.starsea,['Hard','Extreme']);
+const all=['難易度Ⅰ','難易度Ⅱ','難易度Ⅲ','難易度Ⅳ','難易度Ⅴ'];
+for(const id of ['grassland','volcano','seikai_irie','forest','light_plain','starry_plain','highland_ruins','arena','ruined_village','kaiyu_kaiiki','magic_academy','kaen_village'])assert.deepEqual(difficulties[id],all,id);
+for(const id of ['lake','snow_mountain'])assert.deepEqual(difficulties[id],all.slice(0,4),id);
+assert.deepEqual(difficulties.deep_sea_end,all.slice(1));
+assert.deepEqual(difficulties.starsea,['難易度Ⅳ','難易度Ⅴ','Extreme']);
 assert.deepEqual(difficulties.world_between,['Extreme']);
-assert.deepEqual(difficulties.water_secret,['Hard']);
-assert.deepEqual(difficulties.golden_land,['Hard']);
+assert.deepEqual(difficulties.water_secret,['難易度Ⅳ','難易度Ⅴ']);
+assert.deepEqual(difficulties.golden_land,['難易度Ⅳ']);
 
 const notes=()=>value(`Object.fromEntries(MAPS.map(map=>[map.id,{
   difficulties:mapDexDifficulties(map),events:mapDexEvents(map),
@@ -32,7 +32,7 @@ assert.match(encounter('light_plain','hikari').frequency,/降臨/);
 assert.doesNotMatch(encounter('light_plain','hikari').frequency,/よく出現/);
 assert.match(encounter('light_plain','hikari').note,/契約不可/);
 assert.match(encounter('starsea','doom_nemesion').frequency,/危機.*Extreme/);
-assert.match(encounter('starsea','nemesion').note,/入口.*Hard/);
+assert.match(encounter('starsea','nemesion').note,/入口.*難易度Ⅳ/);
 for(const id of ['false_dragon_alfa']){
   assert.match(encounter('world_between',id).note,/討伐.*対処を任せる.*痕跡/);
 }

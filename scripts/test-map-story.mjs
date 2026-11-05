@@ -35,7 +35,7 @@ assert.deepEqual(json('save.instances'),initial.instances);assert.equal(run('sav
 run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id);
 run('closeMapStoryDialogue();save=loadSave();startMapStoryEpisode("gl_01")');
 assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id);
-const beforeNormal=json('createHuntRequest(MAPS.find(m=>m.id==="grassland"),by("slime"),"easy",[])');
+const beforeNormal=json('createHuntRequest(MAPS.find(m=>m.id==="grassland"),by("slime"),"d1",[],{allowOvertier:false})');
 function pre(id){assert.equal(run(`startMapStoryEpisode('${id}')`),true);for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');}
 function victory(){run('if(multiBattle?.active){multiBattle.enemies.forEach(e=>{e.hp=0;e.alive=false;});winMultiBattle();}else{eHp=0;win();}');}
 function finish(){run('resumeMapStoryAfterBattle()');for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');run('completeMapStoryEpisode()');}
@@ -98,5 +98,5 @@ run('resumeMapStoryAfterBattle();launchMapStoryBattle("gl_03");losePartyBattle()
 // Additive old-save defaults preserve other maps and unrecognized version fields.
 run('var old=structuredClone(save);delete old.mapStories;repairSave(old)');assert.deepEqual(json('old.mapStories.grassland_whose'),{version:1,episodes:{},resume:null});
 run('old.mapStories.other_map={version:9,custom:"keep"};old.mapStories.grassland_whose.futureField="keep";repairSave(old)');assert.deepEqual(json('old.mapStories.other_map'),{version:9,custom:'keep'});assert.equal(run('old.mapStories.grassland_whose.futureField'),'keep');
-assert.equal(beforeNormal.source,undefined);assert.equal(beforeNormal.difficultyId,'easy');
+assert.equal(beforeNormal.source,undefined);assert.equal(beforeNormal.difficultyId,'d1');
 console.log('PASS grassland map story: 11 episodes, exact IDs/HP/moves, 15 contractor lines, gates, full rewards, replay, retreat/defeat, real save/reload, atomic failure/retry and stale attempts.');

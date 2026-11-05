@@ -14,7 +14,7 @@ function setupBattle() {
     contractPanel.innerHTML = '';
   }
   if (selectedMap && document.getElementById('battleMapBanner')) {
-    const request = activeHuntRequest || createHuntRequest(selectedMap, enemy, 'normal');
+    const request = activeHuntRequest || createHuntRequest(selectedMap, enemy, 'd2',[],{allowOvertier:false});
     const mapImage = battleMapImage(selectedMap);
     const battleScreen = document.getElementById('battle');
     if (battleScreen) battleScreen.style.setProperty('--battle-map-image', `url("${mapImage}")`);
@@ -28,7 +28,7 @@ function setupBattle() {
   document.getElementById('pVis').innerHTML = vis(player);
   document.getElementById('singleEnemyBox')?.classList.remove('hidden');
   document.getElementById('multiEnemyGrid')?.classList.add('hidden');
-  document.getElementById('eName').textContent = enemy.name;
+  document.getElementById('eName').textContent = enemy.name+(battleOvertierLabel()?`【${battleOvertierLabel()}】`:'');
   document.getElementById('eVis').innerHTML =
     `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
   // 技ボタン

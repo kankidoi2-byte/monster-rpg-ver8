@@ -51,6 +51,7 @@ const ROADMAP = (function(){
       points:['キロ／メガ／ギガデータや、錬成の素材を集めやすく','オートと組み合わせて周回しやすく']}
   ],
   done:[
+    {id:'difficulty',lane:'sys',stage:'now',note:'見直し',title:'難易度の見直し',sub:'5段階の難易度',icon:'🧭',lead:'野生のモンスターの難易度を見直しました。',points:['難易度をⅠ〜Ⅴの5段階に','どの場所にも、弱い相手から強い相手まで']},
     {id:'status',lane:'sys',stage:'now',note:'追加',title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
       lead:'モンスターやキャラクターのステータスを確認できるようになりました。',points:['HP・攻撃などの能力値を確認','モンスターとキャラクターの両方に対応','進化のタイミングは秘密のまま。育てて見つけよう']},
     {id:'stat4',lane:'sys',stage:'now',note:'見直し',title:'能力値の見直し',sub:'攻撃と防御を追加',icon:'⚔️',

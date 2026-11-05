@@ -3,7 +3,7 @@ const CONTRACTOR_RANK_SYSTEM_VERSION = 1;
 const CONTRACTOR_MAX_RANK = 50;
 const CONTRACTOR_LEGACY_MIGRATION_VERSION = 1;
 const CONTRACTOR_ACTION_EXP = Object.freeze({
-  battle:Object.freeze({easy:5,normal:10,hard:20,extreme:35,multiBonus:10}),
+  battle:Object.freeze({multiBonus:10}),
   contractSuccess:20,
   firstSpeciesContract:30,
   dexRegistration:30,
@@ -261,8 +261,8 @@ function grantContractorBossFirstWin(mon){
 }
 
 function grantContractorBattleWin({difficultyId='normal',multi=false,enemies=[]}={}){
-  const difficulty=['easy','normal','hard','extreme'].includes(difficultyId)?difficultyId:'normal';
-  const results=[grantContractorExp(CONTRACTOR_ACTION_EXP.battle[difficulty],{source:`battle_${difficulty}`})];
+  const difficulty=huntDifficulty(difficultyId).id;
+  const results=[grantContractorExp(huntDifficulty(difficulty).contractorExp,{source:`battle_${difficulty}`})];
   if(multi)results.push(grantContractorExp(CONTRACTOR_ACTION_EXP.battle.multiBonus,{source:'multi_battle_bonus'}));
   (Array.isArray(enemies)?enemies:[]).forEach(mon=>results.push(...grantContractorBossFirstWin(mon).results));
   return contractorGrantSummary(results);

@@ -7,18 +7,19 @@ const source=fs.readFileSync(new URL('js/contractor-rank.js',root),'utf8');
 const defaults=()=>({systemVersion:1,exp:0,claimedRankRewards:[],expEventIds:[],unlockedTitleIds:[],equippedTitleId:null,recentExp:[],legacyMigrationVersion:0,legacyMigrationSummary:null});
 const save={saveMeta:{migrations:[]},history:{wins:0,logs:[]},caught:[],expeditions:{completedCount:0},contractor:defaults()};
 const context=vm.createContext({console,Date,Math,M:[],save,contractorSaveDefaults:defaults});
+vm.runInContext('const MAX_LEVEL=100;'+fs.readFileSync(new URL('js/state.js',root),'utf8'),context);
 vm.runInContext(source,context);
 const value=expression=>vm.runInContext(expression,context);
 
 assert.equal(value("grantContractorBattleWin({difficultyId:'easy'}).amount"),5);
-assert.equal(value("grantContractorBattleWin({difficultyId:'normal',multi:true}).amount"),20);
-assert.equal(value("grantContractorBattleWin({difficultyId:'hard'}).amount"),20);
+assert.equal(value("grantContractorBattleWin({difficultyId:'normal',multi:true}).amount"),18);
+assert.equal(value("grantContractorBattleWin({difficultyId:'hard'}).amount"),16);
 assert.equal(value("grantContractorBattleWin({difficultyId:'extreme'}).amount"),35);
 
 context.boss={id:'boss',name:'Boss',bossClass:'ボス級'};
 context.superBoss={id:'super',name:'Super',bossClass:'超ボス級'};
-assert.equal(value("grantContractorBattleWin({difficultyId:'normal',enemies:[boss,superBoss]}).amount"),360);
-assert.equal(value("grantContractorBattleWin({difficultyId:'normal',enemies:[boss,superBoss]}).amount"),10,'boss bonuses must only be awarded once');
+assert.equal(value("grantContractorBattleWin({difficultyId:'normal',enemies:[boss,superBoss]}).amount"),358);
+assert.equal(value("grantContractorBattleWin({difficultyId:'normal',enemies:[boss,superBoss]}).amount"),8,'boss bonuses must only be awarded once');
 
 assert.equal(value("grantContractorContractSuccess('freigal').amount"),50);
 assert.equal(value("grantContractorContractSuccess('freigal').amount"),20,'repeat contracts must not repeat the first-species bonus');

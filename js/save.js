@@ -40,10 +40,10 @@ function beginGBlessVictory(){
   if(used){if(s.week>0)s.week-=G_BLESS_RULES.cost;else s.reserve-=G_BLESS_RULES.cost;if(!gBlessTotal(s))s.on=false;}
   return used?{baseExp:0,baseCoins:0,remaining:gBlessTotalText(s)}:null;
 }
-function gBlessHuntReward(base,turnBonus,kind,bless){
-  if(!bless)return huntRewardAmount(base,turnBonus);
-  bless[kind==='coins'?'baseCoins':'baseExp']+=huntRewardAmount(base,turnBonus);
-  return huntRewardAmount(base,turnBonus,G_BLESS_RULES[kind]);
+function gBlessHuntReward(base,turnBonus,kind,bless,rewardMultiplier){
+  if(!bless)return huntRewardAmount(base,turnBonus,1,rewardMultiplier);
+  bless[kind==='coins'?'baseCoins':'baseExp']+=huntRewardAmount(base,turnBonus,1,rewardMultiplier);
+  return huntRewardAmount(base,turnBonus,G_BLESS_RULES[kind],rewardMultiplier);
 }
 
 const TUTORIAL_VERSION = 2;
@@ -118,13 +118,19 @@ function normalizeTutorialSave(value,{legacy=false}={}){
   return normalized;
 }
 
-const WORLD_MAP_NAVIGATION_DIFFICULTY_IDS = Object.freeze(['easy','normal','hard','extreme']);
+// Keep migration independent of battle state: save repair also runs in recovery tools.
+const WORLD_MAP_NAVIGATION_DIFFICULTY_IDS = Object.freeze(['d1','d2','d3','d4','d5','extreme']);
+function normalizeSavedHuntDifficultyId(value){
+  const aliases={easy:'d1',normal:'d2',hard:'d4'};
+  const id=typeof value==='string'&&Object.hasOwn(aliases,value)?aliases[value]:value;
+  return WORLD_MAP_NAVIGATION_DIFFICULTY_IDS.includes(id)?id:null;
+}
 function normalizeWorldMapNavigationState(value){
   const source=isSaveObject(value)?value:{};
   const knownMapIds=new Set((typeof MAPS!=='undefined'&&Array.isArray(MAPS)?MAPS:[]).map(map=>map.id));
   const mapId=typeof source.mapId==='string'&&knownMapIds.has(source.mapId)?source.mapId:null;
   const eventKey=mapId&&typeof source.eventKey==='string'&&/^[a-z0-9_:-]{1,80}$/.test(source.eventKey)?source.eventKey:null;
-  const difficultyId=mapId&&WORLD_MAP_NAVIGATION_DIFFICULTY_IDS.includes(source.difficultyId)?source.difficultyId:null;
+  const difficultyId=mapId?normalizeSavedHuntDifficultyId(source.difficultyId):null;
   return {...source,mapId,eventKey,difficultyId,
     overviewScrollLeft:Math.min(100000,nonNegativeInteger(source.overviewScrollLeft))};
 }
@@ -172,14 +178,23 @@ function normalizeMapStories(value){
   maps.grassland_whose={...source,version:1,episodes,resume};return maps;
 }
 function normalizeAutoBattle(raw){
-  const keyOk=key=>typeof key==='string'&&/^[a-z0-9_]+:(easy|normal|hard|extreme)$/.test(key);
+  const normalizeKey=key=>{
+    if(typeof key!=='string'||!/^[a-z0-9_]+:[a-z0-9_]+$/.test(key))return null;
+    const [mapId,rawDifficulty]=key.split(':');
+    const difficulty=normalizeSavedHuntDifficultyId(rawDifficulty);
+    return difficulty?`${mapId}:${difficulty}`:null;
+  };
   const unique=(list,test)=>Array.isArray(list)?[...new Set(list.filter(test))]:[];
   const defeated={};
   for(const [key,list] of Object.entries(isSaveObject(raw?.defeated)?raw.defeated:{})){
-    if(keyOk(key))defeated[key]=unique(list,id=>typeof id==='string'&&/^[a-z0-9_]+$/.test(id));
+    const normalizedKey=normalizeKey(key);
+    if(normalizedKey)defeated[normalizedKey]=[...new Set([
+      ...(defeated[normalizedKey]||[]),
+      ...unique(list,id=>typeof id==='string'&&/^[a-z0-9_]+$/.test(id))
+    ])];
   }
   const s=raw?.settings;
-  return {v:1,defeated,unlocked:unique(raw?.unlocked,keyOk),settings:{
+  return {v:1,defeated,unlocked:[...new Set((Array.isArray(raw?.unlocked)?raw.unlocked:[]).map(normalizeKey).filter(Boolean))],settings:{
     times:[1,5,10,20].includes(s?.times)?s.times:5,contract:s?.contract==='pause'?'pause':'skip',
     stopOnBlessEmpty:s?.stopOnBlessEmpty!==false,stopOnNewDex:s?.stopOnNewDex===true,speed:s?.speed===1?1:2}};
 }

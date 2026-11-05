@@ -10,33 +10,33 @@ assert.equal(run('worldMapOverviewIntroIsUnread()'),true,'completed and skipped 
 assert.equal(run('worldMapDismissOverviewIntro()'),true);
 assert.equal(run('worldMapOverviewIntroIsUnread()'),false,'the introduction receipt is additive and persistent');
 assert.equal(run('MAPS.length'),19);
-assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'hard').some(m=>m.id==='hikari')"),false);
+assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'d4').some(m=>m.id==='hikari')"),false);
 assert.equal(run("worldMapAvailableDifficulties(MAPS.find(m=>m.id==='world_between')).length"),0);
-run("save.worldMap=rollWorldEventsAfterVictory(null,{receiptId:'world-victory:1',difficultyId:'hard',mapId:'light_plain'},()=>0)");
+run("save.worldMap=rollWorldEventsAfterVictory(null,{receiptId:'world-victory:1',difficultyId:'d4',mapId:'light_plain'},()=>0)");
 assert.equal(run('worldMapActiveEvents().length'),5);
-assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='water_secret'),'hard','water_secret').some(m=>m.id==='tienhairon')"),true,'secret water entrance offers Tienhairon');
-for(const difficulty of ['easy','normal','hard','extreme']){
+assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='water_secret'),'d4','water_secret').some(m=>m.id==='tienhairon')"),true,'secret water entrance offers Tienhairon');
+for(const difficulty of ['d1','d2','d3','d4','d5','extreme']){
   c.habitatDifficulty=difficulty;
   assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='deep_sea_end'),habitatDifficulty).some(m=>m.id==='tienhairon')"),false,'deep sea must no longer offer Tienhairon');
 }
 assert.equal(run("normalizeWorldMapState(JSON.parse(JSON.stringify({active:{water_secret:{monsterId:'tienhairon'}}}))).active.water_secret.monsterId"),'tienhairon','event target survives reload normalization');
 
-assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'hard','elysia')[0].id"),'hikari');
+assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'d4','elysia')[0].id"),'hikari');
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='light_plain'),'extreme','elysia').length"),0);
-assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='starsea'),'hard','starsea')[0].id"),'nemesion');
+assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='starsea'),'d4','starsea')[0].id"),'nemesion');
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='starsea'),'extreme','crisis')[0].id"),'doom_nemesion');
 run("save.worldMap=resolveWorldEvent(save.worldMap,'crisis','skip')");
 assert.equal(run("worldMapCandidates(MAPS.find(m=>m.id==='world_between'),'extreme','rift')[0].id"),'false_dragon_alfa');
 run("save.items.golden_land_map=2;reserveGoldenLandMap();");
-assert.equal(run("worldMapAvailableDifficulties(MAPS.find(m=>m.id==='golden_land')).map(d=>d.id).join(',')"),'hard');
+assert.equal(run("worldMapAvailableDifficulties(MAPS.find(m=>m.id==='golden_land')).map(d=>d.id).join(',')"),'d4');
 assert.equal(run('save.items.golden_land_map'),2,'rendering or candidate lookup must not consume');
 run("save.worldMap.futureField={preserved:true};globalThis.before=structuredClone(save);repairSave(save,[])");
 assert.equal(run('save.worldMap.futureField.preserved'),true);
 assert.equal(run('save.worldMap.active.rift.monsterIds.length'),1);
 assert.equal(run('save.items.golden_land_map'),2);
-run("save.worldMap=normalizeWorldMapState(null);save.history.wins=22;selectedMap=MAPS[0];activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'hard'};recordWorldMapVictory();recordWorldMapVictory();");
+run("save.worldMap=normalizeWorldMapState(null);save.history.wins=22;selectedMap=MAPS[0];activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'d4'};recordWorldMapVictory();recordWorldMapVictory();");
 assert.equal(run('save.worldMap.normalVictories'),1);
-run("save.progress.tutorial.status='in_progress';activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'hard'};recordWorldMapVictory();");
+run("save.progress.tutorial.status='in_progress';activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'d4'};recordWorldMapVictory();");
 assert.equal(run('save.worldMap.normalVictories'),1,'tutorial must not roll');
 for(const mapId of run('MAPS.map(m=>m.id)')){
   c.mapId=mapId;
@@ -48,13 +48,13 @@ assert.ok(html.indexOf('js/world-events.js')<html.indexOf('js/save.js'));
 assert.equal((html.match(/src="js\/multi-battle\.js/g)||[]).length,1);
 assert.ok(!fs.readFileSync(new URL('../js/battle-rules.js',import.meta.url),'utf8').includes('script.src = \'js/multi-battle.js'));
 vm.runInContext(fs.readFileSync(new URL('../js/battle-flow.js',import.meta.url),'utf8'),c);
-run("saveGame=()=>false;showBattleChoices=()=>{globalThis.returnedToMap=true};save.items.golden_land_map=2;save.goldenLandMapReady=true;beginChosenBattle('golden_land','slime_gold','hard',{goldenLandMapEntry:true});");
+run("saveGame=()=>false;showBattleChoices=()=>{globalThis.returnedToMap=true};save.items.golden_land_map=2;save.goldenLandMapReady=true;beginChosenBattle('golden_land','slime_gold','d4',{goldenLandMapEntry:true});");
 assert.equal(run('save.items.golden_land_map'),2,'failed save rolls back entry consumption');
 assert.equal(run('save.goldenLandMapReady'),true);
 assert.equal(c.returnedToMap,true,'failed save aborts battle start');
 console.log('World map adapter passed: 19 maps, rarity gates, events, save defaults, item preservation, victory dedupe and tutorial exclusion.');
 
-run("save.progress.tutorial.status='completed';save.worldMap=normalizeWorldMapState({active:{water_secret:{},elysia:{}}});activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'easy'};recordWorldMapBattleResult({saveNow:true});recordWorldMapBattleResult({saveNow:true});");
+run("save.progress.tutorial.status='completed';save.worldMap=normalizeWorldMapState({active:{water_secret:{},elysia:{}}});activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'d1'};recordWorldMapBattleResult({saveNow:true});recordWorldMapBattleResult({saveNow:true});");
 assert.equal(run('save.worldMap.active.water_secret.remainingBattles'),2,'failed writes leave event lifetime untouched');
 assert.equal(run('activeHuntRequest.worldMapExpiryPending'),true);
 assert(!run('activeHuntRequest.worldMapExpiryRecorded'));
@@ -63,7 +63,7 @@ assert.equal(run('save.worldMap.active.water_secret.remainingBattles'),1,'loss/r
 run("save.worldMap=normalizeWorldMapState(JSON.parse(JSON.stringify(save.worldMap)));activeHuntRequest={worldMapExploration:true,worldMapEventKey:'water_secret'};recordWorldMapBattleResult();");
 assert.equal(run('save.worldMap.active.water_secret.remainingBattles'),1,'failed challenge preserves its entrance');
 assert.equal(run('save.worldMap.active.elysia.remainingBattles'),1,'other events still age during a challenge');
-run("activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'easy'};recordWorldMapBattleResult();");
+run("activeHuntRequest={worldMapExploration:true,mapId:'grassland',difficultyId:'d1'};recordWorldMapBattleResult();");
 assert.equal(run('save.worldMap.active.water_secret'),null);
 assert.equal(run('save.worldMap.active.elysia'),null);
 assert.equal(run('save.items.golden_land_map'),2,'expiry does not consume held maps');

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 const c=vm.createContext({console});
+vm.runInContext('const MAX_LEVEL=100;'+fs.readFileSync(new URL('../js/state.js',import.meta.url),'utf8'),c);
 vm.runInContext(fs.readFileSync(new URL('../js/world-events.js',import.meta.url),'utf8'),c);
 const plain=value=>JSON.parse(JSON.stringify(value));
 const details={receiptId:'world-victory:1',difficultyId:'hard',mapId:'light_plain'};

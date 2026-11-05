@@ -76,7 +76,7 @@ function worldMapCandidates(map,difficultyId,eventKey=null){
 }
 function worldMapAvailableDifficulties(map,eventKey=null){
   return Object.values(HUNT_DIFFICULTIES).filter(d=>
-    (!(map?.bossOnly||map?.rareOnly||map?.goldenLand)||['hard','extreme'].includes(d.id))&&
+    (!(map?.bossOnly||map?.rareOnly||map?.goldenLand)||['d4','d5','extreme'].includes(d.id))&&
     worldMapCandidates(map,d.id,eventKey).length
   );
 }

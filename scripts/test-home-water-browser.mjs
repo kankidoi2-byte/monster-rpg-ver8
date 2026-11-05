@@ -55,7 +55,7 @@ try{
  await page.evaluate(()=>show('home'));assert.equal(await page.locator('[data-notice-unread]').first().isHidden(),true);report.checks.push('rank/notices/read indicator/expedition/dex shortcuts; media disposed on exit');
  await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('#rosterActions [data-roster-party]').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();report.checks.push('monster navigation -> party edit -> save');
  await page.evaluate(()=>show('home'));await page.locator('.home-battle-button').click();assert(await page.locator('#battleChoices').isVisible());
- await page.locator('[data-wm-place="grassland"]').first().click();await page.locator('[data-wm-difficulty="easy"]').first().click();await page.locator('[data-wm-depart]').first().click();assert(await page.locator('#battle').isVisible());report.checks.push('home battle -> world map -> easy battle start');
+ await page.locator('[data-wm-place="grassland"]').first().click();await page.locator('[data-wm-difficulty="d1"]').first().click();await page.locator('[data-wm-depart]').first().click();assert(await page.locator('#battle').isVisible());report.checks.push('home battle -> world map -> easy battle start');
  await page.evaluate(()=>{show('home');save.homeFavoriteId='freigal';renderHome();});
  await page.emulateMedia({reducedMotion:'reduce'});await page.waitForTimeout(100);
  assert.equal(await page.locator('#home video').count(),0);assert(await page.locator('.home-water-monster img').isVisible());report.checks.push('reduced-motion transparent poster');

@@ -160,7 +160,7 @@ while(state().status==='in_progress'){
       advanceQueued();
       break;
     case 'rescue_world_map_depart':
-      assert.equal(run("handleTutorialWorldMapDeparture('grassland','easy')"),true);
+      assert.equal(run("handleTutorialWorldMapDeparture('grassland','d1')"),true);
       break;
     case 'battle_actor_open': assert.equal(run("handleTutorialBattleAction('actor_picker_opened')"),true);flushTimers();break;
     case 'battle_actor_select': assert.equal(run("handleTutorialBattleAction('actor_selected')"),true);flushTimers();break;
@@ -281,7 +281,7 @@ assert.equal(finalSave.expeditions.active.length,1,'the prologue must dispatch o
 assert.equal(finalSave.expeditions.active[0].tutorialPrologue,true);
 assert.deepEqual(finalSave.expeditions.active[0].memberUids.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['freigal'],'only reserve Freigal must be sent on the tutorial expedition');
 assert.equal(run('resumeTutorialIfNeeded()'),false,'completed prologue must not reopen');
-assert.equal(run("handleTutorialWorldMapDeparture('grassland','easy')"),false,'free exploration must no longer be intercepted by tutorial routing');
+assert.equal(run("handleTutorialWorldMapDeparture('grassland','d1')"),false,'free exploration must no longer be intercepted by tutorial routing');
 assert.equal(activeScreen,'home','completion must return to free-play home');
 assert.equal(notices.length,0,`successful journey must not emit warnings: ${notices.join(' / ')}`);
 

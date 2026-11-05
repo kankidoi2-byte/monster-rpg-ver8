@@ -8,22 +8,22 @@ const multiBattleSource = fs.readFileSync(new URL('../js/multi-battle.js', impor
 const battleFlowSource = fs.readFileSync(new URL('../js/battle-flow.js', import.meta.url), 'utf8');
 const battleCss = fs.readFileSync(new URL('../css/ui-redesign.css', import.meta.url), 'utf8');
 
-assert.equal(context.rollThreeWayBattle('easy', () => 0), false, 'Easy must never roll a three-way battle');
-assert.equal(context.rollThreeWayBattle('normal', () => 0.099), true, 'Normal rate must include rolls below 10%');
-assert.equal(context.rollThreeWayBattle('normal', () => 0.10), false, 'Normal rate must exclude rolls at 10% or above');
-assert.equal(context.rollThreeWayBattle('hard', () => 0.199), true, 'Hard rate must include rolls below 20%');
-assert.equal(context.rollThreeWayBattle('hard', () => 0.20), false, 'Hard rate must exclude rolls at 20% or above');
-assert.equal(context.rollThreeWayBattle('extreme', () => 0.299), true, 'Extreme rate must include rolls below 30%');
-assert.equal(context.rollThreeWayBattle('extreme', () => 0.30), false, 'Extreme rate must exclude rolls at 30% or above');
-
-assert.equal(context.rollHuntBattleMode('easy', () => 0), 'single', 'Easy must remain a single battle');
-assert.equal(context.rollHuntBattleMode('normal', () => 0.099), 'three_way', 'Normal three-way rate must be 10%');
-assert.equal(context.rollHuntBattleMode('normal', () => 0.10), 'invasion_pending', 'Normal invasion range must start at 10%');
-assert.equal(context.rollHuntBattleMode('normal', () => 0.199), 'invasion_pending', 'Normal invasion rate must be 10%');
-assert.equal(context.rollHuntBattleMode('normal', () => 0.20), 'single', 'Normal special battle ranges must not overlap');
-assert.equal(context.rollHuntBattleMode('hard', () => 0.399), 'invasion_pending', 'Hard invasion rate must be 20%');
-assert.equal(context.rollHuntBattleMode('extreme', () => 0.599), 'invasion_pending', 'Extreme invasion rate must be 30%');
-assert.equal(context.rollHuntBattleMode('extreme', () => 0.60), 'single', 'Extreme special battle ranges must end at 60%');
+const rates={d1:0,d2:.05,d3:.10,d4:.15,d5:.20,extreme:.30};
+for(const [id,rate] of Object.entries(rates)){
+  assert.equal(context.rollThreeWayBattle(id,()=>0),rate>0,`${id} zero draw`);
+  if(rate)assert.equal(context.rollThreeWayBattle(id,()=>rate-.001),true,`${id} below upper bound`);
+  assert.equal(context.rollThreeWayBattle(id,()=>rate),false,`${id} excludes upper bound`);
+  assert.equal(context.rollHuntBattleMode(id,()=>0),rate?'three_way':'single');
+  if(rate){
+    assert.equal(context.rollHuntBattleMode(id,()=>rate),'invasion_pending');
+    assert.equal(context.rollHuntBattleMode(id,()=>2*rate-.001),'invasion_pending');
+  }
+  assert.equal(context.rollHuntBattleMode(id,()=>2*rate),'single');
+}
+for(const [old,id] of [['easy','d1'],['normal','d2'],['hard','d4']]){
+  for(const draw of [0,.049,.05,.149,.15,.299,.30,.99])
+    assert.equal(context.rollHuntBattleMode(old,()=>draw),context.rollHuntBattleMode(id,()=>draw),`${old} alias preserves new tier rates`);
+}
 assert.deepEqual([0, .34, .99].map(value => context.rollInvasionTurn(() => value)), [2, 3, 4], 'Invasion turn must be between turns 2 and 4');
 
 const monsters = new Map([

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {runtime} from './runtime.mjs';
 const r=runtime(),run=r.run;
+r.context.Math.random=()=>.5;
 // Same difficulty, different species: each participant must use its defined level.
 run(`activeHuntRequest=createHuntRequest(MAPS[0],by('slime'),'normal',[]);`);
 assert.equal(run(`createMultiEnemy(by('seralphia'),'enemy_b').level`),run(`huntLevelFor(by('seralphia'),'normal')`),'second enemy must use its species level');
@@ -36,8 +37,8 @@ console.log('PASS: poison KO attribution, single/multi damage/drain/guard parity
 // Different levels and species catch using the lead enemy's level for a second
 // enemy or reading an owned instance's level for a wild unit of the same species.
 run(`activeInstance=addInstance('freigal',10);player=by('freigal');enemy=by('slime');
-  activeHuntRequest=createHuntRequest(MAPS[0],enemy,'normal',[]);
-  var wild=createMultiEnemy(by('goblin'),'enemy_b');
+  activeHuntRequest=createHuntRequest(MAPS[0],enemy,'d2',[],{enemyLevel:5});
+  const originalLevel=huntLevelFor;huntLevelFor=()=>7;var wild=createMultiEnemy(by('goblin'),'enemy_b');huntLevelFor=originalLevel;
   activeInstance.alchemy={statModifiers:{hp:1.1,speed:1.1}};
   pAtk=eAtk=1;pGuard=eGuard=pAquaShield=eAquaShield=pFlareCharge=eFlareCharge=false;
   eHp=wild.hp=1000;wild.maxHp=1000;var statMove=['検証',24,'normal','repeat_attack',1];`);

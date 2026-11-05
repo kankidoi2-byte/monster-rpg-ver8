@@ -12,7 +12,7 @@ const notices=read('js/notices-data.js');
 const index=read('index.html');
 
 assert.match(saveSource,/const SAVE_KEY = 'mb_v95c'/,'the established save key must not change');
-assert.ok(tutorial.includes("Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'})"),'the guaranteed target must be the existing grassland Slime');
+assert.ok(tutorial.includes("Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'d1'})"),'the guaranteed target must be the existing grassland Slime');
 assert.ok(tutorial.includes("save.saveMeta.migrations.includes('v3_to_v4_tutorial_state')"),'migrated existing saves must be excluded explicitly');
 assert.ok(tutorial.includes("tutorial.status!=='in_progress'||tutorial.completed||tutorial.skipped"),'only an active, unskipped required tutorial may use the guarantee');
 assert.ok(tutorial.includes("!['first_contract','contract_confirm'].includes(tutorial.stepId)"),'the guarantee must be restricted to the first-contract checkpoint');
@@ -28,7 +28,7 @@ const freshSave=()=>({
   progress:{tutorial:{status:'in_progress',stepId:'first_contract',completed:false,skipped:false,replaying:false,firstContractGuaranteeUsed:false,starterContractScrollGranted:false}}
 });
 const context=vm.createContext({
-  TUTORIAL_FIRST_HUNT:{mapId:'grassland',enemyId:'slime',difficultyId:'easy'},
+  TUTORIAL_FIRST_HUNT:{mapId:'grassland',enemyId:'slime',difficultyId:'d1'},
   save:freshSave(),enemy:{id:'slime'},selectedMap:{id:'grassland'},saveOk:true,saveCalls:0,
   currentTutorialState:()=>context.save.progress.tutorial,
   ensureContractScrollItem:()=>{context.save.items??={};context.save.items.contract_scroll??=0;},

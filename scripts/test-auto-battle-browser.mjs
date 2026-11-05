@@ -44,10 +44,10 @@ try{
  // Settle real single encounters in Grassland Normal through the normal victory receipt.
  const result=await page.evaluate(()=>{
    const map=MAPS.find(m=>m.id==='grassland');
-   const targets=autoProgress(map,'normal').targets;
+   const targets=autoProgress(map,'d2').targets;
    for(const [i,mon] of targets.entries()){
-     const request=createHuntRequest(map,mon,'normal',[]);request.battleMode='single';
-     beginChosenBattle(map.id,mon.id,'normal',request);eHp=0;
+     const request=createHuntRequest(map,mon,'d2',[],{allowOvertier:false});request.battleMode='single';
+     beginChosenBattle(map.id,mon.id,'d2',request);eHp=0;
      if(i===0){
        const before=JSON.stringify(save),orig=Storage.prototype.setItem;
        Storage.prototype.setItem=function(k,v){if(k===MonsterProfiles.key(SAVE_KEY))throw Error('test quota');return orig.call(this,k,v)};
@@ -57,19 +57,19 @@ try{
      }else win();
      afterBattleNext();
    }
-   return [targets.length,autoProgress(map,'normal').count,save.autoBattle.unlocked.includes('grassland:normal')];
+   return [targets.length,autoProgress(map,'d2').count,save.autoBattle.unlocked.includes('grassland:d2')];
  });
  assert(result[0]>0&&result[0]===result[1]&&result[2]);
- await page.evaluate(()=>{showBattleChoices();showWorldMapLocation('grassland');worldMapSelectedDifficulty='normal';renderWorldMap(document.getElementById('battleChoiceList'));});
- assert(await sw.isEnabled());assert.match(await page.locator('[data-wm-difficulty="normal"]').innerText(),/討伐 \d+\/\d+ ✓/);
+ await page.evaluate(()=>{showBattleChoices();showWorldMapLocation('grassland');worldMapSelectedDifficulty='d2';renderWorldMap(document.getElementById('battleChoiceList'));});
+ assert(await sw.isEnabled());assert.match(await page.locator('[data-wm-difficulty="d2"]').innerText(),/討伐 \d+\/\d+ ✓/);
  await sw.click();await assertMobileLayout('.ab-sheet');
  await page.getByRole('button',{name:'10回',exact:true}).click();
  assert.equal(await page.evaluate(()=>save.autoBattle.settings.times),10);
  await page.getByRole('button',{name:'5回',exact:true}).click();
  // A high-level test party makes the five real fights reproducible. Preserve random damage/rewards.
  await page.evaluate(()=>{
-   const map=MAPS.find(m=>m.id==='grassland');save.autoBattle.unlocked.push('grassland:easy');
-   pendingEvolutions=[];currentEvolution=null;worldMapSelectedDifficulty='easy';autoRefreshSheet();
+   const map=MAPS.find(m=>m.id==='grassland');save.autoBattle.unlocked.push('grassland:d1');
+   pendingEvolutions=[];currentEvolution=null;worldMapSelectedDifficulty='d1';autoRefreshSheet();
    save.gBless.on=true;save.gBless.week=5;save.gBless.reserve=0;saveGame();
    window.abBefore=structuredClone(save);
  });
@@ -101,11 +101,11 @@ try{
      clearTutorialUi();showBattleChoices();worldMapDeparting=false;
      save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
      const map=MAPS.find(m=>m.id==='grassland'),mon=by('slime');
-     const request=createHuntRequest(map,mon,'easy',[]);request.battleMode='single';
+     const request=createHuntRequest(map,mon,'d1',[],{allowOvertier:false});request.battleMode='single';
      request.worldMapExploration=true;prepareBattleParty();
-     autoRun=autoNewRun(map.id,'easy',5);Object.assign(autoRun.settings,opts);
+     autoRun=autoNewRun(map.id,'d1',5);Object.assign(autoRun.settings,opts);
      if(opts.stopOnNewDex){save.caught=save.caught.filter(id=>id!==mon.id);save.instances=save.instances.filter(i=>i.id!==mon.id);}
-     autoBindDeparture(map,request,null);beginChosenBattle(map.id,mon.id,'easy',request);
+     autoBindDeparture(map,request,null);beginChosenBattle(map.id,mon.id,'d1',request);
    },options);
  }
  await encounter({contract:'pause'});

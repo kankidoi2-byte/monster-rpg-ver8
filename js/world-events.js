@@ -87,14 +87,14 @@ function rollWorldEventsAfterVictory(raw,details={},randomFn=Math.random){
     const roll=Number(randomFn());
     if(Number.isFinite(roll)&&roll>=0&&roll<rate)next.active[key]={...event,remainingBattles:WORLD_EVENT_BATTLE_LIMITS[key],source:'ordinary_victory',discoveredAtVictory:next.normalVictories};
   };
-  const difficulty=details.difficultyId;
-  const eligible=['normal','hard','extreme'].includes(difficulty);
+  const difficulty=huntDifficulty(details.difficultyId).id;
+  const eligible=['d2','d3','d4','d5','extreme'].includes(difficulty);
   if(!eligible)return next;
   if(details.mapId==='light_plain')add('elysia',.08,{mapId:'light_plain',monsterId:'hikari'});
   add('crisis',.03,{mapId:'starsea',monsterId:'doom_nemesion'});
   add('water_secret',.12,{mapId:'water_secret'});
   add('starsea',.10,{mapId:'starsea',monsterId:'nemesion'});
-  add('golden_land',{normal:.03,hard:.05,extreme:.08}[difficulty],{mapId:'golden_land'});
+  add('golden_land',huntDifficulty(difficulty).goldenLandRate,{mapId:'golden_land'});
   return next;
 }
 function resolveWorldEvent(raw,key,outcome='defeat'){
