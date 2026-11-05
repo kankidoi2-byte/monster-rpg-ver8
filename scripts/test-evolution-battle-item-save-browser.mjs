@@ -48,7 +48,11 @@ try{
   await page.screenshot({path:`${out}/${slot}-${width}-${font}-item-error.png`});
   await page.evaluate(()=>{Storage.prototype.setItem=originalSet});await potion.click();
   await page.waitForFunction(()=>!busy&&battleTurnCount===1);
-  assert(await page.evaluate(()=>save.items.potion===2&&pHp===60&&partyBattle[activePartyIdx].hp===60&&localStorage.getItem(otherKey)===otherRaw));
+  assert(await page.evaluate(()=>{
+   // The evolved Lv50 Highaquaron used to have 165 + 49 × 12 max HP.
+   const expectedHp=10+Math.floor(50*playerMaxHp()/(165+49*12));
+   return save.items.potion===2&&pHp===expectedHp&&partyBattle[activePartyIdx].hp===expectedHp&&localStorage.getItem(otherKey)===otherRaw;
+  }));
   await page.reload({waitUntil:'networkidle'});
   assert.equal(await page.evaluate(()=>save.items.potion),2);assert.equal(await page.evaluate(()=>getPartyInstances()[0].id),'highaquaron');
   report.cases.push({slot,width,height,font,evolution:true,item:true,retry:true,reload:true});await context.close();
