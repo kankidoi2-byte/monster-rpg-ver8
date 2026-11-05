@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-viewport-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
 w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
@@ -43,7 +45,7 @@ for(const link of d.querySelectorAll('link[rel="stylesheet"]')){
  const path=link.getAttribute('href').split('?')[0];
  if(!path.startsWith('css/'))continue;
  css.walk(css.parse(fs.readFileSync(new URL(path,root),'utf8')),{visit:'Rule',enter(rule){
-  if(rule.prelude?.type!=='SelectorList')return;
+  if(this.atrule?.name.endsWith('keyframes')||rule.prelude?.type!=='SelectorList')return;
   const declarations=[...rule.block.children].filter(n=>n.type==='Declaration'&&['width','height','position','min-height','display'].includes(n.property));
   for(const sel of rule.prelude.children)for(const decl of declarations)sizingRules.push({selector:css.generate(sel),spec:specificity(sel),important:!!decl.important,property:decl.property,value:css.generate(decl.value)});
  }});
@@ -110,49 +112,34 @@ let panelScrolls=0;w.HTMLElement.prototype.scrollIntoView=function(){if(this.clo
 const restingHeight=arena.dataset.compactHeight,restingUnit=arena.dataset.sizeUnit;
 run('toggleBattleSkillPanel()');
 assert(by('commands').classList.contains('battle-inline-panel'));
-assert(by('battleCompactInfo').querySelector('.battle-skill-help .battle-choice-detail'));
-assert.equal(by('commands').querySelectorAll('.skill-button .battle-choice-detail').length,0);
+assert(by('commands').querySelector('.br-effect'));
 assert(by('commands').contains(d.activeElement));assert.equal(panelScrolls,0);
 const winningRule=(node,property)=>sizingRules.filter(rule=>rule.property===property&&node.matches(rule.selector)).reduce((winner,rule)=>!winner||Number(rule.important)>Number(winner.important)||(rule.important===winner.important&&compare(rule.spec,winner.spec)>=0)?rule:winner,null);
 assert.equal(winningRule(by('commands'),'position').value,'static');
-assert.equal(winningRule(by('commands').querySelector('.skill-button'),'min-height').value,'54px');
-assert.equal(winningRule(screen.querySelector('.battle-command-dock'),'min-height').value,'184px');
+assert.equal(winningRule(by('commands').querySelector('.skill-button'),'min-height').value,'98px');
+assert.equal(winningRule(screen.querySelector('.battle-command-dock'),'min-height').value,'153px');
 assert.equal(winningRule(by('singlePlayerBox').querySelector('.battle-vitals'),'display').value,'contents');
 assert.equal(winningRule(by('singlePlayerBox'),'position').value,'absolute');
-assert.equal(winningRule(by('singlePlayerBox').querySelector('.bar'),'height').value,'5px');
+assert.equal(winningRule(by('singlePlayerBox').querySelector('.bar'),'height').value,'6px');
 run('updateBattleViewport()');assert.equal(arena.dataset.compactHeight,restingHeight);assert.equal(arena.dataset.sizeUnit,restingUnit);
 run('battleUiBack()');assert(by('commands').classList.contains('hidden'));assert.equal(d.activeElement,by('battleSkillButton'));
-const art=by('pVis').querySelector('img');Object.defineProperty(w,'innerHeight',{configurable:true,value:420});run('updateBattleViewport()');assert.equal(screen.dataset.viewportOverflow,'true');assert.equal(Number(arena.dataset.compactHeight),300);assert.equal(by('pVis').querySelector('img'),art);
+const art=by('pVis').querySelector('img');Object.defineProperty(w,'innerHeight',{configurable:true,value:420});run('updateBattleViewport()');assert.equal(screen.dataset.viewportOverflow,'true');assert.equal(Number(arena.dataset.compactHeight),228);assert.equal(by('pVis').querySelector('img'),art);
 run(`ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('slime'),'enemy_a'),createMultiEnemy(by('freigal'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle();syncBattleViewportInfo()`);
 assert(by('battleCompactInfo').querySelector('[data-info-vis="eVis"]').hidden);checkIds();checkSizingCascade();
-const detail=by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .compact-enemy-detail');
-assert(detail);detail.click();assert(by('battleCompactInfo').querySelector('[data-info-vis="enemy_aVis"] .multi-enemy-details'));checkIds();
-run('chooseMultiBattleTarget(0);renderBattleInputState()');
-assert(by('multiTargetSelect').classList.contains('battle-inline-panel'));assert.equal(panelScrolls,0);
-assert.equal(by('multiTargetSelect').querySelectorAll(':scope > button:not([hidden])').length,1);
-assert.equal(by('multiTargetSelect').querySelectorAll('p').length,0);
-const targetName=by('multiTargetSelect').querySelector('.battle-target-skill').textContent;
-assert(targetName&&!targetName.includes('選択中')&&!targetName.includes('タップ'));
-assert.equal(by('multiTargetSelect').querySelector('[data-battle-panel-back]').textContent,'← 技に戻る');
-run('syncBattleUi();syncBattleUi()');assert.equal(by('multiTargetSelect').querySelector('.battle-target-skill').textContent,targetName);
-assert.equal(by('battleActionStatus').textContent,'攻撃する敵をタップ');
-assert.equal(winningRule(screen.querySelector('.battle-command-dock'),'min-height').value,'64px');
-assert.match(winningRule(arena,'height').value,/120px/);
-assert.equal(by('battleCompactInfo').querySelector('summary').textContent,'設定');
-run("battleHistoryEntry('確認ログ')");assert.match(by('battleHistoryCount').textContent,/^\d+件$/);
-assert.match(screen.querySelector('.battle-log-panel>summary').textContent,/^履歴 /);
-assert.match(screen.querySelector('.battle-history-limit').textContent,/最新240件/);
-for(const id of ['enemy_aCard','enemy_bCard']){const card=by(id);for(const hit of card.querySelectorAll('.battle-target-hit')){assert.equal(hit.getAttribute('role'),'button');assert.equal(hit.tabIndex,0);assert.match(hit.getAttribute('aria-label'),/対象にする/);}}
-run('battleUiBack();battleUiBack()');
-for(const hit of d.querySelectorAll('.battle-target-hit'))assert(!hit.hasAttribute('role'));
-// Opening status details retains a compact summary and the full condition list.
-run("pStatus='poison';pPoisonTurns=2;pGuard=true;update()");
-assert.match(by('pBattleStatus').querySelector('summary').textContent,/毒/);assert.match(by('pBattleStatus').querySelector('details>div').textContent,/次の被弾/);
-// A selected enemy's image uses the same guarded handler as its HP plate.
-run('chooseMultiBattleTarget(0);renderBattleInputState();window.qaTargetCalls=[];window.qaOriginalTarget=handleMultiEnemyCard;handleMultiEnemyCard=id=>window.qaTargetCalls.push(id)');
-by('enemy_aCard').querySelector('.battle-stage-slot').click();by('enemy_bCard').querySelector('.multi-enemy-copy').click();
-assert.deepEqual([...w.qaTargetCalls],['enemy_a','enemy_b']);
-run('handleMultiEnemyCard=window.qaOriginalTarget;battleUiBack();battleUiBack()');
+const detail=by('enemy_aCard').querySelector('.br-info');
+assert(detail);detail.click();assert(by('renewalSheet').open);
+assert.match(by('renewalSheetBody').textContent,/弱点/);
+run('renewalClose();toggleBattleSkillPanel()');
+assert(by('commands').classList.contains('battle-inline-panel'));assert.equal(panelScrolls,0);
+assert.equal(by('commands').querySelector('[data-battle-panel-back]').textContent,'‹ 戻る');
+by('enemy_bCard').querySelector('.battle-stage-slot').click();
+assert.match(by('commands').querySelector('.br-skill-heading').textContent,/🎯.*フレイガル/);
+assert(by('multiTargetSelect').classList.contains('hidden'));
+run('battleUiBack();battleHistoryEntry("確認ログ");renewalHistory()');
+assert.match(by('renewalSheetBody').textContent,/確認ログ/);
+run('renewalClose();pStatus="poison";pPoisonTurns=2;pGuard=true;update()');
+assert.match(by('pBattleStatus').textContent,/毒/);
+assert.match(by('pBattleStatus').textContent,/次の被弾/);
 const projected=run(`battleCompactSizePlan([BATTLE_IDLE_MEDIA.goblin,BATTLE_IDLE_MEDIA.slime],BATTLE_IDLE_MEDIA.elixion,393,488)`);
 assert(projected.unit*1.2>260,'foreground dragon remains prominent');
 assert(projected.unit*.3*.85>45,'background slime remains legible');

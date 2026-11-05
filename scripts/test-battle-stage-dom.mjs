@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-stage-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
 w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
@@ -42,8 +44,8 @@ run('busy=true;renderBattleInputState();toggleBattleSkillPanel();openBattleSwitc
 assert(d.querySelector('.battle-command-dock').inert);assert(!by('commands').classList.contains('hidden'));assert(by('battle').classList.contains('active'));
 run('busy=false;closeBattleSkillPanel();renderBattleInputState();openBattleSwitchPicker()');assert.match(by('multiTargetSelect').textContent,/交代する仲間/);
 run('cancelBattleSwitchPicker();toggleKokoroLinkPanel()');assert(!by('kokoroLinkPanel').classList.contains('hidden'));
-run('openBattleItemSelect()');assert(by('battleItemSelect').classList.contains('active'));
-run("show('battle');update()");assert.equal(by('pVis').querySelector('img'),p);
+run('openBattleItemSelect()');assert(by('renewalSheet').open);
+run("renewalClose();update()");assert.equal(by('pVis').querySelector('img'),p);
 run('changeActivePartyMember(1)');assert.notEqual(by('pVis').querySelector('img'),p);assert(by('pVis').querySelector('.battle-facing'));
 run("busy=true;beginBattleAction(player,['回復'],true);showSingleBattleActionTarget('pVis')");assert.match(by('battleActionStatus').textContent,/→ アクアロン/);
 run('busy=false;runAway()');assert(!by('battleOutcome').classList.contains('hidden'));assert(!by('next').classList.contains('hidden'));
@@ -52,7 +54,7 @@ setup();assert(!by('eBattleSlot').classList.contains('is-defeated'));
 run('eHp=0;update()');assert(by('eBattleSlot').classList.contains('is-defeated'));
 assert(!by('singleEnemyBox').classList.contains('hidden'));assert.match(by('eHpText').textContent,/^0 \/ /);
 run('win()');assert(by('eBattleSlot').classList.contains('is-defeated'));
-assert(!by('battleOutcome').classList.contains('hidden'));assert.match(by('battleOutcomeActions').textContent,/契約候補/);
+assert(!by('battleOutcome').classList.contains('hidden'));assert.match(by('battleOutcomeActions').textContent,/契約できそうだ/);
 run('afterBattleNext()');setup();assert(!by('eBattleSlot').classList.contains('is-defeated'));
 setup();run('ensureMultiBattleDom();multiBattle={active:true,enemies:[createMultiEnemy(by("slime"),"enemy_a"),createMultiEnemy(by("freigal"),"enemy_b")],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle()');
 assert(!by('battle').classList.contains('is-single-stage'));assert.equal(by('pVis').parentElement.id,'pBattleSlot');assert.equal(d.querySelectorAll('.battle-stage-slot').length,3);assert(by('enemy_aVis'));checkIds();

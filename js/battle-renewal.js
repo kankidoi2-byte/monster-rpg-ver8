@@ -31,7 +31,7 @@ function renewalMount(){
   dock.insertAdjacentHTML('beforeend','<p id="renewalHint" class="br-hint"></p>');
   battle.querySelector('.battle-arena').insertAdjacentHTML('beforeend','<div id="renewalBanner" class="br-banner" role="status"></div>');
   document.body.insertAdjacentHTML('beforeend','<dialog id="renewalSheet" class="br-sheet" aria-labelledby="renewalSheetTitle"><header><h2 id="renewalSheetTitle"></h2><button type="button" onclick="renewalClose()" aria-label="閉じる">×</button></header><div id="renewalSheetBody"></div></dialog>');
-  const dialog=renewalEl('renewalSheet');dialog.addEventListener('close',()=>{renewal.focus?.focus?.({preventScroll:true});renewal.focus=null;});
+  const dialog=renewalEl('renewalSheet');dialog.addEventListener('close',()=>{renewal.focus?.focus?.({preventScroll:true});renewal.focus=null;syncBattleIdleMedia();});
   dialog.addEventListener('click',e=>{if(e.target===dialog){const b=dialog.getBoundingClientRect();if(e.clientY<b.top||e.clientY>b.bottom||e.clientX<b.left||e.clientX>b.right)renewalClose();}});
   // Result sections must survive reconciliation by the engine's actions panel.
   renewalEl('battleOutcomeRewards').insertAdjacentHTML('afterend','<div id="renewalResultMeta"></div><div id="renewalResultExp"></div>');
@@ -46,9 +46,12 @@ function renewalReset(){
 function renewalOpen(title,html){
   renewalMount();const dialog=renewalEl('renewalSheet');if(!dialog.open)renewal.focus=document.activeElement;
   renewalEl('renewalSheetTitle').textContent=title;renewalEl('renewalSheetBody').innerHTML=html;
-  if(!dialog.open)dialog.showModal();
+  if(!dialog.open){dialog.showModal();syncBattleIdleMedia();}
 }
-function renewalClose(){renewalEl('renewalSheet')?.close();}
+function renewalClose(){
+  const sheet=renewalEl('renewalSheet');
+  if(sheet?.open)sheet.close();
+}
 function renewalRender(){
   if(!renewalEl('battle')?.classList.contains('active')||!player||!enemy)return;
   renewalMount();const target=renewalTarget(),canAct=renewalCanAct(),auto=renewalAuto();
@@ -65,7 +68,10 @@ function renewalRender(){
   const pad=renewalEl('battle').querySelector('.battle-command-pad');pad.inert=!canAct;
   const commands=renewalEl('commands');commands.inert=!canAct;
   for(const [id,text] of [['battleSkillButton','技'],['battleItemButton','道具'],['battleSwitchButton','交代'],['battleEscapeButton','逃走']]){
-    const button=renewalEl(id);if(button)button.innerHTML=`<strong>${text}</strong>`;
+    const button=renewalEl(id);
+    if(!button||id==='battleItemButton')continue;
+    const label=`<strong>${text}</strong>`;
+    if(button.innerHTML!==label)button.innerHTML=label;
   }
   const link=kokoroLinkEffectForInstance(activeInstance),sources=currentKokoroLinkSources({includeUsed:true}),available=sources.filter(s=>s.available).length;
   const reason=player.entityKind!=='monster'?'対象外':link?'発動中':!available?(sources.some(s=>s.used)?'使用済み':'利用可能な控えなし'):'';

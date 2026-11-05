@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-journey-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3c.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};w.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
@@ -40,14 +42,32 @@ function depart(){
 }
 depart();
 act(by('battleSkillButton'));assert(!by('commands').classList.contains('hidden'));act(by('commands').querySelector('[data-battle-panel-back]'));checks.push('skills/back');
-act(by('battleItemButton'));assert.equal(run('activeScreenId()'),'battleItemSelect');act(by('battleItemBack'));assert.equal(run('activeScreenId()'),'battle');checks.push('item/back');
-act(by('battleEscapeButton'));assert(by('battleOutcome').classList.contains('is-retreat'));act(by('next'));assert.equal(run('activeScreenId()'),'battleChoices');checks.push('retreat/next');
+act(by('battleItemButton'));assert(by('renewalSheet').open);run('renewalClose()');assert.equal(run('activeScreenId()'),'battle');checks.push('item/back');
+act(by('battleEscapeButton'));assert(by('renewalSheet').open);run('renewalConfirmEscape()');assert(by('battleOutcome').classList.contains('is-retreat'));act(by('next'));assert.equal(run('activeScreenId()'),'battleChoices');checks.push('retreat/next');
 depart();run('eHp=1');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);assert(by('battleOutcome').classList.contains('is-victory'));assert(run('battleRewardGranted'));assert(!by('next').classList.contains('hidden'));checks.push('actual attack/victory/rewards');
 const coins=run('save.coins');run('win()');assert.equal(run('save.coins'),coins,'reward once');
-const contractButton=by('battleOutcomeActions').querySelector('button');assert(contractButton,'victory contract offer');act(contractButton);assert.equal(run('activeScreenId()'),'contractConfirm');
-const count=run('save.instances.length'),scrolls=run('save.items.contract_scroll');run('Math.random=()=>0');act(d.querySelector('#contractConfirm button[onclick="useContractScrollConfirmed()"]'));await settled();assert.equal(run('save.instances.length'),count+1);assert.equal(run('save.items.contract_scroll'),scrolls-1);assert(run('singleBattleContractAttempted'));assert.equal(run('activeScreenId()'),'battle');assert(run('pendingEvolutions.length>0'),'evolution remains queued during contract');assert.equal(run('loadSave().instances.length'),count+1);checks.push('contract success/remains on outcome/save');
-act(by('next'));resolveEvolution();run('Math.random=()=>.5');depart();run('eHp=1');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);
-act(by('battleOutcomeActions').querySelector('button'));const count2=run('save.instances.length'),scrolls2=run('save.items.contract_scroll');run('Math.random=()=>.99');act(d.querySelector('#contractConfirm button[onclick="useContractScrollConfirmed()"]'));await settled();assert.equal(run('save.instances.length'),count2);assert.equal(run('save.items.contract_scroll'),scrolls2-1);assert(run('singleBattleContractAttempted'));assert.equal(run('activeScreenId()'),'battle');checks.push('contract failure/attempt once/outcome retained');
+const contractButton=by('battleOutcomeActions').querySelector('[data-contract-item="contract_scroll"]');
+assert(contractButton,'victory contract offer');
+const count=run('save.instances.length'),scrolls=run('save.items.contract_scroll');
+run('Math.random=()=>0');
+await run('renewalContract("single","contract_scroll")');
+assert.equal(run('save.instances.length'),count+1);
+assert.equal(run('save.items.contract_scroll'),scrolls-1);
+assert(run('singleBattleContractAttempted'));
+assert.equal(run('activeScreenId()'),'battle');
+assert(run('pendingEvolutions.length>0'),'evolution remains queued during contract');
+assert.equal(run('loadSave().instances.length'),count+1);
+checks.push('contract success/remains on outcome/save');
+act(by('next'));resolveEvolution();run('Math.random=()=>.5');depart();run('eHp=1');
+act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);
+const count2=run('save.instances.length'),scrolls2=run('save.items.contract_scroll');
+run('Math.random=()=>.99');
+await run('renewalContract("single","contract_scroll")');
+assert.equal(run('save.instances.length'),count2);
+assert.equal(run('save.items.contract_scroll'),scrolls2-1);
+assert(run('singleBattleContractAttempted'));
+assert.equal(run('activeScreenId()'),'battle');
+checks.push('contract failure/attempt once/outcome retained');
 // Keep enemy HP valid and select an attack (RNG 0 now selects the enemy guard skill).
 act(by('next'));run('Math.random=()=>.5');depart();run('pHp=1;partyBattle[activePartyIdx].hp=1;partyBattle.forEach((p,i)=>{if(i!==activePartyIdx){p.hp=0;p.fainted=true;}});eHp=enemyMaxHp();Math.random=()=>.99;update()');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);assert(by('battleOutcome').classList.contains('is-defeat'));act(by('next'));depart();assert(!run('busy'));assert.equal(run('battleTurnCount'),0);assert(!d.querySelector('.battle-command-pad').hidden);checks.push('enemy attack/defeat/restart/cleared locks');
 assert.equal(errors.length,0,errors.join('\n'));dom.window.close();console.log('PASS normal journey: '+checks.join('; '));

@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-motion-operations-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3c.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
@@ -38,39 +40,71 @@ const snapshot=()=>run('JSON.stringify({pHp,eHp,battleTurnCount,items:save.items
 // Opening/cancelling uses no RNG and changes no combat/save state.
 setup();run('window.qaRolls=0;window.qaRandom=Math.random;Math.random=()=>{window.qaRolls++;return .5}');
 const before=snapshot(),p=by('pVis').querySelector('img');
-for(const expression of ['toggleBattleSkillPanel();battleUiBack()','openBattleSwitchPicker();battleUiBack()','toggleKokoroLinkPanel();battleUiBack()','openBattleItemSelect();show("battle")']){
+for(const expression of ['toggleBattleSkillPanel();battleUiBack()','openBattleSwitchPicker();battleUiBack()','toggleKokoroLinkPanel();battleUiBack()','openBattleItemSelect();renewalClose()']){
  run(expression);assert.equal(snapshot(),before,expression);assert.equal(run('window.qaRolls'),0);assert.equal(by('pVis').querySelector('img'),p);
 }
-run('Math.random=window.qaRandom;toggleBattleSkillPanel()');assert.match(by('battleCompactInfo').textContent,/COSTは編成用。戦闘では減らない/);assert.match(by('battleCompactInfo').textContent,/対象：/);
-assert(d.querySelector('.battle-command-pad').hidden);run('battleUiBack()');assert.equal(d.activeElement.id,'battleSkillButton');
-// Item denial, success, stale double submission and exact persistence.
-run('openBattleItemSelect()');assert.match(by('battleItemList').textContent,/HPは満タン/);let n=run('save.items.potion');run('useBattleItemFromMenu("potion")');assert.equal(run('save.items.potion'),n);
-run('show("battle");pHp-=70;partyBattle[activePartyIdx].hp=pHp;update();openBattleItemSelect()');
-const hurt=run('pHp'),turn=run('battleTurnCount'),enemyHp=run('eHp');run('useBattleItemFromMenu("potion");useBattleItemFromMenu("potion")');
-assert.equal(run('save.items.potion'),n-1);assert.equal(run('pHp'),hurt+50);assert.equal(run('eHp'),enemyHp);assert.equal(run('battleTurnCount'),turn);assert.equal(d.activeElement.id,'battleItemButton');
+run('Math.random=window.qaRandom;toggleBattleSkillPanel()');
+assert(by('commands').querySelector('.br-effect'));
+assert(d.querySelector('.battle-command-pad').hidden);
+run('battleUiBack()');assert.equal(d.activeElement.id,'battleSkillButton');
+const wait=async()=>{
+ for(let i=0;i<100&&run('busy');i++)await new Promise(r=>setTimeout(r,50));
+ assert(!run('busy'),'action unlock');
+};
+// Refuse a full-HP target, then commit a single item use and one enemy turn.
+run('openBattleItemSelect();renewalPickItem("potion")');
+assert(by('renewalSheet').querySelector('[data-item-target="0"]').disabled);
+const n=run('save.items.potion');
+run('renewalUseItem()');assert.equal(run('save.items.potion'),n);
+run(`renewalClose();pHp-=70;partyBattle[activePartyIdx].hp=pHp;
+ enemy={...enemy,moves:[['身構える',0,'normal','guard']]};
+ update();openBattleItemSelect();renewalPickItem('potion');renewalPickItemTarget(0)`);
+const hurt=run('pHp'),turn=run('battleTurnCount'),enemyHp=run('eHp');
+run('renewalUseItem();renewalUseItem()');await wait();
+assert.equal(run('save.items.potion'),n-1);assert.equal(run('pHp'),hurt+50);
+assert.equal(run('eHp'),enemyHp);assert.equal(run('battleTurnCount'),turn+1);
 assert.equal(run('loadSave().items.potion'),n-1);assert.equal(by('pVis').querySelector('img'),p);
-run('save.items.potion=0;openBattleItemSelect()');assert.match(by('battleItemList').textContent,/残数がありません/);run('show("battle")');
-// Summarize all conditions, retain media and disclosure state.
+run('save.items.potion=0;openBattleItemSelect()');
+assert(by('renewalSheet').querySelector('[data-item="potion"]').disabled);run('renewalClose()');
+// The new badges retain every condition without replacing the media node.
 run("pStatus='poison';pPoisonTurns=2;pParalysisTurns=2;pSleepTurns=1;pConfusionTurns=3;pGuard=true;update()");
-assert.equal(by('pBattleStatus').querySelectorAll('details>div>p').length,5);assert.match(by('pBattleStatus').querySelector('summary').textContent,/＋3/);const states=by('pBattleStatus').querySelector('details');states.open=true;run('update()');assert(by('pBattleStatus').querySelector('details').open);assert.equal(by('pVis').querySelector('img'),p);
-// Link uses a source only once, does not consume a turn.
-setup();const linkTurn=run('battleTurnCount');run('toggleKokoroLinkPanel();window.qaSource=currentKokoroLinkSources()[0].uid;activateKokoroLinkFromBattle(window.qaSource);activateKokoroLinkFromBattle(window.qaSource)');
-assert.equal(run('battleTurnCount'),linkTurn);assert(run('!!kokoroLinkEffectForInstance(activeInstance)'));assert.equal(run('currentKokoroLinkSources({includeUsed:true}).filter(s=>s.used).length'),1);
+assert.equal(by('pBattleStatus').querySelectorAll('.br-status').length,5);
+assert.match(by('pBattleStatus').textContent,/毒/);
+assert.equal(by('pVis').querySelector('img'),p);
+// Link confirmation latches one source and applies after its animation.
+setup();const linkTurn=run('battleTurnCount');
+run('toggleKokoroLinkPanel();window.qaSource=currentKokoroLinkSources()[0].uid;renewalLinkPreview(window.qaSource);renewalLinkConfirm();renewalLinkConfirm()');
+assert(!run('!!kokoroLinkEffectForInstance(activeInstance)'));
+for(let i=0;i<60&&!run('!!kokoroLinkEffectForInstance(activeInstance)');i++)await new Promise(r=>setTimeout(r,50));
+assert(run('!!kokoroLinkEffectForInstance(activeInstance)'));
+assert.equal(run('battleTurnCount'),linkTurn);
+assert.equal(run('currentKokoroLinkSources({includeUsed:true}).filter(s=>s.used).length'),1);
 // Empty and long/many render inputs are synthetic, not new legal loadouts.
 setup();run("window.qaMoves=getEquippedMovesForInstance;getEquippedMovesForInstance=()=>[];renderSkillButtons()");assert.match(by('commands').textContent,/装備中の技がありません/);
 run("getEquippedMovesForInstance=()=>Array.from({length:12},()=>['長い技名'.repeat(12),24,'normal',null,null,1,'説明'.repeat(150)]);renderSkillButtons()");assert.equal(by('commands').querySelectorAll('.skill-button').length,12);run('getEquippedMovesForInstance=window.qaMoves');
-// Same species target, self target description, cancellation, invalidated target.
-multi();run("Object.assign(multiBattle.enemies[0],{poisonTurns:2,status:'poison',paralysisTurns:2,sleepTurns:1,guard:true});update()");const enemyMedia=by('enemy_aVis').querySelector('img');by('enemy_aStatus').querySelector('details').open=true;run('update()');assert(by('enemy_aStatus').querySelector('details').open);assert.equal(by('enemy_aVis').querySelector('img'),enemyMedia);
-multi();const mBefore=snapshot();run('toggleBattleSkillPanel();turn(0)');assert(by('multiTargetSelect').querySelector('.battle-target-skill').textContent);assert.equal(by('multiTargetSelect').querySelectorAll('p').length,0);assert.match(by('enemy_aCard').querySelector('.battle-target-hit').getAttribute('aria-label'),/敵A：ボルモーグ/);assert.match(by('enemy_bCard').querySelector('.battle-target-hit').getAttribute('aria-label'),/敵B：ボルモーグ/);run('battleUiBack()');assert(!by('commands').classList.contains('hidden'));assert.equal(snapshot(),mBefore);
-run("chooseMultiBattleTarget(0);multiBattle.enemies[1].alive=false;multiBattle.enemies[1].hp=0;startMultiBattleTurn('enemy_b')");assert.equal(run('busy'),false);assert.equal(run('battleTurnCount'),0);assert(!by('multiTargetSelect').textContent.includes('敵B：ボルモーグ'));
-run('battleUiBack();battleUiBack();');assert.equal(d.activeElement.id,'battleSkillButton');
+// Both same-species cards keep separate state, target and media identities.
+multi();
+run("Object.assign(multiBattle.enemies[0],{poisonTurns:2,status:'poison',paralysisTurns:2,sleepTurns:1,guard:true});update()");
+const enemyMedia=by('enemy_aVis').querySelector('img');
+assert.equal(by('enemy_aStatus').querySelectorAll('.br-status').length,4);
+assert.equal(by('enemy_aVis').querySelector('img'),enemyMedia);
+const mBefore=snapshot();run('toggleBattleSkillPanel()');
+by('enemy_bCard').querySelector('.battle-stage-slot').click();
+assert.equal(run('renewalTarget().id'),'enemy_b');
+assert(by('multiTargetSelect').classList.contains('hidden'));
+run('battleUiBack()');assert.equal(snapshot(),mBefore);
+run("multiBattle.enemies[1].alive=false;multiBattle.enemies[1].hp=0;update()");
+assert.equal(run('renewalTarget().id'),'enemy_a');
 assert.equal(run("battleUiMoveTarget(['防御',0,'normal','guard'])"),'自分');
-// Actual multi attack and one turn despite rapid duplicate execution.
-multi();run('chooseMultiBattleTarget(0);startMultiBattleTurn("enemy_b");startMultiBattleTurn("enemy_b")');
-const wait=async()=>{for(let i=0;i<100&&run('busy');i++)await new Promise(r=>setTimeout(r,50));assert(!run('busy'),'action unlock');};await wait();assert.equal(run('battleTurnCount'),1);assert(run('battleFeedback.history.some(h=>h.kind==="hp"&&h.text.includes("敵B：ボルモーグ"))'));
+// Selecting the skill strikes the selected enemy and cannot submit twice.
+multi();run('toggleBattleSkillPanel()');
+by('enemy_bCard').querySelector('.multi-enemy-copy').click();
+run('turn(0);turn(0)');await wait();
+assert.equal(run('battleTurnCount'),1);
+assert(run('battleFeedback.history.some(h=>h.kind==="hp"&&h.text.includes("敵B：ボルモーグ"))'));
 // Manual swap consumes one action; repeated submission while busy is ignored.
 setup();run('openBattleSwitchPicker();selectBattleSwitchTarget(1);selectBattleSwitchTarget(2)');await wait();assert.equal(run('activePartyIdx'),1);assert.equal(run('battleTurnCount'),1);assert(!d.querySelector('.battle-command-pad').hidden);
 // Finished and next battle clear old panels/locks.
 run('toggleBattleSkillPanel();runAway();renderBattleInputState()');assert(by('commands').classList.contains('hidden'));run('toggleBattleSkillPanel();openBattleItemSelect()');assert(by('commands').classList.contains('hidden'));assert(by('battle').classList.contains('active'));
 setup();assert(!run('busy'));assert(!d.querySelector('.battle-command-pad').hidden);checkIds();assert.equal(errors.length,0,errors.join('\n'));
-dom.window.close();console.log('PASS Phase6/7 with eligible volmoog videos: panel cancellation/RNG/state, item refusal/success/stale double click/save reload, status disclosure/media, link once, same-species target/cancel/invalidation, actual multi turn once, manual switch once, finished/next lifecycle.');
+dom.window.close();console.log('PASS Phase6/7 with eligible volmoog videos: panel cancellation/RNG/state, item refusal/success/stale double click/save reload, status badges/media, link once, same-species target/cancel/fallback, actual multi turn once, manual switch once, finished/next lifecycle.');

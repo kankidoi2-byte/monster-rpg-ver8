@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-idle-media-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
 const layoutObservers=[];
 w.ResizeObserver=class {constructor(callback){this.callback=callback;this.disconnected=false;layoutObservers.push(this);}observe(media){this.media=media;}disconnect(){this.disconnected=true;}};
@@ -92,7 +94,7 @@ mediaWidth=160;mediaHeight=120;fitRecord.layoutObserver.callback();
 
 let video=by('pVis').querySelector('video');assert(video&&!video.paused);video.currentTime=3;
 run('pHp-=3;update();toggleBattleSkillPanel();battleUiBack()');assert.equal(by('pVis').querySelector('video'),video);assert.equal(video.currentTime,3);
-run('openBattleItemSelect()');assert(video.paused);run("show('battle');update()");await new Promise(r=>setTimeout(r,0));assert.equal(by('pVis').querySelector('video'),video);assert(!video.paused);
+run('openBattleItemSelect()');assert(video.paused);run("renewalClose();update()");await new Promise(r=>setTimeout(r,0));assert.equal(by('pVis').querySelector('video'),video);assert(!video.paused);
 const retiredLayout=fitRecord.layoutObserver;const oldPlaying=video.onplaying;run('changeActivePartyMember(1)');assert(video.paused&&!video.isConnected);oldPlaying();assert.notEqual(by('pVis').querySelector('video'),video);assert(retiredLayout.disconnected);retiredLayout.callback();assert(!fitRecord.media.dataset.idleFit);
 for(let i=0;i<5;i++){setup();run("show('home')");assert.equal(d.querySelectorAll('video').length,0);}
 refuse=true;setup();await new Promise(r=>setTimeout(r,0));assert(run('battleIdleRecord.failed'));assert.equal(by('pVis').querySelector('img').style.visibility,'visible');

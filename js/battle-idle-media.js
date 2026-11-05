@@ -345,6 +345,7 @@ function battleIdleCurrent(r){
 function battleIdleStops(r){
   const reasons=[];
   if(!document.getElementById('battle')?.classList.contains('active'))reasons.push('screen');
+  if(document.getElementById('renewalSheet')?.open)reasons.push('dialog');
   if(document.hidden)reasons.push('hidden');
   if(battleIdlePageHidden)reasons.push('pagehide');
   if(battleIdleReduced?.matches)reasons.push('reduced');
