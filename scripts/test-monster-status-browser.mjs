@@ -21,6 +21,7 @@ try{
    alch.alchemy={statModifiers:{hp:1.05},archetypeLabel:'検証'};first.exp=430;
    for(let n=0;n<60;n++)addInstance('slime',1);
    save.expeditions.active=[{memberUids:[alch.uid]}];
+   save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);
    saveGame();show('party');setRosterView('filter','monster');setRosterView('sort','level');
    const list=document.getElementById('partyList');list.scrollTop=90;
    return {first:first.uid,max:max.uid,alch:alch.uid,character:character.uid,before:JSON.stringify(save),order:rosterVisibleInstances().map(i=>i.uid),scroll:list.scrollTop};
@@ -54,7 +55,7 @@ try{
   await page.evaluate(()=>{save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');});
   assert.equal(await page.locator('#monsterStatus').count(),0);
   assert.deepEqual(await page.evaluate(()=>({filter:rosterUi.filter,sort:rosterUi.sort,scroll:document.getElementById('partyList').scrollTop})),{filter:'monster',sort:'level',scroll:fixture.scroll});
-  assert.equal(await page.evaluate(()=>JSON.stringify(save)),fixture.before);
+  assert.deepEqual(await page.evaluate(()=>JSON.parse(JSON.stringify(save))),JSON.parse(fixture.before));
   await page.evaluate(uid=>{setRosterView('filter','character');openRosterDetail(uid);openMonsterStatus(uid);},fixture.character);
   assert.match(await page.locator('.status-chips').innerText(),/キャラクター/);
   await page.locator('[data-status-nav="next"]').click();assert.equal(await page.evaluate(()=>monsterStatusUi.uid),fixture.character);
