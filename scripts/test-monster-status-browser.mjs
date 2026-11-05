@@ -1,0 +1,61 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {spawn} from 'node:child_process';
+import {chromium} from 'playwright';
+const out='artifacts/save-failure-ui/monster-status';fs.mkdirSync(out,{recursive:true});
+const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4341'],{stdio:['ignore','pipe','inherit']});let browser;
+try{
+ await new Promise((ok,fail)=>{server.stdout.once('data',ok);server.once('error',fail)});
+ browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
+ for(const viewport of [{width:390,height:844},{width:360,height:640},{width:844,height:390}]){
+  const page=await browser.newPage({viewport,reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
+  await page.route('**/status-screen-reference.html',r=>r.fulfill({contentType:'text/html',body:fs.readFileSync('scripts/fixtures/status-screen-prototype.html','utf8')}));
+  await page.goto('http://127.0.0.1:4341/status-screen-reference.html');await page.evaluate(()=>showView('status'));await page.screenshot({path:out+'/prototype-'+viewport.width+'.png'});
+  await page.goto('http://127.0.0.1:4341/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  const fixture=await page.evaluate(()=>{
+   clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
+   save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
+   save.instances=[];save.party=[];
+   const first=addInstance('freigal',12),max=addInstance('elixion',100),alch=addInstance('orca_abyss',70),character=addInstance('elna_beginner',10);
+   alch.alchemy={statModifiers:{hp:1.05},archetypeLabel:'検証'};first.exp=430;
+   for(let n=0;n<60;n++)addInstance('slime',1);
+   save.expeditions.active=[{memberUids:[alch.uid]}];
+   saveGame();show('party');setRosterView('filter','monster');setRosterView('sort','level');
+   const list=document.getElementById('partyList');list.scrollTop=90;
+   return {first:first.uid,max:max.uid,alch:alch.uid,character:character.uid,before:JSON.stringify(save),order:rosterVisibleInstances().map(i=>i.uid),scroll:list.scrollTop};
+  });
+  await page.evaluate(uid=>openRosterDetail(uid),fixture.first);
+  assert.equal(await page.locator('.status-mini>div').count(),4);
+  assert(await page.locator('[data-tutorial-skill-edit]').count());
+  await page.locator('.roster-status-open').click();await page.locator('#monsterStatus').waitFor();
+  assert(await page.locator('#monsterStatus h2').innerText()==='フレイガル');
+  assert.equal(await page.locator('.status-alchemy').count(),0);
+  assert.deepEqual(await page.evaluate(()=>Object.fromEntries([...document.querySelectorAll('[data-status-stat]')].map(el=>[el.dataset.statusStat,el.querySelector('b').textContent]))),await page.evaluate(()=>Object.fromEntries(Object.entries(monsterStatusValues(getInstance(monsterStatusUi.uid))).map(([k,v])=>[k,statusNumber(v)]))));
+  const next=fixture.order[(fixture.order.indexOf(fixture.first)+1)%fixture.order.length];
+  await page.locator('[data-status-nav="next"]').click();assert.equal(await page.evaluate(()=>monsterStatusUi.uid),next);
+  await page.locator('[data-status-nav="prev"]').click();assert.equal(await page.evaluate(()=>monsterStatusUi.uid),fixture.first);
+  await page.evaluate(uid=>{monsterStatusUi.uid=uid;renderMonsterStatus();},fixture.max);assert.equal(await page.locator('[data-status-exp]').innerText(),'MAX');
+  assert.equal(await page.locator('.status-exp-bar i').evaluate(el=>el.style.width),'100%');
+  await page.screenshot({path:out+'/max-'+viewport.width+'.png'});
+  const geometry=await page.locator('#monsterStatus').evaluate(root=>{const hero=root.querySelector('.status-hero'),name=root.querySelector('h2'),level=root.querySelector('.status-level'),scroll=root.querySelector('.status-scroll');return {hero:hero.getBoundingClientRect().height,name:name.getBoundingClientRect().height,level:level.getBoundingClientRect().height,overflow:scroll.scrollHeight>scroll.clientHeight,width:document.documentElement.scrollWidth<=innerWidth};});
+  assert(geometry.hero>=330&&geometry.name>20&&geometry.level>20&&geometry.overflow&&geometry.width,JSON.stringify(geometry));
+  assert(!/進化|Lv100|Lv\.100.*→/.test(await page.locator('#monsterStatus').innerText()));
+  await page.evaluate(uid=>{monsterStatusUi.uid=uid;renderMonsterStatus();},fixture.alch);
+  assert.match(await page.locator('.status-alchemy').innerText(),/HP ×1.05/);await page.screenshot({path:out+'/alchemy-'+viewport.width+'.png'});
+  await page.locator('#monsterStatusBack').click();assert.equal(await page.locator('#monsterStatus').count(),0);
+  assert.deepEqual(await page.evaluate(()=>({filter:rosterUi.filter,sort:rosterUi.sort,scroll:document.getElementById('partyList').scrollTop})),{filter:'monster',sort:'level',scroll:fixture.scroll});
+  assert.equal(await page.evaluate(()=>JSON.stringify(save)),fixture.before);
+  await page.evaluate(uid=>{setRosterView('filter','character');openRosterDetail(uid);openMonsterStatus(uid);},fixture.character);
+  assert.match(await page.locator('.status-chips').innerText(),/キャラクター/);
+  await page.locator('[data-status-nav="next"]').click();assert.equal(await page.evaluate(()=>monsterStatusUi.uid),fixture.character);
+  await page.screenshot({path:out+'/character-'+viewport.width+'.png'});
+  await page.locator('.status-dark').click();assert(await page.locator('#skillEdit.active').isVisible());
+  await page.evaluate(()=>show('party'));assert(!await page.locator('#party').evaluate(el=>el.inert));
+  await page.evaluate(uid=>{openRosterDetail(uid);openMonsterStatus(uid);},fixture.character);await page.keyboard.press('Escape');assert.equal(await page.locator('#monsterStatus').count(),0);
+  await page.reload();await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.evaluate(uid=>{show('party');setRosterView('filter','all');openRosterDetail(uid);openMonsterStatus(uid);},fixture.first);assert.match(await page.locator('#monsterStatus h2').innerText(),/フレイガル/);
+  assert.deepEqual(errors,[]);await page.close();
+ }
+ console.log('Status browser: entry, shared values, wrap/order, filter/sort/scroll, MAX, alchemy, expedition viewing, character, skill edit, Escape, reload, 390/360/landscape geometry passed.');
+}finally{await browser?.close();server.kill();}

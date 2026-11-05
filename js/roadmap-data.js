@@ -43,7 +43,7 @@ const ROADMAP = (function(){
     {id:'linkfx',lane:'sys',stage:'later',title:'ココロリンクの見直し',sub:'作戦の幅を広げる',icon:'💞',
       lead:'ココロリンクの効果を見直します。',
       points:['相手に合わせて選ぶ楽しさを','つなぐ仲間で戦い方が変わる']},
-    {id:'status',lane:'sys',stage:'next',title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
+    {id:'status',lane:'sys',stage:'now',wip:true,title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
       lead:'モンスターやキャラクターのステータスを確認できるようにします。',points:['HP・攻撃などの能力値を確認','モンスターとキャラクターの両方に対応','進化のタイミングは秘密のまま。育てて見つけよう']},
     {id:'evo',lane:'sys',stage:'next',title:'キャラクターの進化レベル',sub:'キャラも個体ごとの進化に',iconImg:'images/monsters/elna_middle_20261004.webp',
       lead:'モンスターと同じように、キャラクターの進化にも個体差を取り入れます。',points:['同じキャラクターでも、進化するタイミングが少しずつ違う','育てながら進化の瞬間を見つける楽しみ']},
