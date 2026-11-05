@@ -74,10 +74,13 @@ try{
    window.abBefore=structuredClone(save);
  });
  await sw.click();await page.locator('[data-wm-depart]').click();
- await page.waitForSelector('#autoBadge');
+ await page.waitForSelector('#renewalLoop:not([hidden])');
+ assert(await page.locator('.battle-command-pad').evaluate(pad=>pad.inert));
  await page.evaluate(()=>{autoControl('manual');autoControl('speed');});
  assert(await page.evaluate(()=>autoRun.manual&&autoRun.settings.speed===1));
- await assertMobileLayout('#autoControls');
+ assert.equal(await page.locator('#renewalHeader [aria-pressed]').getAttribute('aria-pressed'),'false');
+ await assertMobileLayout('#renewalHeader');
+ await assertMobileLayout('#renewalLoop');
  await page.locator('#battleSkillButton').click();await page.locator('#commands .skill-button').first().click();
  if(await page.locator('#multiTargetSelect:not(.hidden) button').count())await page.locator('#multiTargetSelect button[onclick*="startMulti"]').first().click();
  await page.evaluate(()=>{if(autoRun?.phase==='fight'){autoControl('speed');autoControl('manual');}});
@@ -151,7 +154,7 @@ try{
  await page.evaluate(()=>{activeHuntRequest.worldMapEventKey='elysia';syncBattleUi()});
  assert.match(await page.locator('#autoSummary').innerText(),/オート対象外/);
  await page.getByRole('button',{name:'手動で戦闘を続ける'}).click();
- assert(await page.locator('#autoControls').isHidden());
+ assert.equal(await page.locator('#renewalHeader [aria-pressed]').count(),0);
  assert.deepEqual(errors,[]);
  console.log('PASS real victory rollback/retry, old save, 360/412/430px map, locked roster, complete Normal unlock, manual/auto, five real battles, rewards, G-BLESS and reload.');
 }finally{await browser?.close();server.kill();}

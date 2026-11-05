@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-stage-multi-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3b.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
 w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
@@ -29,7 +31,7 @@ function setup(){run(`save=initSave();completeTutorial();save.instances=[];save.
 
 function multi(){setup();run(`ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('slime'),'enemy_a'),createMultiEnemy(by('slime'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle()`);checkIds();}
 multi();
-const detail=by('enemy_aCard').querySelector('button');detail.focus();detail.click();assert.equal(d.activeElement,detail);
+const detail=by('enemy_aCard').querySelector('.br-info');detail.focus();detail.click();assert(by('renewalSheet').open);run('renewalClose()');assert.equal(d.activeElement,detail);
 const a=by('enemy_aVis').querySelector('img'),b=by('enemy_bVis').querySelector('img');
 assert.notEqual(a,b);
 const hpA=run('multiBattle.enemies[0].hp'),hpB=run('multiBattle.enemies[1].hp'),hpP=run('pHp');
@@ -43,15 +45,17 @@ assert.match(by('enemy_bCard').querySelector('.battle-hp-line span').textContent
 assert(by('enemy_aVis').closest('.battle-stage-slot').classList.contains('is-stage-actor'));
 assert(by('enemy_bVis').closest('.battle-stage-slot').classList.contains('is-stage-target'));
 run('updateMultiBattleView()');assert.equal(by('enemy_aVis').querySelector('img'),a);assert.equal(by('enemy_bVis').querySelector('img'),b);
-run('busy=false;renderBattleInputState();chooseMultiBattleTarget(0)');
+run('busy=false;renderBattleInputState();toggleBattleSkillPanel()');
 assert.equal(d.querySelectorAll('.is-stage-actor').length,0);
-assert.match(by('multiTargetSelect').textContent,/敵A：スライム.*HP/);
-assert.match(by('multiTargetSelect').textContent,/敵B：スライム.*HP/);
-assert(!by('enemy_aCard').querySelector('button').disabled);
-run('multiBattle.enemies[0].hp=0;multiBattle.enemies[0].alive=false;update()');
-assert(by('enemy_aCard').classList.contains('is-defeated'));assert(by('enemy_aCard').querySelector('button').disabled);
+assert(by('multiTargetSelect').classList.contains('hidden'));
+by('enemy_bCard').querySelector('.battle-stage-slot').click();
+assert(by('enemy_bCard').querySelector('.br-selected'));
+run('multiBattle.enemies[1].hp=0;multiBattle.enemies[1].alive=false;update()');
+assert(by('enemy_bCard').classList.contains('is-defeated'));
+assert(by('enemy_aCard').querySelector('.br-selected'));
 assert.equal(by('enemy_bVis').querySelector('img'),b);
-run('cancelMultiBattleTarget();openBattleItemSelect();show("battle");update()');assert.equal(by('enemy_bVis').querySelector('img'),b);
+run('battleUiBack();openBattleItemSelect();renewalClose();update()');
+assert.equal(by('enemy_bVis').querySelector('img'),b);
 run('changeActivePartyMember(1);update()');assert.match(by('pName').textContent,/アクアロン/);
 run('busy=true;update();busy=false;renderBattleInputState()');assert(!by('enemy_bCard').querySelector('button').disabled);
 run('runAway()');assert(!by('battleOutcome').classList.contains('hidden'));assert.equal(d.querySelectorAll('[data-stage-action]').length,0);

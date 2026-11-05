@@ -41,10 +41,11 @@ try{
   assert.equal(await page.evaluate(()=>victoryWrites),1);
   assert(await page.locator('#battleOutcome').isVisible());
   const settled=await page.evaluate(()=>{const raw=localStorage.getItem(victoryKey);retryNormalVictorySave();win();return {one:victoryWrites===1,other:localStorage.getItem(otherKey)===otherDisk,history:JSON.parse(raw).history.wins,exp:save.instances[0].exp,coins:save.coins};});assert(settled.one&&settled.other);assert.equal(settled.history,1);
-  // Use the real contract screen and save boundary after the victory commit.
+  // Use the result's contract action and save boundary after the victory commit.
   await page.evaluate(()=>{Math.random=()=>0;Storage.prototype.setItem=storageSet;playContractAnimation=async()=>{};});
-  await page.locator('#battleOutcomeActions button').first().click();assert(await page.locator('#contractConfirm').isVisible());
-  await page.evaluate(()=>useContractScrollConfirmed());
+  await page.locator('#battleOutcomeActions [data-contract-item="contract_scroll"]').click();
+  await page.waitForFunction(()=>singleBattleContractAttempted&&!postBattleContractBusy);
+  assert(await page.locator('#battleOutcome').isVisible());
   assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='slime').length),1);
   await page.evaluate(()=>afterBattleNext());assert(await page.locator('#evolution').isVisible());
   await page.evaluate(()=>{cancelEvolution();startBattleFromParty();});assert(await page.locator('#battleChoices').isVisible());

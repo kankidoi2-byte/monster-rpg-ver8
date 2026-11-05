@@ -31,6 +31,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(typeof renewalScreenChanged==='function')renewalScreenChanged(id);
   if(typeof autoScreenChange==='function')autoScreenChange(id);
   if(typeof closeRoadmapSheet==='function')closeRoadmapSheet();
   if(id!=='giftBox'&&typeof closeGiftDialog==='function')closeGiftDialog();

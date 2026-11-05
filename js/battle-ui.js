@@ -62,7 +62,7 @@ function syncBattleUi(){
     if(!panel.querySelector('[data-battle-panel-back]')){
       const back=document.createElement('button');back.type='button';back.dataset.battlePanelBack='';back.className='battle-panel-back';back.textContent=enemyTarget?'← 技に戻る':'← 戻る';back.onclick=battleUiBack;panel.prepend(back);
     }
-    const back=panel.querySelector('[data-battle-panel-back]');if(back)back.textContent=enemyTarget?'← 技に戻る':'← 戻る';
+    const back=panel.querySelector('[data-battle-panel-back]');if(back)back.textContent=enemyTarget?'‹ 技に戻る':'‹ 戻る';
     if(panel.querySelector('[data-tutorial-actor-select]')){document.getElementById('battleActionStatus').textContent='交代する仲間を選択';document.getElementById('battleInputLabel').textContent='交代';}
   }
   const changed=battleUi.panel!==panel?.id;
@@ -73,6 +73,7 @@ function syncBattleUi(){
     else if(battleUi.panel)battleUiFocus(document.getElementById(battleUi.origin));
   }
   battleUi.panel=panel?.id||null;
+  if(typeof renewalRender==='function')renewalRender();
 }
 function battleUiScreenChanged(id){
   if(id==='battleItemSelect'){

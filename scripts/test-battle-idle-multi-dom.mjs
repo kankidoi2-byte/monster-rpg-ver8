@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-idle-multi-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
@@ -60,7 +62,7 @@ assert(rs.slice(1).every(r=>r.disposed&&r.video.paused&&!r.video.hasAttribute('s
 run('setBattleIdleLimit(3)');assert.equal(records().length,3);assert.equal(records()[0],rs[0]);
 assert.equal(run('setBattleIdleLimit(4)'),false);assert.equal(records().length,3);
 pass('stable budget 3→1→3, invalid upper bound rejected; dropped resources released');
-rs=records();run('openBattleItemSelect()');assert(rs.every(r=>r.video.paused));hidden(true);run("show('battle')");assert(rs.every(r=>r.video.paused));hidden(false);await flush();assert(rs.every(r=>!r.video.paused));
+rs=records();run('openBattleItemSelect()');assert(rs.every(r=>r.video.paused));hidden(true);run("renewalClose()");assert(rs.every(r=>r.video.paused));hidden(false);await flush();assert(rs.every(r=>!r.video.paused));
 reduced(true);assert(rs.every(r=>r.video.paused));reduced(false);await flush();assert(rs.every(r=>r.state==='playing'));
 pass('three independent videos obey overlapping screen/hidden/reduced reasons');
 run('multiBattle.enemies[0].hp=0;updateMultiBattleView()');assert.equal(records().length,2);

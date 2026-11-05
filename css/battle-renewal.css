@@ -1,0 +1,94 @@
+/* Adopted v4: same near/far stage and artwork bounds, new readable chrome. */
+body:has(#battle.active.is-renewed){background:#0b1526;padding-bottom:0}
+#battle.is-renewed{--br-line:#ffffff26;color:#eef3fa;max-width:440px;background:#0b1526;isolation:isolate}
+#battle.is-renewed.active{padding:0 0 env(safe-area-inset-bottom);margin:0 auto;min-height:100dvh}
+body:has(#battle.active.is-renewed) :is(.app-topbar,.bottom-nav,.app-bottom-nav){display:none!important}
+#battle.is-renewed :is(#battleMapBanner,#battleCompactTools,#battleActionStatus,#battleStageResults,#autoControls,.battle-detail,.battle-enemy-controls,.battle-side-label,.battle-idle-details){display:none!important}
+#battle.is-renewed .battle-arena{background-size:cover;min-height:220px;overflow:hidden;border:0;border-radius:0}
+.br-header{display:flex;align-items:center;gap:5px;background:#13203a;padding:7px 9px;border-bottom:1px solid var(--br-line);min-height:49px;box-sizing:border-box}
+.br-location{display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:0;font-size:10px;line-height:1.4}
+.br-location>b{font-size:14px}.br-location>span{border-radius:12px;padding:1px 6px;background:#ffffff15}.br-location .br-kind{background:#7a2f6a}.br-location small{font-size:10px;color:#afc0d7}
+.br-tools{display:flex;gap:4px;margin-left:auto;flex-shrink:0}.br-tools button{font-size:11px;font-weight:800;padding:5px 6px;min-height:32px;min-width:32px;border:1px solid var(--br-line);border-radius:8px;background:#ffffff12;color:#eef3fa}.br-tools button[aria-pressed=true]{background:#168da9}.br-tools button:disabled{opacity:.4}
+.br-loop:not([hidden]){display:flex;align-items:center;gap:6px;background:#084051;color:#bff4ff;font-size:10px;padding:5px 8px}.br-loop .ab-bars{flex:1}.br-loop button{font-size:10px;border:1px solid #8ff0ff66;border-radius:6px;background:#ffffff10;color:inherit;padding:4px}
+#battle.is-renewed :is(.battle-combatant,.multi-enemy-copy){background:#0b1526df;border:1.5px solid #ffffff40;border-radius:11px;box-shadow:none;padding:6px 8px;backdrop-filter:blur(4px)}
+#battle.is-renewed #singleEnemyBox{top:8px;right:8px;width:54%;z-index:50}
+#battle.is-renewed #singlePlayerBox{right:8px;bottom:8px;width:54%}
+#battle.is-renewed :is(.battle-nameplate h2,.multi-enemy-heading h2){text-align:left;font-size:13px;line-height:1.25;margin:0;padding-right:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#battle.is-renewed .battle-nameplate{display:block}
+#battle.is-renewed .battle-hp-line{font-size:10px;min-height:0;line-height:1.2;margin:2px 0}.battle-hp-line strong{font-size:10px}
+#battle.is-renewed :is(.battle-combatant,.multi-enemy-hp) .bar{height:6px;margin:4px 0;border:0;background:#ffffff26;border-radius:5px;overflow:hidden}
+#battle.is-renewed .hp-trail{background:#e8574f;transition:width .65s .35s}.br-plate-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:9px;color:#bfcee2;margin-top:3px}.br-stars{color:#d8bd86}.br-target-label{background:#ffe08a;color:#3a2600;border-radius:4px;padding:0 3px;margin-left:auto;font-size:8px;white-space:nowrap}
+.br-info{position:absolute;right:4px;top:4px;width:24px;height:24px;min-height:0;padding:0;border:0;border-radius:50%;background:#ffffff25;color:#fff;font-size:12px;font-weight:900;z-index:3}
+#battle.is-renewed .multi-enemy-copy{position:relative}
+#battle.is-renewed .br-target{border-color:#ffe08a;box-shadow:0 0 0 1px #ffe08a}
+#battle.is-renewed .battle-status{display:flex;flex-wrap:wrap;gap:3px;min-height:0;margin:2px 0 0;padding:0}
+.br-status{display:inline-block;font-size:9px!important;border-radius:5px;padding:1px 4px!important;background:#9e5a2f;color:#fff;line-height:1.4}.br-status.poison{background:#6b2f8f}.br-status.para{background:#857013}.br-status.sleep{background:#3b4f9e}.br-status.conf{background:#9e3b6b}.br-status.guard{background:#2f6b9e}.br-status.link{background:#b44a8c}
+#battle.is-renewed .battle-stage-slot::after{content:none!important}
+#battle.is-renewed :is(.is-stage-actor,.is-stage-target){outline:0!important;border-color:transparent!important}
+#battle.is-renewed .is-stage-actor .battle-facing{filter:drop-shadow(0 0 12px #ffe08a)}
+#battle.is-renewed .br-selected::before{content:"";position:absolute;inset:12%;border:2px solid #ffe08a;border-radius:50%;box-shadow:0 0 12px #ffe08a88;pointer-events:none;z-index:9}
+#battle.is-renewed .battle-stage-slot{transition:opacity .5s,translate .5s,filter .5s}
+#battle.is-renewed .br-ko{opacity:0;translate:0 35px;filter:grayscale(1);pointer-events:none;visibility:visible!important}
+#battle.is-renewed .defeat-overlay{display:none!important}
+#battle.is-renewed .br-auto .battle-arena,#battle.is-renewed.br-auto .battle-arena{box-shadow:inset 0 0 0 2px #8ff0ff,inset 0 0 25px #1fb6d655}
+.br-messages{padding:5px 11px;background:#13203a;border-top:1px solid var(--br-line);min-height:43px;box-sizing:border-box}.br-messages p{font-size:12px;font-weight:700;line-height:1.4;margin:0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}.br-messages .old{font-size:10px;color:#9fb0c8;font-weight:400}
+.br-party{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:10px 8px 4px;min-height:66px;box-sizing:border-box}
+.br-member{position:relative;display:flex;align-items:center;gap:4px;border:1.5px solid var(--br-line);border-radius:10px;padding:5px 4px;background:#ffffff08;color:inherit;text-align:left;min-width:0;min-height:48px}.br-member img{width:29px;height:32px;object-fit:contain;flex-shrink:0}.br-member>span{min-width:0;flex:1}.br-member b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.br-member small{display:block;font-size:8px;color:#b1c0d4;line-height:1.4}.br-member em{position:absolute;top:-8px;left:5px;font-size:8px;font-weight:800;font-style:normal;background:#d8bd86;color:#2a1d05;border-radius:4px;padding:0 4px}.br-member em.good{background:#3ad07a}.br-member.active{border-color:#d8bd86;opacity:1}.br-member.down{opacity:.4}.br-member.down img{filter:grayscale(1)}.br-mini{display:block;height:4px;background:#ffffff26;border-radius:3px;overflow:hidden;margin:2px 0}.br-mini i{display:block;height:100%;background:#3ad07a}
+#battle.is-renewed .battle-command-dock{padding:4px 9px 8px;background:#0b1526;min-height:172px;border:0;position:relative}
+#battle.is-renewed .battle-command-pad .battle-pad-button{font-size:15px;letter-spacing:.1em;line-height:1.3;min-height:48px}
+#battle.is-renewed .battle-command-pad .battle-pad-button strong{font-size:16px}
+#battle.is-renewed .battle-command-pad #battleSkillButton strong{font-size:23px}
+#battle.is-renewed .battle-pad-center{position:relative;overflow:visible}
+#battle.is-renewed .battle-pad-center.has-effective::after{content:attr(data-effective);position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);font-size:9px;letter-spacing:0;line-height:1.5;padding:1px 5px;border-radius:5px;background:#ffe08a;color:#4a2e00;white-space:nowrap}
+#battle.is-renewed .battle-pad-button small{display:block;font-size:9px;letter-spacing:0}
+.br-hint{font-size:10px;color:#9fb0c8;text-align:center;line-height:1.3;margin:5px 0 0;min-height:13px}
+#battle.is-renewed #commands.battle-inline-panel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-content:start;min-height:142px;max-height:260px;overflow:auto;padding-top:0}
+#battle.is-renewed #commands.hidden{display:none!important}
+#battle.is-renewed .battle-panel-back{grid-column:1/-1;justify-self:start;min-height:28px;margin:0;padding:3px 6px;border:0;background:none;color:#afc0d7;font-size:12px;border-radius:5px;line-height:1.4}
+.br-skill-heading{grid-column:1/-1;display:flex;align-items:center;gap:4px;justify-content:space-between;font-size:11px;min-width:0}.br-skill-heading small{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:52%}
+#battle.is-renewed #commands .skill-button{padding:7px 6px;min-height:98px;max-width:100%;min-width:0;border-radius:12px;display:flex;flex-direction:column;align-items:start;text-align:left;gap:2px;border:1px solid #ffffff30;position:relative}
+#battle.is-renewed #commands .skill-button strong{font-size:12px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+#battle.is-renewed #commands .skill-button>span:first-child{font-size:9px;line-height:1.3}
+#battle.is-renewed #commands .skill-button small{font-size:9px;line-height:1.3}
+#battle.is-renewed #commands :is(.battle-panel-note,.battle-choice-detail){display:none}
+.br-effect{font-size:9px!important;margin-top:auto;align-self:flex-end;border-radius:5px;padding:2px 4px;background:#ffffff25;white-space:nowrap}.br-effect.good{background:#ffe08a;color:#4a2e00}.br-effect.weak{background:#0005;color:#c9d3e4}
+.br-sheet{position:fixed;inset:auto 0 0;margin:0 auto;width:min(100%,440px);max-width:440px;max-height:82dvh;box-sizing:border-box;background:#16233c;color:#eef3fa;border:1px solid #ffffff26;border-radius:20px 20px 0 0;padding:12px 12px calc(16px + env(safe-area-inset-bottom));overflow:auto;box-shadow:0 -10px 40px #0007;font-family:inherit}
+.br-sheet::backdrop{background:#05091299}.br-sheet>header{display:flex;align-items:center;gap:8px;margin-bottom:12px}.br-sheet h2{font-size:18px;margin:0}.br-sheet header button{margin-left:auto;width:36px;height:36px;border:0;border-radius:9px;background:#ffffff15;color:inherit;font-size:20px}.br-sheet h3{font-size:12px;color:#b8c7db;margin:14px 0 6px}.br-sheet p{font-size:12px;line-height:1.6}.br-sheet button{font-family:inherit;color:inherit;cursor:pointer}.br-sheet button:disabled{opacity:.4}.br-two{display:flex;gap:7px}.br-two button,.br-go{border:1px solid #ffffff26;border-radius:11px;background:#0c647c;padding:12px;font-weight:800;flex:1;min-height:44px}.br-go{display:block;width:100%;margin-top:12px}
+#battle.is-renewed #kokoroLinkPanel:not(.hidden){position:fixed!important;inset:auto 0 0!important;transform:none;z-index:200;width:min(100%,440px)!important;margin:0 auto!important;max-height:75dvh!important;overflow:auto!important;border-radius:18px 18px 0 0!important;padding:12px!important;background:#16233c!important;box-shadow:0 -15px 40px #000a!important}
+#battle.is-renewed .kokoro-link-source-grid{display:grid;grid-template-columns:1fr!important}.kokoro-link-source img{height:48px;width:48px;object-fit:contain;float:left;margin-right:8px}
+.br-history p{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff20;white-space:pre-wrap}.br-history small{min-width:50px;color:#9fb0c8}
+.br-enemy-head{display:flex;align-items:center;gap:10px}.br-enemy-head img{width:90px;height:90px;object-fit:contain}.br-enemy-head h3{font-size:18px;color:#fff;margin:0}.br-stat{display:grid;grid-template-columns:50px 1fr 42px;gap:8px;align-items:center}.br-stat>i{height:6px;background:#ffffff20;border-radius:4px;overflow:hidden}.br-stat>i>i{display:block;background:#7aa7ff;height:100%}.br-info-move{padding:8px;border:1px solid #ffffff20;border-radius:9px;margin:5px 0}.br-info-move b{font-size:12px}.br-info-move small{display:block;color:#9fb0c8}.br-info-move p{font-size:10px;margin:3px 0}.br-dex{color:#9fb0c8}
+.br-item{display:flex;align-items:center;gap:8px;width:100%;border:1px solid #ffffff26;border-radius:11px;padding:8px;text-align:left;background:#ffffff08;margin:6px 0;min-height:52px}.br-item>span{flex:1}.br-item b{display:block;font-size:13px}.br-item small{display:block;font-size:10px;color:#9fb0c8}.br-item img{width:34px!important;height:34px!important;object-fit:contain}.br-item-targets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.br-item-targets button{min-width:0;padding:6px;border-radius:11px;border:1px solid #ffffff26;background:#ffffff08}.br-item-targets img{display:block;width:45px;height:45px;object-fit:contain;margin:auto}.br-item-targets b{display:block;font-size:10px}.br-item-targets small{font-size:9px}.br-sheet .selected{border-color:#8ff0ff}
+.br-item-save-error{color:#ffd3cb}
+.br-banner{position:absolute;z-index:90;left:50%;top:46%;transform:translate(-50%,-50%) scale(.8);opacity:0;pointer-events:none;transition:.2s;background:#0b1526e6;border:1px solid #d8bd86;border-radius:24px;padding:7px 13px;font-size:18px;font-weight:900;color:#ffe7a8;white-space:nowrap}.br-banner.on{opacity:1;transform:translate(-50%,-50%) scale(1)}.br-banner.invasion{font-size:30px;color:#ff9b96}.br-banner.weak{color:#c9d3e4}
+.br-damage{position:absolute;z-index:95;color:#fff;text-shadow:1px 1px 2px #811;font-size:27px;font-weight:900;pointer-events:none;animation:brDamage .9s forwards}.br-damage.good{font-size:33px;color:#ffe08a}.br-damage.heal{color:#7be495}.br-damage.poison{color:#d5a1ff}@keyframes brDamage{0%{opacity:0;transform:translateY(10px) scale(.7)}20%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:translateY(-40px)}}
+.br-link-fx{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle,#b44a8cbb,#7a2f6aaa,#0b1526ee);color:#fff;pointer-events:none}.br-link-fx h2{font-size:24px;text-shadow:0 0 12px #ff4fb0}.br-link-fx img{width:48%;max-height:50%;object-fit:contain;filter:drop-shadow(0 0 22px #ff8fd0);transition:transform .45s,opacity .45s}.br-link-fx p{font-size:12px}.br-link-fx b{font-size:11px;color:#ffe08a}.br-link-fx.fly img{transform:translate(-80px,80px) scale(.2);opacity:.15}.br-link-fx.fly{background:#7a2f6a55}
+#battle.is-renewed #battleOutcome:not(.hidden){position:fixed;inset:0;z-index:190;display:flex;flex-direction:column;width:min(100%,440px);max-width:440px;box-sizing:border-box;margin:0 auto;background:radial-gradient(120% 70% at 50% 0%,#2a3f6b,#0b1526 70%);padding:22px 14px;overflow:auto;max-height:100dvh;border-radius:0;align-items:stretch;text-align:left}
+#battle.is-renewed .battle-outcome-copy{width:100%}#battle.is-renewed #battleOutcomeTitle{text-align:center;font-size:30px}#battle.is-renewed #battleOutcomeIcon{display:none}#battle.is-renewed #battleOutcomeEyebrow{display:block;text-align:center;letter-spacing:.2em;color:#d8bd86}#battle.is-renewed .battle-outcome-actions{display:block;width:100%;margin:10px 0}#battle.is-renewed .battle-outcome-actions button{width:100%;margin:4px 0;min-height:42px}#battle.is-renewed #next{margin-top:12px;min-height:44px;flex-shrink:0}
+#renewalResultMeta{font-size:12px;color:#bdcbe0;line-height:1.5}#renewalResultMeta p{margin:6px 0}.br-defeat-tip{border:1px solid #f2c55a66;border-radius:12px;padding:12px;background:#f2c55a15}.br-exp-row{background:#ffffff0a;border:1px solid #ffffff20;border-radius:12px;padding:10px;margin:6px 0;font-size:12px}.br-exp-row>span{float:right;font-size:10px}.br-exp-row em{color:#ffe08a;font-weight:900}.br-exp{height:6px;background:#ffffff20;margin-top:8px;border-radius:4px;overflow:hidden}.br-exp i{display:block;height:100%;background:#7aa7ff;animation:brExp 1s ease-out}@keyframes brExp{from{width:var(--exp-before)}}.br-result-buttons{display:flex;gap:6px}.br-result-buttons button{flex:1;margin-top:6px;padding:12px;border:1px solid #ffffff26;border-radius:12px;background:#ffffff15;color:#fff;font-size:13px}
+@media(max-height:700px){#battle.is-renewed .battle-command-pad{grid-template-rows:76px 42px}#battle.is-renewed .battle-command-pad #battleSkillButton{height:72px;min-height:72px;width:72px}#battle.is-renewed .battle-command-dock{min-height:153px}.br-messages{min-height:37px}.br-party{min-height:61px}}
+@media(prefers-reduced-motion:reduce){#battle.is-renewed *,#battle.is-renewed *::before,#battle.is-renewed *::after{animation:none!important;transition:none!important}.br-link-fx img{transition:none}.br-link-fx.fly img{transform:none;opacity:1}}
+/* Explicitly supersede the older compact two-column command rules. */
+#battle.is-battle-stage.is-renewed .battle-command-dock #commands.battle-inline-panel{grid-template-columns:repeat(3,minmax(0,1fr));min-height:142px}
+#battle.is-battle-stage.is-renewed .battle-command-dock #commands.battle-inline-panel .skill-button{display:flex;flex-direction:column;align-items:flex-start;min-height:98px;padding:7px 6px;gap:3px}
+#battle.is-battle-stage.is-renewed .battle-command-dock #commands.battle-inline-panel .skill-button>strong{font-size:12px;white-space:normal;overflow-wrap:anywhere}
+#battle.is-battle-stage.is-renewed .battle-command-dock .battle-inline-panel .battle-panel-back{grid-column:1;grid-row:1;min-height:28px;padding:3px 6px;width:auto;display:block;background:none;font-size:12px;border:0;justify-self:start;transform:none}
+#battle.is-renewed .br-skill-heading{grid-column:2/4;grid-row:1;min-width:0;font-size:10px}
+#battle.is-battle-stage.is-renewed .battle-command-dock #commands .br-skill-help{flex:none;width:auto;min-width:32px;min-height:28px;margin:0;padding:3px 5px;border:0;background:none;color:#afc0d7;font-size:10px;white-space:nowrap}
+.br-sheet .battle-choice-detail{display:block;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+#battle.is-renewed .br-member.active{outline:0;box-shadow:none;border-style:solid}
+#battle.is-renewed .br-contract h3{font-size:13px}
+#battle.is-renewed .br-contract-result{font-size:22px;color:#ffe08a;text-align:center}
+#battle.is-renewed.br-auto-between #battleOutcome:not(.hidden){inset:30% 10px auto;max-width:400px;max-height:45dvh;padding:14px;border:1px solid #8ff0ff77;border-radius:16px;text-align:center;box-shadow:0 8px 30px #0009}
+#battle.is-renewed.br-auto-between :is(#renewalResultMeta,#renewalResultExp,#renewalResultButtons){display:none}
+#battle.is-renewed.br-auto-between #battleOutcomeTitle{font-size:24px}
+#autoSummary{background:radial-gradient(120% 70% at 50% 0%,#2a3f6b,#0b1526 70%);border:1px solid #8ff0ff55;border-radius:18px;color:#eef3fa}
+#battle.is-renewed .br-ko-ghost{position:absolute;inset:0;pointer-events:none;animation:brKo .5s forwards;z-index:5}@keyframes brKo{to{opacity:0;transform:translateY(35px);filter:grayscale(1)}}
+@media(prefers-reduced-motion:reduce){#battle.is-renewed .br-ko-ghost{display:none}}
+#battle.is-renewed .battle-static-media::after{content:none!important}
+#battle.is-renewed .battle-static-media{background:transparent!important;border:0!important;box-shadow:none!important}
+.br-member small:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#battle.is-renewed .br-enter .battle-stage-slot{animation:brEnter .7s ease-out}@keyframes brEnter{from{transform:translateX(110px);opacity:0}to{transform:none;opacity:1}}
+#battle.is-renewed .br-linked{animation:brLinked .8s}@keyframes brLinked{35%{filter:drop-shadow(0 0 20px #ff8fd0) brightness(1.5)}to{filter:none}}
+.br-levelup i{animation:brLevelUp 1.3s ease-out}@keyframes brLevelUp{from{width:var(--exp-before)}60%{width:100%}61%{width:0%}}
+@media(prefers-reduced-motion:reduce){#battle.is-renewed .br-enter .battle-stage-slot,#battle.is-renewed .br-linked,.br-levelup i{animation:none!important}}

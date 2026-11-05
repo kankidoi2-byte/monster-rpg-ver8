@@ -3,6 +3,7 @@
  * NODE_PATH=/tmp/rpg-dom-deps/node_modules node scripts/test-battle-idle-lifecycle-dom.mjs
  */
 import assert from 'node:assert/strict';
+import {installDialogDomSupport} from './test-dialog-dom-support.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
@@ -13,6 +14,7 @@ const errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const dom=new JSDOM(html,{url:'http://phase3a.test/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
 const w=dom.window,d=w.document,context=dom.getInternalVMContext();
+installDialogDomSupport(w);
 w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
 w.scrollTo=()=>{};w.alert=()=>{};w.confirm=()=>true;w.HTMLElement.prototype.scrollIntoView=()=>{};
 const run=code=>vm.runInContext(code,context);
@@ -44,7 +46,7 @@ const reduced=value=>{run(`battleIdleReduced.matches=${value};syncBattleIdleMedi
 const checks=[];const pass=name=>checks.push(name);
 defer=true;setup();let r=rec(),v=r.video,oldTimer=timers.get(r.timer).fn;
 clock=1200;run('openBattleItemSelect()');assert.equal(r.state,'paused');assert.equal(r.remaining,3800);assert.equal(r.timer,null);
-hidden(true);reduced(true);clock+=60000;run("show('battle');update()");hidden(false);assert(v.paused&&r.state==='paused');assert.equal(r.timer,null);assert(!r.failed);
+hidden(true);reduced(true);clock+=60000;run("renewalClose();update()");hidden(false);assert(v.paused&&r.state==='paused');assert.equal(r.timer,null);assert(!r.failed);
 reduced(false);assert.equal(r.state,'loading');assert.equal(timers.get(r.timer).ms,3800);oldTimer();assert(!r.failed);
 pass('foreground budget excludes 60 seconds offscreen; overlapping reasons; obsolete timer ignored');
 const stale=deferred[0];stale.reject(Error('old interrupted play'));await flush();assert(!r.failed&&r.pending);
@@ -60,7 +62,7 @@ const retryVideo=r.video,retryError=retryVideo.onerror;run('changeActivePartyMem
 pass('switch during retry disposes source, handlers, timer and ignores delayed Promise');
 defer=false;setup();await flush();r=rec();v=r.video;v.currentTime=3.2;
 run('pHp-=3;pPoisonTurns=2;update();toggleBattleSkillPanel();battleUiBack()');assert.equal(rec().video,v);assert.equal(v.currentTime,3.2);
-run('openBattleItemSelect()');hidden(true);run("show('battle')");assert(v.paused);hidden(false);await flush();assert(!v.paused);assert.equal(v.currentTime,3.2);assert.equal(rec().video,v);
+run('openBattleItemSelect()');hidden(true);run("renewalClose()");assert(v.paused);hidden(false);await flush();assert(!v.paused);assert.equal(v.currentTime,3.2);assert.equal(rec().video,v);
 pass('HP/status/panel and temporary screen keep video and position');
 w.dispatchEvent(new w.PageTransitionEvent('pagehide',{persisted:true}));assert.equal(rec(),null);assert(!v.isConnected);run('update()');assert(!d.querySelector('video'));
 w.dispatchEvent(new w.PageTransitionEvent('pageshow',{persisted:true}));await flush();assert(rec()&&rec().video!==v);assert.equal(d.querySelectorAll('video').length,1);

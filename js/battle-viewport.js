@@ -23,6 +23,7 @@ function prepareBattleFloatingPanel(panel){
     return;
   }
   if(panel.id!=='commands')return;
+  if(typeof renewalDecorateSkills==='function'){renewalDecorateSkills();return;}
   syncBattleViewportInfo();
   const info=document.getElementById('battleCompactInfo');
   let help=info.querySelector('.battle-skill-help');
@@ -44,7 +45,7 @@ function battleViewportBudget(viewportHeight,top,chrome,hud){
   const available=Math.max(0,viewportHeight-top-chrome-8);
   // HP panels live within the field, not in extra rows above and below it.
   // Keep a usable field when text or expanded targeting needs natural scroll.
-  const artwork=Math.max(300,hud*2+120,available);
+  const artwork=Math.max(typeof renewalRender==='function'?220:300,hud*2+100,available);
   return {arena:Math.ceil(artwork),artwork,scroll:artwork>available};
 }
 function battleCompactSizePlan(enemies,ally,width,height,enemyHud=64,tracks=enemies.length){
@@ -116,14 +117,14 @@ function updateBattleViewport(){
   const floating=screen.querySelector('.battle-inline-panel:not(.hidden)');
   // Choice changes keep the body-size unit. CSS transfers targeting
   // command space into the field, without adding to the page height.
-  if(floating&&Number(arena.dataset.compactHeight)>0&&Number(arena.dataset.viewportWidth)===arena.clientWidth&&Number(arena.dataset.viewportHeight)===viewport)return;
+  if(!screen.classList.contains('is-renewed')&&floating&&Number(arena.dataset.compactHeight)>0&&Number(arena.dataset.viewportWidth)===arena.clientWidth&&Number(arena.dataset.viewportHeight)===viewport)return;
   const top=Math.max(0,screen.getBoundingClientRect().top+window.scrollY);
   let chrome=0;
   for(const el of screen.children){
     if(el===arena||!el.getClientRects().length||getComputedStyle(el).position==='fixed')continue;
     const style=getComputedStyle(el);chrome+=el.getBoundingClientRect().height+(parseFloat(style.marginTop)||0)+(parseFloat(style.marginBottom)||0);
   }
-  if(floating&&Number.isFinite(Number(arena.dataset.restChrome)))chrome=Number(arena.dataset.restChrome);
+  if(!screen.classList.contains('is-renewed')&&floating&&Number.isFinite(Number(arena.dataset.restChrome)))chrome=Number(arena.dataset.restChrome);
   else arena.dataset.restChrome=String(chrome);
   const hudHeight=el=>el?.getClientRects().length?el.getBoundingClientRect().height:0;
   const enemyHeight=multiBattle?.active?Math.max(...[...screen.querySelectorAll('.multi-enemy-copy')].map(hudHeight),0):hudHeight(document.getElementById('singleEnemyBox'));

@@ -92,7 +92,7 @@ function openBattleSwitchPicker(){
   const picker=document.getElementById('multiTargetSelect');
   const candidates=typeof livingPartySwitchCandidates==='function'?livingPartySwitchCandidates():[];
   if(!picker||!candidates.length)return;
-  picker.innerHTML=`<p><b>交代する仲間を選択</b><span>交代すると、このターンの行動を消費します</span></p>${candidates.map(({entry,index})=>`<button data-tutorial-actor-select onclick="selectBattleSwitchTarget(${index})">${entry.mon.name}（HP ${entry.hp} / ${instanceMaxHp(entry.inst)}）</button>`).join('')}<button onclick="cancelBattleSwitchPicker()" class="secondary-button">やめる</button>`;
+  picker.innerHTML=`<p><b>交代する仲間を選択</b><span>上の控えの仲間をタップすると交代できます</span></p>${candidates.map(({entry,index})=>`<button data-tutorial-actor-select onclick="selectBattleSwitchTarget(${index})">${entry.mon.name}（HP ${entry.hp} / ${instanceMaxHp(entry.inst)}）</button>`).join('')}<button onclick="cancelBattleSwitchPicker()" class="secondary-button">やめる</button>`;
   picker.classList.remove('hidden');
   if(typeof syncBattleUi==='function')syncBattleUi();
   if(typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('actor_picker_opened');
@@ -310,6 +310,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   if(!victory&&typeof autoLost==='function')autoLost(kind);
   setTimeout(() => outcome.classList.remove('is-revealing'), 850);
   if (typeof updateAppResourceBar === 'function') updateAppResourceBar();
+  if(typeof renewalOutcome==='function')renewalOutcome({kind,exp,coins});
 }
 function huntConditionsHtml(request, inBattle=false) {
   const conditions = Array.isArray(request?.conditions) ? request.conditions : [];
@@ -349,6 +350,7 @@ function syncKokoroLinkAura(){
   target?.classList.toggle('is-kokoro-linked',!!active);
 }
 function playKokoroLinkActivationAnimation(source,link){
+  if(typeof renewalDelayLink==='function')return true;
   const stage=document.querySelector('#battle .battle-arena');
   const target=document.getElementById('singlePlayerBox');
   if(!stage||!target||!source?.entry?.mon||!link)return false;
@@ -429,8 +431,8 @@ function renderKokoroLinkPanel(){
     if(!preview)return '';
     const effects=preview.effects;
     const disabled=source.used||!!current||!targetEligible;
-    return `<button class="kokoro-link-source${source.used?' is-used':''}" data-uid="${escapeGameHtml(source.uid)}" onclick="activateKokoroLinkFromBattle(this.dataset.uid)" ${disabled?'disabled':''}>`+
-      `<span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
+    return `<button class="kokoro-link-source${source.used?' is-used':''}" data-uid="${escapeGameHtml(source.uid)}" onclick="typeof renewalLinkPreview==='function'?renewalLinkPreview(this.dataset.uid):activateKokoroLinkFromBattle(this.dataset.uid)" ${disabled?'disabled':''}>`+
+      `<img src="${IMG[source.entry.mon.id]}" alt=""><span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
       `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
       `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+
       `${preview.powerAbility?`<small>★1リンク能力：${preview.powerAbility.label}（${preview.powerAbility.summary}）</small>`:''}`+
@@ -490,6 +492,7 @@ function activateKokoroLinkFromBattle(sourceUid,targetId=null){
   if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
   const source=typeof currentKokoroLinkSources==='function'?currentKokoroLinkSources({includeUsed:true}).find(candidate=>candidate.uid===sourceUid):null;
   if(!targetId&&multiBattle?.active&&kokoroLinkSourceNeedsEnemyTarget(source)){beginKokoroLinkStatusTargetSelection(sourceUid);return;}
+  if(typeof renewalDelayLink==='function'&&renewalDelayLink(sourceUid,targetId,source))return;
   const result=activateCurrentKokoroLink(sourceUid,kokoroLinkTargetStats());
   const log=document.getElementById('log');
   if(!result.ok){if(log)log.innerHTML+=(log.innerHTML?'<br>':'')+`⚠️ ${kokoroLinkFailureText(result.reason)}`;if(typeof captureBattleLog==='function')captureBattleLog();renderKokoroLinkPanel();return;}

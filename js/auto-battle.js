@@ -211,6 +211,7 @@ function autoVictoryCommitted(receipt,outcome){
   const actions=document.getElementById('battleOutcomeActions');
   actions.replaceChildren();document.getElementById('next').classList.add('hidden');
   actions.textContent=candidates.length?(pause?'契約のチャンス！':'契約のチャンス → 設定どおり見送り'):'';
+  if(typeof renewalAutoBetween==='function')renewalAutoBetween(outcome,pause);
   autoLater(r,1300,()=>pause?autoContractOffer():autoAdvance());
 }
 function autoContractOffer(){

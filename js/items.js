@@ -165,6 +165,7 @@ function useExpItemOnInstance(itemId, uidValue){
 }
 function openBattleItemSelect() {
   if(busy||(typeof battleUiCanAct==='function'&&!battleUiCanAct()))return;
+  if(typeof renewalItems==='function'){renewalItems();return;}
   if(typeof battleUiRemember==='function')battleUiRemember('battleItemButton');
   if(typeof closeBattleSkillPanel==='function')closeBattleSkillPanel();
   document.getElementById('kokoroLinkPanel')?.classList.add('hidden');
@@ -341,6 +342,7 @@ function tryCatch(){ askUseContractScroll(); }
 function catchEnemy(){ askUseContractScroll(); }
 function contractEnemy(){ askUseContractScroll(); }
 function renderSingleBattleContractPanel(){
+  if(typeof renewalContracts==='function'&&renewalContracts())return;
   const actions=document.getElementById('battleOutcomeActions');
   if(!actions||multiBattle?.active||!battleRewardGranted)return;
   if(!isContractableUnit(enemy)){
