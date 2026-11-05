@@ -43,8 +43,7 @@ const ROADMAP = (function(){
     {id:'linkfx',lane:'sys',stage:'later',title:'ココロリンクの見直し',sub:'作戦の幅を広げる',icon:'💞',
       lead:'ココロリンクの効果を見直します。',
       points:['相手に合わせて選ぶ楽しさを','つなぐ仲間で戦い方が変わる']},
-    {id:'status',lane:'sys',stage:'now',wip:true,title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
-      lead:'モンスターやキャラクターのステータスを確認できるようにします。',points:['HP・攻撃などの能力値を確認','モンスターとキャラクターの両方に対応','進化のタイミングは秘密のまま。育てて見つけよう']},
+
     {id:'evo',lane:'sys',stage:'next',title:'キャラクターの進化レベル',sub:'キャラも個体ごとの進化に',iconImg:'images/monsters/elna_middle_20261004.webp',
       lead:'モンスターと同じように、キャラクターの進化にも個体差を取り入れます。',points:['同じキャラクターでも、進化するタイミングが少しずつ違う','育てながら進化の瞬間を見つける楽しみ']},
     {id:'material',lane:'sys',stage:'next',title:'素材クエスト',sub:'育成素材を集めやすく',iconImg:'images/items/mega_data_art_v1.webp',
@@ -52,6 +51,8 @@ const ROADMAP = (function(){
       points:['キロ／メガ／ギガデータや、錬成の素材を集めやすく','オートと組み合わせて周回しやすく']}
   ],
   done:[
+    {id:'status',lane:'sys',stage:'now',note:'追加',title:'ステータス確認',sub:'仲間の能力を見やすく',icon:'📊',
+      lead:'モンスターやキャラクターのステータスを確認できるようになりました。',points:['HP・攻撃などの能力値を確認','モンスターとキャラクターの両方に対応','進化のタイミングは秘密のまま。育てて見つけよう']},
     {id:'stat4',lane:'sys',stage:'now',note:'見直し',title:'能力値の見直し',sub:'攻撃と防御を追加',icon:'⚔️',
       lead:'モンスターとキャラクターの能力値を見直しました。',
       points:['HP・攻撃・防御・速度の4つの能力に','育てるほど、はっきり強くなる']},
