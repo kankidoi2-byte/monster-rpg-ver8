@@ -50,9 +50,9 @@ try{
  }
  // Change only the data file response: stage and completed-list updates need no renderer edit.
  const page=await browser.newPage();
- await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'status',lane:'sys',stage:'next'","id:'status',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
+ await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'material',lane:'sys',stage:'next'","id:'material',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
  await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
- assert.equal(await page.locator('[data-id="status"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
+ assert.equal(await page.locator('[data-id="material"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
  assert.equal(await page.locator('#doneList>div').first().locator('span').nth(1).innerText(),'追加テスト');
  assert.deepEqual(errors,[]);console.log('PASS roadmap acceptance 1–9: navigation, grid/rails, WIP, main/side, focus, all sheets/synopsis, data-only updates, 360/412/430px, loaded save and zero game-save writes.');
 }finally{await browser?.close();server.kill();}
