@@ -34,9 +34,6 @@ const ROADMAP = (function(){
     {id:'bgm',lane:'art',stage:'later',title:'BGM',sub:'ゲームに音楽を',icon:'🎵',
       lead:'ゲームにBGMを追加します。',points:['ホーム・バトル・ストーリーなど場面ごとの曲','オン／オフの切り替え']},
 
-    {id:'stat4',lane:'sys',stage:'now',wip:true,title:'能力値の見直し',sub:'攻撃と防御を追加',icon:'⚔️',
-      lead:'モンスターとキャラクターの能力値を見直します。',
-      points:['HP・攻撃・防御・速度の4つの能力に','育てるほど、はっきり強くなる']},
     {id:'extreme',lane:'sys',stage:'later',title:'EXTREMEの強敵',sub:'特別な力を持つボス',icon:'💀',
       lead:'EXTREMEのボスに、そこでしか見られない特別な力を追加します。',
       points:['育てきった仲間でも、備えなしでは勝てない','相手を知って備えれば、道は開ける']},
@@ -55,6 +52,9 @@ const ROADMAP = (function(){
       points:['キロ／メガ／ギガデータや、錬成の素材を集めやすく','オートと組み合わせて周回しやすく']}
   ],
   done:[
+    {id:'stat4',lane:'sys',stage:'now',note:'見直し',title:'能力値の見直し',sub:'攻撃と防御を追加',icon:'⚔️',
+      lead:'モンスターとキャラクターの能力値を見直しました。',
+      points:['HP・攻撃・防御・速度の4つの能力に','育てるほど、はっきり強くなる']},
     {id:'auto',lane:'sys',stage:'now',note:'追加',title:'オートバトル',sub:'討伐済みの探索を自動で',icon:'⏩',
       lead:'バトルを自動で進めるオート機能を追加しました。',
       points:['同じマップ・難易度の相手を全員倒すと解放','2倍速にも対応','序章・チュートリアルの戦闘では使えない']},
