@@ -35,7 +35,7 @@ r.context.skill110BaseAuditSetup=originalSetup;
 r.run(`var supportPolicyCounts={attack:0,heal:0,guard:0};
  auditSetup=function(config){skill110BaseAuditSetup(config);const ids=['s110_021','s110_004','s110_003'];ids.forEach(id=>save.skillCards[id]=1);save.equippedSkills[activeInstance.uid]=ids;
  if(!ids.every(id=>isSkillAllowedForMonster(id,player))||ids.reduce((n,id)=>n+SKILL_BY_ID[id].cost,0)>skillCostLimitFor(player,activeInstance))throw Error('support simulation illegal equipment');};
- auditSelect=function(){const moves=getEquippedMovesForInstance(activeInstance);let index=battleTurnCount%3===0?2:pHp<playerMaxHp()*.8?1:0;supportPolicyCounts[index===0?'attack':index===1?'heal':'guard']++;return index;};`);
+ auditSelect=function(){const moves=getEquippedMovesForInstance(activeInstance);let index=battleTurnCount%3===0?2:pHp<playerMaxHp()?1:0;supportPolicyCounts[index===0?'attack':index===1?'heal':'guard']++;return index;};`);
 const supportResults=[];
 for(const [enemy,map,difficulty,level] of [['goblin','grassland','normal',20],['nemesion','starsea','hard',50],['doom_nemesion','starsea','extreme',100]])for(const seed of [31,47]){
  const result=await runner.battle({party:['grassbeat'],level,map,enemy,difficulty,cap:160},seed);
@@ -58,4 +58,4 @@ for(const [label,index,cap] of [['heal-only',0,100],['guard-only',1,3000],['debu
  else assert.notEqual(result.outcome,'capped',label+' positive incoming damage must eventually end battle');
 }
 r.context.auditSetup=originalSetup;r.context.auditSelect=originalSelect;
-console.log(JSON.stringify({result:'KNOWN_SPEC_LIMIT',noAttackFindings,reason:'Unlimited healing with no resource cost can sustain indefinitely against weak attacks; fixed skill values left unchanged; cooldown/resource/turn-limit requires user decision'}));
+console.log(JSON.stringify({result:'KNOWN_SPEC_LIMIT',noAttackFindings,reason:'Unlimited healing with no resource cost can sustain indefinitely against weak attacks; no cooldown or resource limit; cooldown/resource/turn-limit requires user decision'}));

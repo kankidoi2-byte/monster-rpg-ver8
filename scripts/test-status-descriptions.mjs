@@ -11,7 +11,12 @@ import {applyStatusDataCopy,applyStatusCoreCopy} from './status-description-copy
 const base='a546894691f243aeb41de9e1a46f4c66e299bc28';
 const read=n=>fs.readFileSync(new URL('../js/'+n+'.js',import.meta.url),'utf8');
 const original=n=>applyRenamedMonsterIds(execFileSync('git',['show',base+':js/'+n+'.js'],{encoding:'utf8'}));
-const before=runtime({data:()=>original('data'),core:()=>original('core')}),r=runtime();
+const before=runtime({
+ data:()=>original('data').replace(/HPを\d+＋Lv×[\d.]+回復/g,'最大HPに応じて回復'),
+ core:()=>original('core')
+  .replace("recoil:'攻撃後、自分も8ダメージを受ける'","recoil:'攻撃後、自分の最大HPの4%の反動ダメージを受ける'")
+  .replace("heal:'自分のHPを回復'","heal:'自分の最大HPの22%を回復'")
+}),r=runtime();
 r.context.document.addEventListener=()=>{};
 for(const file of ['skill-synthesis','skill-synthesis-ui','dex','skill-dex','battle-ui'])vm.runInContext(read(file),r.context);
 const expected={skill_grassbeat_04:['poison',60],skill_grassbeat_05:['sleep',70],skill_grassbeat_06:['poison',70],skill_volteck_04:['paralysis',30],skill_volteck_05:['paralysis',80],skill_volteck_06:['paralysis',50],skill_nemes_04:['confusion',60],skill_nemes_05:['poison',40],skill_goblin_03:['poison',50],skill_kimeragna_01:['poison',40],skill_kimeragna_apex_01:['poison',60]};

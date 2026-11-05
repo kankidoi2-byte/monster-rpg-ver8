@@ -7,7 +7,7 @@ function installSingleHpProbe(strict=true) {
     observations.push({stage,pHp,eHp});
     if(strict&&(pHp<0||eHp<0))throw Error(`${stage}: negative HP ${pHp}/${eHp}`);
   };
-  const expression=/([pe]Hp)\s*(?:-=\s*(dmg|8|recoilDamage|secondDmg)|=\s*Math\.max\(0,\s*\1\s*-\s*(dmg|8|recoilDamage|secondDmg)\))\s*;/g;
+  const expression=/([pe]Hp)\s*(?:-=\s*(dmg|8|recoil(?:Damage)?|secondDmg)|=\s*Math\.max\(0,\s*\1\s*-\s*(dmg|8|recoil(?:Damage)?|secondDmg)\))\s*;/g;
   let count=0;
   doAttack=eval('('+doAttack.toString().replace(expression,statement=>{count++;return '{'+statement+'singleHpProbe("assignment");}';})+')');
   if(count!==8)throw Error(`Expected 8 observed subtractions, got ${count}`);

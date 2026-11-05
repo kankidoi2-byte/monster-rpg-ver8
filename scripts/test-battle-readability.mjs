@@ -1,3 +1,4 @@
+import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
@@ -28,7 +29,7 @@ assert(history().some(e=>/被弾 −1.*超過/.test(e.text)),'overkill separate 
 run('setup();pStatus="poison";pPoisonTurns=1;pHp=2;refreshBattleFeedback();applyPoisonEndTurn()');
 assert.equal(run('pHp'),0);assert.equal(run('pStatus'),null);assert(history().some(e=>/毒 −2/.test(e.text)));
 run('setup()');await run(`performAction(player,enemy,['反動技',12,'normal','recoil'],true)`);
-assert(history().some(e=>/反動 −8/.test(e.text)));
+assert(history().some(e=>new RegExp(`反動 −${Math.floor(run('playerMaxHp()')*.04)}`).test(e.text)));
 run('setup();pSleepTurns=1;refreshBattleFeedback()');await run(`performAction(player,enemy,['攻撃',12,'normal'],true)`);
 assert.equal(run('pSleepTurns'),0);assert(history().some(e=>/動けない/.test(e.text)));
 run('setup();pGuard=true;pAquaShield=true;pAtk=1.5;refreshBattleFeedback()');
@@ -39,7 +40,8 @@ assert.equal(history().filter(e=>e.text==='身を守った').length,2);
 // Compare unchanged effects/RNG without defense; intentional defense rules are
 // covered by test-story-legacy-defense, including whole-attack consumption.
 const {execFileSync}=await import('node:child_process');
-const baseline=runtime(Object.fromEntries(['battle-rules','battle-flow','multi-battle','battle-view','items'].map(file=>[file,()=>execFileSync('git',['show',`4f3d5d5c488d4dd44da9b2bab30a56ab45663323:js/${file}.js`],{encoding:'utf8',maxBuffer:5e6})])));
+const baseline=runtime(Object.fromEntries(['battle-rules','battle-flow','multi-battle','battle-view','items'].map(file=>[file,()=>applyNormalHealingSpec(file,execFileSync('git',['show',`4f3d5d5c488d4dd44da9b2bab30a56ab45663323:js/${file}.js`],{encoding:'utf8',maxBuffer:5e6}))])));
+run('battleStatDamageMultiplier=()=>1;normalRecoilDamage=()=>8;');
 for(const effect of [null,'repeat_attack','drain','recoil','alchemy_recoil','poison','paralysis','confusion','guard','heal','buff','aqua_shield']){
  const seed=912;const a=seeded(seed),b=seeded(seed);let drawsA=0,drawsB=0;
  baseline.run(`function setup(){${setup.replace('refreshBattleFeedback();','')}};setup();pHp=70;eHp=60;pGuard=false;eGuard=false;pAquaShield=false;eAquaShield=false;`);

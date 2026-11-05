@@ -127,7 +127,7 @@ function setupMultiBattle() {
 function aliveMultiEnemies() { return multiBattle?.enemies?.filter(entry => entry.alive && entry.hp > 0) || []; }
 function multiEnemy(id) { return multiBattle?.enemies?.find(entry => entry.id === id) || null; }
 function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield)+enemyKokoroLinkStatusHtml(entry.id); }
-function multiEnemyKokoroLinkSpeed(entry){return enemyKokoroLinkSpeed(entry.mon,entry.id);}
+function multiEnemyKokoroLinkSpeed(entry){return enemyKokoroLinkSpeed(entry.mon,entry.id,entry.level);}
 function multiStatChangeHtml(entry) {
   const changes=[];
   if(entry.attack>1)changes.push('攻撃↑');
@@ -261,7 +261,7 @@ async function performMultiAttack(actor,target,move) {
     actor.confusionTurns--;
     const roll=Math.random();
     if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${a.name}はこんらんして動けない！`);return;}
-    if(roll>=.75){const dmg=Math.max(1,Math.floor(12*actor.attack*enemyKokoroLinkAttackMultiplier(actor.id)));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
+    if(roll>=.75){const dmg=confusionSelfDamage(a,actor.level,actor.attack*enemyKokoroLinkAttackMultiplier(actor.id));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
   }
   if(typeof battleFeedback!=='undefined'){
     const label=entry=>entry.kind==='player'?`味方・${player.name}`:`敵${multiBattle.enemies.indexOf(entry)===0?'A':'B'}・${entry.mon.name}`;
@@ -285,7 +285,7 @@ async function performMultiAttack(actor,target,move) {
   }
   if(effect==='guard'){ if(actorIsPlayer)pGuard=true;else actor.guard=true; appendMultiLog(`🛡️ ${a.name}は身を守った！`);updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated}; }
   if(effect==='heal'){
-    const amount=normalBattleHealing(actorIsPlayer ? activeInstance?.level : typeof activeHuntRequest!=='undefined'&&activeHuntRequest?.source==='map_story'?1:actor.level);
+    const amount=normalBattleHealing(actorIsPlayer ? playerMaxHp() : actor.maxHp);
     const before=actorIsPlayer?pHp:actor.hp;
     if(actorIsPlayer)pHp=Math.min(playerMaxHp(),pHp+amount);else actor.hp=Math.min(actor.maxHp,actor.hp+amount);
     const healed=(actorIsPlayer?pHp:actor.hp)-before;
@@ -313,7 +313,10 @@ async function performMultiAttack(actor,target,move) {
   const guard=defenderIsPlayer?pGuard:targetEntry.guard, shield=defenderIsPlayer?pAquaShield:targetEntry.aquaShield;
   const r=typeEff(type,d.types), difficulty=actorIsPlayer?1:enemyDifficultyAttackMultiplier(), map=power>0?huntMapAttackMultiplier(moveTypes(move)):1;
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
-  const rawDamage=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map;
+  const actorLevel=actorIsPlayer?activeInstance?.level:actor.level;
+  const targetLevel=defenderIsPlayer?activeInstance?.level:targetEntry.level;
+  const statMultiplier=battleStatDamageMultiplier(a,actorLevel,d,targetLevel);
+  const rawDamage=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map*statMultiplier;
   const linkBarrier=legacyAttackDefense(rawDamage,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
   const damage=linkBarrier.hpDamage;
   const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
@@ -334,7 +337,7 @@ async function performMultiAttack(actor,target,move) {
     if(Math.random()<chance.chance){
     if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true});
-    const rawSecond=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map;
+    const rawSecond=(effectivePower*atk*effectiveType+Math.random()*9)*difficulty*map*statMultiplier;
     const secondBarrier=legacyAttackDefense(rawSecond,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
     const second=secondBarrier.hpDamage;const secondHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
@@ -353,7 +356,7 @@ async function performMultiAttack(actor,target,move) {
     msg+=`<br>⬇️ ${d.name}の攻撃力が下がった！`;
   }
   if(effect==='recoil'||effect==='alchemy_recoil'){
-    const recoil=effect==='recoil'?8:alchemyRecoilDamage(Math.min(damage,Math.max(0,defenderHpBefore))),guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
+    const recoil=effect==='recoil'?normalRecoilDamage(actorIsPlayer?playerMaxHp():actor.maxHp):alchemyRecoilDamage(Math.min(damage,Math.max(0,defenderHpBefore))),guarded=actorIsPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
     if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=actorIsPlayer?pHp:actor.hp;if(actorIsPlayer)pHp=Math.max(0,pHp-recoil);else actor.hp=Math.max(0,actor.hp-recoil);if(typeof battleHpResult==='function')battleHpResult(sourceId,before,actorIsPlayer?pHp:actor.hp,{label:'反動',damage:recoil});msg+=`<br>💥 ${a.name}は反動で${recoil}ダメージ！`;}
   }
   if(effect==='flare_charge'){if(actorIsPlayer)pFlareCharge=true;else actor.flareCharge=true;}else if(power>0){if(actorIsPlayer)pFlareCharge=false;else actor.flareCharge=false;}

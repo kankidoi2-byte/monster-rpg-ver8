@@ -17,7 +17,7 @@ async function scenario({mode='single',actor='player',targetHp=3,guarded=false,z
  r.context.playerAttackInstanceMultiplier=()=>1;
  r.context.consumeKokoroLinkRecoilGuard=()=>guarded;
  r.run(`var player=by('${isPlayer?'alchemion':'slime'}'),enemy=by('${isPlayer?'slime':'alchemion'}');
- var activeInstance={id:player.id,level:1};var activePartyIdx=0;
+ var activeHuntRequest={enemyLevel:1};var activeInstance={id:player.id,level:1};var activePartyIdx=0;
  var pHp=${isPlayer?1000:targetHp},eHp=${isPlayer?targetHp:1000},pAtk=1,eAtk=1,pGuard=false,eGuard=false,pAquaShield=false,eAquaShield=false,pFlareCharge=false,eFlareCharge=false;
  var partyBattle=[{hp:pHp}];
  var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
@@ -36,7 +36,7 @@ for(const actor of ['player','enemy']){
 let checks=0;
 for(const actor of ['player','enemy','enemy-other'])for(const targetHp of [1,3,4,7,140,500]){
  const patched=await scenario({mode:'multi',actor,targetHp});
- const expected=Math.max(1,Math.floor(Math.min(140,targetHp)*.25));
+ const expected=Math.max(1,Math.floor(Math.min(Math.floor(140*.8*(73/53)),targetHp)*.25));
  assert.equal(patched.recoil,expected,JSON.stringify(patched));checks++;
  if(actor!=='enemy-other'){
   const single=await scenario({mode:'single',actor,targetHp});

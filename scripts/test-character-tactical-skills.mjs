@@ -119,6 +119,9 @@ battle.context.document.addEventListener=()=>{};
 vm.runInContext(fs.readFileSync(new URL('../js/battle-ui.js',import.meta.url),'utf8'),battle.context,{filename:'js/battle-ui.js'});
 battle.context.motionCalls=[];
 b('playBattleSkillMotion=async(source,target,move)=>{motionCalls.push({source,target,id:move[8]||move[0]});return false;};');
+// The Bordo fixture has 68 ATK / 78 DEF at Lv10 and a legacy Lv10 cap of 353.
+const fixtureDamage=(power,multiplier=1)=>Math.floor(power*multiplier*.8*(68/78)*1.54);
+const fixtureHealing=(amount,maximum=310)=>Math.floor(amount*maximum/353);
 function setup(mode='single'){
  b(`save=initSave();save.instances=[];save.party=[];var fighter=addInstance('character_bordo_4',10);save.party=[fighter.uid];
  prepareBattleParty();selectedMap=MAPS[0];enemy=by('character_bordo_4');
@@ -174,14 +177,14 @@ for(const mode of ['single','multi'])for(const enemyActs of [false,true])for(con
  assert.deepEqual(plain(battle.context.motionCalls),[{source,target:test.self?source:opponent,id:test.move[8]||test.move[0]}],`${mode}/${enemyActs}: support animation target`);
  if(test.move[9]?.heal){
   const healing=test.move[9].heal;
-  assert.equal(b(actorHp),Math.min(maximum,before+Math.floor(healing.flat+10*healing.perLevel)),'shipped healing follows its current data');
+  assert.equal(b(actorHp),Math.min(maximum,before+fixtureHealing(healing.flat+10*healing.perLevel,maximum)),'shipped healing follows its current data');
  }
 }
 
 // Focused effect contracts cover caps, additive effects, conditions, and real damage.
-setup();b('pHp=100;');resolve({heal:{flat:12,perLevel:2}});assert.equal(b('pHp'),132);
+setup();b('pHp=100;');resolve({heal:{flat:12,perLevel:2}});assert.equal(b('pHp'),100+fixtureHealing(32));
 b('pHp=playerMaxHp()-1;');resolve({heal:{flat:999,perLevel:2}});assert.equal(b('pHp'),b('playerMaxHp()'));
-b("pHp=100;activeHuntRequest.conditions=[{id:'healing_half'}];");resolve({heal:{flat:12,perLevel:2}});assert.equal(b('pHp'),116);
+b("pHp=100;activeHuntRequest.conditions=[{id:'healing_half'}];");resolve({heal:{flat:12,perLevel:2}});assert.equal(b('pHp'),100+Math.floor(fixtureHealing(32)/2));
 setup();b('pAtk=1.55;eAtk=.7;');resolve({buff:.2,debuff:.2});assert.equal(b('pAtk'),1.6);assert.equal(b('eAtk'),.65);
 setup();b("pStatus='poison';pPoisonTurns=3;pParalysisTurns=3;pConfusionTurns=3;pSleepTurns=2;");
 resolve({cleanse:['poison','paralysis','confusion','sleep']});assert.deepEqual(plain(b('[pStatus,pPoisonTurns,pParalysisTurns,pConfusionTurns,pSleepTurns]')),[null,0,0,0,0]);
@@ -230,7 +233,7 @@ for(const mode of ['single','multi'])for(const state of ['active','expired','oth
  const powerCall=mode==='single'?'tacticalSkillPower(testMove,true)':'tacticalSkillPower(testMove,true,null,multiBattle.enemies[0])';
  assert.equal(b(powerCall),expected,`${mode}/${state}: link poison condition`);
  await attack(plain(b('testMove')),mode);
- assert.equal(300-b(mode==='single'?'eHp':'multiBattle.enemies[0].hp'),expected,`${mode}/${state}: real attack uses link poison condition`);
+ assert.equal(300-b(mode==='single'?'eHp':'multiBattle.enemies[0].hp'),fixtureDamage(expected),`${mode}/${state}: real attack uses link poison condition`);
  if(state==='active'){
   assert.equal(b(mode==='single'?'tacticalSkillPower(testMove,false)':'tacticalSkillPower(testMove,false,multiBattle.enemies[0],{kind:"player"})'),40,'an enemy poison record does not make the player poisoned');
   if(mode==='multi')assert.equal(b('tacticalSkillPower(testMove,false,multiBattle.enemies[1],multiBattle.enemies[0])'),60,'enemy-to-enemy targeting reads the selected enemy poison');
@@ -249,9 +252,9 @@ for(const move of [...exclusive,...commons])for(const enemyActs of [false,true])
 
 // Compound attack effects happen exactly once after damage; support causes no damage.
 setup();await attack(moveWith({heal:{flat:10,perLevel:0},buff:.1,debuff:.1},20));
-assert.equal(b('pHp'),310);assert.equal(b('eHp'),280);assert.equal(b('pAtk'),1.1);assert.equal(b('eAtk'),.9);
+assert.equal(b('pHp'),300+fixtureHealing(10));assert.equal(b('eHp'),300-fixtureDamage(20));assert.equal(b('pAtk'),1.1);assert.equal(b('eAtk'),.9);
 setup();await attack(moveWith({buff:.1,debuff:.1},0));assert.equal(b('pHp'),300);assert.equal(b('eHp'),300);
-setup();await attack(moveWith({charge:true},0));await attack(moveWith({},40));assert.equal(b('eHp'),252);assert.equal(b('pFlareCharge'),false,'charge consumed by next attack');
+setup();await attack(moveWith({charge:true},0));await attack(moveWith({},40));assert.equal(b('eHp'),300-fixtureDamage(40,1.2));assert.equal(b('pFlareCharge'),false,'charge consumed by next attack');
 setup();b('eHp=3;pHp=100;');await attack(moveWith({drain:.5},100));assert.equal(b('pHp'),101,'overkill does not inflate drain');
 for(const mode of ['single','multi'])for(const enemyActs of [false,true])for(const condition of ['target_hurt','self_hurt','target_poisoned','target_guarded']){
  setup(mode);
@@ -263,7 +266,7 @@ for(const mode of ['single','multi'])for(const enemyActs of [false,true])for(con
  if(condition==='target_guarded')b(enemyActs?'pGuard=true;':mode==='single'?'eGuard=true;':'multiBattle.enemies[0].guard=true;');
  const before=b(targetHp);
  await attack(moveWith({bonus:{condition,threshold:.5,multiplier:1.5}},40),mode,enemyActs);
- assert.equal(before-b(targetHp),condition==='target_guarded'?33:60,`${mode}/${enemyActs}/${condition}: bonus applied before defenses`);
+ assert.equal(before-b(targetHp),fixtureDamage(60,condition==='target_guarded'?.55:1),`${mode}/${enemyActs}/${condition}: bonus applied before defenses`);
 }
 
 // Multi enemies target each other without changing the player's state or another enemy.
@@ -271,8 +274,8 @@ setup('multi');b('multiBattle.enemies[0].hp=100;');const untouched=snapshot('mul
 battle.context.testMove=moveWith({heal:{flat:9,perLevel:1},debuff:.2,status:{kind:'poison',chance:1}},20);
 await b('performMultiAttack(multiBattle.enemies[0],multiBattle.enemies[1],testMove)');
 assert.deepEqual(snapshot('multi')[0],untouched);
-assert.equal(b('multiBattle.enemies[0].hp'),119);assert.equal(b('multiBattle.enemies[0].attack'),1);
-assert.equal(b('multiBattle.enemies[1].hp'),280);assert.equal(b('multiBattle.enemies[1].attack'),.8);
+assert.equal(b('multiBattle.enemies[0].hp'),100+fixtureHealing(19));assert.equal(b('multiBattle.enemies[0].attack'),1);
+assert.equal(b('multiBattle.enemies[1].hp'),300-fixtureDamage(20));assert.equal(b('multiBattle.enemies[1].attack'),.8);
 assert.equal(b('multiBattle.enemies[1].status'),'poison');assert.equal(b('multiBattle.enemies[1].poisonSourceIsPlayer'),false);
 setup('multi');b('multiBattle.enemies[0].hp=1;');battle.context.testMove=moveWith({recoil:.1},20);
 await b('performMultiAttack(multiBattle.enemies[0],multiBattle.enemies[1],testMove)');
@@ -280,8 +283,8 @@ assert.equal(b('multiBattle.enemies[0].hp'),0);assert.equal(b('multiBattle.enemi
 assert.equal(b('multiBattle.enemies[0].defeatedByPlayer'),false,'enemy recoil KO does not award player kill credit');
 
 // Existing non-tactical skill behavior remains on its old path.
-setup();await attack(['従来回復',0,'normal','heal']);assert.equal(b('pHp'),Math.min(b('playerMaxHp()'),354));
+setup();await attack(['従来回復',0,'normal','heal']);assert.equal(b('pHp'),Math.min(b('playerMaxHp()'),300+Math.floor(b('playerMaxHp()')*.22)));
 setup();await attack(['従来強化',0,'normal','buff']);assert.equal(b('pAtk'),1.25);
-setup();await attack(['従来反動',20,'normal','recoil']);assert.equal(b('pHp'),292);assert.equal(b('eHp'),280);
+setup();await attack(['従来反動',20,'normal','recoil']);assert.equal(b('pHp'),300-Math.floor(b('playerMaxHp()')*.04));assert.equal(b('eHp'),300-fixtureDamage(20));
 
 console.log('PASS: 99 revised cards + 6 common cards, unique names, metadata round trip, 50-character common-card compatibility, initial equipment, old aliases/inventory/UIDs, evolution, effect limits, conditional attacks, single/multi parity, enemy targeting, and legacy behavior.');

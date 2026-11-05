@@ -43,7 +43,7 @@ for(const slot of [1,2])for(const feature of ['evolution','potion','upper_potion
   }else{
    assert.equal(r.run(`save.items['${feature}']`),2);
    assert.equal(r.run('pAtk'),feature==='attack_potion'?1.6:1);
-   assert.equal(r.run('pHp'),feature==='attack_potion'?10:r.run(`Math.min(playerMaxHp(),10+adjustedBattleHealing(${feature==='potion'?50:120}))`));
+   assert.equal(r.run('pHp'),feature==='attack_potion'?10:r.run(`Math.min(playerMaxHp(),10+Math.floor(${feature==='potion'?50:120}*playerMaxHp()/(130+49*12)))`));
    assert.equal(r.run('partyBattle[0].hp'),r.run('pHp'));
    // A stale menu event after success (even after a render exception) is not a second use.
    r.run(`document.getElementById('battleItemSelect').classList.contains=()=>true;var committed=JSON.stringify(save);useBattleItemFromMenu('${feature}')`);

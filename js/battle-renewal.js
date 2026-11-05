@@ -144,10 +144,7 @@ function renewalSwitch(index){
 }
 function renewalHistory(){renewalOpen('戦闘の履歴',`<div class="br-history">${[...battleFeedback.history].reverse().map(h=>`<p><small>ターン ${h.turn}</small>${renewalHtml(h.text)}</p>`).join('')||'<p>まだ履歴はありません</p>'}</div>`);}
 function renewalTraits(mon){
-  const moves=mon.moves||[];
-  // This game has no raw ATK/DEF stats. These are relative estimates based on
-  // the existing skill powers and species HP, never invented combat numbers.
-  return [Math.max(0,...moves.map(m=>Number(m[1])||0)),Number(mon.hp)||1,Number(mon.spd)||50];
+  return [mon.atk,mon.def,mon.spd];
 }
 const renewalDistribution=[0,1,2].map(i=>M.map(m=>renewalTraits(m)[i]).sort((a,b)=>a-b));
 function renewalEnemyInfo(id=null){
@@ -195,7 +192,11 @@ function renewalUseItem(){
     }
     if(identity!==saveTransactionIdentity())return;
     if(id==='attack_potion'){if(index===activePartyIdx)pAtk=1.6;else entry.itemAttack=1.6;}
-    else{const amount=adjustedBattleHealing(id==='potion'?50:120);if(index===activePartyIdx){pHp=Math.min(playerMaxHp(),pHp+amount);entry.hp=pHp;}else entry.hp=Math.min(instanceMaxHp(entry.inst),entry.hp+amount);}
+    else{
+      const maxHp=instanceMaxHp(entry.inst),amount=battlePotionHealing(id,entry.mon,entry.inst,maxHp);
+      if(index===activePartyIdx){pHp=Math.min(maxHp,pHp+amount);entry.hp=pHp;}
+      else entry.hp=Math.min(maxHp,entry.hp+amount);
+    }
     renewal.itemId=null;renewal.itemTarget=null;busy=true;renewalClose();
     try{const log=renewalEl('log');log.textContent=`${ITEM_BY_ID[id].name}を${entry.mon.name}に使った！`;captureBattleLog();updateItems();update();}catch(error){console.error('Committed battle item display failed',error);}finally{renewalItemEnemyTurn();}
   }finally{battleItemSaveBusy=false;}

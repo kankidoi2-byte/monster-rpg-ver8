@@ -49,7 +49,7 @@ function playerKokoroLinkChance(baseChance){
 }
 function singleEnemyKokoroLinkKey(){return 'single';}
 function enemyKokoroLinkAttackMultiplier(targetKey){return typeof kokoroLinkEnemyAttackMultiplierFor==='function'?kokoroLinkEnemyAttackMultiplierFor(targetKey):1;}
-function enemyKokoroLinkSpeed(monster,targetKey){const base=monSpd(monster);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
+function enemyKokoroLinkSpeed(monster,targetKey,level){const base=monSpd(monster,null,level);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
 function enemyKokoroLinkMisses(targetKey,randomFn=Math.random){const accuracy=typeof kokoroLinkEnemyAccuracyFor==='function'?kokoroLinkEnemyAccuracyFor(targetKey):1;return randomFn()>=accuracy;}
 function enemyKokoroLinkStatusHtml(targetKey){
   const parts=[];const status=typeof kokoroLinkEnemyStatusText==='function'?kokoroLinkEnemyStatusText(targetKey):'';const foresight=typeof kokoroLinkForesightTextForTarget==='function'?kokoroLinkForesightTextForTarget(targetKey):'';
@@ -217,7 +217,8 @@ function tryConfusionAction(isPlayer) {
     result = {canAct:false, selfHit:false, message:`🌀 ${actor.name}はこんらんして動けない！`};
   } else {
     const atkMultiplier = isPlayer ? pAtk * playerAttackInstanceMultiplier() : eAtk * enemyDifficultyAttackMultiplier() * enemyKokoroLinkAttackMultiplier(singleEnemyKokoroLinkKey());
-    const rawDamage = Math.max(1, Math.floor(24 * atkMultiplier * 0.5));
+    const level = isPlayer ? activeInstance?.level : activeHuntRequest?.enemyLevel;
+    const rawDamage = confusionSelfDamage(actor, level, atkMultiplier);
     const barrier = isPlayer ? resolvePlayerIncomingDamage(rawDamage) : {hpDamage:rawDamage,absorbed:0};
     const damage = barrier.hpDamage;
     if (isPlayer) {
@@ -328,7 +329,7 @@ async function turn(i) {
   const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);
   const pSpeed = prioritized?Infinity:monSpd(player, activeInstance);
   const delayed=typeof consumeKokoroLinkEnemyActionDelay==='function'&&consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
-  const eSpeed = delayed?-Infinity:enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey());
+  const eSpeed = delayed?-Infinity:enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey(),activeHuntRequest?.enemyLevel);
   const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
 
   if (playerFirst) {
@@ -374,7 +375,8 @@ async function turn(i) {
 function tacticalCombatant(isPlayer, entry=null){
   return {
     isPlayer, entry,
-    get name(){ return isPlayer ? player.name : entry?.mon?.name || enemy.name; },
+    get mon(){ return isPlayer ? player : entry?.mon || enemy; },
+    get name(){ return this.mon.name; },
     get visualId(){ return isPlayer ? 'pVis' : entry ? `${entry.id}Vis` : 'eVis'; },
     get maxHp(){ return isPlayer ? playerMaxHp() : entry ? entry.maxHp : enemyMaxHp(); },
     get level(){ return isPlayer ? activeInstance?.level || 1 : entry?.level || activeHuntRequest?.enemyLevel || entry?.mon?.level || enemy?.level || 1; },
@@ -437,7 +439,10 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
     if(typeof battleHpResult==='function')battleHpResult(actor.visualId,before,actor.hp,{label});
     messages.push(`💚 ${actor.name}はHPを${actor.hp-before}${label}した！`);
   };
-  if(config.heal)heal(config.heal.flat+actor.level*config.heal.perLevel,'回復');
+  if(config.heal){
+    const legacyAmount = config.heal.flat + actor.level * config.heal.perLevel;
+    heal(healingAtNewMaxHp(legacyAmount, actor.mon, actor.level, actor.maxHp),'回復');
+  }
   if(config.drain&&actualDamage>0)heal(actualDamage*config.drain,'吸収');
   if(config.cleanse?.length){
     const labels={poison:'毒',paralysis:'麻痺',confusion:'こんらん',sleep:'ねむり'},cleared=[];
@@ -495,10 +500,14 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
   }
   return messages.join('<br>');
 }
-// Ordinary healing uses the caster's battle level, with the existing Lv1 fallback
-// and level bounds. Hunt healing modifiers remain shared by both sides.
-function normalBattleHealing(level) {
-  return adjustedBattleHealing(24 + clampLevel(level) * 3);
+function normalBattleHealing(maxHp) {
+  return adjustedBattleHealing(Math.floor(maxHp * 0.22));
+}
+function normalRecoilDamage(maxHp) {
+  return Math.max(1, Math.floor(maxHp * 0.04));
+}
+function confusionSelfDamage(mon, level, attackMultiplier) {
+  return Math.max(1, Math.floor(12 * attackMultiplier * battleStatDamageMultiplier(mon, level, mon, level)));
 }
 // Numeric state shares the existing ephemeral guard/charge slots. Legacy booleans
 // retain their old 45% reduction / 1.20 multiplier when read by the new resolver.
@@ -564,7 +573,7 @@ async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEn
       message+='<br>✨ 目くらましで攻撃は外れた！';
       if(config.recoil){const recoilMove=[...move];recoilMove[9]={recoil:config.recoil};message+=`<br>${resolveTacticalSkillEffects(recoilMove,actorIsPlayer,actorEntry,targetEntry)}`;}
     }else{
-      const defender=target.isPlayer?player:target.entry?.mon||enemy;
+      const defender=target.mon;
       const r=typeEff(moveTypes(move),defender.types);
       const resolvedPower=power,conditional=tacticalSkillBonusMultiplier(move,actorIsPlayer,actorEntry,targetEntry);
       const boost=actorIsPlayer&&typeof kokoroLinkMovePowerMultiplierFor==='function'?kokoroLinkMovePowerMultiplierFor(activeInstance,resolvedPower):{multiplier:1};
@@ -576,7 +585,8 @@ async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEn
       const typeMultiplier=kokoroLinkPenetratedMultiplier(r,penetration.rate);
       // Power is total power, so multiple hits never multiply the move's budget
       // or the random bonus. Guard/focus are snapshotted once for the entire move.
-      const rawTotal=(resolvedPower*boost.multiplier*attack*typeMultiplier+Math.random()*9)*charge*conditional*difficulty*huntMapAttackMultiplier(moveTypes(move));
+      const statMultiplier=battleStatDamageMultiplier(actor.mon,actor.level,defender,target.level);
+      const rawTotal=(resolvedPower*boost.multiplier*attack*typeMultiplier+Math.random()*9)*charge*conditional*difficulty*huntMapAttackMultiplier(moveTypes(move))*statMultiplier;
       const total=Math.max(1,Math.floor(rawTotal*defense));
       const hits=Math.max(1,Math.floor(config.hits||1));
       const wholeBarrier=target.isPlayer?skill110IncomingDamage(rawTotal,config.ignoreDefense,1-defense):{hpDamage:total,absorbed:0};
@@ -624,7 +634,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'heal') {
-    const healing = normalBattleHealing(isPlayer ? activeInstance?.level : activeHuntRequest?.source==='map_story'?1:activeHuntRequest?.enemyLevel);
+    const healing = normalBattleHealing(isPlayer ? playerMaxHp() : enemyMaxHp());
     const before = isPlayer ? pHp : eHp;
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
@@ -676,7 +686,10 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const g = isPlayer ? eGuard : pGuard;
   const shield = isPlayer ? eAquaShield : pAquaShield;
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
-  const rawDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier;
+  const playerLevel = activeInstance?.level;
+  const enemyLevel = activeHuntRequest?.enemyLevel;
+  const statMultiplier = battleStatDamageMultiplier(attacker, isPlayer ? playerLevel : enemyLevel, defender, isPlayer ? enemyLevel : playerLevel);
+  const rawDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
   const linkBarrier = legacyAttackDefense(rawDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
   const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
@@ -734,7 +747,14 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   }
   if (effect === 'recoil') {
     const guarded=isPlayer&&typeof consumeKokoroLinkRecoilGuard==='function'&&consumeKokoroLinkRecoilGuard(activeInstance);
-    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';else{const before=isPlayer?pHp:eHp;if (isPlayer) pHp = Math.max(0, pHp - 8); else eHp = Math.max(0, eHp - 8);if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:8});msg += `<br>💢 ${attacker.name}は反動で8ダメージ！`;}
+    if(guarded)msg+='<br>🔥 炎身不動が反動ダメージを無効化！';
+    else{
+      const before=isPlayer?pHp:eHp;
+      const recoil=normalRecoilDamage(isPlayer?playerMaxHp():enemyMaxHp());
+      if(isPlayer)pHp=Math.max(0,pHp-recoil);else eHp=Math.max(0,eHp-recoil);
+      if(typeof battleHpResult==='function')battleHpResult(sourceId,before,isPlayer?pHp:eHp,{label:'反動',damage:recoil});
+      msg+=`<br>💢 ${attacker.name}は反動で${recoil}ダメージ！`;
+    }
   }
   if (effect === 'alchemy_recoil') {
     const recoilDamage = alchemyRecoilDamage(actualDamage);
@@ -773,7 +793,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true});
   if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
     // Additional hit shares the attack-wide defense snapshot; no second charge consumption.
-    const rawSecondDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier;
+    const rawSecondDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
     const secondBarrier = legacyAttackDefense(rawSecondDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
     const secondDmg = secondBarrier.hpDamage;
     const secondHpBefore=isPlayer?eHp:pHp;

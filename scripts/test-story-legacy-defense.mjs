@@ -40,7 +40,8 @@ for(const episodeId of ['gl_01','gl_03','gl_11'])for(const [guard,sid] of [[0,nu
  r.context.shield=shield;r.run('pAquaShield=shield');const before=r.run('pHp');
  if(r.run('!!multiBattle?.active'))await r.run('performMultiAttack(multiBattle.enemies[0],{kind:"player"},multiBattle.enemies[0].mon.moves.find(m=>m[1]>0))');
  else await r.run('doAttack(enemy,player,enemy.moves.find(m=>m[1]>0),false)');
- const raw=({gl_01:14*.8,gl_03:24*.85,gl_11:48*.75})[episodeId];
+ const raw=({gl_01:14*.8,gl_03:24*.85,gl_11:48*.75})[episodeId]*r.run(
+  'battleStatDamageMultiplier(enemy,activeHuntRequest.enemyLevel,player,activeInstance.level)');
  const expected=Math.max(1,Math.floor(raw*(1-Math.max(guard,shield?.5:0)))),damage=before-r.run('pHp');
  assert.equal(damage,expected,JSON.stringify({episodeId,guard,shield}));assert.equal(r.run('pGuard'),false);assert.equal(r.run('pAquaShield'),false);damageCases.push({episodeId,guard,shield,damage});cases++;
 }
@@ -52,9 +53,10 @@ for(const mode of ['single','three_way'])for(const evasion of [false,true]){
  r.run('var chain=["互換連撃",100,"normal","repeat_attack",1,1,"",null,"legacy_defense_fixture"];');
  const before=r.run('pHp'),multiplier=mode==='single'?.8:.85;
  if(mode==='single')await r.run('doAttack(enemy,player,chain,false)');else await r.run('performMultiAttack(multiBattle.enemies[0],{kind:"player"},chain)');
- const hit=Math.max(1,Math.floor(100*multiplier*(1-.7)));
- assert.equal(before-r.run('pHp'),evasion?0:hit*2-5);assert.equal(r.run('defenseTestLink.powerAbility.charges'),0);
- assert.equal(r.run('defenseTestLink.tacticsAbility.charges'),evasion?1:0);assert.equal(r.run('pGuard'),false);assert.equal(r.run('defenseTestLink.barrierRemaining'),evasion?5:0);cases++;
+ const statMultiplier=r.run('battleStatDamageMultiplier(enemy,activeHuntRequest.enemyLevel,player,activeInstance.level)');
+ const hit=Math.max(1,Math.floor(100*multiplier*statMultiplier*(1-.7)));
+ assert.equal(before-r.run('pHp'),evasion?0:Math.max(0,hit*2-5));assert.equal(r.run('defenseTestLink.powerAbility.charges'),0);
+ assert.equal(r.run('defenseTestLink.tacticsAbility.charges'),evasion?1:0);assert.equal(r.run('pGuard'),false);assert.equal(r.run('defenseTestLink.barrierRemaining'),evasion?5:Math.max(0,5-hit*2));cases++;
  r.run('kokoroLinkEffectForInstance=originalLink');
 }
 // Legacy compatibility attacks in the other directions use the same numeric guard.
@@ -64,12 +66,15 @@ for(const direction of ['single-player','multi-player','enemy-enemy'])for(const 
  let before,after,raw;
  if(direction==='single-player'){r.run('eHp=1000;eGuard=g');before=r.run('eHp');await r.run('doAttack(player,enemy,plainHit,true)');after=r.run('eHp');raw=100*r.run('playerAttackInstanceMultiplier()');assert.equal(r.run('eGuard'),false);}
  else {r.run('multiBattle.enemies[1].hp=1000;multiBattle.enemies[1].guard=g');before=r.run('multiBattle.enemies[1].hp');await r.run(direction==='multi-player'?'performMultiAttack({kind:"player"},multiBattle.enemies[1],plainHit)':'performMultiAttack(multiBattle.enemies[0],multiBattle.enemies[1],plainHit)');after=r.run('multiBattle.enemies[1].hp');raw=direction==='multi-player'?100*r.run('playerAttackInstanceMultiplier()'):85;assert.equal(r.run('multiBattle.enemies[1].guard'),false);}
- assert.equal(before-after,Math.floor(raw*(1-guard)),direction);cases++;
+ const scale=direction==='single-player'
+  ?r.run('battleStatDamageMultiplier(player,activeInstance.level,enemy,activeHuntRequest.enemyLevel)')
+  :r.run(`battleStatDamageMultiplier(${direction==='multi-player'?'player,activeInstance.level':'multiBattle.enemies[0].mon,multiBattle.enemies[0].level'},multiBattle.enemies[1].mon,multiBattle.enemies[1].level)`);
+ assert.equal(before-after,Math.min(before,Math.max(1,Math.floor(raw*scale*(1-guard)))),direction);cases++;
 }
 // Stronger 110 guard survives a weaker support; periodic poison and recoil do not consume it.
 r.context.config={party:['galdra'],level:100,episodeId:'gl_01'};r.run('auditSetup(config);pAtk=eAtk=1;pFlareCharge=eFlareCharge=false;Math.random=()=>0');
 await r.run('doAttack(player,enemy,skillToMove("s110_063"),true)');await r.run('doAttack(player,enemy,skillToMove("s110_003"),true)');assert.equal(r.run('pGuard'),.7);
-let before=r.run('pHp');await r.run('doAttack(player,enemy,["互換反動",1,"normal","recoil",null,1,"",null,"legacy_recoil_fixture"],true)');assert.equal(before-r.run('pHp'),8);assert.equal(r.run('pGuard'),.7);
+let before=r.run('pHp');await r.run('doAttack(player,enemy,["互換反動",1,"normal","recoil",null,1,"",null,"legacy_recoil_fixture"],true)');assert.equal(before-r.run('pHp'),Math.floor(r.run('playerMaxHp()')*.04));assert.equal(r.run('pGuard'),.7);
 r.run('pStatus="poison";pPoisonTurns=3;');before=r.run('pHp');r.run('applyPoisonEndTurn()');
 assert.equal(before-r.run('pHp'),r.run('Math.floor(playerMaxHp()*.1)'));assert.equal(r.run('pGuard'),.7);cases++;
 console.log(JSON.stringify({result:'PASS',cases,damageCases,scope:'real grassland single/multi legacy attacks, 110 support skills, strongest shield/link, repeat hit/evasion once, poison/recoil bypass; VM rendering/save stubbed'}));

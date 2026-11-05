@@ -32,3 +32,29 @@ for(const mv of ["['hit',40,'normal']","['drain',40,'grass','drain']","['guard',
  assert.deepEqual(JSON.parse(JSON.stringify(run('({hp:pHp,enemy:target.hp,guard:pGuard})'))),JSON.parse(JSON.stringify(single)));
 }
 console.log('PASS: poison KO attribution, single/multi damage/drain/guard parity');
+
+// Different levels and species catch using the lead enemy's level for a second
+// enemy or reading an owned instance's level for a wild unit of the same species.
+run(`activeInstance=addInstance('freigal',10);player=by('freigal');enemy=by('slime');
+  activeHuntRequest=createHuntRequest(MAPS[0],enemy,'normal',[]);
+  var wild=createMultiEnemy(by('goblin'),'enemy_b');
+  activeInstance.alchemy={statModifiers:{hp:1.1,speed:1.1}};
+  pAtk=eAtk=1;pGuard=eGuard=pAquaShield=eAquaShield=pFlareCharge=eFlareCharge=false;
+  eHp=wild.hp=1000;wild.maxHp=1000;var statMove=['検証',24,'normal','repeat_attack',1];`);
+r.context.Math.random=()=>0;
+const growth=level=>1+.06*(level-1);
+const damage=(power,atk,atkLevel,def,defLevel)=>Math.floor(power*.8*(atk*growth(atkLevel))/(def*growth(defLevel))*growth(atkLevel));
+assert.equal(run('instanceMaxHp(activeInstance)'),Math.round(Math.round(108*growth(10))*1.1));
+assert.equal(run('monSpd(player,activeInstance)'),Math.round(61*1.045*1.1));
+assert.equal(run('multiEnemyKokoroLinkSpeed(wild)'),Math.round(54*1.03));
+await run('doAttack(player,enemy,statMove,true)');
+assert.equal(run('eHp'),1000-2*damage(24,63,10,53,5));
+await run('performMultiAttack({kind:"player"},wild,statMove)');
+assert.equal(run('wild.hp'),1000-2*damage(24,63,10,53,7));
+run('pHp=wild.hp=100;pConfusionTurns=wild.confusionTurns=1;');
+r.context.Math.random=()=>.9;
+run('tryConfusionAction(true)');
+await run('performMultiAttack(wild,{kind:"player"},statMove)');
+assert.equal(run('pHp'),100-damage(12,63,10,43,10));
+assert.equal(run('wild.hp'),100-damage(12,45,7,53,7));
+console.log('PASS Lv growth, alchemy HP/speed, repeat attacks at unequal levels, and confusion self-damage');

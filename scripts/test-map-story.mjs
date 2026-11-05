@@ -13,7 +13,11 @@ assert.equal(episodes.reduce((sum,e)=>sum+e.firstReward.coins,0),1265);
 assert.equal(episodes.flatMap(e=>[...e.preNodes,...e.postNodes]).filter(n=>n.speaker==='contractor').length,15);
 for(const e of episodes){
  for(const nodes of [e.preNodes,e.postNodes])nodes.forEach((n,i)=>assert.equal(Number(n.id.slice(-2)),i+1));
- for(const spec of e.enemies){r.context.spec=spec;assert(run('spec.moveIds.every(id=>SKILL_BY_ID[id])'));assert.equal(run('maxHp(by(spec.speciesId),spec.level)'),spec.hp);assert.equal(run('by(spec.speciesId).spd'),spec.speed);}
+ for(const spec of e.enemies){
+  r.context.spec=spec;
+  assert(run('spec.moveIds.every(id=>SKILL_BY_ID[id])'));
+  assert.equal(run('by(spec.speciesId).legacyBaseHp+(spec.level-1)*12'),spec.hp,'original HP remains recorded in the story spec');
+ }
 }
 run("save.progress.tutorial.status='in_progress'");assert.equal(run('startMapStoryEpisode("gl_01")'),false);
 run("save.progress.tutorial.status='skipped'");assert.equal(run('mapStoryAvailable()'),true);
@@ -40,8 +44,15 @@ for(const e of episodes){
  assert.equal(run(`launchMapStoryBattle('${e.id}')`),false,'double start rejected');
  assert.equal(run('activeHuntRequest.source'),'map_story');assert.equal(run('activeHuntRequest.invasionEnemyId'),null);
  assert.equal(run('activeHuntRequest.conditions.length'),0);
- if(e.enemies.length===2)assert.deepEqual(json('multiBattle.enemies.map(e=>({level:e.level,hp:e.hp,moves:e.mon.moves.map(m=>m[8])}))'),e.enemies.map(s=>({level:s.level,hp:s.hp,moves:s.moveIds})));
- else assert.deepEqual(json('enemy.moves.map(m=>m[8])'),e.enemies[0].moveIds);
+ const expected=e.enemies.map(spec=>{
+  r.context.spec=spec;
+  const hp=Math.round(run('by(spec.speciesId).hp')*(1+.06*(spec.level-1)));
+  return {level:spec.level,hp,moves:spec.moveIds};
+ });
+ const actual=e.enemies.length===2
+  ?json('multiBattle.enemies.map(e=>({level:e.level,hp:e.hp,moves:e.mon.moves.map(m=>m[8])}))')
+  :[json('({level:activeHuntRequest.enemyLevel,hp:eHp,moves:enemy.moves.map(m=>m[8])})')];
+ assert.deepEqual(actual,expected,'story enemies keep their levels and moves and use the shared HP formula');
  assert.equal(run('askUseContractScroll("contract_scroll")'),false);
  victory();assert.equal(run('save.coins'),coins+e.firstReward.coins);
  assert.equal(run(`mapStoryProgress('${e.id}').completed`),false,'victory alone cannot unlock next');

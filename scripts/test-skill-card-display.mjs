@@ -11,7 +11,8 @@ const read=name=>fs.readFileSync(new URL('../js/'+name+'.js',import.meta.url),'u
 // Apply the separately tested taxonomy fix to the display baseline as well:
 // Normalize the two intentional recoil copy edits; all other card data and descriptions remain compared.
 const old=runtime({data:s=>applyStatusDataCopy(s).replace('極限の嵐を解放する代わりに反動を受ける。','極限の嵐を解放する。'),core:()=>applyStatusCoreCopy(applyRenamedMonsterIds(execFileSync('git',['show',base+':js/core.js'],{encoding:'utf8'})))
- .replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分も8ダメージを受ける'")
+ .replace("recoil:'強力だが反動ダメージあり'","recoil:'攻撃後、自分の最大HPの4%の反動ダメージを受ける'")
+ .replace("heal:'自分のHPを回復'","heal:'自分の最大HPの22%を回復'")
  .replace('ダイブ|ラッシュ|ランページ','ダイブ|(?<!ク)ラッシュ|ランページ')
  .replace('  if (fx[effect]) txt +=',read('core').match(/  const poweredModifierText=[\s\S]*?\n  if\(poweredModifierText\[mv\[8\]\]\)fx\[effect\]=poweredModifierText\[mv\[8\]\];\n/)[0]+'  if (fx[effect]) txt +=')});
 const r=runtime();

@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261105-battle-stats',date:'2026-11-05',category:'update',title:'仲間の能力値を見直しました',body:'HP・攻撃・防御・素早さがレベルに応じて伸びます。バトルのダメージに攻撃と防御が反映され、回復量は最大HPに応じて変わります。'},
   {id:'20261105-battle-renewal',date:'2026-11-05',category:'update',title:'バトル画面を新しくしました',body:'控えの仲間と状態がいつでも見え、技の画面で相手への効きやすさを確認できます。相手の札の「i」から弱点や技を見られます。道具は使う仲間を選び、1行動で使用します。'},
   {id:'20261104-elna-fullbody',date:'2026-11-04',category:'update',title:'エルナの全身立ち絵を追加しました',body:'初級・中級・上級・流水・華炎のエルナを、ホームとバトルで背景のない全身立ち絵にしました。'},
   {id:'20261103-auto-battle',date:'2026-11-04',category:'update',title:'オートバトルを追加しました',body:'通常探索で同じ難易度の相手をすべて討伐すると、最大20回まで自動で周回できます。途中で手動に切り替えたり、契約のチャンスで止めたりできます。'},
