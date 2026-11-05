@@ -112,3 +112,7 @@ body:has(#battle.active.is-renewed) :is(.app-topbar,.bottom-nav,.app-bottom-nav)
 #battle.is-renewed .br-contract p,#battle.is-renewed #battleOutcomeActions>p{color:#9fb0c8;font-size:13px}
 /* 敗北・撤退時の報酬なし表示も暗い背景用に補正 */
 #battle.is-renewed .battle-outcome-rewards .battle-outcome-empty{color:#9fb0c8}
+
+/* Keep encounter badges independent of the narrow name/HP row. */
+#battle.is-renewed .multi-enemy-copy .br-plate-meta{grid-column:1/-1;grid-row:4;min-width:0}
+#battle.is-renewed .br-overtier-label{display:inline-block;flex:0 0 auto;white-space:nowrap;font-size:9px;font-weight:800;line-height:1.4;padding:1px 4px;border-radius:4px;color:#ffe7a8;background:#6d3f13;border:1px solid #d7a458}

@@ -67,8 +67,26 @@ try{
   });
   assert(multi[0].level>=61&&multi[0].level<=70);assert.equal(multi[0].attack,1.8);assert.equal(multi[0].reward,7.2);
   assert(multi[1].level>=46&&multi[1].level<=60);assert.equal(multi[1].attack,1);assert.equal(multi[1].reward,2.4);
-  assert.match(await page.locator('#enemy_aCard h2').innerText(),/ヌシ/);assert(!/格上|ヌシ/.test(await page.locator('#enemy_bCard h2').innerText()));
-  await page.screenshot({path:`${out}/multi-${viewport.width}.png`});await page.evaluate(()=>runAway());
+  async function assertOvertierBadge(label){
+   const badge=page.locator('#enemy_aCard .br-overtier-label');
+   await badge.waitFor({state:'visible'});assert.equal(await badge.innerText(),label);
+   assert.equal(await page.locator('#enemy_bCard .br-overtier-label').count(),0);
+   const geometry=await badge.evaluate(el=>{
+    const r=el.getBoundingClientRect(),hud=el.closest('.multi-enemy-copy').getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);const text=range.getBoundingClientRect();
+    const contains=(a,b)=>b.left>=a.left-.5&&b.right<=a.right+.5&&b.top>=a.top-.5&&b.bottom<=a.bottom+.5;
+    let unclipped=true;
+    for(let parent=el.parentElement;parent;parent=parent.parentElement){const css=getComputedStyle(parent);if(/hidden|clip|auto|scroll/.test(css.overflow+css.overflowX+css.overflowY)&&!contains(parent.getBoundingClientRect(),text))unclipped=false;}
+    const hit=document.elementFromPoint(text.left+text.width/2,text.top+text.height/2);
+    return {textFits:contains(r,text)&&el.scrollWidth<=el.clientWidth+1,insideHud:contains(hud,r),onscreen:r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight,unclipped,uncovered:hit===el||el.contains(hit)};
+   });assert(Object.values(geometry).every(Boolean),JSON.stringify({viewport,label,geometry}));
+  }
+  await assertOvertierBadge('ヌシ');
+  assert(!/格上|ヌシ/.test(await page.locator('#enemy_aCard h2').innerText()),'name ellipsis must not own the badge');
+  await page.screenshot({path:`${out}/multi-${viewport.width}.png`});
+  // Both two-character labels must survive a redraw at every viewport.
+  await page.evaluate(()=>{activeHuntRequest.overtier='stronger';updateMultiBattleView();syncBattleUi();});
+  await assertOvertierBadge('格上');await page.screenshot({path:`${out}/multi-stronger-${viewport.width}.png`});
+  await page.evaluate(()=>runAway());
   // Rank threshold and migration are viewport-independent; run once in the real app.
   if(viewport.width===390){
    const thresholds=await page.evaluate(()=>{

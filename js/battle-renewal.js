@@ -95,7 +95,8 @@ function renewalNameplates(target){
     let meta=hud.querySelector('.br-plate-meta');
     if(!meta){meta=document.createElement('div');meta.className='br-plate-meta';hud.querySelector('h2')?.insertAdjacentElement('afterend',meta);}
     const selected=!!entry&&!!target&&entry.id===target.id&&multiBattle?.active;
-    meta.innerHTML=`<span>Lv.${level}</span>${!playerBox?`<span class="br-stars">${renewalHtml(mon.rarity)}</span>`:''}<span>${multiBattle?.active?normalizeMoveTypes(mon.types).map(t=>skillTypeIcon(t)).join(''):skillTypeLabel(mon.types)}</span>${selected?'<span class="br-target-label">🎯狙う</span>':''}`;
+    const overtier=entry?.id==='enemy_a'&&typeof battleOvertierLabel==='function'?battleOvertierLabel():'';
+    meta.innerHTML=`${overtier?`<span class="br-overtier-label">${renewalHtml(overtier)}</span>`:''}<span>Lv.${level}</span>${!playerBox?`<span class="br-stars">${renewalHtml(mon.rarity)}</span>`:''}<span>${multiBattle?.active?normalizeMoveTypes(mon.types).map(t=>skillTypeIcon(t)).join(''):skillTypeLabel(mon.types)}</span>${selected?'<span class="br-target-label">🎯狙う</span>':''}`;
     hud.classList.toggle('br-target',!!selected);
     if(!playerBox){
       let info=hud.querySelector('.br-info');if(!info){info=document.createElement('button');info.className='br-info';info.type='button';info.textContent='i';info.setAttribute('aria-label',`${mon.name}の詳細`);hud.append(info);}
