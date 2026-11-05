@@ -92,3 +92,21 @@ body:has(#battle.active.is-renewed) :is(.app-topbar,.bottom-nav,.app-bottom-nav)
 #battle.is-renewed .br-linked{animation:brLinked .8s}@keyframes brLinked{35%{filter:drop-shadow(0 0 20px #ff8fd0) brightness(1.5)}to{filter:none}}
 .br-levelup i{animation:brLevelUp 1.3s ease-out}@keyframes brLevelUp{from{width:var(--exp-before)}60%{width:100%}61%{width:0%}}
 @media(prefers-reduced-motion:reduce){#battle.is-renewed .br-enter .battle-stage-slot,#battle.is-renewed .br-linked,.br-levelup i{animation:none!important}}
+
+/* バトル結果画面: 暗い背景用の文字色・カード色 */
+#battle.is-renewed #battleOutcome:not(.hidden){color:#eef3fa}
+#battle.is-renewed #battleOutcomeTitle{color:#fff;text-shadow:0 2px 10px #0008}
+#battle.is-renewed #battleOutcome.is-defeat #battleOutcomeTitle{color:#ff9b96}
+#battle.is-renewed #battleOutcome.is-retreat #battleOutcomeTitle{color:#ffd9a8}
+#battle.is-renewed .battle-outcome-rewards>span{background:#ffffff0f;border-color:#ffffff26}
+#battle.is-renewed .battle-outcome-rewards small{color:#9fb0c8}
+#battle.is-renewed .battle-outcome-rewards strong{color:#fff}
+#battle.is-renewed .battle-outcome-copy>p{color:#9fb0c8}
+#battle.is-renewed #renewalResultMeta{color:#c9d3e4}
+#battle.is-renewed #renewalResultMeta b{color:#7be495}
+#battle.is-renewed .br-exp-row{color:#eef3fa}
+#battle.is-renewed .br-exp-row b{color:#fff;font-size:13px}
+#battle.is-renewed .br-exp-row>span{color:#c9d3e4}
+#battle.is-renewed .br-contract{color:#eef3fa}
+#battle.is-renewed .br-contract h3{color:#ffe7a8;font-size:15px}
+#battle.is-renewed .br-contract p,#battle.is-renewed #battleOutcomeActions>p{color:#9fb0c8;font-size:13px}
