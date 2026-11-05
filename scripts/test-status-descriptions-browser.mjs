@@ -41,10 +41,10 @@ try{
    await check(`#skillCardList [data-skill-card-id="${row.id}"] .skill-numeric-text`,row.detail);
    // Equip through the production save field; render with the real battle setup and UI.
    await page.evaluate(id=>{save.equippedSkills[save.party[0]]=[id];show('partySet');startBattleFromParty();startChosenBattle('grassland','slime','easy');renderSkillButtons();closeBattleSkillPanel();toggleBattleSkillPanel();},row.id);
-   if(!await page.locator('#battleCompactInfo').evaluate(el=>el.open))await clickSummary(page.locator('#battleCompactInfo > summary'));
-   if(!await page.locator('.battle-skill-help').evaluate(el=>el.open))await clickSummary(page.locator('.battle-skill-help > summary'));
-   await check('.battle-skill-help .battle-choice-detail',row.text);
-   await check('.battle-skill-help .battle-choice-numbers',row.detail);
+   await page.getByRole('button',{name:'装備中の技の詳細'}).click();
+   await check('#renewalSheet .battle-choice-detail',row.text);
+   await check('#renewalSheet .battle-choice-numbers',row.detail);
+   await page.locator('#renewalSheet').getByRole('button',{name:'閉じる'}).click();
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'viewport overflow');
   }
   await page.screenshot({path:`${out}/${width}.png`,fullPage:true});

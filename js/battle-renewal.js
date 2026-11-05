@@ -129,7 +129,13 @@ function renewalDecorateSkills(){
     // Equipped COST is a loadout budget, not a consumable combat resource.
   }
   let head=commands.querySelector('.br-skill-heading');if(!head){head=document.createElement('div');head.className='br-skill-heading';commands.prepend(head);}
-  head.innerHTML=`<span>技を選んでください</span>${multiBattle?.active&&target?`<small>🎯 ${renewalHtml(target.mon.name)}</small>`:''}`;
+  const heading=`<span>技を選んでください</span>${multiBattle?.active&&target?`<small>🎯 ${renewalHtml(target.mon.name)}</small>`:''}<button type="button" class="br-skill-help" aria-label="装備中の技の詳細" onclick="renewalSkillHelp()">詳細</button>`;
+  if(head.innerHTML!==heading)head.innerHTML=heading;
+}
+function renewalSkillHelp(){
+  if(!renewalCanAct())return;
+  const cards=[...renewalEl('commands').querySelectorAll('.skill-button')];
+  renewalOpen('装備中の技の詳細',`<p>COSTは編成用。戦闘では減らない</p>${cards.map(card=>`<div class="br-info-move"><b>${renewalHtml(card.querySelector('strong')?.textContent||'')}</b><p>${renewalHtml(card.querySelector('small')?.textContent||'')}</p>${card.querySelector('.battle-choice-detail')?.outerHTML||''}</div>`).join('')}`);
 }
 function renewalSwitch(index){
   if(!renewalCanAct())return;const picker=renewalEl('multiTargetSelect');
