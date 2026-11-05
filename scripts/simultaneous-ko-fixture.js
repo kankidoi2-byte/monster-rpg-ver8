@@ -1,4 +1,7 @@
 // Test-only fixture shared by VM regression and real-browser smoke. Not loaded by index.html.
+function koRecoilThreshold(maximum){
+  return typeof normalRecoilDamage==='function'?normalRecoilDamage(maximum):8;
+}
 async function simultaneousKoScenario({mode='single',cause='player-recoil',reserve=false,enemiesRemain=false}) {
   const assert=(ok,message)=>{if(!ok)throw Error(`${mode}/${cause}/${reserve}/${enemiesRemain}: ${message}`);};
   if(typeof clearTutorialUi==='function')clearTutorialUi();
@@ -36,9 +39,9 @@ async function simultaneousKoScenario({mode='single',cause='player-recoil',reser
   enemyKokoroLinkSpeed=()=>1;
   const coinsBefore=save.coins,winsBefore=save.history.wins||0;
   try {
-    pHp=cause==='player-recoil'?8:cause==='poison'||cause==='enemy-recoil'||cause==='defeat'?1:100;
+    pHp=cause==='player-recoil'?koRecoilThreshold(playerMaxHp()):cause==='poison'||cause==='enemy-recoil'||cause==='defeat'?1:100;
     partyBattle[0].hp=pHp;
-    eHp=cause==='enemy-recoil'?8:cause==='poison'||cause==='player-recoil'||cause==='victory'?1:100;
+    eHp=cause==='enemy-recoil'?koRecoilThreshold(multi?entries[0].maxHp:enemyMaxHp()):cause==='poison'||cause==='player-recoil'||cause==='victory'?1:100;
     pAtk=eAtk=1;pGuard=eGuard=pAquaShield=eAquaShield=false;
     if(multi){
       entries[0].hp=eHp;
@@ -104,7 +107,7 @@ async function simultaneousKoEnemyAttribution({mode='multi',reserve=false,poison
     // Target the other faction through the actual enemy action dispatcher.
     Math.random=()=>.75;
     pHp=poison?1:100;
-    entries[0].hp=poison?100:8;entries[1].hp=poison?100:1;entries[1].alive=true;
+    entries[0].hp=poison?100:koRecoilThreshold(entries[0].maxHp);entries[1].hp=poison?100:1;entries[1].alive=true;
     if(poison){
       await performMultiAttack(entries[0],entries[1],['敵の毒',1,'normal','poison',1]);
       assert(entries[1].status==='poison'&&!entries[1].poisonSourceIsPlayer,'enemy applied poison source');

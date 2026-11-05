@@ -29,7 +29,7 @@ try{
  await page.evaluate(()=>startBattleFromParty());await page.locator('#battleChoices').waitFor({state:'visible'});
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  for(const skillId of ['skill_luxseed_03','s110_062'])for(const mode of ['single','multi','invasion'])for(const side of mode==='single'?['player','enemyA']:['player','enemyA','enemyB']){
-  for(const [level,amount] of [[1,27],[10,54],[50,174],[100,324]])for(const shortage of [800,5,0]){
+  for(const level of [1,10,50,100])for(const shortage of [800,5,0]){
    const result=await page.evaluate(async({mode,side,level,shortage,skillId})=>{
     clearTutorialUi();save.instances[0].level=side==='player'?level:99;prepareBattleParty();
     const request=createHuntRequest(MAPS[0],by('slime'),'normal',[]);
@@ -45,6 +45,8 @@ try{
     const entries=multi?multiBattle.enemies:[];
     entries.forEach((entry,i)=>{entry.level=!isPlayer&&i===index?level:99;entry.maxHp=maxHp(entry.mon,entry.level);entry.hp=entry.maxHp;});
     const maximum=isPlayer?playerMaxHp():multi?entries[index].maxHp:enemyMaxHp();
+    const mon=isPlayer?player:multi?entries[index].mon:enemy;
+    const legacyMaximum=mon.legacyBaseHp+(level-1)*12;
     const missing=Math.min(shortage,maximum-1),before=maximum-missing;
     pHp=playerMaxHp();eHp=enemyMaxHp();
     if(isPlayer)pHp=before;else if(multi)entries[index].hp=before;else eHp=before;
@@ -57,10 +59,11 @@ try{
      if(multi)await performMultiAttack(isPlayer?{kind:'player'}:entries[index],isPlayer?entries[1]:{kind:'player'},move);
      else await doAttack(isPlayer?player:enemy,isPlayer?enemy:player,move,isPlayer);
      const after=isPlayer?pHp:multi?entries[index].hp:eHp;
-     return {before,after,maximum,missing,feedback,log:document.getElementById('log').textContent};
+     return {before,after,maximum,legacyMaximum,missing,feedback,log:document.getElementById('log').textContent};
     }finally{battleHpResult=original;}
    },{mode,side,level,shortage,skillId});
-   const expected=Math.min(result.missing,amount);
+   const rate=skillId==='s110_062'?(24+level*3)/result.legacyMaximum:.22;
+   const expected=Math.min(result.missing,Math.floor(result.maximum*rate));
    assert.equal(result.after-result.before,expected,`${mode}/${side}/${level}/${shortage}`);
    assert(result.after<=result.maximum);assert.match(result.log,new RegExp(`HPを${expected}回復した`));
    assert.equal(result.feedback.length,1);assert.equal(result.feedback[0].after-result.feedback[0].before,expected);

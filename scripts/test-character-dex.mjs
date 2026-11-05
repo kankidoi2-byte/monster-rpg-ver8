@@ -134,7 +134,8 @@ for(const slot of retired){
  assert.equal(mon.prologueCharacterNo??mon.characterNo,slot.prologueCharacterNo??slot.characterNo);
 }
 assert.equal(vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS.length',context),0);
-assert.equal(JSON.stringify(records.map(legacyUnitProjection)),vm.runInContext('JSON.stringify(M)',oldContext),'all historical unit data preserved; live110 loadouts tested separately');
+const oldUnits=vm.runInContext('M',oldContext);
+assert.equal(JSON.stringify(records.map((unit,i)=>legacyUnitProjection(unit,oldUnits[i]))),JSON.stringify(oldUnits),'all historical unit data preserved; live110 loadouts tested separately');
 assert(!elements.dexHubGrid.innerHTML.includes('登場予定'),'no stale coming-soon label');
 // Keep genuine future plans visible, read-only and out of the battle roster.
 const future=vm.createContext({...context});

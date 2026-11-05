@@ -19,6 +19,8 @@ old['multi-battle']=()=>{
 };
 for(const file of ['battle-rules','multi-battle']){const historical=old[file];old[file]=()=>applyNormalHealingSpec(file,historical());}
 const before=runtime(old),after=runtime();
+before.run('maxHp=(m,level)=>Math.round(m.hp*(1+.06*(clampLevel(level)-1)));');
+after.run('battleStatDamageMultiplier=()=>1;normalRecoilDamage=()=>8;');
 const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);beginChosenBattle('grassland','slime','normal',activeHuntRequest);pHp=70;eHp=60;`;
 const multiSetup=setup+`activeHuntRequest.battleMode='three_way';activeHuntRequest.secondEnemyId='goblin';beginThreeWayBattle();multiBattle.enemies.forEach(e=>{e.hp=60;e.guard=true;e.aquaShield=true;});`;
 // Defense stacking/repeat-hit scope deliberately changed to the approved 110

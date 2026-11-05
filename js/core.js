@@ -403,13 +403,21 @@ function clampLevel(value) {
 }
 function needExp(lv) { return clampLevel(lv) * 60; }
 function isMaxLevel(lv) { return clampLevel(lv) >= MAX_LEVEL; }
+function battleStatGrowth(level) {
+  return 1 + 0.06 * (clampLevel(level) - 1);
+}
 function maxHp(m, level) {
-  // Ver5.1 Claude修正: 種族IDだけで検索するinsLevel()に頼ると、
-  // 「同種族の別個体」や「野生の敵」が別のプレイヤー所持個体のレベルと
-  // 混同されてしまうバグがあったため、呼び出し側で明示的にlevelを渡す方式に変更。
-  // level省略時は野生の敵など「基礎(Lv1)」相当として扱う。
-  const lv = (typeof level === 'number' && level > 0) ? level : 1;
-  return m.hp + (lv - 1) * 12;
+  return Math.round(m.hp * battleStatGrowth(level));
+}
+function battleStatDamageMultiplier(attacker, attackerLevel, defender, defenderLevel) {
+  const growth = battleStatGrowth(attackerLevel);
+  const attack = (attacker.atk ?? 60) * growth;
+  const defense = (defender.def ?? 60) * battleStatGrowth(defenderLevel);
+  return 0.8 * (attack / defense) * growth;
+}
+function healingAtNewMaxHp(amount, mon, level, currentMaxHp, legacyHpModifier=1) {
+  const legacyMaxHp = ((mon.legacyBaseHp ?? mon.hp) + (clampLevel(level) - 1) * 12) * legacyHpModifier;
+  return Math.floor(amount * currentMaxHp / Math.max(1, Math.round(legacyMaxHp)));
 }
 function instanceStatModifier(ins, stat){
   const value = Number(ins?.alchemy?.statModifiers?.[stat]);
@@ -420,8 +428,12 @@ function instanceMaxHp(ins){
   if(!mon) return 1;
   return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp')));
 }
-function monSpd(m, ins=null) {
-  const base = Math.round(Number(m?.spd ?? 50) * instanceStatModifier(ins, 'speed'));
+function baseBattleSpeed(m, ins, level) {
+  const growth = 1 + 0.005 * (clampLevel(level) - 1);
+  return Math.max(1, Math.round((m?.spd ?? 50) * growth * instanceStatModifier(ins, 'speed')));
+}
+function monSpd(m, ins=null, level=ins?.level) {
+  const base = baseBattleSpeed(m, ins, level);
   const linkBonus = typeof kokoroLinkSpeedBonusFor === 'function' ? kokoroLinkSpeedBonusFor(ins) : 0;
   return Math.max(1, base + linkBonus);
 }
@@ -437,7 +449,7 @@ function moveEffectText(mv, {includeBase=true}={}) {
   let txt = includeBase ? (power === 0 ? `${typeText}属性 / 補助技` : `${typeText}属性 / 威力 ${power}`) : '';
   const percent = Number.isFinite(chance) ? Math.round(chance * 100) : null;
   const fx = {
-    heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'攻撃後、自分も8ダメージを受ける',
+    heal:'自分の最大HPの22%を回復', drain:'与えたダメージの半分を吸収', recoil:'攻撃後、自分の最大HPの4%の反動ダメージを受ける',
     alchemy_recoil:'攻撃後、実際に与えたダメージの25％を反動として受ける',
     guard:'次のダメージを軽減', buff:'自分の攻撃力を上げる', debuff:'相手の攻撃力を下げる',
     poison:'相手を毒状態にすることがある',

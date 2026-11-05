@@ -13,7 +13,7 @@ const baseline={};vm.createContext(baseline);
 vm.runInContext(applyStatusDataCopy(applyRenamedMonsterIds(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'})))+';globalThis.units=M;',baseline);
 assert.equal(current.length,100);
 for(const old of baseline.units){
- const unit=legacyUnitProjection(current.find(u=>u.id===old.id));
+ const unit=legacyUnitProjection(current.find(u=>u.id===old.id),old);
  if(old.id==='proto_icegolem'){
   // The subsequent Golem fix adds two normal attacks but retains all original fields and cards.
   assert.equal(unit.moves.length,old.moves.length+2);

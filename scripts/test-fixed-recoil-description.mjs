@@ -23,7 +23,7 @@ async function scenario({skillId,mode='single',actor='player',targetHp=3,guarded
  r.context.playerAttackInstanceMultiplier=()=>1;
  r.context.consumeKokoroLinkRecoilGuard=()=>guarded;
  r.run(`var player=by('${isPlayer?'alchemion':'slime'}'),enemy=by('${isPlayer?'slime':'alchemion'}');
- var activeInstance={id:player.id,level:1};var activePartyIdx=0;
+ var activeHuntRequest={enemyLevel:1};var activeInstance={id:player.id,level:1};var activePartyIdx=0;
  var pHp=${isPlayer?1000:targetHp},eHp=${isPlayer?targetHp:1000},pAtk=1,eAtk=1,pGuard=false,eGuard=false,pAquaShield=false,eAquaShield=false,pFlareCharge=false,eFlareCharge=false;
  var partyBattle=[{hp:pHp}];
  var entryA={id:'enemy_a',kind:'enemy',mon:enemy,hp:eHp,maxHp:1000,attack:1,alive:true,guard:false,aquaShield:false,flareCharge:false};
@@ -42,7 +42,7 @@ const r=runtime();vm.runInContext(fs.readFileSync(new URL('js/dex.js',root),'utf
 const old=runtime({data:()=>applyStatusDataCopy(original('data')),core:()=>applyStatusCoreCopy(original('core'))});
 const cards=JSON.parse(JSON.stringify(r.run('MOVE_CARDS.filter(s=>s.effect==="recoil")')));
 assert.deepEqual(cards.map(s=>s.id).sort(),['skill_freigal_03','skill_freiwolf_02','skill_doom_nemesion_03','skill_ignaros_03','skill_kimeragna_apex_03'].sort());
-const text='攻撃後、自分も8ダメージを受ける';
+const text='攻撃後、自分の最大HPの4%の反動ダメージを受ける';
 for(const sk of cards){
  const arg=JSON.stringify(sk.id);
  const effect=r.run(`moveEffectText(skillToMove(${arg}),{includeBase:false})`);
@@ -54,17 +54,17 @@ for(const sk of cards){
  r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance(${JSON.stringify(sk.sourceUnitId)},1);save.party=[ins.uid];save.skillCards=Object.fromEntries(MOVE_CARDS.map(s=>[s.id,10]));editingSkillUid=ins.uid;renderSkillEdit();`);
  assert(!r.context.document.getElementById('skillCardList').innerHTML.includes(`equipSkill('${sk.id}')`),'retired recoil cards excluded from equipment');
  for(const actor of ['player','enemy','enemy-other'])for(const mode of actor==='enemy-other'?['multi']:['single','multi']){
-  const result=await scenario({skillId:sk.id,mode,actor,targetHp:1000});assert.equal(result.recoil,8,JSON.stringify(result));
+  const result=await scenario({skillId:sk.id,mode,actor,targetHp:1000});assert.equal(result.recoil,40,JSON.stringify(result));
  }
- console.log('PASS fixed recoil: '+sk.id+' '+sk.name+' / '+effect);
+ console.log('PASS percentage recoil: '+sk.id+' '+sk.name+' / '+effect);
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_kimeragna_apex_03'),{includeBase:false})`),text+'。極限の嵐を解放する。');
-for(const sk of r.run('MOVE_CARDS.filter(s=>!s.id.startsWith("s110_")&&s.effect!=="recoil"&&!["skill_shenhairon_02","skill_nightmare_02","skill_noxvelg_02"].includes(s.id))')){
- const arg=JSON.stringify(sk.id);assert.equal(r.run(`moveEffectText(skillToMove(${arg}))`),old.run(`moveEffectText(skillToMove(${arg}))`));
+for(const sk of r.run('MOVE_CARDS.filter(s=>!s.id.startsWith("s110_")&&s.effect!=="recoil"&&s.effect!=="heal"&&!["skill_shenhairon_02","skill_nightmare_02","skill_noxvelg_02"].includes(s.id))')){
+ const arg=JSON.stringify(sk.id);assert.equal(r.run(`moveEffectText(skillToMove(${arg}))`),old.run(`moveEffectText(skillToMove(${arg}))`).replace(/HPを\d+＋Lv×[\d.]+回復/g,'最大HPに応じて回復'));
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_alchemion_01'),{includeBase:false})`),'攻撃後、実際に与えたダメージの25％を反動として受ける');
 for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert((sk.detailedDesc||r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`)).includes('最大HP'));
 // Exact source equality from a narrow historical copy patch is superseded by the approved110 migration.
 assert.equal(r.run('EQUIPPABLE_MOVE_CARDS.length'),110);
 assert(r.run('SKILL110_CATALOG.filter(sk=>sk.tactical.recoil).every(sk=>sk.tactical.recoil>0&&sk.tactical.recoil<=.15)'));
-console.log('PASS preserved legacy fixed recoil: five skills and25 battle scenarios; new maxHP recoil verified by skill110 combat suite.');
+console.log('PASS legacy percentage recoil: five skills and25 battle scenarios; new maxHP recoil verified by skill110 combat suite.');

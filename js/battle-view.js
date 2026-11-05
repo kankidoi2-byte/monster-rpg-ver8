@@ -338,7 +338,7 @@ function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, s
   return parts.length ? ' / 状態:' + parts.join('・') : '';
 }
 function kokoroLinkTargetStats(){
-  return {maxHp:playerMaxHp(),speed:Math.max(1,Math.round(Number(player?.spd ?? 50)*instanceStatModifier(activeInstance,'speed')))};
+  return {maxHp:playerMaxHp(),speed:baseBattleSpeed(player,activeInstance,activeInstance?.level)};
 }
 let pendingKokoroLinkStatusSourceUid=null;
 let pendingKokoroLinkTacticsMode=null;

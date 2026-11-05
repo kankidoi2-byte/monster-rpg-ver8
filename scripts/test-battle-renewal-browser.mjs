@@ -49,7 +49,7 @@ try{
  const before=await page.evaluate(()=>save.items.potion);
  await page.locator('#battleItemButton').click();await page.locator('[data-item="potion"]').click();await page.locator('[data-item-target="1"]').click();await page.locator('#renewalSheet .br-go').click();
  await page.waitForFunction(()=>!busy||battleFeedback.finished);
- assert.equal(await page.evaluate(()=>save.items.potion),before-1);assert.equal(await page.evaluate(()=>partyBattle[1].hp),70);assert.equal(await page.evaluate(()=>battleTurnCount),1);
+ assert.equal(await page.evaluate(()=>save.items.potion),before-1);assert.equal(await page.evaluate(()=>partyBattle[1].hp),58);assert.equal(await page.evaluate(()=>battleTurnCount),1);
  await page.locator('#battleEscapeButton').click();assert((await page.locator('#renewalSheetBody').innerText()).includes('報酬はもらえません'));
  await page.getByRole('button',{name:'戦いを続ける',exact:true}).click();assert.equal(await page.locator('#renewalSheet').evaluate(e=>e.open),false);
  await start();const turn=await page.evaluate(()=>battleTurnCount);

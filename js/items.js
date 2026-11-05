@@ -195,6 +195,10 @@ function useBattleItemFromMenu(id){
   useBattleItem(id);
 }
 let battleItemSaveBusy = false, battleItemMenuConsumed = false;
+function battlePotionHealing(id, mon, ins, maxHp) {
+  const legacyAmount = id === 'potion' ? 50 : 120;
+  return adjustedBattleHealing(healingAtNewMaxHp(legacyAmount, mon, ins?.level, maxHp, instanceStatModifier(ins, 'hp')));
+}
 function useBattleItem(id) {
   if(busy || battleItemSaveBusy)return;
   ensureContractScrollItem();
@@ -204,7 +208,7 @@ function useBattleItem(id) {
   if (!player || !enemy) { alert('バトル中だけ使えます。'); return; }
   if ((save.items[id]||0) <= 0) { alert(`${it.name}を持っていない！`); return; }
 
-  const healing = id==='attack_potion' ? 0 : adjustedBattleHealing(id==='potion'?50:120);
+  const healing = id==='attack_potion' ? 0 : battlePotionHealing(id,player,activeInstance,playerMaxHp());
   const h = Math.min(healing, playerMaxHp()-pHp);
   if(id!=='attack_potion' && h<=0){alert('HPは満タンです。');return;}
   const nextHp = Math.min(playerMaxHp(),pHp+healing);
