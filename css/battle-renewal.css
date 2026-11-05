@@ -110,3 +110,5 @@ body:has(#battle.active.is-renewed) :is(.app-topbar,.bottom-nav,.app-bottom-nav)
 #battle.is-renewed .br-contract{color:#eef3fa}
 #battle.is-renewed .br-contract h3{color:#ffe7a8;font-size:15px}
 #battle.is-renewed .br-contract p,#battle.is-renewed #battleOutcomeActions>p{color:#9fb0c8;font-size:13px}
+/* 敗北・撤退時の報酬なし表示も暗い背景用に補正 */
+#battle.is-renewed .battle-outcome-rewards .battle-outcome-empty{color:#9fb0c8}

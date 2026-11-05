@@ -28,7 +28,7 @@ try{
  const records=[];
  async function verify(name,root='#battleOutcome'){
   await page.locator(root).waitFor({state:'visible'});
-  const result=await page.locator(root).evaluate(el=>({text:el.innerText,background:getComputedStyle(el).background,color:getComputedStyle(el).color,items:[...el.querySelectorAll('h2,h3,p,small,strong,.br-exp-row,.br-exp-row b,.br-exp-row>span')].filter(x=>x.getClientRects().length).map(x=>({tag:x.tagName,text:x.textContent,color:getComputedStyle(x).color,background:getComputedStyle(x).backgroundColor}))}));
+  const result=await page.locator(root).evaluate(el=>({text:el.innerText,background:getComputedStyle(el).background,color:getComputedStyle(el).color,items:[...el.querySelectorAll('h2,h3,p,small,strong,.battle-outcome-empty,.br-exp-row,.br-exp-row b,.br-exp-row>span')].filter(x=>x.getClientRects().length).map(x=>({tag:x.tagName,text:x.textContent,color:getComputedStyle(x).color,background:getComputedStyle(x).backgroundColor}))}));
   assert(result.text.length>0);
   if(root==='#battleOutcome'){
    assert.equal(result.color,'rgb(238, 243, 250)');
@@ -47,12 +47,14 @@ try{
   assert((await page.locator('.br-contract-result').innerText()).includes(success?'契約成功':'契約失敗'));await verify(success?'contract-success':'contract-failure');
  }
  await start();await page.evaluate(()=>losePartyBattle());await verify('defeat');
+ assert.equal(await page.locator('.battle-outcome-empty').evaluate(x=>getComputedStyle(x).color),'rgb(159, 176, 200)');
  assert.equal(await page.locator('#battleOutcomeTitle').evaluate(x=>getComputedStyle(x).color),'rgb(255, 155, 150)');
  await start();await page.evaluate(()=>{busy=false;runAway();});await verify('retreat');
+ assert.equal(await page.locator('.battle-outcome-empty').evaluate(x=>getComputedStyle(x).color),'rgb(159, 176, 200)');
  assert.equal(await page.locator('#battleOutcomeTitle').evaluate(x=>getComputedStyle(x).color),'rgb(255, 217, 168)');
  await start('multi');await page.evaluate(()=>{for(const x of multiBattle.enemies){x.hp=0;x.defeatedByPlayer=true;}winMultiBattle();});await page.locator('#battleOutcome:not(.hidden)').waitFor();await verify('three-way-victory');
  await start();await page.evaluate(()=>{eHp=0;win();});await page.locator('#battleOutcome:not(.hidden)').waitFor();
  await page.evaluate(()=>renewalAutoBetween({exp:123},false));await verify('auto-between');
  await page.evaluate(()=>{autoRun=autoNewRun(selectedMap.id,'normal',5);autoRun.battles=['win','win'];autoRun.coins=200;autoRun.exp={one:{name:'フレイガル',total:123}};autoRun.contracts=[{mon:enemy,result:'成功'}];autoRun.reason='指定回数を終了';autoSummary(false);});await verify('auto-summary','#autoSummary');
- assert.deepEqual(errors,[]);fs.writeFileSync(`${output}/results.json`,JSON.stringify(records,null,2));console.log('PASS: 8 result/contract scenarios rendered in Chromium at 360x640; computed styles and screenshots saved. Runtime outcomes invoked with disposable fixtures; contract random and animation controlled.');
+ assert.deepEqual(errors,[]);fs.writeFileSync(`${output}/results.json`,JSON.stringify(records,null,2));console.log('PASS: 9 result/contract scenarios rendered in Chromium at 360x640; computed styles and screenshots saved. Runtime outcomes invoked with disposable fixtures; contract random and animation controlled.');
 }finally{await browser?.close();server.kill();}
