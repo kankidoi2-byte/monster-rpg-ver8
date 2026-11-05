@@ -74,11 +74,29 @@ try{
    const geometry=await badge.evaluate(el=>{
     const r=el.getBoundingClientRect(),hud=el.closest('.multi-enemy-copy').getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);const text=range.getBoundingClientRect();
     const contains=(a,b)=>b.left>=a.left-.5&&b.right<=a.right+.5&&b.top>=a.top-.5&&b.bottom<=a.bottom+.5;
-    let unclipped=true;
-    for(let parent=el.parentElement;parent;parent=parent.parentElement){const css=getComputedStyle(parent);if(/hidden|clip|auto|scroll/.test(css.overflow+css.overflowX+css.overflowY)&&!contains(parent.getBoundingClientRect(),text))unclipped=false;}
+    const rect=value=>({left:value.left,top:value.top,right:value.right,bottom:value.bottom,width:value.width,height:value.height});
+    const ancestors=[];
+    for(let parent=el.parentElement;parent;parent=parent.parentElement){
+     const css=getComputedStyle(parent),box=parent.getBoundingClientRect();
+     const clipX=/^(hidden|clip|auto|scroll)$/.test(css.overflowX),clipY=/^(hidden|clip|auto|scroll)$/.test(css.overflowY);
+     // display:contents has no principal CSS box. Its computed overflow may be
+     // inherited from the old card rules, but cannot clip descendants to its 0x0 rect.
+     const noBox=css.display==='contents';
+     const sx=parent.offsetWidth?box.width/parent.offsetWidth:1,sy=parent.offsetHeight?box.height/parent.offsetHeight:1;
+     const client={left:box.left+parent.clientLeft*sx,top:box.top+parent.clientTop*sy};
+     client.right=client.left+parent.clientWidth*sx;client.bottom=client.top+parent.clientHeight*sy;
+     const clippedX=!noBox&&clipX&&(text.left<client.left-.5||text.right>client.right+.5);
+     const clippedY=!noBox&&clipY&&(text.top<client.top-.5||text.bottom>client.bottom+.5);
+     ancestors.push({tag:parent.tagName,id:parent.id,classes:parent.className,display:css.display,overflowX:css.overflowX,overflowY:css.overflowY,noBox,box:rect(box),client,clippedX,clippedY});
+    }
     const hit=document.elementFromPoint(text.left+text.width/2,text.top+text.height/2);
-    return {textFits:contains(r,text)&&el.scrollWidth<=el.clientWidth+1,insideHud:contains(hud,r),onscreen:r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight,unclipped,uncovered:hit===el||el.contains(hit)};
-   });assert(Object.values(geometry).every(Boolean),JSON.stringify({viewport,label,geometry}));
+    const checks={textFits:contains(r,text)&&el.scrollWidth<=el.clientWidth+1,insideHud:contains(hud,r),onscreen:r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight,unclipped:ancestors.every(a=>!a.clippedX&&!a.clippedY),uncovered:hit===el||el.contains(hit)};
+    return {checks,badge:rect(r),text:rect(text),hud:rect(hud),ancestors};
+   });
+   const evidence=`${out}/badge-${label==='ヌシ'?'nushi':'stronger'}-${viewport.width}`;
+   await page.screenshot({path:evidence+'.png'});
+   fs.writeFileSync(evidence+'.json',JSON.stringify({viewport,label,...geometry},null,2));
+   assert(Object.values(geometry.checks).every(Boolean),JSON.stringify({viewport,label,...geometry}));
   }
   await assertOvertierBadge('ヌシ');
   assert(!/格上|ヌシ/.test(await page.locator('#enemy_aCard h2').innerText()),'name ellipsis must not own the badge');
