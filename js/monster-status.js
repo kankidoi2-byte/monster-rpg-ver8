@@ -34,6 +34,7 @@ function closeMonsterStatus(restore=true){
   if(restore){
     const list=document.getElementById('partyList');if(list)list.scrollTop=prev.scroll;
     (findRosterButton(prev.uid)||prev.focus)?.focus?.({preventScroll:true});
+    if(typeof scheduleContractorRankUpPresentation==='function')scheduleContractorRankUpPresentation();
   }
 }
 function moveMonsterStatus(delta){

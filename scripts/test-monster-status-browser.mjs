@@ -31,6 +31,11 @@ try{
   await page.locator('.roster-status-open').click();await page.locator('#monsterStatus').waitFor();
   assert(await page.locator('#monsterStatus h2').innerText()==='フレイガル');
   assert.equal(await page.locator('.status-alchemy').count(),0);
+  assert.equal(await page.locator('#monsterStatus h1').evaluate(el=>getComputedStyle(el).webkitTextFillColor),'rgb(28, 34, 48)');
+  await page.evaluate(()=>{save.contractor.pendingRankUps=[{fromRank:1,toRank:2,unlockedTitleIds:[]}];presentNextContractorRankUp();});
+  assert(await page.locator('#contractorRankUpOverlay.hidden').count());
+  assert.equal(await page.evaluate(()=>contractorRankUpCanPresent()),false);
+  await page.evaluate(()=>save.contractor.pendingRankUps=[]);
   assert.deepEqual(await page.evaluate(()=>Object.fromEntries([...document.querySelectorAll('[data-status-stat]')].map(el=>[el.dataset.statusStat,el.querySelector('b').textContent]))),await page.evaluate(()=>Object.fromEntries(Object.entries(monsterStatusValues(getInstance(monsterStatusUi.uid))).map(([k,v])=>[k,statusNumber(v)]))));
   const next=fixture.order[(fixture.order.indexOf(fixture.first)+1)%fixture.order.length];
   await page.locator('[data-status-nav="next"]').click();assert.equal(await page.evaluate(()=>monsterStatusUi.uid),next);
@@ -43,7 +48,11 @@ try{
   assert(!/進化|Lv100|Lv\.100.*→/.test(await page.locator('#monsterStatus').innerText()));
   await page.evaluate(uid=>{monsterStatusUi.uid=uid;renderMonsterStatus();},fixture.alch);
   assert.match(await page.locator('.status-alchemy').innerText(),/HP ×1.05/);await page.screenshot({path:out+'/alchemy-'+viewport.width+'.png'});
-  await page.locator('#monsterStatusBack').click();assert.equal(await page.locator('#monsterStatus').count(),0);
+  await page.evaluate(()=>save.contractor.pendingRankUps=[{fromRank:1,toRank:2,unlockedTitleIds:[]}]);
+  await page.locator('#monsterStatusBack').click();
+  await page.locator('#contractorRankUpOverlay:not(.hidden)').waitFor();
+  await page.evaluate(()=>{save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');});
+  assert.equal(await page.locator('#monsterStatus').count(),0);
   assert.deepEqual(await page.evaluate(()=>({filter:rosterUi.filter,sort:rosterUi.sort,scroll:document.getElementById('partyList').scrollTop})),{filter:'monster',sort:'level',scroll:fixture.scroll});
   assert.equal(await page.evaluate(()=>JSON.stringify(save)),fixture.before);
   await page.evaluate(uid=>{setRosterView('filter','character');openRosterDetail(uid);openMonsterStatus(uid);},fixture.character);

@@ -1,9 +1,9 @@
-#monsterStatus{--status-ink:#1c2230;position:fixed;inset:0;z-index:1700;width:100%;max-width:780px;margin:auto;background:#faf8f2;color:var(--status-ink);display:flex;flex-direction:column;overflow:hidden;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);box-sizing:border-box}
+#monsterStatus{--status-ink:#1c2230;position:fixed;inset:0;z-index:1700;width:100%;max-width:780px;margin:auto;background:#faf8f2;color:var(--status-ink);text-align:left;display:flex;flex-direction:column;overflow:hidden;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);box-sizing:border-box}
 #monsterStatus *{box-sizing:border-box}
 #monsterStatus h1,#monsterStatus h2,#monsterStatus h3,#monsterStatus button,.status-level,.status-stat b,.status-mini b{font-family:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif}
 #monsterStatus button{min-height:44px;padding:0 14px;border:1px solid #b08d5573;border-radius:12px;background:#fff;color:#1c2230;margin:0;box-shadow:none;font-size:14px}
 #monsterStatus header{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 12px 8px}
-#monsterStatus h1{margin:0;font-size:17px;letter-spacing:.08em;color:#1c2230}
+#monsterStatus h1{background:none;-webkit-text-fill-color:currentColor;margin:0;font-size:17px;letter-spacing:.08em;color:#1c2230}
 .status-nav{display:flex;gap:6px}
 #monsterStatus .status-nav button{width:44px;height:44px;padding:0;font-size:25px}
 .status-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 12px 16px;display:flex;flex-direction:column;gap:10px}
