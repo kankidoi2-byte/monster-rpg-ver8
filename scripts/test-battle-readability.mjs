@@ -12,7 +12,7 @@ r.context.document.getElementById=id=>{
 };
 run(fs.readFileSync(new URL('../js/battle-feedback.js',import.meta.url),'utf8'));
 run(`renderBattleInputState=()=>{};renderBattleHpResults=()=>{};`);
-const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);refreshBattleFeedback();`;
+const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{enemyLevel:6,allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);refreshBattleFeedback();`;
 run(`function setup(){${setup}};setup();`);
 const history=()=>JSON.parse(run('JSON.stringify(battleFeedback.history)'));
 run('pHp=playerMaxHp()-3;refreshBattleFeedback()');

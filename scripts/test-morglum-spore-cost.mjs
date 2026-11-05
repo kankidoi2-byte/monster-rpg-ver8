@@ -53,7 +53,7 @@ let damageComparisons=0;
 for(const defender of ['slime','aquaron','grassbeat','nemesion','doom_nemesion'])for(const level of [1,16,100])for(const guard of [false,true])for(const seed of [1,42,1234]){
   for(const r of [before,after]){
     r.context.Math.random=seeded(seed);
-    r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('morglum',${level});save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('${defender}');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);pHp=1000;eHp=1000;pAtk=eAtk=1;pGuard=false;eGuard=${guard};pAquaShield=eAquaShield=false;pFlareCharge=eFlareCharge=false;`);
+    r.run(`save=initSave();save.instances=[];save.party=[];var ins=addInstance('morglum',${level});save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('${defender}');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});pHp=1000;eHp=1000;pAtk=eAtk=1;pGuard=false;eGuard=${guard};pAquaShield=eAquaShield=false;pFlareCharge=eFlareCharge=false;`);
     await r.run(`doAttack(by('morglum'),enemy,skillToMove('${id}'),true)`);
   }
   assert.equal(after.run('eHp'),before.run('eHp'),'identical damage with identical random seed');

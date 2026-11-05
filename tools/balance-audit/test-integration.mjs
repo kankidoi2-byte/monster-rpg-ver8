@@ -6,7 +6,7 @@ const r=runtime(),run=r.run;
 r.context.Math.random=()=>.5;
 let levels=0;
 for(const difficulty of ['d1','d2','d3','d4','d5','extreme']){
-  run(`activeHuntRequest=createHuntRequest(MAPS[0],by('slime'),${JSON.stringify(difficulty)},[]);`);
+  run(`activeHuntRequest=createHuntRequest(MAPS[0],by('slime'),${JSON.stringify(difficulty)},[],{allowOvertier:false});`);
   for(const id of run('M.map(m=>m.id)')){
     r.context.testId=id;
     assert.equal(run(`createMultiEnemy(by(testId),'enemy_b').level`),run(`huntLevelFor(by(testId),activeHuntRequest.difficultyId)`));
@@ -23,7 +23,7 @@ for(const name of ['setupMultiBattle','updateMultiBattleView','renderMultiContra
 }
 r.elements.set('battleOutcomeActions',{appendChild(){}});
 run(`playContractAnimation=async()=>{};updateItems=()=>{};
-function setupTest(){save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',30);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='seralphia';activeHuntRequest.invasionTurn=1;beginChosenBattle('grassland','slime','normal',activeHuntRequest);eHp=1;eStatus='poison';ePoisonTurns=2;battleTurnCount=1;}
+function setupTest(){save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',30);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='seralphia';activeHuntRequest.invasionTurn=1;beginChosenBattle('grassland','slime','normal',activeHuntRequest);eHp=1;eStatus='poison';ePoisonTurns=2;battleTurnCount=1;}
 setupTest();var originalMax=enemyMaxHp();triggerInvasionIfDue();`);
 assert.equal(run('multiBattle.enemies[0].hp'),1);
 assert.equal(run('multiBattle.enemies[0].maxHp'),run('originalMax'));
@@ -46,7 +46,7 @@ assert.equal(run("save.instances.filter(i=>i.id==='slime').length"),1);
 for(const action of ['runAwayFromMultiBattle()','losePartyBattle()']){
   run(`setupTest();triggerInvasionIfDue();${action};`);
   assert.equal(run('auditOutcome.kind'),action.startsWith('runAway')?'retreat':'defeat');
-  run("endPartyRecovery();beginChosenBattle('grassland','slime','normal',{...createHuntRequest(MAPS[0],by('slime'),'normal',[]),battleMode:'single'});");
+  run("endPartyRecovery();beginChosenBattle('grassland','slime','normal',{...createHuntRequest(MAPS[0],by('slime'),'normal',[],{allowOvertier:false}),battleMode:'single'});");
   assert.equal(run('busy'),false);assert.equal(run('multiBattle'),null);assert.ok(run('pHp>0'));
 }
 console.log(`PASS: ${levels} species/difficulty level+HP cases; production level markup; real invasion poison KO -> contract; reward/contract idempotency; defeat/retreat/retry. VM only, no visual/reload claim.`);

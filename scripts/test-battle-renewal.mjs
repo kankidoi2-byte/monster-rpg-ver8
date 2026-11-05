@@ -5,7 +5,7 @@ import {runtime} from '../tools/balance-audit/runtime.mjs';
 const source=fs.readFileSync(new URL('../js/battle-renewal.js',import.meta.url),'utf8').replace(/^renewalMount\(\);$/m,'');
 function setup(){
  const r=runtime();vm.runInContext(source,r.context,{filename:'battle-renewal.js'});
- r.run(`save=initSave();save.instances=[];save.party=[];for(var id of ['freigal','aquaron','volteck']){var ins=addInstance(id,12);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('grassbeat');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);busy=false;
+ r.run(`save=initSave();save.instances=[];save.party=[];for(var id of ['freigal','aquaron','volteck']){var ins=addInstance(id,12);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('grassbeat');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});busy=false;
  var autoRun=null;renewalCanAct=()=>!busy;renewalRender=()=>{};renewalDecorateSkills=()=>{};renewalClose=()=>{};renewalItemSheet=()=>{};updateItems=()=>{};captureBattleLog=()=>{};var itemTurns=0;renewalItemEnemyTurn=()=>{itemTurns++;busy=true;};
  `);return r;
 }

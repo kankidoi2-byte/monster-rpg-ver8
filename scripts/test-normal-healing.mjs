@@ -5,7 +5,7 @@ const r=runtime();
 r.run(`save=initSave();save.instances=[];save.party=[];
 save.party=[addInstance('freigal',10).uid];prepareBattleParty();
 selectedMap=MAPS[0];enemy=by('slime');
-activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);
+activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});
 activeHuntRequest.battleMode='three_way';activeHuntRequest.secondEnemyId='goblin';
 beginChosenBattle('grassland','slime','normal',activeHuntRequest);
 var playerMaximum=1000,enemyMaximum=1000;playerMaxHp=()=>playerMaximum;enemyMaxHp=()=>enemyMaximum;
