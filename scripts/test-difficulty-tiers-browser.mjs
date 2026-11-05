@@ -21,7 +21,7 @@ try{
    save.worldMap.guides.map_intro=true;save.instances=[];save.party=[];
    for(const id of ['voltax','granbeat','shenhairon'])save.party.push(addInstance(id,100).uid);
    save.coins=321;save.items.contract_scroll=6;save.gBless.on=false;
-   save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');saveGame();
+   save.contractor.exp=contractorCumulativeExpForRank(50);save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');saveGame();
    show('home');show('partySet');startBattleFromParty();showWorldMapLocation('grassland');
   });
   const ids=await page.locator('[data-wm-difficulty]').evaluateAll(els=>els.map(el=>el.dataset.wmDifficulty));
@@ -77,7 +77,7 @@ try{
    });assert.deepEqual(thresholds,[null,'stronger']);
    const autoStart=await page.evaluate(()=>{
     endPartyRecovery();hideBattleOutcome();worldMapDeparting=false;const map=MAPS.find(m=>m.id==='grassland');
-    save.autoBattle.unlocked.push('grassland:d1');save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
+    save.autoBattle.unlocked.push('grassland:d1');save.contractor.exp=contractorCumulativeExpForRank(50);save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
     save.autoBattle.settings={...save.autoBattle.settings,contract:'skip',stopOnNewDex:false,stopOnBlessEmpty:false};saveGame();
     const request=createHuntRequest(map,by('slime'),'d1',[]);request.worldMapExploration=true;prepareBattleParty();
     autoRun=autoNewRun(map.id,'d1',5);autoBindDeparture(map,request,null);beginChosenBattle(map.id,request.enemyId,'d1',request);
