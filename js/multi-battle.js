@@ -103,6 +103,7 @@ function triggerInvasionIfDue() {
   document.getElementById('multiTargetSelect').classList.add('hidden');
   document.getElementById('multiContractPanel').classList.add('hidden');
   setupMultiBattle();
+  if(typeof renewalBanner==='function')renewalBanner('乱入！','invasion');
   appendMultiLog(`❗ 不穏な気配の正体は<b>${invader.name}</b>だった！<br>乱入した${invader.name}は周囲を警戒している。次のターンから行動する！`);
   busy = false;
   if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('invasion',TUTORIAL_INVASION_FLOW_ID);
@@ -169,6 +170,7 @@ function handleMultiEnemyCard(targetId){
   const action=multiEnemyCardAction(entry,multiBattle?.pendingMoveIndex);
   if(action==='target'){startMultiBattleTurn(targetId);return;}
   if(action!=='details')return;
+  if(typeof renewalSelectTarget==='function'){renewalSelectTarget(targetId);return;}
   entry.detailsOpen=!entry.detailsOpen;updateMultiBattleView();
 }
 function handleMultiEnemyCardKey(event,targetId){if(event.key!=='Enter'&&event.key!==' ')return;event.preventDefault();handleMultiEnemyCard(targetId);}
@@ -178,6 +180,7 @@ function chooseMultiBattleTarget(moveIndex) {
   if(pendingKokoroLinkStatusSourceUid)cancelKokoroLinkStatusTarget();
   const living=aliveMultiEnemies();
   if (!living.length) return;
+  if(typeof renewalTarget==='function'){multiBattle.pendingMoveIndex=moveIndex;startMultiBattleTurn(renewalTarget().id);return;}
   multiBattle.enemies.forEach(entry=>{entry.detailsOpen=false;});
   multiBattle.pendingMoveIndex=moveIndex;
   const picker=document.getElementById('multiTargetSelect');
@@ -415,6 +418,7 @@ function prepareMultiVictoryReward(){
 }
 
 function renderMultiContractPanel(){
+  if(typeof renewalContracts==='function'&&renewalContracts())return;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return;
   const panel=document.getElementById('multiContractPanel');if(!panel||!multiBattle?.finished)return;
   const outcomeActions=document.getElementById('battleOutcomeActions');if(outcomeActions&&panel.parentElement!==outcomeActions)outcomeActions.appendChild(panel);

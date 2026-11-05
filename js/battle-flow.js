@@ -242,7 +242,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   activeInstance = next.inst;
   player = next.mon;
   pHp = next.hp;
-  pAtk = 1; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
+  pAtk = next.itemAttack||1; next.itemAttack=null; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
   const log = document.getElementById('log');
   if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();
   document.getElementById('pName').textContent = player.name;
@@ -255,6 +255,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   return true;
 }
 function switchPartyMember() {
+  if(typeof renewalKoClone==='function')renewalKoClone();
   const current = partyBattle[activePartyIdx];
   if (current) { current.hp = 0; current.fainted = true; }
   const next = livingPartySwitchCandidates(partyBattle, activePartyIdx)[0];

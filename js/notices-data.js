@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261105-battle-renewal',date:'2026-11-05',category:'update',title:'バトル画面を新しくしました',body:'控えの仲間と状態がいつでも見え、技の画面で相手への効きやすさを確認できます。相手の札の「i」から弱点や技を見られます。道具は使う仲間を選び、1行動で使用します。'},
   {id:'20261104-elna-fullbody',date:'2026-11-04',category:'update',title:'エルナの全身立ち絵を追加しました',body:'初級・中級・上級・流水・華炎のエルナを、ホームとバトルで背景のない全身立ち絵にしました。'},
   {id:'20261103-auto-battle',date:'2026-11-04',category:'update',title:'オートバトルを追加しました',body:'通常探索で同じ難易度の相手をすべて討伐すると、最大20回まで自動で周回できます。途中で手動に切り替えたり、契約のチャンスで止めたりできます。'},
   {id:'20261104-feedback-world-map-retry',date:'2026-11-04',category:'fix',title:'意見箱の再送と世界地図の保存を修正',body:'送信できなかった意見は控えで確認できます。敗北・撤退時に世界地図を保存できなかった場合は、結果画面から再試行できます。'},

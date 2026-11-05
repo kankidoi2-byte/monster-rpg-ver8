@@ -36,6 +36,7 @@ function resetBattleFeedback(){
   if(typeof battleUiClear==='function')battleUiClear();
   if(typeof clearBattleStageAction==='function')clearBattleStageAction();
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
+  if(typeof renewalReset==='function')renewalReset();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
   battleFeedback.hp.clear();battleFeedback.states.clear();battleFeedback.results.clear();battleFeedback.sequence++;
   const log=document.getElementById('log');if(log)log.innerHTML='';
@@ -76,6 +77,7 @@ function renderBattleInputState(){
   if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
   if(typeof syncBattleUi==='function')syncBattleUi();
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
+  if(typeof renewalRender==='function')renewalRender();
 }
 function battleCombatants(){
   if(!player||!enemy)return [];
@@ -109,6 +111,7 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);
+  if(typeof renewalHpFeedback==='function')renewalHpFeedback(u,loss,{label,effectiveness});
 }
 // Update only presentation here: do not clamp game state or run turn logic.
 // A repeat attack must visibly consume HP once per hit, before its final update().
@@ -140,7 +143,7 @@ function refreshBattleFeedback(message=''){
     }else battleFeedback.hp.set(u.key,hp);
     const labels=battleStateLabels(u),state=labels.join('・');
     const prior=battleFeedback.states.get(u.key);
-    if(prior!==undefined&&prior!==state)battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');
+    if(prior!==undefined&&prior!==state){battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');if(typeof renewalStatusFeedback==='function')renewalStatusFeedback(labels,prior);}
     battleFeedback.states.set(u.key,state);
     const el=document.getElementById(u.statusId);
     if(el&&typeof renderBattleStateSummary==='function'){el.classList.toggle('is-normal',labels.length===0);renderBattleStateSummary(el,labels,u);}

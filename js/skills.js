@@ -203,6 +203,7 @@ function renderSkillButtons(){
     return `<button onclick="turn(${i})" data-tutorial-skill${stellaAdvantage} class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}、COST ${cost}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role} / <b data-tutorial-skill-cost>COST ${cost}</b></small>${typeof battleUiSkillInfo==='function'?battleUiSkillInfo(mv):''}</button>`;
   }).join('');
   if(!moves.length&&!rescueBasicAttack)el.innerHTML+='<p>装備中の技がありません。</p>';
+  if(typeof renewalDecorateSkills==='function')renewalDecorateSkills();
 }
 function openSkillEdit(uid){
   editingSkillUid = uid;
