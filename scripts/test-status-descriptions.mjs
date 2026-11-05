@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import {legacyCardProjection} from './skill110-legacy-projection.mjs';
 import {retiredReservations} from './retired-dex-reservations-baseline.mjs';
 import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
@@ -9,7 +10,7 @@ import {runtime} from '../tools/balance-audit/runtime.mjs';
 import {applyStatusDataCopy,applyStatusCoreCopy} from './status-description-copy-baseline.mjs';
 const base='a546894691f243aeb41de9e1a46f4c66e299bc28';
 const read=n=>fs.readFileSync(new URL('../js/'+n+'.js',import.meta.url),'utf8');
-const original=n=>execFileSync('git',['show',base+':js/'+n+'.js'],{encoding:'utf8'});
+const original=n=>applyRenamedMonsterIds(execFileSync('git',['show',base+':js/'+n+'.js'],{encoding:'utf8'}));
 const before=runtime({data:()=>original('data'),core:()=>original('core')}),r=runtime();
 r.context.document.addEventListener=()=>{};
 for(const file of ['skill-synthesis','skill-synthesis-ui','dex','skill-dex','battle-ui'])vm.runInContext(read(file),r.context);

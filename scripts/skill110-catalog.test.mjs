@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const ctx=vm.createContext({console});
 vm.runInContext(read('js/data.js')+read('js/core.js'),ctx);
-const x=vm.runInContext('({M,MOVE_CARDS,EQUIPPABLE_MOVE_CARDS,SKILL110_CATALOG,SKILL110_IDS,SKILL110_MIGRATION_MAP,SKILL110_MIGRATION_REASONS,SKILL_BY_ID,canonicalSkillId,skill110TierFromCost,defaultSkillIdsForMonster,isSkillAllowedForMonster,skillCostLimitFor,skillCostFromMove,skillToMove})',ctx);
+const x=vm.runInContext('({M,MOVE_CARDS,EQUIPPABLE_MOVE_CARDS,SKILL110_CATALOG,SKILL110_IDS,SKILL110_MIGRATION_MAP,SKILL110_MIGRATION_REASONS,SKILL_BY_ID,RENAMED_SKILL_ID_ALIASES,canonicalSkillId,skill110TierFromCost,defaultSkillIdsForMonster,isSkillAllowedForMonster,skillCostLimitFor,skillCostFromMove,skillToMove})',ctx);
 const C=x.EQUIPPABLE_MOVE_CARDS;
 const recorded=JSON.parse(read('docs/skill110/catalog.json'));
 for(const expected of recorded){
@@ -20,7 +20,10 @@ assert(C.every(s=>s.cost<=20||s.cost===25));
 assert.equal(C.filter(s=>s.acquisition==='normal').length,106);
 assert(C.filter(s=>s.cost===25).every(s=>s.acquisition==='synthesis'&&s.universal));
 for(const row of JSON.parse(read('docs/skill-system-110/historical-skills.json')).entries){
- const target=x.SKILL110_MIGRATION_MAP[row.id];assert(target,`historical ID ${row.id}`);assert(x.SKILL_BY_ID[target].cost<25);assert(x.SKILL110_MIGRATION_REASONS[row.id]);
+ // Historical records keep their published names; fixed aliases resolve to the
+ // new identifier while raw sk_ mappings keep their original catalog targets.
+ const id=x.RENAMED_SKILL_ID_ALIASES[row.id]||row.id;
+ const target=x.SKILL110_MIGRATION_MAP[id];assert(target,`historical ID ${row.id}`);assert(x.SKILL_BY_ID[target].cost<25);assert(x.SKILL110_MIGRATION_REASONS[id]);
 }
 for(const legacy of x.MOVE_CARDS.filter(s=>s.deprecated))assert(x.SKILL_BY_ID[legacy.canonicalId]&&!x.SKILL_BY_ID[legacy.canonicalId].deprecated);
 for(const m of x.M){

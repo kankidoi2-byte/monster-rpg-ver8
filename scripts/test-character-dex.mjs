@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -64,8 +65,8 @@ const expectedMonsterDexOrder = [
   'icegolem',
   'nightmare',
   'astralepis',
-  'false_dragon_beta',
-  'false_dragon_gamma',
+  'ashleia',
+  'morglum',
   'nemes',
   'nemesia',
   'nemesion',
@@ -122,7 +123,7 @@ console.log('Character dex validation passed: 50 prologue display forms, empty c
 
 // Every retired reservation is already represented by the same implemented form.
 const {execFileSync}=await import('node:child_process');
-const baseline=execFileSync('git',['show','accc2c5187ddd627c2ea8fbe35f91ece48eeb9d1:js/data.js'],{encoding:'utf8'});
+const baseline=applyRenamedMonsterIds(execFileSync('git',['show','accc2c5187ddd627c2ea8fbe35f91ece48eeb9d1:js/data.js'],{encoding:'utf8'}));
 const oldContext=vm.createContext({});vm.runInContext(baseline,oldContext);
 const retired=vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS',oldContext);
 assert.equal(retired.length,36);

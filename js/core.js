@@ -46,6 +46,16 @@ const MOVE_CARDS = [];
 const _skillSeen = new Set();
 const _skillIdByMove = new WeakMap();
 const LEGACY_SKILL_ID_ALIASES = Object.create(null);
+// Persistent fixed-ID aliases. Name-derived sk_ aliases below target these new IDs.
+const RENAMED_SKILL_ID_ALIASES = Object.freeze({
+  skill_false_dragon_beta_01:'skill_ashleia_01',
+  skill_false_dragon_beta_02:'skill_ashleia_02',
+  skill_false_dragon_beta_03:'skill_ashleia_03',
+  skill_false_dragon_gamma_01:'skill_morglum_01',
+  skill_false_dragon_gamma_02:'skill_morglum_02',
+  skill_false_dragon_gamma_03:'skill_morglum_03',
+});
+Object.assign(LEGACY_SKILL_ID_ALIASES,RENAMED_SKILL_ID_ALIASES);
 // Preserve ownership and equipment from the pre-drain, name-derived skill ID.
 LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(["セラフィックリーフ",68,"grass"])] = "skill_seralphia_03";
 if (typeof CHARACTER_SKILL_LEGACY_MOVES !== 'undefined') {
@@ -57,12 +67,12 @@ if (typeof CHARACTER_SKILL_LEGACY_MOVES !== 'undefined') {
 // User-approved replacement skills. Fixed IDs retain ownership; legacy names/types
 // remain readable. Presentation and anatomy are keyed by ID, not mutable names.
 const REPLACEMENT_SKILL_COMPAT = Object.freeze({
-  skill_false_dragon_beta_01: Object.freeze({legacyMove:['断界光',76,'light'],form:'beam',requiredAll:[]}),
-  skill_false_dragon_beta_02: Object.freeze({legacyMove:['偽竜の翼撃',62,'normal'],form:'wing',requiredAll:['anatomy:wing']}),
-  skill_false_dragon_beta_03: Object.freeze({legacyMove:['コード・ベータ',94,'light'],form:'beam',requiredAll:[]}),
-  skill_false_dragon_gamma_01: Object.freeze({legacyMove:['虚無光翼',82,'light'],form:'projectile',requiredAll:[]}),
-  skill_false_dragon_gamma_02: Object.freeze({legacyMove:['偽竜の咆哮',66,'normal'],form:'roar',requiredAll:['capability:roar']}),
-  skill_false_dragon_gamma_03: Object.freeze({legacyMove:['コード・ガンマ',100,'light'],form:'wave',requiredAll:[]})
+  skill_ashleia_01: Object.freeze({legacyMove:['断界光',76,'light'],form:'beam',requiredAll:[]}),
+  skill_ashleia_02: Object.freeze({legacyMove:['偽竜の翼撃',62,'normal'],form:'wing',requiredAll:['anatomy:wing']}),
+  skill_ashleia_03: Object.freeze({legacyMove:['コード・ベータ',94,'light'],form:'beam',requiredAll:[]}),
+  skill_morglum_01: Object.freeze({legacyMove:['虚無光翼',82,'light'],form:'projectile',requiredAll:[]}),
+  skill_morglum_02: Object.freeze({legacyMove:['偽竜の咆哮',66,'normal'],form:'roar',requiredAll:['capability:roar']}),
+  skill_morglum_03: Object.freeze({legacyMove:['コード・ガンマ',100,'light'],form:'wave',requiredAll:[]})
 });
 Object.entries(REPLACEMENT_SKILL_COMPAT).forEach(([id,profile])=>{
   LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(profile.legacyMove)]=id;

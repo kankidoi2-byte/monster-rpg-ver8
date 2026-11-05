@@ -343,8 +343,60 @@ function migrateSkill110Save(payload, report=[]){
   report.push(`技体系を110種類へ更新。装備調整 ${adjusted}体、基本攻撃補填 ${compensated}枚。`);
   return true;
 }
+// Run on every load, including imports carrying current migration markers.
+// Only identifier-bearing fields are visited: UIDs, prose and archival backups
+// must remain byte-for-byte unchanged. Party/expedition links already use UIDs.
+function migrateRenamedMonsterIds(payload,report=[]){
+  const monsterId=id=>typeof MONSTER_ID_ALIASES!=='undefined'&&Object.hasOwn(MONSTER_ID_ALIASES,id)?MONSTER_ID_ALIASES[id]:id;
+  const renamedSkills=new Set(typeof RENAMED_SKILL_ID_ALIASES!=='undefined'?Object.values(RENAMED_SKILL_ID_ALIASES):[]);
+  const skillId=id=>{
+    if(typeof RENAMED_SKILL_ID_ALIASES!=='undefined'&&Object.hasOwn(RENAMED_SKILL_ID_ALIASES,id))return RENAMED_SKILL_ID_ALIASES[id];
+    // Pre-110 saves have explicit historical catalog mappings for sk_ aliases.
+    // Let that migration consume each raw entry before normalizing its alias.
+    if(!isSkill110Save(payload)&&skill110MigrationAvailable()&&Object.hasOwn(SKILL110_MIGRATION_MAP,id))return id;
+    const normalized=repairSkillId(id);
+    return renamedSkills.has(normalized)?normalized:id;
+  };
+  let changed=false;
+  const mapped=(id,convert)=>{const next=convert(id);if(next!==id)changed=true;return next;};
+  const list=(values,convert)=>Array.isArray(values)?values.map(id=>mapped(id,convert)):values;
+  const record=(values,convert,merge)=>{
+    if(!isSaveObject(values))return values;
+    const result={};
+    Object.entries(values).forEach(([id,value])=>{
+      const next=mapped(id,convert);
+      result[next]=Object.hasOwn(result,next)?merge(result[next],value):value;
+    });
+    return result;
+  };
+  const sum=(a,b)=>nonNegativeInteger(a)+nonNegativeInteger(b);
+  const discovery=(a,b)=>typeof a==='number'&&typeof b==='number'?Math.max(a,b):(a||b);
+  (Array.isArray(payload.instances)?payload.instances:[]).forEach(ins=>{
+    if(!isSaveObject(ins))return;
+    ins.id=mapped(ins.id,monsterId);
+    if(Array.isArray(ins.alchemy?.exclusiveSkillIds))ins.alchemy.exclusiveSkillIds=list(ins.alchemy.exclusiveSkillIds,skillId);
+  });
+  payload.caught=list(payload.caught,monsterId);
+  if(typeof payload.homeFavoriteId==='string')payload.homeFavoriteId=mapped(payload.homeFavoriteId,monsterId);
+  for(const key of ['levels','exp'])payload[key]=record(payload[key],monsterId,discovery);
+  if(isSaveObject(payload.autoBattle?.defeated)){
+    for(const key of Object.keys(payload.autoBattle.defeated))payload.autoBattle.defeated[key]=list(payload.autoBattle.defeated[key],monsterId);
+  }
+  for(const key of ['skillCards','skill110UnmappedCards']){
+    if(isSaveObject(payload[key]))payload[key]=record(payload[key],skillId,sum);
+  }
+  if(isSaveObject(payload.equippedSkills)){
+    for(const uid of Object.keys(payload.equippedSkills))payload.equippedSkills[uid]=list(payload.equippedSkills[uid],skillId);
+  }
+  for(const key of ['skillDex','discoveredSkills','knownSkills']){
+    if(Array.isArray(payload[key]))payload[key]=[...new Set(list(payload[key],skillId))];
+    else if(isSaveObject(payload[key]))payload[key]=record(payload[key],skillId,discovery);
+  }
+  if(changed)report.push('アシュレイア・モルグラムの旧識別名を更新');
+}
 function repairSave(payload,report=[]){
   captureSkill110Backup(payload);
+  migrateRenamedMonsterIds(payload,report);
   payload.autoBattle=normalizeAutoBattle(payload.autoBattle);
   payload.gBless=normalizeGBless(payload.gBless);
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;

@@ -34,13 +34,13 @@ const bodyMove = motion.skillToMove('skill_slime_01');
 const tailMove = motion.skillToMove('skill_aquaron_02');
 const hornMove = motion.skillToMove('skill_thornbeat_01');
 const fistMove = motion.skillToMove('skill_icegolem_01');
-const wingMove = motion.skillToMove('skill_false_dragon_beta_02');
+const wingMove = motion.skillToMove('skill_ashleia_02');
 const finMove = motion.skillToMove('skill_sylphin_01');
 const legMove = motion.skillToMove('skill_astralepis_01');
 const beakMove = motion.skillToMove('skill_volteck_01');
 const clubMove = motion.skillToMove('skill_goblin_01');
 const daggerMove = motion.skillToMove('skill_goblin_03');
-const roarMove = motion.skillToMove('skill_false_dragon_gamma_02');
+const roarMove = motion.skillToMove('skill_morglum_02');
 const roarSupportMove = motion.skillToMove('skill_freiwolf_03');
 const genericMotionCases = [
   ['skill_grassbeat_01','blade'],
@@ -210,7 +210,7 @@ for (const [skillId,form] of [['skill_aquaron_01','magic'],['skill_tienhairon_02
   assert.equal(rangedEffect.removed, true, `${form} must be removed after its animation`);
 }
 
-const roarRendered = await vm.runInContext("playBattleSkillMotion('sourceVis','targetVis',skillToMove('skill_false_dragon_gamma_02'))", context);
+const roarRendered = await vm.runInContext("playBattleSkillMotion('sourceVis','targetVis',skillToMove('skill_morglum_02'))", context);
 const roarEffect = stage.appended;
 assert.equal(roarRendered, true, 'damage roar must travel toward the target');
 assert(roarEffect.className.includes('battle-skill-motion') && roarEffect.className.includes('is-roar'), 'roar must use its dedicated shockwave class');
@@ -265,7 +265,7 @@ assert.equal(source.classList.contains('battle-charge-cast'), false, 'the charge
 assert.deepEqual(sourceStyle.values, {}, 'temporary charge direction variables must be cleared');
 
 for (const [skillId,form,family] of [
-  ['skill_aquaron_02','tail','sweep'],['skill_false_dragon_beta_02','wing','sweep'],['skill_sylphin_01','fin','sweep'],['skill_astralepis_01','leg','sweep'],
+  ['skill_aquaron_02','tail','sweep'],['skill_ashleia_02','wing','sweep'],['skill_sylphin_01','fin','sweep'],['skill_astralepis_01','leg','sweep'],
   ['skill_thornbeat_01','horn','pierce'],['skill_volteck_01','beak','pierce'],['skill_goblin_03','dagger','pierce'],
   ['skill_icegolem_01','fist','blunt'],['skill_goblin_01','club','blunt']
 ]) {

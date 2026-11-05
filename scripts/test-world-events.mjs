@@ -80,7 +80,7 @@ const damaged={active:{
   starsea:{mapId:'world_between',monsterId:'false_dragon_alfa'},
   water_secret:{mapId:'bad',monsterId:'hikari',custom:3},
   golden_land:{monsterId:'elixion'},
-  rift:{mapId:'grassland',monsterId:'bad',monsterIds:['false_dragon_gamma','bad','false_dragon_gamma','false_dragon_beta'],custom:4},
+  rift:{mapId:'grassland',monsterId:'bad',monsterIds:['morglum','bad','morglum','ashleia'],custom:4},
   nextEra:{mapId:'future',monsterId:'future_monster'}
 },history:Array.from({length:45},(_,i)=>({i,unknown:true}))};
 const damagedBefore=JSON.stringify(damaged);
@@ -101,7 +101,7 @@ assert.equal(repaired.history.length,30);assert.equal(repaired.history[0].i,15);
 assert.deepEqual(plain(c.normalizeWorldMapState(repaired)),plain(repaired),'normalization is idempotent');
 const emptyRift=c.normalizeWorldMapState({active:{rift:{monsterId:'bad',monsterIds:[null],futureField:true}}});
 assert.equal(emptyRift.active.rift.monsterIds.length,1);assert.equal(emptyRift.active.rift.futureField,true);
-const currentRift=c.normalizeWorldMapState({active:{rift:{monsterId:'false_dragon_beta',monsterIds:['false_dragon_gamma']}}});
+const currentRift=c.normalizeWorldMapState({active:{rift:{monsterId:'ashleia',monsterIds:['morglum']}}});
 assert.deepEqual(plain(currentRift.active.rift.monsterIds),['false_dragon_alfa']);
 console.log('World events passed: additive migration, independent persistence, one-time guides, receipt deduplication, Elysia/crisis, fair rift queues, loss/escape, and legacy values.');
 

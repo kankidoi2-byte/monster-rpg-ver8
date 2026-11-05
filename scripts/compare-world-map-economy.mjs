@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
@@ -27,7 +28,9 @@ function gitRevision(expression){
 
 function sourceAt(revision,file){
   if(revision==='working-tree')return fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
-  return execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
+  const source=execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
+  // Compare historical rules under current names without modifying the archive.
+  return applyRenamedMonsterIds(source);
 }
 
 function mulberry32(seed){
@@ -338,7 +341,7 @@ assert.deepEqual(currentSnapshot.rates,baselineSnapshot.rates,'three-way/invasio
 assert.deepEqual(currentSnapshot.materialDrops,baselineSnapshot.materialDrops,'material drop table diverged');
 assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,'contract scroll rule diverged');
 const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
-  ['false_dragon_beta','false_dragon_gamma'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
+  ['ashleia','morglum'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
 );
 // New prologue allies are deliberately additive and never enter map enemy pools.
 // Preserve parity for every legacy record and validate exactly the approved additions.

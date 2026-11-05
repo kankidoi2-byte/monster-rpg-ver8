@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -5,7 +6,7 @@ import vm from 'node:vm';
 import {execFileSync} from 'node:child_process';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
 const base='282f774d00e240c599f8542843d7f27a65a49cec';
-const old=Object.fromEntries(['core','battle-view','battle-rules','multi-battle'].map(f=>[f,()=>execFileSync('git',['show',`${base}:js/${f}.js`],{encoding:'utf8'})]));
+const old=Object.fromEntries(['core','battle-view','battle-rules','multi-battle'].map(f=>[f,()=>applyRenamedMonsterIds(execFileSync('git',['show',`${base}:js/${f}.js`],{encoding:'utf8'}))]));
 // The approved alchemy overkill correction intentionally differs from this
 // historical engine. Apply only that correction to the comparison baseline;
 // test-alchemion-recoil independently checks the actual HP-loss contract.

@@ -1,3 +1,4 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import {applyStatusDataCopy} from './status-description-copy-baseline.mjs';
 import assert from 'node:assert/strict';
@@ -9,7 +10,7 @@ const r=runtime();
 const run=r.run;
 const current=run('M');
 const baseline={};vm.createContext(baseline);
-vm.runInContext(applyStatusDataCopy(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'}))+';globalThis.units=M;',baseline);
+vm.runInContext(applyStatusDataCopy(applyRenamedMonsterIds(execFileSync('git',['show','53a9b57511022b5d04ea4f13b79f4d8514ba6b0c:js/data.js'],{encoding:'utf8'})))+';globalThis.units=M;',baseline);
 assert.equal(current.length,100);
 for(const old of baseline.units){
  const unit=legacyUnitProjection(current.find(u=>u.id===old.id));
@@ -18,12 +19,12 @@ for(const old of baseline.units){
   assert.equal(unit.moves.length,old.moves.length+2);
   const legacyMoves=old.moves.map(move=>unit.moves.find(candidate=>candidate[8]===move[8]));
   assert.equal(JSON.stringify({...unit,moves:legacyMoves}),JSON.stringify(old),'preserve Golem legacy cards and non-move data');
- }else if(old.id==='false_dragon_gamma'){
-  const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_false_dragon_gamma_01')expected[5]=4;return expected;});
+ }else if(old.id==='morglum'){
+  const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_morglum_01')expected[5]=4;return expected;});
   assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Morglum except approved Spore Shot COST');
- }else if(old.id==='false_dragon_beta'){
+ }else if(old.id==='ashleia'){
   // Approved balance adjustment: only Fire Wing Strike's explicit COST changes.
-  const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_false_dragon_beta_02')expected[5]=3;return expected;});
+  const expectedMoves=old.moves.map(move=>{const expected=[...move];if(move[8]==='skill_ashleia_02')expected[5]=3;return expected;});
   assert.equal(JSON.stringify(unit),JSON.stringify({...old,moves:expectedMoves}),'preserve Ashleia except approved Fire Wing Strike COST');
  }else if(old.id==='seralphia'){
   // Approved leaf drain addition; every other field and move stays unchanged.

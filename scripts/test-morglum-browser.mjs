@@ -14,7 +14,7 @@ try{
  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.progress.tutorial.guides.skillCards=true;save.instances=[];save.party=[];
-  const ins=addInstance('false_dragon_gamma',1);save.party=[ins.uid];
+  const ins=addInstance('morglum',1);save.party=[ins.uid];
   save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.filter(sk=>sk.cost<25).map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=['s110_020'];show('home');
  });
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
@@ -22,7 +22,7 @@ try{
  assert((await page.locator('[data-skill-card-id="s110_003"]').textContent()).includes('COST 2'));
  const loadout=await page.evaluate(()=>{
   const guard=equipSkill('s110_003'),heal=equipSkill('s110_004');
-  return {guard,heal,total:equippedSkillCost(save.instances[0]),limit:skillCostLimitFor(by('false_dragon_gamma'),save.instances[0])};
+  return {guard,heal,total:equippedSkillCost(save.instances[0]),limit:skillCostLimitFor(by('morglum'),save.instances[0])};
  });
  assert.deepEqual(loadout,{guard:true,heal:true,total:8,limit:8});
  assert.deepEqual(await page.evaluate(()=>save.equippedSkills[save.instances[0].uid]),['s110_020','s110_003','s110_004']);
