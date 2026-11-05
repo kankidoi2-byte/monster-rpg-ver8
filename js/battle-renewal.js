@@ -174,7 +174,13 @@ function renewalUseItem(){
   const entry=partyBattle[index],identity=saveTransactionIdentity();battleItemSaveBusy=true;
   try{
     // Existing transactional inventory writer. No transient HP changes on failure.
-    if(!commitSaveMutation(()=>{save.items[id]--;},{requireReadable:true}))return;
+    if(!commitSaveMutation(()=>{save.items[id]--;},{requireReadable:true})){
+      const sheet=renewalEl('renewalSheet');
+      if(sheet?.open&&!sheet.querySelector('.br-item-save-error')){
+        sheet.querySelector('.br-go').insertAdjacentHTML('beforebegin','<p class="br-item-save-error" role="alert">保存できませんでした。道具は消費されていません。</p>');
+      }
+      return;
+    }
     if(identity!==saveTransactionIdentity())return;
     if(id==='attack_potion'){if(index===activePartyIdx)pAtk=1.6;else entry.itemAttack=1.6;}
     else{const amount=adjustedBattleHealing(id==='potion'?50:120);if(index===activePartyIdx){pHp=Math.min(playerMaxHp(),pHp+amount);entry.hp=pHp;}else entry.hp=Math.min(instanceMaxHp(entry.inst),entry.hp+amount);}
@@ -201,7 +207,10 @@ function renewalDelayLink(uid,targetId,source){
   setTimeout(()=>{effect.remove();if(epoch!==renewal.epoch)return;renewal.linkPending=false;if(identity!==saveTransactionIdentity()||actor!==activeInstance?.uid||!renewalEl('battle').classList.contains('active'))return;renewal.linkReady=true;activateKokoroLinkFromBattle(uid,targetId);renewalEl('pVis')?.classList.add('br-linked');setTimeout(()=>renewalEl('pVis')?.classList.remove('br-linked'),800);renewalRender();},1800);return true;
 }
 function renewalOutcome({kind}){
-  renewalClose();renewalEl('next').textContent='探索先へ';const request=activeHuntRequest?structuredClone(activeHuntRequest):null;
+  renewalClose();
+  const savePending=worldMapBattleSavePending();
+  if(!savePending)renewalEl('next').textContent='探索先へ';
+  const request=activeHuntRequest?structuredClone(activeHuntRequest):null;
   renewal.result={map:selectedMap?.id,enemy:enemy?.id,request};
   const defeated=multiBattle?.enemies||[{mon:enemy,defeatedByPlayer:kind==='victory'}];
   renewalEl('battleOutcomeEyebrow').prepend(document.createTextNode(kind==='victory'?'VICTORY · ':kind==='defeat'?'DEFEAT · ':''));
@@ -210,7 +219,7 @@ function renewalOutcome({kind}){
     const before=JSON.parse(normalVictoryReceipt.before);
     renewalMarkup('renewalResultExp',partyBattle.map(p=>{const old=before.instances.find(i=>i.uid===p.inst.uid),now=getInstance(p.inst.uid)||p.inst;return `<div class="br-exp-row"><b>${renewalHtml(p.mon.name)}</b><span>Lv.${old?.level||now.level} → ${now.level} ${old&&now.level>old.level?'<em>LEVEL UP!</em>':''}</span><div class="br-exp ${old&&now.level>old.level?'br-levelup':''}"><i style="--exp-before:${(old?.exp||0)/needExp(old?.level||1)*100}%;width:${isMaxLevel(now.level)?100:(now.exp||0)/needExp(now.level)*100}%"></i></div></div>`;}).join(''));
   }
-  const ordinary=!request?.source&&!tutorialBattleSession?.active;
+  const ordinary=!savePending&&!request?.source&&!tutorialBattleSession?.active;
   renewalMarkup('renewalResultButtons',`${kind==='defeat'&&ordinary?'<button onclick="renewalPartyReview()">編成を見直す</button>':''}${ordinary?'<button onclick="renewalRetry()">もう一度</button>':''}`);
 }
 function renewalPartyReview(){afterBattleNext();if(!normalVictoryPending()&&!worldMapBattleSavePending())show('party');}

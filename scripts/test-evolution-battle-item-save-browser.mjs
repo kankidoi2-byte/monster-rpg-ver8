@@ -33,13 +33,21 @@ try{
   await page.evaluate(()=>{Storage.prototype.setItem=originalSet});await evo.click();
   assert.equal(await page.evaluate(()=>getPartyInstances()[0].id),'highaquaron');
   await page.evaluate(()=>{
-   const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[]);request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);pHp=10;partyBattle[activePartyIdx].hp=10;openBattleItemSelect();window.before=JSON.stringify(save);window.disk=localStorage.getItem(testKey);Storage.prototype.setItem=function(k,v){if(k===testKey)throw Error('Injected write');return originalSet.call(this,k,v)};
+   const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[]);request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
+   // Give the enemy a defensive move so its turn cannot mask the healed HP.
+   enemy={...enemy,moves:[['身構える',0,'normal','guard']]};
+   pHp=10;partyBattle[activePartyIdx].hp=10;window.before=JSON.stringify(save);window.disk=localStorage.getItem(testKey);Storage.prototype.setItem=function(k,v){if(k===testKey)throw Error('Injected write');return originalSet.call(this,k,v)};
   });
-  const potion=page.locator('button[onclick="useBattleItemFromMenu(\'potion\')"]');await potion.click();
-  assert(await page.evaluate(()=>JSON.stringify(save)===before&&localStorage.getItem(testKey)===disk&&pHp===10));
+  await page.locator('#battleItemButton').click();
+  await page.locator('#renewalSheet [data-item="potion"]').click();
+  await page.locator('#renewalSheet [data-item-target="0"]').click();
+  const potion=page.locator('#renewalSheet .br-go');await potion.click();
+  assert(await page.evaluate(()=>JSON.stringify(save)===before&&localStorage.getItem(testKey)===disk&&pHp===10&&battleTurnCount===0));
+  assert(await page.getByRole('alert').filter({hasText:'道具は消費されていません'}).isVisible());
   assert(await potion.isVisible());assert(await potion.isEnabled());await potion.scrollIntoViewIfNeeded();box=await potion.boundingBox();assert(box&&box.x>=0&&box.x+box.width<=width+1);
   await page.screenshot({path:`${out}/${slot}-${width}-${font}-item-error.png`});
   await page.evaluate(()=>{Storage.prototype.setItem=originalSet});await potion.click();
+  await page.waitForFunction(()=>!busy&&battleTurnCount===1);
   assert(await page.evaluate(()=>save.items.potion===2&&pHp===60&&partyBattle[activePartyIdx].hp===60&&localStorage.getItem(otherKey)===otherRaw));
   await page.reload({waitUntil:'networkidle'});
   assert.equal(await page.evaluate(()=>save.items.potion),2);assert.equal(await page.evaluate(()=>getPartyInstances()[0].id),'highaquaron');

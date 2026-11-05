@@ -77,7 +77,6 @@ function renderBattleInputState(){
   if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
   if(typeof syncBattleUi==='function')syncBattleUi();
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
-  if(typeof renewalRender==='function')renewalRender();
 }
 function battleCombatants(){
   if(!player||!enemy)return [];

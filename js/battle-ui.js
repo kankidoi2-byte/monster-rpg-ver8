@@ -73,6 +73,7 @@ function syncBattleUi(){
     else if(battleUi.panel)battleUiFocus(document.getElementById(battleUi.origin));
   }
   battleUi.panel=panel?.id||null;
+  if(typeof renewalRender==='function')renewalRender();
 }
 function battleUiScreenChanged(id){
   if(id==='battleItemSelect'){
