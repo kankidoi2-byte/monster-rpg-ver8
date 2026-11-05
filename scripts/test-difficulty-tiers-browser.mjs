@@ -53,7 +53,7 @@ try{
    await page.locator('[data-wm-depart]').click();
    await page.waitForFunction(label=>document.querySelector('#battle.active')&&document.getElementById('eName').textContent.includes(label),label,{timeout:15000});
    const actual=await page.evaluate(()=>({level:activeHuntRequest.enemyLevel,kind:activeHuntRequest.overtier,enemyId:enemy.id,requestedId:activeHuntRequest.enemyId,log:document.getElementById('log').innerText}));
-   assert(actual.level>=min&&actual.level<=max);assert.equal(actual.enemyId,actual.requestedId);assert.match(actual.log,new RegExp(label));
+   assert((await page.locator('#eName').innerText()).startsWith('【'+label+'】'));assert(actual.level>=min&&actual.level<=max);assert.equal(actual.enemyId,actual.requestedId);assert.match(actual.log,new RegExp(label));
    await page.screenshot({path:`${out}/${tier}-${viewport.width}.png`});
    await page.evaluate(()=>runAway());await page.waitForFunction(()=>document.getElementById('battleOutcome').classList.contains('is-retreat'));
    assert.match(await page.locator('#battleOutcome').innerText(),/撤退/);

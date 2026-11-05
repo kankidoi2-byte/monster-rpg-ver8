@@ -18,7 +18,7 @@ w.HTMLMediaElement.prototype.play=function(){this._paused=false;this.dispatchEve
 for(const m of html.matchAll(/<script src="([^"?]+)[^"]*"><\/script>/g))run(fs.readFileSync(new URL(m[1],root),'utf8'));
 run(`function qaReport(){} function qaSetup(){save=initSave();completeTutorial();save.instances=[];save.party=[];
  for(const id of ['volmoog','aquaron']){const ins=addInstance(id,10);save.party.push(ins.uid);}
- prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);show('battle');}`);
+ prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);show('battle');}`);
 run(fs.readFileSync(new URL('tools/motion-review/qa-map-motion.js',root),'utf8'));
 const maps=JSON.parse(fs.readFileSync(new URL('docs/motion-prepublication/map-audit.json',root))).maps;
 const results=[];

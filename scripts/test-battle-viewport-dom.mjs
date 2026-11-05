@@ -75,7 +75,7 @@ function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="
 function setup(){run(`save=initSave();completeTutorial();save.instances=[];save.party=[];
   for(const id of ['freigal','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
-  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
+  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
 setup();
 run('syncBattleViewportInfo()');checkSizingCascade();

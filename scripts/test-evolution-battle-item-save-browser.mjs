@@ -33,7 +33,7 @@ try{
   await page.evaluate(()=>{Storage.prototype.setItem=originalSet});await evo.click();
   assert.equal(await page.evaluate(()=>getPartyInstances()[0].id),'highaquaron');
   await page.evaluate(()=>{
-   const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[]);request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
+   const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[],{allowOvertier:false});request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
    // Give the enemy a defensive move so its turn cannot mask the healed HP.
    enemy={...enemy,moves:[['身構える',0,'normal','guard']]};
    pHp=10;partyBattle[activePartyIdx].hp=10;window.before=JSON.stringify(save);window.disk=localStorage.getItem(testKey);Storage.prototype.setItem=function(k,v){if(k===testKey)throw Error('Injected write');return originalSet.call(this,k,v)};

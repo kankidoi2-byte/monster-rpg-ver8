@@ -1268,7 +1268,7 @@ function granReviewSetup(mode='ally',mapId='grassland',species=granReviewSpecies
    const ins=addInstance(id,10);save.party.push(ins.uid);
  }
  prepareBattleParty();selectedMap=map;enemy=by(mode==='ally'?'slime':species);
- activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';
+ activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
  beginChosenBattle(map.id,enemy.id,'normal',activeHuntRequest);show('battle');
  if(mode==='multi'||mode==='mixed'){
    ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(mode==='mixed'?'orca_abyss':species),'enemy_a'),createMultiEnemy(by(mode==='mixed'?'slime':species),'enemy_b')],pendingMoveIndex:null};

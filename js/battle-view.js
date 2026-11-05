@@ -28,7 +28,7 @@ function setupBattle() {
   document.getElementById('pVis').innerHTML = vis(player);
   document.getElementById('singleEnemyBox')?.classList.remove('hidden');
   document.getElementById('multiEnemyGrid')?.classList.add('hidden');
-  document.getElementById('eName').textContent = enemy.name+(battleOvertierLabel()?`【${battleOvertierLabel()}】`:'');
+  document.getElementById('eName').textContent = (battleOvertierLabel()?`【${battleOvertierLabel()}】`:'')+enemy.name;
   document.getElementById('eVis').innerHTML =
     `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
   // 技ボタン

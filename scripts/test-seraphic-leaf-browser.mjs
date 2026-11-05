@@ -40,7 +40,7 @@ try{
    pHp=10;eHp=75;pAtk=10;pGuard=eGuard=pAquaShield=eAquaShield=false;
    await doAttack(player,enemy,skillToMove('skill_seralphia_03'),true);
    const playerHeal=pHp-10;
-   enemy=by('seralphia');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);
+   enemy=by('seralphia');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});
    eHp=10;pHp=75;eAtk=10;
    await doAttack(enemy,player,skillToMove('skill_seralphia_03'),false);
    const enemyHeal=eHp-10;

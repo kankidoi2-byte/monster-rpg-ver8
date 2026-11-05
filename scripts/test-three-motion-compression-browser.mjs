@@ -54,7 +54,7 @@ async function start(page,id,multi=false,limit=1){
   for(const mon of [id,...['kimeragna','slime','elixion'].filter(x=>x!==id)])save.party.push(addInstance(mon,30).uid);
   prepareBattleParty();if(limit!==null)setBattleIdleLimit(limit);
   const enemyId=id==='slime'?'elixion':'slime';
-  const request=createHuntRequest(MAPS[0],by(enemyId),'normal',[]);
+  const request=createHuntRequest(MAPS[0],by(enemyId),'normal',[],{allowOvertier:false});
   request.battleMode=multi?'three_way':'single';request.secondEnemyId='elixion';
   beginChosenBattle('grassland',enemyId,'normal',request);clearTutorialUi();
  },{id,multi,limit});

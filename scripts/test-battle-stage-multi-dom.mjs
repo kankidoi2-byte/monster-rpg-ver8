@@ -26,7 +26,7 @@ function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="
 function setup(){run(`save=initSave();completeTutorial();save.instances=[];save.party=[];
   for(const id of ['freigal','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
-  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
+  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
 
 function multi(){setup();run(`ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('slime'),'enemy_a'),createMultiEnemy(by('slime'),'enemy_b')],pendingMoveIndex:null};setMultiBattleLayout(true);setupMultiBattle()`);checkIds();}

@@ -22,7 +22,7 @@ try{
       const hero=addInstance('aquaron',5);save.party=[hero.uid];
       save.worldMap=normalizeWorldMapState({active:{elysia:{remainingBattles:2},water_secret:{remainingBattles:1}}});
       if(!saveGame())throw Error('fixture write');
-      const map=MAPS.find(m=>m.id==='grassland'),request=createHuntRequest(map,by('slime'),'easy',[]);
+      const map=MAPS.find(m=>m.id==='grassland'),request=createHuntRequest(map,by('slime'),'easy',[],{allowOvertier:false});
       Object.assign(request,{worldMapExploration:true,battleMode:multi?'three_way':'single',secondEnemyId:multi?'freigal':null});
       beginChosenBattle(map.id,'slime','easy',request);
       worldMapSelectedEvent='water_secret';

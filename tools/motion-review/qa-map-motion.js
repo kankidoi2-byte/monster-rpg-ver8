@@ -5,7 +5,7 @@ function qaMapMotion(id, limit=3){
   if(!map||![1,3].includes(limit))return false;
   qaSetup('motion-ally');
   selectedMap=map;
-  activeHuntRequest=createHuntRequest(map,enemy,'normal',[]);
+  activeHuntRequest=createHuntRequest(map,enemy,'normal',[],{allowOvertier:false});
   activeHuntRequest.battleMode='single';
   setupBattle();
   if(limit===3){

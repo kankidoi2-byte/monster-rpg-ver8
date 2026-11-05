@@ -29,7 +29,7 @@ function checkIds(){for(const id of fixed)assert.equal(d.querySelectorAll(`[id="
 function setup(){run(`save=initSave();completeTutorial();currentTutorialState().guides={shopItems:true,kokoroLink:true};save.instances=[];save.party=[];
   for(const id of ['volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}
   prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');
-  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';
+  activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
   beginChosenBattle('grassland','slime','easy',activeHuntRequest);show('battle');`);}
 
 const flush=()=>new Promise(r=>setTimeout(r,0));
@@ -68,7 +68,7 @@ emit(r,0);const stale=timers.get(r.viewportTimer).fn,observer=r.viewportObserver
 run("show('home')");assert(observer.disconnected);stale();observer.emit(r.media,1);assert(r.disposed);assert.equal(records().length,0);
 pass('exit disconnects observer and rejects queued timer/observer callbacks');
 // Normal game path, no review registry injection.
-run("save=initSave();completeTutorial();save.instances=[];save.party=[];for(const id of ['gran_volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('volmoog');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','volmoog','easy',activeHuntRequest);show('battle');");
+run("save=initSave();completeTutorial();save.instances=[];save.party=[];for(const id of ['gran_volmoog','aquaron','grassbeat']){const ins=addInstance(id,10);save.party.push(ins.uid);}prepareBattleParty();selectedMap=MAPS[0];enemy=by('volmoog');activeHuntRequest=createHuntRequest(selectedMap,enemy,'easy',[],{allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle('grassland','volmoog','easy',activeHuntRequest);show('battle');");
 r=rec();assert.equal(run('battleIdleLimit'),3);assert.equal(r.config.src,run('BATTLE_IDLE_MEDIA.gran_volmoog.src'));
 assert.equal(r.media.style.getPropertyValue('--idle-position'),'50% 100%');assert.equal(r.media.style.getPropertyValue('--idle-scale'),'0.75');
 assert.equal(r.facing.style.transform,'scaleX(-1)');emit(r,1);await flush();assert(!r.video.paused);
