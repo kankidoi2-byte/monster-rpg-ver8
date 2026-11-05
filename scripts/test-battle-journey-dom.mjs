@@ -68,6 +68,6 @@ assert.equal(run('save.items.contract_scroll'),scrolls2-1);
 assert(run('singleBattleContractAttempted'));
 assert.equal(run('activeScreenId()'),'battle');
 checks.push('contract failure/attempt once/outcome retained');
-// Keep enemy HP valid and select an attack (RNG 0 now selects the enemy guard skill).
-act(by('next'));run('Math.random=()=>.5');depart();run('pHp=1;partyBattle[activePartyIdx].hp=1;partyBattle.forEach((p,i)=>{if(i!==activePartyIdx){p.hp=0;p.fainted=true;}});eHp=enemyMaxHp();Math.random=()=>.99;update()');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);assert(by('battleOutcome').classList.contains('is-defeat'));act(by('next'));depart();assert(!run('busy'));assert.equal(run('battleTurnCount'),0);assert(!d.querySelector('.battle-command-pad').hidden);checks.push('enemy attack/defeat/restart/cleared locks');
+// Give the enemy enough HP to take the hit and force an attack in the defeat fixture.
+act(by('next'));run('Math.random=()=>.5');depart();run('pHp=1;partyBattle[activePartyIdx].hp=1;partyBattle.forEach((p,i)=>{if(i!==activePartyIdx){p.hp=0;p.fainted=true;}});activeHuntRequest.enemyHp=5000;eHp=enemyMaxHp();enemy={...enemy,moves:[["攻撃",24,"normal"]]};Math.random=()=>.99;update()');act(by('battleSkillButton'));act(by('commands').querySelector('.skill-button'));await settled(true);assert(by('battleOutcome').classList.contains('is-defeat'));act(by('next'));depart();assert(!run('busy'));assert.equal(run('battleTurnCount'),0);assert(!d.querySelector('.battle-command-pad').hidden);checks.push('enemy attack/defeat/restart/cleared locks');
 assert.equal(errors.length,0,errors.join('\n'));dom.window.close();console.log('PASS normal journey: '+checks.join('; '));

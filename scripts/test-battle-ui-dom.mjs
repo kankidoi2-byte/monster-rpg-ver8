@@ -55,7 +55,7 @@ run(`renewalClose();pHp-=70;partyBattle[activePartyIdx].hp=pHp;
  update();openBattleItemSelect();renewalPickItem('potion');renewalPickItemTarget(0)`);
 const hurt=run('pHp'),turn=run('battleTurnCount'),enemyHp=run('eHp');
 run('renewalUseItem();renewalUseItem()');await wait();
-assert.equal(run('save.items.potion'),n-1);assert.equal(run('pHp'),hurt+50);
+assert.equal(run('save.items.potion'),n-1);assert.equal(run('pHp'),hurt+Math.floor(50*run('playerMaxHp()')/(120+9*12)));
 assert.equal(run('eHp'),enemyHp);assert.equal(run('battleTurnCount'),turn+1);
 assert.equal(run('loadSave().items.potion'),n-1);assert.equal(by('pVis').querySelector('img'),p);
 run('save.items.potion=0;openBattleItemSelect()');
