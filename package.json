@@ -128,7 +128,7 @@
     "check:gifts": "node scripts/test-review-top10.mjs && node scripts/test-gifts.mjs && node scripts/test-gifts-browser.mjs",
     "check:roadmap": "node scripts/test-roadmap.mjs && node scripts/test-roadmap-browser.mjs",
     "check:g-bless": "node scripts/test-g-bless.mjs && node scripts/test-g-bless-browser.mjs",
-    "check:battle-renewal": "node scripts/test-battle-renewal.mjs && node scripts/test-battle-renewal-browser.mjs"
+    "check:battle-renewal": "node scripts/test-battle-renewal.mjs && node scripts/test-battle-renewal-browser.mjs && node scripts/test-battle-result-contrast-browser.mjs"
   },
   "engines": {
     "node": ">=20"
