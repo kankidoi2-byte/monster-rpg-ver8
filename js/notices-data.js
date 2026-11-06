@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261106-species-traits',date:'2026-11-06',category:'update',title:'仲間に特性を追加しました',body:'仲間それぞれの特性が、戦いや探索を支えます。ステータス画面で確認でき、進化すると特性も変わります。'},
   {id:'20261105-difficulty-tiers',date:'2026-11-05',category:'update',title:'探索の難易度を5段階に見直しました',body:'難易度Ⅰ〜Ⅴから相手の強さを選べます。どのマップも同じ難易度の目安になり、ときどき格上の相手が現れます。これまでのオート解放記録は引き継がれます。Extremeはこれまでどおりです。'},
   {id:'20261105-monster-status',date:'2026-11-05',category:'update',title:'仲間のステータスを確認できるようになりました',body:'モンスター一覧の詳細から、現在の能力値や装備している技を見られます。一覧の順に前後の仲間へ切り替えられます。'},
   Object.freeze({id:"20261105-battle-result-contrast",date:"2026-11-05",category:"fix",title:"バトル結果画面の文字を見やすくしました",body:"暗い背景でも、勝敗や報酬、仲間の名前・レベル、契約の案内を読みやすくしました。"}),

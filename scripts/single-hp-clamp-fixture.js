@@ -1,7 +1,7 @@
 // Test-only instrumentation: observe each subtraction before the next statement,
 // plus real presentation/history callbacks and update's entry (before correction).
 function installSingleHpProbe(strict=true) {
-  const original={doAttack,battleHpResult:globalThis.battleHpResult,captureBattleLog:globalThis.captureBattleLog,update};
+  const original={doAttack,doAttackBase:typeof doAttackBase==='function'?doAttackBase:null,battleHpResult:globalThis.battleHpResult,captureBattleLog:globalThis.captureBattleLog,update};
   const observations=[],events=[],actual=[];
   globalThis.singleHpProbe=(stage)=>{
     observations.push({stage,pHp,eHp});
@@ -9,7 +9,8 @@ function installSingleHpProbe(strict=true) {
   };
   const expression=/([pe]Hp)\s*(?:-=\s*(dmg|8|recoil(?:Damage)?|secondDmg)|=\s*Math\.max\(0,\s*\1\s*-\s*(dmg|8|recoil(?:Damage)?|secondDmg)\))\s*;/g;
   let count=0;
-  doAttack=eval('('+doAttack.toString().replace(expression,statement=>{count++;return '{'+statement+'singleHpProbe("assignment");}';})+')');
+  const instrumented=eval('('+(original.doAttackBase||doAttack).toString().replace(expression,statement=>{count++;return '{'+statement+'singleHpProbe("assignment");}';})+')');
+  if(original.doAttackBase)doAttackBase=instrumented;else doAttack=instrumented;
   if(count!==8)throw Error(`Expected 8 observed subtractions, got ${count}`);
   globalThis.battleHpResult=(...args)=>{
     singleHpProbe('presentation');
@@ -22,7 +23,7 @@ function installSingleHpProbe(strict=true) {
   resolveTacticalSkillEffects=(move,isPlayer,a,b,damage)=>{actual.push(['tactical',damage]);return tacticalOriginal(move,isPlayer,a,b,damage);};
   applyPlayerKokoroLinkLifeSteal=damage=>{actual.push(['link',damage]);return linkOriginal(damage);};
   return {observations,events,actual,restore(){
-    doAttack=original.doAttack;update=original.update;
+    doAttack=original.doAttack;if(original.doAttackBase)doAttackBase=original.doAttackBase;update=original.update;
     globalThis.battleHpResult=original.battleHpResult;globalThis.captureBattleLog=original.captureBattleLog;
     resolveTacticalSkillEffects=tacticalOriginal;applyPlayerKokoroLinkLifeSteal=linkOriginal;
     delete globalThis.singleHpProbe;

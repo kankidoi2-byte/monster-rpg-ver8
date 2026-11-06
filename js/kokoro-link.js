@@ -161,7 +161,7 @@ function kokoroLinkClamp(value, minimum, maximum){
 function buildKokoroLinkProfile(monster, instance={}){
   if(!monster || monster.entityKind !== 'monster') return null;
   const rarity=kokoroLinkRarity(monster);
-  const multiplier=KOKORO_LINK_CONFIG.rarityMultipliers[rarity];
+  const multiplier=KOKORO_LINK_CONFIG.rarityMultipliers[rarity]*(typeof traitValue==='function'?traitValue(instance,'resonance',1):1);
   const abilityBand=KOKORO_LINK_CONFIG.abilityBands[rarity];
   return {
     sourceUid:typeof instance?.uid === 'string' ? instance.uid : null,

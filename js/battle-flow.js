@@ -7,6 +7,8 @@ function battleOvertierLog(){
 }
 function prepareBattleParty(storyInstances=null) {
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
+  if (typeof resetTraitBattleState === 'function') resetTraitBattleState();
+  if (typeof resetTraitRewardState === 'function') resetTraitRewardState();
   const savedParty = storyInstances || getPartyInstances();
   const party = !storyInstances && typeof tutorialBattlePartyInstances === 'function'
     ? tutorialBattlePartyInstances(savedParty)
@@ -197,6 +199,8 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   singleBattleContractAttempted = false;
   postBattleContractRetry = null;
   resetBattleTurnCounter();
+  if(typeof resetTraitBattleState==='function')resetTraitBattleState();
+  if(typeof resetTraitRewardState==='function')resetTraitRewardState();
   if (!partyBattle.length) prepareBattleParty();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
   if (activePartyIdx < 0) activePartyIdx = 0;
@@ -250,6 +254,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   activeInstance = next.inst;
   player = next.mon;
   pHp = next.hp;
+  if(typeof traitPartyChanged==='function')traitPartyChanged(current,next,faintCurrent);
   pAtk = next.itemAttack||1; next.itemAttack=null; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
   const log = document.getElementById('log');
   if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();
@@ -275,11 +280,13 @@ function performManualPartySwitch(nextIndex) {
   const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const previousName = player.name;
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
-  startBattleTurn();
+  const freeTraitSwitch=typeof traitValue==='function'&&traitValue(partyBattle[nextIndex].inst,'swift',0)>0;
+  if(!freeTraitSwitch)startBattleTurn();
   if (!changeActivePartyMember(nextIndex, {message:`🔄 ${previousName}から<b>${partyBattle[nextIndex].mon.name}</b>へ交代した！`})) {
     busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     return false;
   }
+  if(freeTraitSwitch){busy=false;if(typeof renderBattleInputState==='function')renderBattleInputState();return true;}
   if (multiBattle?.active) {
     const actions = aliveMultiEnemies().map(actor => {
       const delayed = consumeKokoroLinkEnemyActionDelay(actor.id);
@@ -344,12 +351,14 @@ function runAway() {
   if (busy) return;
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('retreat'))return;
   if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
+  const traitReward=typeof settleTraitRetreatReward==='function'?settleTraitRetreatReward():{exp:0,materials:[]};
+  if(!traitReward)return;
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
   resetBattleTransientEffects();
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
   document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';if(typeof captureBattleLog==='function')captureBattleLog();
-  showBattleOutcome({kind:'retreat',title:'撤退成功',note:'態勢を整えてから再挑戦できる。'});
+  showBattleOutcome({kind:'retreat',title:'撤退成功',...traitReward,note:'態勢を整えてから再挑戦できる。'});
   if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('retreat');
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 }
@@ -368,7 +377,8 @@ function prepareSingleVictoryReward(){
   const baseExpGain = enemy.expBonus || (35 + Math.floor(Math.random()*25));
   const baseCoinGain = enemy.coinBonus || (8 + Math.floor(Math.random()*10));
   const expGain = gBlessHuntReward(baseExpGain,turnBonusSucceeded,'exp',bless);
-  const coinGain = gBlessHuntReward(baseCoinGain,turnBonusSucceeded,'coins',bless);
+  const rawCoins = gBlessHuntReward(baseCoinGain,turnBonusSucceeded,'coins',bless);
+  const coinGain = typeof traitCoinReward==='function'?traitCoinReward(rawCoins):rawCoins;
   let displayedCoinGain = coinGain;
   save.coins += coinGain;
   let msg = `🏆 ${enemy.name}を倒した！<br>`;
@@ -381,7 +391,8 @@ function prepareSingleVictoryReward(){
   msg += grantPartyExp(expGain,{saveNow:false,animate:false});
   msg += `<br>🪙 コイン${coinGain}枚獲得！`;
   if (selectedMap?.goldenLand) {
-    const bonus = goldenLandCoinBonus(activeHuntRequest?.difficultyId);
+    const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);
+    const bonus = typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;
     save.coins += bonus;
     displayedCoinGain += bonus;
     if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}
@@ -391,7 +402,7 @@ function prepareSingleVictoryReward(){
   }
   if (enemy.dropItem) {
     const dropRate = Number.isFinite(enemy.dropRate) ? enemy.dropRate : 1;
-    if (Math.random() < dropRate) {
+    if (Math.random() < (typeof traitDropRate==='function'?traitDropRate(dropRate):dropRate)) {
       save.items[enemy.dropItem] = (save.items[enemy.dropItem]||0)+1;
       materialRewards.push(enemy.dropItemName||ITEM_BY_ID[enemy.dropItem]?.name||enemy.dropItem);
       const dropVisual = enemy.dropItem === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : '';

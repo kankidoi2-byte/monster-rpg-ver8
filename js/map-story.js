@@ -201,7 +201,7 @@ function mapStoryBattleBanner(){
 function mapStoryAwardExp(uids,amount){
   for(const uid of uids){const ins=save.instances.find(i=>i.uid===uid);if(!ins)continue;
     if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;continue;}
-    ins.exp=(ins.exp||0)+amount;
+    ins.exp=(ins.exp||0)+(typeof traitExperienceReward==='function'?traitExperienceReward(ins,amount,uids.map(id=>save.instances.find(p=>p.uid===id)).filter(Boolean)):amount);
     while(!isMaxLevel(ins.level)&&ins.exp>=needExp(ins.level)){ins.exp-=needExp(ins.level);ins.level++;}
     if(isMaxLevel(ins.level))ins.exp=0;
   }
@@ -218,7 +218,7 @@ function mapStoryOutcome(kind,request=activeHuntRequest){
     if(kind==='victory'){
       const p=s.episodes[episode.id]||{completed:false,firstVictory:false,firstRewardClaimed:false,victoryCount:0};
       if(p.lastAttemptId===request.attemptId)return;
-      mapStoryAwardExp(r.participantUids,reward.exp);save.coins+=reward.coins;
+      mapStoryAwardExp(r.participantUids,reward.exp);save.coins+=typeof traitCoinReward==='function'?traitCoinReward(reward.coins):reward.coins;
       s.episodes[episode.id]={...p,firstVictory:true,firstRewardClaimed:true,victoryCount:p.victoryCount+1,lastAttemptId:request.attemptId};
       s.resume={...r,phase:'post',nodeId:episode.postNodes[0].id,rewardCommitted:true,postPending:true};
     }else s.resume={...r,phase:'pre',nodeId:null,attemptId:null,rewardCommitted:false,postPending:false};

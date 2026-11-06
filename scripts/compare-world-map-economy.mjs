@@ -141,8 +141,19 @@ function gBlessOffRuleSource(source){
     .replace('grantMultiEnemyReward(entry,turnBonus,bless)','grantMultiEnemyReward(entry,turnBonus)')
     .replace('if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}','');
 }
+// The adopted species traits intentionally add reward bonuses. Historical parity
+// remains the NO-TRAIT path. Normalize only the exact opt-in wrappers; numerical
+// no-trait simulations below and check:traits cover neutral and bonus behavior.
+function traitsOffRuleSource(source){
+  return source
+    .replace("const rawCoins = huntRewardAmount(baseCoinGain,turnBonusSucceeded);\n  const coinGain = typeof traitCoinReward==='function'?traitCoinReward(rawCoins):rawCoins;","const coinGain = huntRewardAmount(baseCoinGain,turnBonusSucceeded);")
+    .replace("const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);\n    const bonus = typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;","const bonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);")
+    .replace("(typeof traitDropRate==='function'?traitDropRate(dropRate):dropRate)","dropRate")
+    .replace("rawCoins=huntRewardAmount(baseCoins,turnBonus),coins=typeof traitCoinReward==='function'?traitCoinReward(rawCoins):rawCoins","coins=huntRewardAmount(baseCoins,turnBonus)")
+    .replace("(typeof traitDropRate==='function'?traitDropRate(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1):(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1))","(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1)");
+}
 function normalizedRuleSource(source,name){
-  source=gBlessOffRuleSource(source);
+  source=traitsOffRuleSource(gBlessOffRuleSource(source));
   // Map-story rewards have an independent transaction path, covered by check:map-story.
   // Strip only its exact early victory dispatch when comparing NORMAL exploration.
   source=source.replace(/if\(typeof mapStoryOutcome==='function'&&mapStoryOutcome\('victory'\)\)return;/g,'');
@@ -352,6 +363,8 @@ assert.match(current.source['js/multi-battle.js'],/gBlessHuntReward\(baseCoins,t
 assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base+1,turn,'coins',bless)"),'huntRewardAmount(base,turn)');
 assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless);save.coins++"),gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless)"));
 
+assert.notEqual(traitsOffRuleSource("const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId)+1;const bonus=typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;"),"const bonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);");
+assert.notEqual(traitsOffRuleSource("save.coins++;"),"");
 const baselineSnapshot=canonicalSnapshot(baseline);
 const currentSnapshot=canonicalSnapshot(current);
 

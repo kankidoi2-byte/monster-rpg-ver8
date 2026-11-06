@@ -47,7 +47,8 @@ try{
    await doAttack(enemy,player,skillToMove('skill_seralphia_02'),false);
    return {playerHeal,enemyHeal,enemyBlessing:eHp>25};
  });
- assert.deepEqual(combat,{playerHeal:15,enemyHeal:15,enemyBlessing:true});
+ // Seralphia now has the adopted player-only healer+ trait (15 × 1.4).
+ assert.deepEqual(combat,{playerHeal:21,enemyHeal:15,enemyBlessing:true});
  // Read a stored old-ID fixture, then use the actual saveGame/localStorage path.
  const legacySaved=await page.evaluate(()=>{
    const raw=JSON.parse(JSON.stringify(save));
