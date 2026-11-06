@@ -12,7 +12,7 @@ function h(slot=1){
  r.run('saveGame=originalSaveGame;save=initSave();save.coins=20000;renderShop=()=>{};updateItems=()=>{};renderItemGacha=()=>{};renderFusion=()=>{};renderPartySetup=()=>{};renderExpedition=()=>{};typesHtml=()=>"";battleRewardGranted=true;var auditNotices=[];showUiNotice=(text)=>auditNotices.push(text);saveGame();');
  return r;
 }
-const seedAlchemy=`var catalyst=addInstance('freigal',1);addInstance('aquaron',1);save.party=[];var recipe=ALCHEMY_RECIPES[0];var materials=recipe.materialChoices.map(x=>x.normal);materials.forEach(id=>save.items[id]=10);var selection={recipeId:recipe.recipeId,mode:'normal',instanceUid:catalyst.uid,materialIds:materials,materialCounts:[1,1,1,1],coinOptionId:'low'};var plan=alchemyPlan(selection);saveGame();`;
+const seedAlchemy=`save.progress.tutorial.status='completed';var catalyst=addInstance('freigal',1);addInstance('aquaron',1);save.party=[];var recipe=ALCHEMY_RECIPES[0];var materials=recipe.materialChoices.map(x=>x.normal);materials.forEach(id=>save.items[id]=10);var selection={recipeId:recipe.recipeId,mode:'normal',instanceUid:catalyst.uid,materialIds:materials,materialCounts:[1,1,1,1],coinOptionId:'low'};var plan=alchemyPlan(selection);saveGame();`;
 for(const slot of [1,2])for(const fault of ['quota','conflict','postCommitDOM','notice']){
  const r=h(slot);r.run(seedAlchemy);assert.equal(r.run('validateAlchemyPlan(plan).length'),0);
  r.run(`var beforeMemory=JSON.stringify(save);var before1=localStorage.getItem('mb_v95c');var key=MonsterProfiles.key(SAVE_KEY);var originalSet=localStorage.setItem;var writes=0;`);

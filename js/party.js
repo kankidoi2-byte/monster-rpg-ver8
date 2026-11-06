@@ -48,21 +48,25 @@ function rosterRecycleReward(ins){
   const mon=by(ins?.id);if(!mon)return null;
   return (isCharacterUnit(mon)?CHARACTER_RECYCLE_REWARDS:MONSTER_RECYCLE_REWARDS)[(mon.rarity.match(/★/g)||[]).length]||null;
 }
-function rosterRecycleError(ins){
+function instanceConsumeBlockReason(ins){
   if(!ins||!by(ins.id))return '対象の個体が見つかりません。';
   if(ins.locked)return 'ロック中です。';
-  if((save.party||[]).includes(ins.uid))return 'パーティー編成中です。';
   if(save.expeditions?.active?.some(e=>e.memberUids?.includes(ins.uid)))return '遠征中です。';
   if(rosterTutorialProtected(ins))return 'チュートリアルで使用する個体です。';
-  if(typeof selectedAlchemyCatalystUid!=='undefined'&&selectedAlchemyCatalystUid===ins.uid)return '錬成の触媒に選択中です。';
-  if(typeof alchemyBusy!=='undefined'&&alchemyBusy)return '錬成中です。';
   if((typeof currentEvolution!=='undefined'&&currentEvolution?.uid===ins.uid)||(typeof pendingEvolutions!=='undefined'&&pendingEvolutions.some(e=>e.uid===ins.uid)))return '進化の確認待ちです。';
   if(typeof normalVictoryPending==='function'&&normalVictoryPending())return '戦闘結果の保存待ちです。';
-  if(typeof postBattleContractBusy!=='undefined'&&postBattleContractBusy)return '契約の処理中です。';
   const battleActive=typeof battleFeedback!=='undefined'&&typeof enemy!=='undefined'&&enemy&&!battleFeedback.finished&&typeof partyBattle!=='undefined'&&partyBattle.some(e=>e.inst?.uid===ins.uid);
   if(battleActive)return '戦闘中です。';
   if(Object.values(save.mapStories||{}).some(story=>story?.resume?.participantUids?.includes(ins.uid)))return '物語の戦闘で使用中です。';
   if(save.instances.length<=1)return '最後の所持契約体は変換できません。';
+  return '';
+}
+function rosterRecycleError(ins){
+  const reason=instanceConsumeBlockReason(ins);if(reason)return reason;
+  if((save.party||[]).includes(ins.uid))return 'パーティー編成中です。';
+  if(typeof selectedAlchemyCatalystUid!=='undefined'&&selectedAlchemyCatalystUid===ins.uid)return '錬成の触媒に選択中です。';
+  if(typeof alchemyBusy!=='undefined'&&alchemyBusy)return '錬成中です。';
+  if(typeof postBattleContractBusy!=='undefined'&&postBattleContractBusy)return '契約の処理中です。';
   if(!rosterRecycleReward(ins))return '変換報酬が未設定です。';
   return '';
 }
