@@ -12,9 +12,10 @@ function alchemyRecoilDamage(actualDamage){
   return Math.max(1, Math.floor(Math.max(0, Number(actualDamage) || 0) * .25));
 }
 function resolvePlayerIncomingDamage(damage){
-  if(typeof absorbKokoroLinkDamage==='function')return absorbKokoroLinkDamage(activeInstance,damage);
+  if(typeof absorbKokoroLinkDamage==='function'){const result=absorbKokoroLinkDamage(activeInstance,damage);return typeof traitIncomingDamage==='function'?traitIncomingDamage(result):result;}
   const incoming=Math.max(0,Math.floor(Number(damage)||0));
-  return {incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,reductionLabel:null,evaded:false,barrierRemaining:0};
+  const result={incoming,afterReduction:incoming,hpDamage:incoming,absorbed:0,reduced:0,reductionLabel:null,evaded:false,barrierRemaining:0};
+  return typeof traitIncomingDamage==='function'?traitIncomingDamage(result):result;
 }
 function kokoroLinkDefenseMessage(result){
   if(!result)return '';
@@ -49,7 +50,7 @@ function playerKokoroLinkChance(baseChance){
 }
 function singleEnemyKokoroLinkKey(){return 'single';}
 function enemyKokoroLinkAttackMultiplier(targetKey){return typeof kokoroLinkEnemyAttackMultiplierFor==='function'?kokoroLinkEnemyAttackMultiplierFor(targetKey):1;}
-function enemyKokoroLinkSpeed(monster,targetKey,level){const base=monSpd(monster,null,level);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
+function enemyKokoroLinkSpeed(monster,targetKey,level){const base=monSpd(monster,null,level)*(typeof traitEnemySpeedMultiplier==='function'?traitEnemySpeedMultiplier(targetKey):1);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
 function enemyKokoroLinkMisses(targetKey,randomFn=Math.random){const accuracy=typeof kokoroLinkEnemyAccuracyFor==='function'?kokoroLinkEnemyAccuracyFor(targetKey):1;return randomFn()>=accuracy;}
 function enemyKokoroLinkStatusHtml(targetKey){
   const parts=[];const status=typeof kokoroLinkEnemyStatusText==='function'?kokoroLinkEnemyStatusText(targetKey):'';const foresight=typeof kokoroLinkForesightTextForTarget==='function'?kokoroLinkForesightTextForTarget(targetKey):'';
@@ -158,6 +159,10 @@ function tickSingleEnemyKokoroLinkEffects(){
   const messages=[];if(result.damage)messages.push(`🔥☠️ ${enemy.name}はリンク状態異常で${result.damage}ダメージ！`);if(result.expiredLabels.length&&eHp>0)messages.push(`✨ ${[...new Set(result.expiredLabels)].join('・')}の効果が切れた！`);return messages.join('<br>');
 }
 function applySleepToTarget(targetIsPlayer) {
+  if(targetIsPlayer&&typeof traitReceiveStatus==='function'){let message='';traitReceiveStatus('sleep',()=>{message=applySleepToTargetBase(true);});return message;}
+  return applySleepToTargetBase(targetIsPlayer);
+}
+function applySleepToTargetBase(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
   const current = targetIsPlayer ? pSleepTurns : eSleepTurns;
   if (current > 0) return `<br>💤 ${actor.name}はすでに眠っている！`;
@@ -176,6 +181,10 @@ function trySleepAction(isPlayer) {
   return {canAct:false, message};
 }
 function applyParalysisToTarget(targetIsPlayer) {
+  if(targetIsPlayer&&typeof traitReceiveStatus==='function'){let message='';traitReceiveStatus('paralysis',()=>{message=applyParalysisToTargetBase(true);});return message;}
+  return applyParalysisToTargetBase(targetIsPlayer);
+}
+function applyParalysisToTargetBase(targetIsPlayer) {
   if (targetIsPlayer) {
     pParalysisTurns = 3;
     return `<br>⚡ ${player.name}は麻痺状態になった！`;
@@ -196,6 +205,10 @@ function tryParalysisAction(isPlayer) {
   return {canAct:!stopped, message};
 }
 function applyConfusionToTarget(targetIsPlayer) {
+  if(targetIsPlayer&&typeof traitReceiveStatus==='function'){let message='';traitReceiveStatus('confusion',()=>{message=applyConfusionToTargetBase(true);});return message;}
+  return applyConfusionToTargetBase(targetIsPlayer);
+}
+function applyConfusionToTargetBase(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
   const current = targetIsPlayer ? pConfusionTurns : eConfusionTurns;
   if (current > 0) return `<br>🌀 ${actor.name}はすでにこんらんしている！`;
@@ -259,6 +272,10 @@ async function performAction(attacker, defender, move, isPlayer) {
   return {acted:true,animated:!!result?.animated};
 }
 function applyPoisonToTarget(targetIsPlayer) {
+  if(targetIsPlayer&&typeof traitReceiveStatus==='function'){let message='';traitReceiveStatus('poison',()=>{message=applyPoisonToTargetBase(true);});return message;}
+  return applyPoisonToTargetBase(targetIsPlayer);
+}
+function applyPoisonToTargetBase(targetIsPlayer) {
   const poison = BATTLE_STATUS_EFFECTS.poison;
   const actor = targetIsPlayer ? player : enemy;
   const wasPoisoned = targetIsPlayer ? pPoisonTurns > 0 : ePoisonTurns > 0;
@@ -303,6 +320,7 @@ function finishTurnWithPoison({skipPlayerEffects=false}={}) {
   const poisonMsg = applyPoisonEndTurn(skipPlayerEffects);
   if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();
   const linkStatusMsg=tickSingleEnemyKokoroLinkEffects();if(linkStatusMsg)logEl.innerHTML+=`<br>${linkStatusMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();
+  if(typeof traitEndTurn==='function')traitEndTurn({skipPlayerEffects});
   if (eHp <= 0) { win(); return; }
   if(!skipPlayerEffects&&pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();}
   if (pHp <= 0) {
@@ -327,7 +345,7 @@ async function turn(i) {
   const enemyAction=nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);
   const enemyMove = enemyAction.move;
   const prioritized=typeof consumeKokoroLinkActionPriority==='function'&&consumeKokoroLinkActionPriority(activeInstance);
-  const pSpeed = prioritized?Infinity:monSpd(player, activeInstance);
+  const pSpeed = prioritized?Infinity:(typeof traitPlayerSpeed==='function'?traitPlayerSpeed(monSpd(player, activeInstance)):monSpd(player, activeInstance));
   const delayed=typeof consumeKokoroLinkEnemyActionDelay==='function'&&consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
   const eSpeed = delayed?-Infinity:enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey(),activeHuntRequest?.enemyLevel);
   const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
@@ -435,7 +453,7 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
   const {actor,target}=tacticalCombatants(actorIsPlayer,actorEntry,targetEntry),messages=[];
   const heal=(amount,label)=>{
     const before=actor.hp;
-    actor.hp+=adjustedBattleHealing(Math.max(0,Math.floor(amount)));
+    actor.hp+=adjustedBattleHealing(Math.max(0,Math.floor(typeof traitHealing==='function'?traitHealing(amount,actorIsPlayer):amount)));
     if(typeof battleHpResult==='function')battleHpResult(actor.visualId,before,actor.hp,{label});
     messages.push(`💚 ${actor.name}はHPを${actor.hp-before}${label}した！`);
   };
@@ -477,6 +495,7 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
       const chance=actorIsPlayer?playerKokoroLinkChance(baseChance):{chance:baseChance,boosted:false};
       if(chance.boosted)messages.push('⭐ 星運上昇で成功率アップ！');
       if(Math.random()<chance.chance){
+        const applyStatus=()=>{
         if(kind==='poison'){
           target.status='poison';target.poison=BATTLE_STATUS_EFFECTS.poison.duration;
           if(target.entry)target.entry.poisonSourceIsPlayer=actorIsPlayer;
@@ -485,6 +504,8 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
           messages.push(`☠️ ${target.name}は毒状態になった！`);
         }else if(kind==='paralysis'){target.paralysis=3;messages.push(`⚡ ${target.name}は麻痺状態になった！`);}
         else if(kind==='confusion'){target.confusion=isSkill110Move(move)?2+Math.floor(Math.random()*2):2;messages.push(`🌀 ${target.name}はこんらんした！`);}
+        };
+        if(target.isPlayer&&typeof traitReceiveStatus==='function')traitReceiveStatus(kind,applyStatus,actorEntry);else applyStatus();
       }
     }
   }
@@ -528,7 +549,7 @@ function skill110IncomingDamage(damage,ignoreDefense,guardReduction=0,attackStat
   const link=typeof kokoroLinkEffectForInstance==='function'?kokoroLinkEffectForInstance(activeInstance):null;
   if(!attackState.initialized){
     attackState.initialized=true;
-    attackState.reduction=ignoreDefense?0:guardReduction;
+    attackState.reduction=ignoreDefense?0:(typeof traitGuardReduction==='function'?traitGuardReduction(guardReduction):guardReduction);
     attackState.reductionLabel=guardReduction?'防御':null;
     const ability=link?.powerAbility;
     if(ability?.id==='evasion'&&ability.charges>0){
@@ -549,7 +570,8 @@ function skill110IncomingDamage(damage,ignoreDefense,guardReduction=0,attackStat
   const afterReduction=Math.max(1,Math.floor(damage*(1-attackState.reduction))),reduced=Math.max(0,incoming-afterReduction);
   const absorbed=!ignoreDefense&&link?Math.min(afterReduction,Math.max(0,link.barrierRemaining||0)):0;
   if(absorbed)link.barrierRemaining-=absorbed;
-  return {incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,reductionLabel:attackState.reductionLabel,evaded:false,barrierRemaining:link?.barrierRemaining||0};
+  const result={incoming,afterReduction,hpDamage:afterReduction-absorbed,absorbed,reduced,reductionLabel:attackState.reductionLabel,evaded:false,barrierRemaining:link?.barrierRemaining||0};
+  return typeof traitIncomingDamage==='function'?traitIncomingDamage(result):result;
 }
 function legacyAttackDefense(damage,defenderIsPlayer,guard,shield,penetration=0,attackState={}){
   const multiplier=kokoroLinkPenetratedMultiplier(1-Math.max(skillGuardReduction(guard),shield?.5:0),penetration);
@@ -557,6 +579,9 @@ function legacyAttackDefense(damage,defenderIsPlayer,guard,shield,penetration=0,
   return {hpDamage:Math.max(1,Math.floor(damage*multiplier)),absorbed:0,barrierRemaining:0};
 }
 async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEntry=null){
+  return typeof runTraitAttack==='function'?runTraitAttack(m=>performSkill110AttackBase(m,actorIsPlayer,actorEntry,targetEntry),move,actorIsPlayer,actorEntry,targetEntry):performSkill110AttackBase(move,actorIsPlayer,actorEntry,targetEntry);
+}
+async function performSkill110AttackBase(move,actorIsPlayer,actorEntry=null,targetEntry=null){
   const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const {actor,target}=tacticalCombatants(actorIsPlayer,actorEntry,targetEntry);
   actor.attack=actor.attack;target.attack=target.attack;
@@ -585,7 +610,7 @@ async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEn
       const typeMultiplier=kokoroLinkPenetratedMultiplier(r,penetration.rate);
       // Power is total power, so multiple hits never multiply the move's budget
       // or the random bonus. Guard/focus are snapshotted once for the entire move.
-      const statMultiplier=battleStatDamageMultiplier(actor.mon,actor.level,defender,target.level);
+      const statMultiplier=battleStatDamageMultiplier(actor.mon,actor.level,defender,target.level)*(typeof traitDamageMultiplier==='function'?traitDamageMultiplier(actorIsPlayer,move,actorEntry,targetEntry):1);
       const rawTotal=(resolvedPower*boost.multiplier*attack*typeMultiplier+Math.random()*9)*charge*conditional*difficulty*huntMapAttackMultiplier(moveTypes(move))*statMultiplier;
       const total=Math.max(1,Math.floor(rawTotal*defense));
       const hits=Math.max(1,Math.floor(config.hits||1));
@@ -613,6 +638,9 @@ async function performSkill110Attack(move,actorIsPlayer,actorEntry=null,targetEn
   return {animated,actualDamage};
 }
 async function doAttack(attacker, defender, mv, isPlayer) {
+  return typeof runTraitAttack==='function'?runTraitAttack(m=>doAttackBase(attacker,defender,m,isPlayer),mv,isPlayer):doAttackBase(attacker,defender,mv,isPlayer);
+}
+async function doAttackBase(attacker, defender, mv, isPlayer) {
   const storyToken=typeof mapStoryBattleToken==='function'?mapStoryBattleToken():null;
   const adoptedMove=skill110BattleMove(mv);
   if(adoptedMove)return performSkill110Attack(adoptedMove,isPlayer);
@@ -634,7 +662,8 @@ async function doAttack(attacker, defender, mv, isPlayer) {
     logEl.innerHTML = `🛡️ ${attacker.name}は身を守った！`;if(typeof captureBattleLog==='function')captureBattleLog(); update(); return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   if (effect === 'heal') {
-    const healing = normalBattleHealing(isPlayer ? playerMaxHp() : enemyMaxHp());
+    const baseHealing=normalBattleHealing(isPlayer ? playerMaxHp() : enemyMaxHp());
+    const healing=typeof traitHealing==='function'?traitHealing(baseHealing,isPlayer):baseHealing;
     const before = isPlayer ? pHp : eHp;
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);
@@ -688,7 +717,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
   const playerLevel = activeInstance?.level;
   const enemyLevel = activeHuntRequest?.enemyLevel;
-  const statMultiplier = battleStatDamageMultiplier(attacker, isPlayer ? playerLevel : enemyLevel, defender, isPlayer ? enemyLevel : playerLevel);
+  const statMultiplier = battleStatDamageMultiplier(attacker, isPlayer ? playerLevel : enemyLevel, defender, isPlayer ? enemyLevel : playerLevel)*(typeof traitDamageMultiplier==='function'?traitDamageMultiplier(isPlayer,mv):1);
   const rawDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
   const linkBarrier = legacyAttackDefense(rawDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
   const dmg = linkBarrier.hpDamage;
@@ -722,7 +751,7 @@ async function doAttack(attacker, defender, mv, isPlayer) {
   if (r > 1) msg += `<br>🔥 効果はバツグン！（属性倍率×${Number(r.toFixed(2))}）`;
   if (r < 1) msg += `<br>💧 効果はいまひとつ……（属性倍率×${Number(r.toFixed(2))}）`;
   if (effect === 'drain') {
-    const healing = adjustedBattleHealing(Math.floor(dmg/2));
+    const healing = adjustedBattleHealing(typeof traitHealing==='function'?traitHealing(Math.floor(dmg/2),isPlayer):Math.floor(dmg/2));
     const before = isPlayer ? pHp : eHp;
     if (isPlayer) pHp = Math.min(playerMaxHp(), pHp+healing);
     else eHp = Math.min(enemyMaxHp(), eHp+healing);

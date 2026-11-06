@@ -11,7 +11,7 @@ for(const item of [...data.items,...data.done]){
  if(item.id){assert(data.stages.some(s=>s.id===item.stage));assert([undefined,'main','side'].includes(item.kind));assert(Array.isArray(item.points));}
 }
 for(const path of source.matchAll(/['"](images\/[^'"]+)['"]/g))assert(fs.existsSync(path[1]),path[1]);
-assert.deepEqual(Array.from(data.items.filter(i=>i.wip),i=>i.id).sort(),['lore','portrait']);
+assert.deepEqual(Array.from(data.items.filter(i=>i.wip),i=>i.id).sort(),['lore','portrait','traits']);
 assert.equal(data.done.find(i=>i.id==='status').note,'追加');
 assert(!data.items.some(i=>i.id==='status'));
 assert.equal(data.done.find(i=>i.id==='stat4').note,'見直し');

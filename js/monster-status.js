@@ -11,6 +11,11 @@ function statusMiniStats(ins){
   const stats=monsterStatusValues(ins);
   return '<div class="status-mini">'+Object.keys(STATUS_LABELS).map(k=>`<div><small style="color:${STATUS_COLORS[k]}">${STATUS_LABELS[k]}</small><b>${statusNumber(stats[k])}</b></div>`).join('')+'</div>';
 }
+function monsterStatusTraitsHtml(ins){
+  const traits=typeof traitsForSpecies==='function'?traitsForSpecies(ins):[];
+  if(!traits.length)return '';
+  return `<section class="status-card status-traits"><h3>特性</h3>${traits.map(t=>`<div class="status-trait"><div><b>${rosterEscape(t.name)}</b>${t.remnant?'<small>名残</small>':''}</div><p>${rosterEscape(t.description)}</p></div>`).join('')}</section>`;
+}
 function monsterStatusScale(){
   const max={hp:1,attack:1,defense:1,speed:1};
   for(const mon of M){const values=monsterStatusValues({id:mon.id,level:MAX_LEVEL});for(const k of Object.keys(max))max[k]=Math.max(max[k],values[k]);}
@@ -69,6 +74,7 @@ function renderMonsterStatus(){
   root.innerHTML=`<header><button id="monsterStatusBack" onclick="closeMonsterStatus()">‹ 一覧へ</button><h1>ステータス</h1><div class="status-nav"><button data-status-nav="prev" aria-label="前の仲間" onclick="moveMonsterStatus(-1)">‹</button><button data-status-nav="next" aria-label="次の仲間" onclick="moveMonsterStatus(1)">›</button></div></header>
   <div class="status-scroll"><section class="status-hero"><div class="status-image">${vis(mon)}<div class="status-stars">${rosterEscape(mon.rarity)}</div></div><div class="status-hero-body"><div class="status-name-row"><h2>${rosterEscape(mon.name)}</h2><div class="status-level">Lv.<b>${clampLevel(ins.level)}</b></div></div><div class="status-chips"><span class="status-kind">${isCharacterUnit(mon)?'キャラクター':'モンスター'}</span>${typesHtml(mon.types)}</div><div><div class="status-exp-head"><span>EXP</span><span data-status-exp>${maxed?'MAX':statusNumber(ins.exp||0)+' / '+statusNumber(needExp(ins.level))}</span></div><div class="status-exp-bar"><i style="width:${maxed?100:Math.max(0,Math.min(100,(ins.exp||0)/needExp(ins.level)*100))}%"></i></div></div></div></section>
   <section class="status-card"><h3>能力</h3>${Object.keys(STATUS_LABELS).map(k=>`<div class="status-stat" data-status-stat="${k}"><span>${STATUS_LABELS[k]}</span><div class="status-bar"><i style="width:${Math.max(2,Math.min(100,values[k]/scale[k]*100))}%;background:${STATUS_COLORS[k]}"></i></div><b>${statusNumber(values[k])}</b></div>`).join('')}${modifiers.length?`<div class="status-alchemy"><span>錬成の補正</span><b>${modifiers.join(' / ')}</b></div>`:''}</section>
+  ${monsterStatusTraitsHtml(ins)}
   <section class="status-card"><div class="status-skill-heading"><h3>装備している技</h3><span>コスト ${equippedSkillCost(ins)} / ${skillCostLimitFor(mon,ins)}</span></div>${skills.map(sk=>`<div class="status-skill"><span class="status-dot ${rosterEscape(skillTypes(sk)[0]||'normal')}">●</span><span class="status-skill-name">${rosterEscape(sk.name)}</span><small>${sk.power>0?'威力 '+sk.power:'補助'}</small><em>C${sk.cost}</em></div>`).join('')||'<p>技が未装備です。</p>'}<button class="status-dark" onclick="editMonsterStatusSkills()">技を変更する</button></section></div>`;
   const party=document.getElementById('party');if(party)party.inert=true;
   if(focus)root.querySelector(`[data-status-nav="${focus}"]`)?.focus({preventScroll:true});

@@ -515,7 +515,7 @@ function update() {
   pHp = Math.max(0,pHp); eHp = Math.max(0,eHp);
   const pm = playerMaxHp(), em = enemyMaxHp();
   const lv = activeInstance?.level || 1, xp = activeInstance?.exp || 0, nd = needExp(lv);
-  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${monSpd(player, activeInstance)}`;
+  document.getElementById('pInfo').innerHTML = `Lv.${lv} ${typesHtml(player.types)} / 素早さ:${Math.round(typeof traitPlayerSpeed==='function'?traitPlayerSpeed(monSpd(player, activeInstance)):monSpd(player, activeInstance))}`;
   const enemyLevel = activeHuntRequest?.enemyLevel || 1;
   document.getElementById('eInfo').innerHTML = `Lv.${enemyLevel} ${typesHtml(enemy.types)} / 素早さ:${enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey())}`;
   const pBar = document.getElementById('pHpBar');

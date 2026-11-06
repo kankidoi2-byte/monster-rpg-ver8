@@ -37,8 +37,10 @@ function itemCount(id){
   ensureContractScrollItem();
   return save.items[id] || 0;
 }
-function rollAlchemyMaterialDrop(randomFn=Math.random){
-  let roll = randomFn();
+function rollAlchemyMaterialDrop(randomFn=Math.random,bonus=0){
+  const total=ALCHEMY_MATERIAL_DROPS.reduce((sum,entry)=>sum+entry.rate,0);
+  const multiplier=total>0?Math.min(1,total+Math.max(0,bonus))/total:1;
+  let roll = randomFn()/multiplier;
   for(const entry of ALCHEMY_MATERIAL_DROPS){
     if(roll < entry.rate) return entry.id;
     roll -= entry.rate;
@@ -46,7 +48,8 @@ function rollAlchemyMaterialDrop(randomFn=Math.random){
   return null;
 }
 function grantAlchemyMaterialReward(randomFn=Math.random){
-  const itemId = rollAlchemyMaterialDrop(randomFn);
+  const bonus=typeof partyTraitBonus==='function'?partyTraitBonus(['appraiser','scavenger']):0;
+  const itemId = rollAlchemyMaterialDrop(randomFn,bonus);
   if(!itemId) return null;
   const item = ITEM_BY_ID[itemId];
   if(!item?.alchemyMaterial) return null;
@@ -148,7 +151,7 @@ function useExpItemOnInstance(itemId, uidValue){
   let msg = `${it.icon || '📦'} ${it.name}を${mon.name}に与えた！\nEXP +${it.expAmount}`;
   if(!commitSaveMutation(()=>{
     save.items[itemId]--;
-    ins.exp = (ins.exp||0) + it.expAmount;
+    ins.exp = (ins.exp||0) + (typeof traitExperienceReward==='function'?traitExperienceReward(ins,it.expAmount):it.expAmount);
     while(!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)){
       ins.exp -= needExp(ins.level);
       ins.level++;
@@ -284,7 +287,8 @@ function postBattleContractStage(target,itemId,scope,guaranteed=false){
   const identity=saveTransactionIdentity();
   if(postBattleContractRetry?.target===target&&postBattleContractRetry.itemId===itemId&&postBattleContractRetry.scope===scope&&postBattleContractRetry.identity===identity)return postBattleContractRetry.stage;
   const it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;
-  const rate=Math.min(.95,(target.catchRate??.25)*(it.catchMultiplier||1));
+  const baseRate=Math.min(.95,(target.catchRate??.25)*(it.catchMultiplier||1));
+  const rate=typeof traitContractRate==='function'?traitContractRate(baseRate):baseRate;
   const stage=guaranteed?3:contractAnimationStage(Math.random(),rate);
   postBattleContractRetry={target,itemId,scope,identity,stage};return stage;
 }

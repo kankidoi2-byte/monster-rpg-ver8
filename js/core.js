@@ -423,7 +423,9 @@ function healingAtNewMaxHp(amount, mon, level, currentMaxHp, legacyHpModifier=1)
 }
 function instanceStatModifier(ins, stat){
   const value = Number(ins?.alchemy?.statModifiers?.[stat]);
-  return Number.isFinite(value) && value > 0 ? value : 1;
+  const modifier = Number.isFinite(value) && value > 0 ? value : 1;
+  const amplification=typeof traitValue==='function'?traitValue(ins,'alchemy_core',1):1;
+  return Math.max(.01,1+(modifier-1)*amplification);
 }
 function instanceMaxHp(ins){
   const mon = by(ins?.id);

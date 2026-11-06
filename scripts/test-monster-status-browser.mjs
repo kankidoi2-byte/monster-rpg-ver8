@@ -32,6 +32,9 @@ try{
   await page.locator('.roster-status-open').click();await page.locator('#monsterStatus').waitFor();
   assert(await page.locator('#monsterStatus h2').innerText()==='フレイガル');
   assert.equal(await page.locator('.status-alchemy').count(),0);
+  assert.match(await page.locator('.status-traits').innerText(),/燃える闘志/);
+  assert(!/[0-9０-９%％×]/.test(await page.locator('.status-traits').innerText()));
+  await page.screenshot({path:out+'/traits-'+viewport.width+'.png'});
   assert.equal(await page.locator('#monsterStatus h1').evaluate(el=>getComputedStyle(el).webkitTextFillColor),'rgb(28, 34, 48)');
   await page.evaluate(()=>{save.contractor.pendingRankUps=[{fromRank:1,toRank:2,unlockedTitleIds:[]}];presentNextContractorRankUp();});
   assert(await page.locator('#contractorRankUpOverlay.hidden').count());
@@ -43,6 +46,7 @@ try{
   await page.locator('[data-status-nav="prev"]').click();assert.equal(await page.evaluate(()=>monsterStatusUi.uid),fixture.first);
   await page.evaluate(uid=>{monsterStatusUi.uid=uid;renderMonsterStatus();},fixture.max);assert.equal(await page.locator('[data-status-exp]').innerText(),'MAX');
   assert.equal(await page.locator('.status-exp-bar i').evaluate(el=>el.style.width),'100%');
+  assert.equal(await page.locator('.status-traits').count(),0);
   await page.screenshot({path:out+'/max-'+viewport.width+'.png'});
   const geometry=await page.locator('#monsterStatus').evaluate(root=>{const hero=root.querySelector('.status-hero'),name=root.querySelector('h2'),level=root.querySelector('.status-level'),scroll=root.querySelector('.status-scroll');return {hero:hero.getBoundingClientRect().height,name:name.getBoundingClientRect().height,level:level.getBoundingClientRect().height,overflow:scroll.scrollHeight>scroll.clientHeight,width:document.documentElement.scrollWidth<=innerWidth};});
   assert(geometry.hero>=330&&geometry.name>20&&geometry.level>20&&geometry.overflow&&geometry.width,JSON.stringify(geometry));

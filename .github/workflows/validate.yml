@@ -247,6 +247,7 @@ jobs:
           export NODE_PATH="$RUNNER_TEMP/dom-deps/node_modules"
           # Explicit allowlist: test-map-story-dom.mjs is outside request 07 (story hold).
           tests=(
+            test-traits-integration.mjs
             test-battle-idle-lifecycle-dom.mjs
             test-battle-idle-media-dom.mjs
             test-battle-idle-multi-dom.mjs
