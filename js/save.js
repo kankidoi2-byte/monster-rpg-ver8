@@ -509,9 +509,17 @@ function loadSave(){
   protectedPrimaryRaw=null;
   rejectedPrimaryRaw=null;
   primaryReadFailed=false;
+  // An interrupted explicit replacement must not silently resume autosaving.
+  // The archive retains both primary/recovery pairs for read-only export.
+  let replacementPending=false;
+  lastSaveError=null;
+  try{
+    const archive=JSON.parse(safeStorageGet(`${SAVE_KEY}_soulContractRecovery_v1_archived`));
+    replacementPending=Boolean(lastSaveError||archive?.pending||archive&&(archive.version!==1||!Array.isArray(archive.records)));
+  }catch(_error){replacementPending=true;}
   lastSaveError=null;
   const raw=safeStorageGet(SAVE_KEY);
-  if(lastSaveError){
+  if(lastSaveError||replacementPending){
     primaryReadFailed=true;
     const message='セーブを読み取れなかったため保存を停止しました。再読み込みしてください。セーブ管理から元データを書き出せます。';
     saveRecoveryReport.push(message);
@@ -730,8 +738,16 @@ function refreshReplacementRecoveryStatus(){
 function exportReplacementRecovery(kind='all'){
   try{
     const raw=safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY);
+    if(kind==='all'){
+      const archive=typeof readCharacterGachaRecoveryArchive==='function'?readCharacterGachaRecoveryArchive():null;
+      if(archive?.records.length||archive?.pending){
+        const record=raw?JSON.parse(raw):{};
+        downloadTextFile('monster-battle-replacement-recovery.json',JSON.stringify({...record,soulContractArchive:archive}));
+        replacementRecoveryExportedRaw=raw;return true;
+      }
+      if(raw){downloadTextFile('monster-battle-replacement-recovery.json',raw);replacementRecoveryExportedRaw=raw;return true;}
+    }
     if(!raw){saveTransactionNotice('保管された読込・復旧記録はありません。');return false;}
-    if(kind==='all'){downloadTextFile('monster-battle-replacement-recovery.json',raw);replacementRecoveryExportedRaw=raw;return true;}
     if(!['before','after','backupBefore'].includes(kind))return false;
     const {record}=readReplacementRecovery(),candidate=record[kind];
     if(!candidate){saveTransactionNotice('この候補のセーブデータはありません。');return false;}
@@ -790,20 +806,37 @@ function exportSaveData(){
   }
   /* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
+function replaceSaveExplicitly(replacement,report){
+  if(primaryReadFailed||protectedPrimaryRaw!==null)return false;
+  const commit=()=>{
+    const snapshot=captureSaveTransaction();
+    save=replacement;saveRecoveryReport=report;
+    let saved=false;
+    try{saved=saveGame({requireBackup:true});}
+    catch(error){lastSaveError=error;}
+    // Storage can have committed before a profile/UI notification throws.
+    if(!saved){
+      lastSaveError=null;
+      saved=safeStorageGet(SAVE_KEY)===JSON.stringify(save)&&!lastSaveError;
+    }
+    if(!saved)rollbackSaveTransaction(snapshot);
+    return saved;
+  };
+  return typeof reconcileCharacterGachaRecoveryAfterReplacement==='function'
+    ?reconcileCharacterGachaRecoveryAfterReplacement(replacement,commit):commit();
+}
 async function importSaveData(input){
   const file=input?.files?.[0];if(!file)return;
   const identity=saveTransactionIdentity();
-  let snapshot=null,persisted=false;
+  let persisted=false;
   try{
     const raw=await file.text();const report=[];const imported=parseAndPrepareSave(raw,report);
     if(identity!==saveTransactionIdentity())throw new Error('読み込み中にアカウントが変わったため中止しました。');
     if(!confirm(`セーブデータを読み込みますか？\n個体 ${imported.instances.length}体／コイン ${imported.coins}\n現在のデータはバックアップされます。`))return;
     if(identity!==saveTransactionIdentity())throw new Error('アカウントが変わったため中止しました。');
-    snapshot=captureSaveTransaction();
-    save=imported;saveRecoveryReport=report.concat('ファイルからセーブデータを読込み');
-    if(!saveGame({requireBackup:true}))throw lastSaveError||new Error('保存できませんでした。');
+    if(!await replaceSaveExplicitly(imported,report.concat('ファイルからセーブデータを読込み')))return;
     persisted=true;location.reload();
-  }catch(error){if(snapshot&&!persisted)rollbackSaveTransaction(snapshot);saveTransactionNotice(persisted?'読込結果は保存済みです。画面を再読み込みしてください。':`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
+  }catch(error){saveTransactionNotice(persisted?'読込結果は保存済みです。画面を再読み込みしてください。':`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
 }
 async function copySaveText(kind='current'){
   const raw=kind==='corrupt'?safeStorageGet(SAVE_CORRUPT_KEY):(safeStorageGet(SAVE_KEY)||JSON.stringify(save));
@@ -812,20 +845,14 @@ async function copySaveText(kind='current'){
 }
 function restoreLastKnownGood(){
   const identity=saveTransactionIdentity(),backup=safeStorageGet(SAVE_BACKUP_KEY);if(!backup){alert('復旧できるバックアップがありません。');return;}
-  let snapshot=null,persisted=false,current=null;
   try{
     const report=[];const restored=parseAndPrepareSave(backup,report);
     if(!confirm('直前の正常なバックアップへ戻しますか？'))return;
     if(identity!==saveTransactionIdentity())throw new Error('アカウントが変わったため中止しました。');
-    snapshot=captureSaveTransaction();current=safeStorageGet(SAVE_KEY);
-    save=restored;saveRecoveryReport=report.concat('lastKnownGoodから手動復旧');
-    if(!saveGame({requireBackup:true}))throw lastSaveError||new Error('保存できませんでした。');
-    persisted=true;location.reload();
-  }catch(error){
-    if(snapshot&&!persisted)rollbackSaveTransaction(snapshot);
-    // Both original candidates remain in the durable recovery record; never roll disk backwards.
-    saveTransactionNotice(persisted?'復旧結果は保存済みです。画面を再読み込みしてください。':`バックアップを復旧できませんでした。\n${error.message}`);
-  }
+    const finish=saved=>{if(saved){try{location.reload();}catch(_error){saveTransactionNotice('復旧結果は保存済みです。画面を再読み込みしてください。');}}return saved;};
+    const result=replaceSaveExplicitly(restored,report.concat('lastKnownGoodから手動復旧'));
+    return result?.then?result.then(finish):finish(result);
+  }catch(error){saveTransactionNotice(`バックアップを復旧できませんでした。\n${error.message}`);return false;}
 }
 function showSaveRecoveryReport(){alert(saveRecoveryReport.length?saveRecoveryReport.join('\n'):'修復・移行の記録はありません。');}
 
@@ -949,8 +976,8 @@ function ensureContractScrollItem(){
 function resetSave() {
   if(primaryReadFailed||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
   if (confirm('セーブデータを削除しますか？\n序章の最初から再スタートします。')) {
-    const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
-    safeStorageRemove(SAVE_KEY);
-    location.reload();
+    const finish=saved=>{if(saved)location.reload();return saved;};
+    const result=replaceSaveExplicitly(initSave(),[]);
+    return result?.then?result.then(finish):finish(result);
   }
 }

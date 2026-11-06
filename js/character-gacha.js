@@ -56,6 +56,88 @@ function writeCharacterGachaRecovery(raw){
   const stored=readCharacterGachaStorage(key);
   return stored.ok&&stored.raw===raw;
 }
+// Explicit replacements alone may establish a new contract baseline. The archive
+// is append-only evidence, including malformed records, and is profile scoped.
+function characterGachaRecoveryArchiveKey(){return `${characterGachaRecoveryKey()}_archived`;}
+function readCharacterGachaRecoveryArchive(){
+  const stored=readCharacterGachaStorage(characterGachaRecoveryArchiveKey());
+  if(!stored.ok)throw new Error('契約の退避記録を読み取れません。');
+  if(stored.raw===null)return {version:1,records:[]};
+  const archive=JSON.parse(stored.raw);
+  if(archive?.version!==1||!Array.isArray(archive.records))throw new Error('契約の退避記録を確認できません。');
+  return archive;
+}
+function reconcileCharacterGachaRecoveryAfterReplacement(newSave,replace){
+  return withCharacterGachaLock(()=>{
+    if(primaryReadFailed||protectedPrimaryRaw!==null)return false;
+    const previous=readCharacterGachaStorage(characterGachaRecoveryKey());
+    if(!previous.ok)throw new Error('契約の復旧記録を読み取れません。');
+    let status=null;
+    try{status=JSON.parse(previous.raw)?.status;}catch(_error){}
+    if(['prepared','failed'].includes(status)){
+      if(!confirm('未確定の契約記録があります。書き出してから続けますか？'))return false;
+      downloadTextFile('monster-battle-soul-contract-before-replacement.json',previous.raw);
+    }
+    const archive=readCharacterGachaRecoveryArchive();
+    if(previous.raw!==null){
+      archive.records.push({archivedAt:new Date().toISOString(),raw:previous.raw});
+      const raw=JSON.stringify(archive),key=characterGachaRecoveryArchiveKey();
+      try{localStorage.setItem(key,raw);}catch(_error){}
+      const stored=readCharacterGachaStorage(key);
+      if(!stored.ok||stored.raw!==raw)throw new Error('契約の復旧記録を退避できませんでした。');
+    }
+    const before=readCharacterGachaStorage(characterGachaStorageKey());
+    if(!before.ok)throw new Error('セーブを読み取れません。');
+    let changed=false,afterRaw=null,journaled=false;
+    const persistArchive=()=>{
+      const raw=JSON.stringify(archive),key=characterGachaRecoveryArchiveKey();
+      try{localStorage.setItem(key,raw);}catch(_error){}
+      const stored=readCharacterGachaStorage(key);
+      return stored.ok&&stored.raw===raw;
+    };
+    const originalStorageSet=safeStorageSet;
+    safeStorageSet=(key,raw)=>{
+      if(key===SAVE_KEY){
+        const snapshot=JSON.parse(raw);
+        afterRaw=raw;
+        const next=snapshot.soulContractAppliedId?JSON.stringify({version:1,id:snapshot.soulContractAppliedId,
+          status:'baseline',before:snapshot,after:snapshot,previous:null}):null;
+        // A durable marker also protects a restart if both the primary write
+        // and restoration of the old record fail, or the tab closes mid-write.
+        archive.pending={beforePrimary:before.raw,afterPrimary:raw,beforeRecovery:previous.raw,afterRecovery:next};
+        if(!persistArchive())return false;
+        journaled=true;changed=true;
+        if(!writeCharacterGachaRecovery(next))return false;
+      }
+      return originalStorageSet(key,raw);
+    };
+    let result=false;
+    try{result=replace(newSave);}
+    finally{
+      safeStorageSet=originalStorageSet;
+      if(changed&&!result){
+        const primary=readCharacterGachaStorage(characterGachaStorageKey());
+        // Notification hooks may throw after a successful primary write.
+        if(primary.ok&&afterRaw!==null&&primary.raw===afterRaw)result=true;
+        else if(!primary.ok||primary.raw!==before.raw||!writeCharacterGachaRecovery(previous.raw)){
+          // Never continue saving after an uncertain rollback. Both candidates
+          // remain available in the replacement journal and the archive.
+          primaryReadFailed=true;
+          saveTransactionNotice('契約の復旧記録を戻せなかったため保存を停止しました。セーブ管理から記録を書き出してください。');
+        }
+      }
+      if(journaled&&!primaryReadFailed){
+        delete archive.pending;
+        if(!persistArchive()){
+          primaryReadFailed=true;
+          saveTransactionNotice('置換記録の確認を完了できなかったため保存を停止しました。セーブ管理から記録を書き出してください。');
+          result=false;
+        }
+      }
+    }
+    return result;
+  },false);
+}
 function characterGachaRecoveryRecord(raw){
   if(raw===null)return null;
   try{

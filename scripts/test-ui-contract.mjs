@@ -38,7 +38,7 @@ expect(!index.includes('Ver8.0 Claude'), 'obsolete development attribution must 
 expect(save.includes(`const SAVE_KEY = '${saveKey}'`), `primary save key must keep ${saveKey}`);
 expect(save.includes('safeStorageGet(SAVE_KEY)'), `save loader must use protected ${saveKey} access`);
 expect(save.includes('safeStorageSet(SAVE_KEY,raw)'), `save writer must use protected ${saveKey} access`);
-expect(save.includes('safeStorageRemove(SAVE_KEY)'), `save reset must use protected ${saveKey} access`);
+expect(save.includes('replaceSaveExplicitly(initSave(),[])'), `save reset must use the protected explicit replacement path for ${saveKey}`);
 
 const starterIds = ['elna_beginner', 'freigal', 'aquaron', 'grassbeat', 'volteck'];
 starterIds.forEach(id => expect(data.includes(`id:'${id}'`) || data.includes(`id: '${id}'`), `starter id is missing: ${id}`));
