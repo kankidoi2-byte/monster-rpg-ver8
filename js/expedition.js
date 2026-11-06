@@ -78,14 +78,14 @@ function normalizeExpeditionSave(){
   if(!save.expeditions||typeof save.expeditions!=='object')save.expeditions={completedCount:0,active:[]};
   save.expeditions.completedCount=Math.max(0,Math.floor(Number(save.expeditions.completedCount)||0));
   if(!Array.isArray(save.expeditions.active))save.expeditions.active=[];
-  save.expeditions.active=save.expeditions.active.filter(entry=>entry&&Array.isArray(entry.memberUids)&&entry.memberUids.length>=1&&entry.memberUids.length<=3);
-  save.expeditions.active.forEach(entry=>{
-    const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId];
-    if(!map||!distance)return;
-    entry.requiredWins=distance.wins;
-    entry.progress=Math.min(entry.requiredWins,Math.max(0,Math.floor(Number(entry.progress)||0)));
-    entry.status=entry.status==='complete'?'complete':'active';
+  save.expeditions.active=save.expeditions.active.filter(entry=>{
+    const map=MAPS.find(x=>x.id===entry?.mapId),distance=EXPEDITION_DISTANCES[entry?.distanceId];
+    const valid=entry&&map&&distance&&Array.isArray(entry.memberUids)&&entry.memberUids.length>=1&&entry.memberUids.length<=3;
+    const repaired=valid?validateExpeditionEntry(entry):null;
+    if(!repaired){quarantineExpeditionEntry(save,entry,saveRecoveryReport);return false;}
+    Object.assign(entry,repaired);
     if(!isValidExpeditionSuitability(entry.suitability))entry.suitability=expeditionSuitability(entry.memberUids,map);
+    return true;
   });
 }
 function expeditionUnlockedSlots(){const n=save.expeditions?.completedCount||0;return n>=15?3:n>=5?2:1;}
@@ -193,9 +193,22 @@ function grantExpeditionReward(entry,reward){
 }
 function claimExpedition(id){
   const index=save.expeditions.active.findIndex(x=>x.id===id),entry=save.expeditions.active[index];
-  if(!entry||entry.status!=='complete'||!entry.reward)return;
-  const notice=`遠征報酬：コイン${entry.reward.coins}・EXP ${entry.reward.exp}`;
+  if(!entry||entry.status!=='complete')return;
+  const repaired=validateExpeditionEntry(entry);
+  if(!repaired){
+    if(!commitSaveMutation(()=>{
+      quarantineExpeditionEntry(save,entry,saveRecoveryReport);
+      save.expeditions.active.splice(index,1);
+    },{requireReadable:true}))return;
+    showCommittedSaveResult(()=>{
+      renderExpedition();renderParty();if(typeof renderPartySetup==='function')renderPartySetup();
+      if(typeof showUiNotice==='function')showUiNotice('遠征記録が壊れていたため、仲間を戻しました');
+    });
+    return;
+  }
+  const notice=`遠征報酬：コイン${repaired.reward.coins}・EXP ${repaired.reward.exp}`;
   if(!commitSaveMutation(()=>{
+    Object.assign(entry,repaired);
     grantExpeditionReward(entry,entry.reward);
     if(typeof grantContractorExpeditionComplete==='function')grantContractorExpeditionComplete(entry);
     save.expeditions.active.splice(index,1);save.expeditions.completedCount++;
