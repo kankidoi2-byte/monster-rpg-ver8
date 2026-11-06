@@ -34,7 +34,7 @@
     switchTo(n){
       if(!available||![1,2].includes(n)||n===slot)return false;
       if(!canSwitch()){notify('戦闘や演出が終わってから切り替えてください。');return false;}
-      if(typeof saveGame==='function'&&!(typeof protectedPrimaryRaw!=='undefined'&&protectedPrimaryRaw!==null)&&!saveGame())return false;
+      if(typeof saveGame==='function'&&!(typeof protectedPrimaryRaw!=='undefined'&&protectedPrimaryRaw!==null)&&!(typeof primaryReadFailed!=='undefined'&&primaryReadFailed)&&!saveGame())return false;
       const previousSelected=state.selected;let preferenceSaved=false;
       try{
         state.selected=n;persist();preferenceSaved=true;
