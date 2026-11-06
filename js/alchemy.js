@@ -346,7 +346,11 @@ function validateAlchemyPlan(plan){
   if(!plan.modeSelectionValid) errors.push('錬成方法が正しく選択されていません。再選択してください。');
   if(!plan.tutorialLesson){
     if(!ins) errors.push('触媒契約体を1体選択してください。');
-    if(ins){const reason=instanceConsumeBlockReason(ins);if(reason)errors.push(reason==='最後の所持契約体は変換できません。'?'最後の所持モンスターは投入できません。':reason);}
+    if(ins){
+      const reason=instanceConsumeBlockReason(ins);
+      if(reason)errors.push(reason==='最後の所持契約体は変換できません。'?'最後の所持モンスターは投入できません。':
+        ['ロック中です。','遠征中です。'].includes(reason)?`${by(ins.id)?.name || ins.id}は${reason}`:reason);
+    }
     if(ins && !isAlchemyCatalystUnit(by(ins.id))) errors.push(`${by(ins.id)?.name || ins.id}は触媒に使用できません。`);
     if(ins && (save.party || []).includes(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}はパーティー編成中です。`);
   }else{
