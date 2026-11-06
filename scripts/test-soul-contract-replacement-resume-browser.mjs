@@ -99,7 +99,8 @@ try{
         await Promise.all([page.waitForNavigation({waitUntil:'networkidle'}),resume.click()]);
         await enter(page);await page.waitForFunction(()=>!soulContractReplacementBlocked);
         const rows=await observations(page),committed=rows.find(row=>{
-          const archive=JSON.parse(row.archive);return !archive.pending&&row.recovery&&JSON.parse(row.recovery).status==='baseline';
+          try{const archive=JSON.parse(row.archive);return !archive.pending&&row.recovery&&JSON.parse(row.recovery).status==='baseline';}
+          catch(_error){return false;} // Earlier lock observations intentionally contain the malformed fixture.
         });
         assert(committed,'manual resume must complete under the same Web Lock');
         assert.equal(committed.name,`monster-rpg:character-gacha:${fixture.keys.primary}`);
