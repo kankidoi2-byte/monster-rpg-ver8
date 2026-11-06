@@ -16,6 +16,7 @@ function initSaveManagementUi(){
       <button type="button" onclick="exportReplacementRecovery('after')">置換後候補のセーブを書き出す</button>
       <button type="button" onclick="exportReplacementRecovery('backupBefore')">元のバックアップを書き出す</button>
       <button type="button" onclick="acknowledgeReplacementRecovery()">書き出した復旧記録を確認済みにする</button>
+      <button type="button" id="resumeSoulContractReplacement" onclick="resumeSoulContractReplacement()" ${soulContractReplacementBlocked?'':'hidden'} disabled>現在の主セーブを基準として再開する</button>
       <button type="button" onclick="showSaveRecoveryReport()">修復・移行記録を見る</button>
       <button type="button" onclick="copySaveText('current')">現在の内容をコピー</button>
       <button type="button" onclick="copySaveText('corrupt')">破損内容をコピー</button>
