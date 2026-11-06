@@ -88,6 +88,7 @@ function autoBindDeparture(map,request,event){
   autoRun.request=request;
   autoRun.phase='fight';
   autoRun.manual=false;
+  autoRun.progress=null;
   if(!autoField(map,event))autoRun.reason='オート対象外の戦闘';
 }
 function autoSpeed(){return autoRun?.phase==='fight'&&!autoRun.manual?autoRun.settings.speed:1;}
@@ -96,8 +97,12 @@ function autoChooseMove(moves,target,hpRatio){
     const heal=moves.findIndex(m=>m[3]==='heal'||(m[3]==='tactical'&&tacticalSkillProfile(m)?.heal));
     if(heal>=0)return heal;
   }
-  let best=-1,score=-Infinity;
-  moves.forEach((m,i)=>{const power=Number(m[1])*typeEff(moveTypes(m),target.types);if(power>score){score=power;best=i;}});
+  let best=-1,score=24*typeEff(['normal'],target.types);
+  moves.forEach((m,i)=>{
+    if(!(Number(m[1])>0))return;
+    const power=Number(m[1])*typeEff(moveTypes(m),target.types);
+    if(power>score){score=power;best=i;}
+  });
   return best;
 }
 function autoClearTimer(){clearTimeout(autoTimer);autoTimer=null;}
@@ -106,10 +111,27 @@ function autoLater(run,ms,fn){
   autoTimer=setTimeout(()=>{autoTimer=null;if(autoRun===run&&run.identity===saveTransactionIdentity()&&document.querySelector('#battle.active'))fn();},ms);
 }
 function autoFoes(){return multiBattle?.active?aliveMultiEnemies().map(e=>e.mon):[enemy];}
+// Observe intermediate HP updates too: damage followed by healing is still progress.
+// This state belongs only to the current automated battle, never to the save.
+function autoObserveProgress(run,completed=false){
+  const foes=multiBattle?.active?multiBattle.enemies.map(e=>[e,Math.max(0,e.hp)]):[[enemy,Math.max(0,eHp)]];
+  const now=new Map(foes),prior=run.progress;
+  if(!prior||battleTurnCount<prior.turn){
+    run.progress={turn:battleTurnCount,hp:now,damaged:false,idle:0};return;
+  }
+  for(const [mon,hp] of prior.hp)if(now.has(mon)&&now.get(mon)<hp)prior.damaged=true;
+  prior.hp=now;
+  if(completed&&battleTurnCount>prior.turn){
+    prior.idle=prior.damaged?0:prior.idle+1;
+    prior.turn=battleTurnCount;prior.damaged=false;
+    if(prior.idle>=30)run.reason='戦闘が進まないためオートを停止しました';
+  }
+}
 function autoAct(){
   const r=autoRun;
   if(!r||r.phase!=='fight'||r.request!==activeHuntRequest||r.manual||!battleUiCanAct())return;
   if(tutorialUiState.active){autoLater(r,350,autoAct);return;}
+  autoObserveProgress(r,true);
   if(!autoEligible())r.reason='オート対象外の戦闘';
   const fresh=r.settings.stopOnNewDex&&autoFoes().find(m=>m&&!isCharacterUnit(m)&&!caughtHas(m.id));
   if(fresh)r.reason=fresh.name+'は図鑑にいないモンスター';
@@ -125,7 +147,7 @@ function autoControl(action){
     autoRun=autoNewRun(selectedMap.id,activeHuntRequest.difficultyId,1);
     autoRun.phase='fight';autoRun.request=activeHuntRequest;
   }else if(autoRun.phase!=='fight')return;
-  else if(action==='manual')autoRun.manual=!autoRun.manual;
+  else if(action==='manual'){autoRun.manual=!autoRun.manual;autoRun.progress=null;}
   else if(action==='speed'){
     const speed=autoRun.settings.speed===1?2:1;
     if(autoChangeSetting('speed',speed))autoRun.settings.speed=speed;
@@ -140,6 +162,7 @@ function autoBars(run){
   }).join('');
 }
 function autoSyncBattle(){
+  if(autoRun?.phase==='fight'&&!autoRun.manual&&autoRun.request===activeHuntRequest)autoObserveProgress(autoRun);
   const controls=document.getElementById('autoControls');
   if(!controls)return;
   const r=autoRun,screen=document.getElementById('battle'),panel=document.querySelector('#battleMapBanner>.panel');

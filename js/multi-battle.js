@@ -223,26 +223,35 @@ async function runMultiActions(actions,index) {
   if (action.kind==='player') {
     // A reserve that replaces a fainted member did not choose this action.
     // Match single battles: do not let it execute the previous member's skill.
-    if (pHp<=0 || activeInstance?.uid!==actions.playerUid) { runMultiActions(actions,index+1); return; }
-    if(typeof beginBattleAction==='function')beginBattleAction(player,action.move,true);
-    if (pSleepTurns>0) { pSleepTurns--; appendMultiLog(`💤 ${player.name}は眠っていて動けない！`); runMultiActions(actions,index+1); return; }
-    if (pParalysisTurns>0) { pParalysisTurns--; if(Math.random()<.30){appendMultiLog(`⚡ ${player.name}は体がしびれて動けない！`);runMultiActions(actions,index+1);return;} }
-    if (pConfusionTurns>0) {
+    let canAct=pHp>0 && activeInstance?.uid===actions.playerUid;
+    if(canAct && typeof beginBattleAction==='function')beginBattleAction(player,action.move,true);
+    if (canAct && pSleepTurns>0) { pSleepTurns--; appendMultiLog(`💤 ${player.name}は眠っていて動けない！`); canAct=false; }
+    if (canAct && pParalysisTurns>0) { pParalysisTurns--; if(Math.random()<.30){appendMultiLog(`⚡ ${player.name}は体がしびれて動けない！`);canAct=false;} }
+    if (canAct && pConfusionTurns>0) {
       pConfusionTurns--;
       const roll=Math.random();
-      if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${player.name}はこんらんして動けない！`);runMultiActions(actions,index+1);return;}
-      if(roll>=.75){const raw=Math.max(1,Math.floor(12*pAtk*playerAttackInstanceMultiplier())),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage,defense=kokoroLinkDefenseMessage(barrier);pHp=Math.max(0,pHp-dmg);appendMultiLog(`🌀 ${player.name}はこんらんして自分に${dmg}ダメージ！${defense?`<br>${defense}`:''}`);runMultiActions(actions,index+1);return;}
+      if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${player.name}はこんらんして動けない！`);canAct=false;}
+      if(roll>=.75){
+        const raw=confusionSelfDamage(player,activeInstance?.level,pAtk*playerAttackInstanceMultiplier()),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage,defense=kokoroLinkDefenseMessage(barrier);
+        pHp=Math.max(0,pHp-dmg);
+        if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
+        appendMultiLog(`🌀 ${player.name}はこんらんして自分に${dmg}ダメージ！${defense?`<br>${defense}`:''}`);
+        canAct=false;
+      }
     }
-    const resolvedTargetId=resolveLivingMultiTargetId(multiBattle.enemies,action.targetId);
-    const target=multiEnemy(resolvedTargetId);
-    if (target) result=await performMultiAttack({kind:'player'},target,action.move);
+    if(canAct){
+      const resolvedTargetId=resolveLivingMultiTargetId(multiBattle.enemies,action.targetId);
+      const target=multiEnemy(resolvedTargetId);
+      if (target) result=await performMultiAttack({kind:'player'},target,action.move);
+    }
   } else {
     const actor=multiEnemy(action.actorId);
-    if (!actor?.alive) { runMultiActions(actions,index+1); return; }
-    const targets=[{kind:'player',id:'player'},...aliveMultiEnemies().filter(entry=>entry.id!==actor.id).map(entry=>({kind:'enemy',id:entry.id}))];
-    const targetDescriptor=targets[Math.floor(Math.random()*targets.length)];
-    const target=targetDescriptor?.kind==='enemy' ? multiEnemy(targetDescriptor.id) : targetDescriptor;
-    if (target) result=await performMultiAttack(actor,target,action.move);
+    if(actor?.alive){
+      const targets=[{kind:'player',id:'player'},...aliveMultiEnemies().filter(entry=>entry.id!==actor.id).map(entry=>({kind:'enemy',id:entry.id}))];
+      const targetDescriptor=targets[Math.floor(Math.random()*targets.length)];
+      const target=targetDescriptor?.kind==='enemy' ? multiEnemy(targetDescriptor.id) : targetDescriptor;
+      if (target) result=await performMultiAttack(actor,target,action.move);
+    }
   }
   if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(actions.storyToken))return;
   // Match single battles: enemy annihilation wins before a forced party switch.
@@ -265,7 +274,7 @@ async function performMultiAttack(actor,target,move) {
     actor.confusionTurns--;
     const roll=Math.random();
     if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${a.name}はこんらんして動けない！`);return;}
-    if(roll>=.75){const dmg=confusionSelfDamage(a,actor.level,actor.attack*enemyKokoroLinkAttackMultiplier(actor.id));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
+    if(roll>=.75){const dmg=confusionSelfDamage(a,actor.level,actor.attack*(actor.attackMultiplier??huntDifficulty(activeHuntRequest?.difficultyId).attackMultiplier)*enemyKokoroLinkAttackMultiplier(actor.id));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`🌀 ${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
   }
   if(typeof battleFeedback!=='undefined'){
     const label=entry=>entry.kind==='player'?`味方・${player.name}`:`敵${multiBattle.enemies.indexOf(entry)===0?'A':'B'}・${entry.mon.name}`;
