@@ -416,6 +416,26 @@ function migrateRenamedMonsterIds(payload,report=[]){
   }
   if(changed)report.push('アシュレイア・モルグラムの旧識別名を更新');
 }
+// Shared by load repair and runtime expedition normalization. Never invent rewards.
+function validateExpeditionEntry(entry){
+  if(!isSaveObject(entry)||!['active','complete'].includes(entry.status))return null;
+  const requiredWins={short:1,medium:3,long:5}[entry.distanceId];
+  if(!Number.isInteger(requiredWins)||!Number.isInteger(entry.progress)||entry.progress<0)return null;
+  const repaired={...entry,requiredWins,progress:Math.min(requiredWins,entry.progress)};
+  if(entry.status==='active'){repaired.reward=null;return repaired;}
+  const reward=entry.reward;
+  if(!isSaveObject(reward)||!Number.isInteger(reward.coins)||reward.coins<0||!Number.isInteger(reward.exp)||reward.exp<0||typeof reward.great!=='boolean')return null;
+  // Keep SEC-02's non-increasing item repair, including malformed containers.
+  const items=Object.fromEntries(Object.entries(isSaveObject(reward.items)?reward.items:{}).filter(([id])=>typeof ITEM_BY_ID!=='undefined'&&Object.hasOwn(ITEM_BY_ID,id)).map(([id,count])=>[id,nonNegativeInteger(count)]));
+  repaired.reward={...reward,items};
+  return repaired;
+}
+function quarantineExpeditionEntry(payload,entry,report=[]){
+  if(!isSaveObject(payload.quarantine))payload.quarantine={};
+  if(!Array.isArray(payload.quarantine.invalidExpeditions))payload.quarantine.invalidExpeditions=[];
+  payload.quarantine.invalidExpeditions.push(entry);
+  report.push('破損した遠征記録を隔離し、仲間を戻しました');
+}
 function repairSave(payload,report=[]){
   captureSkill110Backup(payload);
   migrateRenamedMonsterIds(payload,report);
@@ -476,11 +496,14 @@ function repairSave(payload,report=[]){
   payload.mapDex=Array.isArray(payload.mapDex)?[...new Set(payload.mapDex.filter(id=>typeof id==='string'&&(!knownMapIds.size||knownMapIds.has(id))))]:[];
   payload.expeditions=isSaveObject(payload.expeditions)?payload.expeditions:defaults.expeditions;payload.expeditions.completedCount=nonNegativeInteger(payload.expeditions.completedCount);
   const rawExpeditions=Array.isArray(payload.expeditions.active)?payload.expeditions.active:[];
-  payload.expeditions.active=rawExpeditions.filter(entry=>{const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];const valid=isSaveObject(entry)&&typeof entry.id==='string'&&/^[A-Za-z0-9_:-]+$/.test(entry.id)&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;if(!valid){payload.quarantine.invalidExpeditions.push(entry);report.push('参照切れの遠征データを隔離');return false;}entry.memberUids=members;entry.requiredWins={short:1,medium:3,long:5}[entry.distanceId];entry.progress=Math.min(entry.requiredWins,nonNegativeInteger(entry.progress));entry.status=entry.status==='complete'?'complete':'active';
-    if(isSaveObject(entry.reward)&&typeof ITEM_BY_ID!=='undefined'){
-      entry.reward.items=Object.fromEntries(Object.entries(isSaveObject(entry.reward.items)?entry.reward.items:{}).filter(([id])=>Object.hasOwn(ITEM_BY_ID,id)).map(([id,count])=>[id,nonNegativeInteger(count)]));
-    }
-    return true;});
+  payload.expeditions.active=rawExpeditions.flatMap(entry=>{
+    const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];
+    const valid=isSaveObject(entry)&&typeof entry.id==='string'&&/^[A-Za-z0-9_:-]+$/.test(entry.id)&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;
+    const repaired=valid?validateExpeditionEntry(entry):null;
+    if(!repaired){quarantineExpeditionEntry(payload,entry,report);return [];}
+    repaired.memberUids=members;
+    return [repaired];
+  });
   payload.contractor=isSaveObject(payload.contractor)?payload.contractor:contractorSaveDefaults();
   payload.contractor.systemVersion=Math.max(1,nonNegativeInteger(payload.contractor.systemVersion,1));
   payload.contractor.exp=Math.min(CONTRACTOR_SAVE_EXP_CAP,nonNegativeInteger(payload.contractor.exp));
