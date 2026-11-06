@@ -1015,18 +1015,38 @@ function addInstance(id, level=1, exp=0, extraFields=null) {
   }
   return ins;
 }
+// Resolve display metadata from trusted definitions, including evolved alchemy forms.
+function alchemyArchetypeFor(ins){
+  const pending=[ins?.id],visited=new Set();
+  while(pending.length){
+    const id=pending.shift();
+    if(!id || visited.has(id))continue;
+    visited.add(id);
+    const config=ALCHEMY_MONSTER_CONFIGS[id];
+    if(config)return config.archetypes?.find(type=>type.id===ins?.alchemy?.archetypeId) || null;
+    M.forEach(mon=>{
+      if(mon.evolution===id || (mon.evolutions||[]).some(route=>route.to===id))pending.push(mon.id);
+    });
+  }
+  return null;
+}
 function normalizeInstanceSaveFields(ins){
   if(!ins || typeof ins !== 'object') return;
   if(typeof ins.locked !== 'boolean') ins.locked = false;
   if(by(ins.id)?.entityKind==='monster')ins.evolutionOffset=monsterEvolutionOffset(ins);
   const config = ALCHEMY_MONSTER_CONFIGS[ins.id];
-  if(!config) return;
+  if(!config){
+    if(ins.alchemy && typeof ins.alchemy==='object' && !Array.isArray(ins.alchemy)){
+      ins.alchemy.archetypeLabel=alchemyArchetypeFor(ins)?.label || '不明な錬成タイプ';
+    }
+    return;
+  }
   if(!ins.alchemy || typeof ins.alchemy !== 'object' || Array.isArray(ins.alchemy)) ins.alchemy = {};
   const fallback = config.archetypes?.[0];
   const archetype = config.archetypes?.find(type => type.id === ins.alchemy.archetypeId) || fallback;
   if(archetype){
     if(!ins.alchemy.archetypeId) ins.alchemy.archetypeId = archetype.id;
-    ins.alchemy.archetypeLabel = config.archetypes?.find(type => type.id === ins.alchemy.archetypeId)?.label || '不明な錬成タイプ';
+    ins.alchemy.archetypeLabel = alchemyArchetypeFor(ins)?.label || '不明な錬成タイプ';
     if(!ins.alchemy.statModifiers || typeof ins.alchemy.statModifiers !== 'object' || Array.isArray(ins.alchemy.statModifiers)){
       ins.alchemy.statModifiers = {...archetype.modifiers};
     }else{

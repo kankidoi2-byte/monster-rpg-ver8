@@ -86,3 +86,32 @@ for(const stat of ['hp','attack','speed']){
  const value=mods[stat];assert(summary.includes(`${value>=1?'+':''}${Math.round((Number(value||1)-1)*100)}%`),'E: correction percentage unchanged');
 }
 console.log('PASS SEC-01 E: legitimate type name and correction percentages unchanged');
+
+// Evolved alchemy forms inherit only the trusted display definition, not new stats.
+const evolved=runtime();
+const evoRun=source=>evolved.run(source);
+evoRun(`var attackType=ALCHEMY_MONSTER_CONFIGS.kimeragna.archetypes.find(type=>type.id==='attack');
+  var evolvedInstance={uid:'evolved_alchemy',id:'kimeragna_apex',level:100,exp:0,
+    alchemy:{archetypeId:'attack',archetypeLabel:'old label',statModifiers:{hp:1.07,attack:1.23,speed:.92}}};
+  var modifiersBefore=JSON.stringify(evolvedInstance.alchemy.statModifiers);
+  normalizeInstanceSaveFields(evolvedInstance);`);
+assert.equal(evoRun('evolvedInstance.alchemy.archetypeLabel'),'攻撃型','F: evolved form rebuilds the configured attack label');
+assert(evoRun('instanceAlchemySummary(evolvedInstance)').includes('攻撃型'),'F: evolved form displays attack label');
+assert.equal(evoRun('JSON.stringify(evolvedInstance.alchemy.statModifiers)'),evoRun('modifiersBefore'),'F: evolved modifiers are unchanged');
+evoRun(`evolvedInstance.alchemy.archetypeLabel='<img src=x onerror=1>';
+  var evolvedSave=parseAndPrepareSave(JSON.stringify({instances:[evolvedInstance],party:[],coins:0,items:{}}),[]);
+  evolvedInstance=evolvedSave.instances[0];normalizeInstanceSaveFields(evolvedInstance);`);
+assert.equal(evoRun('evolvedInstance.alchemy.archetypeLabel'),'攻撃型','G: evolved malicious label is rebuilt');
+assert(!evoRun('instanceAlchemySummary(evolvedInstance)').includes('<img'),'G: no injected tag on evolved form');
+assert.equal(evoRun('JSON.stringify(evolvedInstance.alchemy.statModifiers)'),evoRun('modifiersBefore'),'G: load repair preserves evolved modifiers');
+evoRun(`save=initSave();save.progress.tutorial.status='completed';
+  var actual=addInstance('kimeragna',100);actual.alchemy={archetypeId:'attack',archetypeLabel:'<img src=x onerror=1>',statModifiers:{hp:1.07,attack:1.23,speed:.92}};
+  currentEvolution={uid:actual.uid,from:'kimeragna',choices:getEvoCandidates(actual)};
+  confirmEvolution('kimeragna_apex');`);
+assert.equal(evoRun('actual.id'),'kimeragna_apex','H: real evolution succeeds');
+assert(evoRun('instanceAlchemySummary(actual)').includes('攻撃型'),'H: actual evolution immediately displays attack label');
+assert(!evoRun('instanceAlchemySummary(actual)').includes('<img'),'H: actual evolution never trusts stored label');
+evoRun('normalizeInstanceSaveFields(actual);');
+assert.equal(evoRun('actual.alchemy.archetypeLabel'),'攻撃型','H: post-evolution normalization rebuilds label');
+assert.equal(evoRun('JSON.stringify(actual.alchemy.statModifiers)'),evoRun('modifiersBefore'),'H: actual evolution and normalization preserve modifiers');
+console.log('PASS SEC-01 F/G/H: evolved form, malicious label and real evolution preserve attack type and modifiers');

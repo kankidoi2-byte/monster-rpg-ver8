@@ -213,7 +213,7 @@ function rosterScreenChanged(id){
 }
 function instanceAlchemySummary(ins){
   if(!ins?.alchemy) return '';
-  const archetype = ALCHEMY_MONSTER_CONFIGS[ins.id]?.archetypes?.find(type => type.id === ins.alchemy.archetypeId);
+  const archetype = alchemyArchetypeFor(ins);
   const label = archetype?.label || '不明な錬成タイプ';
   const mod = ins.alchemy.statModifiers || {};
   const pct = value => `${value >= 1 ? '+' : ''}${Math.round((Number(value||1)-1)*100)}%`;
