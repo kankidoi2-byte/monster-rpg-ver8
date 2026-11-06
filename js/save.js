@@ -7,6 +7,7 @@ const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
 let protectedPrimaryRaw = null;
+let primaryReadFailed = false;
 let rejectedPrimaryRaw = null;
 
 const G_BLESS_RULES=Object.freeze({week:100,coins:2,exp:1.5,cost:1});
@@ -218,8 +219,8 @@ function initSave() {
 function normalizeAlchemyResonance(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;}
 function isSaveObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
 function safeStorageGet(key){try{return localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);}catch(error){lastSaveError=error;return null;}}
-function safeStorageSet(key,value){try{if(typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return false;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
-function safeStorageRemove(key){try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageSet(key,value){if(primaryReadFailed&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return false;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageRemove(key){if(primaryReadFailed&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
 function saveHash(payload){
   const copy=JSON.parse(JSON.stringify(payload));
   if(copy.saveMeta)copy.saveMeta.integrityHash=null;
@@ -507,7 +508,16 @@ function parseAndPrepareSave(raw,report=[]){const parsed=JSON.parse(raw);if(pars
 function loadSave(){
   protectedPrimaryRaw=null;
   rejectedPrimaryRaw=null;
+  primaryReadFailed=false;
+  lastSaveError=null;
   const raw=safeStorageGet(SAVE_KEY);
+  if(lastSaveError){
+    primaryReadFailed=true;
+    const message='セーブを読み取れなかったため保存を停止しました。再読み込みしてください。セーブ管理から元データを書き出せます。';
+    saveRecoveryReport.push(message);
+    if(typeof alert==='function')alert(message);
+    return initSave();
+  }
   if(raw===null)return initSave();
   try{
     const parsed=JSON.parse(raw);
@@ -739,7 +749,7 @@ function acknowledgeReplacementRecovery(){
   }catch(error){saveTransactionNotice(error.message);}
 }
 function saveGame({requireBackup=false,requireReadable=false}={}) {
-  if(protectedPrimaryRaw!==null)return false;
+  if(primaryReadFailed||protectedPrimaryRaw!==null)return false;
   if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
@@ -751,7 +761,7 @@ function saveGame({requireBackup=false,requireReadable=false}={}) {
   const raw=JSON.stringify(save);
   lastSaveError=null;
   const previous=safeStorageGet(SAVE_KEY);
-  if((requireBackup||requireReadable)&&lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
+  if(lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
   let replacementRecord=null;
   if(requireBackup){try{replacementRecord=stageReplacementRecovery(previous,raw);}catch(error){saveTransactionNotice(error.message);return false;}}
   if(previous&&previous!==rejectedPrimaryRaw){const backedUp=safeStorageSet(SAVE_BACKUP_KEY,previous);if(requireBackup&&!backedUp){saveTransactionNotice('バックアップを保存できないため、データの置換を中止しました。');return false;}}
@@ -772,9 +782,10 @@ function downloadTextFile(filename,text){
   anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function exportSaveData(){
-  if(protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false){
+  if(primaryReadFailed||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false){
     const raw=protectedPrimaryRaw??safeStorageGet(SAVE_KEY);
     if(raw!==null)downloadTextFile('monster-battle-original-save.json',raw);
+    else if(primaryReadFailed)saveTransactionNotice('元データを読み取れません。再読み込みしてから、セーブ管理で書き出してください。');
     return;
   }
   /* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
@@ -936,7 +947,7 @@ function ensureContractScrollItem(){
   if(save.items.doom_fragment==null) save.items.doom_fragment=0;
 }
 function resetSave() {
-  if(protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
+  if(primaryReadFailed||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
   if (confirm('セーブデータを削除しますか？\n序章の最初から再スタートします。')) {
     const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
     safeStorageRemove(SAVE_KEY);
