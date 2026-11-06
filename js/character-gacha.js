@@ -57,7 +57,7 @@ function writeCharacterGachaRecovery(raw){
   return stored.ok&&stored.raw===raw;
 }
 // Explicit replacements alone may establish a new contract baseline. The archive
-// is append-only evidence, including malformed records, and is profile scoped.
+// retains the latest three records, including malformed records, per profile.
 function characterGachaRecoveryArchiveKey(){return `${characterGachaRecoveryKey()}_archived`;}
 function readCharacterGachaRecoveryArchive(){
   const stored=readCharacterGachaStorage(characterGachaRecoveryArchiveKey());
@@ -68,8 +68,11 @@ function readCharacterGachaRecoveryArchive(){
   return archive;
 }
 function reconcileCharacterGachaRecoveryAfterReplacement(newSave,replace){
+  if(typeof navigator!=='undefined'&&(!navigator.locks||typeof navigator.locks.request!=='function')){
+    saveTransactionNotice(SOUL_REPLACEMENT_UNSUPPORTED);return false;
+  }
   return withCharacterGachaLock(()=>{
-    if(primaryReadFailed||protectedPrimaryRaw!==null)return false;
+    if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null)return false;
     const previous=readCharacterGachaStorage(characterGachaRecoveryKey());
     if(!previous.ok)throw new Error('契約の復旧記録を読み取れません。');
     let status=null;
@@ -81,20 +84,12 @@ function reconcileCharacterGachaRecoveryAfterReplacement(newSave,replace){
     const archive=readCharacterGachaRecoveryArchive();
     if(previous.raw!==null){
       archive.records.push({archivedAt:new Date().toISOString(),raw:previous.raw});
-      const raw=JSON.stringify(archive),key=characterGachaRecoveryArchiveKey();
-      try{localStorage.setItem(key,raw);}catch(_error){}
-      const stored=readCharacterGachaStorage(key);
-      if(!stored.ok||stored.raw!==raw)throw new Error('契約の復旧記録を退避できませんでした。');
+      if(!persistSoulReplacementArchive(archive))throw new Error('契約の復旧記録を退避できませんでした。');
     }
     const before=readCharacterGachaStorage(characterGachaStorageKey());
     if(!before.ok)throw new Error('セーブを読み取れません。');
     let changed=false,afterRaw=null,journaled=false;
-    const persistArchive=()=>{
-      const raw=JSON.stringify(archive),key=characterGachaRecoveryArchiveKey();
-      try{localStorage.setItem(key,raw);}catch(_error){}
-      const stored=readCharacterGachaStorage(key);
-      return stored.ok&&stored.raw===raw;
-    };
+    const persistArchive=()=>persistSoulReplacementArchive(archive);
     const originalStorageSet=safeStorageSet;
     safeStorageSet=(key,raw)=>{
       if(key===SAVE_KEY){
@@ -122,15 +117,13 @@ function reconcileCharacterGachaRecoveryAfterReplacement(newSave,replace){
         else if(!primary.ok||primary.raw!==before.raw||!writeCharacterGachaRecovery(previous.raw)){
           // Never continue saving after an uncertain rollback. Both candidates
           // remain available in the replacement journal and the archive.
-          primaryReadFailed=true;
-          saveTransactionNotice('契約の復旧記録を戻せなかったため保存を停止しました。セーブ管理から記録を書き出してください。');
+          notifySoulReplacementBlocked();
         }
       }
-      if(journaled&&!primaryReadFailed){
+      if(journaled&&!primaryReadFailed&&!soulContractReplacementBlocked){
         delete archive.pending;
         if(!persistArchive()){
-          primaryReadFailed=true;
-          saveTransactionNotice('置換記録の確認を完了できなかったため保存を停止しました。セーブ管理から記録を書き出してください。');
+          notifySoulReplacementBlocked();
           result=false;
         }
       }

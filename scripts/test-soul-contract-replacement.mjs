@@ -142,8 +142,8 @@ console.log('SAVE-01 additional storage, profile, archive, and Web Locks tests P
  const h=harness();h.seed();const pre=h.snapshot(),old=contract(h),key=h.run('characterGachaRecoveryKey()'),primary=h.storage.get(h.key);
  const original=h.context.localStorage.setItem;
  h.context.localStorage.setItem=(k,v)=>{if(k===h.key||k===key&&v===old)throw Error('double fault');original(k,v);};
- await importRaw(h,pre);assert.equal(h.storage.get(h.key),primary);assert.equal(h.run('primaryReadFailed'),true);
- h.context.localStorage.setItem=original;reload(h);assert.equal(h.run('primaryReadFailed'),true);assert.equal(h.run('saveGame()'),false);
+ await importRaw(h,pre);assert.equal(h.storage.get(h.key),primary);assert.equal(h.run('soulContractReplacementBlocked'),true);
+ h.context.localStorage.setItem=original;reload(h);assert.equal(h.run('soulContractReplacementBlocked'),true);assert.equal(h.run('saveGame()'),false);
  assert.equal(h.run('exportReplacementRecovery()'),true);const archive=JSON.parse(h.downloads.at(-1).text).soulContractArchive;
  assert.equal(archive.pending.beforePrimary,primary);assert.equal(archive.pending.beforeRecovery,old);
 }

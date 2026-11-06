@@ -8,6 +8,12 @@ let lastSaveError = null;
 let saveRecoveryReport = [];
 let protectedPrimaryRaw = null;
 let primaryReadFailed = false;
+let soulContractReplacementBlocked = false;
+let soulContractReplacementExported = null;
+const SOUL_REPLACEMENT_NOTICE='セーブの置き換え処理が途中で止まっています。セーブ管理で記録を書き出してから再開してください。';
+const SOUL_REPLACEMENT_UNSUPPORTED='このブラウザではセーブの置き換えを安全に実行できません。最新のブラウザで開き直してください。';
+const SOUL_RECOVERY_STORAGE_KEY=`${SAVE_KEY}_soulContractRecovery_v1`;
+const SOUL_ARCHIVE_STORAGE_KEY=`${SOUL_RECOVERY_STORAGE_KEY}_archived`;
 let rejectedPrimaryRaw = null;
 
 const G_BLESS_RULES=Object.freeze({week:100,coins:2,exp:1.5,cost:1});
@@ -219,8 +225,8 @@ function initSave() {
 function normalizeAlchemyResonance(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;}
 function isSaveObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
 function safeStorageGet(key){try{return localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);}catch(error){lastSaveError=error;return null;}}
-function safeStorageSet(key,value){if(primaryReadFailed&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return false;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
-function safeStorageRemove(key){if(primaryReadFailed&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageSet(key,value){if((primaryReadFailed||soulContractReplacementBlocked)&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return false;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageRemove(key){if((primaryReadFailed||soulContractReplacementBlocked)&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
 function saveHash(payload){
   const copy=JSON.parse(JSON.stringify(payload));
   if(copy.saveMeta)copy.saveMeta.integrityHash=null;
@@ -505,26 +511,116 @@ function repairSave(payload,report=[]){
   return payload;
 }
 function parseAndPrepareSave(raw,report=[]){const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))report.push('整合性ハッシュの不一致を検出');return repairSave(migrateSave(parsed,report),report);}
+function readSoulReplacementStorage(key){
+  try{return {ok:true,raw:localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key)};}
+  catch(_error){return {ok:false,raw:null};}
+}
+function parseSoulReplacementArchive(raw){
+  if(raw===null)return {version:1,records:[]};
+  const archive=JSON.parse(raw);
+  if(archive?.version!==1||!Array.isArray(archive.records))throw new Error('退避記録を確認できません。');
+  return archive;
+}
+function persistSoulReplacementArchive(archive){
+  archive.records=archive.records.slice(-3);
+  const key=typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SOUL_ARCHIVE_STORAGE_KEY):SOUL_ARCHIVE_STORAGE_KEY;
+  for(;;){
+    const raw=JSON.stringify(archive);
+    try{localStorage.setItem(key,raw);}catch(_error){}
+    const stored=readSoulReplacementStorage(SOUL_ARCHIVE_STORAGE_KEY);
+    if(stored.ok&&stored.raw===raw)return true;
+    if(!archive.records.length)return false;
+    archive.records.shift();
+  }
+}
+function readSoulReplacementBundle(){
+  const primary=readSoulReplacementStorage(SAVE_KEY),recovery=readSoulReplacementStorage(SOUL_RECOVERY_STORAGE_KEY),archive=readSoulReplacementStorage(SOUL_ARCHIVE_STORAGE_KEY);
+  return {ok:primary.ok&&recovery.ok&&archive.ok,primary:primary.raw,recovery:recovery.raw,archive:archive.raw};
+}
+function notifySoulReplacementBlocked(){
+  soulContractReplacementBlocked=true;
+  if(!saveRecoveryReport.includes(SOUL_REPLACEMENT_NOTICE))saveRecoveryReport.push(SOUL_REPLACEMENT_NOTICE);
+  saveTransactionNotice(SOUL_REPLACEMENT_NOTICE);refreshReplacementRecoveryStatus();
+}
+function withSoulReplacementLock(action,unsupportedNotice=true){
+  if(typeof navigator==='undefined')return action();
+  if(!navigator.locks||typeof navigator.locks.request!=='function'){
+    if(unsupportedNotice)saveTransactionNotice(SOUL_REPLACEMENT_UNSUPPORTED);
+    return false;
+  }
+  const identity=saveTransactionIdentity(),key=typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SAVE_KEY):SAVE_KEY;
+  return navigator.locks.request(`monster-rpg:character-gacha:${key}`,{mode:'exclusive'},()=>{
+    if(identity!==saveTransactionIdentity())return false;
+    return action();
+  }).catch(()=>{if(unsupportedNotice)notifySoulReplacementBlocked();return false;});
+}
+function resolveSoulReplacementPending(){
+  const state=readSoulReplacementBundle();if(!state.ok)return false;
+  let archive;try{archive=parseSoulReplacementArchive(state.archive);}catch(_error){return false;}
+  const pending=archive.pending;
+  if(pending){
+    const match=side=>Object.prototype.hasOwnProperty.call(pending,`${side}Primary`)&&
+      Object.prototype.hasOwnProperty.call(pending,`${side}Recovery`)&&
+      state.primary===pending[`${side}Primary`]&&state.recovery===pending[`${side}Recovery`];
+    if(!match('before')&&!match('after'))return false;
+    delete archive.pending;
+    if(!persistSoulReplacementArchive(archive))return false;
+  }
+  soulContractReplacementBlocked=false;refreshReplacementRecoveryStatus();return true;
+}
+function resumeSoulContractReplacement(){
+  if(!soulContractReplacementBlocked||primaryReadFailed||protectedPrimaryRaw!==null)return false;
+  return withSoulReplacementLock(()=>{
+    const state=readSoulReplacementBundle();
+    if(!state.ok||JSON.stringify(state)!==soulContractReplacementExported){
+      soulContractReplacementExported=null;refreshReplacementRecoveryStatus();
+      saveTransactionNotice('先に記録一式を書き出してください。記録が変わった場合は、もう一度書き出してください。');return false;
+    }
+    let current=null,valid=state.primary===null;
+    try{if(state.primary!==null){current=JSON.parse(state.primary);parseAndPrepareSave(state.primary,[]);valid=isSaveObject(current)&&!(current.schemaVersion>SAVE_SCHEMA_VERSION);}}catch(_error){}
+    if(!valid){
+      saveTransactionNotice('現在の主セーブを確認できません。記録を保管してセーブの復旧を行ってください。');return false;
+    }
+    if(!confirm('書き出した記録を保管しましたか？ 現在の主セーブを基準として再開します。'))return false;
+    // Recheck after the dialog: another tab may have changed the storage.
+    if(JSON.stringify(readSoulReplacementBundle())!==soulContractReplacementExported)return false;
+    let archive;try{archive=parseSoulReplacementArchive(state.archive);}catch(_error){archive={version:1,records:[]};}
+    const next=current?.soulContractAppliedId?JSON.stringify({version:1,id:current.soulContractAppliedId,
+      status:'baseline',before:current,after:current,previous:null}):null;
+    archive.pending={beforePrimary:state.primary,afterPrimary:state.primary,beforeRecovery:state.recovery,afterRecovery:next};
+    if(!persistSoulReplacementArchive(archive))return false;
+    if(!writeCharacterGachaRecovery(next)){writeCharacterGachaRecovery(state.recovery);return false;}
+    delete archive.pending;
+    if(!persistSoulReplacementArchive(archive))return false;
+    soulContractReplacementBlocked=false;soulContractReplacementExported=null;
+    refreshReplacementRecoveryStatus();location.reload();return true;
+  });
+}
 function loadSave(){
   protectedPrimaryRaw=null;
   rejectedPrimaryRaw=null;
   primaryReadFailed=false;
-  // An interrupted explicit replacement must not silently resume autosaving.
-  // The archive retains both primary/recovery pairs for read-only export.
-  let replacementPending=false;
-  lastSaveError=null;
-  try{
-    const archive=JSON.parse(safeStorageGet(`${SAVE_KEY}_soulContractRecovery_v1_archived`));
-    replacementPending=Boolean(lastSaveError||archive?.pending||archive&&(archive.version!==1||!Array.isArray(archive.records)));
-  }catch(_error){replacementPending=true;}
+  soulContractReplacementBlocked=false;
+  soulContractReplacementExported=null;
+  const archiveState=readSoulReplacementStorage(SOUL_ARCHIVE_STORAGE_KEY);
+  let archive=null,archiveInvalid=!archiveState.ok;
+  try{archive=parseSoulReplacementArchive(archiveState.raw);}catch(_error){archiveInvalid=true;}
   lastSaveError=null;
   const raw=safeStorageGet(SAVE_KEY);
-  if(lastSaveError||replacementPending){
+  if(lastSaveError){
     primaryReadFailed=true;
     const message='セーブを読み取れなかったため保存を停止しました。再読み込みしてください。セーブ管理から元データを書き出せます。';
     saveRecoveryReport.push(message);
     if(typeof alert==='function')alert(message);
     return initSave();
+  }
+  if(archiveInvalid||archive?.pending){
+    soulContractReplacementBlocked=true;
+    if(!archiveInvalid){
+      const resolved=withSoulReplacementLock(resolveSoulReplacementPending,false);
+      if(resolved?.then)resolved.then(ok=>{if(!ok)notifySoulReplacementBlocked();});
+      else if(!resolved)notifySoulReplacementBlocked();
+    }else notifySoulReplacementBlocked();
   }
   if(raw===null)return initSave();
   try{
@@ -729,21 +825,28 @@ function completeReplacementRecovery(raw){
   refreshReplacementRecoveryStatus();
 }
 function replacementRecoveryStatusText(){
+  if(soulContractReplacementBlocked)return SOUL_REPLACEMENT_NOTICE;
   try{const {record}=readReplacementRecovery();return !record?'読込・復旧用の保管記録はありません。':record.status==='pending'?'途中で止まった読込があります。セーブ管理で書き出してください。':'読込・復旧記録があります。書き出すとセーブ読込で使えます。';}
   catch(_error){return '読込・復旧記録を確認できません。記録全体を書き出してください。';}
 }
 function refreshReplacementRecoveryStatus(){
-  try{const el=document.getElementById('replacementRecoveryStatus');if(el)el.textContent=replacementRecoveryStatusText();}catch(error){console.error(error);}
+  try{const el=document.getElementById('replacementRecoveryStatus');if(el)el.textContent=replacementRecoveryStatusText();const button=document.getElementById('resumeSoulContractReplacement');if(button){button.hidden=!soulContractReplacementBlocked;button.disabled=!soulContractReplacementExported;}}catch(error){console.error(error);}
 }
 function exportReplacementRecovery(kind='all'){
   try{
     const raw=safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY);
     if(kind==='all'){
-      const archive=typeof readCharacterGachaRecoveryArchive==='function'?readCharacterGachaRecoveryArchive():null;
-      if(archive?.records.length||archive?.pending){
-        const record=raw?JSON.parse(raw):{};
-        downloadTextFile('monster-battle-replacement-recovery.json',JSON.stringify({...record,soulContractArchive:archive}));
-        replacementRecoveryExportedRaw=raw;return true;
+      const state=readSoulReplacementBundle();
+      if(!state.ok)throw new Error('記録を読み取れません。再読み込みしてから書き出してください。');
+      if(state.archive!==null||soulContractReplacementBlocked){
+        let archive=null,record=null;
+        try{archive=JSON.parse(state.archive);}catch(_error){}
+        try{record=raw?JSON.parse(raw):null;}catch(_error){}
+        downloadTextFile('monster-battle-replacement-recovery.json',JSON.stringify({...(record||{}),
+          soulContractArchive:archive,soulContractArchiveRaw:state.archive,
+          currentPrimaryRaw:state.primary,currentRecoveryRaw:state.recovery,replacementRecoveryRaw:raw}));
+        soulContractReplacementExported=JSON.stringify(state);
+        replacementRecoveryExportedRaw=raw;refreshReplacementRecoveryStatus();return true;
       }
       if(raw){downloadTextFile('monster-battle-replacement-recovery.json',raw);replacementRecoveryExportedRaw=raw;return true;}
     }
@@ -765,7 +868,7 @@ function acknowledgeReplacementRecovery(){
   }catch(error){saveTransactionNotice(error.message);}
 }
 function saveGame({requireBackup=false,requireReadable=false}={}) {
-  if(primaryReadFailed||protectedPrimaryRaw!==null)return false;
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null)return false;
   if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
@@ -798,7 +901,7 @@ function downloadTextFile(filename,text){
   anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function exportSaveData(){
-  if(primaryReadFailed||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false){
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false){
     const raw=protectedPrimaryRaw??safeStorageGet(SAVE_KEY);
     if(raw!==null)downloadTextFile('monster-battle-original-save.json',raw);
     else if(primaryReadFailed)saveTransactionNotice('元データを読み取れません。再読み込みしてから、セーブ管理で書き出してください。');
@@ -807,7 +910,7 @@ function exportSaveData(){
   /* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
 function replaceSaveExplicitly(replacement,report){
-  if(primaryReadFailed||protectedPrimaryRaw!==null)return false;
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null)return false;
   const commit=()=>{
     const snapshot=captureSaveTransaction();
     save=replacement;saveRecoveryReport=report;
@@ -974,7 +1077,7 @@ function ensureContractScrollItem(){
   if(save.items.doom_fragment==null) save.items.doom_fragment=0;
 }
 function resetSave() {
-  if(primaryReadFailed||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
   if (confirm('セーブデータを削除しますか？\n序章の最初から再スタートします。')) {
     const finish=saved=>{if(saved)location.reload();return saved;};
     const result=replaceSaveExplicitly(initSave(),[]);
