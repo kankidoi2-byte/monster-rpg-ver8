@@ -272,10 +272,10 @@ function applyPoisonToTarget(targetIsPlayer) {
   }
   return `<br>☠️ ${actor.name}の毒は${wasPoisoned ? '更新され' : '付与され'}、残り${poison.duration}ターンになった！`;
 }
-function applyPoisonEndTurn() {
+function applyPoisonEndTurn(skipPlayerEffects=false) {
   const poison = BATTLE_STATUS_EFFECTS.poison;
   const msgs = [];
-  if (pStatus === 'poison' && pPoisonTurns > 0 && pHp > 0) {
+  if (!skipPlayerEffects && pStatus === 'poison' && pPoisonTurns > 0 && pHp > 0) {
     const dmg = Math.max(1, Math.floor(playerMaxHp() * poison.maxHpDamageRate));
     const before=pHp;
     pHp = Math.max(0, pHp - dmg);
@@ -297,14 +297,14 @@ function applyPoisonEndTurn() {
   update();
   return msgs.join('<br>');
 }
-function finishTurnWithPoison() {
+function finishTurnWithPoison({skipPlayerEffects=false}={}) {
   const logEl = document.getElementById('log');
   completeBattleTurn();
-  const poisonMsg = applyPoisonEndTurn();
+  const poisonMsg = applyPoisonEndTurn(skipPlayerEffects);
   if (poisonMsg) logEl.innerHTML += `<br>${poisonMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();
   const linkStatusMsg=tickSingleEnemyKokoroLinkEffects();if(linkStatusMsg)logEl.innerHTML+=`<br>${linkStatusMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();
   if (eHp <= 0) { win(); return; }
-  if(pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();}
+  if(!skipPlayerEffects&&pHp>0){const regenMsg=applyPlayerKokoroLinkRegeneration();if(regenMsg)logEl.innerHTML+=`<br>${regenMsg}`;if(typeof captureBattleLog==='function')captureBattleLog();}
   if (pHp <= 0) {
     if (!switchPartyMember()) return;
   }
@@ -344,9 +344,9 @@ async function turn(i) {
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
-      completeBattleTurn();
-      if (triggerInvasionIfDue()) return;
-      busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
+      // Enemy-side effects still expire once; the incoming reserve did not
+      // take this turn and must not inherit the defeated front's end effects.
+      finishTurnWithPoison({skipPlayerEffects:true});
       return;
     }
     finishTurnWithPoison();
@@ -356,9 +356,9 @@ async function turn(i) {
     if (eHp <= 0) { win(); return; }
     if (pHp <= 0) {
       if (!switchPartyMember()) return;
-      completeBattleTurn();
-      if (triggerInvasionIfDue()) return;
-      busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
+      // Enemy-side effects still expire once; the incoming reserve did not
+      // take this turn and must not inherit the defeated front's end effects.
+      finishTurnWithPoison({skipPlayerEffects:true});
       return;
     }
     await battleMotionDelay(enemyResult.animated?140:700);
