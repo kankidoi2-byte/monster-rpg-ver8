@@ -476,7 +476,11 @@ function repairSave(payload,report=[]){
   payload.mapDex=Array.isArray(payload.mapDex)?[...new Set(payload.mapDex.filter(id=>typeof id==='string'&&(!knownMapIds.size||knownMapIds.has(id))))]:[];
   payload.expeditions=isSaveObject(payload.expeditions)?payload.expeditions:defaults.expeditions;payload.expeditions.completedCount=nonNegativeInteger(payload.expeditions.completedCount);
   const rawExpeditions=Array.isArray(payload.expeditions.active)?payload.expeditions.active:[];
-  payload.expeditions.active=rawExpeditions.filter(entry=>{const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];const valid=isSaveObject(entry)&&typeof entry.id==='string'&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;if(!valid){payload.quarantine.invalidExpeditions.push(entry);report.push('参照切れの遠征データを隔離');return false;}entry.memberUids=members;entry.requiredWins={short:1,medium:3,long:5}[entry.distanceId];entry.progress=Math.min(entry.requiredWins,nonNegativeInteger(entry.progress));entry.status=entry.status==='complete'?'complete':'active';return true;});
+  payload.expeditions.active=rawExpeditions.filter(entry=>{const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];const valid=isSaveObject(entry)&&typeof entry.id==='string'&&/^[A-Za-z0-9_:-]+$/.test(entry.id)&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;if(!valid){payload.quarantine.invalidExpeditions.push(entry);report.push('参照切れの遠征データを隔離');return false;}entry.memberUids=members;entry.requiredWins={short:1,medium:3,long:5}[entry.distanceId];entry.progress=Math.min(entry.requiredWins,nonNegativeInteger(entry.progress));entry.status=entry.status==='complete'?'complete':'active';
+    if(isSaveObject(entry.reward)&&typeof ITEM_BY_ID!=='undefined'){
+      entry.reward.items=Object.fromEntries(Object.entries(isSaveObject(entry.reward.items)?entry.reward.items:{}).filter(([id])=>Object.hasOwn(ITEM_BY_ID,id)).map(([id,count])=>[id,nonNegativeInteger(count)]));
+    }
+    return true;});
   payload.contractor=isSaveObject(payload.contractor)?payload.contractor:contractorSaveDefaults();
   payload.contractor.systemVersion=Math.max(1,nonNegativeInteger(payload.contractor.systemVersion,1));
   payload.contractor.exp=Math.min(CONTRACTOR_SAVE_EXP_CAP,nonNegativeInteger(payload.contractor.exp));
@@ -1022,7 +1026,7 @@ function normalizeInstanceSaveFields(ins){
   const archetype = config.archetypes?.find(type => type.id === ins.alchemy.archetypeId) || fallback;
   if(archetype){
     if(!ins.alchemy.archetypeId) ins.alchemy.archetypeId = archetype.id;
-    if(!ins.alchemy.archetypeLabel) ins.alchemy.archetypeLabel = archetype.label;
+    ins.alchemy.archetypeLabel = config.archetypes?.find(type => type.id === ins.alchemy.archetypeId)?.label || '不明な錬成タイプ';
     if(!ins.alchemy.statModifiers || typeof ins.alchemy.statModifiers !== 'object' || Array.isArray(ins.alchemy.statModifiers)){
       ins.alchemy.statModifiers = {...archetype.modifiers};
     }else{

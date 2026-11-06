@@ -97,13 +97,13 @@ export async function runMonochromeFlows(page,out,record){
  await pass('expedition-launch');
  // Exercise actual early-return confirmation, then actual reward-claim controls
  // after calling the same win-progress handler used by completed battles.
- await click(page.locator('.expedition-active-grid button[onclick^="recallExpedition"]'));
+ await click(page.locator('.expedition-active-grid button[data-expedition-id][data-action="recall"]'));
  assert.equal(await page.evaluate(()=>save.expeditions.active.length),0);
  await click(page.locator('.expedition-member').first());
  await click(page.locator('#expeditionStartButton'));
  await page.evaluate(()=>{progressActiveExpeditions(()=>0.5);renderExpedition();});
  assert.equal(await page.evaluate(()=>save.expeditions.active[0].status),'complete');
- await click(page.locator('.expedition-active-grid button[onclick^="claimExpedition"]'));
+ await click(page.locator('.expedition-active-grid button[data-expedition-id][data-action="claim"]'));
  assert.equal(await page.evaluate(()=>save.expeditions.active.length),0);
  assert.equal(await page.evaluate(()=>save.expeditions.completedCount),1);
  await page.waitForTimeout(350);

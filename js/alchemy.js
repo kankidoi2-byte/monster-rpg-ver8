@@ -524,7 +524,7 @@ function openAlchemyConfirmation(){
   target.innerHTML = `<div class="alchemy-confirm-card">
     ${plan.instance ? vis(by(plan.instance.id)) : '<div class="alchemy-core">⚗</div>'}
     <h2>錬成の最終確認</h2>
-    <p><b>${plan.tutorialLesson?'錬成核':'触媒'}：</b>${plan.tutorialLesson?'ルミナの練習用錬成核（仲間の消費なし）':alchemyInstanceLabel(plan.instance)}</p>
+    <p><b>${plan.tutorialLesson?'錬成核':'触媒'}：</b>${plan.tutorialLesson?'ルミナの練習用錬成核（仲間の消費なし）':escapeGameHtml(alchemyInstanceLabel(plan.instance))}</p>
     <p>${plan.selection.materialIds.map((id,index)=>`${ITEM_BY_ID[id].name} ×${plan.selection.materialCounts[index]}`).join(' / ')}</p>
     <p><b>投入コイン：</b>${plan.coinCost}枚</p><p><b>成功率：</b>${plan.rate}%</p><p><b>錬成傾向：</b>${alchemyTendency(plan)}</p><p class="alchemy-guarantee"><b>${plan.tutorialLesson?'入門錬成は初回100％成功します。':'結果は錬成完了まで不明です。'}</b></p>
     <p class="alchemy-warning">この操作を確定すると、素材・コイン${plan.tutorialLesson?'':'・触媒契約体1体'}を消費します。元には戻せません。</p>
@@ -602,7 +602,7 @@ function finalizeAlchemy(originalPlan){
     content.innerHTML = `<div ${plan.tutorialLesson?'id="tutorialAlchemyResult" ':''}class="alchemy-result-card ${success?'success':'fallback'}">
       <p class="alchemy-result-label">${success?'✨ 錬成成功！':'🔹 通常個体が完成'}</p>
       ${vis(resultMonster)}<h1>${resultMonster.name}</h1>
-      <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${String(resultInstance.uid).slice(-8)}</p>
+      <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${escapeGameHtml(String(resultInstance.uid).slice(-8))}</p>
       ${modifierHtml}
       ${candidate?.alchemyInstance?`<p><b>初期技：</b>${resultMonster.moves.filter((_,index)=>(ALCHEMY_MONSTER_CONFIGS[resultMonster.id]?.exclusiveMoveIndexes||[]).includes(index)).map(move=>`${skillTypeLabel(moveTypes(move))} ${move[0]}（威力${move[1]}・${moveEffectText(move)}）`).join('')}</p>`:''}
       <button onclick="show('party')">完成個体を手持ちで確認</button>
