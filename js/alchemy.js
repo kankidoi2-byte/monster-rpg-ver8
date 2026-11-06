@@ -166,7 +166,7 @@ function selectAlchemyCoin(optionId){
 }
 function alchemyEligibleInstances(){
   return (save.instances || []).filter(ins =>
-    !ins.locked && !(save.party || []).includes(ins.uid) && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)) && save.instances.length > 1 && isAlchemyCatalystUnit(by(ins.id))
+    !instanceConsumeBlockReason(ins) && !(save.party || []).includes(ins.uid) && isAlchemyCatalystUnit(by(ins.id))
   );
 }
 function alchemyInstanceLabel(ins){
@@ -346,11 +346,13 @@ function validateAlchemyPlan(plan){
   if(!plan.modeSelectionValid) errors.push('錬成方法が正しく選択されていません。再選択してください。');
   if(!plan.tutorialLesson){
     if(!ins) errors.push('触媒契約体を1体選択してください。');
-    if(ins && (save.instances || []).length <= 1) errors.push('最後の所持モンスターは投入できません。');
+    if(ins){
+      const reason=instanceConsumeBlockReason(ins);
+      if(reason)errors.push(reason==='最後の所持契約体は変換できません。'?'最後の所持モンスターは投入できません。':
+        ['ロック中です。','遠征中です。'].includes(reason)?`${by(ins.id)?.name || ins.id}は${reason}`:reason);
+    }
     if(ins && !isAlchemyCatalystUnit(by(ins.id))) errors.push(`${by(ins.id)?.name || ins.id}は触媒に使用できません。`);
     if(ins && (save.party || []).includes(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}はパーティー編成中です。`);
-    if(ins && typeof isInstanceOnExpedition==='function' && isInstanceOnExpedition(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}は遠征中です。`);
-    if(ins?.locked) errors.push(`${by(ins.id)?.name || ins.id}はロック中です。`);
   }else{
     if(plan.recipe.recipeId!==tutorialAlchemyLessonConfig.recipeId)errors.push('入門錬成のレシピが一致しません。');
     if(plan.selection.materialIds.join('|')!==tutorialAlchemyLessonConfig.materials.join('|')||plan.selection.materialCounts.some(count=>Number(count)!==1))errors.push('入門錬成の素材が一致しません。');

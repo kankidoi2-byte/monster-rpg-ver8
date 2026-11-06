@@ -163,6 +163,24 @@ function launchMapStoryBattle(id){
   const episode=mapStoryEpisode(id),resume=mapStoryState().resume;
   if(mapStoryStarting||mapStorySaveRetry||!episode||!mapStoryUnlocked(episode)||resume?.episodeId!==id||!['pre','battle'].includes(resume.phase))return false;
   if(isMapStoryBattle()&&mapStoryTokenValid(activeHuntRequest))return false;
+  // Persist the rescue before allowing a new party or attempt; failed saves retain the old resume.
+  if(resume.phase==='battle'&&!resume.participantUids.some(uid=>save.instances.some(ins=>ins.uid===uid))){
+    if((resume.rewardCommitted||resume.postPending)&&!mapStoryState().episodes[id]){
+      showUiNotice('物語の戦闘データを読み込めませんでした','error');return false;
+    }
+    mapStoryWrite(()=>{
+      const r=mapStoryState().resume;
+      // Already committed outcomes must never be replayed for another reward.
+      const awarded=r.rewardCommitted||r.postPending||Boolean(r.attemptId&&mapStoryProgress(id).lastAttemptId===r.attemptId);
+      mapStoryState().resume={...r,phase:awarded?'post':'pre',nodeId:awarded?episode.postNodes[0].id:null,
+        attemptId:awarded?r.attemptId:null,rewardCommitted:Boolean(awarded),postPending:Boolean(awarded),participantUids:[]};
+    },()=>{
+      activeHuntRequest=null;mapStoryUi=null;
+      if(mapStoryState().resume.phase==='pre')showUiNotice('戦闘に参加していた仲間がいないため、戦闘前に戻しました。','warning');
+      if(mapStoryState().resume.phase==='pre')editMapStoryParty();else startMapStoryEpisode(id);
+    });
+    return false;
+  }
   const party=resume.phase==='battle'?resume.participantUids.map(uid=>save.instances.find(i=>i.uid===uid)).filter(Boolean):getPartyInstances();if(!party.length){showUiNotice('戦えるモンスターを編成してください。','warning');editMapStoryParty();return false;}
   const attemptId=`${id}:${Date.now()}:${Math.random().toString(36).slice(2)}`;
   let request;try{request=createMapStoryRequest(episode,attemptId,party.map(p=>p.uid));}catch(_error){showUiNotice('物語の戦闘データを読み込めませんでした','error');return false;}
