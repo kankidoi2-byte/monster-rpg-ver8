@@ -51,10 +51,17 @@ function loadRules(revision){
     querySelectorAll:()=>[],querySelector:()=>null,createElement:()=>({})
   };
   const context=vm.createContext({
-    console,structuredClone,Math,Date,save,document,
+    console,structuredClone,Math,Date,save,document,saveRecoveryReport:[],
     saveGame:()=>true,registerItemDex:()=>{},show:()=>{},alert:()=>{},
     getInstance:()=>null,checkEvolution:()=>{},setTimeout:()=>0,clearTimeout:()=>{}
   });
+  // Load actual shared validators for current rules; old revisions do not define them.
+  const saveSource=sourceAt(revision,'js/save.js');
+  if(saveSource.includes('function validateExpeditionEntry(')){
+    for(const name of ['isSaveObject','nonNegativeInteger','validateExpeditionEntry','quarantineExpeditionEntry']){
+      vm.runInContext(functionSource(saveSource,name),context,{filename:`${revision}:js/save.js:${name}`});
+    }
+  }
   for(const file of SOURCE_FILES)vm.runInContext(sourceAt(revision,file),context,{filename:`${revision}:${file}`});
   vm.runInContext(`
     globalThis.ensureContractScrollItem=function(){
