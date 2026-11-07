@@ -77,9 +77,9 @@ for (const [name, source] of [['repository', repositorySource], ['actions', acti
   expect(!source.includes("method: 'PATCH'"), `${name} reader must not contain PATCH`);
   expect(!source.includes("method: 'DELETE'"), `${name} reader must not contain DELETE`);
 }
-expect(writerSource.includes("method: 'POST'"), 'Issue writer must use its explicit POST path');
+expect(writerSource.includes("request(endpoint, 'POST', { title: draft.title, body: draft.body })"), 'Issue writer must use its explicit POST path');
 expect(writerSource.includes("DEV_COMMAND_CENTER_GITHUB_ISSUE_TOKEN"), 'Issue writer must use the separate server token');
-expect(writerSource.includes('body: JSON.stringify({ title: draft.title, body: draft.body })'), 'Issue writer payload must remain title/body only');
+expect(writerSource.includes("request(endpoint, 'POST', { title: draft.title, body: draft.body })"), 'Issue writer payload must remain title/body only');
 expect(serverSource.includes('sameOriginForm(request)'), 'write forms must remain same-origin guarded');
 expect(serverSource.includes('publicationConsumed = true'), 'Issue authorization must be consumed before the network call');
 expect(serverSource.includes("form-action 'self'"), 'dashboard CSP must restrict form targets');
