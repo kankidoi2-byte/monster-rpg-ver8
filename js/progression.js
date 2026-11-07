@@ -73,7 +73,7 @@ function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
   const targets = battleParty.length?battleParty.filter(ins=>!ins.guest):getPartyInstances();
   const msgs = [];
   targets.forEach(ins => {
-    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; msgs.push(`🏆 ${by(ins.id).name} は Lv.MAX！`); return; }
+    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; checkEvolution(ins); msgs.push(`🏆 ${by(ins.id).name} は Lv.MAX！`); return; }
     const earned=typeof traitExperienceReward==='function'?traitExperienceReward(ins,baseExp,battleParty):baseExp;
     ins.exp = (ins.exp||0) + earned;
     msgs.push(`✨ ${by(ins.id).name} EXP +${earned}`);
