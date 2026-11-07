@@ -24,9 +24,34 @@ try{
   },mode);
   await page.locator('#renewalParty .br-member').first().waitFor();
  }
+ // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{
+  HTMLMediaElement.prototype.play=function(){this.dispatchEvent(new Event('playing'));return Promise.resolve();};
+ });
+ await start();
+ await page.evaluate(()=>{for(const r of battleIdleRecords.values())r.video.onerror?.();});
+ await page.getByRole('button',{name:'戦闘の履歴',exact:true}).click();
+ const retry=page.getByRole('button',{name:'待機動画を再生し直す',exact:true});
+ await retry.waitFor({state:'visible'});assert(await retry.isEnabled());
+ await retry.click();assert.equal(await page.evaluate(()=>[...battleIdleRecords.values()].filter(r=>r.retried).length)>0,true);
+ await page.getByRole('button',{name:'戦闘の履歴',exact:true}).click();assert.equal(await retry.count(),0);
+ await page.locator('#renewalSheet header button').click();
+ await page.emulateMedia({reducedMotion:'reduce'});
  for(const [width,height] of [[360,640],[412,780],[430,700]]){
   await page.setViewportSize({width,height});await start('multi');
   assert.equal(await page.locator('#renewalParty button').count(),3);
+  const info=page.locator('#enemy_bCard .br-info');
+  const hit=await info.boundingBox();assert(hit.width>=44&&hit.height>=44,JSON.stringify(hit));
+  const selected=await page.evaluate(()=>renewal.targetId);
+  await info.click();assert.equal(await page.evaluate(()=>renewal.targetId),selected);
+  assert(await page.locator('#renewalSheet').evaluate(e=>e.open));await page.locator('#renewalSheet header button').click();
+  const party=await page.locator('.br-member').evaluateAll(els=>els.map(el=>({
+   children:[...el.querySelectorAll('b,small')].map(e=>({font:parseFloat(getComputedStyle(e).fontSize),width:e.clientWidth,scroll:e.scrollWidth})),
+   width:el.clientWidth,scroll:el.scrollWidth
+  })));
+  for(const member of party){assert(member.scroll<=member.width);for(const text of member.children){assert(text.font>=10);assert(text.scroll<=text.width);}}
+
   const labels=await page.locator('.battle-command-pad button').allTextContents();assert(labels.every(t=>!/[💞✨🎒🔄🏃]/u.test(t)),labels.join(','));
   assert.equal(await page.locator('.br-selected .br-target-label').count(),0,'ring has no text');
   await page.locator('#battleSkillButton').click();
