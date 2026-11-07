@@ -3,28 +3,202 @@
     "key": "title",
     "file": "audio/bgm/bgm_title.m4a",
     "driveId": "1r7qhWnktev_WXi3f6w07dJf952_N9iS3",
-    "bytes": 3448381,
-    "sha256": "554f4bece9f12ba2c1da58c4fa06fa49c012778e735f7cdcffbbca9b2e43d540",
-    "duration": 202.8,
-    "codec": "opus"
+    "bytes": 4936290,
+    "sha256": "a418e979278cb7ff7f77924c3cf71ded1e799c7fafd48e931b11a27ff9a5b8a4",
+    "duration": 202.813,
+    "codec": "aac",
+    "source": {
+      "bytes": 3448381,
+      "sha256": "554f4bece9f12ba2c1da58c4fa06fa49c012778e735f7cdcffbbca9b2e43d540",
+      "duration": 202.8,
+      "codec": "opus",
+      "sampleRate": 48000,
+      "channels": 2,
+      "startTime": 0
+    },
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0,
+    "conversion": {
+      "tool": "ffmpeg 7.1.5",
+      "arguments": [
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-b:a",
+        "192k",
+        "-ar",
+        "48000",
+        "-ac",
+        "2"
+      ],
+      "targetBitrate": 192000,
+      "measuredBitrate": 193153
+    },
+    "alignment": {
+      "method": "ffmpeg f32le decode at 48000 Hz stereo; scipy.signal.correlate each channel, 2-second windows, search +/-4800 samples",
+      "windowStartsSeconds": [
+        0,
+        1,
+        5,
+        15,
+        30,
+        60
+      ],
+      "lagSamples": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "minimumZeroLagCorrelation": 0.9891231203207325,
+      "sourceDecodedSamples": 9735048,
+      "outputDecodedSamples": 9735168
+    }
   },
   {
     "key": "home",
     "file": "audio/bgm/bgm_home.m4a",
     "driveId": "1VRMxenfnXGtQym49RyJgbUr4yLXBDoEn",
-    "bytes": 3176328,
-    "sha256": "7a368f58e599703d55a7d4e5be57d497ecfbb3940e0cbcf523fc874c16f2c75e",
-    "duration": 172.6,
-    "codec": "opus"
+    "bytes": 4194671,
+    "sha256": "e55b37e723853aff0cd2e18a2d7d7f831298ba412943e9c228fed3ce5f58270e",
+    "duration": 172.613,
+    "codec": "aac",
+    "source": {
+      "bytes": 3176328,
+      "sha256": "7a368f58e599703d55a7d4e5be57d497ecfbb3940e0cbcf523fc874c16f2c75e",
+      "duration": 172.6,
+      "codec": "opus",
+      "sampleRate": 48000,
+      "channels": 2,
+      "startTime": 0
+    },
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0,
+    "conversion": {
+      "tool": "ffmpeg 7.1.5",
+      "arguments": [
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-b:a",
+        "192k",
+        "-ar",
+        "48000",
+        "-ac",
+        "2"
+      ],
+      "targetBitrate": 192000,
+      "measuredBitrate": 192838
+    },
+    "alignment": {
+      "method": "ffmpeg f32le decode at 48000 Hz stereo; scipy.signal.correlate each channel, 2-second windows, search +/-4800 samples",
+      "windowStartsSeconds": [
+        0,
+        1,
+        5,
+        15,
+        30,
+        60
+      ],
+      "lagSamples": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "minimumZeroLagCorrelation": 0.9992705620776001,
+      "sourceDecodedSamples": 8285448,
+      "outputDecodedSamples": 8286208
+    }
   },
   {
     "key": "battle_grassland",
     "file": "audio/bgm/bgm_battle_grassland.m4a",
     "driveId": "1zCEDn8TeMhlmzKUTXQl6Iaf0GGjSVXyr",
-    "bytes": 1275253,
-    "sha256": "845a26a61fc75cefd4b40c58161b18a03cff5352fd080b6c10d48269568286e9",
-    "duration": 71.2,
-    "codec": "opus"
+    "bytes": 1731534,
+    "sha256": "9df59bbff5c2f538648d467228045dc82f5341ce6f45bf5388b12268a9aa04d5",
+    "duration": 71.213,
+    "codec": "aac",
+    "source": {
+      "bytes": 1275253,
+      "sha256": "845a26a61fc75cefd4b40c58161b18a03cff5352fd080b6c10d48269568286e9",
+      "duration": 71.2,
+      "codec": "opus",
+      "sampleRate": 48000,
+      "channels": 2,
+      "startTime": 0
+    },
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0,
+    "conversion": {
+      "tool": "ffmpeg 7.1.5",
+      "arguments": [
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-b:a",
+        "192k",
+        "-ar",
+        "48000",
+        "-ac",
+        "2"
+      ],
+      "targetBitrate": 192000,
+      "measuredBitrate": 192854
+    },
+    "alignment": {
+      "method": "ffmpeg f32le decode at 48000 Hz stereo; scipy.signal.correlate each channel, 2-second windows, search +/-4800 samples",
+      "windowStartsSeconds": [
+        0,
+        1,
+        5,
+        15,
+        30,
+        60
+      ],
+      "lagSamples": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "minimumZeroLagCorrelation": 0.9972651484318,
+      "sourceDecodedSamples": 3418248,
+      "outputDecodedSamples": 3419136
+    }
   },
   {
     "key": "tap",
