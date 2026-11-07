@@ -189,7 +189,7 @@ function progressActiveExpeditions(randomFn=Math.random,{saveNow=true}={}){
 }
 function grantExpeditionReward(entry,reward){
   save.coins=(save.coins||0)+(reward.coins||0);Object.entries(reward.items||{}).forEach(([id,count])=>{save.items[id]=(save.items[id]||0)+count;if(typeof registerItemDex==='function')registerItemDex(id);});
-  entry.memberUids.map(getInstance).filter(Boolean).forEach(ins=>{if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;return;}ins.exp=(ins.exp||0)+(typeof traitExperienceReward==='function'?traitExperienceReward(ins,reward.exp||0):reward.exp||0);while(!isMaxLevel(ins.level)&&ins.exp>=needExp(ins.level)){ins.exp-=needExp(ins.level);ins.level++;}if(isMaxLevel(ins.level))ins.exp=0;checkEvolution(ins);});
+  entry.memberUids.map(getInstance).filter(Boolean).forEach(ins=>{if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;checkEvolution(ins);return;}ins.exp=(ins.exp||0)+(typeof traitExperienceReward==='function'?traitExperienceReward(ins,reward.exp||0):reward.exp||0);while(!isMaxLevel(ins.level)&&ins.exp>=needExp(ins.level)){ins.exp-=needExp(ins.level);ins.level++;}if(isMaxLevel(ins.level))ins.exp=0;checkEvolution(ins);});
 }
 function claimExpedition(id){
   const index=save.expeditions.active.findIndex(x=>x.id===id),entry=save.expeditions.active[index];
