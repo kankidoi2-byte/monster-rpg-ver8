@@ -6,3 +6,5 @@
 .audio-settings input[type=range]{width:100%;min-height:44px;accent-color:#777}
 .audio-settings input[type=checkbox]{width:22px;height:22px;accent-color:#777}
 .title-skip-hint button{display:block;margin:8px auto;padding:8px 16px;color:#fff;background:#222c;border:1px solid #aaa;border-radius:8px;font:inherit;min-height:44px}
+
+#titleScreen .title-skip-hint{z-index:4;opacity:1}
