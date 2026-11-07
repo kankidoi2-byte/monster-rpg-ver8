@@ -143,7 +143,18 @@ function renewalSwitch(index){
   if(picker?.querySelector('[data-tutorial-actor-select]'))selectBattleSwitchTarget(index);
   else{battleUiClear();performManualPartySwitch(index);}
 }
-function renewalHistory(){renewalOpen('戦闘の履歴',`<div class="br-history">${[...battleFeedback.history].reverse().map(h=>`<p><small>ターン ${h.turn}</small>${renewalHtml(h.text)}</p>`).join('')||'<p>まだ履歴はありません</p>'}</div>`);}
+function renewalHistory(){renewalOpen('戦闘の履歴',`<div class="br-history">${[...battleFeedback.history].reverse().map(h=>`<p><small>ターン ${h.turn}</small>${renewalHtml(h.text)}</p>`).join('')||'<p>まだ履歴はありません</p>'}</div>`);
+ const failed=typeof battleIdleRecords==='undefined'?[]:[...battleIdleRecords.values()].filter(r=>battleIdleCurrent(r)&&r.failed&&!r.retried);
+ if(failed.length){
+  const button=document.createElement('button');button.type='button';button.className='br-go';button.textContent='待機動画を再生し直す';
+  button.onclick=()=>{
+   button.disabled=true;renewalClose();
+   // Delegate to the existing guarded, one-shot retry for each current failure.
+   for(const r of failed)r.button.onclick?.();
+  };
+  document.getElementById('renewalSheetBody').prepend(button);
+ }
+}
 function renewalTraits(mon){
   return [mon.atk,mon.def,mon.spd];
 }

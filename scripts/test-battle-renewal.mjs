@@ -44,3 +44,18 @@ for(const invasion of [false,true]){
  await a.flush();assert.deepEqual(Array.from(a.run('observed')),['enemy_b']);assert.equal(a.run('battleTurnCount'),1);assert.equal(a.run('multiBattle.pendingMoveIndex'),null);cases++;
 }
 console.log(`PASS battle renewal v4: ${cases} real-data matchup, target-fallback and transactional item cases`);
+
+// MOB-04: independent element/class timers; a second notice gets its full lifetime.
+{
+ let now=0,seq=0;const timers=new Map(),classes=new Set();
+ const notice={classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)},offsetWidth:0};
+ const context=vm.createContext({WeakMap,Map,document:{getElementById:()=>notice},
+  setTimeout:(fn,ms)=>{timers.set(++seq,{fn,at:now+ms});return seq;},clearTimeout:id=>timers.delete(id)});
+ const ui=fs.readFileSync(new URL('../js/ui.js',import.meta.url),'utf8');
+ vm.runInContext(ui.slice(ui.indexOf('const uiMotionTimers'),ui.indexOf('function show(id)')),context);
+ const advance=ms=>{now+=ms;for(const [id,t] of [...timers])if(t.at<=now){timers.delete(id);t.fn();}};
+ vm.runInContext("showUiNotice('1件目')",context);advance(2000);vm.runInContext("showUiNotice('2件目')",context);
+ advance(200);assert(classes.has('is-visible'));advance(1999);assert(classes.has('is-visible'));advance(1);assert(!classes.has('is-visible'));
+ context.notice=notice;vm.runInContext("replayUiMotion(notice,'a',100);replayUiMotion(notice,'b',200)",context);advance(100);assert(!classes.has('a')&&classes.has('b'));advance(100);assert(!classes.has('b'));
+ console.log('PASS MOB-04: replacement notice lasts 2200ms; independent class timers');
+}
