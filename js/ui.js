@@ -53,6 +53,7 @@ function show(id) {
   const target = document.getElementById(id);
   if (!target) return;
   target.classList.add('active');
+  if(typeof gameAudioScreenChanged==='function')gameAudioScreenChanged(id);
   if(typeof MonsterFeedback!=='undefined')MonsterFeedback.screenChanged(id,feedbackPreviousScreen);
   replayUiMotion(target, 'ui-screen-enter', 320);
   updateAppNavigation(id);

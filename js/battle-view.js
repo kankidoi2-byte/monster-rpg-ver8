@@ -277,6 +277,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   if (!battle || !outcome) return;
+  if(typeof GameAudio!=='undefined')GameAudio.endBattle(kind==='victory');
   if(typeof captureBattleLog==='function')captureBattleLog();
   if(typeof battleFeedback!=='undefined'){battleFeedback.finished=true;refreshBattleFeedback();}
   const victory = kind === 'victory';
@@ -350,6 +351,7 @@ function syncKokoroLinkAura(){
   target?.classList.toggle('is-kokoro-linked',!!active);
 }
 function playKokoroLinkActivationAnimation(source,link){
+  if(typeof GameAudio!=='undefined')GameAudio.playSe('kokoroLink');
   if(typeof renewalDelayLink==='function')return true;
   const stage=document.querySelector('#battle .battle-arena');
   const target=document.getElementById('singlePlayerBox');

@@ -619,6 +619,7 @@ async function performSkill110AttackBase(move,actorIsPlayer,actorEntry=null,targ
         const hitDamage=Math.floor(wholeBarrier.hpDamage/hits)+(hit<wholeBarrier.hpDamage%hits?1:0);
         const barrier={...wholeBarrier,hpDamage:hitDamage,absorbed:hit===0?wholeBarrier.absorbed:0,reduced:hit===0?wholeBarrier.reduced:0};
         const before=target.hp;target.hp-=barrier.hpDamage;actualDamage+=before-target.hp;
+        if(!barrier.evaded&&typeof gameAudioMoveImpact==='function')gameAudioMoveImpact(move);
         if(typeof battleHpResult==='function')battleHpResult(target.visualId,before,target.hp,{label:hits>1?`${hit+1}撃目`:'被弾',damage:barrier.hpDamage,barrier:barrier.absorbed,reduced:barrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});
         message+=`<br>${target.name}に<b>${barrier.hpDamage}</b>ダメージ！`;
         const defenseMessage=kokoroLinkDefenseMessage(barrier);if(defenseMessage)message+=`<br>${defenseMessage}`;
@@ -732,6 +733,7 @@ async function doAttackBase(attacker, defender, mv, isPlayer) {
     if (shield) pAquaShield = false;
   }
   const actualDamage = Math.min(dmg, Math.max(0, defenderHpBefore));
+  if(!linkBarrier.evaded&&typeof gameAudioMoveImpact==='function')gameAudioMoveImpact(mv);
   if(typeof battleHpResult==='function')battleHpResult(targetId,defenderHpBefore,isPlayer?eHp:pHp,{label:linkBarrier.evaded?'回避':`被弾${g?'・防御':''}${shield?'・水の盾':''}`,damage:dmg,barrier:linkBarrier.absorbed,reduced:linkBarrier.reduced,effectiveness:r,types:moveTypes(mv),power,impact:true});
 
   let msg = `⚔️ ${attacker.name}の「${name}」！ <b>${dmg}</b>ダメージ！`;
@@ -827,6 +829,7 @@ async function doAttackBase(attacker, defender, mv, isPlayer) {
     const secondDmg = secondBarrier.hpDamage;
     const secondHpBefore=isPlayer?eHp:pHp;
     if (isPlayer) eHp = Math.max(0, eHp - secondDmg); else pHp = Math.max(0, pHp - secondDmg);
+    if(!secondBarrier.evaded&&typeof gameAudioMoveImpact==='function')gameAudioMoveImpact(mv);
     if(typeof battleHpResult==='function')battleHpResult(targetId,secondHpBefore,isPlayer?eHp:pHp,{label:'追加攻撃',damage:secondDmg,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(mv),power,impact:true});
     msg += `<br>⚡ 電撃が連鎖した！ ライトニングチェインの追加攻撃！ <b>${secondDmg}</b>ダメージ！`;
     const secondDefenseMsg=kokoroLinkDefenseMessage(secondBarrier);if(secondDefenseMsg)msg+=`<br>${secondDefenseMsg}`;
