@@ -1,0 +1,119 @@
+[
+  {
+    "key": "title",
+    "file": "audio/bgm/bgm_title.m4a",
+    "driveId": "1r7qhWnktev_WXi3f6w07dJf952_N9iS3",
+    "bytes": 3448381,
+    "sha256": "554f4bece9f12ba2c1da58c4fa06fa49c012778e735f7cdcffbbca9b2e43d540",
+    "duration": 202.8,
+    "codec": "opus"
+  },
+  {
+    "key": "home",
+    "file": "audio/bgm/bgm_home.m4a",
+    "driveId": "1VRMxenfnXGtQym49RyJgbUr4yLXBDoEn",
+    "bytes": 3176328,
+    "sha256": "7a368f58e599703d55a7d4e5be57d497ecfbb3940e0cbcf523fc874c16f2c75e",
+    "duration": 172.6,
+    "codec": "opus"
+  },
+  {
+    "key": "battle_grassland",
+    "file": "audio/bgm/bgm_battle_grassland.m4a",
+    "driveId": "1zCEDn8TeMhlmzKUTXQl6Iaf0GGjSVXyr",
+    "bytes": 1275253,
+    "sha256": "845a26a61fc75cefd4b40c58161b18a03cff5352fd080b6c10d48269568286e9",
+    "duration": 71.2,
+    "codec": "opus"
+  },
+  {
+    "key": "tap",
+    "file": "audio/se/se_ui_tap.mp3",
+    "driveId": "18csMTpeKwCtTtSW0xgHS_vtah8295Umz",
+    "bytes": 13293,
+    "sha256": "7fbce60ec2ef10d0f73e2bcc8a99104bc99f0929b15692e5ce6a786e87e742a8",
+    "duration": 0.528,
+    "codec": "mp3"
+  },
+  {
+    "key": "confirm",
+    "file": "audio/se/se_ui_confirm.mp3",
+    "driveId": "1hxWWu9WtTKC6Wy85DUPY4eRRnZf-tBNB",
+    "bytes": 49581,
+    "sha256": "3e7786e8cc81ea78abeff6225973d113eaf4cb10ee9bae37da8eafc116c8eff5",
+    "duration": 2.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "cancel",
+    "file": "audio/se/se_ui_cancel.mp3",
+    "driveId": "1S1t1LWO7Dhokp4WNTKD0Tsedn9oGDfzG",
+    "bytes": 49581,
+    "sha256": "38e7654af5daf0fc09ad385876a3e3706362c71b1612687bf33b894654e58b33",
+    "duration": 2.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "menuOpen",
+    "file": "audio/se/se_ui_menu_open.mp3",
+    "driveId": "1t7SrKOpoUYYXT9dYwgekAODdrYPoOFiy",
+    "bytes": 49581,
+    "sha256": "5e1c288ae161afd22c6fb603236f041402f4a562426185bf50134cb877dbe3f7",
+    "duration": 2.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "menuClose",
+    "file": "audio/se/se_ui_menu_close.mp3",
+    "driveId": "1suuhy1K-UuV8CRx67lI8DP_FtD9U09Dw",
+    "bytes": 49581,
+    "sha256": "4b2f5d55baf67edbbdd70b97acebe73b8f0e827a2281f43f383302b70747bd43",
+    "duration": 2.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "slashHeavy",
+    "file": "audio/se/se_battle_slash_heavy.mp3",
+    "driveId": "1EZyufXbi_6sW2YHF4a3zp_-nT2jbP4__",
+    "bytes": 49581,
+    "sha256": "3fd26a5c91cb6be9f578c196425df01bd955472dcf02568ef3c05da78f599e0f",
+    "duration": 2.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "slashLight",
+    "file": "audio/se/se_battle_slash_light.mp3",
+    "driveId": "18mLRUP3TfbRY-3-88-n5Y7jYumAkR4f2",
+    "bytes": 49581,
+    "sha256": "0eea2f494ee1bd54403786969333d31f77af89970f70aba553b0d03f95f1934d",
+    "duration": 2.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "fire",
+    "file": "audio/se/se_battle_fire.mp3",
+    "driveId": "1TwbxCJCPQBFcqJQrP1OwyWLevYITkZNl",
+    "bytes": 29997,
+    "sha256": "bce72e4244d539d0da712bb139ffa1b4244bfb0a4d42a7b55226f62991064fbb",
+    "duration": 1.224,
+    "codec": "mp3"
+  },
+  {
+    "key": "kokoroLink",
+    "file": "audio/se/se_battle_kokoro_link.mp3",
+    "driveId": "1IG8vq2cgf1HPTT4XqmUwaXdV4yuTDi29",
+    "bytes": 121581,
+    "sha256": "78c94aece921809b491b6b185d421f934947af3ec57e104890e610ac94e7ab9e",
+    "duration": 5.04,
+    "codec": "mp3"
+  },
+  {
+    "key": "victory",
+    "file": "audio/se/jingle_victory.mp3",
+    "driveId": "145jsqGqUj66knteoBcJ20wvBiDNxsAfN",
+    "bytes": 241389,
+    "sha256": "35354cdea1f4cd8935840d889cd564dc0289f45a197a52383636c2e32346b8ef",
+    "duration": 10.032,
+    "codec": "mp3"
+  }
+]

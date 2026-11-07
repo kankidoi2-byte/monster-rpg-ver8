@@ -32,6 +32,7 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
+  if(typeof gameAudioResetBattle==='function')gameAudioResetBattle();
   if(typeof disposeBattleIdleMedia==='function')disposeBattleIdleMedia();
   if(typeof battleUiClear==='function')battleUiClear();
   if(typeof clearBattleStageAction==='function')clearBattleStageAction();

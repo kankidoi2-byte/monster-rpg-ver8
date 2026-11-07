@@ -1,0 +1,49 @@
+{
+  "version": "sound-pack-01",
+  "date": "2026-11-07",
+  "note": "source は Googleドライブにある元ファイル（名前とファイルID）。file はゲーム内に置くときの名前",
+  "defaults": { "bgmVolume": 0.5, "seVolume": 0.8 },
+  "bgm": {
+    "title": {
+      "label": "タイトル／メインテーマ",
+      "source": { "name": "出来損ないの….m4a", "driveId": "1r7qhWnktev_WXi3f6w07dJf952_N9iS3" },
+      "file": "audio/bgm/bgm_title.m4a",
+      "loop": false,
+      "restartGapSec": 3
+    },
+    "home": {
+      "label": "ホーム（マップ選択でも流し続ける）",
+      "source": { "name": "行きて帰りし.m4a", "driveId": "1VRMxenfnXGtQym49RyJgbUr4yLXBDoEn" },
+      "file": "audio/bgm/bgm_home.m4a",
+      "loop": true,
+      "loopStartSec": 85.075,
+      "loopEndSec": 159.405
+    },
+    "battle_grassland": {
+      "label": "草原の戦闘（案A）",
+      "source": { "name": "草原をかき分けて.m4a", "driveId": "1zCEDn8TeMhlmzKUTXQl6Iaf0GGjSVXyr" },
+      "file": "audio/bgm/bgm_battle_grassland.m4a",
+      "loop": true,
+      "loopStartSec": 14.420,
+      "loopEndSec": 41.425
+    }
+  },
+  "screenBgm": {
+    "title": "title",
+    "home": "home",
+    "mapSelect": "home",
+    "battle:grassland": "battle_grassland"
+  },
+  "se": {
+    "tap":        { "label": "タップ",             "file": "audio/se/se_ui_tap.mp3",             "source": { "name": "Soft,_clean_UI_tap_s_#2-1793954426846.mp3",   "driveId": "18csMTpeKwCtTtSW0xgHS_vtah8295Umz" } },
+    "confirm":    { "label": "決定",               "file": "audio/se/se_ui_confirm.mp3",         "source": { "name": "Bright,_satisfying_U_#1-1793956030527.mp3",   "driveId": "1hxWWu9WtTKC6Wy85DUPY4eRRnZf-tBNB" } },
+    "cancel":     { "label": "キャンセル・戻る",   "file": "audio/se/se_ui_cancel.mp3",          "source": { "name": "Gentle_UI_cancel_sou_#3-1793956065076.mp3",   "driveId": "1S1t1LWO7Dhokp4WNTKD0Tsedn9oGDfzG" } },
+    "menuOpen":   { "label": "メニューを開く",     "file": "audio/se/se_ui_menu_open.mp3",       "source": { "name": "Fantasy_RPG_menu_ope_#4-1794025417513.mp3",   "driveId": "1t7SrKOpoUYYXT9dYwgekAODdrYPoOFiy" } },
+    "menuClose":  { "label": "メニューを閉じる",   "file": "audio/se/se_ui_menu_close.mp3",      "source": { "name": "Fantasy_RPG_menu_clo_#3-1794025470142.mp3",   "driveId": "1suuhy1K-UuV8CRx67lI8DP_FtD9U09Dw" } },
+    "slashHeavy": { "label": "斬撃（重い・大剣）", "file": "audio/se/se_battle_slash_heavy.mp3", "source": { "name": "Sharp_sword_slash_wi_#1-1793954583391.mp3",   "driveId": "1EZyufXbi_6sW2YHF4a3zp_-nT2jbP4__" } },
+    "slashLight": { "label": "斬撃（軽い）",       "file": "audio/se/se_battle_slash_light.mp3", "source": { "name": "Quick_light_sword_sl_#3-1794024490328.mp3",   "driveId": "18mLRUP3TfbRY-3-88-n5Y7jYumAkR4f2" } },
+    "fire":       { "label": "炎",                 "file": "audio/se/se_battle_fire.mp3",        "source": { "name": "Fire_attack,_burst_o_#1-1793956155483.mp3",   "driveId": "1TwbxCJCPQBFcqJQrP1OwyWLevYITkZNl" } },
+    "kokoroLink": { "label": "ココロリンク",       "file": "audio/se/se_battle_kokoro_link.mp3", "source": { "name": "Emotional_bond_activ_#3-1793954682223.mp3",   "driveId": "1IG8vq2cgf1HPTT4XqmUwaXdV4yuTDi29" } },
+    "victory":    { "label": "勝利ファンファーレ", "file": "audio/se/jingle_victory.mp3",        "source": { "name": "Short_triumphant_vic_#2-1793956394639.mp3",   "driveId": "145jsqGqUj66knteoBcJ20wvBiDNxsAfN" } }
+  }
+}

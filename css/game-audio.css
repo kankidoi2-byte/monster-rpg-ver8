@@ -1,0 +1,8 @@
+.audio-settings{display:grid;gap:18px;max-width:520px;margin:20px auto;padding:0 16px}
+.audio-settings fieldset{display:grid;gap:16px;border:1px solid #aaa;border-radius:12px;padding:20px}
+.audio-settings legend{padding:0 8px;font-weight:700}
+.audio-settings label{display:flex;align-items:center;gap:12px;min-height:44px}
+.audio-settings output{margin-left:auto}
+.audio-settings input[type=range]{width:100%;min-height:44px;accent-color:#777}
+.audio-settings input[type=checkbox]{width:22px;height:22px;accent-color:#777}
+.title-skip-hint button{display:block;margin:8px auto;padding:8px 16px;color:#fff;background:#222c;border:1px solid #aaa;border-radius:8px;font:inherit;min-height:44px}

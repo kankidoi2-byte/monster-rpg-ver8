@@ -342,6 +342,7 @@ async function performMultiAttackBase(actor,target,move) {
   const defenderHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
   if(defenderIsPlayer){pHp=Math.max(0,pHp-damage);pGuard=false;pAquaShield=false;if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}
   else{targetEntry.hp=Math.max(0,targetEntry.hp-damage);targetEntry.guard=false;targetEntry.aquaShield=false;}
+  if(!linkBarrier.evaded&&typeof gameAudioMoveImpact==='function')gameAudioMoveImpact(move);
   if(typeof battleHpResult==='function')battleHpResult(impactTargetId,defenderHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:linkBarrier.evaded?'回避':`被弾${guard?'・防御':''}${shield?'・水の盾':''}`,damage,barrier:linkBarrier.absorbed,reduced:linkBarrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});
   else if(typeof playBattleImpact==='function')playBattleImpact(impactTargetId,damage,r,moveTypes(move),power);
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
@@ -361,6 +362,7 @@ async function performMultiAttackBase(actor,target,move) {
     const secondBarrier=legacyAttackDefense(rawSecond,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
     const second=secondBarrier.hpDamage;const secondHpBefore=defenderIsPlayer?pHp:targetEntry.hp;
     if(defenderIsPlayer){pHp=Math.max(0,pHp-second);if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;}else targetEntry.hp=Math.max(0,targetEntry.hp-second);
+    if(!secondBarrier.evaded&&typeof gameAudioMoveImpact==='function')gameAudioMoveImpact(move);
     if(typeof battleHpResult==='function')battleHpResult(impactTargetId,secondHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:'追加攻撃',damage:second,barrier:secondBarrier.absorbed,reduced:secondBarrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});
     msg+=`<br>⚡ 電撃が連鎖した！ 追加で<b>${second}</b>ダメージ！`;
     const secondDefense=kokoroLinkDefenseMessage(secondBarrier);if(secondDefense)msg+=`<br>${secondDefense}`;
