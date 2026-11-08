@@ -63,15 +63,19 @@ assert.equal(elements.get('homeAdventureTitle').textContent,'救援依頼を報�
 console.log('Story hub behavior passed (four categories, untouched progress, terminal states, six episodes, request guidance).');
 
 
-context.GRASSLAND_STORY={episodes:Array.from({length:11},(_,i)=>({id:'episode_'+i}))};
+vm.runInContext(read('js/map-story-data.js'),context);
 let available=false;
 context.mapStoryAvailable=()=>available;
-context.mapStoryProgress=id=>({completed:Number(id.split('_')[1])<3});
+context.mapStoryCompletedCount=story=>story.mapId==='grassland'?3:1;
+context.mapStoryMap=story=>({name:story.mapId==='grassland'?'草原':'火山',image:`images/maps/${story.mapId}.webp`});
+context.mapStoryEscape=String;
 vm.runInContext('renderStoryMapCatalog()',context);
 assert.match(elements.get('storyMapList').innerHTML,/3\/11 完了/);
+assert.match(elements.get('storyMapList').innerHTML,/1\/9 完了/);
 assert.match(elements.get('storyMapList').innerHTML,/disabled/);
 available=true;
 vm.runInContext('renderStoryMapCatalog()',context);
 assert.ok(!elements.get('storyMapList').innerHTML.includes('disabled'));
-assert.match(elements.get('storyMapList').innerHTML,/onclick="openMapStory\(\)"/);
+assert.match(elements.get('storyMapList').innerHTML,/onclick="openMapStory\('grassland_whose'\)"/);
+assert.match(elements.get('storyMapList').innerHTML,/onclick="openMapStory\('volcano_breath'\)"/);
 console.log('Map catalog passed (existing gate, shared progress, playable entrance).');

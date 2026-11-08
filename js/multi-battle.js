@@ -25,7 +25,7 @@ function createMultiEnemy(mon, factionId) {
   const difficulty=huntDifficulty(activeHuntRequest?.difficultyId);
   const level=storySpec?.level||(primary?activeHuntRequest?.enemyLevel:null)||huntLevelFor(mon,difficulty.id);
   const max=primary&&!storySpec&&activeHuntRequest?.enemyHp?activeHuntRequest.enemyHp:Math.max(1,Math.round(maxHp(mon,level)*(storySpec?1:difficulty.hpMultiplier)));
-  const attackMultiplier=storySpec?(Number(activeHuntRequest?.attackMultiplier)||1):primary?(Number(activeHuntRequest?.attackMultiplier)||difficulty.attackMultiplier):difficulty.attackMultiplier;
+  const attackMultiplier=storySpec?storySpec.attackMultiplier:primary?(Number(activeHuntRequest?.attackMultiplier)||difficulty.attackMultiplier):difficulty.attackMultiplier;
   const rewardMultiplier=primary?(Number(activeHuntRequest?.rewardMultiplier)||difficulty.rewardMultiplier):difficulty.rewardMultiplier;
   return {
     id:factionId, factionId, mon:structuredClone(mon), level, hp:max, maxHp:max, attackMultiplier, rewardMultiplier,
