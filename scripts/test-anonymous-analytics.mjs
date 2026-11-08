@@ -2,24 +2,25 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import fs from 'node:fs';
 import {webcrypto} from 'node:crypto';
-const store=new Map(),requests=[],callbacks={};let tick;
+const store=new Map(),requests=[],callbacks={};let tick,now=0;
+const TestDate=class extends Date{constructor(...args){super(...(args.length?args:[now]));}static now(){return now;}};
 const p={id:webcrypto.randomUUID(),token:'private-profile-token',name:'テスト',consent:false};
-const ctx=vm.createContext({crypto:webcrypto,console,Date,AbortController,setTimeout,clearTimeout,navigator:{userAgentData:{getHighEntropyValues:async keys=>{assert.deepEqual(Array.from(keys),['model']);return {model:'SCG30'};}}},MonsterProfiles:{current:()=>p},save:{party:['unit'],instances:[{uid:'unit',id:'freigal',level:5}],equippedSkills:{unit:['skill_test']},history:{wins:3},progress:{tutorial:{stepId:'first_step',completed:false}}},selectedMap:{id:'grassland'},activeHuntRequest:{difficultyId:'normal'},battleTurnCount:4,multiBattle:null,enemy:{id:'slime'},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},document:{visibilityState:'visible',getElementById:()=>null,addEventListener:(k,v)=>callbacks[k]=v},addEventListener:(k,v)=>callbacks[k]=v,setInterval:f=>{tick=f;return 1;},show:()=>{},showBattleOutcome:()=>{},fetch:async(url,options)=>{requests.push({url,options});return {ok:true};}});
+const ctx=vm.createContext({crypto:webcrypto,console,Date:TestDate,AbortController,setTimeout,clearTimeout,navigator:{userAgentData:{getHighEntropyValues:async keys=>{assert.deepEqual(Array.from(keys),['model']);return {model:'SCG30'};}}},MonsterProfiles:{current:()=>p},save:{party:['unit'],instances:[{uid:'unit',id:'freigal',level:5}],equippedSkills:{unit:['skill_test']},history:{wins:3},progress:{tutorial:{stepId:'first_step',completed:false}}},selectedMap:{id:'grassland'},activeHuntRequest:{difficultyId:'normal'},battleTurnCount:4,multiBattle:null,enemy:{id:'slime'},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},document:{visibilityState:'visible',getElementById:()=>null,addEventListener:(k,v)=>callbacks[k]=v},addEventListener:(k,v)=>callbacks[k]=v,setInterval:f=>{tick=f;return 1;},show:()=>{},showBattleOutcome:()=>{},fetch:async(url,options)=>{requests.push({url,options});return {ok:true};}});
 vm.runInContext(fs.readFileSync(new URL('../js/analytics.js',import.meta.url),'utf8'),ctx);
 ctx.MonsterAnalytics.start();await new Promise(r=>setImmediate(r));
 assert.equal(requests.length,1,'startup reports even with legacy consent=false');
 assert.equal(JSON.parse(requests[0].options.body).events[0].type,'session_start');
 assert.equal(typeof ctx.MonsterAnalytics.consentChanged,'undefined','no reporting off API');
-ctx.show('home');ctx.showBattleOutcome({kind:'victory'});await new Promise(r=>setImmediate(r));
+now=10000;ctx.show('home');ctx.showBattleOutcome({kind:'victory'});await new Promise(r=>setImmediate(r));
 const batch=JSON.parse(requests.at(-1).options.body);
 const battle=batch.events.find(e=>e.type==='battle_result');
 assert.equal(battle.data.party[0].skills[0],'skill_test');assert.equal(battle.data.map,'grassland');assert.equal(batch.device.model,'SCG30');
 assert(!('save' in batch));assert.equal(requests[0].options.credentials,'omit');
 assert(!requests.some(r=>r.options.body.includes('RECORDS_READ_KEY')));
 assert.equal(requests[0].url,'https://monster-battle-records.kanki-doi-2.chatgpt.site/api/events');
-ctx.fetch=async()=>{throw Error('offline');};ctx.show('party');tick();await new Promise(r=>setImmediate(r));
+now=20000;ctx.fetch=async()=>{throw Error('offline');};ctx.show('party');tick();await new Promise(r=>setImmediate(r));
 const pending=JSON.parse(store.get(`mb_analytics_queue_${p.id}`));assert(pending.some(e=>e.type==='screen'&&e.data.screen==='party'),'offline queue retains activity');
-ctx.fetch=async(url,options)=>{requests.push({url,options});return {ok:true};};await new Promise(r=>setTimeout(r,1));ctx.Date=class extends Date{static now(){return Date.now()+31000;}};tick();await new Promise(r=>setImmediate(r));
+ctx.fetch=async(url,options)=>{requests.push({url,options});return {ok:true};};now+=30000;tick();await new Promise(r=>setImmediate(r));
 assert.equal(JSON.parse(store.get(`mb_analytics_queue_${p.id}`)).length,0,'successful retry drains queue');
 const count=requests.length;ctx.MonsterProfiles.current=()=>null;tick();assert.equal(requests.length,count,'no upload without valid profile');
 console.log('Automatic analytics: startup, legacy OFF, payload bounds, no off API, offline queue and retry PASS');
@@ -33,7 +34,7 @@ function tab(shared=new Map(),locks){
   const c=vm.createContext({
     crypto:webcrypto,AbortController,console,navigator:{locks},
     Date:class extends Date{constructor(...args){super(...(args.length?args:[now]));}static now(){return now;}},
-    MonsterProfiles:{current:()=>user},save:{instances:[],history:{},progress:{}},
+    selectedMap:{id:'test-map'},MonsterProfiles:{current:()=>user},save:{instances:[],history:{},progress:{}},
     localStorage:{getItem:k=>shared.get(k)??null,setItem:(k,v)=>shared.set(k,v)},
     document:{visibilityState:'visible',addEventListener:(k,f)=>listeners[k]=f},
     addEventListener:(k,f)=>listeners[k]=f,
@@ -49,7 +50,9 @@ function tab(shared=new Map(),locks){
     async tick(){interval();await drain();},
     async screen(name){c.show(name);await drain();},
     async visibility(value){c.document.visibilityState=value;listeners.visibilitychange();await drain();},
-    async input(){listeners.pointerdown();await drain();},
+    async input(type='pointerdown'){listeners[type]();await drain();},
+    async battle(){c.showBattleOutcome({kind:'victory'});await drain();},
+    async pagehide(){listeners.pagehide();await drain();},
     success(){c.fetch=(url,options)=>{calls.push({url,options,at:now});return Promise.resolve({ok:true});};},
   };
 }
@@ -71,7 +74,7 @@ function tab(shared=new Map(),locks){
   t.success();await t.advance(300000);await t.tick();
   // Reset after successful transmission: a new failure waits only 30 seconds.
   t.c.fetch=(url,options)=>{t.calls.push({url,options});return Promise.reject(Error('offline'));};
-  await t.screen('after-success');await t.tick();const n=t.calls.length;
+  await t.advance(10000);await t.screen('after-success');await t.tick();const n=t.calls.length;
   await t.advance(30000);await t.tick();assert.equal(t.calls.length,n+1);
 }
 for(const withLocks of [false,true]){
@@ -123,3 +126,47 @@ for(const withLocks of [false,true]){
   assert.equal(t.queue.filter(e=>e.type==='active_time').reduce((n,e)=>n+e.data.seconds,0),30,'pagehide/BFCache excludes time away');
 }
 console.log('SEC-03 A/B, SEC-04 A/B/C (with and without Web Locks), SEC-05 A/B/C PASS');
+
+// Healthy network and pending screen events: input must not flush the queue.
+for(const type of ['pointerdown','keydown']){
+  const t=tab();t.success();await t.start();
+  for(let i=0;i<20;i++){
+    await t.advance(1000);await t.screen('tap-'+i);await t.input(type);
+  }
+  await t.advance(9999);
+  assert.equal(t.calls.length,1,`${type}: only startup sends in the first 30 seconds`);
+  assert.equal(t.queue.filter(e=>e.type==='screen').length,20);
+  await t.advance(1);await t.tick();
+  assert.equal(t.calls.length,2,'30-second tick sends queued input activity once');
+  assert.equal(t.calls.filter(c=>c.at>0&&c.at<=30000).length,1);
+}
+{
+  const t=tab();t.success();await t.start();
+  await t.advance(9999);await t.battle();await t.tick();
+  assert.equal(t.calls.length,1,'ordinary sends blocked before 10 seconds');
+  await t.advance(1);await t.battle();
+  assert.equal(t.calls.length,2,'battle result sends exactly at 10 seconds');
+  await t.advance(9999);await t.tick();assert.equal(t.calls.length,2);
+  await t.advance(1);await t.tick();assert.equal(t.calls.length,3);
+}
+for(const lifecycle of ['hidden','pagehide']){
+  const t=tab();t.success();await t.start();await t.advance(1000);await t.screen('pending');
+  if(lifecycle==='hidden')await t.visibility('hidden');else await t.pagehide();
+  assert.equal(t.calls.length,2,`${lifecycle} bypasses the 10-second minimum`);
+  await t.screen('after-exit');await t.visibility('visible');
+  t.listeners.pageshow();await drain();assert.equal(t.calls.length,2,'resume does not flush');
+  await t.advance(9999);await t.battle();assert.equal(t.calls.length,2,'exit send also updates send start');
+  await t.advance(1);await t.battle();assert.equal(t.calls.length,3);
+  const offline=tab();await offline.start();await offline.advance(1000);
+  if(lifecycle==='hidden')await offline.visibility('hidden');else await offline.pagehide();
+  assert.equal(offline.calls.length,2,`${lifecycle} attempts delivery despite retry backoff`);
+}
+{
+  const t=tab();let complete;
+  t.c.fetch=(url,options)=>{t.calls.push({url,options});return new Promise(r=>complete=r);};
+  await t.start();await t.advance(9000);await t.visibility('hidden');await t.pagehide();
+  assert.equal(t.calls.length,1,'lifecycle exits never overlap an in-flight send');
+  complete({ok:true});await drain();t.success();
+  await t.advance(1000);await t.battle();assert.equal(t.calls.length,2,'minimum measured from start, not completion');
+}
+console.log('Input pacing, 10-second start interval, lifecycle exceptions and resume regressions PASS');
