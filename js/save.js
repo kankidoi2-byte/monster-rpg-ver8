@@ -170,9 +170,14 @@ function contractorSaveDefaults(){
 
 function normalizeMapStories(value){
   const maps=isSaveObject(value)?{...value}:{};
-  const source=isSaveObject(maps.grassland_whose)?maps.grassland_whose:{};
+  maps.grassland_whose=normalizeMapStory(maps.grassland_whose,'gl',11);
+  maps.volcano_breath=normalizeMapStory(maps.volcano_breath,'vc',9);
+  return maps;
+}
+function normalizeMapStory(value,prefix,total){
+  const source=isSaveObject(value)?value:{};
   const episodes=isSaveObject(source.episodes)?{...source.episodes}:{};
-  const ids=Array.from({length:11},(_,i)=>`gl_${String(i+1).padStart(2,'0')}`);
+  const ids=Array.from({length:total},(_,i)=>`${prefix}_${String(i+1).padStart(2,'0')}`);
   for(const id of ids){
     if(!isSaveObject(episodes[id]))continue;
     const p=episodes[id];episodes[id]={...p,completed:p.completed===true,firstVictory:p.firstVictory===true,firstRewardClaimed:p.firstRewardClaimed===true,victoryCount:nonNegativeInteger(p.victoryCount)};
@@ -182,7 +187,7 @@ function normalizeMapStories(value){
     nodeId:typeof r.nodeId==='string'?r.nodeId:null,attemptId:typeof r.attemptId==='string'?r.attemptId:null,
     rewardCommitted:r.rewardCommitted===true,postPending:r.postPending===true,
     participantUids:Array.isArray(r.participantUids)?[...new Set(r.participantUids.filter(x=>typeof x==='string'))]:[]}:null;
-  maps.grassland_whose={...source,version:1,episodes,resume};return maps;
+  return {...source,version:1,episodes,resume};
 }
 function normalizeAutoBattle(raw){
   const normalizeKey=key=>{

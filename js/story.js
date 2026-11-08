@@ -81,10 +81,11 @@ function selectStoryCategory(category){
 }
 function renderStoryMapCatalog(){
   const root=document.getElementById('storyMapList');
-  if(!root||typeof GRASSLAND_STORY==='undefined')return;
-  const count=GRASSLAND_STORY.episodes.filter(e=>mapStoryProgress(e.id).completed).length;
-  const available=mapStoryAvailable();
-  root.innerHTML=`<article class="story-map-card"><img src="images/maps/grassland.webp" alt=""><div><small>草原 · マップストーリー</small><h2>草原は、誰のもの</h2><p>全${GRASSLAND_STORY.episodes.length}話 · ${count}/${GRASSLAND_STORY.episodes.length} 完了</p><button type="button" onclick="openMapStory()" ${available?'':'disabled'}>各話を見る ›</button>${available?'':'<p>序章を完了またはスキップすると解放されます。</p>'}</div></article>`;
+  if(!root||typeof MAP_STORIES==='undefined')return;
+  root.innerHTML=MAP_STORIES.map(story=>{
+    const map=mapStoryMap(story),total=story.episodes.length,count=mapStoryCompletedCount(story),available=mapStoryAvailable(story);
+    return `<article class="story-map-card"><img src="${mapStoryEscape(map.image)}" alt=""><div><small>${mapStoryEscape(map.name)} · マップストーリー</small><h2>${mapStoryEscape(story.title)}</h2><p>全${total}話 · ${count}/${total} 完了</p><button type="button" data-story-id="${story.id}" onclick="openMapStory('${story.id}')" ${available?'':'disabled'}>各話を見る ›</button>${available?'':'<p>序章を完了またはスキップすると解放されます。</p>'}</div></article>`;
+  }).join('');
 }
 function returnToStoryMapCatalog(){
   if(mapStorySaveRetry)return;

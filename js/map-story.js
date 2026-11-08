@@ -1,21 +1,25 @@
-/* Grassland story controller. Normal exploration never enters this outcome path. */
+/* Map story controller. Normal exploration never enters this outcome path. */
+let mapStoryId=GRASSLAND_STORY.id;
 let mapStoryUi=null;
 let mapStorySaveRetry=null;
 let mapStoryStarting=false;
 const mapStoryEscape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function mapStoryState(){return save.mapStories.grassland_whose;}
-function mapStoryEpisode(id){return GRASSLAND_STORY.episodes.find(e=>e.id===id);}
-function mapStoryProgress(id){return mapStoryState().episodes[id]||{completed:false,firstVictory:false,firstRewardClaimed:false,victoryCount:0};}
-function mapStoryAvailable(){return ['completed','skipped'].includes(save.progress?.tutorial?.status)&&worldMapEntryAvailable(MAPS.find(m=>m.id==='grassland'));}
+function currentMapStory(){return MAP_STORIES.find(story=>story.id===mapStoryId);}
+function mapStoryMap(story){return MAPS.find(map=>map.id===story.mapId);}
+function mapStoryState(storyId=mapStoryId){return save.mapStories[storyId];}
+function mapStoryEpisode(id){return currentMapStory().episodes.find(e=>e.id===id);}
+function mapStoryProgress(id,storyId=mapStoryId){return mapStoryState(storyId).episodes[id]||{completed:false,firstVictory:false,firstRewardClaimed:false,victoryCount:0};}
+function mapStoryCompletedCount(story){return story.episodes.filter(e=>mapStoryProgress(e.id,story.id).completed).length;}
+function mapStoryAvailable(story=currentMapStory()){return ['completed','skipped'].includes(save.progress?.tutorial?.status)&&worldMapEntryAvailable(mapStoryMap(story));}
 function mapStoryUnlocked(episode){return mapStoryAvailable()&&(!episode.unlockAfter||mapStoryProgress(episode.unlockAfter).completed);}
 function isMapStoryBattle(){return activeHuntRequest?.source==='map_story';}
 function mapStoryBattleToken(){return isMapStoryBattle()?activeHuntRequest:null;}
-function mapStoryTokenValid(token){return !token||(activeHuntRequest===token&&token.identity===saveTransactionIdentity()&&mapStoryState().resume?.phase==='battle'&&mapStoryState().resume?.attemptId===token.attemptId);}
+function mapStoryTokenValid(token){return !token||(activeHuntRequest===token&&token.storyId===mapStoryId&&token.identity===saveTransactionIdentity()&&mapStoryState().resume?.phase==='battle'&&mapStoryState().resume?.attemptId===token.attemptId);}
 function mapStoryWrite(mutate,onSaved){
   if(mapStorySaveRetry)return false;
-  const identity=saveTransactionIdentity();
+  const identity=saveTransactionIdentity(),storyId=mapStoryId;
   const attempt=()=>{
-    if(identity!==saveTransactionIdentity()){mapStorySaveRetry=null;mapStoryUi=null;return false;}
+    if(identity!==saveTransactionIdentity()||storyId!==mapStoryId){mapStorySaveRetry=null;mapStoryUi=null;return false;}
     if(!commitSaveMutation(mutate)){
       mapStorySaveRetry=attempt;
       const next=document.getElementById('next');if(next)next.classList.add('hidden');
@@ -30,13 +34,16 @@ function mapStoryWrite(mutate,onSaved){
 }
 function retryMapStorySave(){return mapStorySaveRetry?.()||false;}
 function mapStoryEntryHtml(map){
-  if(map.id!=='grassland')return '';
-  const count=GRASSLAND_STORY.episodes.filter(e=>mapStoryProgress(e.id).completed).length;
-  return `<aside class="wm-event-notice"><strong>マップストーリー</strong><p>草原は、誰のもの／全11話 · ${count}/11 完了</p><button type="button" class="wm-depart" onclick="openMapStory()" ${mapStoryAvailable()?'':'disabled'}>草原の物語を見る ›</button>${mapStoryAvailable()?'':'<p>序章を完了またはスキップすると解放されます。</p>'}</aside>`;
+  const story=MAP_STORIES.find(entry=>entry.mapId===map.id);
+  if(!story)return '';
+  const total=story.episodes.length,count=mapStoryCompletedCount(story),available=mapStoryAvailable(story);
+  return `<aside class="wm-event-notice"><strong>マップストーリー</strong><p>${mapStoryEscape(story.title)}／全${total}話 · ${count}/${total} 完了</p><button type="button" class="wm-depart" data-story-id="${story.id}" onclick="openMapStory('${story.id}')" ${available?'':'disabled'}>${mapStoryEscape(map.name)}の物語を見る ›</button>${available?'':'<p>序章を完了またはスキップすると解放されます。</p>'}</aside>`;
 }
-function openMapStory(){
+function openMapStory(storyId=mapStoryId){
   if(mapStorySaveRetry)return retryMapStorySave();
-  if(!mapStoryAvailable())return false;
+  const story=MAP_STORIES.find(entry=>entry.id===storyId);
+  if(!story||!mapStoryAvailable(story))return false;
+  mapStoryId=story.id;
   mapStoryUi=null;show('mapStory');renderMapStory();return true;
 }
 function mapStoryEnemiesLabel(episode){return episode.enemies.map(e=>`${by(e.speciesId).name}（${by(e.speciesId).rarity}・Lv.${e.level}）`).join('／');}
@@ -47,18 +54,18 @@ function renderMapStory(){
   const resume=mapStoryState().resume;
   if(mapStoryUi?.identity!==saveTransactionIdentity())mapStoryUi=null;
   if(mapStoryUi){renderMapStoryDialogue();return;}
-  const count=GRASSLAND_STORY.episodes.filter(e=>mapStoryProgress(e.id).completed).length;
-  root.innerHTML=`<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>草原は、誰のもの</h2><p>全11話 · ${count}/11 完了</p>${count===11?'<p>草原の暮らしを知り、道を見つけた。</p>':''}<div class="map-story-list">${GRASSLAND_STORY.episodes.map(e=>{
+  const story=currentMapStory(),map=mapStoryMap(story),total=story.episodes.length,count=mapStoryCompletedCount(story);
+  root.innerHTML=`<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>${mapStoryEscape(story.title)}</h2><p>全${total}話 · ${count}/${total} 完了</p>${count===total?`<p>${mapStoryEscape(story.completedText)}</p>`:''}<div class="map-story-list">${story.episodes.map(e=>{
     const p=mapStoryProgress(e.id),unlocked=mapStoryUnlocked(e),pending=resume?.episodeId===e.id;
     const status=p.completed?'完了':pending?'進行中':unlocked?'解放済':'未解放';
     const action=pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}')">${resume.phase==='post'?'戦闘後から再開':'つづきから'}</button>`:!p.completed?`<button type="button" onclick="startMapStoryEpisode('${e.id}')" ${unlocked?'':'disabled'}>第${e.number}話を始める</button>`:'';
-    return `<article class="map-story-card"><small>第${e.number}話 · ${status}</small><h3>${mapStoryEscape(e.title)}</h3><p>推奨Lv.${e.recommendedLevel} · ${e.battleMode==='three_way'?'三つ巴戦':'1対1'}</p><p>${mapStoryEscape(mapStoryEnemiesLabel(e))}</p><p>初回：各個体EXP ${e.firstReward.exp}／コイン ${e.firstReward.coins}<br>再戦：各個体EXP 20／コイン 10</p>${action}${p.completed?`<button type="button" onclick="readMapStoryEpisode('${e.id}')">読み返す</button>${!pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}',true)">再戦する</button>`:''}`:''}</article>`;
-  }).join('')}</div><button type="button" onclick="leaveMapStory()">草原へ戻る</button>`;
+    return `<article class="map-story-card"><small>第${e.number}話 · ${status}</small><h3>${mapStoryEscape(e.title)}</h3><p>推奨Lv.${e.recommendedLevel} · ${e.battleMode==='three_way'?'三つ巴戦':'1対1'}</p><p>${mapStoryEscape(mapStoryEnemiesLabel(e))}</p><p>初回：各個体EXP ${e.firstReward.exp}／コイン ${e.firstReward.coins}<br>再戦：各個体EXP ${e.repeatReward.exp}／コイン ${e.repeatReward.coins}</p>${action}${p.completed?`<button type="button" onclick="readMapStoryEpisode('${e.id}')">読み返す</button>${!pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}',true)">再戦する</button>`:''}`:''}</article>`;
+  }).join('')}</div><button type="button" onclick="leaveMapStory()">${mapStoryEscape(map.name)}へ戻る</button>`;
 }
 function leaveMapStory(){
   if(mapStorySaveRetry)return;
   mapStoryUi=null;activeHuntRequest=null;endPartyRecovery();busy=false;
-  showBattleChoices();worldMapSelectedId='grassland';worldMapSelectedEvent=null;
+  showBattleChoices();worldMapSelectedId=currentMapStory().mapId;worldMapSelectedEvent=null;
   renderWorldMap(document.getElementById('battleChoiceList'));
 }
 function startMapStoryEpisode(id,repeat=false){
@@ -75,7 +82,7 @@ function startMapStoryEpisode(id,repeat=false){
   });
 }
 function readMapStoryEpisode(id){
-  if(!mapStoryProgress(id).completed||mapStorySaveRetry)return false;
+  if(!mapStoryEpisode(id)||!mapStoryProgress(id).completed||mapStorySaveRetry)return false;
   mapStoryUi={episodeId:id,phase:'pre',cursor:0,replay:true,identity:saveTransactionIdentity()};show('mapStory');renderMapStory();return true;
 }
 // Stage directions become narration when an existing illustration cannot show them.
@@ -87,30 +94,37 @@ const MAP_STORY_STAGE_COPY={
   gl_07_pre_01:'石の古道をゴーレムが決まった線に沿って巡回している。三人は崩れた石の脇で止まる。',
   gl_11_post_01:'ボルタックスが遠い雲の方へ離れる。三人は斜面の陰へ避難した。空にはまだ雲が広がっている。',
   gl_11_post_05:'雨が弱まったころ。',
-  gl_11_post_08:'それから数日後。一行は最初の窪地へ戻ってきた。'
+  gl_11_post_08:'それから数日後。一行は最初の窪地へ戻ってきた。',
+  vc_09_post_01:'アシュレイアが高度を上げ、熱気の筋へ離れる。一行は追撃せず、尾根を下る。溶岩は流れ続け、噴気が上がっていた。',
+  vc_09_post_05:'それから数日後。一行は麓の、広く見渡せる場所を再訪した。',
+  vc_09_post_09:'遠くの斜面にフレイウルフ。熱気のそばにはツバキ、岩壁の赤い光の近くにはイグナロスの姿があった。'
 };
 function mapStoryNodeText(node){return node.kind==='stage'?(MAP_STORY_STAGE_COPY[node.id]||node.text):node.text;}
 function renderMapStoryDialogue(){
   const ui=mapStoryUi,episode=mapStoryEpisode(ui.episodeId),resume=mapStoryState().resume;
+  const story=currentMapStory(),map=mapStoryMap(story),mapName=mapStoryEscape(map.name);
+  const finalEpisode=episode.number===story.episodes.length,isVolcano=map.id==='volcano';
   const nodes=ui.phase==='post'?episode.postNodes:episode.preNodes;
   const index=ui.replay?ui.cursor:resume?.nodeId?nodes.findIndex(n=>n.id===resume.nodeId):nodes.length;
   const node=nodes[index];
   const root=document.getElementById('mapStoryContent');
-  const names={gnosis:'グノーシス',galdra:'ガルドラ',contractor:'契約者',system:'システム'};
-  const label=node?(names[node.speaker]||'情景'):ui.phase==='pre'?(ui.replay?'戦闘の記録':'戦闘の準備'):'この話の終わり';
-  const image=node?.speaker==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':node?.speaker==='galdra'?IMG[by('galdra').imgKey]:null;
-  const shade=episode.number<=4?.66:episode.number<=7?.69:episode.number<=10?.72:ui.phase==='pre'?.76:.66;
-  const text=node?mapStoryNodeText(node):ui.phase==='pre'?(ui.replay?`${mapStoryEnemiesLabel(episode)}との戦闘を切り抜けた。`:`敵：${mapStoryEnemiesLabel(episode)}／推奨Lv.${episode.recommendedLevel}。ストーリー戦では契約できません。`):ui.replay?'戦闘後の会話を読み終えました。':episode.number===11?'草原の物語を読み終えました。':'戦闘後の会話を読み終えました。次の話へ進めます。';
-  const primary=node?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">次へ</button>':ui.phase==='pre'?(ui.replay?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" class="map-story-next" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button>`):`<button type="button" class="map-story-next" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':episode.number===11?'草原の物語を終える':`第${episode.number}話を終える`}</button>`;
+  const names={gnosis:'グノーシス',galdra:'ガルドラ',contractor:'契約者',system:'システム',tsubaki:'ツバキ'};
+  const label=node?(names[node.speaker]||(isVolcano?'':'情景')):ui.phase==='pre'?(ui.replay?'戦闘の記録':'戦闘の準備'):'この話の終わり';
+  const speaker=node?.speaker;
+  const image=speaker==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':(speaker==='galdra'||speaker==='tsubaki')?IMG[by(speaker).imgKey]:null;
+  const shade=isVolcano?.30:episode.number<=4?.66:episode.number<=7?.69:episode.number<=10?.72:ui.phase==='pre'?.76:.66;
+  const lighting=isVolcano?(episode.number>=7&&episode.number<=8?'ash':episode.number>=5&&episode.number<=6?'warm':''):'';
+  const text=node?mapStoryNodeText(node):ui.phase==='pre'?(ui.replay?`${mapStoryEnemiesLabel(episode)}との戦闘を切り抜けた。`:`敵：${mapStoryEnemiesLabel(episode)}／推奨Lv.${episode.recommendedLevel}。ストーリー戦では契約できません。`):ui.replay?'戦闘後の会話を読み終えました。':finalEpisode?`${map.name}の物語を読み終えました。`:'戦闘後の会話を読み終えました。次の話へ進めます。';
+  const primary=node?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">次へ</button>':ui.phase==='pre'?(ui.replay?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" class="map-story-next" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button>`):`<button type="button" class="map-story-next" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':finalEpisode?`${mapName}の物語を終える`:`第${episode.number}話を終える`}</button>`;
   const secondary=!node&&ui.phase==='pre'&&!ui.replay?'<button type="button" class="map-story-skip" onclick="editMapStoryParty()">編成を確認</button>':`<button type="button" class="map-story-skip" onclick="skipMapStoryDialogue()" ${node?'':'disabled'}>会話スキップ</button>`;
   const progress=Math.min(index+1,nodes.length);
-  root.innerHTML=`<div class="map-story-scene" style="--story-shade:${shade}">
-    <img class="map-story-bg" src="images/maps/grassland.webp" alt="草原">
+  root.innerHTML=`<div class="map-story-scene${node?.id==='vc_09_post_05'?' map-story-time-skip':''}" data-lighting="${lighting}" style="--story-shade:${shade}">
+    <img class="map-story-bg" src="${mapStoryEscape(map.image)}" alt="${mapName}">
     <div class="map-story-character-stage">${image?`<img class="map-story-speaker" src="${image}" alt="${label}">`:''}</div>
     <section class="map-story-dialogue" aria-labelledby="mapStoryEpisodeTitle">
-      <header class="map-story-dialogue-head"><div><span>草原 · ${ui.replay?'読み返し · ':''}${ui.phase==='pre'?'戦闘前':'戦闘後'}</span><h2 id="mapStoryEpisodeTitle">第${episode.number}話「${mapStoryEscape(episode.title)}」</h2></div><button type="button" class="map-story-close" onclick="closeMapStoryDialogue()" aria-label="会話を閉じて話一覧へ戻る">×</button></header>
+      <header class="map-story-dialogue-head"><div><span>${mapName} · ${ui.replay?'読み返し · ':''}${ui.phase==='pre'?'戦闘前':'戦闘後'}</span><h2 id="mapStoryEpisodeTitle">第${episode.number}話「${mapStoryEscape(episode.title)}」</h2></div><button type="button" class="map-story-close" onclick="closeMapStoryDialogue()" aria-label="会話を閉じて話一覧へ戻る">×</button></header>
       <div class="map-story-progress" role="progressbar" aria-label="${ui.phase==='pre'?'戦闘前':'戦闘後'}の会話" aria-valuemin="0" aria-valuemax="${nodes.length}" aria-valuenow="${progress}"><span style="width:${progress/nodes.length*100}%"></span></div>
-      <div class="map-story-message" aria-live="polite" aria-atomic="true"><strong>${label}</strong><p>${mapStoryEscape(text)}</p></div>
+      <div class="map-story-message" aria-live="polite" aria-atomic="true">${label?`<strong>${label}</strong>`:''}<p>${mapStoryEscape(text)}</p></div>
       <div class="map-story-actions">${primary}<button type="button" class="map-story-back" onclick="previousMapStoryNode()" ${index>0?'':'disabled'}>戻る</button>${secondary}<button type="button" class="map-story-list-button" onclick="closeMapStoryDialogue()">話一覧へ</button></div>
     </section>
   </div>`;
@@ -131,7 +145,7 @@ function moveMapStoryCursor(target){
 function previousMapStoryNode(){moveMapStoryCursor('previous');}
 function skipMapStoryDialogue(){moveMapStoryCursor('end');}
 function advanceMapStoryNode(){
-  const ui=mapStoryUi;if(!ui||mapStorySaveRetry)return;
+  const ui=mapStoryUi;if(!ui||mapStorySaveRetry||ui.identity!==saveTransactionIdentity())return;
   const e=mapStoryEpisode(ui.episodeId),nodes=ui.phase==='post'?e.postNodes:e.preNodes;
   if(ui.replay){if(ui.cursor>=nodes.length&&ui.phase==='pre'){ui.phase='post';ui.cursor=0;}else ui.cursor++;renderMapStory();return;}
   const r=mapStoryState().resume;if(!r||r.phase!==ui.phase)return;
@@ -142,8 +156,9 @@ function closeMapStoryDialogue(){if(mapStorySaveRetry)return;mapStoryUi=null;ren
 function editMapStoryParty(){if(mapStorySaveRetry||mapStoryState().resume?.phase==='battle')return;mapStoryUi=null;show('partySet');}
 function renderMapStoryPartyReturn(){
   document.getElementById('mapStoryPartyReturn')?.remove();
-  if(mapStoryState().resume?.phase!=='pre'&&!GRASSLAND_STORY.episodes.some(e=>mapStoryProgress(e.id).completed))return;
-  const b=document.createElement('button');b.id='mapStoryPartyReturn';b.type='button';b.textContent='草原の物語へ戻る';b.onclick=openMapStory;
+  const story=currentMapStory();
+  if(mapStoryState().resume?.phase!=='pre'&&!mapStoryCompletedCount(story))return;
+  const b=document.createElement('button');b.id='mapStoryPartyReturn';b.type='button';b.textContent=`${mapStoryMap(story).name}の物語へ戻る`;b.onclick=()=>openMapStory(story.id);
   document.getElementById('partySet').prepend(b);
 }
 function createMapStoryEnemy(spec){
@@ -153,9 +168,9 @@ function createMapStoryEnemy(spec){
 function createMapStoryRequest(episode,attemptId,participantUids){
   // Validate every enemy and move before saving departure; never use random hunt construction.
   episode.enemies.forEach(createMapStoryEnemy);
-  const first=episode.enemies[0];
-  return {source:'map_story',storyId:GRASSLAND_STORY.id,storyVersion:1,episodeId:episode.id,attemptId,identity:saveTransactionIdentity(),participantUids:[...participantUids],
-    mapId:'grassland',enemyId:first.speciesId,difficultyId:'normal',difficultyLabel:`草原ストーリー／第${episode.number}話`,enemyLevel:first.level,enemyHp:maxHp(by(first.speciesId),first.level),
+  const story=currentMapStory(),first=episode.enemies[0];
+  return {source:'map_story',storyId:story.id,storyVersion:story.version,episodeId:episode.id,attemptId,identity:saveTransactionIdentity(),participantUids:[...participantUids],
+    mapId:story.mapId,enemyId:first.speciesId,difficultyId:'normal',difficultyLabel:`${mapStoryMap(story).name}ストーリー／第${episode.number}話`,enemyLevel:first.level,enemyHp:maxHp(by(first.speciesId),first.level),
     attackMultiplier:first.attackMultiplier,attackText:String(first.attackMultiplier),rewardMultiplier:1,rewardText:'固定',conditions:[],battleMode:episode.battleMode,
     secondEnemyId:episode.enemies[1]?.speciesId||null,invasionEnemyId:null,invasionTurn:null,enemies:structuredClone(episode.enemies)};
 }
@@ -187,8 +202,8 @@ function launchMapStoryBattle(id){
   mapStoryStarting=true;
   const saved=mapStoryWrite(()=>{mapStoryState().resume={...mapStoryState().resume,phase:'battle',nodeId:null,attemptId,rewardCommitted:false,postPending:false,participantUids:request.participantUids};},()=>{
     mapStoryStarting=false;mapStoryUi=null;endPartyRecovery();prepareBattleParty(request.participantUids.map(uid=>save.instances.find(i=>i.uid===uid)).filter(Boolean));
-    beginChosenBattle('grassland',request.enemyId,'normal',request);
-    document.getElementById('log').innerHTML=`草原ストーリー／第${episode.number}話を開始！<br>${mapStoryEscape(mapStoryEnemiesLabel(episode))}が立ちはだかった。`;
+    beginChosenBattle(request.mapId,request.enemyId,request.difficultyId,request);
+    document.getElementById('log').innerHTML=`${mapStoryEscape(request.difficultyLabel)}を開始！<br>${mapStoryEscape(mapStoryEnemiesLabel(episode))}が立ちはだかった。`;
     mapStoryBattleBanner();
   });
   if(!saved)mapStoryStarting=false;return saved;
@@ -196,7 +211,7 @@ function launchMapStoryBattle(id){
 function mapStoryBattleBanner(){
   if(!isMapStoryBattle())return;
   const e=mapStoryEpisode(activeHuntRequest.episodeId);
-  document.getElementById('battleMapBanner').innerHTML=`<div class="panel"><h2>草原ストーリー／第${e.number}話</h2><p>${mapStoryEscape(e.title)} · ${e.battleMode==='three_way'?'三つ巴戦':'1対1'}</p><p>${mapStoryEscape(mapStoryEnemiesLabel(e))}</p></div>`;
+  document.getElementById('battleMapBanner').innerHTML=`<div class="panel"><h2>${mapStoryEscape(activeHuntRequest.difficultyLabel)}</h2><p>${mapStoryEscape(e.title)} · ${e.battleMode==='three_way'?'三つ巴戦':'1対1'}</p><p>${mapStoryEscape(mapStoryEnemiesLabel(e))}</p></div>`;
 }
 function mapStoryAwardExp(uids,amount){
   for(const uid of uids){const ins=save.instances.find(i=>i.uid===uid);if(!ins)continue;
@@ -242,14 +257,16 @@ function resumeMapStoryAfterBattle(){
 }
 function mapStoryEditAfterBattle(){mapStoryListAfterBattle();editMapStoryParty();}
 function completeMapStoryEpisode(){
-  if(!mapStoryUi||mapStorySaveRetry)return;
+  if(!mapStoryUi||mapStorySaveRetry||mapStoryUi.identity!==saveTransactionIdentity())return;
   if(mapStoryUi.replay){mapStoryUi=null;renderMapStory();return;}
   const id=mapStoryUi.episodeId,e=mapStoryEpisode(id),r=mapStoryState().resume;
   if(r?.episodeId!==id||r.phase!=='post'||r.nodeId!==null)return;
   mapStoryWrite(()=>{mapStoryState().episodes[id].completed=true;mapStoryState().resume=null;},()=>{
     mapStoryUi=null;
     const root=document.getElementById('mapStoryContent');
-    root.innerHTML=e.number===11?'<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>草原は、誰のもの 全11話 完了</h2><p>草原の暮らしを知り、道を見つけた。</p><button type="button" onclick="leaveMapStory()">草原へ戻る</button><button type="button" onclick="openMapStory()">読み返す</button>':`<h2>第${e.number}話 完了</h2><button type="button" onclick="startMapStoryEpisode('gl_${String(e.number+1).padStart(2,'0')}')">次の話へ</button><button type="button" onclick="openMapStory()">話一覧へ</button>`;
+    const story=currentMapStory(),next=story.episodes.find(episode=>episode.unlockAfter===id);
+    root.innerHTML=next?`<h2>第${e.number}話 完了</h2><button type="button" onclick="startMapStoryEpisode('${next.id}')">次の話へ</button><button type="button" onclick="openMapStory()">話一覧へ</button>`:
+      `<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>${mapStoryEscape(story.title)} 全${story.episodes.length}話 完了</h2><p>${mapStoryEscape(story.completedText)}</p><button type="button" onclick="leaveMapStory()">${mapStoryEscape(mapStoryMap(story).name)}へ戻る</button><button type="button" onclick="openMapStory()">読み返す</button>`;
     if(typeof processNextEvolution==='function')processNextEvolution();
   });
 }

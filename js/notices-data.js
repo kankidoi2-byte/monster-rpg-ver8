@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261108-volcano-map-story',date:'2026-11-08',category:'update',title:'火山の物語を追加しました',body:'「火山の息づかい」全9話を追加しました。序章を終えると、火山の詳細画面やストーリー一覧から始められます。'},
   {id:'20261107-sound-pack-01',date:'2026-11-07',category:'update',title:'BGMと効果音を追加しました',body:'タイトル・ホーム・草原の戦闘にBGMを追加しました。決定や斬撃、ココロリンクなどにも音が付き、メニューの設定で音量とミュートを変えられます。'},
   {id:'20261106-species-traits',date:'2026-11-06',category:'update',title:'仲間に特性を追加しました',body:'仲間それぞれの特性が、戦いや探索を支えます。ステータス画面で確認でき、進化すると特性も変わります。'},
   {id:'20261105-difficulty-tiers',date:'2026-11-05',category:'update',title:'探索の難易度を5段階に見直しました',body:'難易度Ⅰ〜Ⅴから相手の強さを選べます。どのマップも同じ難易度の目安になり、ときどき格上の相手が現れます。これまでのオート解放記録は引き継がれます。Extremeはこれまでどおりです。'},

@@ -18,7 +18,7 @@ run(`save=initSave();completeTutorial();save.instances=[];save.party=[];for(cons
 d.getElementById('titleScreen').click();await new Promise(resolve=>setTimeout(resolve,700));assert.equal(run('activeScreenId()'),'home');
 click('#homePartyEditButton');assert.equal(run('activeScreenId()'),'party');click('#rosterActions [data-roster-party]');assert.equal(run('activeScreenId()'),'partySet');click('#partySetupSaveButton');assert.equal(run('loadSave().party.length'),3);
 run('openBattleHub();showWorldMapLocation("grassland")');assert.equal(run('activeScreenId()'),'battleChoices');
-click('#battleChoiceList button[onclick="openMapStory()"]');assert.equal(run('activeScreenId()'),'mapStory');assert.equal(d.querySelectorAll('.map-story-card').length,11);
+click('#battleChoiceList button[data-story-id="grassland_whose"]');assert.equal(run('activeScreenId()'),'mapStory');assert.equal(d.querySelectorAll('.map-story-card').length,11);
 for(let number=1;number<=11;number++){
  const id='gl_'+String(number).padStart(2,'0');click(`#mapStory button[onclick="startMapStoryEpisode('${id}')"]`);
  while(run('mapStoryState().resume.nodeId!==null'))click('#mapStory button[onclick="advanceMapStoryNode()"]');

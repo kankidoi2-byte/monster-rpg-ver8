@@ -100,3 +100,65 @@ run('var old=structuredClone(save);delete old.mapStories;repairSave(old)');asser
 run('old.mapStories.other_map={version:9,custom:"keep"};old.mapStories.grassland_whose.futureField="keep";repairSave(old)');assert.deepEqual(json('old.mapStories.other_map'),{version:9,custom:'keep'});assert.equal(run('old.mapStories.grassland_whose.futureField'),'keep');
 assert.equal(beforeNormal.source,undefined);assert.equal(beforeNormal.difficultyId,'d1');
 console.log('PASS grassland map story: 11 episodes, exact IDs/HP/moves, 15 contractor lines, gates, full rewards, replay, retreat/defeat, real save/reload, atomic failure/retry and stale attempts.');
+
+// The two stories can both have a saved conversation, even on an older grassland save.
+run('delete save.mapStories.volcano_breath;saveGame();save=loadSave()');
+assert.deepEqual(json('save.mapStories.volcano_breath'),{version:1,episodes:{},resume:null});
+const grassland=json('mapStoryState()');
+assert.equal(grassland.resume.episodeId,'gl_03');
+run("save.progress.tutorial.status='in_progress'");
+assert.equal(run('openMapStory("volcano_breath")'),false);
+run("save.progress.tutorial.status='skipped'");
+assert(run('openMapStory("volcano_breath")'));
+assert.equal(run('startMapStoryEpisode("vc_02")'),false);
+const volcano=json('VOLCANO_STORY.episodes');
+assert.equal(volcano.length,9);
+assert.deepEqual(volcano.map(e=>e.recommendedLevel),[12,12,12,12,13,14,14,15,16]);
+assert.deepEqual(volcano.filter(e=>e.battleMode==='three_way').map(e=>e.number),[3,7]);
+const volcanoNodes=volcano.flatMap(e=>[...e.preNodes,...e.postNodes]);
+assert.equal(volcanoNodes.length,149);
+assert.equal(new Set(volcanoNodes.map(n=>n.id)).size,149);
+assert.deepEqual(volcano.at(-1).enemies[0].moveIds,['s110_067','s110_014','s110_003']);
+const volcanoStart=json('save');
+for(const e of volcano){
+ pre(e.id);
+ const coins=run('save.coins');
+ assert(run(`launchMapStoryBattle('${e.id}')`));
+ assert.deepEqual(json('[activeHuntRequest.storyId,selectedMap.id,activeHuntRequest.invasionEnemyId,activeHuntRequest.conditions]'),['volcano_breath','volcano',null,[]]);
+ const actual=e.battleMode==='three_way'
+  ?json('multiBattle.enemies.map(e=>({speciesId:e.mon.id,level:e.level,hp:e.hp,speed:monSpd(e.mon,null,e.level),attackMultiplier:e.attackMultiplier,moveIds:e.mon.moves.map(m=>m[8])}))')
+  :[json('({speciesId:enemy.id,level:activeHuntRequest.enemyLevel,hp:eHp,speed:monSpd(enemy,null,activeHuntRequest.enemyLevel),attackMultiplier:enemyDifficultyAttackMultiplier(),moveIds:enemy.moves.map(m=>m[8])})')];
+ assert.deepEqual(actual,e.enemies);
+ if(e.number===3){
+  run('multiBattle.enemies[0].hp=0;multiBattle.enemies[0].alive=false;winMultiBattle()');
+  assert.equal(run('save.coins'),coins,'a single enemy KO does not grant the reward');
+  run('var volcanoRequest=activeHuntRequest;save=loadSave();activeHuntRequest=null;partyBattle=[];battleTurnCount=9;');
+  assert(run('startMapStoryEpisode("vc_03")'));assert.equal(run('battleTurnCount'),0);
+  assert.equal(run('mapStoryTokenValid(volcanoRequest)'),false);
+  assert(json('multiBattle.enemies').every(enemy=>enemy.hp===enemy.maxHp));
+ }
+ assert.equal(run('askUseContractScroll("contract_scroll")'),false);
+ victory();assert.equal(run('save.coins'),coins+e.firstReward.coins);
+ const awarded=json('save');run('win();winMultiBattle()');assert.deepEqual(json('save'),awarded);
+ if(e.number===1){
+  run('resumeMapStoryAfterBattle();advanceMapStoryNode()');
+  const resume=json('mapStoryState().resume');
+  run('openMapStory("grassland_whose")');assert.deepEqual(json('mapStoryState()'),grassland);
+  run('save=loadSave();openMapStory("volcano_breath")');
+  assert.deepEqual(json('mapStoryState().resume'),resume);
+ }
+ finish();assert(run(`mapStoryProgress('${e.id}').completed`));
+ assert.deepEqual(json('save.mapStories.grassland_whose'),grassland);
+}
+assert.equal(run('save.coins'),volcanoStart.coins+1260);
+assert.deepEqual(json('save.instances.map(({level,exp})=>({level,exp}))'),volcanoStart.instances.map(i=>({level:17,exp:i.exp+200})));
+for(const field of ['history','items','worldMap','expeditions','contractor','gBless','autoBattle'])assert.deepEqual(json(`save.${field}`),volcanoStart[field],`${field} untouched by volcano rewards`);
+const volcanoCompleted=json('save');
+run('readMapStoryEpisode("vc_09");skipMapStoryDialogue();advanceMapStoryNode();skipMapStoryDialogue();completeMapStoryEpisode()');
+assert.deepEqual(json('save'),volcanoCompleted);
+run('startMapStoryEpisode("vc_09",true);launchMapStoryBattle("vc_09")');
+victory();finish();
+assert.equal(run('save.coins'),volcanoCompleted.coins+10);
+assert.equal(run('mapStoryProgress("vc_09").victoryCount'),2);
+assert.deepEqual(json('save.mapStories.grassland_whose'),grassland);
+console.log('PASS volcano map story: 9 episodes, v2 battle settings, independent saves, resume, fixed rewards, replay and retry.');
