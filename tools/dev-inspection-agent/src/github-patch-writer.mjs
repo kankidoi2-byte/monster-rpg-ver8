@@ -128,27 +128,82 @@ export function createGitHubPatchWriter(options = {}) {
   if (typeof fetchImpl !== 'function') throw new GitHubPatchWriteError('fetch_unavailable');
 
   async function request(path, requestOptions = {}, stage = 'preflight') {
-    let response;
+    const controller = new AbortController();
+    const timeoutMs = requestOptions.method ? (options.writeTimeoutMs ?? 30_000) : (options.readTimeoutMs ?? 15_000);
+    let timer;
     try {
-      response = await fetchImpl(`${API_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}${path}`, {
-        method: requestOptions.method || 'GET',
-        headers: {
-          Accept: 'application/vnd.github+json',
-          Authorization: `Bearer ${token}`,
-          ...(requestOptions.body === undefined ? {} : { 'Content-Type': 'application/json' }),
-          'X-GitHub-Api-Version': '2022-11-28'
-        },
-        ...(requestOptions.body === undefined ? {} : { body: JSON.stringify(requestOptions.body) }),
-        redirect: 'error'
-      });
-    } catch {
+      return await Promise.race([
+        (async () => {
+          const response = await fetchImpl(`${API_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}${path}`, {
+            method: requestOptions.method || 'GET',
+            headers: {
+              Accept: 'application/vnd.github+json', Authorization: `Bearer ${token}`,
+              ...(requestOptions.body === undefined ? {} : { 'Content-Type': 'application/json' }),
+              'X-GitHub-Api-Version': '2022-11-28'
+            },
+            ...(requestOptions.body === undefined ? {} : { body: JSON.stringify(requestOptions.body) }),
+            redirect: 'error', signal: controller.signal
+          });
+          if (!response?.ok) throw new GitHubPatchWriteError(apiErrorCode(response), response?.status, stage);
+          const text = await response.text();
+          if (text.length > MAX_RESPONSE_CHARS) throw new GitHubPatchWriteError('github_response_too_large', response.status, stage);
+          try { return JSON.parse(text); } catch { throw new GitHubPatchWriteError('invalid_github_response', response.status, stage); }
+        })(),
+        new Promise((_, reject) => { timer = setTimeout(() => {
+          reject(new GitHubPatchWriteError('github_timeout', null, stage));
+          controller.abort();
+        }, timeoutMs); })
+      ]);
+    } catch (error) {
+      if (error instanceof GitHubPatchWriteError) throw error;
       throw new GitHubPatchWriteError('github_unavailable', null, stage);
+    } finally { clearTimeout(timer); }
+  }
+
+  async function listOpenPulls(query = '', state = 'open') {
+    const pulls = [];
+    for (let page = 1; page <= 10; page += 1) {
+      const batch = await request(`/pulls?state=${state}&base=main&per_page=100&page=${page}${query}`);
+      if (!Array.isArray(batch) || batch.length > 100
+        || batch.some((pull) => typeof pull?.body !== 'string' || pull.body.length > 64_000)) {
+        throw new GitHubPatchWriteError('invalid_github_response');
+      }
+      pulls.push(...batch);
+      if (batch.length < 100) return pulls;
     }
-    if (!response?.ok) throw new GitHubPatchWriteError(apiErrorCode(response), response?.status, stage);
-    let text;
-    try { text = await response.text(); } catch { throw new GitHubPatchWriteError('invalid_github_response', response?.status, stage); }
-    if (text.length > MAX_RESPONSE_CHARS) throw new GitHubPatchWriteError('github_response_too_large', response.status, stage);
-    try { return JSON.parse(text); } catch { throw new GitHubPatchWriteError('invalid_github_response', response.status, stage); }
+    throw new GitHubPatchWriteError('open_pull_request_page_limit');
+  }
+
+  // Immutable objects without a known SHA cannot be located after a lost response.
+  // Stop instead of repeating an uncertain write. Named objects can be reconciled.
+  async function write(path, body, stage, lookup) {
+    try { return await request(path, { method: 'POST', body }, stage); }
+    catch (error) {
+      if (error.code !== 'github_timeout') throw error;
+      if (lookup) {
+        let found;
+        let knownAbsent = false;
+        try {
+          found = await lookup();
+          knownAbsent = found === null;
+        } catch (lookupError) {
+          knownAbsent = lookupError.code === 'repository_object_not_found';
+        }
+        if (found) return found;
+        if (knownAbsent) {
+          // Only one retry, after a successful absence check, never a blind retry.
+          try { return await request(path, { method: 'POST', body }, stage); }
+          catch (retryError) {
+            if (retryError.code !== 'github_timeout') throw retryError;
+            try {
+              const recovered = await lookup();
+              if (recovered) return recovered;
+            } catch { /* The final lookup also failed; stop with an unknown outcome. */ }
+          }
+        }
+      }
+      throw new GitHubPatchWriteError('write_outcome_unknown', null, stage);
+    }
   }
 
   async function materialize(proposalResult, reviewedPlan, authorization) {
@@ -173,14 +228,35 @@ export function createGitHubPatchWriter(options = {}) {
     if (baseCommit?.sha !== expectedPlan.base_sha || !SHA_PATTERN.test(baseCommit?.tree?.sha ?? '')) {
       throw new GitHubPatchWriteError('invalid_github_response');
     }
-    const openPulls = await request('/pulls?state=open&base=main&per_page=100');
+    const openPulls = await listOpenPulls();
     const marker = `<!-- phase29-proposal:${proposal.proposal_id} -->`;
-    if (!Array.isArray(openPulls) || openPulls.length > 100
-      || openPulls.some((pull) => typeof pull?.body !== 'string' || pull.body.length > 64_000)) {
-      throw new GitHubPatchWriteError('invalid_github_response');
-    }
     if (openPulls.some((pull) => pull.body.includes(marker))) {
       throw new GitHubPatchWriteError('matching_open_pull_request_exists');
+    }
+
+    const trees = new Map();
+    async function readTree(sha) {
+      if (!trees.has(sha)) {
+        const value = await request(`/git/trees/${sha}`);
+        if (value?.sha !== sha || value.truncated || !Array.isArray(value.tree)) {
+          throw new GitHubPatchWriteError('invalid_base_tree');
+        }
+        trees.set(sha, value.tree);
+      }
+      return trees.get(sha);
+    }
+    for (const file of proposal.files) {
+      const parts = file.path.split('/');
+      let treeSha = baseCommit.tree.sha;
+      for (let index = 0; index < parts.length; index += 1) {
+        const entry = (await readTree(treeSha)).find((item) => item.path === parts[index]);
+        const isFile = index === parts.length - 1;
+        if (isFile ? entry?.type !== 'blob' || entry.sha !== file.base_blob_sha
+          : entry?.type !== 'tree' || !SHA_PATTERN.test(entry.sha ?? '')) {
+          throw new GitHubPatchWriteError('base_tree_blob_mismatch');
+        }
+        treeSha = entry.sha;
+      }
     }
 
     const preparedFiles = [];
@@ -199,43 +275,38 @@ export function createGitHubPatchWriter(options = {}) {
 
     const treeEntries = [];
     for (const prepared of preparedFiles) {
-      const blob = await request('/git/blobs', {
-        method: 'POST',
-        body: { content: prepared.content, encoding: 'utf-8' }
-      }, 'blob_creation');
+      const blob = await write('/git/blobs', { content: prepared.content, encoding: 'utf-8' }, 'blob_creation',
+        () => request(`/git/blobs/${prepared.file.result_blob_sha}`));
       if (blob?.sha !== prepared.file.result_blob_sha) {
         throw new GitHubPatchWriteError('created_blob_mismatch', null, 'blob_creation');
       }
       treeEntries.push({ path: prepared.file.path, mode: '100644', type: 'blob', sha: blob.sha });
     }
-    const tree = await request('/git/trees', {
-      method: 'POST',
-      body: { base_tree: baseCommit.tree.sha, tree: treeEntries }
-    }, 'tree_creation');
+    const tree = await write('/git/trees', { base_tree: baseCommit.tree.sha, tree: treeEntries }, 'tree_creation');
     if (!SHA_PATTERN.test(tree?.sha ?? '')) throw new GitHubPatchWriteError('invalid_github_response', null, 'tree_creation');
-    const commit = await request('/git/commits', {
-      method: 'POST',
-      body: { message: expectedPlan.commit_message, tree: tree.sha, parents: [expectedPlan.base_sha] }
-    }, 'commit_creation');
+    const commit = await write('/git/commits', { message: expectedPlan.commit_message, tree: tree.sha, parents: [expectedPlan.base_sha] }, 'commit_creation');
     if (!SHA_PATTERN.test(commit?.sha ?? '')) throw new GitHubPatchWriteError('invalid_github_response', null, 'commit_creation');
-    const ref = await request('/git/refs', {
-      method: 'POST',
-      body: { ref: `refs/heads/${expectedPlan.branch_name}`, sha: commit.sha }
-    }, 'branch_creation');
+    const ref = await write('/git/refs', { ref: `refs/heads/${expectedPlan.branch_name}`, sha: commit.sha }, 'branch_creation',
+      () => request(`/git/ref/heads/${expectedPlan.branch_name}`));
     if (ref?.ref !== `refs/heads/${expectedPlan.branch_name}` || ref?.object?.sha !== commit.sha) {
       throw new GitHubPatchWriteError('invalid_github_response', null, 'branch_creation');
     }
-    const pull = await request('/pulls', {
-      method: 'POST',
-      body: {
+    const pull = await write('/pulls', {
         title: expectedPlan.pull_request_title,
         body: expectedPlan.pull_request_body,
         head: expectedPlan.branch_name,
         base: 'main',
         maintainer_can_modify: false,
         draft: false
+    }, 'pull_request_creation', async () => {
+      const matches = (await listOpenPulls(`&head=${encodeURIComponent(`${owner}:${expectedPlan.branch_name}`)}`, 'all'))
+        .filter((item) => item.body.includes(marker));
+      if (matches.some((item) => item.head?.sha !== commit.sha || item.base?.ref !== 'main')) {
+        throw new GitHubPatchWriteError('ambiguous_pull_request_outcome');
       }
-    }, 'pull_request_creation');
+      if (matches.length > 1) throw new GitHubPatchWriteError('ambiguous_pull_request_outcome');
+      return matches[0] || null;
+    });
     const number = Number(pull?.number);
     const htmlUrl = Number.isSafeInteger(number) && number > 0
       ? safePullRequestUrl(pull?.html_url, owner, repository, number) : '';

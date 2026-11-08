@@ -17,7 +17,7 @@
     "check:issue-draft": "node test/issue-draft.test.mjs",
     "check:issue-publication-approval": "node test/issue-publication-approval.test.mjs",
     "check:github-issue-writer": "node test/github-issue-writer.test.mjs",
-    "check:comprehensive": "node test/comprehensive.test.mjs"
+    "check:comprehensive": "node test/comprehensive.test.mjs && node test/security-hardening.test.mjs"
   },
   "engines": {
     "node": ">=20"

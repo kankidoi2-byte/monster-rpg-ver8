@@ -1,3 +1,4 @@
+import { createFormClient } from './form-client.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { generateIssueDraft } from '../src/issue-draft.mjs';
@@ -102,25 +103,26 @@ const app = createCommandCenterServer({
 try {
   const address = await app.listen();
   const base = `http://127.0.0.1:${address.port}`;
-  const generatedResponse = await fetch(base + '/issues/draft', { method: 'POST', redirect: 'manual' });
+  const formFetch = await createFormClient(base);
+  const generatedResponse = await formFetch(base + '/issues/draft', { method: 'POST', redirect: 'manual' });
   assert.equal(generatedResponse.status, 303);
   assert.equal(generatedResponse.headers.get('location'), '/');
-  assert.equal(dashboardReads, 1);
-  const page = await (await fetch(base + '/')).text();
+  assert.equal(dashboardReads, 2);
+  const page = await (await formFetch(base + '/')).text();
   assert.equal(page.includes('未投稿の下書き'), true);
   assert.equal(page.includes('自動チェック失敗を調査'), true);
   assert.equal(page.includes('action="/issues/draft/clear"'), true);
 
-  const crossSite = await fetch(base + '/issues/draft', {
+  const crossSite = await formFetch(base + '/issues/draft', {
     method: 'POST',
     redirect: 'manual',
     headers: { 'sec-fetch-site': 'cross-site' }
   });
-  assert.equal(crossSite.status, 404);
+  assert.equal(crossSite.status, 403);
 
-  const cleared = await fetch(base + '/issues/draft/clear', { method: 'POST', redirect: 'manual' });
+  const cleared = await formFetch(base + '/issues/draft/clear', { method: 'POST', redirect: 'manual' });
   assert.equal(cleared.status, 303);
-  assert.equal((await (await fetch(base + '/')).text()).includes('action="/issues/draft/clear"'), false);
+  assert.equal((await (await formFetch(base + '/')).text()).includes('action="/issues/draft/clear"'), false);
 } finally {
   await app.close();
 }
