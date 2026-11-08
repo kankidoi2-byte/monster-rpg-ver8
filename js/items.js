@@ -147,7 +147,16 @@ function useExpItemOnInstance(itemId, uidValue){
   const ins = getInstance(uidValue);
   if(!ins){ alert('対象のモンスターが見つかりません。'); return; }
   const mon = by(ins.id);
-  if(isMaxLevel(ins.level)){ins.level=MAX_LEVEL;ins.exp=0;alert(`${mon.name}はすでに Lv.MAX です！`);return;}
+  if(isMaxLevel(ins.level)){
+    ins.level=MAX_LEVEL;ins.exp=0;
+    if(!getEvoCandidates(ins).length){alert(`${mon.name}はすでに Lv.MAX です！`);return;}
+    checkEvolution(ins);
+    showCommittedSaveResult(()=>{
+      alert(`${mon.name}はすでに Lv.MAX です。進化できます`);
+      processNextEvolution();
+    });
+    return;
+  }
   let msg = `${it.icon || '📦'} ${it.name}を${mon.name}に与えた！\nEXP +${it.expAmount}`;
   if(!commitSaveMutation(()=>{
     save.items[itemId]--;

@@ -9,12 +9,19 @@ function vis(m, imageAttributes = '') {
   if (m.artworkPending && isCharacterUnit(m)) return `<div class="character-artwork-pending" role="img" aria-label="${m.name}"><div class="emoji" aria-hidden="true">${m.icon || '❓'}</div><small>${m.name}</small></div>`;
   return `<div class="emoji">${m.icon || '❓'}</div>`;
 }
+const uiMotionTimers = new WeakMap();
 function replayUiMotion(element, className, duration=700) {
   if (!element) return;
+  let timers = uiMotionTimers.get(element);
+  if (!timers) uiMotionTimers.set(element, timers = new Map());
+  clearTimeout(timers.get(className));
   element.classList.remove(className);
   void element.offsetWidth;
   element.classList.add(className);
-  setTimeout(() => element.classList.remove(className), duration);
+  timers.set(className, setTimeout(() => {
+    element.classList.remove(className);
+    timers.delete(className);
+  }, duration));
 }
 function showUiNotice(message, kind='success') {
   let notice = document.getElementById('uiNotice');
