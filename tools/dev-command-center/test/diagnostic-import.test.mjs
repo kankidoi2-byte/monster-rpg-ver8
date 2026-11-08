@@ -1,3 +1,4 @@
+import { createFormClient } from './form-client.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
@@ -155,7 +156,8 @@ const app = createCommandCenterServer({
 try {
   const address = await app.listen();
   const base = 'http://127.0.0.1:' + address.port;
-  const acceptedResponse = await fetch(base + '/diagnostics/import', {
+  const formFetch = await createFormClient(base);
+  const acceptedResponse = await formFetch(base + '/diagnostics/import', {
     method: 'POST',
     redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -163,7 +165,7 @@ try {
   });
   assert.equal(acceptedResponse.status, 303);
   assert.equal(acceptedResponse.headers.get('location'), '/');
-  const acceptedPage = await (await fetch(base + '/')).text();
+  const acceptedPage = await (await formFetch(base + '/')).text();
   assert.equal(acceptedPage.includes('診断レポートを取り込みました'), true);
   assert.equal(acceptedPage.includes('diagnosticsScreen'), true);
   assert.equal(acceptedPage.includes('render failed'), false);
@@ -171,27 +173,27 @@ try {
 
   const sensitive = validReport();
   sensitive.apiKey = 'must-not-appear';
-  await fetch(base + '/diagnostics/import', {
+  await formFetch(base + '/diagnostics/import', {
     method: 'POST',
     redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ report: JSON.stringify(sensitive) })
   });
-  const rejectedPage = await (await fetch(base + '/')).text();
+  const rejectedPage = await (await formFetch(base + '/')).text();
   assert.equal(rejectedPage.includes('秘密情報または保存情報らしい項目を検出しました'), true);
   assert.equal(rejectedPage.includes('must-not-appear'), false);
 
-  const crossSiteResponse = await fetch(base + '/diagnostics/clear', {
+  const crossSiteResponse = await formFetch(base + '/diagnostics/clear', {
     method: 'POST',
     redirect: 'manual',
     headers: { 'sec-fetch-site': 'cross-site' }
   });
-  assert.equal(crossSiteResponse.status, 404);
-  assert.equal((await (await fetch(base + '/')).text()).includes('取込結果を消去'), true);
+  assert.equal(crossSiteResponse.status, 403);
+  assert.equal((await (await formFetch(base + '/')).text()).includes('取込結果を消去'), true);
 
-  const clearResponse = await fetch(base + '/diagnostics/clear', { method: 'POST', redirect: 'manual' });
+  const clearResponse = await formFetch(base + '/diagnostics/clear', { method: 'POST', redirect: 'manual' });
   assert.equal(clearResponse.status, 303);
-  const clearedPage = await (await fetch(base + '/')).text();
+  const clearedPage = await (await formFetch(base + '/')).text();
   assert.equal(clearedPage.includes('取込結果を消去'), false);
 } finally {
   await app.close();

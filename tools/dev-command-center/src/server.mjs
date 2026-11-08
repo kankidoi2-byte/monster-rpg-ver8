@@ -1,3 +1,4 @@
+import { randomBytes, timingSafeEqual } from 'node:crypto';
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -69,7 +70,8 @@ function rejectedImport(reasonCode, importedAt) {
 
 function sameOriginForm(request) {
   const fetchSite = String(request.headers['sec-fetch-site'] || '');
-  return fetchSite === '' || fetchSite === 'same-origin' || fetchSite === 'none';
+  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none') return false;
+  return !request.headers.origin || request.headers.origin === `http://${request.headers.host}`;
 }
 
 function publicationFailure(reasonCode, at) {
@@ -93,12 +95,30 @@ export function createCommandCenterServer(options = {}) {
   const issueDraftGenerator = options.issueDraftGenerator || generateIssueDraft;
   const repositoryProvider = options.repositoryProvider || null;
   const issueWriter = options.issueWriter || null;
+  const csrfToken = randomBytes(32).toString('hex');
   let diagnosticImport = null;
   let issueDraft = null;
   let issuePublication = null;
   let publicationConsumed = false;
 
   async function handle(request, response) {
+    const port = server.address()?.port ?? config.port;
+    if (!new Set([`127.0.0.1:${port}`, `localhost:${port}`, `[::1]:${port}`]).has(request.headers.host)) {
+      writeJson(response, 403, { status: 'forbidden' });
+      return;
+    }
+    let formBody;
+    if (request.method === 'POST') {
+      if (!sameOriginForm(request)) { writeJson(response, 403, { status: 'forbidden' }); return; }
+      formBody = await readFormBody(request);
+      const supplied = new URLSearchParams(formBody || '').get('csrf_token') || '';
+      if (!String(request.headers['content-type'] || '').startsWith('application/x-www-form-urlencoded')
+          || !/^[0-9a-f]{64}$/.test(supplied)
+          || !timingSafeEqual(Buffer.from(supplied), Buffer.from(csrfToken))) {
+        writeJson(response, 403, { status: 'forbidden' });
+        return;
+      }
+    }
     const pathname = new URL(request.url || '/', 'http://command-center.invalid').pathname;
     if (request.method === 'GET' && pathname === '/healthz') {
       writeJson(response, 200, {
@@ -117,11 +137,11 @@ export function createCommandCenterServer(options = {}) {
     if (request.method === 'GET' && pathname === '/' && isLoopbackHost(config.host)) {
       const dashboard = await dashboardProvider.getDashboard();
       response.writeHead(200, DASHBOARD_HEADERS);
-      response.end(renderDashboardHtml(dashboard, diagnosticImport, issueDraft, issuePublication));
+      response.end(renderDashboardHtml(dashboard, diagnosticImport, issueDraft, issuePublication).replace(/(<form\b[^>]*>)/g, `$1<input type="hidden" name="csrf_token" value="${csrfToken}">`));
       return;
     }
     if (request.method === 'POST' && pathname === '/diagnostics/import' && isLoopbackHost(config.host) && sameOriginForm(request)) {
-      const body = await readFormBody(request);
+      const body = formBody;
       if (body === null) {
         diagnosticImport = rejectedImport('input_too_large', now().toISOString());
       } else if (!String(request.headers['content-type'] || '').startsWith('application/x-www-form-urlencoded')) {
@@ -174,7 +194,7 @@ export function createCommandCenterServer(options = {}) {
       return;
     }
     if (request.method === 'POST' && pathname === '/issues/publication/confirm' && isLoopbackHost(config.host) && sameOriginForm(request)) {
-      const body = await readFormBody(request);
+      const body = formBody;
       const contentType = String(request.headers['content-type'] || '');
       if (body === null || !contentType.startsWith('application/x-www-form-urlencoded') || publicationConsumed) {
         issuePublication = publicationFailure(publicationConsumed ? 'authorization_already_used' : 'invalid_confirmation_input', now().toISOString());

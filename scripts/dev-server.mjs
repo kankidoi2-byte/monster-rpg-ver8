@@ -9,7 +9,8 @@ const argumentValue = (name, fallback) => {
   const index = args.indexOf(name);
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 };
-const host = argumentValue('--host', '0.0.0.0');
+export const DEFAULT_HOST = '127.0.0.1';
+const host = argumentValue('--host', DEFAULT_HOST);
 const port = Number(argumentValue('--port', '4173'));
 const mime = {
   '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8',
@@ -18,7 +19,14 @@ const mime = {
 };
 
 const server = http.createServer((request, response) => {
-  const requestPath = decodeURIComponent(new URL(request.url || '/', 'http://local').pathname);
+  let requestPath;
+  try {
+    requestPath = decodeURIComponent(new URL(request.url || '/', 'http://local').pathname);
+    if (requestPath.includes('\0')) throw new URIError('Invalid path');
+  } catch {
+    response.writeHead(400, {'content-type':'text/plain; charset=utf-8'}).end('Bad request');
+    return;
+  }
   const relativePath = requestPath.endsWith('/') ? `${requestPath}index.html` : requestPath;
   const target = path.resolve(root, `.${relativePath}`);
   if (target !== root && !target.startsWith(`${root}${path.sep}`)) {
@@ -35,4 +43,4 @@ const server = http.createServer((request, response) => {
   });
 });
 
-server.listen(port, host, () => console.log(`Static preview ready on ${host}:${port}`));
+server.listen(port, host, () => console.log(`Static preview ready on ${host}:${server.address().port}`));

@@ -55,7 +55,14 @@ timers.get(r.timer).fn();assert(r.failed&&r.state==='static');assert.equal(r.img
 assert(v.isConnected&&!v.hasAttribute('src'),'timeout must release the source before manual retry');
 assert.equal(v.onplaying,null);assert.equal(v.onerror,null);
 run('toggleBattleSkillPanel();battleUiBack()');assert(!run('busy'));
-const before=playCalls;for(let i=0;i<20;i++)r.button.click();assert.equal(playCalls,before+1);assert.equal(d.querySelectorAll('video').length,1);assert(!v.isConnected&&v.paused&&!v.hasAttribute('src'));assert.equal(v.onplaying,null);assert.equal(v.onerror,null);
+// The renewed UI must expose an actually visible control, not click the hidden legacy button.
+const style=d.createElement('style');style.textContent=fs.readFileSync(new URL('css/battle-renewal.css',root),'utf8');d.head.append(style);
+run('renewalHistory()');
+const retry=d.querySelector('#renewalSheetBody .br-go');assert(retry&&!retry.disabled);
+for(let el=retry;el;el=el.parentElement){assert(!el.hidden);assert.notEqual(w.getComputedStyle(el).display,'none');}
+assert.equal(retry.textContent,'待機動画を再生し直す');
+const before=playCalls;for(let i=0;i<20;i++)retry.click();assert(retry.disabled);
+assert.equal(playCalls,before+1);assert.equal(d.querySelectorAll('video').length,1);assert(!v.isConnected&&v.paused&&!v.hasAttribute('src'));assert.equal(v.onplaying,null);assert.equal(v.onerror,null);
 stalePlaying();staleError();assert(!r.failed);assert.notEqual(r.video,v);assert(r.retried);
 pass('timeout keeps commands usable; 20 retry clicks create one attempt; stale media events ignored');
 const retryVideo=r.video,retryError=retryVideo.onerror;run('changeActivePartyMember(1)');assert.equal(rec(),null);retryError();deferred.at(-1).resolve();await flush();assert(!d.querySelector('video'));assert.equal(r.state,'disposed');assert.equal(r.timer,null);assert.equal(r.button.onclick,null);
@@ -70,7 +77,7 @@ pass('simulated persisted pagehide disposes; pageshow reconciles current state o
 run('eHp=0;win()');w.dispatchEvent(new w.PageTransitionEvent('pageshow'));assert(!d.querySelector('video'));
 for(let i=0;i<5;i++){setup();await flush();const q=rec(),el=q.video;run('toggleBattleSkillPanel();battleUiBack();openBattleItemSelect()');run("show('battle');show('home')");assert(!d.querySelector('video'));assert(q.disposed&&q.timer===null&&q.button.onclick===null);assert(el.paused&&!el.hasAttribute('src')&&el.onplaying===null&&el.onerror===null);}
 pass('five battle-operation-exit-next cycles release owned resources');
-refuse=true;setup();await flush();assert(rec().failed);const n=playCalls;run('update();update()');assert.equal(playCalls,n);refuse=false;rec().button.click();await flush();assert.equal(rec().state,'playing');
+refuse=true;setup();await flush();assert(rec().failed);const n=playCalls;run('update();update()');assert.equal(playCalls,n);refuse=false;by('battle').classList.remove('is-renewed');rec().details.open=true;assert(!rec().button.hidden);rec().button.click();await flush();assert.equal(rec().state,'playing');
 pass('play refusal static fallback, no auto retry, one successful manual retry');
 setup();await flush();r=rec();v=r.video;r.video.onerror();assert(r.failed);assert(v.isConnected&&!v.hasAttribute('src'),'media failure must stop fetching');run('toggleBattleSkillPanel();battleUiBack()');assert(!run('busy'));
 pass('simulated media error keeps battle commands usable');

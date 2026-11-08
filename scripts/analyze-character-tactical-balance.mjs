@@ -64,7 +64,7 @@ function makeRunner(sources){
 }
 const runners={baseline:makeRunner(baselineSources),current:makeRunner(currentSources)};
 const r=runners.current.r;
-const units=plain(r.run('M.filter(m=>/^character_.*_[234]$/.test(m.id)&&!m.id.startsWith('character_vera_'))'));
+const units=plain(r.run("M.filter(m=>/^character_.*_[234]$/.test(m.id)&&!m.id.startsWith('character_vera_'))"));
 const bases=units.filter(m=>!m.evolutionOnly);
 assert.equal(bases.length,12);
 const families=bases.map(a=>{const b=units.find(m=>m.id===a.evolution);return [a,b,units.find(m=>m.id===b.evolution)];});
