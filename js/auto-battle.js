@@ -479,10 +479,10 @@ function autoResumeSavedRun(){
     const offers=autoOffers(r);
     enemy=offers.length?structuredClone(by(offers[0].monId)):null;
     multiBattle=offers.some(c=>c.entry)?{active:true,finished:true,contractAttempts:Object.create(null),
-      enemies:offers.map(c=>({id:c.entry,mon:structuredClone(by(c.monId)),defeatedByPlayer:true}))}:null;
+      enemies:offers.map(c=>({...createMultiEnemy(by(c.monId),c.entry),hp:0,alive:false,defeatedByPlayer:true,rewardGranted:true}))}:null;
     r.phase=checkpoint.phase==='offer'?'between':'decision';
     show('battle');
-    showBattleOutcome({kind:'victory',title:'前回の戦闘に勝利',note:'報酬は保存済みです。'});
+    renderBattleOutcome({kind:'victory',title:'前回の戦闘に勝利',note:'報酬は保存済みです。',restored:true});
     document.getElementById('next').classList.add('hidden');
     if(checkpoint.phase==='offer')autoContractOffer();
     else {

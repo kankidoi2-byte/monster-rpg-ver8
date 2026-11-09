@@ -275,11 +275,12 @@ function hideBattleOutcome() {
   }
   document.getElementById('next')?.classList.add('hidden');
 }
-function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=null, contractorExp=null, note='', bless=null}) {
+function showBattleOutcome(options){return renderBattleOutcome(options);}
+function renderBattleOutcome({kind='victory', title, exp=0, coins=0, materials=null, contractorExp=null, note='', bless=null, restored=false}) {
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   if (!battle || !outcome) return;
-  if(typeof GameAudio!=='undefined')GameAudio.endBattle(kind==='victory');
+  if(!restored&&typeof GameAudio!=='undefined')GameAudio.endBattle(kind==='victory');
   if(typeof captureBattleLog==='function')captureBattleLog();
   if(typeof battleFeedback!=='undefined'){battleFeedback.finished=true;refreshBattleFeedback();}
   const victory = kind === 'victory';
@@ -292,7 +293,7 @@ function showBattleOutcome({kind='victory', title, exp=0, coins=0, materials=nul
   document.getElementById('battleOutcomeIcon').textContent = icon;
   document.getElementById('battleOutcomeEyebrow').textContent = eyebrow;
   document.getElementById('battleOutcomeTitle').textContent = title;
-  document.getElementById('battleOutcomeRewards').innerHTML = victory
+  document.getElementById('battleOutcomeRewards').innerHTML = restored ? '' : victory
     ? `<span id="battleRewardExp"><small>EXP</small><strong>+${exp}</strong></span><span id="battleRewardCoins"><small>COIN</small><strong>+${coins}</strong></span>${Array.isArray(materials)?`<span id="battleRewardMaterials"><small>素材</small><strong>${materials.length?materials.join('・'):'獲得なし'}</strong></span>`:''}${contractorExp!==null?`<span id="battleRewardContractorExp"><small>契約者EXP</small><strong>+${Math.max(0,Number(contractorExp)||0)}</strong></span>`:''}`
     : '<span class="battle-outcome-empty">報酬なし</span>';
   if(victory&&bless){
