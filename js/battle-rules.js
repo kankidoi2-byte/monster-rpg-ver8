@@ -1,3 +1,7 @@
+function combatRandom(){
+  if(typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&autoRun.fightRandom)return autoRun.fightRandom();
+  return Math.random();
+}
 function typeEff(atkTypeOrTypes, defTypes) {
   const attackTypes=normalizeMoveTypes(atkTypeOrTypes);
   const defenseTypes=normalizeMoveTypes(defTypes);
