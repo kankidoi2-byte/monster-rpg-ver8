@@ -66,7 +66,7 @@ function traitApplyEnemyStatus(kind,entry=null){
   const target=tacticalCombatant(false,entry);if(target.hp<=0)return;
   if(kind==='poison'){if(typeof removeKokoroLinkEnemyEffectCategory==='function')removeKokoroLinkEnemyEffectCategory(entry?.id||'single','poison');target.status='poison';target.poison=BATTLE_STATUS_EFFECTS.poison.duration;if(entry)entry.poisonSourceIsPlayer=true;}
   if(kind==='paralysis')target.paralysis=3;
-  if(kind==='confusion')target.confusion=2+Math.floor(Math.random()*2);
+  if(kind==='confusion')target.confusion=2+Math.floor(combatRandom()*2);
   if(kind==='sleep')target.sleep=2;
 }
 function traitReceiveStatus(kind,apply,actorEntry=null){
@@ -97,10 +97,10 @@ async function runTraitAttack(action,move,actorIsPlayer,actorEntry=null,targetEn
       const hit=target.hp<before;
       if(hit&&target.hp>0){
         const inflict=traitsForSpecies(activeInstance).find(t=>t.type==='inflict');
-        if(inflict&&Math.random()<inflict.value)traitApplyEnemyStatus(inflict.status,target.entry);
-        if(traitPower('spark_dance')&&moveTypes(move).includes('fire')&&Math.random()<traitPower('spark_dance'))traitEnemy(target.entry?.id||'single').sparkUntil=battleTurnCount+traitRule('sparkDanceTurns',2);
+        if(inflict&&combatRandom()<inflict.value)traitApplyEnemyStatus(inflict.status,target.entry);
+        if(traitPower('spark_dance')&&moveTypes(move).includes('fire')&&combatRandom()<traitPower('spark_dance'))traitEnemy(target.entry?.id||'single').sparkUntil=battleTurnCount+traitRule('sparkDanceTurns',2);
       }
-      if(target.hp>0&&pHp>0&&traitPower('combo')>0&&Math.random()<traitPower('combo')){
+      if(target.hp>0&&pHp>0&&traitPower('combo')>0&&combatRandom()<traitPower('combo')){
         const repeat=[...move];repeat[1]=Number(move[1])*traitRule('comboPowerRate',.5);
         await action(repeat);
       }

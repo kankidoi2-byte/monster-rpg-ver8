@@ -205,10 +205,40 @@ function normalizeAutoBattle(raw){
       ...unique(list,id=>typeof id==='string'&&/^[a-z0-9_]+$/.test(id))
     ])];
   }
-  const s=raw?.settings;
-  return {v:1,defeated,unlocked:[...new Set((Array.isArray(raw?.unlocked)?raw.unlocked:[]).map(normalizeKey).filter(Boolean))],settings:{
+  const run=normalizeAutoBattleRun(raw?.run);
+  return {v:1,defeated,unlocked:[...new Set((Array.isArray(raw?.unlocked)?raw.unlocked:[]).map(normalizeKey).filter(Boolean))],
+    settings:normalizeAutoBattleSettings(raw?.settings),...(run?{run}:{})};
+}
+function normalizeAutoBattleSettings(s){
+  return {
     times:[1,5,10,20].includes(s?.times)?s.times:5,contract:s?.contract==='pause'?'pause':'skip',
-    stopOnBlessEmpty:s?.stopOnBlessEmpty!==false,stopOnNewDex:s?.stopOnNewDex===true,speed:s?.speed===1?1:2}};
+    stopOnBlessEmpty:s?.stopOnBlessEmpty!==false,stopOnNewDex:s?.stopOnNewDex===true,speed:s?.speed===1?1:2
+  };
+}
+function normalizeAutoBattleRun(r){
+  if(!isSaveObject(r)||r.v!==1||!['fight','next','offer','decision','summary'].includes(r.phase))return null;
+  const map=MAPS.find(m=>m.id===r.map),d=normalizeSavedHuntDifficultyId(r.d);
+  if(!map||!d||map.goldenLand||map.bossOnly||map.rareOnly||![1,5,10,20].includes(r.times))return null;
+  if(!Number.isSafeInteger(r.at)||r.at<0||!Number.isInteger(r.seed)||r.seed<0||r.seed>0xffffffff)return null;
+  const list=(value,limit)=>Array.isArray(value)?value.slice(0,limit):[];
+  const entries=(value,limit)=>isSaveObject(value)?Object.entries(value).slice(0,limit):[];
+  const count=value=>Number.isSafeInteger(value)&&value>=0?value:0;
+  const battles=list(r.battles,r.times).filter(v=>['win','defeat','retreat'].includes(v));
+  if((r.phase==='fight'||r.phase==='next')&&(battles.length>=r.times||battles.some(v=>v!=='win')))return null;
+  const contracts=list(r.contracts,r.times*2).filter(c=>isSaveObject(c)&&typeof c.monId==='string'&&by(c.monId)
+    &&(c.entry===null||['enemy_a','enemy_b'].includes(c.entry))&&['見送り','成功','失敗'].includes(c.result))
+    .map(({monId,entry,result})=>({monId,entry,result}));
+  const offerCount=Math.min(2,count(r.offerCount),contracts.length);
+  if(r.phase==='offer'&&!offerCount)return null;
+  return {v:1,map:map.id,d,times:r.times,settings:normalizeAutoBattleSettings(r.settings),phase:r.phase,at:r.at,seed:r.seed,
+    battles,coins:count(r.coins),bless:Math.min(count(r.bless),r.times),contracts,offerCount,
+    exp:Object.fromEntries(entries(r.exp,20).filter(([uid,row])=>uid&&isSaveObject(row)&&by(row.monId))
+      .map(([uid,row])=>[uid,{monId:row.monId,total:count(row.total)}])),
+    items:Object.fromEntries(entries(r.items,100).filter(([id])=>/^[a-z0-9_]+$/.test(id)&&!['constructor','prototype','__proto__'].includes(id))
+      .map(([id,n])=>[id,count(n)])),
+    levels:list(r.levels,60).filter(v=>typeof v==='string').map(v=>v.slice(0,120)),
+    stop:r.stop===true,reason:typeof r.reason==='string'?r.reason.slice(0,160):''
+  };
 }
 function initSave() {
   return {

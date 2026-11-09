@@ -257,18 +257,19 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null,fromSheet=fal
   const candidates=worldMapCandidatesForUI(map,difficultyId,eventKey);
   if (!candidates.length) return false;
   if (!getPartyInstances().length) { alert('パーティーにモンスターを入れてください。');return false; }
-  const mon=candidates[Math.floor(Math.random()*candidates.length)];
+  if(fromSheet&&typeof autoPrepareDeparture==='function')autoPrepareDeparture();
+  const random=typeof autoDepartureRandom==='function'?autoDepartureRandom():Math.random;
+  const mon=candidates[Math.floor(random()*candidates.length)];
   if (typeof registerMapDex==='function' && registerMapDex(mapId)) /* save-result-allow: world-map-departure-dex */saveGame();
   prepareBattleParty();
-  const request=createHuntRequest(map,mon,difficultyId,rollHuntConditionIds(difficultyId),{candidatesFor:(_map,id)=>worldMapCandidatesForUI(map,id,eventKey)});
+  const request=createHuntRequest(map,mon,difficultyId,rollHuntConditionIds(difficultyId,random),{randomFn:random,candidatesFor:(_map,id)=>worldMapCandidatesForUI(map,id,eventKey)});
   request.worldMapExploration=true;
   request.worldMapEventKey=eventKey;
   request.worldMapEventMonsterId=mon.id;
   request.goldenLandMapEntry=!!(map.goldenLand&&!eventKey&&goldenLandMapIsReady());
   if (eventKey) { request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null; }
   registerHuntRequest(request);
-  if(fromSheet&&typeof autoPrepareDeparture==='function')autoPrepareDeparture();
-  if(typeof autoBindDeparture==='function')autoBindDeparture(map,request,eventKey);
+  if(typeof autoBindDeparture==='function'&&autoBindDeparture(map,request,eventKey)===false)return false;
   worldMapDeparting=true;
   startChosenBattle(map.id,request.enemyId,difficultyId,request.requestId);
   return true;

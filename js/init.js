@@ -103,6 +103,7 @@ function startFromTitle(){
     if(screen) screen.remove();
     show('home');
     showSkill110MigrationNotice();
+    if(typeof autoResumeSavedRun==='function'&&autoResumeSavedRun())return;
     if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
   },620);
 }

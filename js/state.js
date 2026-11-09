@@ -179,6 +179,10 @@ function createHuntCondition(map, conditionId) {
   }
   return null;
 }
+function combatRandom(){
+  if(typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&autoRun.fightRandom)return autoRun.fightRandom();
+  return Math.random();
+}
 function rollHuntConditionIds(difficultyId, randomFn=Math.random) {
   const difficulty = huntDifficulty(difficultyId);
   const configured=difficulty.conditionCount;

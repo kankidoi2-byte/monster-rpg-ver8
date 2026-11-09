@@ -134,6 +134,7 @@ function battleAnatomyFamily(form){
   return BATTLE_BLUNT_FORMS.includes(form)?'blunt':'';
 }
 function battleMotionDelay(ms){
+  if(typeof autoFastForward==='function'&&autoFastForward())return Promise.resolve();
   return new Promise(resolve => setTimeout(resolve,typeof autoSpeed==='function'?ms/autoSpeed():ms));
 }
 // Fractions are the arrival/contact keyframes in ui-redesign.css, not effect endings.
@@ -152,6 +153,7 @@ function battleMotionTiming(motion){
   return {duration,contact:Math.round(duration*(BATTLE_MOTION_CONTACT[motion.form]||.5))};
 }
 async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
+  if(typeof autoFastForward==='function'&&autoFastForward())return false;
   if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
   else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
   const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;

@@ -113,7 +113,7 @@ function recordWorldMapVictory(){
   });
 }
 
-function recordWorldMapBattleResult({saveNow=false}={}){
+function recordWorldMapBattleResult({saveNow=false,autoEnd=null}={}){
   const request=activeHuntRequest;
   if(!request?.worldMapExploration||request.worldMapExpiryRecorded)return [];
   const tutorial=save.progress?.tutorial;
@@ -121,7 +121,10 @@ function recordWorldMapBattleResult({saveNow=false}={}){
   const result=advanceWorldEventsAfterBattle(save.worldMap,request.worldMapEventKey);
   if(saveNow){
     // Keep the remaining battles, navigation and receipt in sync on failure.
-    if(!commitSaveMutation(()=>{save.worldMap=result.state;},{requireReadable:true})){
+    if(!commitSaveMutation(()=>{
+      save.worldMap=result.state;
+      if(autoEnd&&typeof autoPrepareLossCheckpoint==='function')autoPrepareLossCheckpoint(autoEnd);
+    },{requireReadable:true})){
       request.worldMapExpiryPending=true;
       return null;
     }
