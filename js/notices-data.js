@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261109-background-auto-battle',date:'2026-11-09',category:'update',title:'画面を離れてもオート周回を続けられます',body:'世界地図からオート周回に出発すると、画面を消したり別のアプリを開いたりしても、戻ったときに経過時間ぶんの戦闘を進めます。勝利報酬は1戦ずつ保存され、敗北や契約のチャンスでは設定どおり止まります。'},
   {id:'20261108-volcano-map-story',date:'2026-11-08',category:'update',title:'火山の物語を追加しました',body:'「火山の息づかい」全9話を追加しました。序章を終えると、火山の詳細画面やストーリー一覧から始められます。'},
   {id:'20261107-sound-pack-01',date:'2026-11-07',category:'update',title:'BGMと効果音を追加しました',body:'タイトル・ホーム・草原の戦闘にBGMを追加しました。決定や斬撃、ココロリンクなどにも音が付き、メニューの設定で音量とミュートを変えられます。'},
   {id:'20261106-species-traits',date:'2026-11-06',category:'update',title:'仲間に特性を追加しました',body:'仲間それぞれの特性が、戦いや探索を支えます。ステータス画面で確認でき、進化すると特性も変わります。'},

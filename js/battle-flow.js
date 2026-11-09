@@ -127,6 +127,7 @@ function isBossClassMonster(mon){
 }
 function playBossCaution(mon, onComplete){
   if(bossCautionPlaying) return;
+  if(typeof autoFastForward==='function'&&autoFastForward()){onComplete();return;}
   bossCautionPlaying = true;
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
 
@@ -316,7 +317,7 @@ function performManualPartySwitch(nextIndex) {
 }
 function losePartyBattle() {
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('defeat'))return;
-  if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
+  if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true,autoEnd:'defeat'});
   completeBattleTurn();
   document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';if(typeof captureBattleLog==='function')captureBattleLog();
   endPartyRecovery();
@@ -353,7 +354,7 @@ function runAway() {
   if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
   const traitReward=typeof settleTraitRetreatReward==='function'?settleTraitRetreatReward():{exp:0,materials:[]};
   if(!traitReward)return;
-  if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true});
+  if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true,autoEnd:'retreat'});
   resetBattleTransientEffects();
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
@@ -461,7 +462,8 @@ function prepareNormalVictory(receipt){
     // Include catalog/rank effects of all drops before the single primary write.
     syncItemDexFromInventory();
     if(typeof prepareTutorialBattleVictoryCheckpoint==='function')prepareTutorialBattleVictoryCheckpoint();
-    return {...result,after:JSON.stringify(save),evolutions:structuredClone(pendingEvolutions),
+    const autoResult=typeof autoPrepareVictory==='function'?autoPrepareVictory(receipt,result.outcome):null;
+    return {...result,autoResult,after:JSON.stringify(save),evolutions:structuredClone(pendingEvolutions),
       request:activeHuntRequest?structuredClone(activeHuntRequest):null,selection:typeof worldMapSelectedEvent!=='undefined'?worldMapSelectedEvent:null};
   }finally{
     save=originalSave;pendingEvolutions=originalEvolutions;activeHuntRequest=request;multiBattle=battle;
@@ -542,7 +544,7 @@ function settleNormalVictory(multi){
         const tutorialOutcomeHandled=typeof handleTutorialBattleOutcome==='function'&&handleTutorialBattleOutcome('victory',candidate.outcome,{victorySaved:true});
         if(!tutorialOutcomeHandled)renderSingleBattleContractPanel();
       }
-      if(typeof autoVictoryCommitted==='function')autoVictoryCommitted(receipt,candidate.outcome);
+      if(typeof autoVictoryCommitted==='function')autoVictoryCommitted(candidate.outcome,candidate.autoResult);
       if(typeof refreshContractorRankUi==='function')refreshContractorRankUi();
       renderParty();
     });

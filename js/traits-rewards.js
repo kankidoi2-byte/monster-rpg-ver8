@@ -50,6 +50,7 @@ function settleTraitRetreatReward(){
       }
       exp=Math.floor(exp/2);
       grantPartyExp(exp,{saveNow:false,animate:false});
+      if(typeof autoPrepareLossCheckpoint==='function')autoPrepareLossCheckpoint('retreat');
       traitRetreatReceipt={before,after:JSON.stringify(save),evolutions:structuredClone(pendingEvolutions),request,identity:saveTransactionIdentity(),outcome:{exp,materials},committed:false};
     }finally{save=originalSave;pendingEvolutions=evolutions;if(typeof rebindNormalVictoryInstances==='function')rebindNormalVictoryInstances();}
   }

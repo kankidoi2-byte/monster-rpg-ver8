@@ -94,7 +94,9 @@ try{
  assert.equal(totals.wins,5);assert.equal(totals.coins,totals.delta);assert(totals.exp&&totals.items&&totals.kept);
  assert.equal(totals.bless,5);assert.equal(totals.remaining,0);assert.match(totals.reason,/G-BLESS/);
  const coins=await page.evaluate(()=>save.coins);await boot();
- assert.deepEqual(await page.evaluate(()=>[save.coins,autoRun]),[coins,null]);
+ await page.waitForSelector('#autoSummary[open]');
+ assert.deepEqual(await page.evaluate(()=>[save.coins,autoRun.battles.length]),[coins,5]);
+ await page.getByRole('button',{name:'世界地図へ',exact:true}).click();
  // Exercise the real continuation UI and contract transactions with controlled encounters.
  async function encounter(options={}){
    await page.evaluate(opts=>{
@@ -155,6 +157,128 @@ try{
  assert.match(await page.locator('#autoSummary').innerText(),/オート対象外/);
  await page.getByRole('button',{name:'手動で戦闘を続ける'}).click();
  assert.equal(await page.locator('#renewalHeader [aria-pressed]').count(),0);
+ // Start background runs through the real world-map departure flow.
+ async function startBackground(contract='skip',difficulty='d1'){
+   await page.evaluate(({contract,difficulty})=>{
+     endPartyRecovery();hideBattleOutcome();clearTutorialUi();showBattleChoices();
+     Object.assign(save.autoBattle.settings,{times:5,contract,speed:2,stopOnBlessEmpty:false,stopOnNewDex:false});
+     save.gBless.on=false;
+     save.contractor.pendingRankUps=[];
+     for(const key of ['threeWay','invasion'])save.progress.tutorial.guides[key]=true;
+     showWorldMapLocation('grassland');
+     if(!save.autoBattle.unlocked.includes('grassland:'+difficulty))save.autoBattle.unlocked.push('grassland:'+difficulty);
+     worldMapSelectedDifficulty=difficulty;
+     autoRefreshSheet();
+   },{contract,difficulty});
+   await sw.click();
+   if(difficulty==='d1')await page.locator('[data-wm-depart]').click();
+   else await page.evaluate(d=>{
+     const map=MAPS.find(m=>m.id==='grassland'),candidates=worldMapCandidatesForUI(map,d);
+     const seeds=Array.from({length:1000},(_,i)=>i);
+     const seed=seeds.find(i=>{
+       const random=autoSeedRandom(i),mon=candidates[Math.floor(random()*candidates.length)];
+       const request=createHuntRequest(map,mon,d,rollHuntConditionIds(d,random),{
+         randomFn:random,candidatesFor:(_map,id)=>worldMapCandidatesForUI(map,id)
+       });
+       return request.battleMode==='three_way'&&[request.enemyId,request.secondEnemyId].every(id=>isContractableUnit(by(id)));
+     });
+     if(seed===undefined)throw Error('No three-way encounter seed found');
+     const random=Math.random;Math.random=()=>seed/4294967296;
+     try{
+       if(!startWorldMapExploration(map.id,d,null,true)||!multiBattle?.active)throw Error('Three-way departure failed');
+     }finally{Math.random=random;}
+   },difficulty);
+   assert.equal(await page.evaluate(()=>save.autoBattle.run?.phase),'fight');
+ }
+ async function closeSummary(){
+   await page.getByRole('button',{name:'世界地図へ',exact:true}).click();
+   assert.equal(await page.evaluate(()=>save.autoBattle.run),undefined);
+ }
+ // Hide the current page without allowing its auto timer to run, then advance the clock.
+ await startBackground();
+ const hiddenWins=await page.evaluate(()=>{
+   const member=addInstance('freigal',1);
+   save.expeditions.active=[{id:'exp_background_test',mapId:'grassland',distanceId:'long',
+     memberUids:[member.uid],progress:0,requiredWins:5,status:'active',suitability:expeditionSuitability([member.uid],selectedMap),reward:null}];
+   if(!saveGame())throw Error('expedition fixture save failed');
+   window.testPageHidden=true;
+   Object.defineProperty(document,'hidden',{configurable:true,get:()=>window.testPageHidden});
+   document.dispatchEvent(new Event('visibilitychange'));
+   return save.history.wins;
+ });
+ await page.waitForTimeout(400);
+ assert.equal(await page.evaluate(()=>save.history.wins),hiddenWins);
+ await page.evaluate(()=>{
+   const now=Date.now;
+   window.restoreBackgroundClock=()=>{Date.now=now;};
+   Date.now=()=>now()+60000;
+   window.testPageHidden=false;
+   document.dispatchEvent(new Event('visibilitychange'));
+ });
+ await page.waitForSelector('#autoSummary[open]');
+ assert.deepEqual(await page.evaluate(()=>[save.history.wins,save.expeditions.active[0].progress,save.expeditions.active[0].status]),
+   [hiddenWins+5,5,'complete']);
+ assert(await page.evaluate(()=>autoRun.catchupTurns>=5));
+ await page.evaluate(()=>window.restoreBackgroundClock());
+ await closeSummary();
+ // Reload during the next run and restore the same encounter seed, then run the elapsed fights once.
+ await startBackground();
+ const cold=await page.evaluate(()=>{
+   const record=save.autoBattle.run;
+   record.at-=60000;
+   if(!saveGame())throw Error('checkpoint fixture save failed');
+   return {wins:save.history.wins,coins:save.coins};
+ });
+ await boot();
+ await page.waitForSelector('#autoSummary[open]');
+ const finished=await page.evaluate(()=>({wins:save.history.wins,coins:save.coins,delta:autoRun.coins,battles:autoRun.battles.length}));
+ assert.deepEqual([finished.wins,finished.coins,finished.battles],[cold.wins+5,cold.coins+finished.delta,5]);
+ assert(await page.evaluate(()=>autoRun.catchupTurns>=5));
+ await boot();
+ await page.waitForSelector('#autoSummary[open]');
+ assert.deepEqual(await page.evaluate(()=>[save.history.wins,save.coins]),[finished.wins,finished.coins]);
+ await closeSummary();
+ // A saved contract offer waits for a choice, and its committed scroll is consumed once.
+ await startBackground('pause','d3');
+ await page.evaluate(()=>{
+   const multi=multiBattle?.active, before=JSON.stringify(save), write=Storage.prototype.setItem;
+   const finish=()=>{
+     if(multi){
+       for(const enemy of multiBattle.enemies){enemy.hp=0;enemy.alive=false;enemy.defeatedByPlayer=true;}
+       winMultiBattle();
+     }else{eHp=0;win();}
+   };
+   Storage.prototype.setItem=function(key,value){
+     if(key===MonsterProfiles.key(SAVE_KEY))throw Error('test checkpoint quota');
+     return write.call(this,key,value);
+   };
+   try{
+     finish();
+     if(JSON.stringify(save)!==before||!normalVictoryPending())throw Error('victory or checkpoint escaped rollback');
+   }finally{Storage.prototype.setItem=write;}
+   retryNormalVictorySave();
+   const committed=JSON.stringify(save);
+   finish();
+   if(save.autoBattle.run?.phase!=='offer'||JSON.stringify(save)!==committed)throw Error('victory and offer were not committed once');
+ });
+ await page.locator('#contractConfirm.active .ab-offer').nth(1).waitFor();
+ const offerWins=await page.evaluate(()=>save.history.wins);
+ await boot();
+ await page.locator('#contractConfirm.active .ab-offer').nth(1).waitFor();
+ const scrolls=await page.evaluate(()=>save.items.contract_scroll);
+ await page.locator('#autoContractChoices .ab-offer').nth(1).locator('button[onclick*="contract_scroll"]').first().click();
+ await page.waitForFunction(()=>save.autoBattle.run?.phase==='decision');
+ await boot();
+ await page.getByRole('button',{name:/周回を続ける/}).waitFor();
+ assert.deepEqual(await page.evaluate(()=>[save.history.wins,save.items.contract_scroll]),[offerWins,scrolls-1]);
+ await page.getByRole('button',{name:/周回を続ける/}).click();
+ await page.evaluate(()=>losePartyBattle());
+ await page.waitForSelector('#autoSummary[open]');
+ await boot();
+ await page.waitForSelector('#autoSummary[open]');
+ assert.match(await page.locator('#autoSummary').innerText(),/1勝　1敗[\s\S]*負けた/);
+ assert.equal(await page.evaluate(()=>save.history.wins),offerWins);
+ await closeSummary();
  assert.deepEqual(errors,[]);
- console.log('PASS real victory rollback/retry, old save, 360/412/430px map, locked roster, complete Normal unlock, manual/auto, five real battles, rewards, G-BLESS and reload.');
+ console.log('PASS real victory rollback/retry, old save, 360/412/430px map, locked roster, complete Normal unlock, manual/auto, five real battles, rewards, G-BLESS, visibility catch-up, reload, expeditions and contract recovery.');
 }finally{await browser?.close();server.kill();}

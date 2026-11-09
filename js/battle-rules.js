@@ -1,3 +1,7 @@
+function combatRandom(){
+  if(typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&autoRun.fightRandom)return autoRun.fightRandom();
+  return Math.random();
+}
 function typeEff(atkTypeOrTypes, defTypes) {
   const attackTypes=normalizeMoveTypes(atkTypeOrTypes);
   const defenseTypes=normalizeMoveTypes(defTypes);
@@ -51,7 +55,7 @@ function playerKokoroLinkChance(baseChance){
 function singleEnemyKokoroLinkKey(){return 'single';}
 function enemyKokoroLinkAttackMultiplier(targetKey){return typeof kokoroLinkEnemyAttackMultiplierFor==='function'?kokoroLinkEnemyAttackMultiplierFor(targetKey):1;}
 function enemyKokoroLinkSpeed(monster,targetKey,level){const base=monSpd(monster,null,level)*(typeof traitEnemySpeedMultiplier==='function'?traitEnemySpeedMultiplier(targetKey):1);const multiplier=typeof kokoroLinkEnemySpeedMultiplierFor==='function'?kokoroLinkEnemySpeedMultiplierFor(targetKey):1;return Math.max(1,Math.round(base*multiplier));}
-function enemyKokoroLinkMisses(targetKey,randomFn=Math.random){const accuracy=typeof kokoroLinkEnemyAccuracyFor==='function'?kokoroLinkEnemyAccuracyFor(targetKey):1;return randomFn()>=accuracy;}
+function enemyKokoroLinkMisses(targetKey,randomFn=combatRandom){const accuracy=typeof kokoroLinkEnemyAccuracyFor==='function'?kokoroLinkEnemyAccuracyFor(targetKey):1;return randomFn()>=accuracy;}
 function enemyKokoroLinkStatusHtml(targetKey){
   const parts=[];const status=typeof kokoroLinkEnemyStatusText==='function'?kokoroLinkEnemyStatusText(targetKey):'';const foresight=typeof kokoroLinkForesightTextForTarget==='function'?kokoroLinkForesightTextForTarget(targetKey):'';
   if(status)parts.push(`💔${status}`);if(foresight)parts.push(foresight);return parts.length?` / ${parts.join('・')}`:'';
@@ -70,7 +74,7 @@ function applyKokoroLinkControlStatus(result,target){
     if(result.controlStatus==='sleep')eSleepTurns=turns;
   }
 }
-function applyKokoroLinkStatusAbilityForBattle(link,targetId=null,randomFn=Math.random){
+function applyKokoroLinkStatusAbilityForBattle(link,targetId=null,randomFn=combatRandom){
   if(!link?.statusAbility||typeof attemptKokoroLinkStatusAbility!=='function')return '';
   const multiEntry=multiBattle?.active?multiEnemy(targetId):null;
   const targetMon=multiEntry?.mon||enemy;
@@ -102,7 +106,7 @@ function dispelEnemyKokoroLinkBoosts(targetId=null){
   else{if(eAtk>1){eAtk=1;removed.push('攻撃強化');}if(eGuard){eGuard=false;removed.push('防御');}if(eFlareCharge){eFlareCharge=false;removed.push('フレアチャージ');}if(eAquaShield){eAquaShield=false;removed.push('水の盾');}}
   return removed;
 }
-function applyKokoroLinkTacticsAbilityForBattle(link,targetId=null,randomFn=Math.random){
+function applyKokoroLinkTacticsAbilityForBattle(link,targetId=null,randomFn=combatRandom){
   const ability=link?.tacticsAbility;if(!ability)return '';
   if(ability.deferred)return `⏸️ ★3リンク能力「${ability.label}」は、戦闘内コスト実装まで保留中です。`;
   if(ability.id==='origin_choice')return `✨ ★3リンク能力「${ability.label}」：効果を選択してください。`;
@@ -130,7 +134,7 @@ function skill110EnemyMoves(monster,level){
   const ids=defaultSkillIdsForMonster(monster,{level:level||1});
   return ids.filter(id=>SKILL_BY_ID[id]?.cost<25).map(skillToMove);
 }
-function nextEnemyMoveWithKokoroLinkForesight(targetKey,monster,randomFn=Math.random){
+function nextEnemyMoveWithKokoroLinkForesight(targetKey,monster,randomFn=combatRandom){
   const entry=typeof multiBattle!=='undefined'&&multiBattle?.active?multiBattle.enemies.find(e=>e.id===targetKey):null;
   const level=entry?.level||activeHuntRequest?.enemyLevel||monster?.level||1;
   const moves=skill110EnemyMoves(monster,level);
@@ -196,7 +200,7 @@ function tryParalysisAction(isPlayer) {
   let turns = isPlayer ? pParalysisTurns : eParalysisTurns;
   if (turns <= 0) return {canAct:true, message:''};
   const actor = isPlayer ? player : enemy;
-  const stopped = Math.random() < 0.30;
+  const stopped = combatRandom() < 0.30;
   turns--;
   if (isPlayer) pParalysisTurns = turns; else eParalysisTurns = turns;
   let message = stopped ? `⚡ ${actor.name}は体がしびれて動けない！` : '';
@@ -212,7 +216,7 @@ function applyConfusionToTargetBase(targetIsPlayer) {
   const actor = targetIsPlayer ? player : enemy;
   const current = targetIsPlayer ? pConfusionTurns : eConfusionTurns;
   if (current > 0) return `<br>🌀 ${actor.name}はすでにこんらんしている！`;
-  const turns = 2 + Math.floor(Math.random() * 2);
+  const turns = 2 + Math.floor(combatRandom() * 2);
   if (targetIsPlayer) pConfusionTurns = turns; else eConfusionTurns = turns;
   return `<br>🌀 ${actor.name}はこんらんした！（${turns}ターン）`;
 }
@@ -220,7 +224,7 @@ function tryConfusionAction(isPlayer) {
   let turns = isPlayer ? pConfusionTurns : eConfusionTurns;
   if (turns <= 0) return {canAct:true, selfHit:false, message:''};
   const actor = isPlayer ? player : enemy;
-  const roll = Math.random();
+  const roll = combatRandom();
   turns--;
   if (isPlayer) pConfusionTurns = turns; else eConfusionTurns = turns;
   let result;
@@ -348,7 +352,7 @@ async function turn(i) {
   const pSpeed = prioritized?Infinity:(typeof traitPlayerSpeed==='function'?traitPlayerSpeed(monSpd(player, activeInstance)):monSpd(player, activeInstance));
   const delayed=typeof consumeKokoroLinkEnemyActionDelay==='function'&&consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
   const eSpeed = delayed?-Infinity:enemyKokoroLinkSpeed(enemy,singleEnemyKokoroLinkKey(),activeHuntRequest?.enemyLevel);
-  const playerFirst = pSpeed === eSpeed ? Math.random() < 0.5 : pSpeed > eSpeed;
+  const playerFirst = pSpeed === eSpeed ? combatRandom() < 0.5 : pSpeed > eSpeed;
 
   if (playerFirst) {
     const playerResult=await performAction(player, enemy, playerMove, true);
@@ -494,7 +498,7 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
       const {kind,chance:baseChance}=config.status;
       const chance=actorIsPlayer?playerKokoroLinkChance(baseChance):{chance:baseChance,boosted:false};
       if(chance.boosted)messages.push('⭐ 星運上昇で成功率アップ！');
-      if(Math.random()<chance.chance){
+      if(combatRandom()<chance.chance){
         const applyStatus=()=>{
         if(kind==='poison'){
           target.status='poison';target.poison=BATTLE_STATUS_EFFECTS.poison.duration;
@@ -503,7 +507,7 @@ function resolveTacticalSkillEffects(move,actorIsPlayer,actorEntry=null,targetEn
             removeKokoroLinkEnemyEffectCategory(target.entry?.id||singleEnemyKokoroLinkKey(),'poison');
           messages.push(`☠️ ${target.name}は毒状態になった！`);
         }else if(kind==='paralysis'){target.paralysis=3;messages.push(`⚡ ${target.name}は麻痺状態になった！`);}
-        else if(kind==='confusion'){target.confusion=isSkill110Move(move)?2+Math.floor(Math.random()*2):2;messages.push(`🌀 ${target.name}はこんらんした！`);}
+        else if(kind==='confusion'){target.confusion=isSkill110Move(move)?2+Math.floor(combatRandom()*2):2;messages.push(`🌀 ${target.name}はこんらんした！`);}
         };
         if(target.isPlayer&&typeof traitReceiveStatus==='function')traitReceiveStatus(kind,applyStatus,actorEntry);else applyStatus();
       }
@@ -554,7 +558,7 @@ function skill110IncomingDamage(damage,ignoreDefense,guardReduction=0,attackStat
     const ability=link?.powerAbility;
     if(ability?.id==='evasion'&&ability.charges>0){
       ability.charges--;
-      attackState.evaded=Math.random()<(Number(ability.chance)||0);
+      attackState.evaded=combatRandom()<(Number(ability.chance)||0);
     }
     if(!ignoreDefense&&!attackState.evaded){
       for(const candidate of [ability,link?.tacticsAbility]){
@@ -611,7 +615,7 @@ async function performSkill110AttackBase(move,actorIsPlayer,actorEntry=null,targ
       // Power is total power, so multiple hits never multiply the move's budget
       // or the random bonus. Guard/focus are snapshotted once for the entire move.
       const statMultiplier=battleStatDamageMultiplier(actor.mon,actor.level,defender,target.level)*(typeof traitDamageMultiplier==='function'?traitDamageMultiplier(actorIsPlayer,move,actorEntry,targetEntry):1);
-      const rawTotal=(resolvedPower*boost.multiplier*attack*typeMultiplier+Math.random()*9)*charge*conditional*difficulty*huntMapAttackMultiplier(moveTypes(move))*statMultiplier;
+      const rawTotal=(resolvedPower*boost.multiplier*attack*typeMultiplier+combatRandom()*9)*charge*conditional*difficulty*huntMapAttackMultiplier(moveTypes(move))*statMultiplier;
       const total=Math.max(1,Math.floor(rawTotal*defense));
       const hits=Math.max(1,Math.floor(config.hits||1));
       const wholeBarrier=target.isPlayer?skill110IncomingDamage(rawTotal,config.ignoreDefense,1-defense):{hpDamage:total,absorbed:0};
@@ -690,7 +694,7 @@ async function doAttackBase(attacker, defender, mv, isPlayer) {
     let msg = `🌿 ${attacker.name}の「${name}」！`;
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.70):{chance:Number.isFinite(effectChance)?effectChance:0.70,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
-    if (Math.random() < chance.chance) {
+    if (combatRandom() < chance.chance) {
       msg += applySleepToTarget(!isPlayer);
     } else {
       msg += `<br>しかし、${defender.name}には効かなかった！`;
@@ -719,7 +723,7 @@ async function doAttackBase(attacker, defender, mv, isPlayer) {
   const playerLevel = activeInstance?.level;
   const enemyLevel = activeHuntRequest?.enemyLevel;
   const statMultiplier = battleStatDamageMultiplier(attacker, isPlayer ? playerLevel : enemyLevel, defender, isPlayer ? enemyLevel : playerLevel)*(typeof traitDamageMultiplier==='function'?traitDamageMultiplier(isPlayer,mv):1);
-  const rawDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
+  const rawDmg = (effectivePower * atk * effectiveType + combatRandom()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
   const linkBarrier = legacyAttackDefense(rawDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
   const dmg = linkBarrier.hpDamage;
   const defenderHpBefore = isPlayer ? eHp : pHp;
@@ -795,36 +799,36 @@ async function doAttackBase(attacker, defender, mv, isPlayer) {
   if (effect === 'poison' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.5):{chance:Number.isFinite(effectChance)?effectChance:0.5,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
-    if(Math.random()<chance.chance)
+    if(combatRandom()<chance.chance)
     msg += applyPoisonToTarget(!isPlayer);
   }
   if (effect === 'paralysis' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.30):{chance:Number.isFinite(effectChance)?effectChance:0.30,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
-    if(Math.random()<chance.chance)
+    if(combatRandom()<chance.chance)
     msg += applyParalysisToTarget(!isPlayer);
   }
   if (effect === 'sleep' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.70):{chance:Number.isFinite(effectChance)?effectChance:0.70,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
-    if(Math.random()<chance.chance)
+    if(combatRandom()<chance.chance)
     msg += applySleepToTarget(!isPlayer);
   }
   if (effect === 'confusion' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.60):{chance:Number.isFinite(effectChance)?effectChance:0.60,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
-    if(Math.random()<chance.chance)
+    if(combatRandom()<chance.chance)
     msg += applyConfusionToTarget(!isPlayer);
   }
   if (effect === 'repeat_attack' && (isPlayer ? eHp > 0 : pHp > 0)) {
     const chance=isPlayer?playerKokoroLinkChance(Number.isFinite(effectChance)?effectChance:0.30):{chance:Number.isFinite(effectChance)?effectChance:0.30,boosted:false};
     if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';
-    if(Math.random()<chance.chance){
+    if(combatRandom()<chance.chance){
     if(typeof finishBattleSkillMotion==='function')await finishBattleSkillMotion(animated);
     if(typeof playBattleSkillMotion==='function')await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true});
   if(typeof mapStoryTokenValid==='function'&&!mapStoryTokenValid(storyToken))return {animated:false};
     // Additional hit shares the attack-wide defense snapshot; no second charge consumption.
-    const rawSecondDmg = (effectivePower * atk * effectiveType + Math.random()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
+    const rawSecondDmg = (effectivePower * atk * effectiveType + combatRandom()*9) * difficultyAttackMultiplier * mapAttackMultiplier * statMultiplier;
     const secondBarrier = legacyAttackDefense(rawSecondDmg,!isPlayer,g,shield,penetration.rate,attackDefense);
     const secondDmg = secondBarrier.hpDamage;
     const secondHpBefore=isPlayer?eHp:pHp;

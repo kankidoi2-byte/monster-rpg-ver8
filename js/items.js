@@ -328,6 +328,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
     }else{
       save.items[itemId]--;
       if(ok){addInstance(target.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(target.id);}
+      if(typeof autoPrepareContractCheckpoint==='function')autoPrepareContractCheckpoint(target,null,ok);
       if(!saveGame())throw new Error('contract_save');
     }
     committed=true;
