@@ -12,6 +12,8 @@ try{
  for(const width of [360,1280]){
   const ctx=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'}),page=await ctx.newPage();
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
+  // Registering new items can legitimately earn a rank. Dismiss its real dialog.
+  await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{await page.getByRole('button',{name:'冒険を続ける',exact:true}).click();});
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.goto('http://127.0.0.1:4389/?legacy=1',{waitUntil:'networkidle'});
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
