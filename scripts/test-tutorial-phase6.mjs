@@ -59,15 +59,20 @@ expectedPhaseChecks.forEach(name=>{
 const requiredRegressionChecks=['save','post-battle-contract','three-way','alchemy','expedition','golden-land','contractor-rank-events','ui-contract'];
 requiredRegressionChecks.forEach(name=>assert.ok(packageJson.scripts.check.includes(`npm run check:${name}`),`integrated regression check is missing: ${name}`));
 
-const saveFullSource=read('js/save.js');
-const saveSource=saveFullSource.slice(0,saveFullSource.indexOf('/* Ver7.8:'));
 const storage=new Map();
+let activeScreen='home';
+const timers=[];
 const saveContext=vm.createContext({
   console,Date,JSON,Math,MAX_LEVEL:100,
   clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),
   isMaxLevel:value=>Number(value)>=100,
   M:[{id:'elna_beginner'},{id:'freigal'},{id:'aquaron'},{id:'grassbeat'},{id:'volteck'},{id:'slime'}],
   MAPS:[{id:'grassland'}],
+  SHOP_ITEMS:[],ITEM_DEX_ITEMS:[],
+  document:{getElementById:()=>null,querySelector:selector=>selector==='.screen.active'?{id:activeScreen}:null,
+    addEventListener(){},body:{classList:{toggle(){}}}},
+  window:{addEventListener(){}},
+  setTimeout:callback=>timers.push(callback),
   localStorage:{
     getItem:key=>storage.has(key)?storage.get(key):null,
     setItem:(key,value)=>storage.set(key,String(value)),
@@ -75,13 +80,14 @@ const saveContext=vm.createContext({
   },
   confirm:()=>false,alert:()=>{}
 });
-vm.runInContext(saveSource,saveContext);
+for(const file of ['js/save.js','js/state.js','js/tutorial.js'])vm.runInContext(read(file),saveContext,{filename:file});
 const evaluate=expression=>vm.runInContext(expression,saveContext);
 const plain=value=>JSON.parse(JSON.stringify(value));
 evaluate('save=initSave()');
 evaluate("setTutorialStep('first_contract')");
-['threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion','skillCards','goldenLand','dex','shopItems','contractorRank']
-  .forEach(id=>assert.equal(evaluate(`markTutorialGuideSeen('${id}')`),true,`could not persist guide: ${id}`));
+for(const id of evaluate('TUTORIAL_GUIDE_IDS')){
+  assert.equal(evaluate(`markTutorialGuideSeen('${id}')`),true,`could not persist guide: ${id}`);
+}
 assert.equal(evaluate('markTutorialStarterContractScrollGranted()'),true);
 assert.equal(evaluate('markTutorialFirstContractGuaranteeUsed()'),true);
 saveContext.roundTrip=plain(evaluate('save'));
@@ -96,6 +102,40 @@ const legacy=plain(evaluate('parseAndPrepareSave(legacyRaw,[])'));
 assert.equal(legacy.progress.tutorial.status,'completed','existing saves must not be forced into onboarding after integrated migration');
 assert.equal(legacy.progress.tutorial.firstContractGuaranteeUsed,true,'existing saves must not gain the tutorial guarantee');
 assert.equal(legacy.progress.tutorial.starterContractScrollGranted,true,'existing saves must not gain a tutorial scroll');
+
+const mainStep=id=>evaluate(`tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).find(step=>step.id==='${id}')`);
+assert.equal(mainStep('rescue_world_map_depart').text,'最初は難易度Ⅰで進もう。「出発」を押したら、エルナの救援戦が始まるぞ！');
+assert.equal(mainStep('growth_elna_details').text,'アイコンを押すと詳細が開く。レベルと経験値、HP・攻撃・防御・速度、装備中の技を確認できるぞ！ 「ステータス」を押せば特性も見られる！');
+assert.equal(mainStep('lumina_world_map_academy').title,'魔導学園を選ぼう');
+assert.equal(mainStep('lumina_academy_arrival').title,'魔導学園へ');
+
+const guidePairs=[
+  [['fusion','evolutionFusion','guide_evolution_fusion'],['evolution','evolution','guide_evolution']],
+  [['skillEdit','skillCards','guide_skill_cards'],['skillGacha','skillGacha','guide_skill_gacha']],
+  [['shop','shopItems','guide_shop_items'],['battleItemSelect','battleItems','guide_battle_items']],
+  [['contractorRank','contractorRank','guide_contractor_rank'],['contractorTitles','contractorTitles','guide_contractor_titles']]
+];
+function openGuideScreen(screen){
+  activeScreen=screen;
+  evaluate(`handleTutorialScreenChange('${screen}')`);
+  while(timers.length)timers.shift()();
+  return evaluate('tutorialUiState.flowId');
+}
+for(const order of [guidePairs.flat(),guidePairs.flat().reverse()]){
+  evaluate('save=initSave();completeTutorial()');
+  for(const [screen,guideId,flowId] of order){
+    assert.deepEqual(plain(evaluate(`tutorialFeatureGuideForScreen('${screen}')`)),[guideId,flowId]);
+    assert.equal(openGuideScreen(screen),flowId,`${screen}: its guide must start independently`);
+    assert.equal(evaluate(`save.progress.tutorial.guides.${guideId}`),true);
+    evaluate('finishTutorialFlow()');
+    assert.equal(openGuideScreen(screen),null,`${screen}: an already seen guide must not restart`);
+  }
+  evaluate('save=loadSave()');
+  for(const [screen,guideId] of order){
+    assert.equal(evaluate(`save.progress.tutorial.guides.${guideId}`),true);
+    assert.equal(openGuideScreen(screen),null,`${screen}: a saved guide flag must survive reload`);
+  }
+}
 
 const placementStart=tutorial.indexOf('function calculateTutorialPlacement');
 const placementEnd=tutorial.indexOf('function setTutorialShadeRect',placementStart);

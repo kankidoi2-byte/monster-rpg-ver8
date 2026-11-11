@@ -24,7 +24,7 @@ assert.match(main,/id:'home_requests'[^\n]+target:'#homeAdventureButton'[^\n]+ad
 assert.match(main,/id:'request_accept'[^\n]+data-tutorial-request-open[^\n]+externalAdvance:true/);
 assert.match(main,/id:'request_reward_claim'[^\n]+target:'#tutorialRequestClaimButton'[^\n]+externalAdvance:true[^\n]+disableBack:true/);
 assert.match(main,/id:'request_reward_received'[^\n]+persistAs:'stella_intro'[^\n]+nextStepId:'stella_intro'/);
-assert.ok(main.includes('ここを押すと、討伐依頼と報酬を確認できるぞ！'));
+assert.ok(main.includes("title:'救援を報告しよう',text:'エルナを助けたことを報告しに行こう！ ここを押すと、報告と報酬の受け取りへ進めるぞ！'"));
 assert.ok(main.includes('このボタンを押して、報告と報酬の確認へ進もう！'));
 assert.ok(main.includes('報酬はコイン250枚とアイテム4種類だ'));
 assert.ok(!main.includes('カナタ'),'Kanata must not appear in the prologue');

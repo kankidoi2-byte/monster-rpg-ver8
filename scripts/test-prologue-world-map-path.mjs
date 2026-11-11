@@ -61,30 +61,36 @@ let advances=0;
 const notices=[];
 let overviewReturns=0;
 const handlerContext=vm.createContext({
-  TUTORIAL_FIRST_HUNT:{mapId:'grassland',difficultyId:'easy'},
+  TUTORIAL_FIRST_HUNT:{mapId:'grassland',difficultyId:'d1'},
+  TUTORIAL_FIRST_HUNT_DIFFICULTY_LABEL:'難易度Ⅰ',
   tutorialCurrentStepId:()=>currentStep,
   tutorialNext:completed=>{assert.equal(completed,true);advances+=1;},
   showUiNotice:(message,kind)=>notices.push({message,kind}),showWorldMapOverview:()=>{overviewReturns+=1;return true;}
 });
 vm.runInContext(tutorial.slice(selectionStart,handlerStart),handlerContext);
 vm.runInContext(tutorial.slice(handlerStart,handlerEnd),handlerContext);
-assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('grassland','easy',null)",handlerContext),false,
+assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('grassland','d1',null)",handlerContext),false,
   'ordinary exploration must remain untouched outside the tutorial checkpoint');
 currentStep='rescue_world_map_depart';
-assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('forest','easy',null)",handlerContext),true,
+assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('forest','d1',null)",handlerContext),true,
   'a wrong departure is consumed instead of starting an unrelated random battle');
+assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('grassland','d2',null)",handlerContext),true,
+  'the first hunt must reject another difficulty');
 assert.equal(advances,0);
-assert.equal(notices.length,1);
-assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('grassland','easy',null)",handlerContext),true);
+assert.deepEqual(notices,[
+  {message:'最初は草原の難易度Ⅰを選んで、エルナを助けに行こう。',kind:'warning'},
+  {message:'最初は草原の難易度Ⅰを選んで、エルナを助けに行こう。',kind:'warning'}
+]);
+assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('grassland','d1',null)",handlerContext),true);
 assert.equal(advances,1,'the valid fixed route advances exactly once into the rescue transition');
 currentStep='rescue_world_map_grassland';
 assert.equal(vm.runInContext("handleTutorialWorldMapLocationSelection('forest',null)",handlerContext),true);
 assert.equal(vm.runInContext("handleTutorialWorldMapLocationSelection('grassland',null)",handlerContext),false);
-assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('forest','easy',null)",handlerContext),true,'an off-route direct departure is also consumed');
+assert.equal(vm.runInContext("handleTutorialWorldMapDeparture('forest','d1',null)",handlerContext),true,'an off-route direct departure is also consumed');
 assert.ok(overviewReturns>=2,'off-route actions return to the visible world overview');
 
 const newPath=main.slice(main.indexOf("id:'rescue_world_map_open'"),main.indexOf("id:'elna_rescue_start'"));
 assert.ok(!newPath.includes('Math.random'),'the first exploration must not wait for random selection or events');
 assert.ok(!/[★☆]\s*5|star.?5/i.test(newPath),'the first exploration must not require a five-star encounter');
 
-console.log('Prologue world-map path passed (Battle -> Grassland -> Easy departure -> deterministic rescue, exact resume view, and v2 checkpoint compatibility).');
+console.log('Prologue world-map path passed (Battle -> Grassland -> difficulty I departure -> deterministic rescue, exact resume view, and v2 checkpoint compatibility).');

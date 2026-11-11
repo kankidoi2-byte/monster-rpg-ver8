@@ -56,7 +56,8 @@ function gBlessHuntReward(base,turnBonus,kind,bless,rewardMultiplier){
 const TUTORIAL_VERSION = 2;
 const TUTORIAL_GUIDE_IDS = Object.freeze([
   'threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion',
-  'skillCards','goldenLand','dex','shopItems','contractorRank'
+  'skillCards','goldenLand','dex','shopItems','contractorRank',
+  'evolution','skillGacha','battleItems','contractorTitles'
 ]);
 const TUTORIAL_ONCE_FLAG_IDS = Object.freeze([
   'starterContractsGranted','elnaContractGranted','stellaSkillCardGranted',

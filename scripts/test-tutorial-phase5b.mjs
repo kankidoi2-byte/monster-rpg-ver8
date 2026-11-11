@@ -17,7 +17,8 @@ const index=read('index.html');
 const notices=read('js/notices-data.js');
 
 assert.match(saveSource,/const SAVE_KEY = 'mb_v95c'/,'the established save key must not change');
-const guideIds=['alchemy','expedition','evolutionFusion','skillCards','goldenLand','dex','shopItems','contractorRank'];
+const guideIds=['alchemy','expedition','evolutionFusion','skillCards','goldenLand','dex','shopItems','contractorRank',
+  'evolution','skillGacha','battleItems','contractorTitles'];
 guideIds.forEach(id=>assert.ok(saveSource.includes(`'${id}'`),`missing persisted guide flag: ${id}`));
 
 const flowConstants=[
@@ -51,9 +52,9 @@ assert.ok(flows.TUTORIAL_CONTRACTOR_RANK_FLOW_ID.includes('モンスターのレ
 
 const screenGuideSlice=tutorial.slice(tutorial.indexOf('function tutorialFeatureGuideForScreen'),tutorial.indexOf('function tutorialFirstHuntIsPending'));
 [
-  "alchemy:['alchemy'","expedition:['expedition'","fusion:['evolutionFusion'","evolution:['evolutionFusion'",
-  "skillEdit:['skillCards'","skillGacha:['skillCards'","dexHub:['dex'","shop:['shopItems'",
-  "battleItemSelect:['shopItems'","contractorRank:['contractorRank'","contractorTitles:['contractorRank'"
+  "alchemy:['alchemy'","expedition:['expedition'","fusion:['evolutionFusion'","evolution:['evolution'",
+  "skillEdit:['skillCards'","skillGacha:['skillGacha'","dexHub:['dex'","shop:['shopItems'",
+  "battleItemSelect:['battleItems'","contractorRank:['contractorRank'","contractorTitles:['contractorTitles'"
 ].forEach(mapping=>assert.ok(screenGuideSlice.includes(mapping),`missing first-screen guide mapping: ${mapping}`));
 assert.ok(screenGuideSlice.includes('if(tutorialUiState.active){setTimeout(renderTutorialStep,0);return;}'),'feature guides must not interrupt an active guide');
 const worldMapSource=read('js/world-map.js');
@@ -76,4 +77,4 @@ assert.ok(ui.includes('Rankで能力や機能は変わらない')&&index.include
 assert.ok(notices.includes("id: '20260829-tutorial-growth-collection-guides'"),'the player-facing update must have a stable notice ID');
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1')&&index.includes('tutorial-action-guidance-1'),'changed browser scripts must have refreshed cache keys');
 
-console.log('Tutorial Phase 5B validation passed (eight persisted guide families, current rules, first-use routing, and no gameplay-rule changes).');
+console.log('Tutorial Phase 5B validation passed (persisted guide flags, current rules, first-use routing, and no gameplay-rule changes).');
