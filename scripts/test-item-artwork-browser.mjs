@@ -29,6 +29,7 @@ try{
   // Repeated navigation and reload preserve quantities and registration.
   await page.evaluate(()=>{show('home');show('itemDex');show('home');show('itemDex');});
   await page.reload({waitUntil:'networkidle'});
+  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.deepEqual(await page.evaluate(ids=>ids.map(id=>save.items[id]),ids),ids.map(()=>2));
   assert(await page.evaluate(ids=>ids.every(id=>save.itemDex.includes(id)),ids));
   await page.evaluate(()=>{clearTutorialUi();show('shop');});
