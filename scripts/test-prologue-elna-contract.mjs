@@ -29,7 +29,10 @@ assert.ok(tutorial.includes("tutorialRole:'person'"),'the person guest descripto
 assert.ok(tutorial.includes("tutorialRole:'contract_body'"),'the persistent contract body must have its own data role');
 assert.ok(!mainFlow.includes('カナタ'),'Kanata must not appear in the prologue');
 const authored=[];
-vm.runInNewContext(mainFlow,{TUTORIAL_MAIN_FLOW_ID:'main',registerTutorialFlow:(_id,steps)=>authored.push(...steps)});
+vm.runInNewContext(mainFlow,{
+  TUTORIAL_MAIN_FLOW_ID:'main',TUTORIAL_FIRST_HUNT_DIFFICULTY_LABEL:'難易度Ⅰ',
+  registerTutorialFlow:(_id,steps)=>authored.push(...steps)
+});
 const question=authored.find(step=>step.id==='elna_contract_consent');
 const execute=authored.find(step=>step.id==='elna_contract_execute');
 const departure=authored.find(step=>step.id==='elna_contract_departure');

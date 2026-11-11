@@ -37,6 +37,7 @@ for(const mode of ['ally','enemy','multi']){
  assert.equal(d.querySelector('#pVis .battle-facing').style.transform,mode==='enemy'?'':'scaleX(-1)');
  run(mode==='multi'?'pHp--;multiBattle.enemies[0].hp--;updateMultiBattleView()':'pHp--;eHp--;update()');
  assert.deepEqual([...d.querySelectorAll('video')],videos);assert(videos.every(v=>v.currentTime===3));
+ assert(run("markTutorialGuideSeen('battleItems')"));
  run('openBattleItemSelect()');assert(videos.every(v=>v.paused));
  run("show('battle');update()");await tick();assert(videos.every(v=>!v.paused));
  const oldPlaying=videos[0].onplaying;run("show('home')");oldPlaying();assert.equal(d.querySelectorAll('video').length,0);
