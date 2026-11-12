@@ -4,7 +4,7 @@ var STATUS_LABELS={hp:'HP',attack:'攻撃',defense:'防御',speed:'速度'};
 var STATUS_COLORS={hp:'#2f7a3c',attack:'#b8322c',defense:'#245b98',speed:'#9a7424'};
 function monsterStatusValues(ins){
   const mon=by(ins.id);
-  return {hp:instanceMaxHp(ins),attack:battleBaseAttack(mon,ins.level)*instanceStatModifier(ins,'attack'),defense:battleBaseDefense(mon,ins.level),speed:baseBattleSpeed(mon,ins,ins.level)};
+  return {hp:instanceMaxHp(ins,null),attack:battleBaseAttack(mon,ins.level)*instanceStatModifier(ins,'attack'),defense:battleBaseDefense(mon,ins.level),speed:baseBattleSpeed(mon,ins,ins.level)};
 }
 function statusNumber(value){return Math.round(value).toLocaleString('ja-JP');}
 function statusMiniStats(ins){

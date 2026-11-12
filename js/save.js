@@ -16,6 +16,16 @@ const SOUL_RECOVERY_STORAGE_KEY=`${SAVE_KEY}_soulContractRecovery_v1`;
 const SOUL_ARCHIVE_STORAGE_KEY=`${SOUL_RECOVERY_STORAGE_KEY}_archived`;
 let rejectedPrimaryRaw = null;
 
+// Additive authority state: old saves retain all existing fields and completion flags.
+function normalizeAuthoritySave(value,payload){
+  const s=isSaveObject(value)?value:{},t=payload?.progress?.tutorial;
+  const completed=payload?.progress?.storyFlags?.prologueCompleted===true ||
+    !!(t&&(t.prologueCompleted===true||t.completed===true||t.skipped===true||t.status==='completed'||t.status==='skipped'));
+  return {...s,v:1,unlocked:s.unlocked===true||completed,
+    clearedChapters:[...new Set((Array.isArray(s.clearedChapters)?s.clearedChapters:[])
+      .filter(n=>Number.isInteger(n)&&n>=1&&n<=7))].sort((a,b)=>a-b)};
+}
+
 const G_BLESS_RULES=Object.freeze({week:100,coins:2,exp:1.5,cost:1});
 // Shift JST by four hours so every week starts at Monday 04:00 JST.
 function gBlessWeekKey(now=Date.now()){
@@ -243,6 +253,7 @@ function normalizeAutoBattleRun(r){
 }
 function initSave() {
   return {
+    authority:normalizeAuthoritySave(null),
     autoBattle:normalizeAutoBattle(null),
     gBless:normalizeGBless(null),
     schemaVersion:SAVE_SCHEMA_VERSION,
@@ -570,6 +581,7 @@ function repairSave(payload,report=[]){
   const ownedTutorialIds=new Set(payload.instances.map(entry=>entry.id));
   if(ownedTutorialIds.has('freigal')&&ownedTutorialIds.has('aquaron'))payload.progress.tutorial.starterContractsGranted=true;
   if(ownedTutorialIds.has('elna_beginner'))payload.progress.tutorial.elnaContractGranted=true;
+  payload.authority=normalizeAuthoritySave(payload.authority,payload);
   payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;
 }
