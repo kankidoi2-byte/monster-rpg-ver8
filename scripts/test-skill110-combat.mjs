@@ -111,7 +111,8 @@ for(const guard of [0,.45,.7])for(const shield of [false,true])for(const linkGua
  defenseCases++;
 }
 console.log(JSON.stringify({result:'PASS',defenseCases,scope:'strongest-only guard/shield/both-link defenses, HP barriers, bypass and multihit Cartesian combinations'}));
-run("combat110Setup();busy=false;save.items.attack_potion=1;useBattleItem('attack_potion');");
+run("combat110Setup();busy=false;save.items.attack_potion=1;var savedItemEnemyTurn=battleItemEnemyTurn,itemTurnCalls=0;battleItemEnemyTurn=()=>{itemTurnCalls++;};try{useBattleItem('attack_potion');}finally{battleItemEnemyTurn=savedItemEnemyTurn;}");
+assert.equal(run('itemTurnCalls'),1,'successful potion must schedule exactly one enemy turn');
 assert.equal(run('pAtk'),1.6);assert.equal(run('save.items.attack_potion'),0);
 await run('combat110Run({},100)');assert.equal(run('eHp'),500-damage(164.5));
 run('combat110Setup();pAtk=9;eAtk=.1');await run('combat110Run({},100)');
