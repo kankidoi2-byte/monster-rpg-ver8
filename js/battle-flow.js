@@ -210,6 +210,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   pHp = partyBattle[activePartyIdx].hp;
   eHp = enemyMaxHp();
   pAtk = eAtk = 1; pGuard = eGuard = false;
+  for(const member of partyBattle){member.itemDefense=null;member.itemSpeed=null;member.mon.itemDefense=1;member.mon.itemSpeed=1;}
   resetBattleTransientEffects();
   if (activeHuntRequest.battleMode === 'three_way' && activeHuntRequest.secondEnemyId) {
     beginThreeWayBattle();
@@ -248,6 +249,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   const next = partyBattle[nextIndex];
   if (!next || nextIndex === activePartyIdx || next.fainted || next.hp <= 0) return false;
   if (current) {
+    current.mon.itemDefense=1;current.mon.itemSpeed=1;
     current.hp = faintCurrent ? 0 : Math.max(0,pHp);
     if (faintCurrent) current.fainted = true;
   }
@@ -256,6 +258,8 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   player = next.mon;
   pHp = next.hp;
   if(typeof traitPartyChanged==='function')traitPartyChanged(current,next,faintCurrent);
+  next.mon.itemDefense=next.itemDefense||1;next.itemDefense=null;
+  next.mon.itemSpeed=next.itemSpeed||1;next.itemSpeed=null;
   pAtk = next.itemAttack||1; next.itemAttack=null; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
   const log = document.getElementById('log');
   if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();

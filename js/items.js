@@ -25,7 +25,7 @@ function renderShop() {
 function buyItem(id){
   ensureContractScrollItem();
   const it = ITEM_BY_ID[id];
-  if(!it){ alert('そのアイテムは購入できません。'); return; }
+  if(!it || it.shop===false || !Number.isFinite(it.price)){ alert('そのアイテムは購入できません。'); return; }
   if((save.coins||0)<it.price){
     alert('コインが足りない！');
     return;
@@ -189,7 +189,7 @@ function renderBattleItemSelect(){
   ensureContractScrollItem();
   const list=document.getElementById('battleItemList');
   if(!list)return;
-  list.innerHTML = `<p>対象：${typeof battleUiEscape==='function'?battleUiEscape(player?.name||'前衛'):player?.name||'前衛'} / HP ${pHp} / ${playerMaxHp()}。道具は行動を消費しません。</p>` + SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
+  list.innerHTML = `<p>対象：${typeof battleUiEscape==='function'?battleUiEscape(player?.name||'前衛'):player?.name||'前衛'} / HP ${pHp} / ${playerMaxHp()}。</p>` + SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
     <div class="item-card">
       <h2>${itemInlineVisual(it)} ${it.name} ×${save.items[it.id]||0}</h2>
       <p>${it.battleDesc || it.desc}</p>
@@ -197,17 +197,47 @@ function renderBattleItemSelect(){
       <button ${battleItemUnavailableReason(it.id)?'disabled':''} onclick="${it.contract ? `askUseContractScroll('${it.id}')` : `useBattleItemFromMenu('${it.id}')`}">使う</button>
     </div>`).join('');
 }
-function battleItemUnavailableReason(id){
-  if((save.items[id]||0)<=0)return '使用不可：残数がありません';
-  if(['potion','upper_potion'].includes(id)&&pHp>=playerMaxHp())return '使用不可：HPは満タンです';
+const BATTLE_ITEM_CURES = Object.freeze({antidote:['poison'],paralysis_heal:['paralysis'],confusion_heal:['confusion'],awakening:['sleep'],full_heal:['poison','paralysis','confusion','sleep']});
+function battleItemTargetReason(id,index){
+  if(!ITEM_BY_ID[id]?.usableInBattle)return '使用できません';
+  if((save.items[id]||0)<=0)return '残数なし';
+  const entry=partyBattle[index];if(!entry)return '対象なし';
+  const hp=index===activePartyIdx?pHp:entry.hp,fallen=entry.fainted||hp<=0;
+  if(id==='revive_drop')return fallen?'':'戦闘不能ではありません';
+  if(fallen)return '戦闘不能';
+  if(['potion','upper_potion','max_potion'].includes(id)&&hp>=instanceMaxHp(entry.inst))return 'HPは満タンです';
+  const cures=BATTLE_ITEM_CURES[id];
+  // Switching already clears the outgoing member's ailments in the existing rules.
+  if(cures){
+    if(index!==activePartyIdx)return '治す状態異常がありません';
+    const actor=tacticalCombatant(true);
+    if(!cures.some(k=>actor[k]>0||(k==='poison'&&actor.status==='poison')))return '治す状態異常がありません';
+  }
   return '';
 }
+function applyBattleItemEffect(id,index){
+  const entry=partyBattle[index],active=index===activePartyIdx;
+  const cures=BATTLE_ITEM_CURES[id];
+  if(cures){const actor=tacticalCombatant(true);for(const k of cures){actor[k]=0;if(k==='poison'&&actor.status==='poison')actor.status=null;}return;}
+  if(id==='attack_potion'){if(active)pAtk=1.6;else entry.itemAttack=1.6;return;}
+  if(id==='defense_potion'||id==='speed_potion'){
+    const key=id==='defense_potion'?'itemDefense':'itemSpeed';
+    if(active)entry.mon[key]=1.6;else entry[key]=1.6;
+    return;
+  }
+  const maxHp=instanceMaxHp(entry.inst);
+  if(id==='revive_drop'){entry.hp=Math.max(1,adjustedBattleHealing(Math.floor(maxHp/2)));entry.fainted=false;if(active)pHp=entry.hp;return;}
+  const amount=battlePotionHealing(id,entry.mon,entry.inst,maxHp);
+  entry.hp=Math.min(maxHp,(active?pHp:entry.hp)+amount);if(active)pHp=entry.hp;
+}
+function battleItemUnavailableReason(id){return battleItemTargetReason(id,activePartyIdx);}
 function useBattleItemFromMenu(id){
   if(battleItemMenuConsumed||!document.getElementById('battleItemSelect')?.classList.contains('active')||battleItemUnavailableReason(id))return;
   useBattleItem(id);
 }
 let battleItemSaveBusy = false, battleItemMenuConsumed = false;
 function battlePotionHealing(id, mon, ins, maxHp) {
+  if(id==='max_potion')return adjustedBattleHealing(maxHp);
   const legacyAmount = id === 'potion' ? 50 : 120;
   return adjustedBattleHealing(healingAtNewMaxHp(legacyAmount, mon, ins?.level, maxHp, instanceStatModifier(ins, 'hp')));
 }
@@ -216,27 +246,19 @@ function useBattleItem(id) {
   ensureContractScrollItem();
   if(ITEM_BY_ID[id]?.contract) { alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
   const it = ITEM_BY_ID[id];
-  if(!it || !['potion','upper_potion','attack_potion'].includes(id)){ alert('そのアイテムは使えません。'); return; }
+  if(!it || !it.usableInBattle){ alert('そのアイテムは使えません。'); return; }
   if (!player || !enemy) { alert('バトル中だけ使えます。'); return; }
   if ((save.items[id]||0) <= 0) { alert(`${it.name}を持っていない！`); return; }
 
-  const healing = id==='attack_potion' ? 0 : battlePotionHealing(id,player,activeInstance,playerMaxHp());
-  const h = Math.min(healing, playerMaxHp()-pHp);
-  if(id!=='attack_potion' && h<=0){alert('HPは満タンです。');return;}
-  const nextHp = Math.min(playerMaxHp(),pHp+healing);
-  const msg = id==='attack_potion'
-    ? `⚡ 力の薬を使った！ ${player.name}の攻撃力が強化上限の1.6倍になった！`
-    : `${id==='potion'?'💊 回復薬':'💉 上回復薬'}を使った！ HPが${h}回復した！`;
+  const reason=battleItemUnavailableReason(id);if(reason){alert(reason);return;}
+  const msg=`${it.name}を${player.name}に使った！`;
   battleItemSaveBusy = true;
   try {
     // Battle state is transient: apply it only after the inventory write commits.
     if(!commitSaveMutation(()=>{save.items[id]--;},{requireReadable:true}))return;
     battleItemMenuConsumed=true;
-    if(id==='attack_potion')pAtk=1.6;
-    else{
-      pHp=nextHp;
-      if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
-    }
+    applyBattleItemEffect(id,activePartyIdx);
+    busy=true;
     showCommittedSaveResult(()=>{
       // Close the input before fallible refreshes, preventing a stale menu retry.
       show('battle');
@@ -245,7 +267,14 @@ function useBattleItem(id) {
       if(log)log.innerHTML=msg;
       if(typeof captureBattleLog==='function')captureBattleLog();
     });
+    battleItemEnemyTurn();
   } finally { battleItemSaveBusy=false; }
+}
+function battleItemEnemyTurn(){
+  busy=true;startBattleTurn();renderBattleInputState();
+  if(multiBattle?.active){const actions=aliveMultiEnemies().map(actor=>{const delayed=consumeKokoroLinkEnemyActionDelay(actor.id),next=nextEnemyMoveWithKokoroLinkForesight(actor.id,actor.mon);return {kind:'enemy',actorId:actor.id,speed:delayed?-Infinity:multiEnemyKokoroLinkSpeed(actor),move:next.move};}).sort((a,b)=>b.speed-a.speed||Math.random()-.5);runMultiActions(actions,0);return;}
+  const token=mapStoryBattleToken(),actor=enemy,next=nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
+  (async()=>{await battleMotionDelay(300);if(!mapStoryTokenValid(token))return;await performAction(actor,player,next.move,false);if(!mapStoryTokenValid(token))return;if(eHp<=0){win();return;}if(pHp<=0&&!switchPartyMember())return;finishTurnWithPoison();})();
 }
 function chooseDefaultContractItem(){
   ensureContractScrollItem();

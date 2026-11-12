@@ -15,7 +15,7 @@ function h(slot=1){
 // No network APIs or real saves are present in this VM.
 for(const slot of [1,2])for(const feature of ['evolution','potion','upper_potion','attack_potion'])for(const fault of ['none','quota','write','read','lateRead','finalRead','conflict','display','notice','reenter','profile']){
  const r=h(slot);r.context.console={...console,error(){}};
- r.run(`var hero=addInstance('aquaron',50);save.party=[hero.uid];activeInstance=hero;partyBattle=[{inst:hero,hp:10,fainted:false}];activePartyIdx=0;player=by(hero.id);enemy=by('freigal');pHp=10;pAtk=1;pStatus={poison:2};busy=false;battleTurnCount=7;save.items.potion=3;save.items.upper_potion=3;save.items.attack_potion=3;checkEvolution(hero);currentEvolution=pendingEvolutions.shift();var target=currentEvolution.choices[0];pendingEvolutions.push({uid:'later',from:'aquaron',choices:[target]});saveGame();var key=MonsterProfiles.key(SAVE_KEY),otherKey=MonsterProfiles.slot()===1?'mb_v95c_profile2':'mb_v95c';var other=localStorage.getItem(otherKey);var before=JSON.stringify(save),disk=localStorage.getItem(key),choice=JSON.stringify(currentEvolution),queue=JSON.stringify(pendingEvolutions);var set=localStorage.setItem,get=localStorage.getItem;var writes=0;localStorage.setItem=(k,v)=>{if(k===key)writes++;return set(k,v)};var action=()=>${feature==='evolution'?'confirmEvolution(target)':`useBattleItem('${feature}')`};`);
+ r.run(`var hero=addInstance('aquaron',50);save.party=[hero.uid];activeInstance=hero;partyBattle=[{inst:hero,mon:structuredClone(by(hero.id)),hp:10,fainted:false}];activePartyIdx=0;player=partyBattle[0].mon;battleItemEnemyTurn=()=>{battleTurnCount++;busy=true;};enemy=by('freigal');pHp=10;pAtk=1;pStatus={poison:2};busy=false;battleTurnCount=7;save.items.potion=3;save.items.upper_potion=3;save.items.attack_potion=3;checkEvolution(hero);currentEvolution=pendingEvolutions.shift();var target=currentEvolution.choices[0];pendingEvolutions.push({uid:'later',from:'aquaron',choices:[target]});saveGame();var key=MonsterProfiles.key(SAVE_KEY),otherKey=MonsterProfiles.slot()===1?'mb_v95c_profile2':'mb_v95c';var other=localStorage.getItem(otherKey);var before=JSON.stringify(save),disk=localStorage.getItem(key),choice=JSON.stringify(currentEvolution),queue=JSON.stringify(pendingEvolutions);var set=localStorage.setItem,get=localStorage.getItem;var writes=0;localStorage.setItem=(k,v)=>{if(k===key)writes++;return set(k,v)};var action=()=>${feature==='evolution'?'confirmEvolution(target)':`useBattleItem('${feature}')`};`);
  if(['quota','write'].includes(fault))r.run(`localStorage.setItem=(k,v)=>{if(k===key)throw Object.assign(Error('${fault}'),{name:'${fault==='quota'?'QuotaExceededError':'SecurityError'}'});return set(k,v)};`);
  if(['read','lateRead','finalRead'].includes(fault))r.run(`var reads=0;localStorage.getItem=k=>{if(k===key&&${fault==='read'?'true':fault==='lateRead'?'++reads===2':'++reads===3'})throw Error('read');return get(k)};`);
  if(fault==='conflict')r.run('var newer=JSON.parse(disk);newer.coins=99999;set(key,JSON.stringify(newer))');
@@ -25,6 +25,7 @@ for(const slot of [1,2])for(const feature of ['evolution','potion','upper_potion
  r.run('action();localStorage.getItem=get;');
  const failed=['quota','write','read','lateRead','finalRead','conflict'].includes(fault);
  if(failed){
+  assert.equal(r.run('battleTurnCount'),7,'failed inventory write must not start a turn');
   assert.equal(r.run('JSON.stringify(save)'),r.run('before'),`${slot}/${feature}/${fault} memory`);
   assert.equal(r.run('JSON.stringify(currentEvolution)'),r.run('choice'));
   assert.equal(r.run('localStorage.getItem(key)'),fault==='conflict'?r.run('JSON.stringify(newer)'):r.run('disk'));
@@ -51,7 +52,7 @@ for(const slot of [1,2])for(const feature of ['evolution','potion','upper_potion
   }
  }
  assert.equal(r.run('JSON.stringify(pendingEvolutions)'),r.run('queue'));
- assert.equal(r.run('battleTurnCount'),7);assert.equal(r.run('JSON.stringify(pStatus)'),'{"poison":2}');
+ assert.equal(r.run('battleTurnCount'),feature==='evolution'||fault==='conflict'?7:8);assert.equal(r.run('JSON.stringify(pStatus)'),'{"poison":2}');
  assert.equal(r.run('localStorage.getItem(otherKey)'),r.run('other'));
  if(fault==='profile')assert.equal(r.run('switched'),false);
  assert.equal(r.run('evolutionSaveBusy||battleItemSaveBusy'),false);

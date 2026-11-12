@@ -414,7 +414,7 @@ function battleBaseDefense(mon, level) { return (mon.def ?? 60) * battleStatGrow
 function battleStatDamageMultiplier(attacker, attackerLevel, defender, defenderLevel) {
   const growth = battleStatGrowth(attackerLevel);
   const attack = battleBaseAttack(attacker, attackerLevel);
-  const defense = battleBaseDefense(defender, defenderLevel);
+  const defense = battleBaseDefense(defender, defenderLevel) * (defender.itemDefense || 1);
   return 0.8 * (attack / defense) * growth;
 }
 function healingAtNewMaxHp(amount, mon, level, currentMaxHp, legacyHpModifier=1) {
@@ -439,7 +439,7 @@ function baseBattleSpeed(m, ins, level) {
 function monSpd(m, ins=null, level=ins?.level) {
   const base = baseBattleSpeed(m, ins, level);
   const linkBonus = typeof kokoroLinkSpeedBonusFor === 'function' ? kokoroLinkSpeedBonusFor(ins) : 0;
-  return Math.max(1, base + linkBonus);
+  return Math.max(1, Math.round(base * (m?.itemSpeed || 1)) + linkBonus);
 }
 function playerAttackInstanceMultiplier(){
   const linkMultiplier = typeof kokoroLinkAttackMultiplierFor === 'function'

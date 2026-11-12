@@ -31,6 +31,9 @@ try{
   assert.equal(committed.delta,1);assert.equal(committed.scrolls,2);assert(committed.attempt&&!committed.busy);
   await page.reload({waitUntil:'networkidle'});assert.equal(await page.evaluate(()=>save.items.contract_scroll),2);assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='freigal').length),1);
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  // The preceding successful contract earned rank notices; acknowledge them before
+  // the next, unrelated tutorial save-failure fixture (and before fault injection).
+  await page.evaluate(()=>{ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');if(!saveGame())throw Error('Rank notice fixture save failed');});
   await page.evaluate(async()=>{clearTutorialUi();save.progress.tutorial=tutorialSaveDefaults();save.progress.tutorial.status='in_progress';save.progress.tutorial.stepId='contract_confirm';save.saveMeta.migrations=[];save.items.contract_scroll=0;setTutorialContractContext();saveGame();window.testStorageSet=Storage.prototype.setItem;const key=MonsterProfiles.key(SAVE_KEY);Storage.prototype.setItem=function(k,v){if(k===key)throw Error('Injected quota');return window.testStorageSet.call(this,k,v);};await useContractScrollConfirmed();});
   assert(await page.locator('#contractConfirm').isVisible());
   const retry=page.locator('#contractConfirm button[onclick="useContractScrollConfirmed()"]');assert(await retry.isVisible());assert(await retry.isEnabled());
