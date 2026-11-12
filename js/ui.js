@@ -71,6 +71,7 @@ function show(id) {
   if (id === 'giftBox' && typeof renderGiftBox === 'function') renderGiftBox();
   if (id === 'roadmap' && typeof renderRoadmap === 'function') renderRoadmap();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
+  if (id === 'growthHub' && typeof renderAuthority==='function') renderAuthority();
   if (id === 'party')    renderParty();
   if (id === 'skillDex') renderSkillDex();
   if (id === 'skillSynthesis') renderSkillSynthesis();

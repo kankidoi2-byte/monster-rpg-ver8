@@ -16,7 +16,8 @@ function prepareBattleParty(storyInstances=null) {
   partyBattle = party.map(ins => ({
     uid:ins.uid, inst:ins,
     mon:structuredClone(by(ins.id)),
-    hp:instanceMaxHp(ins), fainted:false
+    hp:instanceMaxHp(ins), fainted:false,
+    ...(typeof authorityNumericMultiplier==='function'?{authorityMaxHp:instanceMaxHp(ins)}:{})
   }));
   activePartyIdx = 0;
   activeInstance = partyBattle[0].inst;
@@ -203,6 +204,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   if(typeof resetTraitBattleState==='function')resetTraitBattleState();
   if(typeof resetTraitRewardState==='function')resetTraitRewardState();
   if (!partyBattle.length) prepareBattleParty();
+  if(typeof applyAuthorityBattleContext==='function')applyAuthorityBattleContext();
   activePartyIdx = partyBattle.findIndex(p => !p.fainted && p.hp > 0);
   if (activePartyIdx < 0) activePartyIdx = 0;
   activeInstance = partyBattle[activePartyIdx].inst;

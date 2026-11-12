@@ -427,10 +427,10 @@ function instanceStatModifier(ins, stat){
   const amplification=typeof traitValue==='function'?traitValue(ins,'alchemy_core',1):1;
   return Math.max(.01,1+(modifier-1)*amplification);
 }
-function instanceMaxHp(ins){
+function instanceMaxHp(ins,authorityContextOverride=undefined){
   const mon = by(ins?.id);
   if(!mon) return 1;
-  return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp')));
+  return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp') * (typeof authorityNumericMultiplier==='function'?authorityNumericMultiplier('maxHp',authorityContextOverride):1)));
 }
 function baseBattleSpeed(m, ins, level) {
   const growth = 1 + 0.005 * (clampLevel(level) - 1);

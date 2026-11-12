@@ -100,7 +100,7 @@ function expeditionMemberScore(ins,map){
   const levelScore=Math.min(25,level*4);
   const attackPower=Math.max(10,...(mon.moves||[]).map(move=>Number(move[1])||0))*instanceStatModifier(ins,'attack');
   const attack=Math.min(18,Math.round(attackPower/5));
-  const durability=Math.min(18,Math.round(instanceMaxHp(ins)/14));
+  const durability=Math.min(18,Math.round(instanceMaxHp(ins,false)/14));
   const speed=Math.min(14,Math.round(monSpd(mon,ins)/8));
   const strongest=Math.max(attack,durability,speed),strength=strongest===attack?'攻撃':strongest===durability?'耐久':'速度';
   return {total:attribute+levelScore+attack+durability+speed,reasons:[`${(mon.types||[]).includes(type)?'推奨属性一致':'属性補正なし'} ${attribute}点`,`Lv.${level} ${levelScore}点`,`${strength}適性が高い`]};
