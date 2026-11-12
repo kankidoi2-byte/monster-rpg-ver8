@@ -17,10 +17,15 @@ try{
   if(await page.locator('#titleScreen').count()){await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});}
   await page.evaluate(()=>{
    clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
-   save.worldMap.guides.map_intro=true;save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
+   save.worldMap.guides.map_intro=true;
    save.instances=[];save.party=[];for(const id of ['freigal','aquaron','volteck']){const ins=addInstance(id,30);save.party.push(ins.uid);}
    for(const it of SHOP_ITEMS)if(it.usableInBattle)save.items[it.id]=5;
    save.coins=2000;saveGame();endPartyRecovery();show('home');
+   // Creating the disposable party can earn ranks. Acknowledge those fixture-only
+   // notices after all setup grants, and persist the cleared queue for reloads.
+   save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;
+   document.getElementById('contractorRankUpOverlay').classList.add('hidden');
+   if(!saveGame())throw Error('Fixture save failed');
   });
  }
  async function start(mode='single'){
