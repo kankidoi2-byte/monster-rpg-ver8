@@ -179,14 +179,10 @@ function renewalHpFeedback(unit,loss,{label,effectiveness}){
 function renewalEscape(){if(!renewalCanAct())return;renewalOpen('逃走','<p>戦闘から逃げますか？</p><p>逃げると、この戦闘の報酬はもらえません。</p><div class="br-two"><button onclick="renewalClose()">戦いを続ける</button><button onclick="renewalConfirmEscape()">逃げる</button></div>');}
 function renewalConfirmEscape(){if(!renewalCanAct())return;renewalClose();runAway();}
 function renewalItems(){if(!renewalCanAct())return;battleUiClear();renewal.itemId=null;renewal.itemTarget=null;renewalItemSheet();}
-function renewalItemReason(id,index){
-  const entry=partyBattle[index];if(!entry||entry.fainted||(index===activePartyIdx?pHp:entry.hp)<=0)return '戦闘不能';
-  if((save.items[id]||0)<=0)return '残数なし';
-  if(id!=='attack_potion'&&(index===activePartyIdx?pHp:entry.hp)>=instanceMaxHp(entry.inst))return 'HPは満タンです';return '';
-}
+function renewalItemReason(id,index){return battleItemTargetReason(id,index);}
 function renewalItemSheet(){
   const id=renewal.itemId,item=ITEM_BY_ID[id];
-  renewalOpen('道具',SHOP_ITEMS.filter(i=>i.usableInBattle||i.contract).map(i=>`<button class="br-item ${id===i.id?'selected':''}" ${!['potion','upper_potion','attack_potion'].includes(i.id)||(save.items[i.id]||0)<=0?'disabled':''} data-item="${i.id}" onclick="renewalPickItem(this.dataset.item)">${itemInlineVisual(i)}<span><b>${renewalHtml(i.name)}</b><small>${renewalHtml(i.battleDesc||i.desc)}</small></span><small>${i.contract?'戦闘後':(save.items[i.id]||0)+'個'}</small></button>`).join('')+(item?`<h3>だれに使う？</h3><div class="br-item-targets">${partyBattle.map((p,i)=>`<button data-item-target="${i}" ${renewalItemReason(id,i)?'disabled':''} onclick="renewalPickItemTarget(${i})" class="${renewal.itemTarget===i?'selected':''}"><img src="${renewalHtml(IMG[p.mon.id]||'')}" alt=""><b>${renewalHtml(p.mon.name)}</b><small>${renewalItemReason(id,i)||`${i===activePartyIdx?pHp:p.hp}/${instanceMaxHp(p.inst)}`}</small></button>`).join('')}</div><button class="br-go" ${renewal.itemTarget===null?'disabled':''} onclick="renewalUseItem()">${renewalHtml(item.name)}を使う</button>`:''));
+  renewalOpen('道具',SHOP_ITEMS.filter(i=>i.usableInBattle||i.contract).map(i=>`<button class="br-item ${id===i.id?'selected':''}" ${!i.usableInBattle||(save.items[i.id]||0)<=0?'disabled':''} data-item="${i.id}" onclick="renewalPickItem(this.dataset.item)">${itemInlineVisual(i)}<span><b>${renewalHtml(i.name)}</b><small>${renewalHtml(i.battleDesc||i.desc)}</small></span><small>${i.contract?'戦闘後':(save.items[i.id]||0)+'個'}</small></button>`).join('')+(item?`<h3>だれに使う？</h3><div class="br-item-targets">${partyBattle.map((p,i)=>`<button data-item-target="${i}" ${renewalItemReason(id,i)?'disabled':''} onclick="renewalPickItemTarget(${i})" class="${renewal.itemTarget===i?'selected':''}"><img src="${renewalHtml(IMG[p.mon.id]||'')}" alt=""><b>${renewalHtml(p.mon.name)}</b><small>${renewalItemReason(id,i)||`${i===activePartyIdx?pHp:p.hp}/${instanceMaxHp(p.inst)}`}</small></button>`).join('')}</div><button class="br-go" ${renewal.itemTarget===null?'disabled':''} onclick="renewalUseItem()">${renewalHtml(item.name)}を使う</button>`:''));
 }
 function renewalPickItem(id){renewal.itemId=id;renewal.itemTarget=null;renewalItemSheet();}
 function renewalPickItemTarget(i){if(renewalItemReason(renewal.itemId,i))return;renewal.itemTarget=i;renewalItemSheet();}
@@ -203,22 +199,12 @@ function renewalUseItem(){
       return;
     }
     if(identity!==saveTransactionIdentity())return;
-    if(id==='attack_potion'){if(index===activePartyIdx)pAtk=1.6;else entry.itemAttack=1.6;}
-    else{
-      const maxHp=instanceMaxHp(entry.inst),amount=battlePotionHealing(id,entry.mon,entry.inst,maxHp);
-      if(index===activePartyIdx){pHp=Math.min(maxHp,pHp+amount);entry.hp=pHp;}
-      else entry.hp=Math.min(maxHp,entry.hp+amount);
-    }
+    applyBattleItemEffect(id,index);
     renewal.itemId=null;renewal.itemTarget=null;busy=true;renewalClose();
     try{const log=renewalEl('log');log.textContent=`${ITEM_BY_ID[id].name}を${entry.mon.name}に使った！`;captureBattleLog();updateItems();update();}catch(error){console.error('Committed battle item display failed',error);}finally{renewalItemEnemyTurn();}
   }finally{battleItemSaveBusy=false;}
 }
-function renewalItemEnemyTurn(){
-  busy=true;startBattleTurn();renderBattleInputState();
-  if(multiBattle?.active){const actions=aliveMultiEnemies().map(actor=>{const delayed=consumeKokoroLinkEnemyActionDelay(actor.id),next=nextEnemyMoveWithKokoroLinkForesight(actor.id,actor.mon);return {kind:'enemy',actorId:actor.id,speed:delayed?-Infinity:multiEnemyKokoroLinkSpeed(actor),move:next.move};}).sort((a,b)=>b.speed-a.speed||Math.random()-.5);runMultiActions(actions,0);return;}
-  const token=mapStoryBattleToken(),actor=enemy,next=nextEnemyMoveWithKokoroLinkForesight(singleEnemyKokoroLinkKey(),enemy);consumeKokoroLinkEnemyActionDelay(singleEnemyKokoroLinkKey());
-  (async()=>{await battleMotionDelay(300);if(!mapStoryTokenValid(token))return;await performAction(actor,player,next.move,false);if(!mapStoryTokenValid(token))return;if(eHp<=0){win();return;}if(pHp<=0&&!switchPartyMember())return;finishTurnWithPoison();})();
-}
+function renewalItemEnemyTurn(){return battleItemEnemyTurn();}
 function renewalDelayLink(uid,targetId,source){
   if(renewal.linkReady){renewal.linkReady=false;return false;}
   if(renewal.linkPending||!source?.available)return true;

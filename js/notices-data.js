@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261112-battle-items',date:'2026-11-12',category:'update',title:'戦闘で使える道具が増えました',body:'特上回復薬、状態異常を治す薬、守りの薬、速さの薬、再起の雫をショップに追加しました。戦闘中の道具は1回使うと1ターン消費します。'},
   {id:'20261112-six-item-artwork',date:'2026-11-12',category:'update',title:'6種類のアイテムに専用画像を追加しました',body:'猛禽の羽・毒虫の甲殻とそれぞれの上質素材、黄金郷への地図、G-ICHORに専用画像を追加しました。図鑑やショップなどで確認できます。'},
   {id:'20261109-background-auto-battle',date:'2026-11-09',category:'update',title:'画面を離れてもオート周回を続けられます',body:'世界地図からオート周回に出発すると、画面を消したり別のアプリを開いたりしても、戻ったときに経過時間ぶんの戦闘を進めます。勝利報酬は1戦ずつ保存され、敗北や契約のチャンスでは設定どおり止まります。'},
   {id:'20261108-volcano-map-story',date:'2026-11-08',category:'update',title:'火山の物語を追加しました',body:'「火山の息づかい」全9話を追加しました。序章を終えると、火山の詳細画面やストーリー一覧から始められます。'},
