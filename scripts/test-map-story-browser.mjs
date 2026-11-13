@@ -40,6 +40,16 @@ try{
  assert(await storyButton('volcano_breath').isDisabled());
  assert((await page.locator('#storyMapList').innerText()).includes('序章を完了'));
  await page.evaluate(()=>{save.progress.tutorial.status='skipped';renderStoryMode();selectStoryCategory('map');});
+ // Initial fixture/save normalization registers potion in the item encyclopedia,
+ // queuing Rank 1→2. Its delayed notice handler legitimately saves on dismissal.
+ // Drain that unrelated fixture work BEFORE taking the exact no-mutation snapshot.
+ // A real tab click invokes the existing visible-notice handler, not a queue edit.
+ while(await page.evaluate(()=>save.contractor.pendingRankUps.length>0)){
+  await page.evaluate(()=>scheduleContractorRankUpPresentation());
+  await page.locator('#contractorRankUpOverlay:not(.hidden)').waitFor({state:'visible'});
+  await page.locator('#storyCategory-map').click();
+ }
+ assert.equal(await page.locator('#contractorRankUpOverlay').isVisible(),false);
  const savedBefore=await page.evaluate(()=>JSON.stringify(save));
  await storyButton('grassland_whose').click();assert.equal(await page.locator('.map-story-card').count(),11);
  await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();

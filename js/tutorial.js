@@ -478,15 +478,23 @@ function positionTutorialUi(){
       const nav=document.querySelector('.app-bottom-nav');
       const navRect=nav?.getBoundingClientRect();
       const safeBottom=navRect&&navRect.height>0&&getComputedStyle(nav).visibility!=='hidden'?Math.min(viewport.height-10,navRect.top-8):viewport.height-10;
-      const safeTop=toolRect.bottom+24; // includes the raised nameplate
-      const height=bubble.getBoundingClientRect().height;
-      if(placement.top<safeTop||placement.top+Math.min(height,placement.maxHeight)>safeBottom){
+      const bubbleRect=bubble.getBoundingClientRect();
+      const nameplate=bubble.querySelector('.story-scene-nameplate');
+      const nameRect=nameplate&&!nameplate.hidden?nameplate.getBoundingClientRect():null;
+      // Font wrapping and zoom change the raised label's real height. Include
+      // that overhang in both toolbar reservation and target clearance.
+      const nameRise=nameRect?Math.max(0,bubbleRect.top-nameRect.top):0;
+      const targetGap=16+nameRise;
+      const safeTop=toolRect.bottom+nameRise+8;
+      const height=bubbleRect.height;
+      const coversTarget=center&&center.x>=placement.left&&center.x<=placement.left+bubbleRect.width&&center.y>=placement.top-nameRise-8&&center.y<=placement.top+Math.min(height,placement.maxHeight)+8;
+      if(placement.top<safeTop||placement.top+Math.min(height,placement.maxHeight)>safeBottom||coversTarget){
         const above=center?Math.max(0,center.y-16-safeTop):0;
-        const below=center?Math.max(0,safeBottom-Math.max(safeTop,center.y+16)):safeBottom-safeTop;
+        const below=center?Math.max(0,safeBottom-Math.max(safeTop,center.y+targetGap)):safeBottom-safeTop;
         const useBelow=!center||below>=above;
         const room=Math.max(0,useBelow?below:above);
         placement.maxHeight=room;
-        placement.top=useBelow?Math.max(safeTop,center?center.y+16:safeTop):center.y-16-Math.min(height,room);
+        placement.top=useBelow?Math.max(safeTop,center?center.y+targetGap:safeTop):center.y-16-Math.min(height,room);
         placement.side=useBelow?'below':'above';
       }
     }

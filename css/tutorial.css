@@ -138,3 +138,6 @@ body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble but
 body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble .tutorial-back{background:transparent;color:#e2cd96;border:0}
 /* Changing from a positioned guide to a full-width scene must not tween offscreen. */
 .tutorial-overlay.is-story-step #tutorialBubble{transition:none;box-sizing:border-box}
+
+/* Speaker labels are decorative; they never consume a target tap. */
+#tutorialBubble .story-scene-nameplate{pointer-events:none}
