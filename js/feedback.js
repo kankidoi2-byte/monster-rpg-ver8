@@ -2,7 +2,8 @@
 (function(global){
  'use strict';
  const ENDPOINT='https://monster-battle-records.kanki-doi-2.chatgpt.site/api/feedback';
- const VERSION='Ver8.0-feedback-20261102';
+ const VERSION='Ver8.0-feedback-thanks-20261113';
+ const THANKS_MIN_LENGTH=10;
  const KINDS={
   bug:{ic:'🐞',nm:'不具合',ds:'動かない・表示がおかしい',ph:'例：バトルで技を選んだあと画面が止まった。\n・何をしていた時に\n・どうなったか\n・何回起きたか'},
   idea:{ic:'💡',nm:'改善要望',ds:'使いにくい・こうしてほしい',ph:'例：世界地図で行きたい場所を探しにくいので、最後に行った場所を覚えておいてほしい。'},
@@ -44,6 +45,7 @@
  function refresh(){
   const host=root();if(!host)return;const len=draft.body.length,count=host.querySelector('#fb-count'),send=host.querySelector('#fb-send');
   if(count){count.textContent=`${len} / 1000`;count.classList.toggle('over',len>1000);}
+  const thanks=host.querySelector('#fb-thanks-min');if(thanks)thanks.hidden=draft.body.trim().length>=THANKS_MIN_LENGTH;
   let left=0;try{left=remaining(read(profile().id));}catch(_){}
   if(send){send.disabled=sending||!draft.kind||draft.body.trim().length<2||len>1000||left===0;send.textContent=sending?'送信中…':left?'送る':'今日はもう送れません';}
   const quota=host.querySelector('.quota');if(quota)quota.textContent=`今日あと${left}件送れます`;
@@ -51,16 +53,16 @@
  function render(){
   const host=root();if(!host)return;host.replaceChildren();
   host.append(button('‹ メニュー',()=>global.show('moreMenu'),'back'));
-  const head=el('div','head');head.append(el('span','eyebrow','FEEDBACK'),el('h1','', '意見箱'),el('p','','届いた意見は開発者がすべて読みます。返信はできません。'));host.append(head);
+  const head=el('div','head');head.append(el('span','eyebrow','FEEDBACK'),el('h1','', '意見箱'),el('p','','届いた意見は開発者がすべて読みます。返信はできません。'));head.append(el('p','','送るとお礼にコイン500枚(1日1回)。内容によっては特別なお礼が届くこともあります。'));host.append(head);
   let s;try{if(!profile()||global.MonsterProfiles?.available?.()===false)throw Error('プロフィール情報を読み込めません。');s=read(profile().id);}catch(e){host.append(el('p','err',e.message));return;}
-  if(completion){const panel=el('div','panel done');panel.setAttribute('role','status');panel.append(el('div','seal','受'),el('h2','',completion==='sent'?'届きました':'送信を予約しました'),el('p','',completion==='sent'?'ありがとうございます。今後の更新の参考にします。':'今は通信できません。次にゲームを開いた時に自動で送ります。'));const actions=el('div','done-actions');actions.append(button('続けて書く',()=>{completion=null;render();}),button('メニューへ戻る',()=>global.show('moreMenu')));panel.append(actions);host.append(panel);}
+  if(completion){const panel=el('div','panel done');panel.setAttribute('role','status');panel.append(el('div','seal','受'),el('h2','',completion==='gift'?'届きました。お礼をプレゼントBOXに届けました。':completion==='sent'?'届きました':'送信を予約しました'),el('p','',['sent','gift'].includes(completion)?'ありがとうございます。今後の更新の参考にします。':'今は通信できません。次にゲームを開いた時に自動で送ります。'));const actions=el('div','done-actions');actions.append(button('続けて書く',()=>{completion=null;render();}),button('メニューへ戻る',()=>global.show('moreMenu')));if(completion==='gift')actions.append(button('プレゼントBOXへ',()=>global.show('giftBox')));panel.append(actions);host.append(panel);}
   else{
    const form=el('form','panel');form.id='fbform';form.noValidate=true;
    form.append(el('div','lbl','種類'));
    const kinds=el('div','kinds');kinds.setAttribute('role','group');kinds.setAttribute('aria-label','意見の種類');
    for(const [k,v] of Object.entries(KINDS)){const b=button('',()=>{draft.kind=k;for(const x of kinds.children)x.setAttribute('aria-pressed',x===b?'true':'false');form.querySelector('textarea').placeholder=v.ph;refresh();},'kind');b.dataset.k=k;b.setAttribute('aria-pressed',String(draft.kind===k));b.append(el('span','ki',v.ic),el('b','',v.nm),el('small','',v.ds));kinds.append(b);}form.append(kinds);
    const label=el('label','lbl','どの画面のこと？');label.htmlFor='fb-screen';const select=el('select');select.id='fb-screen';for(const [id,name] of Object.entries(SCREENS)){const option=el('option','',name);option.value=id;select.append(option);}select.value=draft.screen;select.onchange=()=>{draft.screen=select.value;};form.append(label,select);
-   const bodyLabel=el('label','lbl','内容');bodyLabel.htmlFor='fb-body';const count=el('small','count');count.id='fb-count';bodyLabel.append(count);const body=el('textarea');body.id='fb-body';body.maxLength=1200;body.placeholder=KINDS[draft.kind]?.ph||'先に種類を選んでください';body.value=draft.body;body.oninput=()=>{draft.body=body.value;refresh();};form.append(bodyLabel,body,el('p','hint','名前・連絡先・SNSのIDなど、個人が分かることは書かないでください。'));
+   const bodyLabel=el('label','lbl','内容');bodyLabel.htmlFor='fb-body';const count=el('small','count');count.id='fb-count';const thanks=el('small','hint','お礼は10文字から');thanks.id='fb-thanks-min';bodyLabel.append(count,thanks);const body=el('textarea');body.id='fb-body';body.maxLength=1200;body.placeholder=KINDS[draft.kind]?.ph||'先に種類を選んでください';body.value=draft.body;body.oninput=()=>{draft.body=body.value;refresh();};form.append(bodyLabel,body,el('p','hint','名前・連絡先・SNSのIDなど、個人が分かることは書かないでください。'));
    const c=context(),attach=el('details','attach'),info=el('dl','info');attach.append(el('summary','','一緒に送られる情報'));
    for(const [label,value] of [['バージョン',c.version],['端末',deviceLabel(c.device)],['直前の画面',SCREENS[classify(contextScreen)]],['進み具合',c.progress],['プロフィール名',c.profileName]])info.append(el('dt','',label),el('dd','',value));attach.append(info,el('p','hint','セーブデータそのものは送りません。'));form.append(attach);
    if(error){const e=el('p','err',error);e.setAttribute('role','alert');form.append(e);}const send=el('button','send','送る');send.type='submit';send.id='fb-send';form.append(send,el('p','quota'));form.onsubmit=e=>{e.preventDefault();void submit();};host.append(form);
@@ -79,7 +81,7 @@
  async function transmit(p,item){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
   try{const response=await fetch(ENDPOINT,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({...item.payload,token:p.token}),signal:controller.signal});
-   if(response.ok){let result;try{result=await response.json();}catch(_){return {state:'wait'};}return result.accepted===1?{state:'sent',day:result.day,remaining:result.remaining}:{state:'wait'};}
+   if(response.ok){let result;try{result=await response.json();}catch(_){return {state:'wait'};}return result.accepted===1?{state:'sent',day:result.day,remaining:result.remaining,gift:result.gift}:{state:'wait'};}
    if(response.status===429){let result={};try{result=await response.json();}catch(_){}return {state:'wait',limited:true,notBefore:typeof result.retryAt==='string'&&Number.isFinite(Date.parse(result.retryAt))?result.retryAt:nextDay()};}
    if([401,403].includes(response.status))return {state:'auth',error:'プロフィールの認証を確認できませんでした。'};
    if([400,413].includes(response.status))return {state:'rejected',error:'送れませんでした。内容を確認してください。'};
@@ -90,6 +92,7 @@
   const s=read(id),h=s.history.find(x=>x.id===item.payload.id),q=s.queue.find(x=>x.payload.id===item.payload.id);
   if(!q)return;
   if(result.state==='sent'){
+   if(result.gift&&global.PersonalGifts)global.PersonalGifts.accept(result.gift,id);
    if(result.day===day()&&Number.isInteger(result.remaining)&&result.remaining>=0&&result.remaining<=5)
     s.quota={day:day(),count:Math.max(s.quota.day===day()?s.quota.count:0,5-result.remaining)};
    if(h){h.state='sent';delete h.reason;}
@@ -139,7 +142,8 @@
     staged=false;throw Error(result.error||'今日はもう送れません');
    }
    applyResult(p.id,item,result);if(result.error){staged=false;throw Error(result.error);}
-   completion=result.state;draft={kind:null,screen:classify(contextScreen),body:''};
+   if(profile()?.id!==p.id)return;
+   completion=result.state==='sent'&&result.gift&&global.PersonalGifts?.accept(result.gift,p.id)?'gift':result.state;draft={kind:null,screen:classify(contextScreen),body:''};
   });}catch(e){if(staged){completion='wait';draft={kind:null,screen:classify(contextScreen),body:''};}else error=e.message||'控えを保存できませんでした。もう一度お試しください。';}finally{sending=false;render();}
  }
  global.MonsterFeedback={

@@ -23,7 +23,7 @@ function giftRewardValid(r){
 function giftDeveloperErrors(g){
   const errors=[];
   if(!g||typeof g!=='object')return ['プレゼントがオブジェクトではありません'];
-  if(typeof g.id!=='string'||!g.id.trim())errors.push('id');
+  if(typeof g.id!=='string'||!g.id.trim()||g.id.startsWith('pg-'))errors.push('id');
   if(typeof g.title!=='string'||!g.title.trim())errors.push('title');
   if(typeof g.letter!=='string')errors.push('letter');
   if(!Number.isFinite(giftDateStart(g.startAt)))errors.push('startAt');
@@ -62,7 +62,7 @@ function lifeQuestGiftEntries(){
 function pendingGifts(now=Date.now()){
   let lifeGifts=[];
   try{lifeGifts=lifeQuestGiftEntries();lifeGiftReadFailed=false;}catch(error){lifeGiftReadFailed=true;}
-  return [...developerGiftEntries(now),...lifeGifts].sort((a,b)=>{
+  return [...developerGiftEntries(now),...(typeof PersonalGifts!=='undefined'?PersonalGifts.entries():[]),...lifeGifts].sort((a,b)=>{
     const deadline=giftDeadline(a)-giftDeadline(b);
     return (Number.isNaN(deadline)?0:deadline)||(Date.parse(b.createdAt)||0)-(Date.parse(a.createdAt)||0);
   });
@@ -146,6 +146,7 @@ async function claimGifts(keys){
   }catch(error){result={ok:false,error:'受け取りできませんでした。もう一度お試しください。'};}
   finally{giftClaimBusy=false;setGiftDialogBusy(false);}
   if(result.ok){
+    if(typeof PersonalGifts!=='undefined')void PersonalGifts.sync();
     showCommittedSaveResult(()=>{refreshGiftUi();updateAppResourceBar();showGiftResult(result.rewards);});
   }else{showUiNotice(result.error,'error');refreshGiftUi();}
   return result.ok;

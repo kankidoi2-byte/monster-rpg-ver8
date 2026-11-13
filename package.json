@@ -127,7 +127,7 @@
     "check:gacha-adopted": "node scripts/test-gacha-adopted.mjs && node scripts/test-skill-silhouettes.mjs",
     "check:tutorial-targets": "node scripts/test-tutorial-target-visibility.mjs && node scripts/test-prologue-chapter-flow.mjs && node scripts/test-tutorial-expedition-stability-browser.mjs",
     "check:prologue-taps": "node scripts/test-prologue-tap-through-browser.mjs",
-    "check:feedback": "node scripts/test-feedback.mjs",
+    "check:feedback": "node scripts/test-feedback.mjs && node scripts/test-personal-gifts.mjs && node scripts/test-personal-gifts-browser.mjs",
     "check:gifts": "node scripts/test-review-top10.mjs && node scripts/test-gifts.mjs && node scripts/test-gifts-browser.mjs",
     "check:roadmap": "node scripts/test-roadmap.mjs && node scripts/test-roadmap-browser.mjs",
     "check:g-bless": "node scripts/test-g-bless.mjs && node scripts/test-g-bless-browser.mjs",
