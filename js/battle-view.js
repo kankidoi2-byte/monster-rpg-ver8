@@ -152,7 +152,41 @@ function battleMotionTiming(motion){
   const duration=motion.skillId?BATTLE_MOTION_DURATIONS[motion.form]||350:motion.form==='strike'?240:BATTLE_MOTION_DURATIONS[motion.form]||350;
   return {duration,contact:Math.round(duration*(BATTLE_MOTION_CONTACT[motion.form]||.5))};
 }
+// The effect controller is presentation-only; the caller still applies battle
+// results after contact. Keep a legacy visual fallback for unavailable canvas.
+let activeBattleSkillEffect=null;
+function battleSkillEffectsSuppressed(){
+  return (typeof autoFastForward==='function'&&autoFastForward())
+    ||(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
 async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
+  if(battleSkillEffectsSuppressed())return false;
+  const source=document.getElementById(sourceId),target=document.getElementById(targetId);
+  const stage=document.querySelector('#battle .battle-arena');
+  if(source&&target&&stage&&typeof startBattleSkillEffect==='function'){
+    const profile=battleSkillEffectProfile(mv);
+    const isAuto=typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&!autoRun.manual;
+    const short=Boolean(isAuto&&profile.special);
+    const rate=(typeof autoSpeed==='function'?autoSpeed():1)*(short?1.6:1);
+    const controller=startBattleSkillEffect({stage,source,target,profile,rate,short,cleanupRegistry:battleVisuals});
+    if(controller){
+      if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
+      else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
+      const effect={controller,stage,source,target,profile,rate};
+      activeBattleSkillEffect=effect;
+      const tail=controller.tail.finally(()=>{
+        battleMotionTails.delete(tail);
+        if(activeBattleSkillEffect===effect)activeBattleSkillEffect=null;
+      });
+      battleMotionTails.add(tail);
+      if(untilImpact)return await controller.contact;
+      await tail;
+      return true;
+    }
+  }
+  return playLegacyBattleSkillMotion(sourceId,targetId,mv,{untilImpact});
+}
+async function playLegacyBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
   if(typeof autoFastForward==='function'&&autoFastForward())return false;
   if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
   else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
@@ -227,7 +261,21 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
 }
 
 const battleImpactOwners=new WeakMap();
-function playBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal', power=0) {
+function playBattleImpact(targetId,damage,effectiveness=1,typeOrTypes='normal',power=0){
+  if(battleSkillEffectsSuppressed())return false;
+  const effect=activeBattleSkillEffect;
+  const target=document.getElementById(targetId);
+  const stage=effect?.stage||document.querySelector('#battle .battle-arena');
+  if(target&&stage&&typeof renderBattleSkillImpact==='function'){
+    const own=effect?.target===target?effect:null;
+    return renderBattleSkillImpact({stage,target,source:own?.source,damage,effectiveness,power,
+      profile:own?.profile,rate:own?.rate??(typeof autoSpeed==='function'?autoSpeed():1),
+      cleanupRegistry:battleVisuals});
+  }
+  playLegacyBattleImpact(targetId,damage,effectiveness,typeOrTypes,power);
+  return false;
+}
+function playLegacyBattleImpact(targetId, damage, effectiveness=1, typeOrTypes='normal', power=0) {
   const target = document.getElementById(targetId);
   const stage = document.querySelector('#battle .battle-arena');
   if (!target || !stage) return;

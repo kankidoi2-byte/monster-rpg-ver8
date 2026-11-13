@@ -106,12 +106,28 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const over=damage===null?0:Math.max(0,damage-Math.max(0,before));
   const text=`${label} ${loss<0||/回復|吸収|再生/.test(label)?'+':'−'}${amount}${reduced?` / 軽減 ${reduced}`:''}${barrier?` / 障壁 ${barrier}`:''}${over?` / 超過 ${over}`:''}`;
   battleFeedback.hp.set(u.key,Math.max(0,after));
+  const effectsStage=typeof setBattleSkillHpTrailTiming==='function'?document.querySelector('#battle .battle-arena'):null;
+  const effectsRate=typeof activeBattleSkillEffect!=='undefined'&&activeBattleSkillEffect?.rate||(typeof autoSpeed==='function'?autoSpeed():1);
+  if(effectsStage)setBattleSkillHpTrailTiming(effectsStage,effectsRate,battleVisuals,{healed:loss<0});
   renderBattleHpAtImpact(u,after);
   battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
-  if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
+  let rendered=impact&&typeof playBattleImpact==='function'&&playBattleImpact(vis,amount,effectiveness,types,power);
+  const suppress=typeof battleSkillEffectsSuppressed==='function'&&battleSkillEffectsSuppressed();
+  if(!impact&&!suppress&&typeof renderBattleSkillHpDelta==='function'){
+    const target=document.getElementById(vis),stage=document.querySelector('#battle .battle-arena');
+    if(target&&stage&&amount>0){
+      const effect=typeof activeBattleSkillEffect==='undefined'?null:activeBattleSkillEffect;
+      const key=label==='吸収'?'drain':label==='反動'?'recoil':null;
+      const display=()=>renderBattleSkillHpDelta({stage,target,loss,label,rate:effectsRate,cleanupRegistry:battleVisuals});
+      if(key&&effect?.source===target&&effect.profile.extras.includes(key)&&effect.controller.whenHpCue){
+        effect.controller.whenHpCue(key).then(ready=>{if(ready&&target.isConnected)display();});
+        rendered=true;
+      }else rendered=display();
+    }
+  }
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);
-  if(typeof renewalHpFeedback==='function')renewalHpFeedback(u,loss,{label,effectiveness});
+  if(typeof renewalHpFeedback==='function')renewalHpFeedback(u,loss,{label,effectiveness,showNumber:!rendered&&!suppress});
 }
 // Update only presentation here: do not clamp game state or run turn logic.
 // A repeat attack must visibly consume HP once per hit, before its final update().

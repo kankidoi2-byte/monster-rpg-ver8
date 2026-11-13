@@ -1,0 +1,34 @@
+/* The command dock is outside the arena and never moves with hit shake. */
+#battle .battle-arena.battle-skill-shaking{
+  translate:var(--battle-hit-shake-x,0px) var(--battle-hit-shake-y,0px);
+  rotate:var(--battle-hit-shake-angle,0deg);
+}
+#battle .battle-skill-number{
+  position:absolute; z-index:24; pointer-events:none; white-space:nowrap;
+  color:#fff; font-size:clamp(17px,4vw,25px); font-weight:900;
+  text-shadow:0 2px 3px #111,0 0 5px #111;
+  animation:battle-skill-number-rise var(--battle-skill-pop-duration,700ms) linear both;
+}
+#battle .battle-skill-number.is-big{font-size:clamp(26px,7vw,42px);color:#ffdc63}
+#battle .battle-skill-number.is-heal{color:#81ff9a}
+#battle .battle-skill-number.is-recoil{color:#ff6a72}
+@keyframes battle-skill-number-rise{
+  0%{transform:translate(-50%,-50%) scale(.6);opacity:0}
+  7%{opacity:1}
+  18.57%{transform:translate(-50%,-50%) scale(1.22)}
+  35%{transform:translate(-50%,calc(-50% - 9px)) scale(1)}
+  70%{opacity:1}
+  100%{transform:translate(-50%,calc(-50% - 46px)) scale(1);opacity:0}
+}
+#battle:is(.battle-screen,.is-renewed) :is(.battle-vitals,.multi-enemy-hp) .hp{
+  transition:none;
+}
+#battle:is(.battle-screen,.is-renewed) :is(.battle-vitals,.multi-enemy-hp) .hp-trail{
+  background:#fff;
+  transition:width var(--battle-skill-trail-duration,420ms) ease-out var(--battle-skill-trail-delay,320ms);
+}
+@media(prefers-reduced-motion:reduce){
+  #battle .battle-skill-number{display:none;animation:none}
+  #battle .battle-arena.battle-skill-shaking{translate:none;rotate:none}
+  #battle:is(.battle-screen,.is-renewed) :is(.battle-vitals,.multi-enemy-hp) .hp-trail{transition:none}
+}
