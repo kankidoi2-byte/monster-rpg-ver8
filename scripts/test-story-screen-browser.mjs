@@ -55,6 +55,7 @@ try{
   const saved=await page.evaluate(()=>{saveGame();return currentTutorialState().stepId;});
   await page.reload();await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.equal(await page.evaluate(()=>currentTutorialState().stepId),saved,'reload retains tutorial checkpoint');
+  await page.evaluate(()=>{save.progress.tutorial.expeditionDispatched=true;});
   await start('prologue_epilogue',true);await finish();await shot('epilogue');
   await page.locator('#tutorialText').click();
   assert.equal(await page.evaluate(()=>currentTutorialState().status),'completed','final epilogue completes prologue');

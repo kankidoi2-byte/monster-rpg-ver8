@@ -33,6 +33,14 @@ jobs:
       - name: Existing map story regression
         if: always()
         run: node scripts/test-map-story-browser.mjs
+      - name: G-BLESS header isolation regression
+        if: always()
+        run: node scripts/test-g-bless-browser.mjs
+      - name: Fresh prologue touch journey
+        if: always()
+        env:
+          PROLOGUE_TEST_WIDTH: '360'
+        run: node scripts/test-prologue-tap-through-browser.mjs
       - name: Upload evidence including failures
         if: always()
         uses: actions/upload-artifact@v4
@@ -40,4 +48,6 @@ jobs:
           name: story-presentation-evidence
           path: |
             artifacts/story-presentation
+            artifacts/save-failure-ui/prologue-taps
+            artifacts/save-failure-ui/g-bless
             artifacts/skill-card-layout/map-stories
