@@ -45,6 +45,13 @@ jobs:
           name: save-failure-ui-evidence
           path: artifacts/save-failure-ui
 
+      - name: Upload skill effect portrait evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-effects-portrait
+          path: artifacts/skill-effects
+
       - name: Verify mobile skill-card layout and interactions
         run: |
           node scripts/test-skill-dex-portrait-browser.mjs

@@ -61,7 +61,12 @@ function kill(o){for(let i=tweens.length-1;i>=0;i--) if(tweens[i].o===o){const r
 function wait(ms){return new Promise(res=>active?timers.push({at:gTime+ms,res}):res())}
 function hitStop(ms){if(!active||ms<=0) return Promise.resolve(); freezeLeft=Math.max(freezeLeft,ms); return new Promise(r=>freezeCbs.push(r))}
 function vib(ms){if(navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}}
-const R=(a,b)=>a+Math.random()*(b-a);
+// Do not consume Math.random: the live battle engine uses that stream.
+const entropy=new Uint32Array(1);
+if(typeof crypto!=='undefined'&&typeof crypto.getRandomValues==='function')crypto.getRandomValues(entropy);
+let visualSeed=entropy[0]||((Date.now()^(CW<<16)^CH)>>>0)||1;
+const random=()=>((visualSeed=(Math.imul(visualSeed,1664525)+1013904223)>>>0)/4294967296);
+const R=(a,b)=>a+random()*(b-a);
 
 
 const parts=[],projs=[];
@@ -72,20 +77,20 @@ function elP(k,x,y,vx,vy,life,size){
   switch(k){
     case 'fire': return addP({...b,type:'ember',color:e.g,core:'#fff1b8'});
     case 'water': return addP({...b,type:'drop',color:e.g,core:e.c,drag:.94});
-    case 'grass': return addP({...b,type:'leaf',color:Math.random()<.5?e.g:e.c,drag:.92});
+    case 'grass': return addP({...b,type:'leaf',color:random()<.5?e.g:e.c,drag:.92});
     case 'thunder': return addP({...b,type:'spark',color:e.c,size:size*.7,drag:.84});
     case 'wind': return addP({...b,type:'streak',color:e.c,drag:.93});
     case 'light': return addP({...b,type:'star4',color:e.c,glow:e.g,size:size*1.1});
-    case 'dark': return Math.random()<.5?addP({...b,type:'smoke',color:e.d,size:size*1.6,drag:.9}):addP({...b,type:'ember',color:e.g,core:e.c});
-    case 'star': return addP({...b,type:'star4',color:Math.random()<.5?e.c:'#c8f4ff',glow:Math.random()<.5?e.g:e.d,size:size*1.3});
-    case 'dragon': return addP({...b,type:'shard',color:Math.random()<.6?e.g:e.d,core:e.c,size:size*1.2,drag:.9});
+    case 'dark': return random()<.5?addP({...b,type:'smoke',color:e.d,size:size*1.6,drag:.9}):addP({...b,type:'ember',color:e.g,core:e.c});
+    case 'star': return addP({...b,type:'star4',color:random()<.5?e.c:'#c8f4ff',glow:random()<.5?e.g:e.d,size:size*1.3});
+    case 'dragon': return addP({...b,type:'shard',color:random()<.6?e.g:e.d,core:e.c,size:size*1.2,drag:.9});
     default: return addP({...b,type:'spark',color:e.c,size:size*.7,drag:.86});
   }
 }
 function burst(c,k,n,s=1,d=null){
   const base=d?Math.atan2(d.y,d.x):0,spread=d?2.4:6.28;
   for(let i=0;i<n;i++){
-    const a=base+(Math.random()-.5)*spread,sp=R(120,520)*s;
+    const a=base+(random()-.5)*spread,sp=R(120,520)*s;
     elP(k,c.x,c.y,Math.cos(a)*sp,Math.sin(a)*sp,R(.28,.6),R(3,6.5)*s);
   }
 }

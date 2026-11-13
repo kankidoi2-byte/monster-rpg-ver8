@@ -7,7 +7,7 @@ const queue=new Map();
 let token=0,connected=true,errors=[];
 const math=Object.create(Math);
 let seed=20261113;
-math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+math.random=()=>{throw Error('Visual effects must not consume combat RNG');};
 const gradient={addColorStop(){}};
 const ctx=new Proxy({createLinearGradient:()=>gradient},{get:(o,k)=>o[k]??((...args)=>{if(args.some(x=>typeof x==='number'&&!Number.isFinite(x)))throw Error(k+':'+args);})});
 const context=vm.createContext({
