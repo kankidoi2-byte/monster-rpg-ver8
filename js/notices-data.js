@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261113-item-decisions',date:'2026-11-13',category:'update',title:'道具の入手と使い道を追加',body:'アイテムガチャに万能薬・特上回復薬・再起の雫を追加しました。格上・ヌシの勝利報酬、格上に出会いやすくなる強者の香、砂金の入手と売却に対応しました。'},
   {id:'20261113-story-presentation',date:'2026-11-13',category:'update',title:'会話と操作案内の表示を統一',body:'序章・マップの会話を全画面背景と紺色の台詞枠に統一しました。会話ログ、自動送り、タップでの文字表示・送りに対応しています。'},
   {id:'20261112-authority-foundation',date:'2026-11-12',category:'update',title:'育成画面に「権能」を追加',body:'序章を終えると育成画面に権能が表示されます。中央の0は味方の最大HP +1%という仮の効果です。七つの章のマスは未開放で、効果はまだ決まっていません。'},
   {id:'20261112-battle-items',date:'2026-11-12',category:'update',title:'戦闘で使える道具が増えました',body:'特上回復薬、状態異常を治す薬、守りの薬、速さの薬、再起の雫をショップに追加しました。戦闘中の道具は1回使うと1ターン消費します。'},

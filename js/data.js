@@ -957,8 +957,8 @@ const SHOP_ITEMS = [
   {id:'max_potion', name:'特上回復薬', icon:'💊', price:80, desc:'HPをすべて回復する。', usableInBattle:true},
   {id:'revive_drop', name:'再起の雫', icon:'💧', price:100, desc:'倒れた仲間を呼び戻す。', usableInBattle:true},
   // No acquisition path or runtime effect until the pending specification is decided.
-  {id:'strong_incense', name:'強者の香', icon:'🕯️', price:50, desc:'強き者を引き寄せる香り。', usableInBattle:false, shop:false},
-  {id:'gold_dust', name:'砂金', icon:'✨', price:null, desc:'黄金郷から流れてきたと言われる金の粒。高く売れる。', usableInBattle:false, shop:false},
+  {id:'strong_incense', name:'強者の香', icon:'🕯️', price:50, desc:'世界地図からの出発10回のあいだ、格上が出る確率が20ポイント上がる。Extreme・黄金郷・物語・チュートリアルは対象外。', usableInBattle:false, shop:true, usableFromDex:true},
+  {id:'gold_dust', name:'砂金', icon:'✨', price:null, sellPrice:100, desc:'黄金郷から流れてきたと言われる金の粒。高く売れる。', usableInBattle:false, shop:false},
   {id:'contract_scroll', name:'契約書', icon:'📜', price:20, desc:'討伐後、モンスターとの契約を試みるための書類。', battleDesc:'討伐後に相手モンスターとの契約を試みる。成功すると手持ちに加わる。', usableInBattle:false, contract:true, catchMultiplier:1},
   {id:'silver_contract_scroll', name:'銀の契約書', icon:'📃', price:40, desc:'通常の契約書より契約成功率が高い銀色の書類。討伐後に使用できる。', battleDesc:'討伐後、通常の契約書より高い確率で契約を試みる。', usableInBattle:false, contract:true, catchMultiplier:2},
   {id:'gold_contract_scroll', name:'金の契約書', icon:'📒', price:80, desc:'銀の契約書より契約成功率がさらに高い金色の書類。討伐後に使用できる。', battleDesc:'討伐後、銀の契約書よりさらに高い確率で契約を試みる。', usableInBattle:false, contract:true, catchMultiplier:3},
@@ -1213,9 +1213,12 @@ const ITEM_IMG = {
 /* ===== アイテムガチャ・経験値データ ===== */
 const ITEM_GACHA_COST = 100;
 const ITEM_GACHA_POOL = [
-  {id:'potion', weight:25},
-  {id:'upper_potion', weight:20},
-  {id:'attack_potion', weight:10},
+  {id:'potion', weight:28.2},
+  {id:'upper_potion', weight:16},
+  {id:'attack_potion', weight:5},
+  {id:'full_heal', weight:5},
+  {id:'max_potion', weight:0.4},
+  {id:'revive_drop', weight:0.4},
   {id:'kilo_data', weight:20},
   {id:'mega_data', weight:15},
   {id:'giga_data', weight:5},

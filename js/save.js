@@ -242,6 +242,7 @@ function normalizeAutoBattleRun(r){
   const offerCount=Math.min(2,count(r.offerCount),contracts.length);
   if(r.phase==='offer'&&!offerCount)return null;
   return {v:1,map:map.id,d,times:r.times,settings:normalizeAutoBattleSettings(r.settings),phase:r.phase,at:r.at,seed:r.seed,
+    ...(r.phase==='fight'&&r.strongIncenseBoosted===true&&d!=='extreme'?{strongIncenseBoosted:true}:{}),
     battles,coins:count(r.coins),bless:Math.min(count(r.bless),r.times),contracts,offerCount,
     exp:Object.fromEntries(entries(r.exp,20).filter(([uid,row])=>uid&&isSaveObject(row)&&by(row.monId))
       .map(([uid,row])=>[uid,{monId:row.monId,total:count(row.total)}])),
@@ -261,7 +262,7 @@ function initSave() {
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
     items:{potion:3, antidote:0, paralysis_heal:0, confusion_heal:0, awakening:0, full_heal:0, defense_potion:0, speed_potion:0, max_potion:0, revive_drop:0, strong_incense:0, gold_dust:0, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0, g_ichor:0},
     lifeQuestClaimedIds:[], giftReceiptVersion:1, giftClaimedIds:[], giftHistory:[], coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
-    expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
+    expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false, strongIncenseRemainingDepartures:0,
     contractor:contractorSaveDefaults(),
     worldMap:normalizeWorldMapSaveState(null),
     mapStories:normalizeMapStories(null),
@@ -488,6 +489,7 @@ function repairSave(payload,report=[]){
   migrateRenamedMonsterIds(payload,report);
   payload.autoBattle=normalizeAutoBattle(payload.autoBattle);
   payload.gBless=normalizeGBless(payload.gBless);
+  payload.strongIncenseRemainingDepartures=Math.min(10,nonNegativeInteger(payload.strongIncenseRemainingDepartures));
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
   if(!isSaveObject(payload.saveMeta))payload.saveMeta={...defaults.saveMeta,migrations:[]};
   if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];

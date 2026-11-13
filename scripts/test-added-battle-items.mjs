@@ -22,14 +22,14 @@ for(const id of newIds){
  assert.equal(catalog.run('initSave().items[id]'),0);
  catalog.run('delete save.items[id];ensureContractScrollItem()');assert.equal(catalog.run('save.items[id]'),0);
  catalog.run('save.items[id]=7;ensureContractScrollItem()');assert.equal(catalog.run('save.items[id]'),7);
- assert.equal(catalog.run('ITEM_GACHA_POOL.some(x=>x.id===id)'),false);
+ assert.equal(catalog.run('ITEM_GACHA_POOL.some(x=>x.id===id)'),['full_heal','max_potion','revive_drop'].includes(id));
  assert.equal(catalog.run('ALCHEMY_MATERIAL_DROPS.some(x=>x.id===id)'),false);
  const deferred=['strong_incense','gold_dust'].includes(id);
- assert.equal(catalog.run('ITEM_BY_ID[id].shop!==false'),!deferred);
+ assert.equal(catalog.run('ITEM_BY_ID[id].shop!==false'),id!=='gold_dust');
  assert.equal(catalog.run('ITEM_BY_ID[id].usableInBattle===true'),!deferred);
  catalog.run('save.coins=1000;save.items[id]=0;buyItem(id)');
- assert.equal(catalog.run('save.items[id]'),deferred?0:1);
- if(deferred)assert.equal(catalog.run('save.coins'),1000);
+ assert.equal(catalog.run('save.items[id]'),id==='gold_dust'?0:1);
+ if(id==='gold_dust')assert.equal(catalog.run('save.coins'),1000);
  cases++;
 }
 assert.equal(catalog.run('ITEM_BY_ID.gold_dust.price'),null);

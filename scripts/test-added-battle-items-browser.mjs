@@ -49,7 +49,7 @@ try{
  for(const id of ['max_potion','antidote','paralysis_heal','confusion_heal','awakening','full_heal','defense_potion','speed_potion','revive_drop']){
   await page.locator(`#shop button[onclick="buyItem('${id}')"]`).click();assert.equal(await page.evaluate(id=>save.items[id],id),6);
  }
- assert.equal(await page.locator(`#shop button[onclick="buyItem('strong_incense')"],#shop button[onclick="buyItem('gold_dust')"]`).count(),0);
+ assert.equal(await page.locator(`#shop button[onclick="buyItem('gold_dust')"]`).count(),0);
  await page.screenshot({path:`${output}/shop.png`});
  await page.reload();assert.equal(await page.evaluate(()=>save.items.revive_drop),6);
  for(const mode of ['single','multi']){
