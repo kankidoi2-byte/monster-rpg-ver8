@@ -58,6 +58,7 @@ try{
  assert.equal(await page.locator('.map-story-speaker.is-speaking').getAttribute('alt'),'グノーシス');
  for(const [width,height,font] of [[320,568,100],[320,720,100],[390,844,100],[430,900,100],[844,390,100],[390,844,200]]){
   await page.setViewportSize({width,height});await page.locator('#mapStory').evaluate((el,font)=>el.style.fontSize=font+'%',font);
+  await page.evaluate(()=>mapStoryTypewriter?.finish());
   await page.screenshot({path:`${out}/dialogue-${width}-${height}-${font}.png`,fullPage:true});
   const fits=await page.locator('#mapStory').evaluate(el=>el.scrollWidth<=el.clientWidth+1);assert(fits,`story fits ${width}px / ${font}%`);
   const scene=await page.locator('.map-story-scene').boundingBox(),panel=await page.locator('.map-story-dialogue').boundingBox(),portrait=await page.locator('.map-story-speaker.is-speaking').boundingBox();
@@ -161,6 +162,7 @@ try{
   }
   if(number===9){
    while(await page.evaluate(()=>mapStoryState().resume.nodeId!=='vc_09_post_05'))await nextPage();
+   await page.evaluate(()=>mapStoryTypewriter?.finish());
    assert.match(await page.locator('.map-story-message').innerText(),/^それから数日後。/);
    assert.equal(await page.locator('.map-story-time-skip .map-story-bg').evaluate(el=>getComputedStyle(el).animationName),'none');
   }

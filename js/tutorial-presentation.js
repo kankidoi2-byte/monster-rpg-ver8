@@ -4,6 +4,8 @@ const TUTORIAL_PORTRAIT_LAYOUT=Object.freeze({gnosis:{height:'50svh',bottom:'29s
 function tutorialPresentationStop(){
   tutorialPresentation.writer?.cancel();clearTimeout(tutorialPresentation.timer);
   tutorialPresentation.writer=null;tutorialPresentation.key=null;tutorialPresentation.auto=false;
+  tutorialPresentation.episode=null;tutorialPresentation.scene=null;tutorialPresentation.log=[];
+  tutorialPresentation.seen.clear();tutorialPresentation.portraits.clear();
   document.getElementById('tutorialAutoButton')?.setAttribute('aria-pressed','false');
   for(const id of ['tutorialLog','tutorialSkipMenu','tutorialSceneTransition','tutorialEpisodeCaption']){const el=document.getElementById(id);if(el)el.hidden=true;}
 }
@@ -18,6 +20,8 @@ function tutorialPresentationTap(event){
   tutorialNext();
 }
 function tutorialPresentationAuto(){
+  const step=tutorialUiState.steps[tutorialUiState.index];
+  if(!step||step.input||step.choices||step.target||tutorialStepRequiresAction(step))return;
   tutorialPresentation.auto=!tutorialPresentation.auto;
   document.getElementById('tutorialAutoButton').setAttribute('aria-pressed',String(tutorialPresentation.auto));
   clearTimeout(tutorialPresentation.timer);
@@ -27,7 +31,7 @@ function tutorialPresentationScheduleAuto(){
   const step=tutorialUiState.steps[tutorialUiState.index];
   if(!tutorialPresentation.auto||!step||step.input||step.choices||step.target||tutorialStepRequiresAction(step))return;
   const key=tutorialPresentation.key;
-  tutorialPresentation.timer=setTimeout(()=>{if(key===tutorialPresentation.key&&tutorialUiState.active)tutorialNext();},1100+55*tutorialResolvedText(tutorialDialogueView(step)).length);
+  tutorialPresentation.timer=setTimeout(()=>{if(key===tutorialPresentation.key&&tutorialUiState.active&&tutorialPresentation.auto)tutorialNext();},1100+55*tutorialResolvedText(tutorialDialogueView(step)).length);
 }
 function tutorialPresentationLog(){
   tutorialPresentation.auto=false;clearTimeout(tutorialPresentation.timer);
@@ -65,7 +69,7 @@ function tutorialPresentationRender(step,view){
   document.getElementById('tutorialSceneLabel').textContent=episode?`序章 第${episode.number}話`:step.progressLabel;
   const title=document.getElementById('tutorialTitle'),guideTitle=document.getElementById('tutorialGuideTitle');
   title.textContent=story?speaker:'グノーシス';title.hidden=story&&!speaker;
-  guideTitle.textContent=step.title;guideTitle.hidden=story;
+  guideTitle.textContent=view.title||step.title;guideTitle.hidden=story;
   document.getElementById('tutorialText').classList.toggle('is-narration',story&&!speaker);
   const bubble=document.getElementById('tutorialBubble'),back=document.getElementById('tutorialBackButton');
   (story?document.getElementById('tutorialLogBack'):document.getElementById('tutorialGuideBack')).append(back);
@@ -93,10 +97,13 @@ function tutorialPresentationRender(step,view){
   });
   const guidePortrait=document.getElementById('tutorialGuidePortrait');guidePortrait.hidden=story;
   document.getElementById('tutorialCharacterLayer').hidden=true;
-  if(step.input||step.choices||!story){state.auto=false;document.getElementById('tutorialAutoButton').setAttribute('aria-pressed','false');}
+  const autoBlocked=Boolean(step.input||step.choices||!story||tutorialStepRequiresAction(step));
+  document.getElementById('tutorialAutoButton').disabled=autoBlocked;
+  if(autoBlocked){state.auto=false;clearTimeout(state.timer);document.getElementById('tutorialAutoButton').setAttribute('aria-pressed','false');}
   if(key===state.key&&state.writer&&!state.writer.isComplete())state.writer.finish();
   if(key!==state.key){
     state.writer?.cancel();clearTimeout(state.timer);state.key=key;
+    document.getElementById('tutorialLog').hidden=true;
     if(step.input)form.hidden=true;if(tutorialDialogueNeedsChoice(step))choices.hidden=true;
     hint.classList.add('is-typing');
     state.writer=createStoryTypewriter(document.getElementById('tutorialText'),text,()=>{
@@ -110,8 +117,15 @@ function tutorialPresentationRender(step,view){
 }
 function tutorialPresentationPosition(){
   const overlay=document.getElementById('tutorialOverlay'),bubble=document.getElementById('tutorialBubble');if(!overlay||!bubble)return;
-  if(overlay.classList.contains('is-story-step')){bubble.style.left='0';bubble.style.top='auto';bubble.style.bottom='0';bubble.style.maxHeight='55svh';return;}
+  if(overlay.classList.contains('is-story-step')){document.getElementById('tutorialText').style.maxHeight='';bubble.style.left='0';bubble.style.top='auto';bubble.style.bottom='0';bubble.style.maxHeight='55svh';return;}
   bubble.style.bottom='auto';
+  // The placement engine may shorten a guide to keep its real target usable.
+  // Constrain the scrollable text too; overflow:visible is needed for the nameplate.
+  const text=document.getElementById('tutorialText'),room=parseFloat(bubble.style.maxHeight);
+  if(text&&Number.isFinite(room)){
+    const overhead=Math.max(0,bubble.scrollHeight-text.clientHeight);
+    text.style.maxHeight=Math.max(40,Math.min(innerHeight*.45,room-overhead))+'px';
+  }
   const portrait=document.getElementById('tutorialGuidePortrait');if(!portrait)return;
   const b=bubble.getBoundingClientRect(),target=tutorialUiState.target?.getBoundingClientRect();
   const height=Math.min(innerWidth*.30,160),width=height*.75;

@@ -116,3 +116,12 @@ body.tutorial-growth-skill-open #rosterSheetHost [data-tutorial-skill-edit]{posi
 #tutorialEpisodeCaption.is-visible{animation:tutorial-caption 3s ease both}
 @keyframes tutorial-caption{0%,100%{opacity:0}18%,75%{opacity:1}}
 @media(prefers-reduced-motion:reduce){#tutorialSceneTransition.is-descent{animation:tutorial-descent-fade .4s linear both}#tutorialSceneTransition::after{display:none}.is-descent #tutorialStoryBackdrop[data-scene="grassland"]{animation:none}}
+
+/* C: owner approved the generated room before branch integration. */
+.tutorial-story-backdrop[data-scene="workshop"]{background-image:url('../images/maps/lumina_secret_workshop_story_v1.webp');animation:story-scene-drift 26s ease-in-out infinite alternate}
+
+/* Scene fades are visual only, including the black→black opening. */
+.tutorial-story-backdrop.scene-enter{animation-name:tutorial-scene-enter,story-scene-drift;animation-duration:.55s,26s;animation-timing-function:ease,ease-in-out;animation-iteration-count:1,infinite;animation-direction:normal,alternate}
+.tutorial-story-backdrop.scene-enter[data-scene="void"],.tutorial-story-backdrop.scene-enter[data-scene="world_descent"]{animation:none}
+@keyframes tutorial-scene-enter{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.tutorial-story-backdrop.scene-enter{animation:none!important}}

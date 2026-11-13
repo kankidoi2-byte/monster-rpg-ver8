@@ -1,0 +1,43 @@
+name: Story presentation evidence
+on:
+  pull_request:
+    paths:
+      - 'js/tutorial*'
+      - 'js/story*'
+      - 'js/map-stories*'
+      - 'css/**'
+      - 'index.html'
+      - 'scripts/test-story-screen-browser.mjs'
+      - 'scripts/test-map-story-browser.mjs'
+      - '.github/workflows/story-presentation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portrait-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install browser
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Tutorial presentation interactions and portraits
+        run: node scripts/test-story-screen-browser.mjs
+      - name: Existing map story regression
+        if: always()
+        run: node scripts/test-map-story-browser.mjs
+      - name: Upload evidence including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-presentation-evidence
+          path: |
+            artifacts/story-presentation
+            artifacts/skill-card-layout/map-stories

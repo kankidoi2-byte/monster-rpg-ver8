@@ -18,3 +18,23 @@ run("writer=createStoryTypewriter(element,'',done)");tick();assert.equal(complet
 run("writer=createStoryTypewriter(element,'🌟',done)");tick();assert.equal(element.textContent,'🌟');assert.equal(completed,3,'Unicode glyph not split');
 run("writer=createStoryTypewriter(element,'closed scene',done)");element.isConnected=false;tick();assert.equal(completed,3,'detached scene cannot advance');assert.equal(timers.size,0);
 console.log('PASS story presentation: 30ms typed Unicode, finish/cancel idempotence, empty text, detached DOM safety; no save state.');
+
+// Adapter guards: auto cannot enable on inputs/choices/real UI actions, and
+// ending a flow must not leak another player's name/log/cast into the next flow.
+const controls=new Map();
+const control=id=>{if(!controls.has(id))controls.set(id,{hidden:false,setAttribute(k,v){this[k]=v;}});return controls.get(id);};
+const adapter=vm.createContext({
+ document:{getElementById:control},clearTimeout(){},setTimeout(){return 1;},
+ tutorialUiState:{steps:[{input:'player_name'}],index:0,active:true},
+ tutorialStepRequiresAction:step=>Boolean(step.action),
+ tutorialResolvedText:view=>view.text||'',tutorialDialogueView:step=>step
+});
+vm.runInContext(fs.readFileSync(new URL('../js/tutorial-presentation.js',import.meta.url),'utf8'),adapter);
+const adapt=s=>vm.runInContext(s,adapter);
+for(const step of [{input:'player_name'},{choices:[{}]},{target:'#realButton'},{action:true}]){
+ adapter.tutorialUiState.steps=[step];adapt('tutorialPresentationAuto()');
+ assert.equal(adapt('tutorialPresentation.auto'),false,'interactive steps cannot enable auto');
+}
+adapt("tutorialPresentation.log=[{speaker:'old player',text:'old text'}];tutorialPresentation.seen.add('old');tutorialPresentation.portraits.set('old.png','old player');tutorialPresentation.episode='old';tutorialPresentationStop()");
+assert.equal(adapt('tutorialPresentation.log.length'),0);assert.equal(adapt('tutorialPresentation.seen.size'),0);assert.equal(adapt('tutorialPresentation.portraits.size'),0);assert.equal(adapt('tutorialPresentation.episode'),null);
+console.log('PASS tutorial adapter: input/choice/guide auto guards and session-local log/cast cleanup.');
