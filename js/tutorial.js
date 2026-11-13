@@ -460,6 +460,37 @@ function positionTutorialUi(){
       placement.side=useBelow?'below':'above';
     }
   }
+  // Reserve the guide toolbar before applying the final bubble geometry. Its
+  // right-top buttons are real controls, not empty overlay space: neither the
+  // nameplate nor text may be placed under them. Narrative layout is unchanged.
+  if(overlay?.classList.contains('is-ui-guide-step')){
+    const tools=overlay.querySelector('.tutorial-tools');
+    if(tools){
+      tools.style.top='';
+      let toolRect=tools.getBoundingClientRect();
+      const center=rect?{x:rect.left+rect.width/2,y:rect.top+rect.height/2}:null;
+      // A guide can point to a tall card. Preserve its actionable center even
+      // when the card extends underneath the reserved top band.
+      if(center&&center.x>=toolRect.left-8&&center.x<=toolRect.right+8&&center.y>=toolRect.top-8&&center.y<=toolRect.bottom+8){
+        tools.style.top=`${center.y+16}px`;
+        toolRect=tools.getBoundingClientRect();
+      }
+      const nav=document.querySelector('.app-bottom-nav');
+      const navRect=nav?.getBoundingClientRect();
+      const safeBottom=navRect&&navRect.height>0&&getComputedStyle(nav).visibility!=='hidden'?Math.min(viewport.height-10,navRect.top-8):viewport.height-10;
+      const safeTop=toolRect.bottom+24; // includes the raised nameplate
+      const height=bubble.getBoundingClientRect().height;
+      if(placement.top<safeTop||placement.top+Math.min(height,placement.maxHeight)>safeBottom){
+        const above=center?Math.max(0,center.y-16-safeTop):0;
+        const below=center?Math.max(0,safeBottom-Math.max(safeTop,center.y+16)):safeBottom-safeTop;
+        const useBelow=!center||below>=above;
+        const room=Math.max(0,useBelow?below:above);
+        placement.maxHeight=room;
+        placement.top=useBelow?Math.max(safeTop,center?center.y+16:safeTop):center.y-16-Math.min(height,room);
+        placement.side=useBelow?'below':'above';
+      }
+    }
+  }
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;

@@ -118,7 +118,7 @@ function tutorialPresentationRender(step,view){
 }
 function tutorialPresentationPosition(){
   const overlay=document.getElementById('tutorialOverlay'),bubble=document.getElementById('tutorialBubble');if(!overlay||!bubble)return;
-  if(overlay.classList.contains('is-story-step')){document.getElementById('tutorialText').style.maxHeight='';bubble.style.left='0';bubble.style.top='auto';bubble.style.bottom='0';bubble.style.maxHeight='55svh';return;}
+  if(overlay.classList.contains('is-story-step')){overlay.querySelector('.tutorial-tools').style.top='';document.getElementById('tutorialText').style.maxHeight='';bubble.style.left='0';bubble.style.top='auto';bubble.style.bottom='0';bubble.style.maxHeight='55svh';return;}
   bubble.style.bottom='auto';
   // The placement engine may shorten a guide to keep its real target usable.
   // Constrain the scrollable text too; overflow:visible is needed for the nameplate.

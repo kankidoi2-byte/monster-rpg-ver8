@@ -4,6 +4,7 @@ on:
     paths:
       - 'js/tutorial*'
       - 'js/story*'
+      - 'js/map-story*'
       - 'js/map-stories*'
       - 'css/**'
       - 'index.html'
