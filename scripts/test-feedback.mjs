@@ -69,3 +69,13 @@ const saturated=setup(),full={history:[],queue:Array.from({length:20},(_,i)=>({p
 const ack=setup();ack.open();ack.context.fetch=async()=>Response.json({accepted:1,day:new Date(Date.now()+9*3600000).toISOString().slice(0,10),remaining:0});await ack.submit('最後の受付');ack.open();assert.equal(ack.find('.quota').textContent,'今日あと0件送れます');
 const html=fs.readFileSync('index.html','utf8');assert(html.indexOf('id="feedbackMenuButton"')>html.indexOf('onclick="showNotices()"',html.indexOf('id="moreMenu"')));assert(!code.includes('innerHTML'));assert(!code.includes('saveGame('));assert(!code.includes('mb_v95c'));
 console.log('Game feedback: validation/quota/queue/reload/stable UUID/profiles/XSS/storage failure/auth errors PASS');
+
+// Reward response is imported only for its authenticated profile; short body remains valid.
+const thanks=setup();let imported=[];thanks.context.PersonalGifts={accept:(gift,id)=>{imported.push({gift,id});return gift.profileId===id;}};
+thanks.open();assert.equal(thanks.find('#fb-thanks-min').hidden,false);
+thanks.find('#fb-body').value='あ'.repeat(10);thanks.find('#fb-body').oninput();assert.equal(thanks.find('#fb-thanks-min').hidden,true);
+thanks.context.fetch=async()=>Response.json({accepted:1,gift:{id:'pg-gift',profileId:'profile-0'}});
+await thanks.submit('あ'.repeat(10));assert(imported.length>0);assert.equal(thanks.find('h2').textContent,'届きました。お礼をプレゼントBOXに届けました。');
+assert(thanks.find('.done-actions').children.some(b=>b.textContent==='プレゼントBOXへ'));
+const short=setup();short.open();await short.submit('短文');assert.equal(short.find('h2').textContent,'届きました');
+console.log('PASS feedback thanks: threshold hint, reward completion and BOX link, short feedback still accepted.');

@@ -269,3 +269,29 @@ jobs:
             node "scripts/$test"
             echo "PASS $test"
           done
+
+  feedback-thanks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify personal thank-you gifts and feedback UI
+        env:
+          FEEDBACK_EVIDENCE: artifacts/feedback-thanks
+        run: npm run check:feedback
+      - name: Upload portrait evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feedback-thanks-evidence
+          path: artifacts/feedback-thanks
