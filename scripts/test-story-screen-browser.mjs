@@ -60,6 +60,8 @@ try{
   await page.locator('#tutorialText').click();
   assert.equal(await page.evaluate(()=>currentTutorialState().status),'completed','final epilogue completes prologue');
   assert.equal(await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).some(s=>s.id==='prologue_complete')),false);
+  await start('lumina_encounter');await finish();await shot('approved-workshop');
+  assert((await page.locator('#tutorialStoryBackdrop').evaluate(e=>getComputedStyle(e).backgroundImage)).includes('lumina_secret_workshop_story_v1.webp'),'approved workshop background applied');
   // Isolated map fixture, then enter its actual scene renderer.
   await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);closeContractorRankUp();openMapStory();startMapStoryEpisode('gl_01');mapStoryTypewriter?.finish();});
   await shot('map-story');assert(await page.locator('.map-story-scene').isVisible());

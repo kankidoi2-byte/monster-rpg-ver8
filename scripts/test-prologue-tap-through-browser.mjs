@@ -52,7 +52,7 @@ try{
    }
    const state=await page.evaluate(()=>{
     const step=tutorialUiState.steps[tutorialUiState.index];
-    return {active:tutorialUiState.active,id:tutorialCurrentStepId(),page:tutorialDialogueState.page,target:step?.target,action:tutorialStepRequiresAction(step),input:step?.input,busy:typeof busy!=='undefined'&&busy,screen:activeScreenId(),status:currentTutorialState().status};
+    return {active:tutorialUiState.active,id:tutorialCurrentStepId(),page:tutorialDialogueState.page,target:step?.target,action:tutorialStepRequiresAction(step),input:step?.input,typing:Boolean(tutorialPresentation.writer&&!tutorialPresentation.writer.isComplete()),busy:typeof busy!=='undefined'&&busy,screen:activeScreenId(),status:currentTutorialState().status};
    });
    const key=JSON.stringify(state);
    if(key===last)repeats++;else {last=key;repeats=0;console.log(width,state.id||state.screen,state.page)}
@@ -118,6 +118,15 @@ try{
     assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open),'unfinished prologue must expose Continue without expanding details');
     await tap('#storyContinueCard button');continue;
    }
+   // The first real text tap completes the 30ms/character presentation only.
+   // Do not try a hidden name/choice form or mistake a custom-button tap for
+   // advancement while its dialogue is still typing. No runtime advancement.
+   if(state.active&&state.typing&&await page.evaluate(()=>Boolean(tutorialPresentation.writer&&!tutorialPresentation.writer.isComplete()))){
+    await tap('#tutorialText');
+    // Typing can naturally finish between hit-testing and the tap; the next
+    // iteration reads the resulting STEP/page instead of assuming either outcome.
+    continue;
+   }
    if(process.env.PROLOGUE_TEST_RETREAT==='1'&&['battle_free','stella_mock_free'].includes(state.id)&&!retreated.has(state.id)){
     retreated.add(state.id);report.retreats.push(state.id);expectedRetryFree=state.id;await tap('#tutorialNextButton');
     await page.waitForFunction(()=>!busy);await tap('#battleEscapeButton');continue;
@@ -125,6 +134,7 @@ try{
    if(state.id==='prologue_epilogue')complete=true;
    if(state.active){
     if(state.input==='player_name'){
+     await page.locator('#tutorialPlayerNameInput').waitFor({state:'visible'});
      await tap('#tutorialPlayerNameInput');await page.keyboard.insertText('通し検査');await tap('#tutorialNameForm button');
     }else if(await isVisible('#tutorialDialogueChoices:not([hidden]) button'))await tap('#tutorialDialogueChoices button');
     else if(state.action&&state.target){

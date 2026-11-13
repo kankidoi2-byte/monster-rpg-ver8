@@ -79,7 +79,13 @@ body.tutorial-growth-skill-open #rosterSheetHost [data-tutorial-skill-edit]{posi
 .tutorial-bubble .story-scene-text.is-narration{text-align:center;font-family:Georgia,'Noto Serif JP',serif}
 .tutorial-bubble h3{color:#e2cd96;font-family:Georgia,'Noto Serif JP',serif;font-size:17px;margin:0}
 .tutorial-overlay.is-ui-guide-step .story-scene-text{font-size:15px;max-height:45svh}
-.tutorial-tools{position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;z-index:10;pointer-events:auto}
+/* The tools container must not intercept the underlying app header through
+   its empty flex area. At zoomed/narrow widths, wrap real controls in-bounds. */
+.tutorial-tools{position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;z-index:10;pointer-events:none;max-width:calc(100% - 20px);flex-wrap:wrap;justify-content:flex-end;box-sizing:border-box}
+.tutorial-tools>button{pointer-events:auto;min-width:0;max-width:100%;overflow-wrap:anywhere;flex:0 1 auto}
+/* Guides retain app chrome: keep their top-right controls below that chrome.
+   Narrative scenes still use the original top-right position. */
+.tutorial-overlay.is-ui-guide-step .tutorial-tools{top:calc(var(--g-bless-bar-height,64px) + 8px)}
 .tutorial-tools .tutorial-pause{margin:0;width:34px;height:34px;min-height:34px;padding:0;background:rgba(8,13,28,.55);color:#e9e4d3;border-color:#e2cd9688}
 .tutorial-scene-label{position:fixed;left:4vw;top:54px;z-index:4;font-family:Georgia,'Noto Serif JP',serif;font-size:13px;text-shadow:0 1px 4px #000;pointer-events:none}
 .tutorial-actions{display:flex!important;justify-content:flex-end}.tutorial-actions:empty{display:none!important}
