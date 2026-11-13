@@ -122,7 +122,7 @@ try{
   const measured=await checkedMetrics(page,`${width}px`,`${width}`,{phone:width<=430});
   const metrics=measured.metrics,entry={width,height,normal:measured.result};
   assert.equal(new Set(metrics.cards.map(c=>c.id)).size,110);
-  assert.equal(new Set(metrics.cards.flatMap(c=>c.types)).size,10,'all ten attributes represented');
+  assert.deepEqual([...new Set(metrics.cards.flatMap(c=>c.types))].sort(), ['dark','dragon','fire','grass','ice','light','normal','star','thunder','water','wind'], 'all eleven attributes represented');
   if(width>=844){assert(entry.normal.columns>=3,'larger screens adapt column count');assert(entry.normal.minWidth>=140,'readable adaptive desktop card width');}
   await screenshotExamples(page,`${width}x${height}`);
   // All filter options and all ordering modes use the unchanged runtime query result.
