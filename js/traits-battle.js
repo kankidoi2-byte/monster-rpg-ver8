@@ -138,7 +138,9 @@ function traitPartyChanged(previous,next,fainted){
   const s=traitMember(next.inst),entryTurn=battleTurnCount+(fainted&&battleTurnInProgress?1:0);
   const extend=turns=>typeof extendNextPlayerTimedBuff==='function'?extendNextPlayerTimedBuff(turns):turns;
   const swift=traitPower('swift',1,next.inst)>1;
-  s.swiftUntil=entryTurn+(swift?extend(1)-1:0);s.skipEndTurn=fainted?battleTurnCount:-1;
+  // A same-turn re-entry must not erase a still-active Time Stop extension.
+  s.swiftUntil=swift?Math.max(s.swiftUntil,entryTurn+extend(1)-1):entryTurn;
+  s.skipEndTurn=fainted?battleTurnCount:-1;
   if(fainted){const gift=traitPower('parting_gift',1,previous?.inst);if(gift>1){s.gift=gift;s.giftUntil=entryTurn+extend(traitRule('partingGiftTurns',2));traitLog('parting_gift','次の仲間に力を託した',previous.inst);}}
   flushTraitMessages();
 }

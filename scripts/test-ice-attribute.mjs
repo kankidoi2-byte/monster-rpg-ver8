@@ -32,9 +32,9 @@ assert.equal(run("SKILL110_CATALOG.length"),110);
 assert.equal(run("defaultSkillIdsForMonster(by('icegolem'),{level:10}).includes('s110_057')"),true);
 assert.equal(run("by('icegolem').legacyMoves[1][2]"),'normal');
 
-run(`function iceSetup(enemyId='thornbeat'){
+run(`function iceSetup(enemyId='thornbeat',ids=['slime','icegolem','grassbeat']){
  let serial=0;Math.random=()=>.05+serial++*.01;save=initSave();save.instances=[];save.party=[];
- for(const id of ['slime','icegolem','grassbeat']){const ins=addInstance(id,30);save.party.push(ins.uid);}
+ for(const id of ids){const ins=addInstance(id,30);save.party.push(ins.uid);}
  prepareBattleParty();selectedMap=MAPS.find(map=>map.id==='snow_mountain');
  enemy=structuredClone(by(enemyId));activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',['map_boost'],{allowOvertier:false});
  eHp=enemyMaxHp();multiBattle=null;busy=false;pFreezeTurns=eFreezeTurns=eSleepTurns=eParalysisTurns=eConfusionTurns=0;
@@ -96,6 +96,11 @@ for(const attack of [
   await run(`performAction(player,enemy,${attack},true)`);
   assert.equal(run('start-eHp'),frozenDamage,'fire damage should be unchanged by thaw');
 }
+run(`iceSetup('freigal');pFreezeTurns=1;applyKokoroLinkEnemyEffectComponents('single',[{category:'accuracy',rate:1,durationTurns:1}]);
+var noThawHp=pHp;`);
+await run("performAction(enemy,player,['火試験',20,'fire',null,null,2,null,null,'s110_test',{}],false)");
+assert.equal(run('pHp'),run('noThawHp'));
+assert.equal(run('pFreezeTurns'),1,'a missed fire attack cannot thaw');
 run("iceSetup();var f=iceLink();applyKokoroLinkStatusAbilityForBattle(f,null,()=>0);");
 await run("performAction(player,enemy,['中立試験',20,'normal'],true)");
 assert.equal(run('eFreezeTurns'),1);
@@ -159,6 +164,26 @@ changeActivePartyMember(1);var reg=activateKokoroLinkSource(partyBattle[2].uid,p
 `);
 assert.equal(run('reg.link.powerAbility.remainingTurns'),3,'next real regeneration consumes pending boost');
 assert.equal(run('extendNextPlayerTimedBuff(2)'),2);
+
+run(`iceSetup('thornbeat',['slime','icegolem','character_tobia_4']);battleTurnCount=0;
+changeActivePartyMember(2);changeActivePartyMember(0);var stop=iceLink(3);
+`);
+assert.match(run('applyKokoroLinkTacticsAbilityForBattle(stop)'),/1件を1ターン延長/);
+run('changeActivePartyMember(2);battleTurnCount=1;');
+assert.equal(run('traitPlayerSpeed(100)'),120,'same-turn re-entry keeps extended Swift');
+run('battleTurnCount=2;');
+assert.equal(run('traitPlayerSpeed(100)'),100,'extended Swift expires normally');
+
+run(`iceSetup('thornbeat',['character_safira_4','icegolem','slime']);battleTurnCount=0;
+changeActivePartyMember(2,{faintCurrent:true});var stop=iceLink(3);
+`);
+assert.equal(run('traitMember().giftUntil'),2);
+assert.match(run('applyKokoroLinkTacticsAbilityForBattle(stop)'),/1件を1ターン延長/);
+assert.equal(run('traitMember().giftUntil'),3);
+run('battleTurnCount=2;');
+assert.equal(run('traitMember().giftUntil>battleTurnCount'),true);
+run('battleTurnCount=3;');
+assert.equal(run('traitMember().giftUntil>battleTurnCount'),false);
 
 run(`save=initSave();save.instances=[{uid:'legacy-ice',id:'icegolem',level:10}];save.party=['legacy-ice'];
 save.skillCards={'skill_icegolem_01':2,'skill_icegolem_03':1,'sk_g5p_or4_9m7_9nt_9mr_9mf_9np_water_40_none':1,'s110_017':3};save.equippedSkills={'legacy-ice':['skill_icegolem_01','skill_icegolem_03']};save.saveMeta.migrations=[];
