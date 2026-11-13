@@ -150,7 +150,7 @@ try{
   await page.evaluate(()=>{skillDexSelectedId=null;document.getElementById('skillDexDetail').innerHTML='';resetSkillDexFilters();});
   // Every card, including the last, can reach a point not blocked by the fixed chrome.
   for(const card of await page.locator('[data-skill-dex-id]').all()){
-   await card.evaluate(el=>{const r=el.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+r.height/2-innerHeight/2,behavior:'instant'});});await settle(page);
+   await card.click({trial:true}); // Wait for the card to receive events without changing the selection.
    const tap=await card.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);return {ok:!!hit&&(el.contains(hit)||el.closest('button').contains(hit)),id:el.closest('button').dataset.skillDexId,rect:r.toJSON(),hit:hit?.outerHTML.slice(0,300),scrollY,innerHeight};});assert(tap.ok,'TCG card tap target: '+JSON.stringify(tap));
   }
   if(width<=430){
