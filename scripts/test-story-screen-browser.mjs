@@ -11,7 +11,8 @@ try{
  browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const viewport of [{width:360,height:800},{width:390,height:844}]){
   const page=await browser.newPage({viewport,isMobile:true,hasTouch:true,reducedMotion:'no-preference'}),errors=[];
-  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
+  let acceptSkip=false,skipConfirmations=0;
+  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',async d=>{if(acceptSkip&&d.type()==='confirm'){assert.match(d.message(),/必須チュートリアルを全体スキップ/);skipConfirmations++;await d.accept();}else await d.dismiss();});
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>page.locator('#contractorRankUpOverlay button').first().click());
   await page.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
   await page.goto(publicUrl||'http://127.0.0.1:4377/?legacy=1');
@@ -62,6 +63,45 @@ try{
   assert.equal(await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).some(s=>s.id==='prologue_complete')),false);
   await start('lumina_encounter');await finish();await shot('approved-workshop');
   assert((await page.locator('#tutorialStoryBackdrop').evaluate(e=>getComputedStyle(e).backgroundImage)).includes('lumina_secret_workshop_story_v1.webp'),'approved workshop background applied');
+  // Acceptance 4: independent fresh fixtures, actual visible controls (no direct skip/Back calls).
+  const resetControls=async()=>page.evaluate(()=>{clearTutorialUi();save=initSave();save.instances=[];save.party=[];save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);closeContractorRankUp();show('home');});
+  await resetControls();await start('intro_gnosis',true);await finish();
+  await page.locator('#tutorialText').click();assert.notEqual(await current(),'intro_gnosis');await finish();await page.waitForTimeout(300);
+  await page.locator('.tutorial-tools button').filter({hasText:'ログ'}).click();
+  assert(await page.locator('#tutorialLog #tutorialBackButton').isVisible());
+  await page.locator('#tutorialBackButton').click();assert.equal(await current(),'intro_gnosis','log Back returns to preceding story step');
+
+  await resetControls();await start('intro_gnosis',true);await finish();await page.waitForTimeout(300);
+  await page.locator('.tutorial-tools button').filter({hasText:'スキップ'}).click();
+  await page.locator('#tutorialDialogueSkipButton').click();
+  assert.equal(await current(),'gnosis_name','conversation skip stops at required name input');
+  assert.equal(await page.evaluate(()=>currentTutorialState().status),'in_progress');
+
+  await resetControls();await start('stella_intro',true);await finish();
+  assert.equal(await page.evaluate(()=>tutorialDialogueState.page),0);
+  assert(await page.locator('#tutorialDialogueChoices').isHidden());
+  await page.locator('#tutorialText').click();
+  assert.equal(await page.evaluate(()=>tutorialDialogueState.page),1,'text tap reaches choice-bearing final page');
+  assert.equal(await current(),'stella_intro');await finish();await page.waitForTimeout(300);
+  assert(await page.locator('#tutorialDialogueChoices').isVisible());
+  await page.locator('#tutorialText').click();assert.equal(await current(),'stella_intro','text tap cannot bypass mandatory choice');
+  await page.locator('#tutorialDialogueChoices button').filter({hasText:'うん、いいよ'}).click();
+  assert.equal(await current(),'stella_road_response','real choice button advances');
+
+  await resetControls();await start('gnosis_contract_power',true);await finish();
+  const pausedStep=await page.evaluate(()=>currentTutorialState().stepId);
+  await page.locator('.tutorial-pause').click();
+  assert(await page.locator('#tutorialOverlay').isHidden());
+  assert.deepEqual(await page.evaluate(()=>({active:tutorialUiState.active,status:currentTutorialState().status,step:currentTutorialState().stepId})),{active:false,status:'in_progress',step:pausedStep},'close pauses without completing or losing checkpoint');
+
+  await resetControls();await start('intro_gnosis',true);await finish();
+  await page.locator('.tutorial-tools button').filter({hasText:'スキップ'}).click();
+  acceptSkip=true;await page.locator('#tutorialSkipButton').click();acceptSkip=false;
+  assert.equal(skipConfirmations,1,'full skip requires accepted confirmation');
+  assert(await page.locator('#tutorialOverlay').isHidden());
+  const skipResult=await page.evaluate(()=>({ids:save.instances.map(x=>x.id).sort(),party:save.party.map(uid=>save.instances.find(x=>x.uid===uid)?.id),reserve:save.instances.some(x=>x.id==='freigal'&&!save.party.includes(x.uid)),card:save.skillCards.s110_041,flags:TUTORIAL_REQUIRED_SKIP_FLAGS.map(flag=>currentTutorialState()[flag]),status:currentTutorialState().status,chapter:save.progress.chapterId,completed:save.progress.storyFlags.prologueCompleted,guest:currentTutorialState().elnaGuestActive,battle:tutorialBattleSession.active,expeditions:save.expeditions.active.length}));
+  // Same mandatory-reward expectations as test-prologue-comprehensive.mjs, exercised through UI.
+  assert.deepEqual(skipResult,{ids:['aquaron','elna_beginner','freigal','galdra'],party:['galdra','aquaron','elna_beginner'],reserve:true,card:1,flags:skipResult.flags.map(()=>true),status:'skipped',chapter:'prologue',completed:true,guest:false,battle:false,expeditions:0});
   // Isolated map fixture, then enter its actual scene renderer.
   await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);closeContractorRankUp();openMapStory();startMapStoryEpisode('gl_01');mapStoryTypewriter?.finish();});
   await shot('map-story');assert(await page.locator('.map-story-scene').isVisible());
@@ -78,5 +118,5 @@ try{
  await motionPage.evaluate(()=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'elna_encounter',persist:false}));
  await motionPage.waitForTimeout(4500);
  const proposalVideo=motionPage.video();await motionContext.close();await proposalVideo.saveAs(out+'/black-to-grassland-proposal-360.webm');
- console.log('story presentation: portrait captures, typing, form, log, auto safety, checkpoint and epilogue passed');
+ console.log('story presentation: portrait captures, typing, form, log, auto safety, checkpoint, epilogue, Back/conversation skip/pause/full skip and mandatory rewards passed');
 }finally{await browser?.close();server?.kill();}

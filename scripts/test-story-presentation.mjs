@@ -27,6 +27,7 @@ const adapter=vm.createContext({
  document:{getElementById:control},clearTimeout(){},setTimeout(){return 1;},
  tutorialUiState:{steps:[{input:'player_name'}],index:0,active:true},
  tutorialStepRequiresAction:step=>Boolean(step.action),
+ tutorialDialogueNeedsChoice:step=>Boolean(step.choices&&step.atChoice),tutorialNext(){adapter.advances=(adapter.advances||0)+1;},
  tutorialResolvedText:view=>view.text||'',tutorialDialogueView:step=>step
 });
 vm.runInContext(fs.readFileSync(new URL('../js/tutorial-presentation.js',import.meta.url),'utf8'),adapter);
@@ -38,3 +39,11 @@ for(const step of [{input:'player_name'},{choices:[{}]},{target:'#realButton'},{
 adapt("tutorialPresentation.log=[{speaker:'old player',text:'old text'}];tutorialPresentation.seen.add('old');tutorialPresentation.portraits.set('old.png','old player');tutorialPresentation.episode='old';tutorialPresentationStop()");
 assert.equal(adapt('tutorialPresentation.log.length'),0);assert.equal(adapt('tutorialPresentation.seen.size'),0);assert.equal(adapt('tutorialPresentation.portraits.size'),0);assert.equal(adapt('tutorialPresentation.episode'),null);
 console.log('PASS tutorial adapter: input/choice/guide auto guards and session-local log/cast cleanup.');
+
+// Choices belong to their final dialogue page, not every preceding page.
+adapter.tutorialUiState.steps=[{choices:[{}],atChoice:false}];
+adapt("tutorialPresentationTap({target:{closest(){return null;}}})");
+assert.equal(adapter.advances,1,"pre-choice dialogue advances by tapping");
+adapter.tutorialUiState.steps[0].atChoice=true;
+adapt("tutorialPresentationTap({target:{closest(){return null;}}})");
+assert.equal(adapter.advances,1,"visible choices require a choice button");

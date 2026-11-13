@@ -191,6 +191,10 @@ try{
   assert.equal(await page.evaluate(()=>currentTutorialState().status),'completed');
   assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.dialogs,[]);
   await page.screenshot({path:`${out}/${width}-complete.png`});
+  await tap('#homeAdventureButton');
+  await tap('#storyPrologueChapter > summary');
+  assert.equal(await page.locator('#storyEpisodeList .story-episode-card.is-completed').count(),6,'all six episodes display completed');
+  await page.screenshot({path:`${out}/${width}-six-episodes-complete.png`});
   console.log(`PASS ${width}x${height}: ${report.steps.length} steps, ${report.targets.length} target-center checks, ${report.taps.length} coordinate taps`);
   await context.close();
  }

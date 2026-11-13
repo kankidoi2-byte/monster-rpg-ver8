@@ -16,7 +16,7 @@ function tutorialPresentationTap(event){
   if(event.target.closest('button,input,form,[data-no-advance]'))return;
   if(tutorialPresentationFinishTyping())return;
   const step=tutorialUiState.steps[tutorialUiState.index];
-  if(!step||step.input||step.choices||tutorialStepRequiresAction(step))return;
+  if(!step||step.input||tutorialDialogueNeedsChoice(step)||tutorialStepRequiresAction(step))return;
   tutorialNext();
 }
 function tutorialPresentationAuto(){
