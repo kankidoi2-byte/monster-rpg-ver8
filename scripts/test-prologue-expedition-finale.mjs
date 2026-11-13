@@ -13,7 +13,7 @@ const packageJson=JSON.parse(read('package.json'));
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
-const required=['expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_home_open','expedition_destination','expedition_distance','expedition_member','expedition_suitability','expedition_dispatch','expedition_active','expedition_replay','prologue_epilogue','prologue_complete'];
+const required=['expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_home_open','expedition_destination','expedition_distance','expedition_member','expedition_suitability','expedition_dispatch','expedition_active','expedition_replay','prologue_epilogue'];
 let previous=-1;
 for(const id of required){const current=main.indexOf(`id:'${id}'`);assert.ok(current>previous,`expedition/finale STEP missing or out of order: ${id}`);previous=current;}
 const finale=main.slice(main.indexOf("id:'expedition_intro'"));
@@ -31,7 +31,7 @@ assert.match(finale,/id:'expedition_dispatch'[^\n]+externalAdvance:true/);
 assert.match(finale,/id:'expedition_active'[^\n]+persistAs:'prologue_epilogue'/);
 assert.match(tutorial,/\['expedition_distance','expedition_member'\]\.includes\(tutorialCurrentStepId\(\)\)[^\n]+tutorialExpeditionCandidateInstance/,'the member target must already be marked by the distance-step render');
 assert.ok(finale.includes('帰還を待たなくて大丈夫！'),'the prologue must continue without waiting for expedition return');
-assert.match(finale,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'/,'the final story scene must show Gnosis without being converted into a UI-guide step');
+assert.match(finale,/id:'prologue_epilogue'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'capital'/,'the final story scene must show Gnosis without being converted into a UI-guide step');
 assert.ok(finale.trimEnd().endsWith(']);'),'the new prologue completion STEP must end the main flow');
 
 for(const token of [
@@ -132,7 +132,7 @@ justDispatched.save.progress.tutorial.stepId='expedition_active';
 assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_active',false)",justDispatched),'expedition_active',
   'a newly dispatched tutorial expedition must still show its active-expedition explanation after reload');
 
-dispatch.save.progress.tutorial.stepId='prologue_complete';
+dispatch.save.progress.tutorial.stepId='prologue_epilogue';
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',dispatch),true);
 assert.equal(dispatch.save.progress.chapterId,'prologue');
 assert.equal(dispatch.save.progress.storyFlags.prologueCompleted,true);
@@ -141,7 +141,7 @@ assert.equal(dispatch.save.progress.tutorial.prologueCompleted,true);
 assert.equal(dispatch.save.progress.tutorial.status,'completed');
 
 const failed=makeTutorialContext({saveSucceeds:false,dispatched:true});
-failed.save.progress.tutorial.stepId='prologue_complete';
+failed.save.progress.tutorial.stepId='prologue_epilogue';
 const before=JSON.stringify(failed.save);
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',failed),false);
 assert.equal(JSON.stringify(failed.save),before,'a failed final save must restore chapter, flags, and tutorial status');

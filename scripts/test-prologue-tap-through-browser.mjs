@@ -122,7 +122,7 @@ try{
     retreated.add(state.id);report.retreats.push(state.id);expectedRetryFree=state.id;await tap('#tutorialNextButton');
     await page.waitForFunction(()=>!busy);await tap('#battleEscapeButton');continue;
    }
-   if(state.id==='prologue_complete')complete=true;
+   if(state.id==='prologue_epilogue')complete=true;
    if(state.active){
     if(state.input==='player_name'){
      await tap('#tutorialPlayerNameInput');await page.keyboard.insertText('通し検査');await tap('#tutorialNameForm button');

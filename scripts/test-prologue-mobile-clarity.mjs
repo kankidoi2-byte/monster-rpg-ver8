@@ -24,7 +24,7 @@ assert.ok(tutorial.includes("openRosterDetail(tutorialElnaContractInstance()?.ui
 assert.ok(!tutorial.includes('tutorial-stella-skill-action')&&!css.includes('tutorial-stella-skill-action'),'Stella skill actions must keep their normal card position and appearance during the tutorial');
 assert.ok(tutorial.includes("target.scrollIntoView?.({block:'center',inline:'nearest'})"),'the normal target button must be scrolled into view instead of being moved into a tutorial-only position');
 
-assert.match(main,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'[^\n]+nextLabel:'自由行動へ'/,'the final scene must render Gnosis as story dialogue instead of a target-only background');
+assert.match(main,/id:'prologue_epilogue'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'capital'/,'the final scene must render Gnosis as story dialogue instead of a target-only background');
 assert.ok(css.includes('.tutorial-overlay.is-ui-guide-step .tutorial-character-layer{display:none}'),'ordinary UI-guide steps must still protect their controls from portrait overlap');
 assert.match(index,/css\/tutorial\.css\?v=[^"]*tutorial-growth-guidance-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1[^"]*">/,'the mobile browser must fetch the skill button CSS and allow newer revisions');
 assert.match(index, /js\/tutorial\.js\?v=[^"]*tutorial-replay-scope-1-tutorial-replay-retired-1-tutorial-skill-button-layout-1-prologue-story-mode-1-prologue-episode-break-fix-1[^"]*"><\/script>/, 'the mobile browser must fetch the normal-position skill button logic');

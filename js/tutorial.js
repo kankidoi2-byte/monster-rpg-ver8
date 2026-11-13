@@ -187,6 +187,8 @@ function startTutorialFeatureGuide(guideId,flowId){
 }
 function activeScreenId(){return document.querySelector('.screen.active')?.id||null;}
 const TUTORIAL_REMOVED_STEP_REDIRECTS=Object.freeze({
+  // Older versions persisted the STEP id when persistAs was absent.
+  prologue_complete:'prologue_epilogue',
   party_review:'party_save',dex_elna_detail:'dex_character_back',dex_aquaron:'home_growth_open',
   growth_elna:'growth_elna_details',growth_skill_current:'growth_return',growth_skill_cards:'growth_return',
   request_board:'request_accept',request_reward_preview:'request_reward_claim',
@@ -2102,8 +2104,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを短距離遠征へ',text:'派遣する仲間がフレイガルになっていることを確認して、出発させよう！',progressLabel:'EXPEDITION'},
   {id:'expedition_active',screenId:'expedition',target:'[data-tutorial-expedition-active]',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征は進行中！',text:'帰還を待たなくて大丈夫！ バトルに勝つと進み、完了したらここで報酬を受け取れるぞ！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
   {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'派遣中または完了済みの遠征があるから、新しい遠征は増やさないぞ。遠征画面からいつでも状況を確認できる！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
-  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'冒険の始まり',text:'これで遠征はバッチリだな！いよいよこれから冒険が始まるぞ！楽しみだな～！',progressLabel:'PROLOGUE'},
-  {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'さぁ、{{playerName}}！次はどこに行く！？',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
+  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'冒険の始まり',text:'これで遠征はバッチリだな！いよいよこれから冒険が始まるぞ！楽しみだな～！',progressLabel:'PROLOGUE'}
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},
