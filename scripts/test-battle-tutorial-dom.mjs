@@ -23,7 +23,7 @@ const by=id=>d.getElementById(id);
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const step=()=>run('tutorialCurrentStepId()');
 const click=node=>{assert(node,'target exists');assert(!node.disabled,'target enabled');const code=node.getAttribute('onclick');if(code)run(code);else node.click();};
-const expect=id=>{assert.equal(step(),id);assert(run('tutorialUiState.target')?.isConnected,`${id}: connected spotlight`);assert(!run('tutorialUiState.target')?.closest('[hidden],.hidden'),`${id}: visible spotlight`);};
+const expect=id=>{assert.equal(step(),id);run('tutorialPresentation.writer?.finish()');assert(run('tutorialUiState.target')?.isConnected,`${id}: connected spotlight`);assert(!run('tutorialUiState.target')?.closest('[hidden],.hidden'),`${id}: visible spotlight`);};
 run("save=initSave();Math.random=()=>0;ensureTutorialStarterContracts();startTutorialRescueBattle();startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'battle_enemy',persist:true})");
 expect('battle_enemy');assert.equal(run('tutorialUiState.target.id'),'singleEnemyBox');assert.match(by('tutorialText').textContent,/名前の横/);
 click(by('tutorialNextButton'));await pause(60);expect('battle_actor_open');
@@ -38,5 +38,5 @@ click(d.querySelector('[data-tutorial-skill]'));for(let i=0;i<200&&(run('busy')|
 assert.equal(run('loadSave().progress.tutorial.stepId'),'elna_rescue_start');
 run('clearTutorialUi();completeTutorial();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by("goblin"),"enemy_a"),createMultiEnemy(by("slime"),"enemy_b")],pendingMoveIndex:null};ensureMultiBattleDom();setMultiBattleLayout(true);setupMultiBattle();startTutorialFlow(TUTORIAL_THREE_WAY_FLOW_ID,{stepId:"three_way_target",returnScreen:"battle"})');
 expect('three_way_target');assert.match(by('tutorialText').textContent,/敵の画像かHP欄/);assert.match(by('tutorialText').textContent,/技に戻る/);
-run('clearTutorialUi();startTutorialFlow(TUTORIAL_EVOLUTION_FLOW_ID,{stepId:"evolution_intro"})');await pause(60);assert.match(by('tutorialText').textContent,/「次へ」で結果画面を閉じる/);
+run('clearTutorialUi();startTutorialFlow(TUTORIAL_EVOLUTION_FLOW_ID,{stepId:"evolution_intro"})');await pause(60);run('tutorialPresentation.writer?.finish()');assert.match(by('tutorialText').textContent,/「次へ」で結果画面を閉じる/);
 assert.equal(errors.length,0,errors.join('\n'));dom.window.close();console.log('PASS battle tutorial: current HUD/image/pad highlights; real switch/normal attack/equipped skill; operation waits; stable resume checkpoint; multi-target and evolution instructions. DOM only, no pixel-layout assertion.');

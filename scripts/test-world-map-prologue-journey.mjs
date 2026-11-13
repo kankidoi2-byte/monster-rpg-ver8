@@ -290,7 +290,7 @@ const requiredJourneySteps=[
   'battle_enemy','battle_free','elna_contract_execute','home_party','request_reward_claim',
   'stella_road_response','stella_mock_battle','stella_mock_free',
   'lumina_world_map_open','lumina_world_map_visit','lumina_alchemy','lumina_wait',
-  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_dispatch','prologue_complete'
+  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_dispatch','prologue_epilogue'
 ];
 for(const id of requiredJourneySteps)assert.ok(visited.includes(id),`canonical new-save journey must visit ${id}`);
 

@@ -90,7 +90,7 @@ for(const id of ['first_contract','contract_confirm','contract_success','contrac
   assert.ok(tutorial.includes(`${id}:`),`an interrupted old save needs a redirect: ${id}`);
 }
 assert.ok(tutorial.includes("target:'#growthMonsterButton'")&&tutorial.includes("target:'#homePartyEditButton'"),'growth and party editing must use their real controls');
-assert.ok(tutorial.includes("id:'prologue_complete',screenId:'home'")&&tutorial.includes('completeTutorial()'),'the required tutorial must finish on the prologue completion scene');
+assert.ok(tutorial.includes("id:'prologue_epilogue',screenId:'home'")&&tutorial.includes('completeTutorial()'),'the required tutorial must finish on the prologue completion scene');
 assert.ok(party.includes('data-tutorial-contract-instance="true"')&&party.includes('data-tutorial-contract-party="true"'),'the joined instance must be addressable in roster and party setup without changing its ID');
 ['growthMonsterButton','homePartyEditButton','contractConfirmAcceptButton'].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing real UI anchor: #${id}`));
 assert.ok(notices.includes("id: '20260829-tutorial-first-contract'"),'the player-facing update must have a stable notice ID');

@@ -4,13 +4,13 @@ const PROLOGUE_STORY_EPISODES=Object.freeze([
   Object.freeze({id:'preparations',number:3,title:'契約者の支度',startStepId:'home_party',endStepId:'request_reward_received',image:'images/maps/light_plain.webp',summary:'編成・図鑑・育成を確かめ、救援依頼の報酬を受け取る。'}),
   Object.freeze({id:'stella',number:4,title:'王都での出会い',startStepId:'stella_intro',endStepId:'stella_mock_retry',image:'images/maps/magic_academy.webp',summary:'王都への道中でグノーシスの願いを聞き、突然の対決に備えて技を整える。'}),
   Object.freeze({id:'lumina',number:5,title:'錬成の工房',startStepId:'lumina_intro',endStepId:'lumina_farewell',image:'images/maps/kaen_village.webp',summary:'逃げたステラを追って学園の地下工房へ。ルミナの錬成に協力する。'}),
-  Object.freeze({id:'expedition',number:6,title:'最初の遠征',startStepId:'expedition_intro',endStepId:'prologue_complete',image:'images/maps/grassland.webp',summary:'仲間を草原へ送り出し、契約者としての最初の一歩を踏み出す。'})
+  Object.freeze({id:'expedition',number:6,title:'最初の遠征',startStepId:'expedition_intro',endStepId:'prologue_epilogue',image:'images/maps/grassland.webp',summary:'仲間を草原へ送り出し、契約者としての最初の一歩を踏み出す。'})
 ]);
 
 function storyEpisodeIndexForStep(stepId){
   const steps=typeof tutorialFlowSteps==='function'?tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID):[];
   if(!steps.length)return 0;
-  const foundIndex=steps.findIndex(step=>step.id===stepId);
+  const foundIndex=typeof tutorialStepIndex==='function'?tutorialStepIndex(steps,stepId):steps.findIndex(step=>step.id===stepId);
   const stepIndex=foundIndex>=0?foundIndex:0;
   const episodeIndex=PROLOGUE_STORY_EPISODES.findIndex(episode=>{
     const start=steps.findIndex(step=>step.id===episode.startStepId);
@@ -64,7 +64,7 @@ function renderHomeStoryCard(){
     kicker.textContent='序章 第3話';title.textContent='救援依頼を報告';summary.textContent='エルナ救援の報酬を受け取る';action.textContent='依頼へ ›';return;
   }
   if(snapshot.finished){
-    kicker.textContent=snapshot.tutorial.status==='skipped'?'序章スキップ済み':'序章クリア';title.textContent='ストーリー';summary.textContent='メイン・マップ・キャラクター・サイド';action.textContent='物語を見る ›';return;
+    kicker.textContent=snapshot.tutorial.status==='skipped'?'チュートリアルスキップ済み':'第6話まで完了';title.textContent='ストーリー';summary.textContent='メイン・マップ・キャラクター・サイド';action.textContent='物語を見る ›';return;
   }
   kicker.textContent=`序章 第${episode.number}話`;title.textContent='ストーリー';
   summary.textContent=episode.title;action.textContent=snapshot.tutorial.status==='not_started'?'物語を始める ›':'物語を進める ›';
@@ -111,7 +111,7 @@ function renderStoryMode(){
   continueCard.innerHTML=snapshot.finished?'':`<div><span>つづきから</span><h2>第${episode.number}話　${episode.title}</h2></div><button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'再開する'} ›</button>`;
   list.innerHTML=PROLOGUE_STORY_EPISODES.map((entry,index)=>{
     const state=storyEpisodeState(index,snapshot);
-    const statusLabel=state==='completed'?'CLEAR':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';
+    const statusLabel=state==='completed'?'完了':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';
     const action=state==='current'?`<button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'つづきから'} ›</button>`:'';
     return `<article class="story-episode-card is-${state}"><img src="${entry.image}" alt=""><div class="story-episode-copy"><span>序章 第${entry.number}話</span><h3>${entry.title}</h3><p>${state==='locked'?'前の話を完了すると解放されます。':entry.summary}</p>${action}</div><strong class="story-episode-status">${statusLabel}</strong></article>`;
   }).join('');

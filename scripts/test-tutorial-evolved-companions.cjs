@@ -54,7 +54,12 @@ const {chromium}=require('playwright');
    await page.locator('[data-tutorial-expedition-map="grassland"]').click();
    await page.locator('[data-tutorial-expedition-distance="short"]').click();
    await page.locator('[data-tutorial-expedition-member]').click();
-   await page.locator('#tutorialNextButton').click();
+   await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_suitability');
+   // The guide now advances by tapping its text after the typewriter finishes.
+   // Wait for real presentation completion; do not call tutorialNext directly.
+   await page.waitForFunction(()=>tutorialPresentation.writer?.isComplete());
+   await page.locator('#tutorialText').click();
+   await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_dispatch');
    await page.locator('#expeditionStartButton').click();
    assert.equal(await page.evaluate(()=>save.expeditions.active.length),1);
    assert.equal(await page.evaluate(()=>save.expeditions.active[0].memberUids[0]),uids.f);

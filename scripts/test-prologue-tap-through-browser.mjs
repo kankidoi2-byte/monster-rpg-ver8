@@ -43,6 +43,8 @@ try{
   const isVisible=selector=>page.locator(selector).first().isVisible();
   await page.goto(`http://127.0.0.1:${port}/?legacy=1`,{waitUntil:'networkidle'});
   await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
+  const longestGuide=await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).filter(s=>s.target).sort((a,b)=>tutorialResolvedText(b).length-tutorialResolvedText(a).length)[0].id);
+  let longestGuideCaptured=false;
   let last='',repeats=0,complete=false,expectedRetryFree=null;
   const reloaded=new Set(),paused=new Set(),retreated=new Set();
   for(let n=0;n<650;n++){
@@ -52,8 +54,9 @@ try{
    }
    const state=await page.evaluate(()=>{
     const step=tutorialUiState.steps[tutorialUiState.index];
-    return {active:tutorialUiState.active,id:tutorialCurrentStepId(),page:tutorialDialogueState.page,target:step?.target,action:tutorialStepRequiresAction(step),input:step?.input,busy:typeof busy!=='undefined'&&busy,screen:activeScreenId(),status:currentTutorialState().status};
+    return {active:tutorialUiState.active,id:tutorialCurrentStepId(),page:tutorialDialogueState.page,target:step?.target,action:tutorialStepRequiresAction(step),input:step?.input,typing:Boolean(tutorialPresentation.writer&&!tutorialPresentation.writer.isComplete()),busy:typeof busy!=='undefined'&&busy,screen:activeScreenId(),status:currentTutorialState().status};
    });
+   if(state.active)assert(await page.locator('#tutorialBubble').evaluate(e=>getComputedStyle(e).backgroundImage.includes('rgba(9, 15, 34')),'all guides including battle use navy dialogue surface');
    const key=JSON.stringify(state);
    if(key===last)repeats++;else {last=key;repeats=0;console.log(width,state.id||state.screen,state.page)}
    assert(repeats<35,`Stalled ${key}`);
@@ -89,13 +92,30 @@ try{
    }
    if(state.id==='growth_skill_open'&&!report.sheetChecks.length){
     assert(await page.locator('.roster-sheet-close').isDisabled());
-    // Both controls are exercised at actual screen coordinates. The disabled
-    // close button can be inside the sheet's scroll area, so use visible points.
+    // Exercise the actual sheet controls, not a coordinate now occupied by
+    // the separate tutorial Pause button (which legitimately pauses guidance).
+    // No locator click, scroll or synthetic dispatch: inspect hit targets, then
+    // send a real touch only to an exposed point of the intended control.
     for(const selector of ['.roster-sheet-close','.roster-sheet-backdrop']){
-     const point=await page.locator(selector).evaluate(el=>{const r=el.getBoundingClientRect();return {x:r.left+r.width/2,y:el.classList.contains('roster-sheet-backdrop')?4:r.top+r.height/2}});
-     await page.touchscreen.tap(point.x,point.y);await page.waitForTimeout(150);
+     const sample=await page.locator(selector).evaluate(el=>{
+      const r=el.getBoundingClientRect(),backdrop=el.classList.contains('roster-sheet-backdrop');
+      const describe=e=>e?{tag:e.tagName,id:e.id,className:e.className,html:e.outerHTML.slice(0,300)}:null;
+      const original={x:r.left+r.width/2,y:backdrop?4:r.top+r.height/2};
+      const originalHit=document.elementFromPoint(original.x,original.y);
+      const points=[original],left=Math.max(0,r.left),right=Math.min(innerWidth,r.right),top=Math.max(0,r.top),bottom=Math.min(innerHeight,r.bottom);
+      // Center-first, then a dense in-viewport grid. For a backdrop, children
+      // are not equivalent: only its own surface invokes the dismiss handler.
+      for(let y=top+2;y<bottom;y+=4)for(let x=left+2;x<right;x+=4)points.push({x,y});
+      const point=points.find(p=>{const hit=document.elementFromPoint(p.x,p.y);return backdrop?hit===el:hit===el||el.contains(hit);});
+      return {selector:backdrop?'.roster-sheet-backdrop':'.roster-sheet-close',rect:r.toJSON(),original,originalHit:describe(originalHit),point:point||null,pointHit:point?describe(document.elementFromPoint(point.x,point.y)):null,step:tutorialCurrentStepId(),tools:document.querySelector('.tutorial-tools')?.getBoundingClientRect().toJSON()};
+     });
+     const stem=`${out}/${width}-growth-skill-${selector.slice(1)}`;
+     fs.writeFileSync(stem+'.json',JSON.stringify(sample,null,2));await page.screenshot({path:stem+'-before.png'});
+     assert(sample.point,`Sheet control has no exposed touch point: ${JSON.stringify(sample)}`);
+     await page.touchscreen.tap(sample.point.x,sample.point.y);await page.waitForTimeout(150);
+     await page.screenshot({path:stem+'-after.png'});
      assert(await isVisible('.roster-sheet'));
-     assert.equal(await page.evaluate(()=>tutorialCurrentStepId()),'growth_skill_open');
+     assert.equal(await page.evaluate(()=>tutorialCurrentStepId()),'growth_skill_open',JSON.stringify(sample));
      report.sheetChecks.push(selector);
     }
     await page.screenshot({path:`${out}/${width}-growth-skill.png`});
@@ -118,19 +138,35 @@ try{
     assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open),'unfinished prologue must expose Continue without expanding details');
     await tap('#storyContinueCard button');continue;
    }
+   // The first real text tap completes the 30ms/character presentation only.
+   // Do not try a hidden name/choice form or mistake a custom-button tap for
+   // advancement while its dialogue is still typing. No runtime advancement.
+   if(state.active&&state.typing&&await page.evaluate(()=>Boolean(tutorialPresentation.writer&&!tutorialPresentation.writer.isComplete()))){
+    await tap('#tutorialText');
+    // Typing can naturally finish between hit-testing and the tap; the next
+    // iteration reads the resulting STEP/page instead of assuming either outcome.
+    continue;
+   }
+   if(state.id===longestGuide&&!state.typing&&!longestGuideCaptured){
+    await page.screenshot({path:`${out}/${width}-longest-guide.png`});
+    assert(await page.locator('#tutorialText').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'longest guide text must not overflow horizontally');
+    report.longestGuide=longestGuide;longestGuideCaptured=true;
+   }
    if(process.env.PROLOGUE_TEST_RETREAT==='1'&&['battle_free','stella_mock_free'].includes(state.id)&&!retreated.has(state.id)){
     retreated.add(state.id);report.retreats.push(state.id);expectedRetryFree=state.id;await tap('#tutorialNextButton');
     await page.waitForFunction(()=>!busy);await tap('#battleEscapeButton');continue;
    }
-   if(state.id==='prologue_complete')complete=true;
+   if(state.id==='prologue_epilogue')complete=true;
    if(state.active){
     if(state.input==='player_name'){
+     await page.locator('#tutorialPlayerNameInput').waitFor({state:'visible'});
      await tap('#tutorialPlayerNameInput');await page.keyboard.insertText('通し検査');await tap('#tutorialNameForm button');
     }else if(await isVisible('#tutorialDialogueChoices:not([hidden]) button'))await tap('#tutorialDialogueChoices button');
     else if(state.action&&state.target){
      // A dynamic party guide selects remove/add/save on this same saved STEP.
      await tap('.tutorial-target-active');
     }else if(await isVisible('#tutorialNextButton:not([hidden]):not(:disabled)'))await tap('#tutorialNextButton');
+    else if(!state.action&&!state.input){await tap('#tutorialText');}
     else await page.waitForTimeout(250);
    }else if(complete&&state.status==='completed')break;
    else if(state.screen==='storyMode'){
@@ -156,6 +192,10 @@ try{
   assert.equal(await page.evaluate(()=>currentTutorialState().status),'completed');
   assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.dialogs,[]);
   await page.screenshot({path:`${out}/${width}-complete.png`});
+  await tap('#homeAdventureButton');
+  await tap('#storyPrologueChapter > summary');
+  assert.equal(await page.locator('#storyEpisodeList .story-episode-card.is-completed').count(),6,'all six episodes display completed');
+  await page.screenshot({path:`${out}/${width}-six-episodes-complete.png`});
   console.log(`PASS ${width}x${height}: ${report.steps.length} steps, ${report.targets.length} target-center checks, ${report.taps.length} coordinate taps`);
   await context.close();
  }
