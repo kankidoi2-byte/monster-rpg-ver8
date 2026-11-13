@@ -1,10 +1,11 @@
 // Adopted 2026-11-13 skill effects prototype, adapted to battle coordinates.
 // All clocks and layers are visual only: callers own gameplay results and saves.
 function startBattleSkillEffect({stage,source,target,profile,rate=1,short=false,cleanupRegistry}){
+  const CW=stage.clientWidth,CH=stage.clientHeight;
+  if(!CW||!CH)return null;
   const canvas=document.createElement('canvas');
   const ctx=canvas.getContext('2d');
-  const CW=stage.clientWidth,CH=stage.clientHeight;
-  if(!ctx||!CW||!CH)return null;
+  if(!ctx)return null;
   const dpr=Math.min(2,window.devicePixelRatio||1);
   canvas.width=Math.round(CW*dpr); canvas.height=Math.round(CH*dpr);
   canvas.setAttribute('aria-hidden','true');
