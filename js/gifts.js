@@ -129,7 +129,7 @@ function commitGiftClaim(keys,identity,owner){
     if(!saveGame())throw Error('保存できなかったため、報酬を受け取れませんでした。');
     return {ok:true,rewards};
   }catch(error){
-    if(snapshot)rollbackSaveTransaction(snapshot);
+    if(snapshot){rollbackSaveTransaction(snapshot);if(typeof PersonalGifts!=='undefined')PersonalGifts.afterRollback(owner);}
     return {ok:false,error:error.message||'受け取りできませんでした。'};
   }
 }

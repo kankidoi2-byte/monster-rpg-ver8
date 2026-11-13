@@ -49,6 +49,6 @@
   }catch(_){/* Offline and auth failures do not interrupt play or expose another profile. */}})();
   inflight=task;try{await task;}finally{if(inflight===task)inflight=null;}
  }
- global.PersonalGifts={entries,accept,sync,screenChanged(id){if(id==='home'||id==='giftBox')void sync();},start(){void sync();}};
+ global.PersonalGifts={entries,accept,sync,afterRollback(previousOwner){const p=profile();if(owner===previousOwner&&p&&identity===p.id+':'+p.token&&typeof save==='object'){owner=save;inflight=null;}},screenChanged(id){if(id==='home'||id==='giftBox')void sync();},start(){void sync();}};
  global.addEventListener('online',()=>void sync());
 })(globalThis);
