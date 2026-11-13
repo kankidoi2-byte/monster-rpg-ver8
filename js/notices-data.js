@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261113-battle-skill-effects',date:'2026-11-13',category:'update',title:'技の演出を新しくしました',body:'技の属性や型に合わせて見た目が変わり、強力な技には専用の演出が入ります。技の威力や効果は変わりません。'},
   {id:'20261113-item-decisions',date:'2026-11-13',category:'update',title:'道具の入手と使い道を追加',body:'アイテムガチャに万能薬・特上回復薬・再起の雫を追加しました。格上・ヌシの勝利報酬、格上に出会いやすくなる強者の香、砂金の入手と売却に対応しました。'},
   {id:'20261113-feedback-thanks',date:'2026-11-13',category:'update',title:'意見箱にお礼を追加しました',body:'10文字以上の意見が届くと、1プロフィールにつき日本時間で1日1回、プレゼントBOXにコイン500枚が届きます。内容によっては特別なお礼が届くこともあります。'},
   {id:'20261113-story-presentation',date:'2026-11-13',category:'update',title:'会話と操作案内の表示を統一',body:'序章・マップの会話を全画面背景と紺色の台詞枠に統一しました。会話ログ、自動送り、タップでの文字表示・送りに対応しています。'},

@@ -169,11 +169,13 @@ function renewalEnemyInfo(id=null){
 function renewalBanner(text,kind=''){
   renewalMount();const el=renewalEl('renewalBanner');el.textContent=text;el.className='br-banner on '+kind;clearTimeout(renewal.bannerTimer);renewal.bannerTimer=setTimeout(()=>el.classList.remove('on'),1100/autoSpeed());
 }
-function renewalHpFeedback(unit,loss,{label,effectiveness}){
+function renewalHpFeedback(unit,loss,{label,effectiveness,showNumber=true}){
   const visual=renewalEl(unit.vis);if(!visual)return;
   const stage=visual.closest('.battle-stage-slot'),arena=renewalEl('battle').querySelector('.battle-arena');if(!stage||!arena)return;
+  if(showNumber){
   const rect=stage.getBoundingClientRect(),base=arena.getBoundingClientRect(),num=document.createElement('span');
   num.className='br-damage '+(loss<0?'heal':/毒|継続/.test(label)?'poison':effectiveness>1?'good':'');num.textContent=(loss<0?'+':'')+Math.abs(loss);num.style.left=rect.left-base.left+rect.width/2+'px';num.style.top=rect.top-base.top+rect.height/2+'px';arena.append(num);setTimeout(()=>num.remove(),950/autoSpeed());
+  }
   if(effectiveness>1)renewalBanner('効果は抜群だ！');else if(effectiveness<1)renewalBanner('いまひとつのようだ…','weak');
 }
 function renewalEscape(){if(!renewalCanAct())return;renewalOpen('逃走','<p>戦闘から逃げますか？</p><p>逃げると、この戦闘の報酬はもらえません。</p><div class="br-two"><button onclick="renewalClose()">戦いを続ける</button><button onclick="renewalConfirmEscape()">逃げる</button></div>');}
