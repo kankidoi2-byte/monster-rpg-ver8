@@ -160,6 +160,9 @@ function battleSkillEffectsSuppressed(){
     ||(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
+  if(typeof autoFastForward==='function'&&autoFastForward())return false;
+  if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
+  else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
   if(battleSkillEffectsSuppressed())return false;
   const source=document.getElementById(sourceId),target=document.getElementById(targetId);
   const stage=document.querySelector('#battle .battle-arena');
@@ -170,8 +173,6 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
     const rate=(typeof autoSpeed==='function'?autoSpeed():1)*(short?1.6:1);
     const controller=startBattleSkillEffect({stage,source,target,profile,rate,short,cleanupRegistry:battleVisuals});
     if(controller){
-      if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
-      else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
       const effect={controller,stage,source,target,profile,rate};
       activeBattleSkillEffect=effect;
       const tail=controller.tail.finally(()=>{
@@ -188,8 +189,6 @@ async function playBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}
 }
 async function playLegacyBattleSkillMotion(sourceId,targetId,mv,{untilImpact=false}={}){
   if(typeof autoFastForward==='function'&&autoFastForward())return false;
-  if(typeof showBattleStageAction==='function')showBattleStageAction(sourceId,targetId);
-  else if(typeof showSingleBattleActionTarget==='function')showSingleBattleActionTarget(targetId);
   const motion=typeof skillBattleMotionForMove==='function'?skillBattleMotionForMove(mv):null;
   if(!motion?.animated)return false;
   const reduced=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;

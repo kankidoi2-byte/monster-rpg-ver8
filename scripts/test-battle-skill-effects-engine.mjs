@@ -11,7 +11,7 @@ math.random=()=>{throw Error('Visual effects must not consume combat RNG');};
 const gradient={addColorStop(){}};
 const ctx=new Proxy({createLinearGradient:()=>gradient},{get:(o,k)=>o[k]??((...args)=>{if(args.some(x=>typeof x==='number'&&!Number.isFinite(x)))throw Error(k+':'+args);})});
 const context=vm.createContext({
- Math:math, console:{error:(...x)=>errors.push(x)}, window:{devicePixelRatio:3}, navigator:{},
+ Math:math, crypto:{getRandomValues(a){a[0]=seed++;return a;}}, console:{error:(...x)=>errors.push(x)}, window:{devicePixelRatio:3}, navigator:{},
  document:{createElement:()=>({style:{},getContext:()=>ctx,setAttribute(){},get isConnected(){return connected;},remove(){connected=false;}})},
  requestAnimationFrame:fn=>{queue.set(++token,fn);return token;},cancelAnimationFrame:id=>queue.delete(id)
 });
