@@ -56,6 +56,7 @@ try{
     const step=tutorialUiState.steps[tutorialUiState.index];
     return {active:tutorialUiState.active,id:tutorialCurrentStepId(),page:tutorialDialogueState.page,target:step?.target,action:tutorialStepRequiresAction(step),input:step?.input,typing:Boolean(tutorialPresentation.writer&&!tutorialPresentation.writer.isComplete()),busy:typeof busy!=='undefined'&&busy,screen:activeScreenId(),status:currentTutorialState().status};
    });
+   if(state.active)assert(await page.locator('#tutorialBubble').evaluate(e=>getComputedStyle(e).backgroundImage.includes('rgba(9, 15, 34')),'all guides including battle use navy dialogue surface');
    const key=JSON.stringify(state);
    if(key===last)repeats++;else {last=key;repeats=0;console.log(width,state.id||state.screen,state.page)}
    assert(repeats<35,`Stalled ${key}`);

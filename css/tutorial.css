@@ -70,7 +70,7 @@ body.tutorial-growth-skill-open #rosterSheetHost [data-tutorial-skill-edit]{posi
 .tutorial-spotlight{border:1.5px solid #e2cd96;box-shadow:0 0 18px #e2cd9670;border-radius:12px;animation:tutorial-gold-pulse 2s ease-in-out infinite}
 .tutorial-target-active{outline:1.5px solid #e2cd96!important;outline-offset:5px!important}
 @keyframes tutorial-gold-pulse{50%{box-shadow:0 0 27px #e2cd96aa}}
-.tutorial-bubble.story-scene-panel{overflow:visible;border-radius:0;color:#fff;padding:32px 5.5vw 28px;gap:10px;}
+.tutorial-bubble.story-scene-panel{background:var(--story-panel);border-color:var(--story-gold);box-shadow:0 -1px 0 #0009,inset 0 3px 0 #090f2280,inset 0 4px 0 #e2cd9638;overflow:visible;border-radius:0;color:#fff;padding:32px 5.5vw 28px;gap:10px;}
 .tutorial-overlay.is-story-step .tutorial-bubble{width:100vw;min-height:25svh;height:auto;max-height:55svh;left:0;bottom:0;border-inline:0;border-bottom:0}
 .tutorial-overlay.is-ui-guide-step .tutorial-bubble{width:min(440px,calc(100vw - 24px));border:1px solid #e2cd96b8;padding:24px 18px 18px}
 .tutorial-bubble-head,.tutorial-progress,.tutorial-arrow{display:none!important}
