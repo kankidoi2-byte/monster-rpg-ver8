@@ -43,13 +43,18 @@ try{
  // Initial fixture/save normalization registers potion in the item encyclopedia,
  // queuing Rank 1→2. Its delayed notice handler legitimately saves on dismissal.
  // Drain that unrelated fixture work BEFORE taking the exact no-mutation snapshot.
- // A real tab click invokes the existing visible-notice handler, not a queue edit.
+ // Return to the normal home surface and drain via actual UI controls. Use a
+ // read-only DOM wait: a locator visibility wait can itself run the registered
+ // overlay handler and then wait forever for the notice it just dismissed.
+ await page.locator('[data-nav="home"]').click();
  while(await page.evaluate(()=>save.contractor.pendingRankUps.length>0)){
-  await page.evaluate(()=>scheduleContractorRankUpPresentation());
-  await page.locator('#contractorRankUpOverlay:not(.hidden)').waitFor({state:'visible'});
-  await page.locator('#storyCategory-map').click();
+  await page.waitForFunction(()=>save.contractor.pendingRankUps.length===0||!document.getElementById('contractorRankUpOverlay').classList.contains('hidden'));
+  await page.locator('#homeAdventureButton').click();
+  await page.locator('[data-nav="home"]').click();
  }
  assert.equal(await page.locator('#contractorRankUpOverlay').isVisible(),false);
+ await page.locator('#homeAdventureButton').click();
+ await page.locator('#storyCategory-map').click();
  const savedBefore=await page.evaluate(()=>JSON.stringify(save));
  await storyButton('grassland_whose').click();assert.equal(await page.locator('.map-story-card').count(),11);
  await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();

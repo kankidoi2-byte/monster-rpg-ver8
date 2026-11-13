@@ -43,6 +43,8 @@ try{
   const isVisible=selector=>page.locator(selector).first().isVisible();
   await page.goto(`http://127.0.0.1:${port}/?legacy=1`,{waitUntil:'networkidle'});
   await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
+  const longestGuide=await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).filter(s=>s.target).sort((a,b)=>tutorialResolvedText(b).length-tutorialResolvedText(a).length)[0].id);
+  let longestGuideCaptured=false;
   let last='',repeats=0,complete=false,expectedRetryFree=null;
   const reloaded=new Set(),paused=new Set(),retreated=new Set();
   for(let n=0;n<650;n++){
@@ -89,13 +91,30 @@ try{
    }
    if(state.id==='growth_skill_open'&&!report.sheetChecks.length){
     assert(await page.locator('.roster-sheet-close').isDisabled());
-    // Both controls are exercised at actual screen coordinates. The disabled
-    // close button can be inside the sheet's scroll area, so use visible points.
+    // Exercise the actual sheet controls, not a coordinate now occupied by
+    // the separate tutorial Pause button (which legitimately pauses guidance).
+    // No locator click, scroll or synthetic dispatch: inspect hit targets, then
+    // send a real touch only to an exposed point of the intended control.
     for(const selector of ['.roster-sheet-close','.roster-sheet-backdrop']){
-     const point=await page.locator(selector).evaluate(el=>{const r=el.getBoundingClientRect();return {x:r.left+r.width/2,y:el.classList.contains('roster-sheet-backdrop')?4:r.top+r.height/2}});
-     await page.touchscreen.tap(point.x,point.y);await page.waitForTimeout(150);
+     const sample=await page.locator(selector).evaluate(el=>{
+      const r=el.getBoundingClientRect(),backdrop=el.classList.contains('roster-sheet-backdrop');
+      const describe=e=>e?{tag:e.tagName,id:e.id,className:e.className,html:e.outerHTML.slice(0,300)}:null;
+      const original={x:r.left+r.width/2,y:backdrop?4:r.top+r.height/2};
+      const originalHit=document.elementFromPoint(original.x,original.y);
+      const points=[original],left=Math.max(0,r.left),right=Math.min(innerWidth,r.right),top=Math.max(0,r.top),bottom=Math.min(innerHeight,r.bottom);
+      // Center-first, then a dense in-viewport grid. For a backdrop, children
+      // are not equivalent: only its own surface invokes the dismiss handler.
+      for(let y=top+2;y<bottom;y+=4)for(let x=left+2;x<right;x+=4)points.push({x,y});
+      const point=points.find(p=>{const hit=document.elementFromPoint(p.x,p.y);return backdrop?hit===el:hit===el||el.contains(hit);});
+      return {selector:backdrop?'.roster-sheet-backdrop':'.roster-sheet-close',rect:r.toJSON(),original,originalHit:describe(originalHit),point:point||null,pointHit:point?describe(document.elementFromPoint(point.x,point.y)):null,step:tutorialCurrentStepId(),tools:document.querySelector('.tutorial-tools')?.getBoundingClientRect().toJSON()};
+     });
+     const stem=`${out}/${width}-growth-skill-${selector.slice(1)}`;
+     fs.writeFileSync(stem+'.json',JSON.stringify(sample,null,2));await page.screenshot({path:stem+'-before.png'});
+     assert(sample.point,`Sheet control has no exposed touch point: ${JSON.stringify(sample)}`);
+     await page.touchscreen.tap(sample.point.x,sample.point.y);await page.waitForTimeout(150);
+     await page.screenshot({path:stem+'-after.png'});
      assert(await isVisible('.roster-sheet'));
-     assert.equal(await page.evaluate(()=>tutorialCurrentStepId()),'growth_skill_open');
+     assert.equal(await page.evaluate(()=>tutorialCurrentStepId()),'growth_skill_open',JSON.stringify(sample));
      report.sheetChecks.push(selector);
     }
     await page.screenshot({path:`${out}/${width}-growth-skill.png`});
@@ -126,6 +145,11 @@ try{
     // Typing can naturally finish between hit-testing and the tap; the next
     // iteration reads the resulting STEP/page instead of assuming either outcome.
     continue;
+   }
+   if(state.id===longestGuide&&!state.typing&&!longestGuideCaptured){
+    await page.screenshot({path:`${out}/${width}-longest-guide.png`});
+    assert(await page.locator('#tutorialText').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'longest guide text must not overflow horizontally');
+    report.longestGuide=longestGuide;longestGuideCaptured=true;
    }
    if(process.env.PROLOGUE_TEST_RETREAT==='1'&&['battle_free','stella_mock_free'].includes(state.id)&&!retreated.has(state.id)){
     retreated.add(state.id);report.retreats.push(state.id);expectedRetryFree=state.id;await tap('#tutorialNextButton');

@@ -47,8 +47,8 @@ try{
   await page.evaluate(()=>{tutorialPresentation.auto=true;tutorialUiState.index=tutorialStepIndex(tutorialUiState.steps,'rescue_world_map_open');renderTutorialStep();});
   assert.equal(await page.evaluate(()=>tutorialPresentation.auto),false);await finish();await shot('ui-target');
   assert(await page.locator('#tutorialOverlay').evaluate(e=>e.classList.contains('is-ui-guide-step')));
-  const longest=await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).filter(s=>!s.target&&!s.input&&!s.choices).sort((a,b)=>tutorialResolvedText(b).length-tutorialResolvedText(a).length)[0].id);
-  await start(longest);await finish();await shot('longest-dialogue');
+  const longest=await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).filter(s=>!s.target&&!s.input&&!s.choices).flatMap(s=>(s.dialogue||[s]).map((v,index)=>({id:s.id,index,length:tutorialResolvedText({...s,...v}).length}))).sort((a,b)=>b.length-a.length)[0]);
+  await start(longest.id);await page.evaluate(index=>{tutorialDialogueState.page=index;renderTutorialStep();},longest.index);await finish();await shot('longest-dialogue');
   assert(await page.locator('#tutorialBubble').evaluate(e=>{const b=e.getBoundingClientRect();return b.left>=-1&&b.right<=innerWidth+1&&b.bottom<=innerHeight+1;}),'dialogue panel within portrait width');
   await start('gnosis_name');await page.evaluate(()=>{tutorialPresentation.auto=true;renderTutorialStep();});assert.equal(await page.evaluate(()=>tutorialPresentation.auto),false);
   await start('gnosis_contract_power',true);await finish();
