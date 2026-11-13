@@ -5,7 +5,7 @@ function tutorialPresentationStop(){
   tutorialPresentation.writer?.cancel();clearTimeout(tutorialPresentation.timer);
   tutorialPresentation.writer=null;tutorialPresentation.key=null;tutorialPresentation.auto=false;
   document.getElementById('tutorialAutoButton')?.setAttribute('aria-pressed','false');
-  for(const id of ['tutorialLog','tutorialSkipMenu']){const el=document.getElementById(id);if(el)el.hidden=true;}
+  for(const id of ['tutorialLog','tutorialSkipMenu','tutorialSceneTransition','tutorialEpisodeCaption']){const el=document.getElementById(id);if(el)el.hidden=true;}
 }
 function tutorialPresentationFinishTyping(){
   if(tutorialPresentation.writer&&!tutorialPresentation.writer.isComplete()){tutorialPresentation.writer.finish();return true;}return false;
@@ -40,6 +40,8 @@ function tutorialPresentationLog(){
 function tutorialPresentationSkipMenu(){
   clearTimeout(tutorialPresentation.timer);tutorialPresentation.auto=false;
   document.getElementById('tutorialAutoButton').setAttribute('aria-pressed','false');
+  document.getElementById('tutorialSceneTransition').hidden=true;
+  document.getElementById('tutorialOverlay').classList.remove('is-descent');
   const root=document.getElementById('tutorialSkipMenu');root.hidden=!root.hidden;
 }
 function tutorialPresentationRender(step,view){
@@ -49,6 +51,14 @@ function tutorialPresentationRender(step,view){
   const episodeKey=tutorialUiState.flowId+':'+(episode?.id||'guide');
   if(state.episode!==episodeKey){state.episode=episodeKey;state.log=[];state.seen.clear();state.portraits.clear();state.scene=null;}
   const key=episodeKey+':'+step.id+':'+tutorialDialogueState.page;
+  if(state.key!==key&&episode?.startStepId===step.id&&tutorialDialogueState.page===0){
+    const caption=document.getElementById('tutorialEpisodeCaption');caption.textContent=`第${episode.number}話　${episode.title}`;caption.hidden=false;caption.classList.remove('is-visible');void caption.offsetWidth;caption.classList.add('is-visible');
+    const transition=document.getElementById('tutorialSceneTransition');
+    const descent=episode.number===2;transition.hidden=!descent;
+    transition.classList.remove('is-descent');overlay.classList.remove('is-descent');
+    if(descent){void transition.offsetWidth;transition.classList.add('is-descent');overlay.classList.add('is-descent');}
+    caption.style.animationDelay=descent?'1.4s':'0s';
+  }
   const text=tutorialResolvedText(view),speaker=tutorialResolvedText({text:view.speaker||''});
   if(!state.seen.has(key)){state.seen.add(key);state.log.push({speaker,text});}
   overlay.classList.toggle('is-story-step',story);overlay.classList.toggle('is-ui-guide-step',!story);
