@@ -22,6 +22,7 @@ try{
   const current=()=>page.evaluate(()=>tutorialUiState.steps[tutorialUiState.index]?.id);
   const shot=async name=>{await page.screenshot({path:`${out}/${name}-${viewport.width}.png`,fullPage:true});};
   await start('intro_gnosis');await finish();await shot('black-start');
+  assert((await page.locator('#tutorialBubble').evaluate(e=>getComputedStyle(e).backgroundImage)).includes('linear-gradient'),'navy panel not white theme');
   assert(await page.locator('#tutorialOverlay').evaluate(e=>e.classList.contains('is-story-step')));
   await start('gnosis_contract_power');
   await page.locator('#tutorialText').click();assert.equal(await current(),'gnosis_contract_power','first tap completes text only');
@@ -41,7 +42,7 @@ try{
   assert.equal(await page.locator('#tutorialCast img').count(),2);
   await page.evaluate(()=>tutorialPresentationLog());
   const rows=await page.locator('#tutorialLogLines p').allTextContents();assert(rows[0].endsWith(firstText));assert(rows[1].endsWith(secondText));await shot('ordered-log');
-  await page.locator('#tutorialLog button').click();
+  await page.locator('#tutorialLog > button').click();
   // Enter a guide with auto already enabled: rendering a guide must turn it off.
   await page.evaluate(()=>{tutorialPresentation.auto=true;tutorialUiState.index=tutorialStepIndex(tutorialUiState.steps,'rescue_world_map_open');renderTutorialStep();});
   assert.equal(await page.evaluate(()=>tutorialPresentation.auto),false);await finish();await shot('ui-target');

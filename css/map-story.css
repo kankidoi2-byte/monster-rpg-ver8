@@ -36,3 +36,7 @@ body:has(#mapStory.active .map-story-scene)>.app-topbar,body:has(#mapStory.activ
 @media(max-width:360px){#mapStory .map-story-tools{gap:4px;right:2vw}#mapStory .map-story-tools button{padding-inline:9px;font-size:11px}}
 @media(max-height:480px){#mapStory .map-story-dialogue{max-height:60%;min-height:140px}.map-story-message{max-height:calc(60dvh - 90px)}#mapStory .map-story-heading h2{top:6vh;font-size:18px}.map-story-tools{gap:4px}}
 @media(prefers-reduced-motion:reduce){#mapStory .map-story-heading h2{animation:none;opacity:0}#mapStory{animation:none!important}}
+/* Keep the adopted cinematic buttons independent from the white page theme. */
+.nonbattle-screen#mapStory #mapStoryContent .map-story-scene button{background:rgba(8,13,28,.7)!important;color:#e9e4d3!important}
+.nonbattle-screen#mapStory #mapStoryContent .map-story-scene button[aria-pressed="true"]{background:#e2cd96!important;color:#141a2c!important}
+.nonbattle-screen#mapStory #mapStoryContent .map-story-scene button:disabled{background:rgba(8,13,28,.7)!important;color:#a6a4a0!important}

@@ -125,3 +125,8 @@ body.tutorial-growth-skill-open #rosterSheetHost [data-tutorial-skill-edit]{posi
 .tutorial-story-backdrop.scene-enter[data-scene="void"],.tutorial-story-backdrop.scene-enter[data-scene="world_descent"]{animation:none}
 @keyframes tutorial-scene-enter{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.tutorial-story-backdrop.scene-enter{animation:none!important}}
+/* Cinematic surfaces opt out of the white nonbattle theme. */
+body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble{background:var(--story-panel);color:#fff;border-color:var(--story-gold);box-shadow:0 -1px 0 #0009,inset 0 3px 0 #090f2280,inset 0 4px 0 #e2cd9638}
+body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble :is(h2,p){color:#fff}
+body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble button{background:#e2cd96;color:#141a2c;border-color:var(--story-gold)}
+body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble .tutorial-back{background:transparent;color:#e2cd96;border:0}

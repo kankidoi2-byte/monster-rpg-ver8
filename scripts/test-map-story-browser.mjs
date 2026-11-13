@@ -64,7 +64,7 @@ try{
   const scene=await page.locator('.map-story-scene').boundingBox(),panel=await page.locator('.map-story-dialogue').boundingBox(),portrait=await page.locator('.map-story-speaker.is-speaking').boundingBox();
   assert.equal(scene.x,0);assert.equal(scene.y,0);assert.equal(scene.width,width);assert.equal(scene.height,height);
   assert(panel.x>=0&&panel.y>=0&&panel.x+panel.width<=width&&panel.y+panel.height<=height,'panel fits viewport');
-  assert(portrait.y>=0&&portrait.y+portrait.height<=panel.y+1,'portrait never overlaps dialogue');
+  assert(portrait.y>=-1&&portrait.y+portrait.height*.4<panel.y,'speaker face stays above dialogue; adopted bottom21% permits feet behind panel');
   assert(await page.locator('.app-topbar').isHidden());assert(await page.locator('.app-bottom-nav').isHidden());
   for(const button of await page.locator('.map-story-scene button:visible').all()){
    await button.scrollIntoViewIfNeeded();assert(await button.isVisible());assert((await button.boundingBox()).height>=44);
