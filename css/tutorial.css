@@ -57,3 +57,50 @@
 
 /* The real action stays in the detail sheet, above the spotlight. */
 body.tutorial-growth-skill-open #rosterSheetHost [data-tutorial-skill-edit]{position:relative;inset:auto;width:100%;margin:0;z-index:81;min-height:48px}
+
+/* Adopted 2026-11-12 story presentation. Progress/target semantics live in the engine. */
+.tutorial-overlay{color:#fff}.tutorial-overlay.is-story-step{pointer-events:auto;background:#000}
+.tutorial-story-backdrop{pointer-events:auto;background-size:cover!important;background-position:center!important}
+.tutorial-story-backdrop[data-scene="void"],.tutorial-story-backdrop[data-scene="world_descent"]{background:#000;animation:none}
+.tutorial-story-backdrop[data-scene="grassland"]{background-image:url('../images/maps/grassland_battle_v1.webp');animation:story-scene-drift 26s ease-in-out infinite alternate}
+.tutorial-story-backdrop[data-scene="academy"]{background-image:url('../images/maps/magic_academy_battle_v1.webp');animation:story-scene-drift 26s ease-in-out infinite alternate}
+.tutorial-story-backdrop[data-scene="capital"]{background-image:url('../images/maps/capital_market_story_v1.webp');animation:story-scene-drift 26s ease-in-out infinite alternate}
+.tutorial-story-backdrop:not([data-scene="void"]):not([data-scene="world_descent"])::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,8,18,.42),transparent 16%,transparent 52%,rgba(4,8,18,.9))}
+.tutorial-overlay.is-story-step .tutorial-shade{display:none}.tutorial-shade{background:rgba(4,8,20,.74)}
+.tutorial-spotlight{border:1.5px solid #e2cd96;box-shadow:0 0 18px #e2cd9670;border-radius:12px;animation:tutorial-gold-pulse 2s ease-in-out infinite}
+.tutorial-target-active{outline:1.5px solid #e2cd96!important;outline-offset:5px!important}
+@keyframes tutorial-gold-pulse{50%{box-shadow:0 0 27px #e2cd96aa}}
+.tutorial-bubble.story-scene-panel{overflow:visible;border-radius:0;color:#fff;padding:32px 5.5vw 28px;gap:10px;}
+.tutorial-overlay.is-story-step .tutorial-bubble{width:100vw;min-height:25svh;height:auto;max-height:55svh;left:0;bottom:0;border-inline:0;border-bottom:0}
+.tutorial-overlay.is-ui-guide-step .tutorial-bubble{width:min(440px,calc(100vw - 24px));border:1px solid #e2cd96b8;padding:24px 18px 18px}
+.tutorial-bubble-head,.tutorial-progress,.tutorial-arrow{display:none!important}
+.tutorial-bubble h2.story-scene-nameplate{color:#fff;font-size:clamp(16px,4.7vw,24px);margin:0;z-index:1}
+.tutorial-bubble .story-scene-text{color:#fff;font-size:clamp(15px,4.5vw,23px);line-height:1.7;overflow:auto;max-height:38svh;margin:0;white-space:pre-wrap;}
+.tutorial-bubble .story-scene-text.is-narration{text-align:center;font-family:Georgia,'Noto Serif JP',serif}
+.tutorial-bubble h3{color:#e2cd96;font-family:Georgia,'Noto Serif JP',serif;font-size:17px;margin:0}
+.tutorial-overlay.is-ui-guide-step .story-scene-text{font-size:15px;max-height:45svh}
+.tutorial-tools{position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;z-index:10;pointer-events:auto}
+.tutorial-tools .tutorial-pause{margin:0;width:34px;height:34px;min-height:34px;padding:0;background:rgba(8,13,28,.55);color:#e9e4d3;border-color:#e2cd9688}
+.tutorial-scene-label{position:fixed;left:4vw;top:54px;z-index:4;font-family:Georgia,'Noto Serif JP',serif;font-size:13px;text-shadow:0 1px 4px #000;pointer-events:none}
+.tutorial-actions{display:flex!important;justify-content:flex-end}.tutorial-actions:empty{display:none!important}
+.tutorial-actions button{min-height:38px;padding:8px 16px;font-size:14px;background:#e2cd96;color:#141a2c}
+.tutorial-back{background:none;color:#e2cd96;border:0;text-decoration:underline;min-height:32px;padding:4px;font-size:13px}
+#tutorialGuideBack:empty{display:none}
+#tutorialAdvanceHint{position:absolute;bottom:8px;right:6%;font-size:13px;color:#e2cd96}
+#tutorialAdvanceHint.is-typing{opacity:0}
+#tutorialCast{position:fixed;inset:0;pointer-events:none;z-index:2}
+#tutorialCast img{position:absolute;object-fit:contain;max-width:80vw;transform-origin:50% 70%}
+#tutorialGuidePortrait{position:fixed;z-index:3;pointer-events:none;width:auto;object-fit:contain;animation:story-scene-bob 4s ease-in-out infinite}
+#tutorialSkipMenu{position:fixed;top:58px;right:12px;z-index:15;pointer-events:auto;padding:12px;background:#080d1cf5;border:1px solid #e2cd96;max-width:calc(100vw - 24px)}
+#tutorialSkipMenu button{display:block;width:100%;background:transparent;color:#e9e4d3;border:1px solid #e2cd9670;margin:6px 0;min-height:44px}
+#tutorialSkipMenu button[hidden]{display:none}
+#tutorialLog{pointer-events:auto;z-index:20;position:fixed;inset:65px 12px 18px;overflow:auto;background:#080d1cf5;padding:18px;border:1px solid #e2cd96}
+#tutorialLogLines p{white-space:pre-wrap;line-height:1.7;border-bottom:1px solid #e2cd9633;padding-bottom:12px}
+#tutorialLogLines strong{display:block;color:#e2cd96}
+#tutorialNameForm,#tutorialDialogueChoices{position:fixed;z-index:12;left:9vw;top:32svh;width:82vw;pointer-events:auto;max-height:40svh;overflow:auto}
+#tutorialNameForm{background:#0c1632f5;border:1px solid #e2cd96;box-shadow:0 0 0 100vmax #0008;color:#fff}
+#tutorialNameForm label{color:#e9e4d3}
+#tutorialDialogueChoices button{border:0;border-block:1px solid #e2cd96;background:linear-gradient(90deg,#0c163280,#0c1632ee 18%,#0c1632ee 82%,#0c163280);color:#fff;animation:tutorial-choice-in .35s ease both}
+#tutorialDialogueChoices button:active{background:#e2cd96;color:#141a2c}
+@keyframes tutorial-choice-in{from{opacity:0;transform:translateX(-6%)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.tutorial-story-backdrop,#tutorialCast img,#tutorialGuidePortrait,.tutorial-spotlight,#tutorialDialogueChoices button{animation:none!important;transition:none!important}}

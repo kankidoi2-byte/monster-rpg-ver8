@@ -21,7 +21,7 @@ run('openBattleHub();showWorldMapLocation("grassland")');assert.equal(run('activ
 click('#battleChoiceList button[data-story-id="grassland_whose"]');assert.equal(run('activeScreenId()'),'mapStory');assert.equal(d.querySelectorAll('.map-story-card').length,11);
 for(let number=1;number<=11;number++){
  const id='gl_'+String(number).padStart(2,'0');click(`#mapStory button[onclick="startMapStoryEpisode('${id}')"]`);
- while(run('mapStoryState().resume.nodeId!==null'))click('#mapStory button[onclick="advanceMapStoryNode()"]');
+ while(run('mapStoryState().resume.nodeId!==null')){run('mapStoryTypewriter.finish()');click('#mapStory .map-story-next');}
  click('#mapStory button[onclick="editMapStoryParty()"]');assert.equal(run('activeScreenId()'),'partySet');click('#mapStoryPartyReturn');click(`#mapStory button[onclick="startMapStoryEpisode('${id}')"]`);
  click(`#mapStory button[onclick="launchMapStoryBattle('${id}')"]`);assert.equal(run('activeScreenId()'),'battle');assert(d.getElementById('battleMapBanner').textContent.includes('草原ストーリー'));
  if(number===1){run('eHp=1;Math.random=()=>.5');await run('turn(-1)');await tick();}
@@ -29,7 +29,7 @@ for(let number=1;number<=11;number++){
  assert(d.getElementById('battleOutcome').classList.contains('is-victory'));
  assert.equal(d.querySelectorAll('#battleOutcomeActions button').length,1,'only story continuation; no contract');
  click('#battleOutcomeActions button');assert.equal(run('activeScreenId()'),'mapStory');
- while(run('mapStoryState().resume.nodeId!==null'))click('#mapStory button[onclick="advanceMapStoryNode()"]');
+ while(run('mapStoryState().resume.nodeId!==null')){run('mapStoryTypewriter.finish()');click('#mapStory .map-story-next');}
  click('#mapStory button[onclick="completeMapStoryEpisode()"]');
  if(run('activeScreenId()')==='evolution'){for(let i=0;i<10&&run('activeScreenId()')==='evolution';i++)run('cancelEvolution()');click('#mapStoryPartyReturn');}
  else if(number<11)click('#mapStory button[onclick="openMapStory()"]');

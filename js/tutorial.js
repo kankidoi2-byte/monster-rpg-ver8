@@ -470,7 +470,7 @@ function positionTutorialUi(){
     arrow.style.top=`${placement.side==='below'?hole.bottom+1:hole.top-16}px`;
   }
 }
-function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(positionTutorialUi));}
+function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(()=>{positionTutorialUi();if(typeof tutorialPresentationPosition==='function')tutorialPresentationPosition();}));}
 function tutorialResolvedText(step){
   const playerName=typeof currentTutorialState==='function'?currentTutorialState().playerName:null;
   return String(step?.text||'').replaceAll('{{playerName}}',playerName||'契約者');
@@ -773,6 +773,7 @@ function renderTutorialStep(){
   next.disabled=requiresAction||tutorialElnaContractBusy||tutorialDialogueNeedsChoice(step);
   actions?.classList.toggle('is-target-action',requiresAction);
   actions?.classList.toggle('is-name-entry',step.input==='player_name');
+  if(typeof tutorialPresentationRender==='function')tutorialPresentationRender(step,view);
   overlay.classList.remove('hidden');
   overlay.setAttribute('aria-hidden','false');
   scheduleTutorialPosition();
@@ -902,6 +903,7 @@ function tutorialShouldUseReplayNextStep(step){
   return false;
 }
 function tutorialNext(actionCompleted=false,choiceId=null){
+  if(actionCompleted!==true&&choiceId===null&&typeof tutorialPresentationFinishTyping==='function'&&tutorialPresentationFinishTyping())return;
   if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
   if(actionCompleted!==true&&Date.now()<tutorialDialogueState.lockedUntil)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
@@ -1020,6 +1022,7 @@ function requestTutorialSkip(){
   updateTutorialMenuSummary();
 }
 function clearTutorialUi(){
+  if(typeof tutorialPresentationStop==='function')tutorialPresentationStop();
   tutorialRankUpWaitScreen=null;
   if(typeof closeGachaRates==='function')closeGachaRates();
   const overlay=document.getElementById('tutorialOverlay');

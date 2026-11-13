@@ -1,0 +1,25 @@
+/* Shared visual vocabulary for prologue, guides and map conversations. */
+:root{--story-gold:rgba(226,205,150,.78);--story-panel:linear-gradient(to bottom,rgba(9,15,34,.80),rgba(6,10,24,.93));--story-name-bg:linear-gradient(90deg,rgba(16,26,56,.97),rgba(16,26,56,.95) 62%,rgba(16,26,56,0))}
+.story-scene-panel{background:var(--story-panel);color:#fff;border-top:1px solid var(--story-gold);box-shadow:0 -1px 0 rgba(0,0,0,.6),inset 0 3px 0 rgba(9,15,34,.5),inset 0 4px 0 rgba(226,205,150,.22)}
+.story-scene-nameplate{position:absolute;left:0;top:0;transform:translateY(-58%);min-width:36%;padding:1.5vw 9vw 1.5vw 5vw;font-family:Georgia,"Noto Serif JP",serif;font-weight:700;font-size:clamp(15px,4.7vw,24px);letter-spacing:.1em;background:var(--story-name-bg);border-top:1px solid var(--story-gold);text-shadow:0 1px 3px #000}
+.story-scene-text{color:#fff;font-size:clamp(15px,4.5vw,23px);line-height:1.7;letter-spacing:.03em;white-space:pre-wrap;overflow-wrap:anywhere;line-break:strict;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+.story-scene-text.is-narration{font-family:Georgia,"Noto Serif JP",serif;text-align:center;color:#e6e9f5;letter-spacing:.08em}
+.story-scene-tools{position:absolute;right:3vw;top:max(10px,env(safe-area-inset-top));display:flex;gap:6px;z-index:6}
+.story-scene-tools button{color:#e9e4d3;background:rgba(8,13,28,.55);border:1px solid rgba(226,205,150,.55);border-radius:99px;min-height:44px;padding:6px 12px}
+.story-scene-tools button[aria-pressed="true"]{background:#e2cd96;color:#141a2c}
+.story-scene-log{position:absolute;inset:0;z-index:9;background:rgba(5,9,20,.96);color:#eef0f8;display:flex;flex-direction:column;padding:20px;overflow:auto}
+.story-scene-log[hidden]{display:none}
+.story-scene-log header{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--story-gold);padding-bottom:12px}
+.story-scene-log article{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.story-scene-log b{color:#e2cd96;font-family:Georgia,"Noto Serif JP",serif}
+.story-scene-log p{white-space:pre-wrap;line-height:1.7}
+.story-scene-bg{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;animation:story-scene-drift 26s ease-in-out infinite alternate}
+.story-scene-portrait{position:absolute;left:50%;height:60%;bottom:21%;max-width:94%;object-fit:contain;transform:translateX(-50%) scale(.97);transform-origin:50% 70%;filter:brightness(.5) saturate(.75);transition:opacity .38s,filter .3s,transform .3s,left .4s}
+.story-scene-portrait.is-speaking{filter:drop-shadow(0 0 12px rgba(0,0,0,.35));transform:translateX(-50%) scale(1.02)}
+.story-scene-portrait[data-character="gnosis"]{height:50%;bottom:29%;animation:story-scene-bob 3.4s ease-in-out infinite}
+.story-scene-portrait[data-character="galdra"]{height:34%;bottom:26%;animation:story-scene-bob 3.4s ease-in-out infinite}
+.story-scene-cue{color:#e2cd96;animation:story-scene-cue 1s ease-in-out infinite}
+@keyframes story-scene-drift{from{transform:scale(1) translateY(0)}to{transform:scale(1.06) translateY(-1.2%)}}
+@keyframes story-scene-bob{0%,100%{translate:0 0}50%{translate:0 -2.2%}}
+@keyframes story-scene-cue{50%{transform:translateY(35%)}}
+@media(prefers-reduced-motion:reduce){.story-scene-bg,.story-scene-portrait,.story-scene-cue{animation:none;transition:none}}

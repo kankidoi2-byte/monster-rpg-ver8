@@ -131,6 +131,7 @@ try{
      // A dynamic party guide selects remove/add/save on this same saved STEP.
      await tap('.tutorial-target-active');
     }else if(await isVisible('#tutorialNextButton:not([hidden]):not(:disabled)'))await tap('#tutorialNextButton');
+    else if(!state.action&&!state.input){await tap('#tutorialText');}
     else await page.waitForTimeout(250);
    }else if(complete&&state.status==='completed')break;
    else if(state.screen==='storyMode'){

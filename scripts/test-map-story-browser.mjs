@@ -48,32 +48,34 @@ try{
  await page.evaluate(()=>{openBattleHub();showWorldMapLocation('grassland');});
  await storyButton('grassland_whose','#battleChoiceList').click();assert.equal(await page.locator('.map-story-card').count(),11);
  await page.locator('#mapStory button[onclick="startMapStoryEpisode(\'gl_01\')"]').click();
- const nextLine=()=>page.locator('#mapStory button[onclick="advanceMapStoryNode()"]');
+ const nextLine=()=>page.locator('#mapStory .map-story-next');
+ const nextPage=async()=>{await page.evaluate(()=>mapStoryTypewriter?.finish());await nextLine().click();};
+ const previousPage=async()=>{await page.locator('#mapStoryLogButton').click();await previous().click();};
  const previous=()=>page.locator('#mapStory button[onclick="previousMapStoryNode()"]');
  const skip=()=>page.locator('#mapStory button[onclick="skipMapStoryDialogue()"]');
  assert(await previous().isDisabled());
- await nextLine().click();await previous().click();assert(await previous().isDisabled());await nextLine().click();
- assert.equal(await page.locator('.map-story-speaker').getAttribute('alt'),'グノーシス');
+ await nextPage();await previousPage();assert(await previous().isDisabled());await nextPage();
+ assert.equal(await page.locator('.map-story-speaker.is-speaking').getAttribute('alt'),'グノーシス');
  for(const [width,height,font] of [[320,568,100],[320,720,100],[390,844,100],[430,900,100],[844,390,100],[390,844,200]]){
   await page.setViewportSize({width,height});await page.locator('#mapStory').evaluate((el,font)=>el.style.fontSize=font+'%',font);
   await page.screenshot({path:`${out}/dialogue-${width}-${height}-${font}.png`,fullPage:true});
   const fits=await page.locator('#mapStory').evaluate(el=>el.scrollWidth<=el.clientWidth+1);assert(fits,`story fits ${width}px / ${font}%`);
-  const scene=await page.locator('.map-story-scene').boundingBox(),panel=await page.locator('.map-story-dialogue').boundingBox(),portrait=await page.locator('.map-story-speaker').boundingBox();
+  const scene=await page.locator('.map-story-scene').boundingBox(),panel=await page.locator('.map-story-dialogue').boundingBox(),portrait=await page.locator('.map-story-speaker.is-speaking').boundingBox();
   assert.equal(scene.x,0);assert.equal(scene.y,0);assert.equal(scene.width,width);assert.equal(scene.height,height);
   assert(panel.x>=0&&panel.y>=0&&panel.x+panel.width<=width&&panel.y+panel.height<=height,'panel fits viewport');
-  assert(width>=720?portrait.x+portrait.width<=panel.x:portrait.y+portrait.height<=panel.y,'portrait never overlaps dialogue');
+  assert(portrait.y>=0&&portrait.y+portrait.height<=panel.y+1,'portrait never overlaps dialogue');
   assert(await page.locator('.app-topbar').isHidden());assert(await page.locator('.app-bottom-nav').isHidden());
-  for(const button of await page.locator('.map-story-scene button').all()){
+  for(const button of await page.locator('.map-story-scene button:visible').all()){
    await button.scrollIntoViewIfNeeded();assert(await button.isVisible());assert((await button.boundingBox()).height>=44);
   }
-  assert((await nextLine().evaluate(el=>getComputedStyle(el).backgroundImage)).includes('linear-gradient'),'primary retains tutorial colors');
+  assert((await page.locator('.map-story-dialogue').evaluate(el=>getComputedStyle(el).backgroundImage)).includes('linear-gradient'),'common navy panel');
  }
  await page.setViewportSize({width:390,height:844});await page.locator('#mapStory').evaluate(el=>el.style.fontSize='100%');
  const beforeSkip=await page.evaluate(()=>({coins:save.coins,instances:JSON.stringify(save.instances)}));
  await skip().click();assert(await page.locator('#mapStory button[onclick="launchMapStoryBattle(\'gl_01\')"]').isVisible());
  assert.equal(await page.evaluate(()=>mapStoryState().resume.phase),'pre');assert.equal(await page.evaluate(()=>mapStoryProgress('gl_01').completed),false);
  assert.deepEqual(await page.evaluate(()=>({coins:save.coins,instances:JSON.stringify(save.instances)})),beforeSkip);
- await previous().click();assert(await nextLine().isVisible());
+ await previousPage();assert(await nextLine().isVisible());
  const savedNode=await page.evaluate(()=>mapStoryState().resume.nodeId);
  await page.locator('.map-story-close').click();assert(await page.locator('.app-topbar').isVisible());assert(await page.locator('.app-bottom-nav').isVisible());
  await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
@@ -82,7 +84,7 @@ try{
  assert.equal(await page.evaluate(()=>mapStoryState().resume.nodeId),savedNode);
  for(let number=1;number<=11;number++){
   const id='gl_'+String(number).padStart(2,'0');if(number!==1)await page.locator(`#mapStory button[onclick="startMapStoryEpisode('${id}')"]`).click();
-  while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await page.locator('#mapStory button[onclick="advanceMapStoryNode()"] ').click();
+  while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await nextPage();
   await page.locator(`#mapStory button[onclick="launchMapStoryBattle('${id}')"]`).click();assert(await page.locator('#battle').isVisible());
   if(number===1){await page.evaluate(()=>{eHp=1;});await page.evaluate(()=>turn(-1));}
   else{
@@ -91,7 +93,7 @@ try{
   }
   assert(await page.locator('#battleOutcome.is-victory').isVisible());assert.equal(await page.locator('#battleOutcomeActions button').count(),1);
   await page.locator('#battleOutcomeActions button').click();
-  while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await page.locator('#mapStory button[onclick="advanceMapStoryNode()"] ').click();
+  while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await nextPage();
   await page.locator('#mapStory button[onclick="completeMapStoryEpisode()"] ').click();
   while(await page.locator('#evolution').isVisible())await page.evaluate(()=>cancelEvolution());
   if(await page.locator('#partySet').isVisible())await page.locator('#mapStoryPartyReturn').click();else if(number<11)await page.locator('#mapStory button[onclick="openMapStory()"] ').click();
@@ -105,8 +107,8 @@ try{
  const completedSave=await page.evaluate(()=>JSON.stringify(save));
  await page.locator('#mapStory button[onclick="readMapStoryEpisode(\'gl_01\')"]').click();
  await skip().click();assert.equal(await page.evaluate(()=>mapStoryUi.phase),'pre');
- await nextLine().click();assert.equal(await page.evaluate(()=>mapStoryUi.phase),'post');
- await skip().click();await previous().click();assert(await nextLine().isVisible());await skip().click();
+ await nextPage();assert.equal(await page.evaluate(()=>mapStoryUi.phase),'post');
+ await skip().click();await previousPage();assert(await nextLine().isVisible());await skip().click();
  await page.locator('#mapStory button[onclick="completeMapStoryEpisode()"] ').click();
  assert.equal(await page.evaluate(()=>JSON.stringify(save)),completedSave,'replay controls leave saved progress unchanged');
  await page.locator('#mapStory button[onclick="leaveMapStory()"] ').click();assert.equal(await page.evaluate(()=>worldMapSelectedId),'grassland');
@@ -119,13 +121,13 @@ try{
   const id='vc_'+String(number).padStart(2,'0');
   await page.getByRole('button',{name:`第${number}話を始める`,exact:true}).click();
   if(number===1){
-   assert.equal(await page.locator('.map-story-bg').getAttribute('src'),'images/maps/volcano.webp');
-   await nextLine().click();
+   assert.equal(await page.locator('.map-story-bg').getAttribute('src'),'images/maps/volcano_battle_v1.webp');
+   await nextPage();
    for(const [width,height,font] of [[320,568,100],[430,900,100],[844,390,100],[390,844,200]]){
     await page.setViewportSize({width,height});await page.locator('#mapStory').evaluate((el,font)=>el.style.fontSize=font+'%',font);
     const panel=await page.locator('.map-story-dialogue').boundingBox();
     assert(panel.x>=0&&panel.y>=0&&panel.x+panel.width<=width&&panel.y+panel.height<=height);
-    for(const button of await page.locator('.map-story-scene button').all()){
+    for(const button of await page.locator('.map-story-scene button:visible').all()){
      await button.scrollIntoViewIfNeeded();assert(await button.isVisible());assert((await button.boundingBox()).height>=44);
     }
     await page.screenshot({path:`${out}/volcano-dialogue-${width}-${font}.png`,fullPage:true});
@@ -148,7 +150,7 @@ try{
   assert.equal(await page.locator('#battleOutcomeActions button').count(),1);
   await page.locator('#battleOutcomeActions button').click();
   if(number===1){
-   await nextLine().click();
+   await nextPage();
    const resume=await page.evaluate(()=>JSON.stringify(mapStoryState().resume));
    await page.reload({waitUntil:'domcontentloaded'});
    await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
@@ -158,7 +160,7 @@ try{
    assert.equal(await page.evaluate(()=>JSON.stringify(mapStoryState().resume)),resume);
   }
   if(number===9){
-   while(await page.evaluate(()=>mapStoryState().resume.nodeId!=='vc_09_post_05'))await nextLine().click();
+   while(await page.evaluate(()=>mapStoryState().resume.nodeId!=='vc_09_post_05'))await nextPage();
    assert.match(await page.locator('.map-story-message').innerText(),/^それから数日後。/);
    assert.equal(await page.locator('.map-story-time-skip .map-story-bg').evaluate(el=>getComputedStyle(el).animationName),'none');
   }
