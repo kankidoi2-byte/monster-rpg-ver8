@@ -101,11 +101,84 @@ for(const slot of [1,2])for(const kind of ['single','three','invasion','boss','g
  vm.runInContext(oldFlow.slice(oldFlow.indexOf('function win()')),old.context);
  vm.runInContext(oldMulti.slice(oldMulti.indexOf('function winMultiBattle()'),oldMulti.indexOf('function renderMultiContractPanel')),old.context);
  const call=['three','invasion'].includes(kind)?'winMultiBattle()':'win()';
+ // Compare pre-existing mechanics and RNG order without the new additive drops.
+ current.run('grantWorldMapVictoryItems=()=>[]');
  old.run(call);current.run(call);
  assert(current.run('battleRewardGranted'),`${kind}/${difficulty}/${seed}`);
  assert.deepEqual(clean(JSON.parse(current.run('JSON.stringify(save)'))),clean(JSON.parse(old.run('JSON.stringify(save)'))),`baseline parity: ${slot}/${kind}/${difficulty}/${seed}`);
  assert.deepEqual(JSON.parse(current.run('JSON.stringify(auditOutcome)')),JSON.parse(old.run('JSON.stringify(auditOutcome)')));
  assert.equal(current.run('rolls'),old.run('rolls'),'random call sequence');parity++;
 }
+// All probabilities and exact thresholds, plus scripted/legacy exclusion.
+{
+ const r=harness();
+ r.run(`var initialItems=JSON.stringify(save.items);
+  var testDrop=(difficultyId,overtier,rolls,overrides={})=>{
+    save.items=JSON.parse(initialItems);
+    let i=0;
+    const names=grantWorldMapVictoryItems({difficultyId,overtier,worldMapExploration:true,...overrides},()=>{
+      if(i>=rolls.length)throw Error('unexpected roll');
+      return rolls[i++];
+    });
+    return {names,max:save.items.max_potion,revive:save.items.revive_drop,gold:save.items.gold_dust,rolls:i};
+  };`);
+ function check(args,expected){
+   const drop=JSON.parse(r.run(`JSON.stringify(testDrop(...${JSON.stringify(args)}))`));
+   assert.deepEqual(drop,expected);
+ }
+ const zero={names:[],max:0,revive:0,gold:0,rolls:0};
+ check(['d1',null,[]],zero);
+ for(const [id,rate] of Object.entries({d2:.01,d3:.02,d4:.03,d5:.04,extreme:.05})){
+   check([id,null,[rate]],{...zero,rolls:1});
+   check([id,null,[rate-.0001]],{...zero,names:['砂金'],gold:1,rolls:1});
+ }
+ check(['d1','stronger',[.25]],{...zero,rolls:1});
+ check(['d1','stronger',[.2499,.5999]],{...zero,names:['特上回復薬'],max:1,rolls:2});
+ check(['d1','stronger',[.2499,.60]],{...zero,names:['再起の雫'],revive:1,rolls:2});
+ check(['d5','nushi',[.60]],{...zero,names:['再起の雫','砂金'],revive:1,gold:1,rolls:1});
+ check(['d5','nushi',[],{worldMapExploration:false}],zero);
+ check(['d5','nushi',[],{source:'map_story'}],zero);
+ r.run('tutorialBattleSession.active=true;');
+ check(['d5','nushi',[]],zero);
+}
+for(const kind of ['single','three','invasion']){
+ const r=harness(1,kind);
+ r.run(`activeHuntRequest.overtier='nushi';
+   var grantNewDrops=grantWorldMapVictoryItems;
+   grantWorldMapVictoryItems=request=>grantNewDrops(request,()=>.1);
+   localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return actualSet(k,v)};`);
+ r.run(kind==='single'?'win()':'winMultiBattle()');
+ assert.equal(r.run('save.items.gold_dust'),0,'uncommitted reward not visible in save');
+ assert.equal(r.run('save.items.max_potion'),0);
+ assert(r.run('normalVictoryPending()'));
+ r.run(`localStorage.setItem=actualSet;
+   grantWorldMapVictoryItems=()=>{throw Error('must not reroll');};
+   retryNormalVictorySave();retryNormalVictorySave();`);
+ assert.equal(r.run('save.items.gold_dust'),1);
+ assert.equal(r.run('save.items.max_potion'),1);
+ assert(r.run('save.itemDex.includes("gold_dust")&&save.itemDex.includes("max_potion")'));
+ assert.equal(r.run('JSON.parse(actualGet(key)).items.gold_dust'),1);
+ assert.equal(r.run('JSON.stringify(auditOutcome.itemRewards)'),JSON.stringify(['特上回復薬','砂金']));
+}
+{
+ const r=harness();
+ const makeNode=()=>({
+   textContent:'',style:{},children:[],
+   append(...children){this.children.push(...children);},
+   appendChild(child){this.children.push(child);}
+ });
+ const rewards=r.context.document.getElementById('battleOutcomeRewards');
+ rewards.appendChild=child=>{rewards.itemRewardRow=child;};
+ r.context.document.createElement=makeNode;
+ r.run(`renderBattleOutcome({title:'討伐',exp:20,coins:10,itemRewards:['特上回復薬','砂金']});`);
+ const row=rewards.itemRewardRow;
+ assert.equal(row.id,'battleRewardItems');
+ assert.equal(row.style.gridColumn,'1 / -1');
+ assert.equal(row.children[0].textContent,'道具');
+ assert.equal(row.children[1].textContent,'特上回復薬 ×1・砂金 ×1');
+ assert.match(rewards.innerHTML,/EXP/);
+ assert.match(rewards.innerHTML,/COIN/);
+}
+console.log('PASS world-map victory drops: exact probability boundaries, encounter exclusions, single/three-way/invasion, catalog, fixed retry and a single result row.');
 console.log(`PASS seeded pre-fix parity: ${parity} outcomes across all difficulties; full save payload, result and random count.`);
 console.log(`PASS atomic hunt victory: ${cases} cases; two profiles, 7 battle types, 3 expedition states, faults, fixed retries, stale protection, committed display failure.`);

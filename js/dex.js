@@ -45,7 +45,8 @@ function showItemDexDetail(itemId){
     ${it.battleDesc ? `<p><b>戦闘効果：</b>${it.battleDesc}</p>` : ''}
     ${it.expItem ? `<p><b>経験値：</b>EXP +${it.expAmount}</p>` : ''}
     ${it.price > 0 ? `<p><b>価格：</b>コイン${it.price}枚</p>` : ''}
-    ${it.usableFromDex ? `<button onclick="useGoldenLandMap()" ${goldenLandMapIsReady()?'disabled':''}>${goldenLandMapIsReady()?'地図使用中（黄金郷を予約済み）':'この地図を使う'}</button>` : ''}
+    ${it.id==='strong_incense' ? `<p>香りの残り：${save.strongIncenseRemainingDepartures||0}回</p><button onclick="useStrongIncense()">使う</button>` : ''}
+    ${it.id==='golden_land_map' && it.usableFromDex ? `<button onclick="useGoldenLandMap()" ${goldenLandMapIsReady()?'disabled':''}>${goldenLandMapIsReady()?'地図使用中（黄金郷を予約済み）':'この地図を使う'}</button>` : ''}
   </div>`;
   detail.scrollIntoView?.({behavior:'smooth',block:'start'});
 }

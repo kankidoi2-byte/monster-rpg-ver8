@@ -114,18 +114,20 @@ function autoResultSnapshot(r){
 }
 function autoCheckpoint(r,phase,result=autoResultSnapshot(r)){
   return {v:1,map:r.map,d:r.d,times:r.times,settings:{...r.settings},phase,stop:r.stop,
+    ...(phase==='fight'&&r.request?.strongIncenseBoosted===true?{strongIncenseBoosted:true}:{}),
     seed:r.seed??0,at:Math.max(0,Date.now()-r.credit),...result};
 }
-function autoPersist(r,phase,result){
+function autoPersist(r,phase,result,applyDeparture=null){
   if(!r.persistent)return true;
   return commitSaveMutation(()=>{
+    if(applyDeparture)applyDeparture();
     if(phase)save.autoBattle.run=autoCheckpoint(r,phase,result);
     else delete save.autoBattle.run;
   },{requireReadable:true});
 }
-function autoBindDeparture(map,request,event){
+function autoBindDeparture(map,request,event,applyDeparture=null){
   const r=autoRun;
-  if(r?.phase!=='depart')return true;
+  if(r?.phase!=='depart')return applyDeparture?commitSaveMutation(applyDeparture,{requireReadable:true}):true;
   if(r.identity!==saveTransactionIdentity()){autoRun=null;return false;}
   r.request=request;
   r.phase='fight';
@@ -133,7 +135,12 @@ function autoBindDeparture(map,request,event){
   r.progress=null;
   r.fightRandom=r.persistent?autoSeedRandom(r.seed^0x9e3779b9):null;
   if(!autoField(map,event))r.reason='オート対象外の戦闘';
-  if(!r.restoringFight&&!autoPersist(r,'fight')){autoRun=null;return false;}
+  // Persist the incense debit with the first fight checkpoint so recovery cannot replay the debit.
+  if(!r.restoringFight){
+    const saved=r.persistent?autoPersist(r,'fight',undefined,applyDeparture)
+      :(!applyDeparture||commitSaveMutation(applyDeparture,{requireReadable:true}));
+    if(!saved){autoRun=null;return false;}
+  }
   r.restoringFight=false;
   return true;
 }
@@ -500,6 +507,7 @@ function autoResumeSavedRun(){
     return true;
   }
   r.restoringFight=true;
+  r.restoredStrongIncenseBoosted=checkpoint.strongIncenseBoosted===true;
   if(!startWorldMapExploration(r.map,r.d)){
     autoRun=r;r.reason='周回を再開できませんでした';autoSummary(false);
   }

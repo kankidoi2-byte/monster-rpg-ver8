@@ -17,6 +17,7 @@ function renderShop() {
           <p class="small">所持数：${save.items[it.id]||0}個</p>
           <button onclick="buyItem('${it.id}')">購入</button>
         </article>`).join('')}
+      ${renderItemSellSection()}
       <details class="shop-history"><summary>📊 バトル履歴・通算${save.history.wins||0}勝</summary>
         <div>${(save.history.logs||[]).slice(-5).reverse().map(l=>`<div class="history-entry">${escapeGameHtml(l)}</div>`).join('') || '<p class="small">まだ履歴がありません。</p>'}</div>
       </details>
@@ -32,6 +33,31 @@ function buyItem(id){
   }
   if(!commitSaveMutation(()=>{save.coins-=it.price;save.items[id]=(save.items[id]||0)+1;}))return;
   showCommittedSaveResult(()=>{renderShop();updateItems();});
+}
+function renderItemSellSection(){
+  const count=Number(save.items?.gold_dust||0),item=ITEM_BY_ID.gold_dust;
+  if(count<1||item?.sellPrice!==100)return '';
+  return `<section class="shop-item-card"><h2>売る</h2><p>砂金：${count}個／1個100コイン</p><button onclick="sellGoldDust(false)">1個売る</button><button onclick="sellGoldDust(true)">全部売る</button></section>`;
+}
+function sellGoldDust(all=false){
+  const owner=save,count=Number(save.items?.gold_dust||0),quantity=all?count:1;
+  if(!Number.isSafeInteger(count)||count<1||ITEM_BY_ID.gold_dust?.sellPrice!==100)return false;
+  const coins=quantity*100;
+  if(!Number.isSafeInteger(coins)||!Number.isSafeInteger((save.coins||0)+coins))return false;
+  if(!confirm(`砂金を${quantity}個、${coins}コインで売りますか？`))return false;
+  if(save!==owner||Number(save.items?.gold_dust||0)!==count)return false;
+  if(!commitSaveMutation(()=>{save.items.gold_dust-=quantity;save.coins=(save.coins||0)+coins;}))return false;
+  showCommittedSaveResult(()=>{renderShop();updateItems();});
+  return true;
+}
+function useStrongIncense(){
+  ensureContractScrollItem();
+  const remaining=save.strongIncenseRemainingDepartures||0;
+  if(remaining>0){alert(`まだ香りが残っている（残り${remaining}回）`);return false;}
+  if((save.items.strong_incense||0)<1){alert('強者の香を持っていません。');return false;}
+  if(!commitSaveMutation(()=>{save.items.strong_incense--;save.strongIncenseRemainingDepartures=10;}))return false;
+  showCommittedSaveResult(()=>{alert('強者の香を使った！ 世界地図からの対象の出発10回に効果があります。');if(typeof renderItemDex==='function')renderItemDex();if(typeof showItemDexDetail==='function')showItemDexDetail('strong_incense');});
+  return true;
 }
 function itemCount(id){
   ensureContractScrollItem();

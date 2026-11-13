@@ -108,6 +108,19 @@ function functionSource(source,name){
   assert.fail(`function ${name} is not balanced`);
 }
 
+// The adopted 2026-11-13 item rewards are additive and covered separately by
+// test-hunt-victory-save.mjs (rates, quantities, receipt and result row).
+// Exempt only the exact tail call/display pair, not arbitrary new statements.
+const APPROVED_ITEM_REWARD_TAIL=[
+  '  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest);',
+  '  if(itemRewards.length)msg+=`<br>🎁 ${huntVictoryItemsLine(itemRewards)}を入手！`;',
+  '  '
+].join('\n');
+function withoutApprovedItemRewardTail(rewardBlock){
+  return rewardBlock.endsWith(APPROVED_ITEM_REWARD_TAIL)
+    ? rewardBlock.slice(0,-APPROVED_ITEM_REWARD_TAIL.length)+'  '
+    : rewardBlock;
+}
 // Compare the unchanged reward statements across the atomic-save extraction.
 // Storage/UI wrappers are covered by test-hunt-victory-save, not reward economics.
 function economicFunctionSource(source,name){
@@ -118,7 +131,7 @@ function economicFunctionSource(source,name){
     const start=body.indexOf(name==='win'?'const turnBonusActive':'const turnBonus=');
     const end=body.indexOf(extracted?'return {message:msg,outcome:':"document.getElementById('log')",start);
     assert(start>=0&&end>start,'reward block boundaries must be explicit');
-    return body.slice(start,end)
+    return withoutApprovedItemRewardTail(body.slice(start,end))
       .replace('grantPartyExp(expGain,{saveNow:false,animate:false})','grantPartyExp(expGain)')
       .replace('grantPartyExp(totalExp,{saveNow:false,animate:false})','grantPartyExp(totalExp)')
       .replace('progressActiveExpeditions(Math.random,{saveNow:false})','progressActiveExpeditions()')
@@ -365,6 +378,11 @@ assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless);s
 
 assert.notEqual(traitsOffRuleSource("const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId)+1;const bonus=typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;"),"const bonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);");
 assert.notEqual(traitsOffRuleSource("save.coins++;"),"");
+const oldRewardFixture='existingReward();\n';
+assert.equal(withoutApprovedItemRewardTail(oldRewardFixture+APPROVED_ITEM_REWARD_TAIL),oldRewardFixture+'  ');
+assert.notEqual(withoutApprovedItemRewardTail(oldRewardFixture+APPROVED_ITEM_REWARD_TAIL.replace('const itemRewards','save.coins++;const itemRewards')),oldRewardFixture+'  ');
+assert.notEqual(withoutApprovedItemRewardTail(oldRewardFixture+APPROVED_ITEM_REWARD_TAIL+'save.coins++;'),oldRewardFixture+'  ');
+
 const baselineSnapshot=canonicalSnapshot(baseline);
 const currentSnapshot=canonicalSnapshot(current);
 

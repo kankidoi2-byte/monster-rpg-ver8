@@ -377,6 +377,27 @@ function win() {
   if (battleRewardGranted) return;
   settleNormalVictory(false);
 }
+// These drops are per completed world-map battle, not per enemy. The primary
+// request is the only source of a 格上 / ヌシ encounter; secondary enemies opt out.
+const HUNT_GOLD_DUST_RATES=Object.freeze({d1:0,d2:.01,d3:.02,d4:.03,d5:.04,extreme:.05});
+function grantWorldMapVictoryItems(request,randomFn=Math.random){
+  if(!request?.worldMapExploration||request.source==='map_story'||
+    (typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active))return [];
+  const nushi=request.overtier==='nushi';
+  const rate=HUNT_GOLD_DUST_RATES[huntDifficulty(request.difficultyId).id];
+  const ids=[];
+  if(nushi||(request.overtier==='stronger'&&randomFn()<.25)){
+    ids.push(randomFn()<.60?'max_potion':'revive_drop');
+  }
+  if(nushi||(rate>0&&randomFn()<rate))ids.push('gold_dust');
+  return ids.map(id=>{
+    save.items[id]=(save.items[id]||0)+1;
+    return ITEM_BY_ID[id].name;
+  });
+}
+function huntVictoryItemsLine(items){
+  return items.map(name=>`${name} ×1`).join('・');
+}
 function prepareSingleVictoryReward(){
   const bless=beginGBlessVictory();
   const turnBonusActive = hasHuntCondition('swift_clear');
@@ -428,8 +449,11 @@ function prepareSingleVictoryReward(){
   const contractorReward=typeof grantContractorBattleWin==='function'?grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]}):{amount:0};
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions(Math.random,{saveNow:false});
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
+  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest);
+  if(itemRewards.length)msg+=`<br>🎁 ${huntVictoryItemsLine(itemRewards)}を入手！`;
   return {message:msg,outcome:{
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain, ...(bless?{bless}:{}),
+    ...(itemRewards.length?{itemRewards}:{}),
     materials:materialRewards,contractorExp:contractorReward.amount,
     note:turnBonusActive && turnBonusSucceeded ? `迅速討伐達成・${battleTurnCount}ターン` : `${battleTurnCount}ターンで勝利`
   }};

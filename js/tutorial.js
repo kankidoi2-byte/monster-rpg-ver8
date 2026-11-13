@@ -2198,7 +2198,7 @@ registerTutorialFlow(TUTORIAL_SHOP_ITEMS_FLOW_ID,[
   {id:'shop_use',screenId:'shop',target:'#shopList',title:'アイテムごとに使う場所が違います',text:'回復・強化薬は戦闘中、契約書は勝利後、進化素材は合成で使います。入手した道具はアイテム図鑑にも記録されます。',progressLabel:'SHOP & ITEMS',nextLabel:'ショップへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_BATTLE_ITEMS_FLOW_ID,[
-  {id:'battle_items_use',screenId:'battleItemSelect',target:'#battleItemList',title:'戦闘中に使うアイテム',text:'回復薬や強化薬は、使うと所持数が1個減ります。道具の使用では行動を消費しません。所持数と効果を確認してください。',progressLabel:'SHOP & ITEMS'},
+  {id:'battle_items_use',screenId:'battleItemSelect',target:'#battleItemList',title:'戦闘中に使うアイテム',text:'回復薬や強化薬は、使うと所持数が1個減ります。所持数と効果を確認してください。',progressLabel:'SHOP & ITEMS'},
   {id:'battle_items_shop',screenId:'battleItemSelect',target:'#battleItemList',title:'道具はショップなどで入手',text:'契約書は勝利後の契約で使う。',progressLabel:'SHOP & ITEMS',nextLabel:'道具を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_CONTRACTOR_RANK_FLOW_ID,[

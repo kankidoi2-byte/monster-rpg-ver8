@@ -128,6 +128,11 @@ function huntOvertierChance(rank){
   const value=Math.max(HUNT_OVERTIER.rankMin,Math.min(HUNT_OVERTIER.rankMax,Number(rank)||1));
   return HUNT_OVERTIER.chanceMin+(HUNT_OVERTIER.chanceMax-HUNT_OVERTIER.chanceMin)*(value-HUNT_OVERTIER.rankMin)/(HUNT_OVERTIER.rankMax-HUNT_OVERTIER.rankMin);
 }
+function huntOvertierCandidatePool(map,difficultyId,candidatesFor=huntCandidatesFor){
+  if(difficultyId==='extreme')return [];
+  const next=difficultyId==='d5'?HUNT_OVERTIER.nushi:HUNT_DIFFICULTIES[`d${Number(difficultyId.slice(1))+1}`];
+  return next?candidatesFor(map,difficultyId==='d5'?'d5':next.id).filter(candidate=>next.rarities.includes(huntMonsterRarity(candidate))):[];
+}
 function huntCandidatesFor(map, difficultyId) {
   return (map?.enemyIds || []).map(id => by(id)).filter(mon => isHuntMonsterEligible(mon, difficultyId));
 }
@@ -198,9 +203,10 @@ function createHuntRequest(map, mon, difficultyId='d2', conditionIds=[], options
   let encounter=difficulty, overtier=null;
   const rank=options.contractorRank??(typeof contractorRankFromExp==='function'&&typeof save!=='undefined'?contractorRankFromExp(save.contractor?.exp):1);
   // Scripted/fixed-level battles and secondary enemies explicitly opt out.
-  if(options.allowOvertier!==false&&!Number.isFinite(options.enemyLevel)&&difficulty.id!=='extreme'&&randomFn()<huntOvertierChance(rank)){
+  const overtierChance=Math.min(1,huntOvertierChance(rank)+(options.strongIncenseBoosted===true ? .20 : 0));
+  if(options.allowOvertier!==false&&!Number.isFinite(options.enemyLevel)&&difficulty.id!=='extreme'&&randomFn()<overtierChance){
     const next=difficulty.id==='d5'?HUNT_OVERTIER.nushi:HUNT_DIFFICULTIES[`d${Number(difficulty.id.slice(1))+1}`];
-    const pool=candidatesFor(map,difficulty.id==='d5'?'d5':next.id).filter(candidate=>next.rarities.includes(huntMonsterRarity(candidate)));
+    const pool=huntOvertierCandidatePool(map,difficulty.id,candidatesFor);
     if(pool.length){
       mon=pool[Math.min(pool.length-1,Math.max(0,Math.floor(randomFn()*pool.length)))];
       encounter=next;overtier=difficulty.id==='d5'?'nushi':'stronger';
