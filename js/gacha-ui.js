@@ -6,7 +6,7 @@ function gachaEscape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&'
 function gachaPresentationRandom(){const n=new Uint32Array(1);if(globalThis.crypto?.getRandomValues){crypto.getRandomValues(n);return n[0]/4294967296;}return (performance.now()%997)/997;}
 function gachaPromotion(high,random=gachaPresentationRandom){return high&&random()<.3;}
 function gachaAudioCue(cue,kind){/* Optional future sound adapter; silent by default. */try{globalThis.MonsterGachaAudio?.onCue?.({cue,kind});}catch(_error){}}
-function gachaItemTier(id){return id==='rainbow_contract_scroll'?'rainbow':id==='gold_contract_scroll'?'gold':['silver_contract_scroll','contract_scroll','giga_data'].includes(id)?'silver':'normal';}
+function gachaItemTier(id){return id==='rainbow_contract_scroll'?'rainbow':['gold_contract_scroll','max_potion','revive_drop'].includes(id)?'gold':['silver_contract_scroll','contract_scroll','giga_data'].includes(id)?'silver':'normal';}
 function gachaItemVisual(item){return ITEM_IMG[item.id]?`<img src="${ITEM_IMG[item.id]}" alt="${gachaEscape(item.name)}">`:`<span class="gacha-item-icon">${item.icon||'✦'}</span>`;}
 function gachaOpenModal(el){
  const focus=document.activeElement,overflow=document.body.style.overflow;

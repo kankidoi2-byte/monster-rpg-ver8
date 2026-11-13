@@ -262,14 +262,25 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null,fromSheet=fal
   const mon=candidates[Math.floor(random()*candidates.length)];
   if (typeof registerMapDex==='function' && registerMapDex(mapId)) /* save-result-allow: world-map-departure-dex */saveGame();
   prepareBattleParty();
-  const request=createHuntRequest(map,mon,difficultyId,rollHuntConditionIds(difficultyId,random),{randomFn:random,candidatesFor:(_map,id)=>worldMapCandidatesForUI(map,id,eventKey)});
+  const candidatesFor=(_map,id)=>worldMapCandidatesForUI(map,id,eventKey);
+  const restoringFight=typeof autoRun!=='undefined'&&autoRun?.restoringFight===true;
+  const hasIncense=restoringFight?autoRun.restoredStrongIncenseBoosted===true
+    :typeof save!=='undefined'&&save.strongIncenseRemainingDepartures>0;
+  const strongIncenseBoosted=hasIncense&&!map.goldenLand&&difficultyId!=='extreme'
+    &&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active)
+    &&typeof huntOvertierCandidatePool==='function'&&huntOvertierCandidatePool(map,difficultyId,candidatesFor).length>0;
+  const request=createHuntRequest(map,mon,difficultyId,rollHuntConditionIds(difficultyId,random),{randomFn:random,candidatesFor,strongIncenseBoosted});
   request.worldMapExploration=true;
   request.worldMapEventKey=eventKey;
   request.worldMapEventMonsterId=mon.id;
   request.goldenLandMapEntry=!!(map.goldenLand&&!eventKey&&goldenLandMapIsReady());
+  if(strongIncenseBoosted)request.strongIncenseBoosted=true;
   if (eventKey) { request.battleMode='single';request.secondEnemyId=null;request.invasionEnemyId=null;request.invasionTurn=null; }
   registerHuntRequest(request);
-  if(typeof autoBindDeparture==='function'&&autoBindDeparture(map,request,eventKey)===false)return false;
+  const debit=strongIncenseBoosted&&!restoringFight?()=>{save.strongIncenseRemainingDepartures--;}:null;
+  if(typeof autoBindDeparture==='function'){
+    if(autoBindDeparture(map,request,eventKey,debit)===false)return false;
+  }else if(debit&&!commitSaveMutation(debit,{requireReadable:true}))return false;
   worldMapDeparting=true;
   startChosenBattle(map.id,request.enemyId,difficultyId,request.requestId);
   return true;

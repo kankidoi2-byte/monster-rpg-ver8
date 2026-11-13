@@ -276,7 +276,7 @@ function hideBattleOutcome() {
   document.getElementById('next')?.classList.add('hidden');
 }
 function showBattleOutcome(options){return renderBattleOutcome(options);}
-function renderBattleOutcome({kind='victory', title, exp=0, coins=0, materials=null, contractorExp=null, note='', bless=null, restored=false}) {
+function renderBattleOutcome({kind='victory', title, exp=0, coins=0, materials=null, itemRewards=null, contractorExp=null, note='', bless=null, restored=false}) {
   const battle = document.getElementById('battle');
   const outcome = document.getElementById('battleOutcome');
   if (!battle || !outcome) return;
@@ -296,6 +296,15 @@ function renderBattleOutcome({kind='victory', title, exp=0, coins=0, materials=n
   document.getElementById('battleOutcomeRewards').innerHTML = restored ? '' : victory
     ? `<span id="battleRewardExp"><small>EXP</small><strong>+${exp}</strong></span><span id="battleRewardCoins"><small>COIN</small><strong>+${coins}</strong></span>${Array.isArray(materials)?`<span id="battleRewardMaterials"><small>素材</small><strong>${materials.length?materials.join('・'):'獲得なし'}</strong></span>`:''}${contractorExp!==null?`<span id="battleRewardContractorExp"><small>契約者EXP</small><strong>+${Math.max(0,Number(contractorExp)||0)}</strong></span>`:''}`
     : '<span class="battle-outcome-empty">報酬なし</span>';
+  if(!restored&&victory&&Array.isArray(itemRewards)&&itemRewards.length){
+    const row=document.createElement('span');
+    row.id='battleRewardItems';
+    row.style.gridColumn='1 / -1';
+    const label=document.createElement('small'), amount=document.createElement('strong');
+    label.textContent='道具';amount.textContent=huntVictoryItemsLine(itemRewards);
+    row.append(label,amount);
+    document.getElementById('battleOutcomeRewards').appendChild(row);
+  }
   if(victory&&bless){
     document.getElementById('battleOutcomeEyebrow').innerHTML=`${eyebrow} <span class="gb-result-tag">✦ G-BLESS</span>`;
     document.getElementById('battleRewardExp').innerHTML=`<small>EXP ×${G_BLESS_RULES.exp}</small><strong><s>${bless.baseExp}</s> → ${exp}</strong>`;
