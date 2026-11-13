@@ -62,6 +62,7 @@ function show(id) {
   target.classList.add('active');
   if(typeof gameAudioScreenChanged==='function')gameAudioScreenChanged(id);
   if(typeof MonsterFeedback!=='undefined')MonsterFeedback.screenChanged(id,feedbackPreviousScreen);
+  if(typeof PersonalGifts!=='undefined')PersonalGifts.screenChanged(id);
   replayUiMotion(target, 'ui-screen-enter', 320);
   updateAppNavigation(id);
   updateAppResourceBar();

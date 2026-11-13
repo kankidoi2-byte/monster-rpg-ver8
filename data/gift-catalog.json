@@ -1,0 +1,1451 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "296ee055a0ed619ee53b268c0b3135caa5969c04",
+  "maxLevel": 100,
+  "rewards": [
+    {
+      "kind": "coins",
+      "name": "コイン"
+    },
+    {
+      "kind": "item",
+      "id": "potion",
+      "name": "回復薬"
+    },
+    {
+      "kind": "item",
+      "id": "upper_potion",
+      "name": "上回復薬"
+    },
+    {
+      "kind": "item",
+      "id": "attack_potion",
+      "name": "力の薬"
+    },
+    {
+      "kind": "item",
+      "id": "antidote",
+      "name": "毒消し"
+    },
+    {
+      "kind": "item",
+      "id": "paralysis_heal",
+      "name": "麻痺治し"
+    },
+    {
+      "kind": "item",
+      "id": "confusion_heal",
+      "name": "気付け薬"
+    },
+    {
+      "kind": "item",
+      "id": "awakening",
+      "name": "目覚まし薬"
+    },
+    {
+      "kind": "item",
+      "id": "full_heal",
+      "name": "万能薬"
+    },
+    {
+      "kind": "item",
+      "id": "defense_potion",
+      "name": "守りの薬"
+    },
+    {
+      "kind": "item",
+      "id": "speed_potion",
+      "name": "速さの薬"
+    },
+    {
+      "kind": "item",
+      "id": "max_potion",
+      "name": "特上回復薬"
+    },
+    {
+      "kind": "item",
+      "id": "revive_drop",
+      "name": "再起の雫"
+    },
+    {
+      "kind": "item",
+      "id": "strong_incense",
+      "name": "強者の香"
+    },
+    {
+      "kind": "item",
+      "id": "gold_dust",
+      "name": "砂金"
+    },
+    {
+      "kind": "item",
+      "id": "contract_scroll",
+      "name": "契約書"
+    },
+    {
+      "kind": "item",
+      "id": "silver_contract_scroll",
+      "name": "銀の契約書"
+    },
+    {
+      "kind": "item",
+      "id": "gold_contract_scroll",
+      "name": "金の契約書"
+    },
+    {
+      "kind": "item",
+      "id": "rainbow_contract_scroll",
+      "name": "虹の契約書"
+    },
+    {
+      "kind": "item",
+      "id": "kilo_data",
+      "name": "キロデータ"
+    },
+    {
+      "kind": "item",
+      "id": "mega_data",
+      "name": "メガデータ"
+    },
+    {
+      "kind": "item",
+      "id": "giga_data",
+      "name": "ギガデータ"
+    },
+    {
+      "kind": "item",
+      "id": "fire_orb",
+      "name": "炎玉"
+    },
+    {
+      "kind": "item",
+      "id": "monster_bone",
+      "name": "魔物の骨"
+    },
+    {
+      "kind": "item",
+      "id": "fine_monster_bone",
+      "name": "上質な魔物の骨"
+    },
+    {
+      "kind": "item",
+      "id": "magic_crystal",
+      "name": "魔晶石"
+    },
+    {
+      "kind": "item",
+      "id": "fine_magic_crystal",
+      "name": "上質な魔晶石"
+    },
+    {
+      "kind": "item",
+      "id": "metal_ore",
+      "name": "金属鉱石"
+    },
+    {
+      "kind": "item",
+      "id": "fine_metal_ore",
+      "name": "上質な金属鉱石"
+    },
+    {
+      "kind": "item",
+      "id": "unstable_alchemy_matter",
+      "name": "不安定錬成物質"
+    },
+    {
+      "kind": "item",
+      "id": "fine_unstable_alchemy_matter",
+      "name": "上質な不安定錬成物質"
+    },
+    {
+      "kind": "item",
+      "id": "raptor_feather",
+      "name": "猛禽の羽"
+    },
+    {
+      "kind": "item",
+      "id": "fine_raptor_feather",
+      "name": "上質な猛禽の羽"
+    },
+    {
+      "kind": "item",
+      "id": "venom_carapace",
+      "name": "毒虫の甲殻"
+    },
+    {
+      "kind": "item",
+      "id": "fine_venom_carapace",
+      "name": "上質な毒虫の甲殻"
+    },
+    {
+      "kind": "item",
+      "id": "golden_land_map",
+      "name": "黄金郷への地図"
+    },
+    {
+      "kind": "item",
+      "id": "g_ichor",
+      "name": "G-ICHOR"
+    },
+    {
+      "kind": "item",
+      "id": "water_mirror",
+      "name": "水鏡"
+    },
+    {
+      "kind": "item",
+      "id": "doom_fragment",
+      "name": "滅亡のカケラ"
+    },
+    {
+      "kind": "monster",
+      "id": "freigal",
+      "name": "フレイガル",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "freiwolf",
+      "name": "フレイウルフ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "aquaron",
+      "name": "アクアロン",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "highaquaron",
+      "name": "ハイアクアロン",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "shenhairon",
+      "name": "シェンハイロン",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "tienhairon",
+      "name": "ティエンハイロン",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "grassbeat",
+      "name": "グラスビート",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "thornbeat",
+      "name": "ソーンビート",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "granbeat",
+      "name": "グランビート",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "rikasheef",
+      "name": "リカシーフ",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "seralphia",
+      "name": "セラルフィア",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "nightmare",
+      "name": "ナイトメア",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "volteck",
+      "name": "ボルテック",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "spaquinn",
+      "name": "スパクイン",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "voltax",
+      "name": "ボルタックス",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "icegolem",
+      "name": "アイスゴーレム",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "proto_icegolem",
+      "name": "ゴーレム",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elysia",
+      "name": "エリシア",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elysia_prayer",
+      "name": "光祈の巫女エリシア",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "hikari",
+      "name": "光の女神エリシア",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "nemes",
+      "name": "ネメス",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "nemesia",
+      "name": "ネメシア",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "nemesion",
+      "name": "ネメシオン",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "doom_nemesion",
+      "name": "滅亡の星 ネメシオン",
+      "rarity": "★★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elna_beginner",
+      "name": "初級剣士エルナ",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elna_middle",
+      "name": "中級剣士エルナ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elna_advanced",
+      "name": "上級剣士エルナ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "suiren",
+      "name": "水の精霊スイレン",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elna_water",
+      "name": "流水の剣士エルナ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "slime",
+      "name": "スライム",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "slime_gold",
+      "name": "スライムゴールド",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "goblin",
+      "name": "ゴブリン",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "false_dragon_alfa",
+      "name": "偽竜 code:alfa",
+      "rarity": "★★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "ashleia",
+      "name": "アシュレイア",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "morglum",
+      "name": "モルグラム",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "volmoog",
+      "name": "ボルモーグ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "gran_volmoog",
+      "name": "グランボルモーグ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "stella_apprentice",
+      "name": "見習い魔法使いステラ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "stella_wizard",
+      "name": "魔法使いステラ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "stella_sorcerer",
+      "name": "魔導師ステラ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "lumina_apprentice",
+      "name": "見習い魔法使いルミナ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "lumina_wizard",
+      "name": "魔法使いルミナ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "lumina_sorcerer",
+      "name": "魔導師ルミナ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "orcana",
+      "name": "オルカーナ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "orca_stream",
+      "name": "オルカストリーム",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "orca_abyss",
+      "name": "オルカアビス",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "tsubaki",
+      "name": "炎の精霊ツバキ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "elna_kaen",
+      "name": "華炎の剣士エルナ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "alchemion",
+      "name": "錬核獣アルケミオン",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "kimeragna",
+      "name": "混成翼竜キメラグナ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "sylphin",
+      "name": "シルフィン",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "zephyray",
+      "name": "ゼファーレイ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "tempestray",
+      "name": "テンペストレイ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "ignaros",
+      "name": "イグナロス",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "nocle",
+      "name": "ノクル",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "noclaid",
+      "name": "ノクレイド",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "noxvelg",
+      "name": "ノクスヴェルグ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "luxseed",
+      "name": "ルクシード",
+      "rarity": "★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "luxiard",
+      "name": "ルクシアード",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "lux_galdion",
+      "name": "ルクスガルディオン",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "astralepis",
+      "name": "アストラレピス",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "galdra",
+      "name": "ガルドラ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "kimeragna_apex",
+      "name": "キメラグナ・アペクス",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "monster",
+      "id": "elixion",
+      "name": "賢金神竜エリクシオン",
+      "rarity": "★★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_brigitte_2",
+      "name": "接雷の従士ブリジット",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_brigitte_3",
+      "name": "雷壁騎士ブリジット",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_brigitte_4",
+      "name": "城塞隊長ブリジット",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_tobia_2",
+      "name": "風便見習いトビア",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_tobia_3",
+      "name": "峡谷便使いトビア",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_tobia_4",
+      "name": "天路伝令長トビア",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_roden_2",
+      "name": "流炉職人ローデン",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_roden_3",
+      "name": "戦炉術師ローデン",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_roden_4",
+      "name": "百錬の炉匠ローデン",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_selene_2",
+      "name": "巡回水医セレネ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_selene_3",
+      "name": "水脈医セレネ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_selene_4",
+      "name": "命泉の医導師セレネ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_safira_2",
+      "name": "隊商槍士サフィラ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_safira_3",
+      "name": "砂嵐槍士サフィラ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_safira_4",
+      "name": "紅砂護商長サフィラ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_bordo_2",
+      "name": "新入りのボルド",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_bordo_3",
+      "name": "熟練のボルド",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_bordo_4",
+      "name": "司厨長ボルド",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_lize_2",
+      "name": "札売り娘リゼ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_lize_3",
+      "name": "影札師リゼ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_lize_4",
+      "name": "千契の奇術頭リゼ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_regus_2",
+      "name": "傷負いの剣士レグス",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_regus_3",
+      "name": "呪鉄剣士レグス",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_regus_4",
+      "name": "断呪の紫刃レグス",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_remnes_2",
+      "name": "レムネス",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_remnes_3",
+      "name": "記憶騎装レムネス",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_remnes_4",
+      "name": "星鎧のレムナント",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_nico_2",
+      "name": "もの作り少年ニコ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_nico_3",
+      "name": "蒼電機巧師ニコ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_nico_4",
+      "name": "蒼雷の発明王ニコ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_mireille_2",
+      "name": "流れ芸人ミレーユ",
+      "rarity": "★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_mireille_3",
+      "name": "幻術師ミレーユ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_mireille_4",
+      "name": "幻惑の女王ミレーユ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_vera_3",
+      "name": "人間兵器ヴェーラ",
+      "rarity": "★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_vera_4",
+      "name": "黒炎戦姫ヴェーラ",
+      "rarity": "★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "character",
+      "id": "character_vera_5",
+      "name": "終焉の殲滅姫ヴェーラ",
+      "rarity": "★★★★★",
+      "maxLevel": 100
+    },
+    {
+      "kind": "skill",
+      "id": "s110_001",
+      "name": "一撃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_002",
+      "name": "強打"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_003",
+      "name": "身構える"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_004",
+      "name": "小回復"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_005",
+      "name": "毒払い"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_006",
+      "name": "しびれ取り"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_007",
+      "name": "気付け"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_008",
+      "name": "気合溜め"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_009",
+      "name": "威圧"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_010",
+      "name": "集中"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_011",
+      "name": "立て直し"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_012",
+      "name": "打ち消し"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_013",
+      "name": "火花の舞"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_014",
+      "name": "火炎弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_015",
+      "name": "爆炎チャージ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_016",
+      "name": "水流弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_017",
+      "name": "大波召喚"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_018",
+      "name": "吸水"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_019",
+      "name": "リーフカッター"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_020",
+      "name": "森の一撃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_021",
+      "name": "ポイズンニードル"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_022",
+      "name": "雷撃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_023",
+      "name": "雷光弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_024",
+      "name": "サンダーボルト"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_025",
+      "name": "突風"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_026",
+      "name": "ゼファーカッター"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_027",
+      "name": "追い風の封書"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_028",
+      "name": "光雫弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_029",
+      "name": "祈光弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_030",
+      "name": "癒しの光弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_031",
+      "name": "影打ち"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_032",
+      "name": "闇の波動"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_033",
+      "name": "呪いの視線"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_034",
+      "name": "星屑弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_035",
+      "name": "スターライトレイ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_036",
+      "name": "イリュージョン"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_037",
+      "name": "夜滑り"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_038",
+      "name": "竜気弾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_039",
+      "name": "蒼竜の咆哮"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_040",
+      "name": "斬りつけ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_041",
+      "name": "連続斬り"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_042",
+      "name": "渾身斬り"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_043",
+      "name": "フレイムクロー"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_044",
+      "name": "竜のひっかき"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_045",
+      "name": "星雲の爪"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_046",
+      "name": "火炎牙"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_047",
+      "name": "影牙"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_048",
+      "name": "炎狼牙"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_049",
+      "name": "しっぽ打ち"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_050",
+      "name": "幼竜の尾"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_051",
+      "name": "ストリームテイル"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_052",
+      "name": "ソーンホーン"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_053",
+      "name": "溶岩角"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_054",
+      "name": "ルクスホーン"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_055",
+      "name": "氷の拳"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_056",
+      "name": "石造拳"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_057",
+      "name": "氷塊拳"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_058",
+      "name": "たいあたり"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_059",
+      "name": "若葉の突進"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_060",
+      "name": "蒼海の突進"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_061",
+      "name": "捨て身打ち"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_062",
+      "name": "応急治療"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_063",
+      "name": "鉄壁の構え"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_064",
+      "name": "奮起"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_065",
+      "name": "崩しの一撃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_066",
+      "name": "再起"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_067",
+      "name": "灼熱光砲"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_068",
+      "name": "焼き直し"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_069",
+      "name": "ハイドロスパイラル"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_070",
+      "name": "命流採水"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_071",
+      "name": "ガイアスラッシュ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_072",
+      "name": "トキシックガーデン"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_073",
+      "name": "ボルテックストーム"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_074",
+      "name": "サンダーストーム"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_075",
+      "name": "暴風刃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_076",
+      "name": "峡谷の風便"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_077",
+      "name": "ジャッジメント"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_078",
+      "name": "浄光のメス"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_079",
+      "name": "ノクスエクリプス"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_080",
+      "name": "衰弱の呪印"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_081",
+      "name": "アストラルフレア"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_082",
+      "name": "星幕の迷路"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_083",
+      "name": "蒼天龍波"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_084",
+      "name": "蝕月咆哮"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_085",
+      "name": "白銀連斬"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_086",
+      "name": "ボルテッククロー"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_087",
+      "name": "夜天竜牙"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_088",
+      "name": "竜の尾撃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_089",
+      "name": "火口崩し"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_090",
+      "name": "巨岩クラッシュ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_091",
+      "name": "紅蓮光砲"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_092",
+      "name": "オルカアビス"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_093",
+      "name": "古森の波動"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_094",
+      "name": "過負荷の蒼雷"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_095",
+      "name": "アペクスストーム"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_096",
+      "name": "コード・アルファ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_097",
+      "name": "総決算の影札"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_098",
+      "name": "コスモスアーク"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_099",
+      "name": "終焉竜波"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_100",
+      "name": "大回復"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_101",
+      "name": "不退の構え"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_102",
+      "name": "清浄の守り"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_103",
+      "name": "エリクシオン・ノヴァ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_104",
+      "name": "錬核崩砕"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_105",
+      "name": "アポカリプスノヴァ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_106",
+      "name": "終焉の一斉射撃"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_107",
+      "name": "オーバーブレイク"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_108",
+      "name": "オーバードレイン"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_109",
+      "name": "オーバードライブ"
+    },
+    {
+      "kind": "skill",
+      "id": "s110_110",
+      "name": "オーバーリバース"
+    }
+  ]
+}
