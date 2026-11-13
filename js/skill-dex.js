@@ -1,5 +1,5 @@
 /* Read-only encyclopedia: derive performance and eligibility from runtime rules. */
-const SKILL_DEX_TYPE_ORDER = ['fire','water','grass','thunder','wind','light','dark','star','dragon','normal'];
+const SKILL_DEX_TYPE_ORDER = ['fire','water','ice','grass','thunder','wind','light','dark','star','dragon','normal'];
 let skillDexSelectedId = null;
 function skillDexEntries(){return EQUIPPABLE_MOVE_CARDS;}
 function skillDexEffectKeys(sk){
@@ -34,7 +34,7 @@ function skillDexUnitLinks(units){
 // Presentation-only colors: same element hues as the existing skill-card palette.
 // Kept out of the skill data so performance, eligibility and acquisition stay unchanged.
 const SKILL_DEX_CARD_PALETTE=Object.freeze({
-  fire:['#4b1715','#ff7043'],water:['#102b49','#42a5f5'],grass:['#12351a','#66bb6a'],
+  fire:['#4b1715','#ff7043'],water:['#102b49','#42a5f5'],ice:['#243b50','#bfefff'],grass:['#12351a','#66bb6a'],
   thunder:['#453b0c','#ffee58'],wind:['#0b3c3f','#80deea'],light:['#3b300d','#ffd740'],
   dark:['#30153a','#ce93d8'],star:['#103830','#64ffda'],dragon:['#451529','#f48fb1'],
   normal:['#252b36','#cdd3e0']

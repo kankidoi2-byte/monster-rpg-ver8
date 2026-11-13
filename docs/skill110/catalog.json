@@ -2043,9 +2043,9 @@
     "name": "氷の拳",
     "cost": 2,
     "power": 34,
-    "type": "water",
+    "type": "ice",
     "types": [
-      "water"
+      "ice"
     ],
     "effect": "tactical",
     "chance": null,
@@ -2070,7 +2070,7 @@
       "source:shared",
       "role:damage",
       "form:fist",
-      "element:water"
+      "element:ice"
     ],
     "detailedDesc": "追加効果のない単体攻撃。",
     "customDesc": "相手を攻撃する。",
@@ -2119,9 +2119,9 @@
     "name": "氷塊拳",
     "cost": 4,
     "power": 54,
-    "type": "water",
+    "type": "ice",
     "types": [
-      "water"
+      "ice"
     ],
     "effect": "tactical",
     "chance": null,
@@ -2146,7 +2146,7 @@
       "source:shared",
       "role:damage",
       "form:fist",
-      "element:water"
+      "element:ice"
     ],
     "detailedDesc": "追加効果のない単体攻撃。",
     "customDesc": "相手を攻撃する。",

@@ -13,7 +13,7 @@ const api=vm.runInContext(`({
 })`,context);
 const plain=value=>JSON.parse(JSON.stringify(value));
 const monster=type=>({id:type,name:type,entityKind:'monster',rarity:'★★★',types:[type],moves:[['技',40,type]]});
-const types=['normal','fire','water','grass','thunder','wind','light','dark','star','dragon'];
+const types=['normal','fire','water','ice','grass','thunder','wind','light','dark','star','dragon'];
 const targetStats={maxHp:200,speed:100};
 
 for(const type of types){
@@ -85,4 +85,4 @@ assert.equal(penetratedMultiplier(.5,.2),.7,'penetration must remove 20 percenta
 assert.equal(penetratedMultiplier(.9,.2),1,'penetration must not exceed neutral effectiveness');
 assert.equal(penetratedMultiplier(1.5,.2),1.5,'penetration must not alter weakness multipliers');
 assert.equal(defenseMessage({reduced:30,reductionLabel:'水鏡の護り',absorbed:0,evaded:false}),'✨ 水鏡の護りが30ダメージを軽減！');
-console.log('Kokoro Link tactics abilities validated (10 attributes, choice, water guard, one-shot charges, foresight, and penetration).');
+console.log('Kokoro Link tactics abilities validated (11 attributes, choice, water guard, one-shot charges, foresight, and penetration).');

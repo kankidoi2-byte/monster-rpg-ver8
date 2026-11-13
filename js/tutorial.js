@@ -1245,7 +1245,7 @@ function continueTutorialRescueWave(){
   busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   try{
     enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
-    ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
+    ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFreezeTurns=0;eFlareCharge=false;eAquaShield=false;
     battleRewardGranted=false;
     if(typeof forgetBattleEnemyFeedback==='function')forgetBattleEnemyFeedback();
     setupBattle();

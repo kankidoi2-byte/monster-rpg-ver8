@@ -262,7 +262,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   if(typeof traitPartyChanged==='function')traitPartyChanged(current,next,faintCurrent);
   next.mon.itemDefense=next.itemDefense||1;next.itemDefense=null;
   next.mon.itemSpeed=next.itemSpeed||1;next.itemSpeed=null;
-  pAtk = next.itemAttack||1; next.itemAttack=null; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFlareCharge = false; pAquaShield = false;
+  pAtk = next.itemAttack||1; next.itemAttack=null; pGuard = false; pStatus = null; pPoisonTurns = 0; pParalysisTurns = 0; pConfusionTurns = 0; pSleepTurns = 0; pFreezeTurns = 0; pFlareCharge = false; pAquaShield = false;
   const log = document.getElementById('log');
   if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();
   document.getElementById('pName').textContent = player.name;
@@ -336,7 +336,7 @@ function losePartyBattle() {
 function resetBattleTransientEffects(){
   pAtk=eAtk=1;pGuard=eGuard=false;
   pStatus=eStatus=null;pPoisonTurns=ePoisonTurns=0;
-  pParalysisTurns=eParalysisTurns=pConfusionTurns=eConfusionTurns=pSleepTurns=eSleepTurns=0;
+  pParalysisTurns=eParalysisTurns=pConfusionTurns=eConfusionTurns=pSleepTurns=eSleepTurns=pFreezeTurns=eFreezeTurns=0;
   pFlareCharge=eFlareCharge=pAquaShield=eAquaShield=false;
   for(const entry of multiBattle?.enemies||[]){
     entry.attack=1;entry.guard=false;entry.status=null;

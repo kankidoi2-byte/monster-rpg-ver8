@@ -6,6 +6,7 @@ let pPoisonTurns = 0, ePoisonTurns = 0;
 let pParalysisTurns = 0, eParalysisTurns = 0;
 let pConfusionTurns = 0, eConfusionTurns = 0;
 let pSleepTurns = 0, eSleepTurns = 0;
+let pFreezeTurns = 0, eFreezeTurns = 0;
 let pFlareCharge = false, eFlareCharge = false;
 let pAquaShield = false, eAquaShield = false;
 let activeInstance = null;
@@ -35,7 +36,7 @@ const HUNT_OVERTIER = Object.freeze({
 });
 const HUNT_MAP_BOOST_TYPES = Object.freeze({
   grassland:'grass', volcano:'fire', lake:'water', seikai_irie:'water',
-  kaiyu_kaiiki:'water', deep_sea_end:'water', snow_mountain:'water', forest:'grass',
+  kaiyu_kaiiki:'water', deep_sea_end:'water', snow_mountain:'ice', forest:'grass',
   light_plain:'light', starry_plain:'star', highland_ruins:'thunder', arena:'normal',
   magic_academy:'normal', ruined_village:'dark', starsea:'star', water_secret:'water',
   world_between:'light', kaen_village:'fire'

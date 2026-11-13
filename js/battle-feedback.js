@@ -81,9 +81,9 @@ function renderBattleInputState(){
 }
 function battleCombatants(){
   if(!player||!enemy)return [];
-  const units=[{key:`player:${activeInstance?.uid||activePartyIdx}`,vis:'pVis',name:player.name,hp:pHp,max:playerMaxHp(),statusId:'pBattleStatus',status:pStatus,poison:pPoisonTurns,paralysis:pParalysisTurns,sleep:pSleepTurns,confusion:pConfusionTurns,guard:pGuard,shield:pAquaShield,charge:pFlareCharge,attack:pAtk,link:typeof kokoroLinkStatusHtml==='function'?kokoroLinkStatusHtml():''}];
-  if(multiBattle?.active){for(const e of multiBattle.enemies)units.push({key:e.id,vis:`${e.id}Vis`,name:e.mon.name,hp:e.hp,max:e.maxHp,statusId:`${e.id}Status`,status:e.status,poison:e.poisonTurns,paralysis:e.paralysisTurns,sleep:e.sleepTurns,confusion:e.confusionTurns,guard:e.guard,shield:e.aquaShield,charge:e.flareCharge,attack:e.attack,link:enemyKokoroLinkStatusHtml(e.id)});}
-  else units.push({key:`single:${enemy.id}`,vis:'eVis',name:enemy.name,hp:eHp,max:enemyMaxHp(),statusId:'eBattleStatus',status:eStatus,poison:ePoisonTurns,paralysis:eParalysisTurns,sleep:eSleepTurns,confusion:eConfusionTurns,guard:eGuard,shield:eAquaShield,charge:eFlareCharge,attack:eAtk,link:enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())});
+  const units=[{key:`player:${activeInstance?.uid||activePartyIdx}`,vis:'pVis',name:player.name,hp:pHp,max:playerMaxHp(),statusId:'pBattleStatus',status:pStatus,poison:pPoisonTurns,paralysis:pParalysisTurns,sleep:pSleepTurns,freeze:typeof pFreezeTurns==='undefined'?0:pFreezeTurns,confusion:pConfusionTurns,guard:pGuard,shield:pAquaShield,charge:pFlareCharge,attack:pAtk,link:typeof kokoroLinkStatusHtml==='function'?kokoroLinkStatusHtml():''}];
+  if(multiBattle?.active){for(const e of multiBattle.enemies)units.push({key:e.id,vis:`${e.id}Vis`,name:e.mon.name,hp:e.hp,max:e.maxHp,statusId:`${e.id}Status`,status:e.status,poison:e.poisonTurns,paralysis:e.paralysisTurns,sleep:e.sleepTurns,freeze:e.freezeTurns,confusion:e.confusionTurns,guard:e.guard,shield:e.aquaShield,charge:e.flareCharge,attack:e.attack,link:enemyKokoroLinkStatusHtml(e.id)});}
+  else units.push({key:`single:${enemy.id}`,vis:'eVis',name:enemy.name,hp:eHp,max:enemyMaxHp(),statusId:'eBattleStatus',status:eStatus,poison:ePoisonTurns,paralysis:eParalysisTurns,sleep:eSleepTurns,freeze:typeof eFreezeTurns==='undefined'?0:eFreezeTurns,confusion:eConfusionTurns,guard:eGuard,shield:eAquaShield,charge:eFlareCharge,attack:eAtk,link:enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())});
   return units;
 }
 function battleStateLabels(u){
@@ -93,6 +93,7 @@ function battleStateLabels(u){
   if(u.paralysis>0)labels.push(`⚡ 麻痺 ${u.paralysis}T`);
   if(u.sleep>0)labels.push(`眠り ${u.sleep}T`);
   if(u.confusion>0)labels.push(`混乱 ${u.confusion}T`);
+  if(u.freeze>0)labels.push(`❄️ 凍結 ${u.freeze}T`);
   if(u.guard)labels.push('防御 次の被弾');
   if(u.shield)labels.push('水の盾 次の被弾');
   if(u.charge)labels.push('溜め 次の攻撃+20%');

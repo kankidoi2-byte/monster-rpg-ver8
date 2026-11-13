@@ -33,7 +33,7 @@ function traitDamageMultiplier(actorIsPlayer,move,actorEntry=null,targetEntry=nu
     if(actor.hp<=actor.maxHp/2)f*=traitPower('adversity',1);
     if(!s.attacked)f*=traitPower('first_strike',1);
     if(moveTypes(move).some(t=>actor.mon.types.includes(t)))f*=traitPower('stab',1);
-    if(target.hp<=target.maxHp/2||target.status||target.poison>0||target.paralysis>0||target.confusion>0||target.sleep>0||
+    if(target.hp<=target.maxHp/2||target.status||target.poison>0||target.paralysis>0||target.confusion>0||target.sleep>0||target.freeze>0||
       (typeof kokoroLinkEnemyEffectsFor==='function'&&kokoroLinkEnemyEffectsFor(target.entry?.id||'single').some(e=>e.remainingTurns>0&&['poison','burn','control'].includes(e.category))))f*=traitPower('pursuit',1);
     f/=1-traitPower('pierce');
     if(battleTurnCount+1>=traitRule('upliftStartTurn',3))f*=traitPower('uplift',1);
@@ -63,7 +63,7 @@ function traitIncomingDamage(result){
   return {...result,hpDamage:damage};
 }
 function traitApplyEnemyStatus(kind,entry=null){
-  const target=tacticalCombatant(false,entry);if(target.hp<=0)return;
+  const target=tacticalCombatant(false,entry);if(target.hp<=0||(kind!=='poison'&&target.freeze>0))return;
   if(kind==='poison'){if(typeof removeKokoroLinkEnemyEffectCategory==='function')removeKokoroLinkEnemyEffectCategory(entry?.id||'single','poison');target.status='poison';target.poison=BATTLE_STATUS_EFFECTS.poison.duration;if(entry)entry.poisonSourceIsPlayer=true;}
   if(kind==='paralysis')target.paralysis=3;
   if(kind==='confusion')target.confusion=2+Math.floor(combatRandom()*2);
@@ -123,9 +123,23 @@ function traitEndTurn({skipPlayerEffects=false}={}){
   }
   flushTraitMessages();
 }
+function traitPlayerTimedBuffExtensions(entries){
+  const buffs=[];
+  for(const entry of entries){
+    if(entry.fainted||entry.hp<=0)continue;
+    const state=traitBattleState.members.get(entry.inst?.uid||entry.inst?.id||'player');
+    if(!state)continue;
+    if(state.swiftUntil>=battleTurnCount&&traitPower('swift',1,entry.inst)>1)buffs.push(()=>{state.swiftUntil++;});
+    if(state.giftUntil>battleTurnCount&&state.gift>1)buffs.push(()=>{state.giftUntil++;});
+  }
+  return buffs;
+}
 function traitPartyChanged(previous,next,fainted){
-  const s=traitMember(next.inst),entryTurn=battleTurnCount+(fainted&&battleTurnInProgress?1:0);s.swiftUntil=entryTurn;s.skipEndTurn=fainted?battleTurnCount:-1;
-  if(fainted){const gift=traitPower('parting_gift',1,previous?.inst);if(gift>1){s.gift=gift;s.giftUntil=entryTurn+traitRule('partingGiftTurns',2);traitLog('parting_gift','次の仲間に力を託した',previous.inst);}}
+  const s=traitMember(next.inst),entryTurn=battleTurnCount+(fainted&&battleTurnInProgress?1:0);
+  const extend=turns=>typeof extendNextPlayerTimedBuff==='function'?extendNextPlayerTimedBuff(turns):turns;
+  const swift=traitPower('swift',1,next.inst)>1;
+  s.swiftUntil=entryTurn+(swift?extend(1)-1:0);s.skipEndTurn=fainted?battleTurnCount:-1;
+  if(fainted){const gift=traitPower('parting_gift',1,previous?.inst);if(gift>1){s.gift=gift;s.giftUntil=entryTurn+extend(traitRule('partingGiftTurns',2));traitLog('parting_gift','次の仲間に力を託した',previous.inst);}}
   flushTraitMessages();
 }
 

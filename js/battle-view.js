@@ -115,7 +115,7 @@ function battleImpactType(typeOrTypes) {
   return /^[a-z_]+$/.test(type) ? type : 'normal';
 }
 const BATTLE_MOTION_COLORS=Object.freeze({
-  fire:'#ff5a36',water:'#38bdf8',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
+  fire:'#ff5a36',water:'#38bdf8',ice:'#bfefff',thunder:'#ffe34f',wind:'#62e6bd',grass:'#67d76c',
   light:'#fff2a8',dark:'#a969ef',star:'#ff8fe7',dragon:'#ff8750',normal:'#f1f5f9'
 });
 const BATTLE_MOTION_DURATIONS=Object.freeze({breath:430,beam:350,sword:340,claw:380,fang:400,magic:440,blade:420,charge:460,strike:400,body:440,tail:420,horn:380,fist:370,wing:400,fin:400,leg:360,beak:340,club:420,dagger:340,roar:480,wave:460,projectile:420,lightning:440,field:520,mystic:480,guard:440,heal:500,buff:460,debuff:360,shield:500,sleep:520});
@@ -387,12 +387,13 @@ function updateHuntTurnDisplay() {
   if (!el) return;
   el.textContent = battleTurnCount > 8 ? '残り0ターン（制限超過）' : `残り${huntTurnRemaining()}ターン`;
 }
-function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false) {
+function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false, freezeTurns=0) {
   const parts = [];
   if (status === 'poison' && poisonTurns > 0) parts.push(`<span style="color:#bbf7d0">☠️毒(${poisonTurns})</span>`);
   if (sleepTurns > 0) parts.push(`<span style="color:#93c5fd">💤ねむり(${sleepTurns})</span>`);
   if (paralysisTurns > 0) parts.push(`<span style="color:#fde047">⚡麻痺(${paralysisTurns})</span>`);
   if (confusionTurns > 0) parts.push(`<span style="color:#c4b5fd">🌀こんらん(${confusionTurns})</span>`);
+  if (freezeTurns > 0) parts.push(`<span class="ice">❄️凍結(${freezeTurns})</span>`);
   if (flareCharge) parts.push('<span style="color:#fb923c">🔥攻撃強化(次の攻撃)</span>');
   if (aquaShield) parts.push('<span style="color:#60a5fa">💧アクアシールド</span>');
   return parts.length ? ' / 状態:' + parts.join('・') : '';

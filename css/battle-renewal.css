@@ -22,7 +22,7 @@ body:has(#battle.active.is-renewed) :is(.app-topbar,.bottom-nav,.app-bottom-nav)
 #battle.is-renewed .multi-enemy-copy{position:relative}
 #battle.is-renewed .br-target{border-color:#ffe08a;box-shadow:0 0 0 1px #ffe08a}
 #battle.is-renewed .battle-status{display:flex;flex-wrap:wrap;gap:3px;min-height:0;margin:2px 0 0;padding:0}
-.br-status{display:inline-block;font-size:9px!important;border-radius:5px;padding:1px 4px!important;background:#9e5a2f;color:#fff;line-height:1.4}.br-status.poison{background:#6b2f8f}.br-status.para{background:#857013}.br-status.sleep{background:#3b4f9e}.br-status.conf{background:#9e3b6b}.br-status.guard{background:#2f6b9e}.br-status.link{background:#b44a8c}
+.br-status{display:inline-block;font-size:9px!important;border-radius:5px;padding:1px 4px!important;background:#9e5a2f;color:#fff;line-height:1.4}.br-status.poison{background:#6b2f8f}.br-status.para{background:#857013}.br-status.sleep{background:#3b4f9e}.br-status.freeze{background:#315469;color:#e7fbff}.br-status.conf{background:#9e3b6b}.br-status.guard{background:#2f6b9e}.br-status.link{background:#b44a8c}
 #battle.is-renewed .battle-stage-slot::after{content:none!important}
 #battle.is-renewed :is(.is-stage-actor,.is-stage-target){outline:0!important;border-color:transparent!important}
 #battle.is-renewed .is-stage-actor .battle-facing{filter:drop-shadow(0 0 12px #ffe08a)}

@@ -67,4 +67,4 @@ const activate=type=>{
   assert.match(api.kokoroLinkPowerAbilityStatus(instance),/使用済み/);
 }
 
-console.log('Kokoro Link Phase 4-1 power abilities validated (10 attributes, one-star scope, consumption, and duration).');
+console.log('Kokoro Link Phase 4-1 power abilities validated (11 attributes, one-star scope, consumption, and duration).');

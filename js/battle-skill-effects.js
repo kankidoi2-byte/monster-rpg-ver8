@@ -43,6 +43,7 @@ const EL={
   normal:{name:'無',c:'#f4f6fa',g:'#aab4c4',d:'#5b6474',grav:700},
   fire:{name:'火',c:'#ffc45a',g:'#ff5a1f',d:'#a8200a',grav:-150},
   water:{name:'水',c:'#a8e6ff',g:'#2f8fff',d:'#0a3f9a',grav:620},
+  ice:{name:'氷',c:'#e7fbff',g:'#bfefff',d:'#54869f',grav:620},
   grass:{name:'草',c:'#c8f78a',g:'#3fb84a',d:'#17662a',grav:160},
   thunder:{name:'雷',c:'#fffbc0',g:'#ffd21f',d:'#a87400',grav:320},
   wind:{name:'風',c:'#e4fff6',g:'#5fe0c0',d:'#1f8a78',grav:0},
