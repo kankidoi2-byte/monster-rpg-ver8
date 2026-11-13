@@ -40,3 +40,6 @@ body:has(#mapStory.active .map-story-scene)>.app-topbar,body:has(#mapStory.activ
 .nonbattle-screen#mapStory #mapStoryContent .map-story-scene button{background:rgba(8,13,28,.7)!important;color:#e9e4d3!important}
 .nonbattle-screen#mapStory #mapStoryContent .map-story-scene button[aria-pressed="true"]{background:#e2cd96!important;color:#141a2c!important}
 .nonbattle-screen#mapStory #mapStoryContent .map-story-scene button:disabled{background:rgba(8,13,28,.7)!important;color:#a6a4a0!important}
+.map-story-scene{overflow:clip}
+#mapStory .map-story-scene :is(button,[tabindex]){scroll-margin:0}
+.nonbattle-screen#mapStory #mapStoryContent .is-conversation .map-story-next{background:transparent!important;color:#e2cd96!important;border:0}

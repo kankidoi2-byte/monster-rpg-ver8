@@ -20,7 +20,7 @@ try{
   const start=async(id,persist=false)=>{await page.evaluate(({id,persist})=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:id,persist}),{id,persist});};
   const finish=()=>page.evaluate(()=>tutorialPresentationFinishTyping());
   const current=()=>page.evaluate(()=>tutorialUiState.steps[tutorialUiState.index]?.id);
-  const shot=async name=>{await page.screenshot({path:`${out}/${name}-${viewport.width}.png`,fullPage:true});};
+  const shot=async name=>{if(!name.startsWith('grassland-transition'))await page.waitForTimeout(650);await page.screenshot({path:`${out}/${name}-${viewport.width}.png`,fullPage:true});};
   await start('intro_gnosis');await finish();await shot('black-start');
   assert((await page.locator('#tutorialBubble').evaluate(e=>getComputedStyle(e).backgroundImage)).includes('linear-gradient'),'navy panel not white theme');
   assert(await page.locator('#tutorialOverlay').evaluate(e=>e.classList.contains('is-story-step')));

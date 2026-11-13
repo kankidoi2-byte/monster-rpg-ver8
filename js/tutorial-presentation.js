@@ -72,6 +72,7 @@ function tutorialPresentationRender(step,view){
   guideTitle.textContent=view.title||step.title;guideTitle.hidden=story;
   document.getElementById('tutorialText').classList.toggle('is-narration',story&&!speaker);
   const bubble=document.getElementById('tutorialBubble'),back=document.getElementById('tutorialBackButton');
+  if(story){bubble.style.left='0';bubble.style.top='auto';bubble.style.bottom='0';bubble.style.maxHeight='55svh';}
   (story?document.getElementById('tutorialLogBack'):document.getElementById('tutorialGuideBack')).append(back);
   back.textContent=story?'1つ戻る':'戻る';back.hidden=!story&&back.disabled;
   const next=document.getElementById('tutorialNextButton');

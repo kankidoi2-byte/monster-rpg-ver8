@@ -130,3 +130,5 @@ body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble{bac
 body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble :is(h2,p){color:#fff}
 body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble button{background:#e2cd96;color:#141a2c;border-color:var(--story-gold)}
 body[data-nonbattle-theme]:not(.title-mode) #tutorialOverlay #tutorialBubble .tutorial-back{background:transparent;color:#e2cd96;border:0}
+/* Changing from a positioned guide to a full-width scene must not tween offscreen. */
+.tutorial-overlay.is-story-step #tutorialBubble{transition:none;box-sizing:border-box}
