@@ -34,11 +34,11 @@ try{
    }return points;
   });
   for(const axis of [0,1,2])assert(Math.max(...samples.map(p=>p[axis]))-Math.min(...samples.map(p=>p[axis]))<1,`stable target/guide/scroll at ${width}x${height}, font ${fontSize}`);
-  const point=await page.locator('#tutorialNextButton').evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;return {x,y,hit:el.contains(document.elementFromPoint(x,y))}});
-  assert(point.hit,'Next center must be tappable');await page.touchscreen.tap(point.x,point.y);
+  const point=await page.locator('#tutorialText').evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;return {x,y,hit:el.contains(document.elementFromPoint(x,y))}});
+  assert(point.hit,'Dialogue center must be tappable');await page.touchscreen.tap(point.x,point.y);await page.waitForTimeout(50);await page.touchscreen.tap(point.x,point.y);
   await page.waitForFunction(()=>tutorialCurrentStepId()==='prologue_epilogue');assert.deepEqual(errors,[]);
   await page.screenshot({path:`${out}/${width}-${fontSize}.png`});
-  console.log(`PASS expedition stable ${width}x${height} font ${fontSize}: 30 frames, target/Next centers, physical Next tap advances.`);
+  console.log(`PASS expedition stable ${width}x${height} font ${fontSize}: 30 frames, target/Dialogue centers, physical Next tap advances.`);
   await context.close();
  }
 }finally{await browser.close();server.kill()}

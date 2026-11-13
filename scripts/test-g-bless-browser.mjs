@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4268'],{stdio:['ignore','pipe','inherit']});
-const evidence=process.env.G_BLESS_EVIDENCE||'/tmp/g-bless-qa';fs.mkdirSync(evidence,{recursive:true});
+const evidence=process.env.G_BLESS_EVIDENCE||'artifacts/save-failure-ui/g-bless';fs.mkdirSync(evidence,{recursive:true});
 let browser;const errors=[];
 try{
  await new Promise((r,j)=>{server.stdout.once('data',r);server.once('error',j)});browser=await chromium.launch({headless:true});
@@ -66,7 +66,23 @@ try{
   // All header controls remain reachable on floating headers and at 200% zoom/reflow.
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);save.contractor.pendingRankUps=[];document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
   const settleHeader=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-  const headerReachable=()=>page.locator('.app-topbar button:visible').evaluateAll(es=>es.every(e=>{const r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.left>=0&&r.right<=innerWidth&&e.contains(hit)}));
+  const headerReachable=async()=>{
+   // Preserve the original predicate. Diagnostics run only after the sampled failure,
+   // and do not retry or replace its result with a later (possibly passing) frame.
+   const sample=await page.locator('.app-topbar button:visible').evaluateAll(es=>{
+    const rect=e=>{if(!e)return null;const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,left:r.left,right:r.right,top:r.top,bottom:r.bottom};};
+    const describe=e=>{if(!e)return null;const s=getComputedStyle(e);return {tag:e.tagName,id:e.id,className:e.className,rect:rect(e),display:s.display,visibility:s.visibility,position:s.position,zIndex:s.zIndex,pointerEvents:s.pointerEvents,transform:s.transform,zoom:s.zoom};};
+    const buttons=es.map(e=>{const r=e.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {button:describe(e),text:e.textContent,hit:describe(hit),stack:document.elementsFromPoint(x,y).slice(0,10).map(describe),reachable:r.left>=0&&r.right<=innerWidth&&e.contains(hit)};});
+    return {reachable:buttons.every(b=>b.reachable),buttons,screen:document.querySelector('.screen.active')?.id,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio,scrollX,scrollY,visual:visualViewport?{width:visualViewport.width,height:visualViewport.height,scale:visualViewport.scale,offsetTop:visualViewport.offsetTop,offsetLeft:visualViewport.offsetLeft}:null},root:describe(document.documentElement),body:describe(document.body),header:describe(document.querySelector('.app-topbar')),tutorial:describe(document.getElementById('tutorialOverlay')),dialogs:[...document.querySelectorAll('dialog[open]')].map(describe),animations:document.getAnimations().map(a=>({playState:a.playState,currentTime:a.currentTime,target:describe(a.effect?.target)}))};
+   });
+   if(!sample.reachable){
+    const stem=`${evidence}/header-failure-${width}-${sample.screen}`;
+    fs.writeFileSync(stem+'.json',JSON.stringify(sample,null,2));
+    await page.screenshot({path:stem+'.png',fullPage:true});
+    console.error('G-BLESS header reachability failure:',JSON.stringify(sample));
+   }
+   return sample.reachable;
+  };
   for(const id of ['gachaHub','battleChoices']){
    await page.evaluate(id=>show(id),id);await page.locator('#gBlessChip').click();assert(await page.locator('#gBlessDialog').isVisible());await page.locator('#gBlessDialog .gb-close').click();assert(await headerReachable(),id+' header');
   }

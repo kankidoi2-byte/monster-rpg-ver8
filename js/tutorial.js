@@ -187,6 +187,8 @@ function startTutorialFeatureGuide(guideId,flowId){
 }
 function activeScreenId(){return document.querySelector('.screen.active')?.id||null;}
 const TUTORIAL_REMOVED_STEP_REDIRECTS=Object.freeze({
+  // Older versions persisted the STEP id when persistAs was absent.
+  prologue_complete:'prologue_epilogue',
   party_review:'party_save',dex_elna_detail:'dex_character_back',dex_aquaron:'home_growth_open',
   growth_elna:'growth_elna_details',growth_skill_current:'growth_return',growth_skill_cards:'growth_return',
   request_board:'request_accept',request_reward_preview:'request_reward_claim',
@@ -458,6 +460,45 @@ function positionTutorialUi(){
       placement.side=useBelow?'below':'above';
     }
   }
+  // Reserve the guide toolbar before applying the final bubble geometry. Its
+  // right-top buttons are real controls, not empty overlay space: neither the
+  // nameplate nor text may be placed under them. Narrative layout is unchanged.
+  if(overlay?.classList.contains('is-ui-guide-step')){
+    const tools=overlay.querySelector('.tutorial-tools');
+    if(tools){
+      tools.style.top='';
+      let toolRect=tools.getBoundingClientRect();
+      const center=rect?{x:rect.left+rect.width/2,y:rect.top+rect.height/2}:null;
+      // A guide can point to a tall card. Preserve its actionable center even
+      // when the card extends underneath the reserved top band.
+      if(center&&center.x>=toolRect.left-8&&center.x<=toolRect.right+8&&center.y>=toolRect.top-8&&center.y<=toolRect.bottom+8){
+        tools.style.top=`${center.y+16}px`;
+        toolRect=tools.getBoundingClientRect();
+      }
+      const nav=document.querySelector('.app-bottom-nav');
+      const navRect=nav?.getBoundingClientRect();
+      const safeBottom=navRect&&navRect.height>0&&getComputedStyle(nav).visibility!=='hidden'?Math.min(viewport.height-10,navRect.top-8):viewport.height-10;
+      const bubbleRect=bubble.getBoundingClientRect();
+      const nameplate=bubble.querySelector('.story-scene-nameplate');
+      const nameRect=nameplate&&!nameplate.hidden?nameplate.getBoundingClientRect():null;
+      // Font wrapping and zoom change the raised label's real height. Include
+      // that overhang in both toolbar reservation and target clearance.
+      const nameRise=nameRect?Math.max(0,bubbleRect.top-nameRect.top):0;
+      const targetGap=16+nameRise;
+      const safeTop=toolRect.bottom+nameRise+8;
+      const height=bubbleRect.height;
+      const coversTarget=center&&center.x>=placement.left&&center.x<=placement.left+bubbleRect.width&&center.y>=placement.top-nameRise-8&&center.y<=placement.top+Math.min(height,placement.maxHeight)+8;
+      if(placement.top<safeTop||placement.top+Math.min(height,placement.maxHeight)>safeBottom||coversTarget){
+        const above=center?Math.max(0,center.y-16-safeTop):0;
+        const below=center?Math.max(0,safeBottom-Math.max(safeTop,center.y+targetGap)):safeBottom-safeTop;
+        const useBelow=!center||below>=above;
+        const room=Math.max(0,useBelow?below:above);
+        placement.maxHeight=room;
+        placement.top=useBelow?Math.max(safeTop,center?center.y+targetGap:safeTop):center.y-16-Math.min(height,room);
+        placement.side=useBelow?'below':'above';
+      }
+    }
+  }
   bubble.style.left=`${placement.left}px`;
   bubble.style.top=`${placement.top}px`;
   bubble.style.maxHeight=`${placement.maxHeight}px`;
@@ -470,7 +511,7 @@ function positionTutorialUi(){
     arrow.style.top=`${placement.side==='below'?hole.bottom+1:hole.top-16}px`;
   }
 }
-function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(positionTutorialUi));}
+function scheduleTutorialPosition(){requestAnimationFrame(()=>requestAnimationFrame(()=>{positionTutorialUi();if(typeof tutorialPresentationPosition==='function')tutorialPresentationPosition();}));}
 function tutorialResolvedText(step){
   const playerName=typeof currentTutorialState==='function'?currentTutorialState().playerName:null;
   return String(step?.text||'').replaceAll('{{playerName}}',playerName||'契約者');
@@ -773,6 +814,7 @@ function renderTutorialStep(){
   next.disabled=requiresAction||tutorialElnaContractBusy||tutorialDialogueNeedsChoice(step);
   actions?.classList.toggle('is-target-action',requiresAction);
   actions?.classList.toggle('is-name-entry',step.input==='player_name');
+  if(typeof tutorialPresentationRender==='function')tutorialPresentationRender(step,view);
   overlay.classList.remove('hidden');
   overlay.setAttribute('aria-hidden','false');
   scheduleTutorialPosition();
@@ -902,6 +944,7 @@ function tutorialShouldUseReplayNextStep(step){
   return false;
 }
 function tutorialNext(actionCompleted=false,choiceId=null){
+  if(actionCompleted!==true&&choiceId===null&&typeof tutorialPresentationFinishTyping==='function'&&tutorialPresentationFinishTyping())return;
   if(!tutorialUiState.active||tutorialElnaContractBusy&&actionCompleted!==true)return;
   if(actionCompleted!==true&&Date.now()<tutorialDialogueState.lockedUntil)return;
   const step=tutorialUiState.steps[tutorialUiState.index];
@@ -1020,6 +1063,7 @@ function requestTutorialSkip(){
   updateTutorialMenuSummary();
 }
 function clearTutorialUi(){
+  if(typeof tutorialPresentationStop==='function')tutorialPresentationStop();
   tutorialRankUpWaitScreen=null;
   if(typeof closeGachaRates==='function')closeGachaRates();
   const overlay=document.getElementById('tutorialOverlay');
@@ -2099,8 +2143,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'expedition_dispatch',screenId:'expedition',target:'#expeditionStartButton',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを短距離遠征へ',text:'派遣する仲間がフレイガルになっていることを確認して、出発させよう！',progressLabel:'EXPEDITION'},
   {id:'expedition_active',screenId:'expedition',target:'[data-tutorial-expedition-active]',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'遠征は進行中！',text:'帰還を待たなくて大丈夫！ バトルに勝つと進み、完了したらここで報酬を受け取れるぞ！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
   {id:'expedition_replay',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'遠征は案内済みだ！',text:'派遣中または完了済みの遠征があるから、新しい遠征は増やさないぞ。遠征画面からいつでも状況を確認できる！',progressLabel:'EXPEDITION',nextStepId:'prologue_epilogue'},
-  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'冒険の始まり',text:'これで遠征はバッチリだな！いよいよこれから冒険が始まるぞ！楽しみだな～！',progressLabel:'PROLOGUE'},
-  {id:'prologue_complete',screenId:'home',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'world_descent',title:'序章完了！',text:'さぁ、{{playerName}}！次はどこに行く！？',progressLabel:'PROLOGUE CLEAR',nextLabel:'自由行動へ'}
+  {id:'prologue_epilogue',screenId:'home',persistAs:'prologue_epilogue',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'冒険の始まり',text:'これで遠征はバッチリだな！いよいよこれから冒険が始まるぞ！楽しみだな～！',progressLabel:'PROLOGUE'}
 ]);
 registerTutorialFlow(TUTORIAL_HELP_FLOW_ID,[
   {id:'help_spotlight',screenId:'home',target:'#homeAdventureButton',title:'実際の画面を見ながら進めます',text:'案内する操作だけを明るい枠で示します。照らされたボタンは、そのままタップやキーボードで操作できます。',progressLabel:'GUIDE UI'},

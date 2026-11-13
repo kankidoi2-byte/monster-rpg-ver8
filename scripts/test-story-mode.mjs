@@ -48,6 +48,9 @@ for(const status of ['not_started','in_progress','completed','skipped']){
   assert.equal(elements.get('storyContinueCard').hidden,['completed','skipped'].includes(status));
   assert.equal(elements.get('storyPrologueChapter').open,!['completed','skipped'].includes(status),'unfinished prologue exposes its continuation; completed/skipped returns to collapsed chapters');
   assert.equal((elements.get('storyEpisodeList').innerHTML.match(/<article /g)||[]).length,6);
+  if(status==='completed')assert.equal((elements.get('storyEpisodeList').innerHTML.match(/story-episode-status">完了/g)||[]).length,6);
+  assert.ok(!elements.get('homeAdventureKicker').textContent.includes('序章クリア'));
+  assert.ok(index.includes('aria-label="序章 第7話は準備中です"'));
   for(const selected of ['character','side','map','main']){
     vm.runInContext(`selectStoryCategory('${selected}')`,context);
     for(const category of ['main','map','character','side']){

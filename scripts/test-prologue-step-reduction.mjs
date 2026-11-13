@@ -12,7 +12,7 @@ const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flow
 assert.ok(flowStart>=0&&flowEnd>flowStart,'the prologue main flow is missing');
 const main=tutorial.slice(flowStart,flowEnd);
 const ids=[...main.matchAll(/^\s{2}\{id:'([^']+)'/gm)].map(match=>match[1]);
-assert.equal(ids.length,104,'the reduced prologue includes rescue, Royal Capital facilities, first-alchemy farewell, and the final party swap');
+assert.equal(ids.length,103,'the reduced prologue includes rescue, Royal Capital facilities, first-alchemy farewell, and the final party swap');
 assert.equal(new Set(ids).size,ids.length,'the reduced prologue must not contain duplicate step IDs');
 assert.equal(ids.indexOf('battle_enemy'),ids.indexOf('elna_rescue_start')+1,'rescue start must advance from 13/86 to the adjacent battle step, not jump to 60/86');
 assert.equal(ids.indexOf('home_party'),ids.indexOf('elna_contract_body')+1,'the contract must continue to the adjacent home guidance');
@@ -27,7 +27,7 @@ const removed=[
   'first_hunt','tutorial_hunt_request','battle_retry','victory_exp','victory_coin','victory_material','victory_rank',
   'first_contract','contract_confirm','contract_success','contract_card','contract_type','contract_skills',
   'contract_list','contract_future','growth_open','growth_overview','party_edit_open','party_edit_contract',
-  'home_finish','tutorial_complete'
+  'home_finish','tutorial_complete','prologue_complete'
 ];
 for(const id of removed){
   assert.ok(!ids.includes(id),`obsolete or duplicate step must stay out of the main flow: ${id}`);
@@ -123,7 +123,7 @@ const requiredActions=[
   'battle_choose_skill','battle_free','elna_contract_execute','party_save','home_dex_open','menu_dex_open',
   'dex_elna_open','growth_skill_open','request_accept','request_reward_claim','stella_card_receive',
   'stella_skill_open','stella_skill_unequip','stella_skill_equip','stella_mock_advantage','lumina_start',
-  'lumina_execute','expedition_member','expedition_dispatch','prologue_complete'
+  'lumina_execute','expedition_member','expedition_dispatch','prologue_epilogue'
 ];
 for(const id of requiredActions)assert.ok(ids.includes(id),`essential operation is missing after reduction: ${id}`);
 
@@ -142,11 +142,11 @@ assert.match(main,/id:'home_dex_open'[^\n]+target:'\[data-nav="more"\]'/,'the mo
 assert.match(main,/id:'menu_dex_open'[^\n]+target:'#homeDexButton'/,'the visible dex button must remain the spotlight target');
 assert.match(main,/id:'request_reward_claim'[^\n]+externalAdvance:true/,'reward receipt must remain an event-backed operation');
 assert.match(main,/id:'expedition_member'[^\n]+data-tutorial-expedition-member/,'expedition must retain an unambiguous member target');
-assert.match(main,/id:'prologue_complete'[^\n]+speaker:'グノーシス'[^\n]+portrait:/,'the finale must retain Gnosis instead of an empty background');
+assert.match(main,/id:'prologue_epilogue'[^\n]+speaker:'グノーシス'[^\n]+portrait:/,'the finale must retain Gnosis instead of an empty background');
 assert.ok(tutorial.includes("classList.toggle('is-ui-guide-step',Boolean(step?.target))"),'target steps must keep portraits away from controls');
 
 assert.ok(index.includes('prologue-world-map-facilities-1'),'the browser must fetch the Royal Capital facility tutorial route');
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 
-console.log('Prologue step reduction validation passed (130 -> 104, including the two Royal Capital selections and final Galdra party swap and reserve Freigal expedition).');
+console.log('Prologue step reduction validation passed (130 -> 103, including the two Royal Capital selections and final Galdra party swap and reserve Freigal expedition).');

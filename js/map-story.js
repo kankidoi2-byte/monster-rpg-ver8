@@ -48,6 +48,7 @@ function openMapStory(storyId=mapStoryId){
 }
 function mapStoryEnemiesLabel(episode){return episode.enemies.map(e=>`${by(e.speciesId).name}（${by(e.speciesId).rarity}・Lv.${e.level}）`).join('／');}
 function renderMapStory(){
+  cancelMapStoryPresentation();
   if(mapStorySaveRetry)return;
   const root=document.getElementById('mapStoryContent');if(!root)return;
   if(!mapStoryAvailable()){root.innerHTML='<p>序章を完了またはスキップすると解放されます。</p>';return;}
@@ -63,6 +64,7 @@ function renderMapStory(){
   }).join('')}</div><button type="button" onclick="leaveMapStory()">${mapStoryEscape(map.name)}へ戻る</button>`;
 }
 function leaveMapStory(){
+  cancelMapStoryPresentation();
   if(mapStorySaveRetry)return;
   mapStoryUi=null;activeHuntRequest=null;endPartyRecovery();busy=false;
   showBattleChoices();worldMapSelectedId=currentMapStory().mapId;worldMapSelectedEvent=null;
@@ -100,34 +102,94 @@ const MAP_STORY_STAGE_COPY={
   vc_09_post_09:'遠くの斜面にフレイウルフ。熱気のそばにはツバキ、岩壁の赤い光の近くにはイグナロスの姿があった。'
 };
 function mapStoryNodeText(node){return node.kind==='stage'?(MAP_STORY_STAGE_COPY[node.id]||node.text):node.text;}
+// Ephemeral presentation state belongs to the open episode, never to the save.
+let mapStoryTypewriter=null,mapStoryAutoTimer=null;
+function cancelMapStoryPresentation(){
+  mapStoryTypewriter?.cancel();mapStoryTypewriter=null;clearTimeout(mapStoryAutoTimer);mapStoryAutoTimer=null;
+}
+function mapStoryPresentationCurrent(ui){
+  return ui===mapStoryUi&&ui.identity===saveTransactionIdentity()&&!mapStorySaveRetry&&document.getElementById('mapStory')?.classList.contains('active');
+}
+function scheduleMapStoryAuto(ui,text){
+  clearTimeout(mapStoryAutoTimer);
+  if(!ui.presentation?.auto||ui.presentation.logOpen||!ui.presentation.node)return;
+  mapStoryAutoTimer=setTimeout(()=>{if(mapStoryPresentationCurrent(ui)&&!ui.presentation.logOpen)advanceMapStoryNode();},1100+Array.from(text).length*55);
+}
+function mapStoryTap(event){
+  if(event?.target?.closest('button,input,select,a,[role="dialog"]')&&!event.target.closest('.map-story-next'))return;
+  event?.stopPropagation();
+  const ui=mapStoryUi;if(!ui||!mapStoryPresentationCurrent(ui)||ui.presentation?.logOpen)return;
+  if(mapStoryTypewriter&&!mapStoryTypewriter.isComplete()){mapStoryTypewriter.finish();return;}
+  if(ui.presentation?.node)advanceMapStoryNode();
+}
+function toggleMapStoryAuto(){
+  const ui=mapStoryUi;if(!ui?.presentation)return;
+  ui.presentation.auto=!ui.presentation.auto;
+  document.getElementById('mapStoryAuto')?.setAttribute('aria-pressed',String(ui.presentation.auto));
+  if(mapStoryTypewriter?.isComplete())scheduleMapStoryAuto(ui,ui.presentation.text);
+  if(!ui.presentation.auto)clearTimeout(mapStoryAutoTimer);
+}
+function toggleMapStoryLog(open=true){
+  const ui=mapStoryUi;if(!ui?.presentation)return;
+  ui.presentation.logOpen=open;clearTimeout(mapStoryAutoTimer);
+  const log=document.getElementById('mapStoryLog');if(log){log.hidden=!open;if(open)log.querySelector('button')?.focus();}
+  if(!open){document.getElementById('mapStoryLogButton')?.focus();if(mapStoryTypewriter?.isComplete())scheduleMapStoryAuto(ui,ui.presentation.text);}
+}
 function renderMapStoryDialogue(){
+  cancelMapStoryPresentation();
   const ui=mapStoryUi,episode=mapStoryEpisode(ui.episodeId),resume=mapStoryState().resume;
   const story=currentMapStory(),map=mapStoryMap(story),mapName=mapStoryEscape(map.name);
   const finalEpisode=episode.number===story.episodes.length,isVolcano=map.id==='volcano';
   const nodes=ui.phase==='post'?episode.postNodes:episode.preNodes;
   const index=ui.replay?ui.cursor:resume?.nodeId?nodes.findIndex(n=>n.id===resume.nodeId):nodes.length;
-  const node=nodes[index];
-  const root=document.getElementById('mapStoryContent');
+  const node=nodes[index],root=document.getElementById('mapStoryContent');
   const names={gnosis:'グノーシス',galdra:'ガルドラ',contractor:'契約者',system:'システム',tsubaki:'ツバキ'};
   const label=node?(names[node.speaker]||(isVolcano?'':'情景')):ui.phase==='pre'?(ui.replay?'戦闘の記録':'戦闘の準備'):'この話の終わり';
+  const narration=!node||node.kind==='stage'||!node.speaker;
   const speaker=node?.speaker;
-  const image=speaker==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':(speaker==='galdra'||speaker==='tsubaki')?IMG[by(speaker).imgKey]:null;
-  const shade=isVolcano?.30:episode.number<=4?.66:episode.number<=7?.69:episode.number<=10?.72:ui.phase==='pre'?.76:.66;
+  const portraitFor=id=>id==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':(id==='galdra'||id==='tsubaki')?IMG[by(id).imgKey]:null;
   const lighting=isVolcano?(episode.number>=7&&episode.number<=8?'ash':episode.number>=5&&episode.number<=6?'warm':''):'';
   const text=node?mapStoryNodeText(node):ui.phase==='pre'?(ui.replay?`${mapStoryEnemiesLabel(episode)}との戦闘を切り抜けた。`:`敵：${mapStoryEnemiesLabel(episode)}／推奨Lv.${episode.recommendedLevel}。ストーリー戦では契約できません。`):ui.replay?'戦闘後の会話を読み終えました。':finalEpisode?`${map.name}の物語を読み終えました。`:'戦闘後の会話を読み終えました。次の話へ進めます。';
-  const primary=node?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">次へ</button>':ui.phase==='pre'?(ui.replay?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" class="map-story-next" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button>`):`<button type="button" class="map-story-next" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':finalEpisode?`${mapName}の物語を終える`:`第${episode.number}話を終える`}</button>`;
-  const secondary=!node&&ui.phase==='pre'&&!ui.replay?'<button type="button" class="map-story-skip" onclick="editMapStoryParty()">編成を確認</button>':`<button type="button" class="map-story-skip" onclick="skipMapStoryDialogue()" ${node?'':'disabled'}>会話スキップ</button>`;
-  const progress=Math.min(index+1,nodes.length);
-  root.innerHTML=`<div class="map-story-scene${node?.id==='vc_09_post_05'?' map-story-time-skip':''}" data-lighting="${lighting}" style="--story-shade:${shade}">
-    <img class="map-story-bg" src="${mapStoryEscape(map.image)}" alt="${mapName}">
-    <div class="map-story-character-stage">${image?`<img class="map-story-speaker" src="${image}" alt="${label}">`:''}</div>
-    <section class="map-story-dialogue" aria-labelledby="mapStoryEpisodeTitle">
-      <header class="map-story-dialogue-head"><div><span>${mapName} · ${ui.replay?'読み返し · ':''}${ui.phase==='pre'?'戦闘前':'戦闘後'}</span><h2 id="mapStoryEpisodeTitle">第${episode.number}話「${mapStoryEscape(episode.title)}」</h2></div><button type="button" class="map-story-close" onclick="closeMapStoryDialogue()" aria-label="会話を閉じて話一覧へ戻る">×</button></header>
-      <div class="map-story-progress" role="progressbar" aria-label="${ui.phase==='pre'?'戦闘前':'戦闘後'}の会話" aria-valuemin="0" aria-valuemax="${nodes.length}" aria-valuenow="${progress}"><span style="width:${progress/nodes.length*100}%"></span></div>
-      <div class="map-story-message" aria-live="polite" aria-atomic="true">${label?`<strong>${label}</strong>`:''}<p>${mapStoryEscape(text)}</p></div>
-      <div class="map-story-actions">${primary}<button type="button" class="map-story-back" onclick="previousMapStoryNode()" ${index>0?'':'disabled'}>戻る</button>${secondary}<button type="button" class="map-story-list-button" onclick="closeMapStoryDialogue()">話一覧へ</button></div>
+  const primary=node?'<button type="button" class="map-story-next" onclick="mapStoryTap(event)" aria-label="次へ">▼</button>':ui.phase==='pre'?(ui.replay?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" class="map-story-next" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button>`):`<button type="button" class="map-story-next" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':finalEpisode?`${mapName}の物語を終える`:`第${episode.number}話を終える`}</button>`;
+  const presentation=ui.presentation||(ui.presentation={auto:false,logOpen:false,seen:{}});
+  presentation.node=Boolean(node);presentation.text=text;presentation.logOpen=false;
+  presentation.seen[ui.phase]=Math.max(presentation.seen[ui.phase]??-1,index);
+  if(!node)presentation.auto=false; // Never auto-start battles or grant completion/rewards.
+  const seen=nodes.slice(0,Math.min(nodes.length,(presentation.seen[ui.phase]??index)+1));
+  const cast=[...new Set(nodes.slice(0,Math.min(index+1,nodes.length)).map(n=>n.speaker).filter(id=>portraitFor(id)))].slice(-2);
+  if(speaker&&portraitFor(speaker)&&!cast.includes(speaker))cast[1]=speaker;
+  const portraits=cast.map((id,i)=>`<img class="map-story-speaker story-scene-portrait${id===speaker?' is-speaking':''}" data-character="${id}" style="left:${cast.length===1?50:i===0?26:74}%" src="${portraitFor(id)}" alt="${names[id]}">`).join('');
+  const showCaption=!presentation.captionShown;presentation.captionShown=true;
+  const log=seen.map(n=>`<article>${n.kind!=='stage'&&names[n.speaker]?`<b>${names[n.speaker]}</b>`:''}<p>${mapStoryEscape(mapStoryNodeText(n))}</p></article>`).join('');
+  const secondary=!node&&ui.phase==='pre'&&!ui.replay?'<button type="button" class="map-story-party" onclick="editMapStoryParty()">編成を確認</button>':'';
+  root.innerHTML=`<div class="map-story-scene${node?.id==='vc_09_post_05'?' map-story-time-skip':''}" data-lighting="${lighting}" onclick="mapStoryTap(event)">
+    <img class="map-story-bg story-scene-bg" src="${mapStoryEscape(BATTLE_MAPIMG[map.id]||map.image)}" alt="${mapName}">
+    <div class="map-story-character-stage">${portraits}</div>
+    <header class="map-story-heading"><span>${mapName} · ${ui.replay?'読み返し · ':''}${ui.phase==='pre'?'戦闘前':'戦闘後'}</span><h2 id="mapStoryEpisodeTitle" class="${showCaption?'is-intro':''}">第${episode.number}話「${mapStoryEscape(episode.title)}」</h2></header>
+    <nav class="story-scene-tools map-story-tools" aria-label="会話の操作">
+      <button type="button" id="mapStoryLogButton" onclick="toggleMapStoryLog()">ログ</button>
+      <button type="button" id="mapStoryAuto" onclick="toggleMapStoryAuto()" aria-pressed="${presentation.auto}" ${node?'':'disabled'}>自動</button>
+      <button type="button" class="map-story-skip" onclick="skipMapStoryDialogue()" ${node?'':'disabled'}>会話スキップ</button>
+      <button type="button" class="map-story-close" onclick="closeMapStoryDialogue()" aria-label="会話を閉じて話一覧へ戻る">×</button>
+    </nav>
+    <section class="map-story-dialogue story-scene-panel" aria-labelledby="mapStoryEpisodeTitle">
+      ${!narration&&label?`<strong class="story-scene-nameplate">${label}</strong>`:''}
+      <div class="map-story-message"><p class="story-scene-text${narration?' is-narration':''}" id="mapStoryText"></p></div>
+      <div class="map-story-actions${node?' is-conversation':''}">${primary}${secondary}</div>
+    </section>
+    <section id="mapStoryLog" class="story-scene-log" role="dialog" aria-modal="true" aria-label="会話ログ" hidden>
+      <header><strong>会話ログ</strong><button type="button" onclick="toggleMapStoryLog(false)">閉じる</button></header>
+      <div class="map-story-log-lines">${log}</div>
+      <div><button type="button" class="map-story-back" onclick="previousMapStoryNode()" ${index>0?'':'disabled'}>1つ戻る</button><button type="button" class="map-story-list-button" onclick="closeMapStoryDialogue()">話一覧へ</button></div>
     </section>
   </div>`;
+  const cue=document.querySelector('#mapStoryContent .is-conversation .map-story-next');if(cue)cue.classList.add('is-typing');
+  const textElement=document.querySelector('#mapStoryText');if(!textElement)return;
+  mapStoryTypewriter=createStoryTypewriter(textElement,text,()=>{
+    if(!mapStoryPresentationCurrent(ui))return;
+    if(cue){cue.classList.remove('is-typing');cue.classList.add('story-scene-cue');}
+    scheduleMapStoryAuto(ui,text);
+  });
 }
 // Move only within the current conversation. Battle, rewards and completion keep
 // their existing explicit actions; replay navigation never writes to the save.
@@ -152,8 +214,8 @@ function advanceMapStoryNode(){
   const index=r.nodeId?nodes.findIndex(n=>n.id===r.nodeId):nodes.length;
   mapStoryWrite(()=>{mapStoryState().resume.nodeId=nodes[index+1]?.id||null;},renderMapStory);
 }
-function closeMapStoryDialogue(){if(mapStorySaveRetry)return;mapStoryUi=null;renderMapStory();}
-function editMapStoryParty(){if(mapStorySaveRetry||mapStoryState().resume?.phase==='battle')return;mapStoryUi=null;show('partySet');}
+function closeMapStoryDialogue(){if(mapStorySaveRetry)return;cancelMapStoryPresentation();mapStoryUi=null;renderMapStory();}
+function editMapStoryParty(){if(mapStorySaveRetry||mapStoryState().resume?.phase==='battle')return;cancelMapStoryPresentation();mapStoryUi=null;show('partySet');}
 function renderMapStoryPartyReturn(){
   document.getElementById('mapStoryPartyReturn')?.remove();
   const story=currentMapStory();
