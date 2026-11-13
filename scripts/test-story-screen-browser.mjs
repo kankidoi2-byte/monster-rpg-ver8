@@ -67,5 +67,16 @@ try{
   await shot('map-story');assert(await page.locator('.map-story-scene').isVisible());
   assert.deepEqual(errors,[]);await page.close();
  }
+ // Short motion proposal clip. This records the actual renderer, not a mock-up.
+ const motionContext=await browser.newContext({viewport:{width:360,height:800},isMobile:true,hasTouch:true,reducedMotion:'no-preference',recordVideo:{dir:out+'/video',size:{width:360,height:800}}});
+ const motionPage=await motionContext.newPage();
+ await motionPage.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
+ await motionPage.goto(publicUrl||'http://127.0.0.1:4377/?legacy=1');
+ await motionPage.locator('#titleScreen').click();await motionPage.locator('#titleScreen').waitFor({state:'detached'});
+ await motionPage.evaluate(()=>{clearTutorialUi();save=initSave();save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);closeContractorRankUp();show('home');startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'gnosis_descent',persist:false});tutorialPresentationFinishTyping();});
+ await motionPage.waitForTimeout(700);
+ await motionPage.evaluate(()=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'elna_encounter',persist:false}));
+ await motionPage.waitForTimeout(4500);
+ const proposalVideo=motionPage.video();await motionContext.close();await proposalVideo.saveAs(out+'/black-to-grassland-proposal-360.webm');
  console.log('story presentation: portrait captures, typing, form, log, auto safety, checkpoint and epilogue passed');
 }finally{await browser?.close();server?.kill();}
