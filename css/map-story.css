@@ -1,12 +1,12 @@
-#mapStory{max-width:920px;margin:auto;padding:16px;color:var(--nb-text,#171717)}
-#mapStory button{min-height:44px;white-space:normal;margin:4px;padding:10px 16px}
+:is(#mapStory,#prologuePart2){max-width:920px;margin:auto;padding:16px;color:var(--nb-text,#171717)}
+:is(#mapStory,#prologuePart2) button{min-height:44px;white-space:normal;margin:4px;padding:10px 16px}
 .map-story-list{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
 .map-story-card{padding:16px;border:1px solid #c9bfa7;border-radius:12px;background:#fff}
 .map-story-card h3{margin:8px 0}.map-story-card p{line-height:1.65}
-body:has(#mapStory.active .map-story-scene){overflow:hidden;padding-bottom:0}
-body:has(#mapStory.active .map-story-scene)>.app-topbar,body:has(#mapStory.active .map-story-scene)>.app-bottom-nav{visibility:hidden;pointer-events:none}
-#mapStory.active:has(.map-story-scene){position:fixed;inset:0;z-index:70;width:100%;max-width:none;height:100vh;height:100dvh;margin:0;padding:0;overflow:hidden;animation:none!important}
-#mapStoryContent:has(.map-story-scene){height:100%}
+body:has(:is(#mapStory,#prologuePart2).active .map-story-scene){overflow:hidden;padding-bottom:0}
+body:has(:is(#mapStory,#prologuePart2).active .map-story-scene)>.app-topbar,body:has(:is(#mapStory,#prologuePart2).active .map-story-scene)>.app-bottom-nav{visibility:hidden;pointer-events:none}
+:is(#mapStory,#prologuePart2).active:has(.map-story-scene){position:fixed;inset:0;z-index:70;width:100%;max-width:none;height:100vh;height:100dvh;margin:0;padding:0;overflow:hidden;animation:none!important}
+:is(#mapStoryContent,#prologuePart2Content):has(.map-story-scene){height:100%}
 .map-story-scene{position:relative;isolation:isolate;width:100%;height:100%;overflow:hidden;text-align:left;background:#05070d;color:#fff;cursor:pointer}
 .map-story-bg{z-index:-2}
 .map-story-scene::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(4,8,18,.42),transparent 16%,transparent 52%,rgba(4,8,18,.55) 78%,rgba(4,8,18,.9));z-index:-1}
@@ -15,31 +15,70 @@ body:has(#mapStory.active .map-story-scene)>.app-topbar,body:has(#mapStory.activ
 .map-story-character-stage{position:absolute;inset:0;pointer-events:none}
 .map-story-heading{position:absolute;left:4vw;right:4vw;top:max(12px,env(safe-area-inset-top));pointer-events:none;text-shadow:0 1px 4px #000;font-family:Georgia,"Noto Serif JP",serif}
 .map-story-heading span{font-size:12px}
-#mapStory .map-story-heading h2{position:absolute;top:13vh;left:0;right:0;text-align:center;font-size:clamp(18px,6vw,30px);padding:10px 0;border-block:1px solid var(--story-gold);background:linear-gradient(90deg,transparent,rgba(6,10,22,.72) 22%,rgba(6,10,22,.72) 78%,transparent);opacity:0;visibility:hidden}
-#mapStory .map-story-heading h2.is-intro{visibility:visible;animation:map-story-caption 3s forwards}
-#mapStory .map-story-tools{top:max(42px,calc(env(safe-area-inset-top) + 30px))}
-#mapStory .map-story-scene button{min-height:44px;margin:0;padding:8px 12px;font-size:12px;border-radius:99px;background:rgba(8,13,28,.70);color:#e9e4d3;border:1px solid rgba(226,205,150,.55);box-shadow:none}
-#mapStory .map-story-scene button[aria-pressed="true"]{background:#e2cd96;color:#141a2c}
-#mapStory .map-story-scene button:focus-visible{outline:2px solid #fff0be;outline-offset:3px}
-#mapStory .map-story-scene button:disabled{opacity:.45;cursor:default}
-#mapStory .map-story-dialogue{position:absolute;left:0;right:0;bottom:0;min-height:max(25%,140px);max-height:57%;padding:28px 5.5vw max(26px,env(safe-area-inset-bottom));border-radius:0;cursor:pointer;box-sizing:border-box}
+:is(#mapStory,#prologuePart2) .map-story-heading h2{position:absolute;top:13vh;left:0;right:0;text-align:center;font-size:clamp(18px,6vw,30px);padding:10px 0;border-block:1px solid var(--story-gold);background:linear-gradient(90deg,transparent,rgba(6,10,22,.72) 22%,rgba(6,10,22,.72) 78%,transparent);opacity:0;visibility:hidden}
+:is(#mapStory,#prologuePart2) .map-story-heading h2.is-intro{visibility:visible;animation:map-story-caption 3s forwards}
+:is(#mapStory,#prologuePart2) .map-story-tools{top:max(42px,calc(env(safe-area-inset-top) + 30px))}
+:is(#mapStory,#prologuePart2) .map-story-scene button{min-height:44px;margin:0;padding:8px 12px;font-size:12px;border-radius:99px;background:rgba(8,13,28,.70);color:#e9e4d3;border:1px solid rgba(226,205,150,.55);box-shadow:none}
+:is(#mapStory,#prologuePart2) .map-story-scene button[aria-pressed="true"]{background:#e2cd96;color:#141a2c}
+:is(#mapStory,#prologuePart2) .map-story-scene button:focus-visible{outline:2px solid #fff0be;outline-offset:3px}
+:is(#mapStory,#prologuePart2) .map-story-scene button:disabled{opacity:.45;cursor:default}
+:is(#mapStory,#prologuePart2) .map-story-dialogue{position:absolute;left:0;right:0;bottom:0;min-height:max(25%,140px);max-height:57%;padding:28px 5.5vw max(26px,env(safe-area-inset-bottom));border-radius:0;cursor:pointer;box-sizing:border-box}
 .map-story-message{max-height:calc(57dvh - 100px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
-#mapStory .map-story-message p{margin:0;font-size:clamp(15px,4.5vw,23px);color:#fff}
+:is(#mapStory,#prologuePart2) .map-story-message p{margin:0;font-size:clamp(15px,4.5vw,23px);color:#fff}
 .map-story-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
-#mapStory .map-story-actions .map-story-next{color:#141a2c;background:#e2cd96;border-color:#fff3cf}
+:is(#mapStory,#prologuePart2) .map-story-actions .map-story-next{color:#141a2c;background:#e2cd96;border-color:#fff3cf}
 .map-story-actions.is-conversation{position:absolute;right:4vw;bottom:3%;margin:0}
-#mapStory .is-conversation .map-story-next{color:#e2cd96;background:transparent;border:0;padding:6px 12px;font-size:18px}
-#mapStory .is-conversation .map-story-next.is-typing{opacity:0}
+:is(#mapStory,#prologuePart2) .is-conversation .map-story-next{color:#e2cd96;background:transparent;border:0;padding:6px 12px;font-size:18px}
+:is(#mapStory,#prologuePart2) .is-conversation .map-story-next.is-typing{opacity:0}
 .map-story-log-lines{flex:1;overflow:auto;margin:12px 0}
 .map-story-log-lines p{margin:5px 0}
 @keyframes map-story-caption{0%{opacity:0}18%,75%{opacity:1}100%{opacity:0;visibility:hidden}}
-@media(max-width:360px){#mapStory .map-story-tools{gap:4px;right:2vw}#mapStory .map-story-tools button{padding-inline:9px;font-size:11px}}
-@media(max-height:480px){#mapStory .map-story-dialogue{max-height:60%;min-height:140px}.map-story-message{max-height:calc(60dvh - 90px)}#mapStory .map-story-heading h2{top:6vh;font-size:18px}.map-story-tools{gap:4px}}
-@media(prefers-reduced-motion:reduce){#mapStory .map-story-heading h2{animation:none;opacity:0}#mapStory{animation:none!important}}
+@media(max-width:360px){:is(#mapStory,#prologuePart2) .map-story-tools{gap:4px;right:2vw}:is(#mapStory,#prologuePart2) .map-story-tools button{padding-inline:9px;font-size:11px}}
+@media(max-height:480px){:is(#mapStory,#prologuePart2) .map-story-dialogue{max-height:60%;min-height:140px}.map-story-message{max-height:calc(60dvh - 90px)}:is(#mapStory,#prologuePart2) .map-story-heading h2{top:6vh;font-size:18px}.map-story-tools{gap:4px}}
+@media(prefers-reduced-motion:reduce){:is(#mapStory,#prologuePart2) .map-story-heading h2{animation:none;opacity:0}:is(#mapStory,#prologuePart2){animation:none!important}}
 /* Keep the adopted cinematic buttons independent from the white page theme. */
-.nonbattle-screen#mapStory #mapStoryContent .map-story-scene button{background:rgba(8,13,28,.7)!important;color:#e9e4d3!important}
-.nonbattle-screen#mapStory #mapStoryContent .map-story-scene button[aria-pressed="true"]{background:#e2cd96!important;color:#141a2c!important}
-.nonbattle-screen#mapStory #mapStoryContent .map-story-scene button:disabled{background:rgba(8,13,28,.7)!important;color:#a6a4a0!important}
+.nonbattle-screen:is(#mapStory,#prologuePart2) :is(#mapStoryContent,#prologuePart2Content) .map-story-scene button{background:rgba(8,13,28,.7)!important;color:#e9e4d3!important}
+.nonbattle-screen:is(#mapStory,#prologuePart2) :is(#mapStoryContent,#prologuePart2Content) .map-story-scene button[aria-pressed="true"]{background:#e2cd96!important;color:#141a2c!important}
+.nonbattle-screen:is(#mapStory,#prologuePart2) :is(#mapStoryContent,#prologuePart2Content) .map-story-scene button:disabled{background:rgba(8,13,28,.7)!important;color:#a6a4a0!important}
 .map-story-scene{overflow:clip}
-#mapStory .map-story-scene :is(button,[tabindex]){scroll-margin:0}
-.nonbattle-screen#mapStory #mapStoryContent .is-conversation .map-story-next{background:transparent!important;color:#e2cd96!important;border:0}
+:is(#mapStory,#prologuePart2) .map-story-scene :is(button,[tabindex]){scroll-margin:0}
+.nonbattle-screen:is(#mapStory,#prologuePart2) :is(#mapStoryContent,#prologuePart2Content) .is-conversation .map-story-next{background:transparent!important;color:#e2cd96!important;border:0}
+
+#prologuePart2Raid[hidden]{display:none}
+#prologuePart2Raid{position:fixed;inset:0;z-index:150;background:#080b15b0;display:flex;align-items:end}
+#prologuePart2Raid section{padding:20px;width:100%;color:#fff}
+.prologue-part2-finish{margin:5vh auto;max-width:720px;padding:16px}
+.prologue-part2-effect{position:absolute;inset:0;pointer-events:none}
+.prologue-part2-scene [data-prologue-character-result] img{max-height:70px;width:auto}
+.prologue-part2-scene .prologue-synthesis{margin:0;max-height:35dvh;overflow:auto}
+.prologue-part2-scene .prologue-synthesis p{margin:3px 0}
+
+.prologue-part2-scene .prologue-part2-effect{z-index:0;transition:opacity .35s}
+.prologue-part2-scene[data-effect="fracture"] .prologue-part2-effect{
+  background:conic-gradient(from 7deg at 52% 38%,transparent 0deg 21deg,#cbddffbd 22deg 23deg,transparent 24deg 104deg,#ecf9fbd6 105deg 106deg,transparent 107deg 178deg,#d6edffcd 179deg 181deg,transparent 182deg 247deg,#c4dcffab 248deg 250deg,transparent 251deg 360deg);
+  animation:prologue-fracture .52s ease-out both
+}
+.prologue-part2-scene[data-effect="starShield"] .prologue-part2-effect{background:radial-gradient(ellipse at 54% 47%,transparent 0 12%,#fff2bbac 15%,#acccff75 22%,transparent 31%)}
+.prologue-part2-scene[data-effect="starPath"] .prologue-part2-effect{background:linear-gradient(154deg,transparent 53%,#f6e9b0a6 57%,#bed5ff78 59%,transparent 65%)}
+.prologue-part2-scene[data-effect="reach"] .map-story-character-stage,.prologue-part2-scene[data-effect="holdTrio"] .map-story-character-stage{animation:prologue-close-in .65s ease-out both}
+.prologue-part2-scene[data-effect="transfer"] .prologue-part2-effect{background:radial-gradient(ellipse at 50% 70%,#03010a 8%,#1f183dc9 35%,transparent 66%);animation:prologue-fracture .9s ease-out both}
+.prologue-part2-scene[data-effect="blackout"] .prologue-part2-effect{background:#050508}
+.prologue-part2-scene[data-effect="eyeContact"] .map-story-character-stage{animation:prologue-close-in 1.6s ease-out both}
+.prologue-part2-scene[data-effect="pledgeLight"] .prologue-part2-effect{background:radial-gradient(circle at 50% 47%,#fff5c8 0 1%,#ffe4a06b 3%,transparent 13%);animation:prologue-pledge 1.3s ease-in-out both}
+.prologue-part2-scene[data-effect="silhouette"] .prologue-part2-effect{background:radial-gradient(ellipse at 53% 42%,#05060d 2%,#090b15f0 13%,transparent 28%)}
+.prologue-part2-scene[data-effect="arrival"] .prologue-part2-effect{animation:prologue-fracture 1.2s ease-out reverse both;background:#ddd9eb9c}
+.prologue-part2-scene[data-effect="quiet"] .prologue-part2-effect{background:linear-gradient(transparent,#1411253b)}
+@keyframes prologue-fracture{from{opacity:.15;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes prologue-close-in{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes prologue-pledge{0%{opacity:.2;transform:translateX(-12%)}45%{opacity:1}100%{opacity:.52;transform:translateX(8%)}}
+@media(prefers-reduced-motion:reduce){.prologue-part2-scene *{animation-duration:.001s!important;transition-duration:.001s!important}}
+#prologuePart2Optional{width:min(90vw,560px);max-height:80dvh;overflow:auto;border:1px solid #e2cd96;border-radius:12px;background:#141a2c;color:#fff;padding:20px}
+#prologuePart2Optional::backdrop{background:#080c19b8}
+#prologuePart2Optional button{min-height:44px}
+.prologue-part2-scene[data-effect="closeRift"] .prologue-part2-effect{background:radial-gradient(ellipse at 51% 42%,#060511 5%,#fdedbdcb 11%,#acc9ff8c 14%,transparent 21%);animation:prologue-rift-close 1.2s ease-in both}
+@keyframes prologue-rift-close{from{transform:scaleX(1);opacity:1}to{transform:scaleX(.04);opacity:.12}}
+/* This route opens the full-screen map; keep its return control clear of the fixed resource header. */
+#battleChoices.active #prologuePart2WorldReturn:not([hidden]){
+  position:fixed;z-index:26;left:50%;bottom:calc(82px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);min-height:44px;width:max-content;max-width:calc(100vw - 24px);margin:0
+}

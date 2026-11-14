@@ -38,6 +38,7 @@ function showUiNotice(message, kind='success') {
   replayUiMotion(notice, 'is-visible', 2200);
 }
 function show(id) {
+  if(typeof prologuePart2ScreenChanged==='function')prologuePart2ScreenChanged(id);
   if(typeof renewalScreenChanged==='function')renewalScreenChanged(id);
   if(typeof autoScreenChange==='function')autoScreenChange(id);
   if(typeof closeRoadmapSheet==='function')closeRoadmapSheet();
@@ -86,6 +87,8 @@ function show(id) {
   if (id === 'contractorTitles') renderContractorTitles();
   if (id === 'storyMode' && typeof renderStoryMode === 'function') renderStoryMode();
   if (id === 'partySet') renderPartySetup();
+  if (id === 'partySet' && typeof renderProloguePart2PartyReturn==='function') renderProloguePart2PartyReturn();
+  if (id === 'battleChoices' && typeof renderProloguePart2ReturnRoute==='function') renderProloguePart2ReturnRoute();
   if (id === 'partySet' && typeof renderMapStoryPartyReturn==='function') renderMapStoryPartyReturn();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
@@ -97,6 +100,7 @@ function show(id) {
   if(gachaTarget)openGachaTab(typeof gachaTarget==='string'?gachaTarget:gachaTab,{guide:false});
   if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(gachaTarget&&gachaTab==='skill'?'skillGacha':id);
   scheduleContractorRankUpPresentation();
+  if(typeof prologuePart2RenderOptionalEntry==='function')prologuePart2RenderOptionalEntry(id);
   if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
   if(typeof syncWaterHomeMedia==='function')syncWaterHomeMedia();

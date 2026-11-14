@@ -16,12 +16,28 @@ const SOUL_RECOVERY_STORAGE_KEY=`${SAVE_KEY}_soulContractRecovery_v1`;
 const SOUL_ARCHIVE_STORAGE_KEY=`${SOUL_RECOVERY_STORAGE_KEY}_archived`;
 let rejectedPrimaryRaw = null;
 
-// Additive authority state: old saves retain all existing fields and completion flags.
+// Later prologue progress is independent of the published first-six-episode flags.
+function normalizeProloguePart2(value){
+  const s=isSaveObject(value)?value:{};
+  const episodes=isSaveObject(s.episodes)?{...s.episodes}:{};
+  const ids=[...Array.from({length:16},(_,i)=>`pb_${String(i+7).padStart(2,'0')}`),'pb_ep'];
+  const strings=value=>[...new Set((Array.isArray(value)?value:[]).filter(v=>typeof v==='string'&&v.length>0))];
+  for(const id of ids){
+    if(!isSaveObject(episodes[id])){if(Object.hasOwn(episodes,id))delete episodes[id];continue;}
+    const e=episodes[id];
+    episodes[id]={...e,phase:typeof e.phase==='string'?e.phase:'pre',
+      cursor:typeof e.cursor==='string'?e.cursor:(Number.isSafeInteger(e.cursor)&&e.cursor>=0?e.cursor:null),
+      wonBattleIds:strings(e.wonBattleIds),completed:e.completed===true,rewardClaimed:e.rewardClaimed===true,
+      ...(Object.hasOwn(e,'rewardTargetUids')?{rewardTargetUids:strings(e.rewardTargetUids)}:{})};
+  }
+  return {...s,version:1,episodes,completed:s.completed===true,hubArrived:s.hubArrived===true,
+    trainingSeen:isSaveObject(s.trainingSeen)?{...s.trainingSeen}:{},
+    evidence:isSaveObject(s.evidence)?{...s.evidence}:{},grants:isSaveObject(s.grants)?{...s.grants}:{}};
+}
+// Preserve existing chapter records, but old tutorial completion is not the new epilogue.
 function normalizeAuthoritySave(value,payload){
-  const s=isSaveObject(value)?value:{},t=payload?.progress?.tutorial;
-  const completed=payload?.progress?.storyFlags?.prologueCompleted===true ||
-    !!(t&&(t.prologueCompleted===true||t.completed===true||t.skipped===true||t.status==='completed'||t.status==='skipped'));
-  return {...s,v:1,unlocked:s.unlocked===true||completed,
+  const s=isSaveObject(value)?value:{};
+  return {...s,v:1,unlocked:payload?.prologuePart2?.completed===true,
     clearedChapters:[...new Set((Array.isArray(s.clearedChapters)?s.clearedChapters:[])
       .filter(n=>Number.isInteger(n)&&n>=1&&n<=7))].sort((a,b)=>a-b)};
 }
@@ -254,6 +270,7 @@ function normalizeAutoBattleRun(r){
 }
 function initSave() {
   return {
+    prologuePart2:normalizeProloguePart2(null),
     authority:normalizeAuthoritySave(null),
     autoBattle:normalizeAutoBattle(null),
     gBless:normalizeGBless(null),
@@ -583,6 +600,7 @@ function repairSave(payload,report=[]){
   const ownedTutorialIds=new Set(payload.instances.map(entry=>entry.id));
   if(ownedTutorialIds.has('freigal')&&ownedTutorialIds.has('aquaron'))payload.progress.tutorial.starterContractsGranted=true;
   if(ownedTutorialIds.has('elna_beginner'))payload.progress.tutorial.elnaContractGranted=true;
+  payload.prologuePart2=normalizeProloguePart2(payload.prologuePart2);
   payload.authority=normalizeAuthoritySave(payload.authority,payload);
   payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;

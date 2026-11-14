@@ -24,15 +24,19 @@ try{
    save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
    save.instances=[];save.party=[];
    const a=addInstance('freigal',12),b=addInstance('aquaron',10);save.party=[a.uid,b.uid];
-   delete save.authority;saveGame();show('party');
+   delete save.authority;saveGame();show('growthHub');
+   if(!document.getElementById('authoritySection').hidden)throw Error('legacy tutorial must not unlock authority');
+   save.prologuePart2.completed=true;save.prologuePart2.hubArrived=true;saveGame();show('party');
    return {uid:a.uid,base:instanceMaxHp(a,false),hp:instanceMaxHp(a),coins:save.coins,items:JSON.stringify(save.items)};
   });
   await page.locator('#party [data-nav="growth"]').click();
   await page.locator('#authoritySection').scrollIntoViewIfNeeded();
-  assert.equal(await page.locator('#authorityBoard [role="listitem"]').count(),8);
-  assert.equal(await page.locator('#authorityBoard .is-locked').count(),7);
+  assert.equal(await page.locator('#authorityBoard [role="listitem"]').count(),1);
+  assert.equal(await page.locator('#authorityBoard .is-locked').count(),0);
   assert.equal(await page.locator('#authorityBoard .is-open').count(),1);
-  assert.match(await page.locator('#authorityEffect').innerText(),/仮の効果・仮の数値/);
+  assert.equal(await page.locator('#authorityEffect').isVisible(),false);
+  await page.locator('#authorityBoard button').click();
+  assert.equal(await page.locator('#authorityEffect').innerText(),'0の権能');
   const geometry=await page.locator('#authorityBoard').evaluate(board=>{
    const box=board.getBoundingClientRect(),nodes=[...board.children].map(n=>n.getBoundingClientRect());
    return {fits:nodes.every(n=>n.left>=box.left-1&&n.right<=box.right+1&&n.top>=box.top-1&&n.bottom<=box.bottom+1),overlap:nodes.some((a,i)=>nodes.some((b,j)=>i!==j&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top)),overflow:document.documentElement.scrollWidth>innerWidth};
@@ -54,7 +58,7 @@ try{
    beginChosenBattle('grassland','slime','d1');
    return {hp:pHp,max:playerMaxHp(),base:instanceMaxHp(activeInstance,false),enemy:eHp,expected:enemyMaxHp(),screen:document.querySelector('.screen.active').id};
   });
-  assert.equal(battle.hp,battle.max);assert.equal(battle.max,Math.round(battle.base*1.01));
+  assert.equal(battle.hp,battle.max);assert.equal(battle.max,battle.base);
   assert.equal(battle.enemy,battle.expected);assert.equal(battle.screen,'battle');
   // Story uses the same actual launch path; disable d2 and verify preparation is rebased.
   const story=await page.evaluate(()=>{
@@ -72,5 +76,5 @@ try{
   assert.deepEqual(errors,[]);
   await page.close();
  }
- console.log('authority browser: title/home/party/hunt/battle, gating, 8 nodes, layout, navigation, save/reload, story difficulty passed');
+ console.log('authority browser: title/home/party/hunt/battle, epilogue gating, inert central marker, layout, navigation, save/reload, story difficulty passed');
 }finally{await browser?.close();server.kill();}

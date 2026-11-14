@@ -192,8 +192,9 @@ try{
   assert.equal(await page.evaluate(()=>currentTutorialState().status),'completed');
   assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.dialogs,[]);
   await page.screenshot({path:`${out}/${width}-complete.png`});
-  await tap('#homeAdventureButton');
-  await tap('#storyPrologueChapter > summary');
+  assert.equal(await page.locator('#prologuePart2Content [data-card]').getAttribute('data-card'),'pb_07_pre_01','first half leads directly to episode 7');
+  await tap('#prologuePart2Content [aria-label="会話を閉じて話一覧へ戻る"]');
+  assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open));
   assert.equal(await page.locator('#storyEpisodeList .story-episode-card.is-completed').count(),6,'all six episodes display completed');
   await page.screenshot({path:`${out}/${width}-six-episodes-complete.png`});
   console.log(`PASS ${width}x${height}: ${report.steps.length} steps, ${report.targets.length} target-center checks, ${report.taps.length} coordinate taps`);

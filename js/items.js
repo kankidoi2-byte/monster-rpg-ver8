@@ -8,6 +8,7 @@ function renderShop() {
   section.innerHTML = `
     <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1></div>
     <p class="ui-coin-balance">所持コイン <strong id="coinView">${save.coins||0}</strong>枚</p>
+    ${typeof ProloguePart2Events!=='undefined'?ProloguePart2Events.shopReturnMarkup():''}
     <div id="shopList" class="grid">
       ${SHOP_ITEMS.filter(it => it.shop !== false).map(it => `
         <article class="shop-item-card">
@@ -31,7 +32,7 @@ function buyItem(id){
     alert('コインが足りない！');
     return;
   }
-  if(!commitSaveMutation(()=>{save.coins-=it.price;save.items[id]=(save.items[id]||0)+1;}))return;
+  if(!commitSaveMutation(()=>{save.coins-=it.price;save.items[id]=(save.items[id]||0)+1;if(typeof ProloguePart2Events!=='undefined')ProloguePart2Events.recordShopPurchase();}))return;
   showCommittedSaveResult(()=>{renderShop();updateItems();});
 }
 function renderItemSellSection(){
@@ -215,7 +216,8 @@ function renderBattleItemSelect(){
   ensureContractScrollItem();
   const list=document.getElementById('battleItemList');
   if(!list)return;
-  list.innerHTML = `<p>対象：${typeof battleUiEscape==='function'?battleUiEscape(player?.name||'前衛'):player?.name||'前衛'} / HP ${pHp} / ${playerMaxHp()}。</p>` + SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
+  const loan=typeof prologuePart2LoanItemMarkup==='function'?prologuePart2LoanItemMarkup():'';
+  list.innerHTML = loan+`<p>対象：${typeof battleUiEscape==='function'?battleUiEscape(player?.name||'前衛'):player?.name||'前衛'} / HP ${pHp} / ${playerMaxHp()}。</p>` + SHOP_ITEMS.filter(it=>it.usableInBattle&&!it.contract).map(it=>`
     <div class="item-card">
       <h2>${itemInlineVisual(it)} ${it.name} ×${save.items[it.id]||0}</h2>
       <p>${it.battleDesc || it.desc}</p>
@@ -311,6 +313,7 @@ function chooseDefaultContractItem(){
   return 'contract_scroll';
 }
 function askUseContractScroll(itemId){
+  if(typeof isProloguePart2Battle==='function'&&isProloguePart2Battle()&&!prologuePart2ContractAllowed())return false;
   if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(multiBattle?.active && !multiBattle.finished){
@@ -366,6 +369,7 @@ function useContractScrollConfirmed(){
   return tryContractWithScroll(itemId,{tutorialGuarantee});
 }
 async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee=false}={}){
+  if(typeof isProloguePart2Battle==='function'&&isProloguePart2Battle())return tryProloguePart2Contract(itemId);
   if(typeof normalVictoryPending==='function'&&normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||singleBattleContractAttempted||!battleRewardGranted||!isContractableUnit(enemy))return false;
@@ -415,6 +419,7 @@ function tryCatch(){ askUseContractScroll(); }
 function catchEnemy(){ askUseContractScroll(); }
 function contractEnemy(){ askUseContractScroll(); }
 function renderSingleBattleContractPanel(){
+  if(typeof isProloguePart2Battle==='function'&&isProloguePart2Battle()&&!prologuePart2ContractAllowed())return;
   if(typeof renewalContracts==='function'&&renewalContracts())return;
   const actions=document.getElementById('battleOutcomeActions');
   if(!actions||multiBattle?.active||!battleRewardGranted)return;
@@ -428,6 +433,7 @@ function renderSingleBattleContractPanel(){
   }
   const hasScroll=SHOP_ITEMS.some(item=>item.contract&&(save.items[item.id]||0)>0);
   actions.innerHTML=`<div class="multi-contract-panel"><h3>🤝 契約候補</h3>${hasScroll?`<button onclick="askUseContractScroll()">${enemy.name}と契約</button>`:'<p class="small">契約書を持っていません。</p>'}</div>`;
+  if(typeof isProloguePart2Battle==='function'&&isProloguePart2Battle())actions.innerHTML+='<button type="button" onclick="skipProloguePart2Contract()">契約を見送る</button>';
 }
 function refreshContractScrollDisplay(){
   ensureContractScrollItem();

@@ -45,20 +45,17 @@ function recordAuthorityChapterClear(chapter,payload=save){
   payload.authority=normalizeAuthoritySave(state,payload);
   return true;
 }
+function showAuthorityName(){
+  if(!authorityUnlocked())return;
+  const label=document.getElementById('authorityEffect');
+  if(label){label.textContent='0の権能';label.hidden=false;}
+}
 function renderAuthority(){
   const root=document.getElementById('authoritySection');if(!root)return;
+  const board=document.getElementById('authorityBoard');
+  const label=document.getElementById('authorityEffect');
+  if(label){label.textContent='';label.hidden=true;}
   root.hidden=!authorityUnlocked();
-  if(root.hidden){document.getElementById('authorityBoard').innerHTML='';return;}
-  const state=authorityState();
-  document.getElementById('authorityBoard').innerHTML=AUTHORITY_DATA.nodes.map(node=>{
-    const open=authorityNodeOpen(node,state),center=node.id==='0';
-    const angle=(Number(node.id)-1)*2*Math.PI/7-Math.PI/2;
-    const x=center?50:50+37*Math.cos(angle),y=center?50:50+37*Math.sin(angle);
-    return `<div class="authority-node ${center?'authority-center':''} ${open?'is-open':'is-locked'}" style="--x:${x}%;--y:${y}%" role="listitem" aria-label="${center?'0':node.chapter+'章のマス'}：${open?'開放済み':'未開放'}"><b>${node.id}</b><span>${open?'開放済み':'未開放'}</span></div>`;
-  }).join('');
-  const locked=AUTHORITY_DATA.nodes.filter(n=>n.chapter!==null&&!authorityNodeOpen(n,state)).length;
-  document.getElementById('authorityNote').textContent='通常の戦闘・ストーリーで常時有効。'+(locked===7?'七つの章のマスは、現在すべて未開放です。':locked+'個の章のマスが未開放です。');
-  const zero=AUTHORITY_DATA.nodes.find(n=>n.id==='0');
-  const hp=zero.effects.find(e=>e.stat==='maxHp');
-  document.getElementById('authorityEffect').textContent=hp?`0の権能：味方の最大HP +${hp.percent}%${zero.provisional?'（仮の効果・仮の数値）':''}`:'0の権能：効果未定';
+  if(root.hidden){if(board)board.innerHTML='';return;}
+  if(board)board.innerHTML='<div role="listitem" class="authority-node authority-center is-open" style="--x:50%;--y:50%"><button type="button" onclick="showAuthorityName()" aria-label="0の権能"><b>0</b></button></div>';
 }

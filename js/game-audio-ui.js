@@ -7,7 +7,7 @@ function gameAudioScreenChanged(id){
     if(gameAudioBattleStarted||(typeof battleFeedback!=='undefined'&&battleFeedback.finished))return;
     gameAudioBattleStarted=true;
     // Story/tutorial encounters intentionally keep their existing (silent) score.
-    const ordinary=typeof activeHuntRequest!=='undefined'&&activeHuntRequest&&!['map_story','tutorial'].includes(activeHuntRequest.source)&&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active);
+    const ordinary=typeof activeHuntRequest!=='undefined'&&activeHuntRequest&&!['map_story','prologue_part2','tutorial'].includes(activeHuntRequest.source)&&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active);
     GameAudio.beginBattle(ordinary&&selectedMap?.id==='grassland'?'battle:grassland':'otherBattle');
   }else if(id==='home'||id==='battleChoices')GameAudio.setScene(id==='home'?'home':'mapSelect');
   if(id==='audioSettings')renderGameAudioSettings();
