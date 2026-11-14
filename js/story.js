@@ -42,7 +42,7 @@ function openStoryMode(){
 function continuePrologueStory(){
   if(typeof currentTutorialState!=='function'||typeof startTutorialFlow!=='function')return false;
   const tutorial=currentTutorialState();
-  if(tutorial.status==='completed'||tutorial.status==='skipped')return false;
+  if(tutorial.status==='completed'||tutorial.status==='skipped')return typeof openProloguePart2==='function'?openProloguePart2():false;
   tutorial.chapterGate=false;
   if(typeof saveGame==='function'&&!saveGame()){
     tutorial.chapterGate=true;
@@ -63,8 +63,12 @@ function renderHomeStoryCard(){
   if(typeof tutorialCurrentStepId==='function'&&tutorialCurrentStepId()==='home_requests'){
     kicker.textContent='序章 第3話';title.textContent='救援依頼を報告';summary.textContent='エルナ救援の報酬を受け取る';action.textContent='依頼へ ›';return;
   }
+  const late=snapshot.finished&&typeof prologuePart2CurrentEpisode==='function'?prologuePart2CurrentEpisode():null;
+  if(late){
+    kicker.textContent=`序章 ${prologuePart2Label(late)}`;title.textContent='ストーリー';summary.textContent=late.title;action.textContent='物語を進める ›';return;
+  }
   if(snapshot.finished){
-    kicker.textContent=snapshot.tutorial.status==='skipped'?'チュートリアルスキップ済み':'第6話まで完了';title.textContent='ストーリー';summary.textContent='メイン・マップ・キャラクター・サイド';action.textContent='物語を見る ›';return;
+    kicker.textContent=typeof save!=='undefined'&&save.prologuePart2?.completed?'序章完了':snapshot.tutorial.status==='skipped'?'チュートリアルスキップ済み':'第6話まで完了';title.textContent='ストーリー';summary.textContent='メイン・マップ・キャラクター・サイド';action.textContent='物語を見る ›';return;
   }
   kicker.textContent=`序章 第${episode.number}話`;title.textContent='ストーリー';
   summary.textContent=episode.title;action.textContent=snapshot.tutorial.status==='not_started'?'物語を始める ›':'物語を進める ›';
@@ -103,17 +107,24 @@ function renderStoryMode(){
   const episode=currentStoryEpisode();
   const cleared=PROLOGUE_STORY_EPISODES.filter((_,index)=>['completed','skipped'].includes(storyEpisodeState(index,snapshot))).length;
   const progress=document.getElementById('storyChapterProgress');
-  if(progress)progress.textContent=snapshot.tutorial.status==='skipped'?'スキップ済み':snapshot.finished?`${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`:`続き：第${episode.number}話 ・ ${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`;
+  const late=typeof prologuePart2Available==='function'&&prologuePart2Available();
+  const lateCurrent=late?prologuePart2CurrentEpisode():null;
+  const lateEpisodes=late?prologuePart2Episodes():[];
+  if(progress)progress.textContent=late?`${lateCurrent?'続き：'+prologuePart2Label(lateCurrent)+' ・ ':''}${cleared+lateEpisodes.filter(e=>prologuePart2EpisodeState(e.id).completed).length}/${PROLOGUE_STORY_EPISODES.length+lateEpisodes.length} 完了`:snapshot.tutorial.status==='skipped'?'スキップ済み':snapshot.finished?`${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`:`続き：第${episode.number}話 ・ ${cleared}/${PROLOGUE_STORY_EPISODES.length} 完了`;
   const chapter=document.getElementById('storyPrologueChapter');
-  if(chapter)chapter.open=!snapshot.finished;
+  if(chapter)chapter.open=!snapshot.finished||Boolean(lateCurrent);
   continueCard.hidden=snapshot.finished;
   continueCard.classList.toggle('is-complete',snapshot.finished);
   continueCard.innerHTML=snapshot.finished?'':`<div><span>つづきから</span><h2>第${episode.number}話　${episode.title}</h2></div><button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'再開する'} ›</button>`;
+  if(lateCurrent){
+    continueCard.hidden=false;continueCard.classList.remove('is-complete');
+    continueCard.innerHTML=`<div><span>つづきから</span><h2>${prologuePart2Label(lateCurrent)}　${prologuePart2Escape(lateCurrent.title)}</h2></div><button type="button" onclick="openProloguePart2()">再開する ›</button>`;
+  }
   list.innerHTML=PROLOGUE_STORY_EPISODES.map((entry,index)=>{
     const state=storyEpisodeState(index,snapshot);
     const statusLabel=state==='completed'?'完了':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';
     const action=state==='current'?`<button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'つづきから'} ›</button>`:'';
     return `<article class="story-episode-card is-${state}"><img src="${entry.image}" alt=""><div class="story-episode-copy"><span>序章 第${entry.number}話</span><h3>${entry.title}</h3><p>${state==='locked'?'前の話を完了すると解放されます。':entry.summary}</p>${action}</div><strong class="story-episode-status">${statusLabel}</strong></article>`;
-  }).join('');
+  }).join('')+(late?renderProloguePart2EpisodeCards():'');
 }
 

@@ -175,10 +175,12 @@ function startChosenBattle(mapId, enemyId, difficultyId='normal', requestId=null
 function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) {
   if(normalVictoryPending()||worldMapBattleSavePending())return;
   selectedMap = MAPS.find(m => m.id === mapId) || MAPS[0];
+  if(request?.source==='prologue_part2'&&request.battleBackground)selectedMap={...selectedMap,name:request.battleLocation||selectedMap.name,storyBattleImage:request.battleBackground};
   enemy = structuredClone(by(enemyId));
   if (!enemy) return;
   activeHuntRequest = request || createHuntRequest(selectedMap, enemy, difficultyId, []);
-  if(activeHuntRequest.source==='map_story')enemy=createMapStoryEnemy(activeHuntRequest.enemies[0]);
+  if(activeHuntRequest.source==='prologue_part2')enemy=createProloguePart2Enemy(activeHuntRequest.enemies[0]);
+  else if(activeHuntRequest.source==='map_story')enemy=createMapStoryEnemy(activeHuntRequest.enemies[0]);
   else if(activeHuntRequest.enemyId&&activeHuntRequest.enemyId!==enemy.id)enemy=structuredClone(by(activeHuntRequest.enemyId));
   if (activeHuntRequest.goldenLandMapEntry) {
     const previousMapCount=save.items.golden_land_map;
@@ -229,6 +231,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br><b>Lv.${activeHuntRequest.enemyLevel} ${enemy.name}</b>が現れた！<br>${battleOvertierLog()}${player.name}、出番だ！`;if(typeof captureBattleLog==='function')captureBattleLog();
 }
 function afterBattleNext() {
+  if(typeof isProloguePart2Battle==='function'&&isProloguePart2Battle())return;
   if(typeof autoRun!=='undefined'&&autoRun)return;
   if(normalVictoryPending())return;
   if(worldMapBattleSavePending()&&recordWorldMapBattleResult({saveNow:true})===null)return;
@@ -322,6 +325,7 @@ function performManualPartySwitch(nextIndex) {
   return true;
 }
 function losePartyBattle() {
+  if(typeof prologuePart2BattleOutcome==='function'&&prologuePart2BattleOutcome('defeat'))return;
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('defeat'))return;
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true,autoEnd:'defeat'});
   completeBattleTurn();
@@ -356,6 +360,7 @@ function endPartyRecovery() {
 }
 function runAway() {
   if (busy) return;
+  if(typeof prologuePart2BattleOutcome==='function'&&prologuePart2BattleOutcome('retreat'))return;
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('retreat'))return;
   if (multiBattle?.active) { runAwayFromMultiBattle(); return; }
   const traitReward=typeof settleTraitRetreatReward==='function'?settleTraitRetreatReward():{exp:0,materials:[]};
@@ -371,6 +376,7 @@ function runAway() {
 }
 function win() {
   if (eHp > 0) return;
+  if(typeof prologuePart2BattleOutcome==='function'&&prologuePart2BattleOutcome('victory'))return;
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('victory'))return;
   if (typeof continueTutorialRescueWave === 'function' && continueTutorialRescueWave()) return;
   if (typeof completeTutorialStellaMockVictory === 'function' && completeTutorialStellaMockVictory()) {resetBattleTransientEffects();return;}

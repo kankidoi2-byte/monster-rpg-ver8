@@ -66,7 +66,7 @@ assert.equal(context.state.guides.invasion,false,'a failed save must restore the
 assert.equal(context.startCalls,1,'a failed save must not display an unpersisted guide');
 
 assert.match(multi,/function beginThreeWayBattle\([\s\S]*?startTutorialFeatureGuide\('threeWay',TUTORIAL_THREE_WAY_FLOW_ID\)/,'the three-way guide must trigger after the real battle starts');
-assert.match(multi,/function triggerInvasionIfDue\([\s\S]*?busy = false;\s*if\(typeof startTutorialFeatureGuide==='function'\)startTutorialFeatureGuide\('invasion',TUTORIAL_INVASION_FLOW_ID\)/,'the invasion guide must trigger after the invader arrives');
+assert.match(multi,/function triggerInvasionIfDue\([\s\S]*?busy = false;\s*(?:if\(activeHuntRequest\.source==='prologue_part2'\)prologuePart2InvasionStarted\(\);\s*else )?if\(typeof startTutorialFeatureGuide==='function'\)startTutorialFeatureGuide\('invasion',TUTORIAL_INVASION_FLOW_ID\)/,'the invasion guide must trigger after the invader arrives');
 assert.ok(battleView.includes("!panel.classList.contains('hidden')&&typeof startTutorialFeatureGuide==='function'"),'the Kokoro Link guide must trigger only when its real panel opens');
 
 const ratesContext=vm.createContext({MAX_LEVEL:100});

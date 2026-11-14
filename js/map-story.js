@@ -13,8 +13,8 @@ function mapStoryCompletedCount(story){return story.episodes.filter(e=>mapStoryP
 function mapStoryAvailable(story=currentMapStory()){return ['completed','skipped'].includes(save.progress?.tutorial?.status)&&worldMapEntryAvailable(mapStoryMap(story));}
 function mapStoryUnlocked(episode){return mapStoryAvailable()&&(!episode.unlockAfter||mapStoryProgress(episode.unlockAfter).completed);}
 function isMapStoryBattle(){return activeHuntRequest?.source==='map_story';}
-function mapStoryBattleToken(){return isMapStoryBattle()?activeHuntRequest:null;}
-function mapStoryTokenValid(token){return !token||(activeHuntRequest===token&&token.storyId===mapStoryId&&token.identity===saveTransactionIdentity()&&mapStoryState().resume?.phase==='battle'&&mapStoryState().resume?.attemptId===token.attemptId);}
+function mapStoryBattleToken(){if(typeof prologuePart2BattleToken==='function'&&isProloguePart2Battle())return prologuePart2BattleToken();return isMapStoryBattle()?activeHuntRequest:null;}
+function mapStoryTokenValid(token){if(token?.source==='prologue_part2')return prologuePart2BattleTokenValid(token);return !token||(activeHuntRequest===token&&token.storyId===mapStoryId&&token.identity===saveTransactionIdentity()&&mapStoryState().resume?.phase==='battle'&&mapStoryState().resume?.attemptId===token.attemptId);}
 function mapStoryWrite(mutate,onSaved){
   if(mapStorySaveRetry)return false;
   const identity=saveTransactionIdentity(),storyId=mapStoryId;

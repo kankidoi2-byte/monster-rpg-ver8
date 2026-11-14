@@ -989,12 +989,15 @@ function finishTutorialFlow(){
   const persist=tutorialUiState.persist;
   const returnScreen=tutorialUiState.returnScreen;
   const flowId=tutorialUiState.flowId;
+  const enterPart2=persist&&flowId===TUTORIAL_MAIN_FLOW_ID&&!currentTutorialState().replaying;
   if(persist){
     if(flowId===TUTORIAL_MAIN_FLOW_ID){if(!commitTutorialPrologueCompletion())return;}
     else{completeTutorial();if(typeof saveGame==='function'&&!saveGame())return;}
   }
   clearTutorialUi();
-  if(flowId===TUTORIAL_MAIN_FLOW_ID&&typeof show==='function')show('home');
+  if(flowId===TUTORIAL_MAIN_FLOW_ID&&typeof show==='function'){
+    if(!enterPart2||typeof openProloguePart2!=='function'||!openProloguePart2('pb_07'))show('home');
+  }
   else restoreTutorialReturnScreen(returnScreen);
   updateTutorialMenuSummary();
 }

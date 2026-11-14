@@ -15,7 +15,7 @@ const NONBATTLE_SCREEN_THEMES = Object.freeze({
   growthHub:'growth',evolution:'growth',fusion:'growth',alchemy:'growth',alchemyConfirm:'growth',alchemyResult:'growth',skillEdit:'growth',skillSynthesis:'growth',
   dexHub:'dex',dex:'dex',characterDex:'dex',mapDex:'dex',itemDex:'dex',skillDex:'dex',typeChart:'dex',
   gachaHub:'gacha',
-  storyMode:'story',mapStory:'story',tutorialRequestReport:'story',tutorialStellaCard:'story',battleChoices:'story',
+  storyMode:'story',mapStory:'story',prologuePart2:'story',tutorialRequestReport:'story',tutorialStellaCard:'story',battleChoices:'story',
   expedition:'growth',shop:'menu',moreMenu:'menu',contractorRank:'menu',contractorRankRewards:'menu',contractorTitles:'menu',giftBox:'settings',feedbackBox:'settings',roadmap:'settings',notices:'settings',diagnosticsScreen:'settings',audioSettings:'settings'
 });
 let nonbattlePreviousScreenId=null;

@@ -19,12 +19,12 @@ function setMultiBattleLayout(active) {
 }
 
 function createMultiEnemy(mon, factionId) {
-  const storySpec=activeHuntRequest?.source==='map_story'?activeHuntRequest.enemies[factionId==='enemy_b'?1:0]:null;
-  if(storySpec)mon=createMapStoryEnemy(storySpec);
+  const storySpec=['map_story','prologue_part2'].includes(activeHuntRequest?.source)?activeHuntRequest.enemies[factionId==='enemy_b'?1:0]:null;
+  if(storySpec)mon=activeHuntRequest.source==='prologue_part2'?createProloguePart2Enemy(storySpec):createMapStoryEnemy(storySpec);
   const primary=factionId==='enemy_a';
   const difficulty=huntDifficulty(activeHuntRequest?.difficultyId);
   const level=storySpec?.level||(primary?activeHuntRequest?.enemyLevel:null)||huntLevelFor(mon,difficulty.id,combatRandom);
-  const max=primary&&!storySpec&&activeHuntRequest?.enemyHp?activeHuntRequest.enemyHp:Math.max(1,Math.round(maxHp(mon,level)*(storySpec?1:difficulty.hpMultiplier)));
+  const max=primary&&!storySpec&&activeHuntRequest?.enemyHp?activeHuntRequest.enemyHp:Math.max(1,Math.round(maxHp(mon,level)*(storySpec?(storySpec.hpMultiplier||1):difficulty.hpMultiplier)));
   const attackMultiplier=storySpec?storySpec.attackMultiplier:primary?(Number(activeHuntRequest?.attackMultiplier)||difficulty.attackMultiplier):difficulty.attackMultiplier;
   const rewardMultiplier=primary?(Number(activeHuntRequest?.rewardMultiplier)||difficulty.rewardMultiplier):difficulty.rewardMultiplier;
   return {
@@ -66,6 +66,7 @@ function beginThreeWayBattle() {
     `${selectedMap.name}の${activeHuntRequest.difficultyLabel}討伐依頼を開始！<br>`+
     `⚔️ <b>${multiBattle.enemies[0].mon.name}</b>と<b>${multiBattle.enemies[1].mon.name}</b>が互いを警戒している！<br>${battleOvertierLog()}${player.name}、三つ巴を制せ！`;if(typeof captureBattleLog==='function')captureBattleLog();
   if(activeHuntRequest.source==='map_story')mapStoryBattleBanner();
+  else if(activeHuntRequest.source==='prologue_part2')prologuePart2BattleBanner();
   else if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('threeWay',TUTORIAL_THREE_WAY_FLOW_ID);
 }
 
@@ -74,6 +75,7 @@ function createExistingMultiEnemy() {
   entry.level = activeHuntRequest?.enemyLevel || entry.level;
   entry.maxHp = enemyMaxHp();
   entry.hp = Math.max(0, eHp);
+  entry.alive=entry.hp>0;
   entry.attack = eAtk;
   entry.guard = eGuard;
   entry.status = eStatus;
@@ -90,9 +92,9 @@ function createExistingMultiEnemy() {
 
 function triggerInvasionIfDue() {
   if (multiBattle?.active || activeHuntRequest?.battleMode !== 'invasion_pending') return false;
-  if (battleTurnCount < Number(activeHuntRequest.invasionTurn || 0)) return false;
+  if (battleTurnCount < Number(activeHuntRequest.invasionTurn || 0) && !(activeHuntRequest.source==='prologue_part2'&&eHp<=0)) return false;
   const invader = by(activeHuntRequest.invasionEnemyId);
-  if (!invader || eHp <= 0 || pHp <= 0) return false;
+  if (!invader || (eHp <= 0 && activeHuntRequest.source!=='prologue_part2') || pHp <= 0) return false;
   ensureMultiBattleDom();
   multiBattle = {
     active:true, finished:false, pendingMoveIndex:null, invasion:true,
@@ -112,7 +114,8 @@ function triggerInvasionIfDue() {
   if(typeof renewalBanner==='function')renewalBanner('乱入！','invasion');
   appendMultiLog(`❗ 不穏な気配の正体は<b>${invader.name}</b>だった！<br>乱入した${invader.name}は周囲を警戒している。次のターンから行動する！`);
   busy = false;
-  if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('invasion',TUTORIAL_INVASION_FLOW_ID);
+  if(activeHuntRequest.source==='prologue_part2')prologuePart2InvasionStarted();
+  else if(typeof startTutorialFeatureGuide==='function')startTutorialFeatureGuide('invasion',TUTORIAL_INVASION_FLOW_ID);
   if(typeof renderBattleInputState==='function')renderBattleInputState();
   return true;
 }
@@ -163,7 +166,7 @@ function updateMultiBattleView() {
       `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
       `<div id="${entry.id}Status" class="battle-status" aria-label="${enemyLabel}の有効状態"></div>`+
       `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp-trail" style="width:${pct}%" aria-hidden="true"></div><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+
-      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':activeHuntRequest?.source==='map_story'?'その場を離れた':'💀 撃破済み'}</p>`+
+      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':['map_story','prologue_part2'].includes(activeHuntRequest?.source)?'その場を離れた':'💀 撃破済み'}</p>`+
       `${entry.detailsOpen?`<div class="multi-enemy-details"><span>Lv.${entry.level}</span><span>${typesHtml(entry.mon.types)}</span><span>素早さ ${multiEnemyKokoroLinkSpeed(entry)}</span><small>もう一方の敵とプレイヤーの両方を攻撃対象にする。</small></div>`:''}</div></article>`;
   }).join('');
   if(typeof renderMultiBattleCards==='function')renderMultiBattleCards(cardsHtml);else document.getElementById('multiEnemyGrid').innerHTML=cardsHtml;
@@ -409,7 +412,7 @@ async function performMultiAttackBase(actor,target,move) {
   return {animated};
 }
 
-function appendMultiLog(message){if(typeof activeHuntRequest!=='undefined'&&activeHuntRequest?.source==='map_story')message=message.replaceAll('💀 ','').replaceAll('に倒された！','の攻撃でその場を離れた！').replaceAll('反動で倒れた！','反動で動きが鈍った！').replaceAll('毒で倒れた！','毒で動きが鈍った！');const el=document.getElementById('log');if(el)el.innerHTML=message;if(typeof captureBattleLog==='function')captureBattleLog();if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();}
+function appendMultiLog(message){if(typeof activeHuntRequest!=='undefined'&&['map_story','prologue_part2'].includes(activeHuntRequest?.source))message=message.replaceAll('💀 ','').replaceAll('に倒された！','の攻撃でその場を離れた！').replaceAll('反動で倒れた！','反動で動きが鈍った！').replaceAll('毒で倒れた！','毒で動きが鈍った！');const el=document.getElementById('log');if(el)el.innerHTML=message;if(typeof captureBattleLog==='function')captureBattleLog();if(typeof refreshBattleFeedback==='function')refreshBattleFeedback();}
 function finishMultiBattleTurn(){
   completeBattleTurn();
   const poison=BATTLE_STATUS_EFFECTS.poison;
@@ -434,6 +437,7 @@ function grantMultiEnemyReward(entry,turnBonus,bless=null){
   return {exp,coins,message};
 }
 function winMultiBattle(){
+  if(typeof prologuePart2BattleOutcome==='function'&&prologuePart2BattleOutcome('victory'))return;
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('victory'))return;
   if(battleRewardGranted)return;
   settleNormalVictory(true);
@@ -451,6 +455,7 @@ function prepareMultiVictoryReward(){
 }
 
 function renderMultiContractPanel(){
+  if(activeHuntRequest?.source==='prologue_part2')return;
   if(typeof renewalContracts==='function'&&renewalContracts())return;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return;
   const panel=document.getElementById('multiContractPanel');if(!panel||!multiBattle?.finished)return;
@@ -460,6 +465,7 @@ function renderMultiContractPanel(){
 }
 function selectMultiBattleContractTarget(id){if(normalVictoryPending())return;const entry=multiEnemy(id);if(!entry?.defeatedByPlayer||!isContractableUnit(entry.mon)||multiBattle.contractAttempts[id])return;pendingMultiBattleContractId=id;enemy=entry.mon;askUseContractScroll();}
 async function useMultiBattleContractScroll(itemId){
+  if(activeHuntRequest?.source==='prologue_part2')return false;
   if(normalVictoryPending())return false;
   if(typeof isMapStoryBattle==='function'&&isMapStoryBattle())return false;
   if(postBattleContractBusy||!multiBattle?.active||!multiBattle.finished)return false;
@@ -486,4 +492,5 @@ async function useMultiBattleContractScroll(itemId){
     return committed;
   }finally{postBattleContractBusy=false;busy=false;}
 }
-function runAwayFromMultiBattle(){if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('retreat'))return;const traitReward=typeof settleTraitRetreatReward==='function'?settleTraitRetreatReward():{exp:0,materials:[]};if(!traitReward)return;resetBattleTransientEffects();if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true,autoEnd:'retreat'});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',...traitReward,note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}
+function runAwayFromMultiBattle(){if(typeof prologuePart2BattleOutcome==='function'&&prologuePart2BattleOutcome('retreat'))return;
+  if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('retreat'))return;const traitReward=typeof settleTraitRetreatReward==='function'?settleTraitRetreatReward():{exp:0,materials:[]};if(!traitReward)return;resetBattleTransientEffects();if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true,autoEnd:'retreat'});if(typeof resetKokoroLinkBattleState==='function')resetKokoroLinkBattleState();multiBattle.finished=true;multiBattle.active=false;document.getElementById('log').innerHTML=`🏃 ${multiBattle.invasion?'乱入戦':'三つ巴'}の戦場から逃げきった！`;if(typeof captureBattleLog==='function')captureBattleLog();showBattleOutcome({kind:'retreat',title:'戦場から撤退',...traitReward,note:'パーティーを立て直して再挑戦できる。'});busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();}

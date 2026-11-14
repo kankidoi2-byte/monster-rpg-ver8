@@ -169,7 +169,7 @@ function mapPortraitImage(map){
   return BATTLE_MAPIMG[map?.id] || map?.image || '';
 }
 function battleMapImage(map){
-  return mapPortraitImage(map);
+  return map?.storyBattleImage||mapPortraitImage(map);
 }
 
 /* ===== マップデータ ===== */

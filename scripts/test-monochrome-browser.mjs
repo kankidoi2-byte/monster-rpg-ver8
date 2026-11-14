@@ -302,7 +302,7 @@ try{
    if(target.headingTop!==undefined)verify(target.headingTop>=target.headerBottom-1,`${detail}: heading is not hidden by sticky header`);
    await capture(page,`${width}x${height}-${detail}`);
   }
-  assert.equal(await page.evaluate(()=>{show('home');return document.querySelector('#homeAdventureKicker').textContent;}),'第6話まで完了');
+  assert.equal(await page.evaluate(()=>{show('home');return document.querySelector('#homeAdventureKicker').textContent;}),'序章 第7話');
   assert.equal(await page.locator('#homeQuickLinks button').count(),5,'adopted water home shortcuts');
   for(const variant of ['empty','many','long']){
    await fixture(page,variant);
