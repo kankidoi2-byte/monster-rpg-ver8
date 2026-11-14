@@ -103,6 +103,7 @@ function prologuePart2StopText(){
 function prologuePart2ScreenChanged(id){
   if(id!=='prologuePart2'){
     prologuePart2StopText();
+    prologuePart2Root()?.replaceChildren();
     if(typeof prologuePart2LinkPracticeClear==='function')prologuePart2LinkPracticeClear();
   }
   if(!['battle','battleItemSelect','contractConfirm','prologuePart2'].includes(id)&&!prologuePart2Retry&&typeof isProloguePart2Battle==='function'&&isProloguePart2Battle()){

@@ -77,3 +77,8 @@ body:has(:is(#mapStory,#prologuePart2).active .map-story-scene)>.app-topbar,body
 #prologuePart2Optional button{min-height:44px}
 .prologue-part2-scene[data-effect="closeRift"] .prologue-part2-effect{background:radial-gradient(ellipse at 51% 42%,#060511 5%,#fdedbdcb 11%,#acc9ff8c 14%,transparent 21%);animation:prologue-rift-close 1.2s ease-in both}
 @keyframes prologue-rift-close{from{transform:scaleX(1);opacity:1}to{transform:scaleX(.04);opacity:.12}}
+/* This route opens the full-screen map; keep its return control clear of the fixed resource header. */
+#battleChoices.active #prologuePart2WorldReturn:not([hidden]){
+  position:fixed;z-index:26;left:50%;bottom:calc(82px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);min-height:44px;width:max-content;max-width:calc(100vw - 24px);margin:0
+}
