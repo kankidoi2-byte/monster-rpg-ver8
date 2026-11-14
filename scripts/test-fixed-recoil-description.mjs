@@ -60,7 +60,9 @@ for(const sk of cards){
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_kimeragna_apex_03'),{includeBase:false})`),text+'。極限の嵐を解放する。');
 for(const sk of r.run('MOVE_CARDS.filter(s=>!s.id.startsWith("s110_")&&s.effect!=="recoil"&&s.effect!=="heal"&&!["skill_shenhairon_02","skill_nightmare_02","skill_noxvelg_02"].includes(s.id))')){
- const arg=JSON.stringify(sk.id);assert.equal(r.run(`moveEffectText(skillToMove(${arg}))`),old.run(`moveEffectText(skillToMove(${arg}))`).replace(/HPを\d+＋Lv×[\d.]+回復/g,'最大HPに応じて回復'));
+ const arg=JSON.stringify(sk.id);
+ const expected=old.run(`moveEffectText(skillToMove(${arg}))`).replace(/HPを\d+＋Lv×[\d.]+回復/g,'最大HPに応じて回復');
+ assert.equal(r.run(`moveEffectText(skillToMove(${arg}))`),sk.id==='skill_icegolem_01'?expected.replace(/^水属性/,'氷属性'):expected);
 }
 assert.equal(r.run(`moveEffectText(skillToMove('skill_alchemion_01'),{includeBase:false})`),'攻撃後、実際に与えたダメージの25％を反動として受ける');
 for(const sk of r.run('MOVE_CARDS.filter(s=>s.effect==="tactical" && s.tactical?.recoil)'))assert((sk.detailedDesc||r.run(`moveEffectText(skillToMove(${JSON.stringify(sk.id)}))`)).includes('最大HP'));

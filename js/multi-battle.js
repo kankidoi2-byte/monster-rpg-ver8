@@ -30,7 +30,7 @@ function createMultiEnemy(mon, factionId) {
   return {
     id:factionId, factionId, mon:structuredClone(mon), level, hp:max, maxHp:max, attackMultiplier, rewardMultiplier,
     attack:1, guard:false, status:null, poisonTurns:0, paralysisTurns:0,
-    confusionTurns:0, sleepTurns:0, flareCharge:false, aquaShield:false,
+    confusionTurns:0, sleepTurns:0, freezeTurns:0, flareCharge:false, aquaShield:false,
     poisonSourceIsPlayer:false, alive:true, defeatedByPlayer:false, rewardGranted:false
   };
 }
@@ -82,6 +82,7 @@ function createExistingMultiEnemy() {
   entry.paralysisTurns = eParalysisTurns;
   entry.confusionTurns = eConfusionTurns;
   entry.sleepTurns = eSleepTurns;
+  entry.freezeTurns = eFreezeTurns;
   entry.flareCharge = eFlareCharge;
   entry.aquaShield = eAquaShield;
   return entry;
@@ -131,7 +132,7 @@ function setupMultiBattle() {
 
 function aliveMultiEnemies() { return multiBattle?.enemies?.filter(entry => entry.alive && entry.hp > 0) || []; }
 function multiEnemy(id) { return multiBattle?.enemies?.find(entry => entry.id === id) || null; }
-function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield)+enemyKokoroLinkStatusHtml(entry.id); }
+function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield,entry.freezeTurns)+enemyKokoroLinkStatusHtml(entry.id); }
 function multiEnemyKokoroLinkSpeed(entry){return enemyKokoroLinkSpeed(entry.mon,entry.id,entry.level);}
 function multiStatChangeHtml(entry) {
   const changes=[];
@@ -226,6 +227,7 @@ async function runMultiActions(actions,index) {
     // Match single battles: do not let it execute the previous member's skill.
     let canAct=pHp>0 && activeInstance?.uid===actions.playerUid;
     if(canAct && typeof beginBattleAction==='function')beginBattleAction(player,action.move,true);
+    if(canAct){const frozen=consumeBattleFreeze(tacticalCombatant(true));if(frozen){appendMultiLog(frozen);canAct=false;}}
     if (canAct && pSleepTurns>0) { pSleepTurns--; appendMultiLog(`💤 ${player.name}は眠っていて動けない！`); canAct=false; }
     if (canAct && pParalysisTurns>0) { pParalysisTurns--; if(combatRandom()<.30){appendMultiLog(`⚡ ${player.name}は体がしびれて動けない！`);canAct=false;} }
     if (canAct && pConfusionTurns>0) {
@@ -233,7 +235,7 @@ async function runMultiActions(actions,index) {
       const roll=combatRandom();
       if(roll>=.50&&roll<.75){appendMultiLog(`🌀 ${player.name}はこんらんして動けない！`);canAct=false;}
       if(roll>=.75){
-        const raw=confusionSelfDamage(player,activeInstance?.level,pAtk*playerAttackInstanceMultiplier()),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage,defense=kokoroLinkDefenseMessage(barrier);
+        const raw=confusionSelfDamage(player,activeInstance?.level,pAtk*playerAttackInstanceMultiplier(),playerLinkDefenseMultiplier(true)),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage,defense=kokoroLinkDefenseMessage(barrier);
         pHp=Math.max(0,pHp-dmg);
         if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
         appendMultiLog(`🌀 ${player.name}はこんらんして自分に${dmg}ダメージ！${defense?`<br>${defense}`:''}`);
@@ -274,6 +276,7 @@ async function performMultiAttackBase(actor,target,move) {
   const a=actorIsPlayer?player:actor.mon; const d=defenderIsPlayer?player:target.mon;
   const [name,power,type,effect,effectChance]=move; let msg='';
   if(typeof beginBattleAction==='function'&&!actorIsPlayer)beginBattleAction(a,move,false);
+  if(!actorIsPlayer){const frozen=consumeBattleFreeze(tacticalCombatant(false,actor));if(frozen){appendMultiLog(frozen);return;}}
   if (!actorIsPlayer && actor.sleepTurns>0) { actor.sleepTurns--; msg=`💤 ${a.name}は眠っていて動けない！`; appendMultiLog(msg); return; }
   if (!actorIsPlayer && actor.paralysisTurns>0) { actor.paralysisTurns--; if(combatRandom()<.30){appendMultiLog(`⚡ ${a.name}は体がしびれて動けない！`);return;} }
   if (!actorIsPlayer && actor.confusionTurns>0) {
@@ -319,7 +322,7 @@ async function performMultiAttackBase(actor,target,move) {
   if(effect==='sleep'&&power<=0){
     const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.7):{chance:effectChance??.7,boosted:false};
     const boostMsg=chance.boosted?'<br>⭐ 星運上昇で成功率アップ！':'';
-    if(combatRandom()<chance.chance){let applied=true;if(defenderIsPlayer){if(typeof traitReceiveStatus==='function')applied=traitReceiveStatus('sleep',()=>{pSleepTurns=2;},actor);else pSleepTurns=2;}else targetEntry.sleepTurns=2;if(applied)appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
+    if(combatRandom()<chance.chance&&tacticalCombatant(defenderIsPlayer,defenderIsPlayer?null:target).freeze<=0){let applied=true;if(defenderIsPlayer){if(typeof traitReceiveStatus==='function')applied=traitReceiveStatus('sleep',()=>{pSleepTurns=2;},actor);else pSleepTurns=2;}else targetEntry.sleepTurns=2;if(applied)appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg}<br>💤 ${d.name}はねむり状態になった！`);}else appendMultiLog(`🌿 ${a.name}の「${name}」！${boostMsg} しかし効かなかった！`);
     updateMultiBattleView();return typeof finishBattleSkillMotion==='function'?await finishBattleSkillMotion(supportAnimated):{animated:supportAnimated};
   }
   const animated=power>0&&typeof playBattleSkillMotion==='function'?await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true}):false;
@@ -335,7 +338,7 @@ async function performMultiAttackBase(actor,target,move) {
   const effectiveType=kokoroLinkPenetratedMultiplier(r,penetration.rate),attackDefense={};
   const actorLevel=actorIsPlayer?activeInstance?.level:actor.level;
   const targetLevel=defenderIsPlayer?activeInstance?.level:targetEntry.level;
-  const statMultiplier=battleStatDamageMultiplier(a,actorLevel,d,targetLevel)*(typeof traitDamageMultiplier==='function'?traitDamageMultiplier(actorIsPlayer,move,actorIsPlayer?null:actor,target):1);
+  const statMultiplier=battleStatDamageMultiplier(a,actorLevel,d,targetLevel,playerLinkDefenseMultiplier(defenderIsPlayer))*(typeof traitDamageMultiplier==='function'?traitDamageMultiplier(actorIsPlayer,move,actorIsPlayer?null:actor,target):1);
   const rawDamage=(effectivePower*atk*effectiveType+combatRandom()*9)*difficulty*map*statMultiplier;
   const linkBarrier=legacyAttackDefense(rawDamage,defenderIsPlayer,guard,shield,penetration.rate,attackDefense);
   const damage=linkBarrier.hpDamage;
@@ -346,6 +349,7 @@ async function performMultiAttackBase(actor,target,move) {
   if(typeof battleHpResult==='function')battleHpResult(impactTargetId,defenderHpBefore,defenderIsPlayer?pHp:targetEntry.hp,{label:linkBarrier.evaded?'回避':`被弾${guard?'・防御':''}${shield?'・水の盾':''}`,damage,barrier:linkBarrier.absorbed,reduced:linkBarrier.reduced,effectiveness:r,types:moveTypes(move),power,impact:true});
   else if(typeof playBattleImpact==='function')playBattleImpact(impactTargetId,damage,r,moveTypes(move),power);
   msg=`⚔️ ${a.name}の「${name}」！ ${d.name}に<b>${damage}</b>ダメージ！`;
+  msg+=thawBattleFreeze(tacticalCombatant(defenderIsPlayer,defenderIsPlayer?null:targetEntry),move,!linkBarrier.evaded);
   const defenseMsg=kokoroLinkDefenseMessage(linkBarrier);if(defenseMsg)msg+=`<br>${defenseMsg}`;
   if(powerBoost.boosted)msg+='<br>🐉 竜威増幅で技威力アップ！';
   if(penetration.penetrated)msg+='<br>🐲 竜牙貫通で耐性・軽減を20%分貫通！';
@@ -394,8 +398,8 @@ async function performMultiAttackBase(actor,target,move) {
       if(applied)msg+='<br>☠️ 毒状態になった！';
       }
     }
-    if(effect==='paralysis'){const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.3):{chance:effectChance??.3,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(combatRandom()<chance.chance){let applied=true;if(defenderIsPlayer){if(typeof traitReceiveStatus==='function')applied=traitReceiveStatus('paralysis',()=>{pParalysisTurns=3;},actor);else pParalysisTurns=3;}else targetEntry.paralysisTurns=3;if(applied)msg+='<br>⚡ 麻痺状態になった！';}}
-    if(effect==='confusion'){const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.6):{chance:effectChance??.6,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(combatRandom()<chance.chance){const turns=2+Math.floor(combatRandom()*2);let applied=true;if(defenderIsPlayer){if(typeof traitReceiveStatus==='function')applied=traitReceiveStatus('confusion',()=>{pConfusionTurns=turns;},actor);else pConfusionTurns=turns;}else targetEntry.confusionTurns=turns;if(applied)msg+='<br>🌀 こんらんした！';}}
+    if(effect==='paralysis'&&tacticalCombatant(defenderIsPlayer,targetEntry).freeze<=0){const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.3):{chance:effectChance??.3,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(combatRandom()<chance.chance){let applied=true;if(defenderIsPlayer){if(typeof traitReceiveStatus==='function')applied=traitReceiveStatus('paralysis',()=>{pParalysisTurns=3;},actor);else pParalysisTurns=3;}else targetEntry.paralysisTurns=3;if(applied)msg+='<br>⚡ 麻痺状態になった！';}}
+    if(effect==='confusion'&&tacticalCombatant(defenderIsPlayer,targetEntry).freeze<=0){const chance=actorIsPlayer?playerKokoroLinkChance(effectChance??.6):{chance:effectChance??.6,boosted:false};if(chance.boosted)msg+='<br>⭐ 星運上昇で成功率アップ！';if(combatRandom()<chance.chance){const turns=2+Math.floor(combatRandom()*2);let applied=true;if(defenderIsPlayer){if(typeof traitReceiveStatus==='function')applied=traitReceiveStatus('confusion',()=>{pConfusionTurns=turns;},actor);else pConfusionTurns=turns;}else targetEntry.confusionTurns=turns;if(applied)msg+='<br>🌀 こんらんした！';}}
   }
   appendMultiLog(msg);
   if(!defenderIsPlayer&&targetEntry.hp<=0){targetEntry.alive=false;targetEntry.defeatedByPlayer=actorIsPlayer;appendMultiLog(`💀 ${targetEntry.mon.name}は${a.name}に倒された！`);}

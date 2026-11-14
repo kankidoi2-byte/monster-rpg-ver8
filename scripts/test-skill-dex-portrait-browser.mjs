@@ -122,7 +122,7 @@ try{
   const measured=await checkedMetrics(page,`${width}px`,`${width}`,{phone:width<=430});
   const metrics=measured.metrics,entry={width,height,normal:measured.result};
   assert.equal(new Set(metrics.cards.map(c=>c.id)).size,110);
-  assert.equal(new Set(metrics.cards.flatMap(c=>c.types)).size,10,'all ten attributes represented');
+  assert.deepEqual([...new Set(metrics.cards.flatMap(c=>c.types))].sort(), ['dark','dragon','fire','grass','ice','light','normal','star','thunder','water','wind'], 'all eleven attributes represented');
   if(width>=844){assert(entry.normal.columns>=3,'larger screens adapt column count');assert(entry.normal.minWidth>=140,'readable adaptive desktop card width');}
   await screenshotExamples(page,`${width}x${height}`);
   // All filter options and all ordering modes use the unchanged runtime query result.
@@ -150,7 +150,7 @@ try{
   await page.evaluate(()=>{skillDexSelectedId=null;document.getElementById('skillDexDetail').innerHTML='';resetSkillDexFilters();});
   // Every card, including the last, can reach a point not blocked by the fixed chrome.
   for(const card of await page.locator('[data-skill-dex-id]').all()){
-   await card.evaluate(el=>{const r=el.getBoundingClientRect();window.scrollTo({top:scrollY+r.top+r.height/2-innerHeight/2,behavior:'instant'});});await settle(page);
+   await card.click({trial:true}); // Wait for the card to receive events without changing the selection.
    const tap=await card.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const hit=document.elementFromPoint(x,y);return {ok:!!hit&&(el.contains(hit)||el.closest('button').contains(hit)),id:el.closest('button').dataset.skillDexId,rect:r.toJSON(),hit:hit?.outerHTML.slice(0,300),scrollY,innerHeight};});assert(tap.ok,'TCG card tap target: '+JSON.stringify(tap));
   }
   if(width<=430){

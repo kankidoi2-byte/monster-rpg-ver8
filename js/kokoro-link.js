@@ -19,6 +19,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
     extraAttackRate:.15,
     extraBarrierMaxHpRate:.15,
     extraSpeedRate:.15,
+    extraDefenseRate:.15,
     instantHealMaxHpRate:.20,
     regenerationMaxHpRatePerTurn:.05,
     damageOverTimeMaxHpRatePerTurn:.05,
@@ -52,6 +53,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
     normal:Object.freeze({power:'balanced_boost',status:'origin_weaken',tactics:'origin_choice'}),
     fire:Object.freeze({power:'attack_boost',status:'burn',tactics:'recoil_guard'}),
     water:Object.freeze({power:'barrier_boost',status:'slow',tactics:'water_mirror_guard'}),
+    ice:Object.freeze({power:'defense_boost',status:'freeze',tactics:'time_stop'}),
     grass:Object.freeze({power:'regeneration',status:'poison',tactics:'instant_heal'}),
     thunder:Object.freeze({power:'speed_boost',status:'paralysis',tactics:'action_priority'}),
     wind:Object.freeze({power:'evasion',status:'action_delay',tactics:'free_switch'}),
@@ -63,6 +65,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
   abilities:Object.freeze({
     balanced_boost:Object.freeze({target:'ally',kind:'boost',rate:.05,stats:Object.freeze(['attack','barrier','speed'])}),
     attack_boost:Object.freeze({target:'ally',kind:'boost',rate:.15,stat:'attack'}),
+    defense_boost:Object.freeze({target:'ally',kind:'boost',rate:.15,stat:'defense'}),
     barrier_boost:Object.freeze({target:'ally',kind:'barrier',maxHpRate:.15}),
     regeneration:Object.freeze({target:'ally',kind:'regeneration',maxHpRatePerTurn:.05,durationTurns:2}),
     speed_boost:Object.freeze({target:'ally',kind:'boost',rate:.15,stat:'speed'}),
@@ -76,6 +79,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
     slow:Object.freeze({target:'enemy',kind:'debuff',rate:.20,stat:'speed',durationTurns:2}),
     poison:Object.freeze({target:'enemy',kind:'damage-over-time',maxHpRatePerTurn:.05,durationTurns:2}),
     paralysis:Object.freeze({target:'enemy',kind:'control',durationTurns:1}),
+    freeze:Object.freeze({target:'enemy',kind:'control',durationTurns:1}),
     action_delay:Object.freeze({target:'enemy',kind:'action-order',durationTurns:1}),
     dazzle:Object.freeze({target:'enemy',kind:'accuracy-down',rate:.20,durationTurns:2}),
     confusion:Object.freeze({target:'enemy',kind:'control',durationTurns:1}),
@@ -85,6 +89,7 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
     small_heal:Object.freeze({target:'ally',kind:'heal',maxHpRate:.10}),
     recoil_guard:Object.freeze({target:'ally',kind:'recoil-guard',charges:1}),
     water_mirror_guard:Object.freeze({target:'ally',kind:'damage-reduction',rate:.30,charges:1}),
+    time_stop:Object.freeze({target:'ally',kind:'extend-buff',extraTurns:1}),
     cost_reduction:Object.freeze({target:'ally',kind:'cost-reduction',amount:1,minimumCost:1,charges:1}),
     instant_heal:Object.freeze({target:'ally',kind:'heal',maxHpRate:.20}),
     action_priority:Object.freeze({target:'ally',kind:'action-order',charges:1}),
@@ -99,10 +104,10 @@ const KOKORO_LINK_ABILITY_RULES = Object.freeze({
   })
 });
 
-let kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map(),enemyEffectsByTargetKey:new Map()};
+let kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map(),enemyEffectsByTargetKey:new Map(),pendingTimeStops:0};
 
 function resetKokoroLinkBattleState(){
-  kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map(),enemyEffectsByTargetKey:new Map()};
+  kokoroLinkBattleState={usedSourceUids:new Set(),linksByTargetUid:new Map(),enemyEffectsByTargetKey:new Map(),pendingTimeStops:0};
   return kokoroLinkBattleSnapshot();
 }
 
@@ -205,6 +210,7 @@ function buildKokoroLinkPowerAbility(plan,targetStats={}){
   const definitions={
     balanced_boost:{label:'原初の万能強化',summary:'攻撃・障壁・素早さ +5%',extraAttackRate:.05,extraBarrier:Math.round(targetMaxHp*.05),extraSpeed:Math.round(targetSpeed*.05)},
     attack_boost:{label:'炎心強化',summary:'攻撃ダメージ +15%',extraAttackRate:.15},
+    defense_boost:{label:'防御強化',summary:'防御 +15%',extraDefenseRate:.15},
     barrier_boost:{label:'水護障壁',summary:'障壁 +15%',extraBarrier:Math.round(targetMaxHp*.15)},
     regeneration:{label:'森命再生',summary:'各ターンHP5%回復（2ターン）',remainingTurns:2,maxHpRatePerTurn:.05},
     speed_boost:{label:'雷速強化',summary:'素早さ +15%',extraSpeed:Math.round(targetSpeed*.15)},
@@ -226,6 +232,7 @@ function buildKokoroLinkStatusAbility(plan){
     slow:{label:'鈍足',summary:'素早さ -20%（2ターン）',components:[{category:'speed',rate:.20,durationTurns:2}]},
     poison:{label:'毒',summary:'最大HP5%ダメージ（2ターン）',components:[{category:'poison',maxHpRatePerTurn:.05,durationTurns:2}]},
     paralysis:{label:'麻痺',summary:'麻痺（1ターン）',controlStatus:'paralysis',durationTurns:1},
+    freeze:{label:'凍結',summary:'凍結（1ターン行動不能）',controlStatus:'freeze',durationTurns:1},
     action_delay:{label:'行動遅延',summary:'次の行動順を最後へ送る',components:[{category:'action-delay',charges:1}]},
     dazzle:{label:'目くらまし',summary:'命中 -20%（2ターン）',components:[{category:'accuracy',rate:.20,durationTurns:2}]},
     confusion:{label:'こんらん',summary:'こんらん（1ターン）',controlStatus:'confusion',durationTurns:1},
@@ -242,6 +249,7 @@ function buildKokoroLinkTacticsAbility(plan){
     origin_choice:{label:'原初選択',summary:'HP10%回復／状態異常解除から選択',options:[{id:'small_heal',label:'小回復',summary:'最大HP10%回復'},{id:'cleanse',label:'浄化',summary:'状態異常をすべて解除'},{id:'cost_reduction',label:'技コスト軽減',summary:'戦闘内コスト実装まで保留',deferred:true}]},
     recoil_guard:{label:'炎身不動',summary:'次の反動ダメージを1回無効',charges:1},
     water_mirror_guard:{label:'水鏡の護り',summary:'次に受ける直接ダメージを30%軽減（1回）',charges:1,reductionRate:.30},
+    time_stop:{label:'時止め',summary:'味方の強化の残りターンを1ターン延ばす。なければ次の強化を延ばす',extraTurns:1},
     cost_reduction:{label:'水脈節約',summary:'戦闘内コスト実装まで保留',deferred:true},
     instant_heal:{label:'森命活性',summary:'最大HP20%を即時回復',maxHpRate:.20},
     action_priority:{label:'雷迅先行',summary:'次の行動を最優先',charges:1},
@@ -261,12 +269,37 @@ function kokoroLinkTacticsAbilityStatus(instance){
   if(ability.deferred)return `${ability.label} 保留中`;
   if(ability.id==='origin_choice'&&!ability.resolved)return `${ability.label} 選択待ち`;
   if(Number.isFinite(ability.charges))return ability.charges>0?`${ability.label} 待機中`:`${ability.label} 使用済み`;
+  if(ability.id==='time_stop'&&ability.pending)return `${ability.label} 次の強化待ち`;
   return ability.resolved?`${ability.label} 発動済み`:ability.label;
 }
 function markKokoroLinkTacticsResolved(linkOrInstance,details={}){
   const ability=linkOrInstance?.tacticsAbility||kokoroLinkTacticsAbilityFor(linkOrInstance);if(!ability||ability.resolved)return false;
   Object.assign(ability,details,{resolved:true});return true;
 }
+// Time Stop is scoped to effects with a real turn counter. It does not
+// create an expiry for permanent buffs or extra charges/HP for hit-based buffs.
+function resolveKokoroLinkTimeStop(link,partyEntries,otherTimedBuffs=[]){
+  if(link?.tacticsAbility?.id!=='time_stop'||!markKokoroLinkTacticsResolved(link))return null;
+  const powerAbilities=partyEntries.filter(kokoroLinkPartyEntryAlive).map(entry=>
+    kokoroLinkEffectForTarget(kokoroLinkTargetUid(entry))?.powerAbility);
+  const active=powerAbilities.filter(ability=>ability?.remainingTurns>0);
+  for(const ability of active)ability.remainingTurns++;
+  for(const extend of otherTimedBuffs)extend();
+  const count=active.length+otherTimedBuffs.length;
+  if(!count){
+    link.tacticsAbility.pending=true;
+    kokoroLinkBattleState.pendingTimeStops++;
+  }
+  return {extended:count};
+}
+function extendNextPlayerTimedBuff(turns){
+  if(kokoroLinkBattleState.pendingTimeStops<=0)return turns;
+  const waiting=[...kokoroLinkBattleState.linksByTargetUid.values()].find(link=>link.tacticsAbility?.id==='time_stop'&&link.tacticsAbility.pending);
+  if(waiting)waiting.tacticsAbility.pending=false;
+  kokoroLinkBattleState.pendingTimeStops--;
+  return turns+1;
+}
+
 function resolveKokoroLinkTacticsChoice(instance,optionId){
   const ability=kokoroLinkTacticsAbilityFor(instance),option=ability?.options?.find(item=>item.id===optionId&&!item.deferred);
   if(!ability||ability.id!=='origin_choice'||ability.resolved||!option)return {resolved:false,reason:'unavailable'};
@@ -385,6 +418,7 @@ function applyKokoroLinkPowerAbility(effects,powerAbility){
     barrierCap:effects.barrierCap+extraBarrier,
     attackBonus:kokoroLinkRounded(effects.attackBonus+extraAttackRate,4),
     attackMultiplier:kokoroLinkRounded(effects.attackMultiplier+extraAttackRate,4),
+    ...(powerAbility.extraDefenseRate ? {defenseMultiplier:1+powerAbility.extraDefenseRate} : {}),
     speedBonus:effects.speedBonus+extraSpeed,
     speedCap:effects.speedCap+extraSpeed
   };
@@ -501,6 +535,7 @@ function activateKokoroLinkSource(sourceUid, partyEntries, activeIndex, targetSt
     tacticsAbility:resolved.tacticsAbility,
     barrierRemaining:resolved.effects.barrier
   };
+  if(link.powerAbility?.remainingTurns>0)link.powerAbility.remainingTurns=extendNextPlayerTimedBuff(link.powerAbility.remainingTurns);
   kokoroLinkBattleState.linksByTargetUid.set(targetUid,link);
   return {ok:true,link};
 }
@@ -515,6 +550,9 @@ function kokoroLinkAttackMultiplierFor(instance){
   return kokoroLinkEffectForInstance(instance)?.effects?.attackMultiplier || 1;
 }
 
+function kokoroLinkDefenseMultiplierFor(instance){
+  return kokoroLinkEffectForInstance(instance)?.effects?.defenseMultiplier || 1;
+}
 function kokoroLinkSpeedBonusFor(instance){
   return Math.max(0,Number(kokoroLinkEffectForInstance(instance)?.effects?.speedBonus) || 0);
 }

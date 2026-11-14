@@ -3,7 +3,7 @@ import {runtime,seeded} from './runtime.mjs';
 process.env.AUDIT_REF ||= '4ad50548f3dd9e5803cb7f2308c8df2e2d3c6f1a';
 const r=runtime();r.context.Math.random=seeded(20260908);
 const result=await r.run(`(async()=>{
- const attributes=['normal','fire','water','grass','thunder','wind','light','dark','star','dragon'];
+ const attributes=['normal','fire','water','ice','grass','thunder','wind','light','dark','star','dragon'];
  const matrix=attributes.map(a=>({attack:a,against:Object.fromEntries(attributes.map(d=>[d,typeEff(a,[d])]))}));
  const moves=[];save=initSave();save.instances=[];save.party=[];
  const reps=attributes.map(t=>M.find(m=>m.types.length===1&&m.types[0]===t)||M.find(m=>m.types[0]===t)).filter(Boolean);

@@ -1245,7 +1245,7 @@ function continueTutorialRescueWave(){
   busy=true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   try{
     enemy=structuredClone(nextEnemy);eHp=enemyMaxHp();eAtk=1;eGuard=false;eStatus=null;
-    ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFlareCharge=false;eAquaShield=false;
+    ePoisonTurns=0;eParalysisTurns=0;eConfusionTurns=0;eSleepTurns=0;eFreezeTurns=0;eFlareCharge=false;eAquaShield=false;
     battleRewardGranted=false;
     if(typeof forgetBattleEnemyFeedback==='function')forgetBattleEnemyFeedback();
     setupBattle();
@@ -2107,7 +2107,7 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'stella_attribute_intro',screenId:'skillEdit',target:'[data-tutorial-stella-skill-card]',persistAs:'stella_attribute_intro',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'技の属性',text:'技には属性がある！相手に有利な属性なら、ダメージが大きくなるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_more_open',screenId:'skillEdit',target:'[data-nav="more"]',advanceOnTarget:true,title:'属性表を見よう',text:'ここを押すと、属性相性を確認できるメニューへ進めるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_type_chart_open',screenId:'moreMenu',target:'#typeChartButton',advanceOnTarget:true,title:'属性相性',text:'ここを押すと、どの属性が有利か確認できるぞ！',progressLabel:'ATTRIBUTE'},
-  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'属性相性の見方',text:'火・水・雷・風・森と、光・闇・星にはそれぞれ相性の輪がある。矢印の向きを見れば有利属性が分かるぞ！',progressLabel:'ATTRIBUTE'},
+  {id:'stella_type_basic',screenId:'typeChart',target:'#typeBasicChart',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'属性相性の見方',text:'火・氷・森・風・雷・水と、光・闇・星にはそれぞれ相性の輪がある。矢印の向きを見れば有利属性が分かるぞ！',progressLabel:'ATTRIBUTE'},
   {id:'stella_mock_battle',screenId:'typeChart',persistAs:'stella_mock_battle',transition:'start_stella_mock_battle',nextStepId:'stella_mock_enemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'あの魔法使いと戦おう',text:'装備できたな！ そしたらさっそくあの魔法使いと戦うぞ！',progressLabel:'STELLA',nextLabel:'戦闘へ'},
   {id:'stella_mock_enemy',screenId:'battle',target:'#singleEnemyBox',persistAs:'stella_mock_battle',disableBack:true,speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',title:'魔法使いとの対決',text:'準備はできた？ 私の魔法でコテンパンにしてあげる！',progressLabel:'BATTLE'},
   {id:'stella_mock_skill_open',screenId:'battle',target:'#battleSkillButton',externalAdvance:true,persistAs:'stella_mock_battle',disableBack:true,title:'仲間の技を選ぼう',text:'下の「技」を押すと、今戦っている仲間の技が操作欄に並ぶぞ！',progressLabel:'BATTLE'},

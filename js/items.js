@@ -223,7 +223,7 @@ function renderBattleItemSelect(){
       <button ${battleItemUnavailableReason(it.id)?'disabled':''} onclick="${it.contract ? `askUseContractScroll('${it.id}')` : `useBattleItemFromMenu('${it.id}')`}">使う</button>
     </div>`).join('');
 }
-const BATTLE_ITEM_CURES = Object.freeze({antidote:['poison'],paralysis_heal:['paralysis'],confusion_heal:['confusion'],awakening:['sleep'],full_heal:['poison','paralysis','confusion','sleep']});
+const BATTLE_ITEM_CURES = Object.freeze({antidote:['poison'],paralysis_heal:['paralysis'],confusion_heal:['confusion'],awakening:['sleep'],full_heal:['poison','paralysis','confusion','sleep','freeze']});
 function battleItemTargetReason(id,index){
   if(!ITEM_BY_ID[id]?.usableInBattle)return '使用できません';
   if((save.items[id]||0)<=0)return '残数なし';
@@ -392,7 +392,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
     busy=true;
     if(ok){
       pStatus=null;eStatus=null;pPoisonTurns=0;ePoisonTurns=0;pParalysisTurns=0;eParalysisTurns=0;
-      pConfusionTurns=0;eConfusionTurns=0;pSleepTurns=0;eSleepTurns=0;pFlareCharge=false;eFlareCharge=false;pAquaShield=false;eAquaShield=false;
+      pConfusionTurns=0;eConfusionTurns=0;pSleepTurns=0;eSleepTurns=0;pFreezeTurns=0;eFreezeTurns=0;pFlareCharge=false;eFlareCharge=false;pAquaShield=false;eAquaShield=false;
     }
     if(guaranteed&&typeof handleTutorialContractCommitted==='function')handleTutorialContractCommitted();
     show('battle');

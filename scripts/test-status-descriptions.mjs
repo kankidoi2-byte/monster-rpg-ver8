@@ -42,7 +42,10 @@ for(const sk of cards){
   for(const multi of [false,true]){r.run(`multiBattle={active:${multi}}`);assert(r.run(`battleUiSkillInfo(skillToMove(${arg}))`).includes(text));}
  }else{
   assert.deepEqual(legacyCardProjection(sk),legacyCardProjection(json(before.run(`SKILL_BY_ID[${arg}]`))),'non-target card unchanged: '+sk.id);
-  for(const opts of ['',',{includeBase:false}'])assert.equal(r.run(`moveEffectText(skillToMove(${arg})${opts})`),before.run(`moveEffectText(skillToMove(${arg})${opts})`));
+  for(const opts of ['',',{includeBase:false}']){
+   const baselineText=before.run(`moveEffectText(skillToMove(${arg})${opts})`);
+   assert.equal(r.run(`moveEffectText(skillToMove(${arg})${opts})`),sk.id==='skill_icegolem_01'?baselineText.replace(/^水属性/,'氷属性'):baselineText);
+  }
  }
 }
 // Whole-source freeze retired: user authorized combat, save, equipment and catalog migration.

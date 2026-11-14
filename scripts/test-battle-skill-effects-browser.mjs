@@ -22,15 +22,22 @@ assert.equal(new Set(game.map(g=>g.skillId)).size,110);
 assert.equal(game.filter(g=>g.special).length,9);
 const fields=['skillId','name','cost','power','elements','effectKind','scale','extras','special'];
 const select=o=>fields.map(key=>o[key]);
+const currentElements=JSON.parse(vm.runInContext('JSON.stringify(SKILL110_CATALOG.map(s=>[s.id,s.types]))',ctx));
+assert.deepEqual(game.map(g=>[g.skillId,g.elements]),currentElements,'effect colors follow the current card attributes');
+// The original effect prototype predates Ice. Keep its shape/timing comparisons strict;
+// only these two approved card attributes differ from the original water labels.
+const adoptedIceCards=new Set(['s110_055','s110_057']);
+const currentReference=row=>adoptedIceCards.has(row[0])&&row[4].length===1&&row[4][0]==='water'
+  ? row.with(4,['ice']) : row;
 if(reference){
  const raw=JSON.parse(reference.match(/^const RAW=(.+);$/m)[1]);
  const blade=JSON.parse(reference.match(/^const BLADE=(.+);$/m)[1]);
  const tier=JSON.parse(reference.match(/^const TIER=(.+);$/m)[1].replaceAll("'",'"'));
  assert.deepEqual(raw.map(([n,name,cost,power,elements,form,scale,extras])=>
-  [`s110_${String(n).padStart(3,'0')}`,name,cost,power,elements.split('+'),power===0?'support':blade.includes(n)?'blade':form==='generic'?'shot':form,tier[scale],extras?extras.split(','):[],cost>=20]),game.map(select));
+  [`s110_${String(n).padStart(3,'0')}`,name,cost,power,elements.split('+'),power===0?'support':blade.includes(n)?'blade':form==='generic'?'shot':form,tier[scale],extras?extras.split(','):[],cost>=20]).map(currentReference),game.map(select));
 }
-if(map)assert.deepEqual(JSON.parse(fs.readFileSync(map,'utf8')).skills.map(select),game.map(select));
-console.log(`PASS 110 unique profiles, 101 generic/9 dedicated${reference?' and exact prototype classification':''}${map?' and exact Drive map classification':''}`);
+if(map)assert.deepEqual(JSON.parse(fs.readFileSync(map,'utf8')).skills.map(select).map(currentReference),game.map(select));
+console.log(`PASS 110 unique profiles, 101 generic/9 dedicated${reference?' and prototype classification with adopted Ice attributes':''}${map?' and Drive map classification with adopted Ice attributes':''}`);
 if(process.env.SKILL_FX_STATIC_ONLY!=='1'){
 const {chromium}=await import('playwright');
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4349'],{stdio:['ignore','pipe','inherit']});

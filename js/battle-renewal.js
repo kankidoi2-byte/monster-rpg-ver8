@@ -115,7 +115,7 @@ function renewalNameplates(target){
   renewalEl('eBattleSlot')?.classList.toggle('br-ko',!multiBattle?.active&&eHp<=0);
   for(const el of document.querySelectorAll('#battle .battle-status')){
     const id=el.id,unit=battleCombatants().find(u=>u.statusId===id);if(!unit)continue;
-    el.innerHTML=battleStateLabels(unit).map(s=>`<span class="br-status ${/毒/.test(s)?'poison':/麻痺/.test(s)?'para':/眠/.test(s)?'sleep':/混乱/.test(s)?'conf':/防御|盾/.test(s)?'guard':/💞/.test(s)?'link':'buff'}">${renewalHtml(s.includes('💞')?'💞リンク中':s)}</span>`).join('');
+    el.innerHTML=battleStateLabels(unit).map(s=>`<span class="br-status ${/毒/.test(s)?'poison':/麻痺/.test(s)?'para':/眠/.test(s)?'sleep':/混乱/.test(s)?'conf':/凍結/.test(s)?'freeze':/防御|盾/.test(s)?'guard':/💞/.test(s)?'link':'buff'}">${renewalHtml(s.includes('💞')?'💞リンク中':s)}</span>`).join('');
   }
 }
 function renewalDecorateSkills(){
@@ -276,7 +276,7 @@ function renewalAutoBetween(outcome,pause){
   renewalEl('battleOutcomeNote').textContent=pause?'契約のチャンス！':`EXP +${outcome.exp} · 契約は見送り · 次の戦闘へ`;
 }
 function renewalStatusFeedback(labels,prior){
-  const status=labels.find(s=>{const name=s.match(/毒|麻痺|眠り|混乱/)?.[0];return name&&!prior.includes(name);});
+  const status=labels.find(s=>{const name=s.match(/毒|麻痺|眠り|混乱|凍結/)?.[0];return name&&!prior.includes(name);});
   if(status)renewalBanner(status,'status');
 }
 function renewalKoClone(){

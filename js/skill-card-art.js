@@ -183,8 +183,8 @@ const SKILL_ART_GROUPS=Object.freeze({
 const SKILL_ART_BY_ID=Object.freeze(Object.fromEntries(Object.entries(SKILL_ART_GROUPS).flatMap(([category,ids])=>ids.map(n=>['s110_'+String(n).padStart(3,'0'),category]))));
 const SKILL_ART_BY_FORM=Object.freeze({fang:'牙',claw:'爪',sword:'剣',tail:'尾',horn:'角',fist:'拳',charge:'突進'});
 function skillArtCategory(sk){return SKILL_ART_BY_ID[sk.id]||SKILL_ART_BY_FORM[sk.form]||null;}
-const SKILL_ART_COLORS=Object.freeze({fire:'#ef724a',water:'#54a9df',grass:'#63b97a',thunder:'#e8c94a',wind:'#75c9b6',light:'#f0d77b',dark:'#ae79d0',star:'#a6a1ed',dragon:'#6bb4d2',normal:'#c4bcb0'});
-const SKILL_ART_KANJI=Object.freeze({fire:'炎',water:'水',grass:'森',thunder:'雷',wind:'風',light:'光',dark:'闇',star:'星',dragon:'竜',normal:'無'});
+const SKILL_ART_COLORS=Object.freeze({fire:'#ef724a',water:'#54a9df',ice:'#bfefff',grass:'#63b97a',thunder:'#e8c94a',wind:'#75c9b6',light:'#f0d77b',dark:'#ae79d0',star:'#a6a1ed',dragon:'#6bb4d2',normal:'#c4bcb0'});
+const SKILL_ART_KANJI=Object.freeze({fire:'炎',water:'水',ice:'氷',grass:'森',thunder:'雷',wind:'風',light:'光',dark:'闇',star:'星',dragon:'竜',normal:'無'});
 function skillArtMarkup(sk){const types=skillTypes(sk),type=types[0],color=SKILL_ART_COLORS[type]||'#c4bcb0',category=skillArtCategory(sk),src=SKILL_ART_ASSETS[category];return `<span class="tcg-art"${category?` data-art-category="${category}"`:''} style="--art-color:${color};--art-second:${SKILL_ART_COLORS[types[1]]||color}">${src?`<i class="tcg-silhouette" style="mask-image:url('${src}');-webkit-mask-image:url('${src}')" aria-hidden="true"></i>`:`<span class="tcg-kanji" aria-hidden="true">${SKILL_ART_KANJI[type]||'無'}</span>`}</span>`;}
 function tcgSkillCardMarkup(sk,{compact=false}={}){
  const types=skillTypes(sk),tier=sk.cost>10?'super':sk.cost>5?'upper':'lower';

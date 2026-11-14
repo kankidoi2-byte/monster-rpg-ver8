@@ -72,7 +72,7 @@ body[data-nonbattle-theme]:not(.title-mode)>.app-topbar :is(.contractor-rank spa
 .nonbattle-screen :is(.home-favorite-option,.monster-roster-card,.party-select-card) img:not(#skillGachaPresentation, #skillGachaPresentation *){filter:none;object-fit:contain;}
 .nonbattle-screen .rarity:not(#skillGachaPresentation, #skillGachaPresentation *){background:#17263f;padding:2px 5px;border-radius:4px;}
 /* Keep pale attribute labels readable without removing their meaning/color. */
-.nonbattle-screen :is(.fire,.water,.grass,.dark,.thunder,.light,.star,.dragon,.wind,.normal):not(#skillGachaPresentation, #skillGachaPresentation *){
+.nonbattle-screen :is(.fire,.water,.ice,.grass,.dark,.thunder,.light,.star,.dragon,.wind,.normal):not(#skillGachaPresentation, #skillGachaPresentation *){
   background-color:#17263f;border-radius:3px;padding:1px 3px;text-shadow:none;
 }
 .nonbattle-screen :is(.ui-danger-button,.danger):not(#skillGachaPresentation, #skillGachaPresentation *){background:#fff0ef!important;color:#a32222!important;border-color:#c35b54!important;}

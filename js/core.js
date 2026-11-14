@@ -411,10 +411,10 @@ function maxHp(m, level) {
 }
 function battleBaseAttack(mon, level) { return (mon.atk ?? 60) * battleStatGrowth(level); }
 function battleBaseDefense(mon, level) { return (mon.def ?? 60) * battleStatGrowth(level); }
-function battleStatDamageMultiplier(attacker, attackerLevel, defender, defenderLevel) {
+function battleStatDamageMultiplier(attacker, attackerLevel, defender, defenderLevel, defenseMultiplier=1) {
   const growth = battleStatGrowth(attackerLevel);
   const attack = battleBaseAttack(attacker, attackerLevel);
-  const defense = battleBaseDefense(defender, defenderLevel) * (defender.itemDefense || 1);
+  const defense = battleBaseDefense(defender, defenderLevel) * (defender.itemDefense || 1) * defenseMultiplier;
   return 0.8 * (attack / defense) * growth;
 }
 function healingAtNewMaxHp(amount, mon, level, currentMaxHp, legacyHpModifier=1) {

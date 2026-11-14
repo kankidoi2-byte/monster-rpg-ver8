@@ -6,11 +6,11 @@ const context=vm.createContext({console,Date,JSON,Math});
 vm.runInContext(fs.readFileSync(new URL('../js/kokoro-link.js',import.meta.url),'utf8'),context,{filename:'js/kokoro-link.js'});
 const api=vm.runInContext(`({resolveKokoroLink})`,context);
 
-const types=['normal','fire','water','grass','thunder','wind','light','dark','star','dragon'];
+const types=['normal','fire','water','ice','grass','thunder','wind','light','dark','star','dragon'];
 const expected={
-  1:{band:'power',ids:['balanced_boost','attack_boost','barrier_boost','regeneration','speed_boost','evasion','first_hit_guard','life_steal','fate_boost','move_power_boost'],rate:.35},
-  2:{band:'status',ids:['origin_weaken','burn','slow','poison','paralysis','action_delay','dazzle','confusion','sleep','attack_down'],rate:.26},
-  3:{band:'tactics',ids:['origin_choice','recoil_guard','water_mirror_guard','instant_heal','action_priority','free_switch','cleanse','dispel','foresight','penetration'],rate:.19},
+  1:{band:'power',ids:['balanced_boost','attack_boost','barrier_boost','defense_boost','regeneration','speed_boost','evasion','first_hit_guard','life_steal','fate_boost','move_power_boost'],rate:.35},
+  2:{band:'status',ids:['origin_weaken','burn','slow','freeze','poison','paralysis','action_delay','dazzle','confusion','sleep','attack_down'],rate:.26},
+  3:{band:'tactics',ids:['origin_choice','recoil_guard','water_mirror_guard','time_stop','instant_heal','action_priority','free_switch','cleanse','dispel','foresight','penetration'],rate:.19},
   4:{band:null,ids:[],rate:.13},
   5:{band:null,ids:[],rate:.10}
 };

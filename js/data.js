@@ -435,29 +435,31 @@ const MAPS = [
 
 /* ===== 属性名 ===== */
 const TN = {
-  fire:'火', water:'水', thunder:'雷', wind:'風', grass:'森',
+  fire:'火', water:'水', ice:'氷', thunder:'雷', wind:'風', grass:'森',
   light:'光', dark:'闇', star:'星', dragon:'竜', normal:'無'
 };
 
-const TYPE_ICONS={fire:'🔥',water:'💧',thunder:'⚡',wind:'🌪️',grass:'🌳',light:'✨',dark:'🌑',star:'⭐',dragon:'🐉',normal:'⚪'};
+const TYPE_ICONS={fire:'🔥',water:'💧',ice:'❄️',thunder:'⚡',wind:'🌪️',grass:'🌳',light:'✨',dark:'🌑',star:'⭐',dragon:'🐉',normal:'⚪'};
 
 // Future character encyclopedia reservations; these are not battle units in M.
 // All 36 former reservations are implemented in M. History: docs/prologue-character-dex-slots.md.
 const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([]);
 const INITIAL_PARTY_IDS=Object.freeze(['elna_beginner','freigal','aquaron']);
 const ADV = {
-  fire:    {grass:1.5, water:.7},
+  fire:    {ice:1.5, water:.7},
+  ice:     {grass:1.5, fire:.7},
   water:   {fire:1.5, thunder:.7},
   thunder: {water:1.5, wind:.7},
   wind:    {thunder:1.5, grass:.7},
-  grass:   {wind:1.5, fire:.7},
+  grass:   {wind:1.5, ice:.7},
   light:   {dark:1.5, star:.7},
   dark:    {star:1.5, light:.7},
   star:    {light:1.5, dark:.7},
   dragon:  {dragon:1.2}
 };
 const BATTLE_STATUS_EFFECTS = Object.freeze({
-  poison:Object.freeze({duration:3, maxHpDamageRate:.10})
+  poison:Object.freeze({duration:3, maxHpDamageRate:.10}),
+  freeze:Object.freeze({duration:1})
 });
 
 /* ===== モンスターデータ ===== */
@@ -524,10 +526,10 @@ const M = [
    evolutionOnly:true,hp:163,spd:101,atk:65,def:61,legacyBaseHp:240,catchRate:.22,
    desc:'スパクインが進化した雷風の王。黒金の翼で嵐を裂き、雷雲そのものを操る。',
    moves:[["雷嵐",48,"thunder",null,null,null,null,null,"skill_voltax_01"],["暴風刃",42,"wind",null,null,null,null,null,"skill_voltax_02"],["ボルテックストーム",62,"thunder",null,null,null,null,null,"skill_voltax_03"],["疾風迅雷",58,["thunder","wind"],null,null,6,"雷と風を同時にまとい、神速の一撃を放つ。",null,"skill_voltax_04"]]},
-  {id:'icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'icegolem',no:15,dexNo:36,name:'アイスゴーレム',rarity:'★★',types:['water'],huntLevels:{normal:26,hard:56},
+  {id:'icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'icegolem',no:15,dexNo:36,name:'アイスゴーレム',rarity:'★★',types:['ice'],huntLevels:{normal:26,hard:56},
    hp:152,spd:54,atk:56,def:61,legacyBaseHp:145,catchRate:.28,
-   desc:'氷河から生まれた水属性のゴーレム。',
-   moves:[["氷の拳",26,"water",null,null,null,null,null,"skill_icegolem_01"],["守りを固める",0,"normal","guard",null,null,null,null,"skill_icegolem_02"],["凍結クラッシュ",40,"water",null,null,null,null,null,"skill_icegolem_03"]]},
+   desc:'氷河から生まれた氷属性のゴーレム。',
+   moves:[["氷の拳",26,"ice",null,null,null,null,null,"skill_icegolem_01"],["守りを固める",0,"normal","guard",null,null,null,null,"skill_icegolem_02"],["凍結クラッシュ",40,"water",null,null,null,null,null,"skill_icegolem_03"]]},
   {id:'proto_icegolem',entityKind:'monster',eligibility:{"contract":true,"alchemyCatalyst":true,"alchemySuccess":false,"alchemyFailure":true},imgKey:'proto_icegolem',no:14,dexNo:35,name:'ゴーレム',rarity:'★★',types:['normal'],huntLevels:{normal:18,hard:44},
    hp:143,spd:63,atk:64,def:61,legacyBaseHp:180,catchRate:.16,
    desc:'古代の技術で造られた石造のゴーレム。胸部の魔力核を動力とし、重い拳で敵を打ち砕く。',
@@ -1302,9 +1304,9 @@ const SKILL110_CATALOG = [
   {"id":"s110_052","name":"ソーンホーン","cost":3,"power":44,"type":"grass","types":["grass"],"effect":"tactical","chance":null,"tactical":{},"form":"horn","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:horn"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:horn","element:grass"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
   {"id":"s110_053","name":"溶岩角","cost":4,"power":54,"type":"fire","types":["fire"],"effect":"tactical","chance":null,"tactical":{},"form":"horn","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:horn"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:horn","element:fire"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
   {"id":"s110_054","name":"ルクスホーン","cost":4,"power":54,"type":"light","types":["light"],"effect":"tactical","chance":null,"tactical":{},"form":"horn","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:horn"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:horn","element:light"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
-  {"id":"s110_055","name":"氷の拳","cost":2,"power":34,"type":"water","types":["water"],"effect":"tactical","chance":null,"tactical":{},"form":"fist","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:fist"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:fist","element:water"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
+  {"id":"s110_055","name":"氷の拳","cost":2,"power":34,"type":"ice","types":["ice"],"effect":"tactical","chance":null,"tactical":{},"form":"fist","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:fist"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:fist","element:ice"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
   {"id":"s110_056","name":"石造拳","cost":4,"power":54,"type":"normal","types":["normal"],"effect":"tactical","chance":null,"tactical":{},"form":"fist","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:fist"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:fist","element:normal"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
-  {"id":"s110_057","name":"氷塊拳","cost":4,"power":54,"type":"water","types":["water"],"effect":"tactical","chance":null,"tactical":{},"form":"fist","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:fist"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:fist","element:water"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
+  {"id":"s110_057","name":"氷塊拳","cost":4,"power":54,"type":"ice","types":["ice"],"effect":"tactical","chance":null,"tactical":{},"form":"fist","requirements":{"entityKinds":["monster","character"],"requiredAll":["anatomy:fist"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:fist","element:ice"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
   {"id":"s110_058","name":"たいあたり","cost":1,"power":26,"type":"normal","types":["normal"],"effect":"tactical","chance":null,"tactical":{},"form":"charge","requirements":{"entityKinds":["monster","character"],"requiredAll":["capability:charge"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:charge","element:normal"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
   {"id":"s110_059","name":"若葉の突進","cost":2,"power":34,"type":"grass","types":["grass"],"effect":"tactical","chance":null,"tactical":{},"form":"charge","requirements":{"entityKinds":["monster","character"],"requiredAll":["capability:charge"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:charge","element:grass"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
   {"id":"s110_060","name":"蒼海の突進","cost":4,"power":54,"type":"water","types":["water"],"effect":"tactical","chance":null,"tactical":{},"form":"charge","requirements":{"entityKinds":["monster","character"],"requiredAll":["capability:charge"]},"universal":false,"tier":"低級","acquisition":"normal","exclusiveMonsterId":null,"sourceUnitId":"skill110","sourceEntityKind":null,"tags":["source:shared","role:damage","form:charge","element:water"],"detailedDesc":"追加効果のない単体攻撃。","customDesc":"相手を攻撃する。","desc":"相手を攻撃する。"},
@@ -1454,7 +1456,7 @@ const SKILL110_MIGRATION_MAP = Object.freeze({
   "sk_g21_phk_o73_9k1_light_58_tactical": "s110_097",
   "sk_g21_ptp_ita_light_28_none": "s110_028",
   "sk_g21_tt7_ita_light_30_none": "s110_028",
-  "sk_g5p_or4_9m7_9nt_9mr_9mf_9np_water_40_none": "s110_017",
+  "sk_g5p_or4_9m7_9nt_9mr_9mf_9np_water_40_none": "s110_057",
   "sk_g9v_hkb_9ke_ts6_ffx_normal_0_buff": "s110_008",
   "sk_gcn_lcn_9ke_feo_jur_normal_36_none": "s110_040",
   "sk_gg3_hn5_9ke_opl_gmx_tt6_dark_50_tactical": "s110_082",
@@ -2005,7 +2007,7 @@ const SKILL110_MIGRATION_MAP = Object.freeze({
   "skill_hikari_03": "s110_077",
   "skill_icegolem_01": "s110_055",
   "skill_icegolem_02": "s110_003",
-  "skill_icegolem_03": "s110_017",
+  "skill_icegolem_03": "s110_057",
   "skill_ignaros_01": "s110_053",
   "skill_ignaros_02": "s110_003",
   "skill_ignaros_03": "s110_089",
@@ -2775,7 +2777,7 @@ const SKILL110_MIGRATION_REASONS = Object.freeze({
   "skill_hikari_03": "同名採用技。旧威力58・旧効果Noneから採用仕様へ移行",
   "skill_icegolem_01": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行",
   "skill_icegolem_02": "同属性・同効果",
-  "skill_icegolem_03": "同属性・同効果",
+  "skill_icegolem_03": "旧凍結クラッシュは現行の氷塊拳へ移行。既に大波召喚へ統合済みのカードは変更しない。",
   "skill_ignaros_01": "同名採用技。旧威力40・旧効果Noneから採用仕様へ移行",
   "skill_ignaros_02": "同じ戦闘上の役割（属性／身体条件は新技に従う）",
   "skill_ignaros_03": "同名採用技。旧威力62・旧効果recoilから採用仕様へ移行",
