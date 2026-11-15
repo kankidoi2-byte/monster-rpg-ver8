@@ -58,6 +58,22 @@ try{
   activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});
   activeHuntRequest.battleMode='single';beginChosenBattle(selectedMap.id,enemy.id,'normal',activeHuntRequest);show('battle');
  });
+ // The effect cancels on a stage resize. Wait for the initial mobile layout to settle
+ // so the contact assertion tests the animation rather than battle-screen startup.
+ await page.evaluate(async ()=>{
+  const arena=document.querySelector('#battle.active .battle-arena');
+  if(!arena)throw new Error('Battle arena missing before skill effect playback');
+  const start=performance.now();
+  let size='',stableSince=start;
+  while(performance.now()-start<5000){
+   const now=await new Promise(resolve=>requestAnimationFrame(resolve));
+   const width=arena.clientWidth,height=arena.clientHeight;
+   const next=width>0&&height>0&&arena.isConnected?`${width}:${height}`:'';
+   if(next!==size){size=next;stableSince=now;}
+   if(size&&now-stableSince>=200)return;
+  }
+  throw new Error('Battle arena did not stabilize before skill effect playback');
+ });
  const samples=new Map([[19,240],[77,300],[103,570],[104,760],[106,1100],[110,950]]);
  let protoPage;
  if(reference){
