@@ -36,7 +36,7 @@ try{
    assert((await img.getAttribute('src')).endsWith(`${id}_fullbody_20261104.webp`));
    const result=await page.evaluate(()=>{
     const r=waterHomeRecord,b=r.config.sourceBounds,a=r.art.getBoundingClientRect(),k=a.width/b.width;
-    const quick=document.getElementById('homeQuickLinks').getBoundingClientRect();
+    const quick=document.getElementById('homeBanner').getBoundingClientRect();
     const plate=document.getElementById('homeNamePlate').getBoundingClientRect();
     const canvas=document.createElement('canvas'),img=r.art.querySelector('img');
     canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;

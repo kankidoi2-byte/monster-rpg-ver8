@@ -142,7 +142,31 @@ function ensureExpeditionDom(){
     document.querySelector('main')?.appendChild(section)||document.body.appendChild(section);
   }
 }
+// A returned assignment should be announced until this profile views Expeditions.
+const seenExpeditionReturnsByProfile=new Map();
+function expeditionReturnProfileKey(){return globalThis.MonsterProfiles?.current?.()?.id||'local';}
+function claimableExpeditionReturnIds(){
+  return Array.isArray(save?.expeditions?.active)
+    ?save.expeditions.active.filter(entry=>entry.status==='complete'&&entry.reward&&typeof entry.id==='string').map(entry=>entry.id)
+    :[];
+}
+function markExpeditionReturnsSeen(){
+  seenExpeditionReturnsByProfile.set(expeditionReturnProfileKey(),new Set(claimableExpeditionReturnIds()));
+}
+function updateExpeditionReturnBadges(){
+  const key=expeditionReturnProfileKey(),claimable=claimableExpeditionReturnIds();
+  const seen=seenExpeditionReturnsByProfile.get(key);
+  if(seen){
+    for(const id of seen)if(!claimable.includes(id))seen.delete(id);
+    if(!seen.size)seenExpeditionReturnsByProfile.delete(key);
+  }
+  const unread=claimable.some(id=>!seen?.has(id));
+  for(const id of ['homeExpeditionReturn','navExpeditionReturn']){
+    const badge=document.getElementById(id);if(badge)badge.hidden=!unread;
+  }
+}
 function showExpedition(){ensureExpeditionDom();show('expedition');renderExpedition();}
+function openBattleExpedition(){showExpedition();}
 function expeditionAvailableInstances(){return (save.instances||[]).filter(ins=>!(save.party||[]).includes(ins.uid)&&!isInstanceOnExpedition(ins.uid)&&by(ins.id));}
 function selectExpeditionDestination(mapId){
   expeditionSelectedMapId=mapId;renderExpedition();

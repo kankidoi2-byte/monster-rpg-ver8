@@ -13,7 +13,7 @@ const packageJson=JSON.parse(read('package.json'));
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
-const required=['expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_home_open','expedition_destination','expedition_distance','expedition_member','expedition_suitability','expedition_dispatch','expedition_active','expedition_replay','prologue_epilogue'];
+const required=['expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_home_open','expedition_battle_open','expedition_destination','expedition_distance','expedition_member','expedition_suitability','expedition_dispatch','expedition_active','expedition_replay','prologue_epilogue'];
 let previous=-1;
 for(const id of required){const current=main.indexOf(`id:'${id}'`);assert.ok(current>previous,`expedition/finale STEP missing or out of order: ${id}`);previous=current;}
 const finale=main.slice(main.indexOf("id:'expedition_intro'"));
@@ -163,3 +163,5 @@ assert.equal(packageJson.scripts['check:prologue-expedition-finale'],'node scrip
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-expedition-finale'));
 
 console.log('Prologue expedition/finale validation passed (exact Galdra/Aquaron/Elna party, reserve Freigal dispatch, occupied/completed legacy routing, no-wait continuation, and atomic completion).');
+
+assert.match(finale,/id:'expedition_battle_open'[^\n]+persistAs:'expedition_home_open'/,'battle hub bridge reuses existing saved checkpoint');

@@ -12,7 +12,7 @@ const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flow
 assert.ok(flowStart>=0&&flowEnd>flowStart,'the prologue main flow is missing');
 const main=tutorial.slice(flowStart,flowEnd);
 const ids=[...main.matchAll(/^\s{2}\{id:'([^']+)'/gm)].map(match=>match[1]);
-assert.equal(ids.length,103,'the reduced prologue includes rescue, Royal Capital facilities, first-alchemy farewell, and the final party swap');
+assert.equal(ids.length,104,'the reduced prologue includes rescue, Royal Capital facilities, first-alchemy farewell, and the final party swap');
 assert.equal(new Set(ids).size,ids.length,'the reduced prologue must not contain duplicate step IDs');
 assert.equal(ids.indexOf('battle_enemy'),ids.indexOf('elna_rescue_start')+1,'rescue start must advance from 13/86 to the adjacent battle step, not jump to 60/86');
 assert.equal(ids.indexOf('home_party'),ids.indexOf('elna_contract_body')+1,'the contract must continue to the adjacent home guidance');
@@ -149,4 +149,7 @@ assert.ok(index.includes('prologue-world-map-facilities-1'),'the browser must fe
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 
-console.log('Prologue step reduction validation passed (130 -> 103, including the two Royal Capital selections and final Galdra party swap and reserve Freigal expedition).');
+console.log('Prologue step reduction validation passed (130 -> 104, including the two Royal Capital selections and final Galdra party swap and reserve Freigal expedition).');
+
+assert.equal(ids.indexOf('expedition_battle_open'),ids.indexOf('expedition_home_open')+1);
+assert.equal(ids.indexOf('expedition_destination'),ids.indexOf('expedition_battle_open')+1);
