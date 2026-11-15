@@ -70,3 +70,6 @@ sheet.close();assert.equal(r.run('timerSyncs'),2,'native close resumes banner');
 r.run('showHomeMissions();closeHomeMissions()');assert.equal(sheet.open,false);
 r.run('currentStoryEpisode=()=>({number:3})');assert.equal(r.run('homeMissionStoryProgress()'),'序章 第3話を進行中');
 r.run('currentStoryEpisode=()=>({number:"<img>"})');assert.equal(r.run('homeMissionStoryProgress()'),'序章ストーリーを進めよう');
+
+// DOM-only previews can implement the element without the dialog methods.
+delete sheet.close;assert.doesNotThrow(()=>r.run("closeHomeMissions()"));

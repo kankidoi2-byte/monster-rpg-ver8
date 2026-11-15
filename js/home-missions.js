@@ -46,7 +46,9 @@ function showHomeMissions(){
   }
 }
 function closeHomeMissions(){
-  document.getElementById('homeMissionsSheet')?.close();
+  const sheet=document.getElementById('homeMissionsSheet');
+  if(!sheet?.open||typeof sheet.close!=='function')return;
+  sheet.close();
   syncHomeMissionDialogTimer();
 }
 function claimHomeMission(id){
