@@ -7,15 +7,15 @@ const source=read('js/home-water.js');
 const fit=vm.runInNewContext(source.slice(source.indexOf('function waterHomeBoundsFit('),source.indexOf('function layoutWaterHome('))+';waterHomeBoundsFit');
 assert.equal(media.slime.layout.scale,.3);assert.equal(media.slime_gold.layout.scale,.3);
 assert.equal(media.slime.sourceBounds.bottom,572);assert.equal(media.slime_gold.sourceBounds.bottom,562);
-// The measured UI reserves 74px header, 76px shortcuts, 78px navigation, and 164px actions/nameplate.
+// The measured UI reserves 74px header, banner, 78px navigation, and 164px actions/nameplate.
 for(const [width,height] of [[412,650],[390,844],[360,600]]){
  const upper=80,plateTop=height-74-78-164;
  for(const [id,m] of Object.entries(media)){
   const p=fit(m,width,upper,plateTop),b=m.sourceBounds,bw=b.right-b.x,bh=b.bottom-b.y;
-  assert(Math.abs(Math.max(bw,bh)*p.k-m.layout.scale*p.base)<1e-7,id+' body-based scale');
+  assert(Math.abs(p.k-Math.min(m.layout.scale*p.base/Math.max(bw,bh),(plateTop-upper)/bh))<1e-7,id+' body-based scale');
   assert(Math.abs(p.left+(b.x+bw/2)*p.k-width/2)<1e-7,id+' horizontal body center');
-  if(m.layout.scale<=.75){
-   assert(p.top+b.y*p.k>=upper-1e-7,id+' above shortcut boundary');
+  {
+   assert(p.top+b.y*p.k>=upper-1e-7,id+' above banner boundary');
    assert(p.top+b.bottom*p.k<=plateTop+6+1e-7,id+' below nameplate boundary');
   }
   assert(p.reflectionOffset<=0,id+' reflection anchored at body bottom');
@@ -28,7 +28,9 @@ assert.equal(fit(media.slime,0,80,300),null);
 const html=read('index.html');
 assert.match(html,/id="homePartyEditButton"[^>]*data-nav="monsters"[^>]*openHomeMonsters/);
 assert.match(source,/\['home_party','expedition_party_open'\]/);
-assert.match(html,/id="homeExpeditionPreview"><button[^>]*showExpedition/);
+assert(!html.includes('id="homeQuickLinks"'));
+assert(!html.includes('id="homeExpeditionPreview"'));
+for(const id of ['homeBanner','homeBannerTrack','homeBannerDots','homeSideLinks','homeMissionButton','homeGiftButton','homeExpeditionReturn','navExpeditionReturn'])assert(html.includes(`id="${id}"`),id);
 assert.match(html,/id="homeNoticePreview"><button[^>]*showNotices/);
 assert(!html.includes('id="homePartyPreview"'));
 assert(fs.statSync('images/maps/home_water_mirror_v1.webp').size<700*1024);

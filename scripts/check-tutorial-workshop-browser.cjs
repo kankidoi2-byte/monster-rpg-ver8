@@ -140,6 +140,7 @@ const assert=require('node:assert/strict');
       await reload();await at('expedition_home_open');
       assert.deepEqual((await page.evaluate(()=>getPartyInstances().map(instance=>instance.id))).sort(),['aquaron','elna_beginner','galdra']);
       await page.locator('.tutorial-target-active').click();
+      await at('expedition_battle_open');assert.equal(await page.evaluate(()=>save.progress.tutorial.stepId),'expedition_home_open');await page.locator('#battleExpeditionButton').click();
       await at('expedition_destination');await page.locator('.tutorial-target-active').click();
       await at('expedition_distance');await page.locator('.tutorial-target-active').click();
       await at('expedition_member');

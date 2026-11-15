@@ -594,6 +594,7 @@ function finalizeAlchemy(originalPlan){
     const {resultMonster,resultInstance,archetype}=createAlchemyResultInstance(candidate,()=>archetypeRoll);
     if(success&&typeof grantContractorAlchemySuccess==='function')grantContractorAlchemySuccess();
     if(plan.tutorialLesson&&typeof commitTutorialLuminaAlchemySuccess==='function'&&!commitTutorialLuminaAlchemySuccess())throw new Error('入門錬成の完了状態を保存できません。');
+    recordHomeMissionAlchemyExecution();
     if(!saveGame())throw new Error('錬成結果を保存できません。');
     committed=true;committedAlchemyPlans.add(originalPlan);alchemyTransactionRetry=null;
 

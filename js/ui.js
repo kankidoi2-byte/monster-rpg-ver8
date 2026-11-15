@@ -43,6 +43,7 @@ function show(id) {
   if(typeof autoScreenChange==='function')autoScreenChange(id);
   if(typeof closeRoadmapSheet==='function')closeRoadmapSheet();
   if(id!=='giftBox'&&typeof closeGiftDialog==='function')closeGiftDialog();
+  if(id!=='home'&&typeof closeHomeMissions==='function')closeHomeMissions();
   const feedbackPreviousScreen=document.querySelector('.screen.active')?.id;
   if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
   if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
@@ -61,6 +62,8 @@ function show(id) {
   const target = document.getElementById(id);
   if (!target) return;
   target.classList.add('active');
+  if(typeof syncHomeBannerTimer==='function')syncHomeBannerTimer(id);
+  if(id==='expedition'&&typeof markExpeditionReturnsSeen==='function')markExpeditionReturnsSeen();
   if(typeof gameAudioScreenChanged==='function')gameAudioScreenChanged(id);
   if(typeof MonsterFeedback!=='undefined')MonsterFeedback.screenChanged(id,feedbackPreviousScreen);
   if(typeof PersonalGifts!=='undefined')PersonalGifts.screenChanged(id);
@@ -121,10 +124,25 @@ function openHomeAdventure(){
   }
   if(typeof openStoryMode==='function')openStoryMode();
 }
+function compactHomeCoinText(coins){
+  for(const [unit,label] of [[1e16,'京'],[1e12,'兆'],[1e8,'億'],[1e4,'万']]){
+    if(coins>=unit)return Math.floor(coins/unit).toLocaleString('ja-JP')+label;
+  }
+  return coins.toLocaleString('ja-JP');
+}
 function updateAppResourceBar(){
   if(typeof renderGBless==='function')renderGBless();
   const coinView = document.getElementById('appCoinView');
-  if(coinView) coinView.textContent = Number(save?.coins || 0).toLocaleString('ja-JP');
+  if(coinView){
+    const coins=Number(save?.coins||0),full=coins.toLocaleString('ja-JP');
+    const compact=document.getElementById('home')?.classList.contains('active')&&coins>=1000000;
+    coinView.textContent=compact?compactHomeCoinText(coins):full;
+    // The full balance remains available to assistive technology and on other screens.
+    const resource=coinView.closest?.('.app-resource');
+    resource?.setAttribute('aria-label',`所持コイン ${full}`);
+    if(compact)coinView.title=full;else coinView.removeAttribute?.('title');
+  }
+  if(typeof updateExpeditionReturnBadges==='function')updateExpeditionReturnBadges();
 }
 const CONTRACTOR_EXP_SOURCE_LABELS=Object.freeze({
   battle_easy:'難易度Ⅰ討伐勝利',battle_normal:'難易度Ⅱ討伐勝利',battle_hard:'難易度Ⅳ討伐勝利',battle_d1:'難易度Ⅰ討伐勝利',battle_d2:'難易度Ⅱ討伐勝利',battle_d3:'難易度Ⅲ討伐勝利',battle_d4:'難易度Ⅳ討伐勝利',battle_d5:'難易度Ⅴ討伐勝利',battle_extreme:'Extreme討伐勝利',multi_battle_bonus:'三つ巴・乱入戦勝利',
@@ -420,6 +438,8 @@ function selectHomeFavorite(id){
 function renderHome(){
   if(typeof refreshGiftUi==='function')refreshGiftUi();
   if(typeof renderNonbattleHomeContext==='function')renderNonbattleHomeContext();
+  if(typeof renderHomeBanners==='function')renderHomeBanners();
+  if(typeof updateHomeMissionBadge==='function')updateHomeMissionBadge();
   renderHomeFavorite();
   if (typeof updateNoticeIndicators === 'function') updateNoticeIndicators();
   if (typeof renderHomeStoryCard === 'function') renderHomeStoryCard();

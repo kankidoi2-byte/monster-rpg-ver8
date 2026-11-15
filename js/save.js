@@ -16,6 +16,17 @@ const SOUL_RECOVERY_STORAGE_KEY=`${SAVE_KEY}_soulContractRecovery_v1`;
 const SOUL_ARCHIVE_STORAGE_KEY=`${SOUL_RECOVERY_STORAGE_KEY}_archived`;
 let rejectedPrimaryRaw = null;
 
+// Additive mission receipts; preserve unknown fields and receipts for forward compatibility.
+function normalizeHomeMissions(value,payload={}){
+  const source=isSaveObject(value)?value:{};
+  const priorAlchemy=Array.isArray(payload.contractor?.recentExp)&&payload.contractor.recentExp.some(entry=>entry?.source==='alchemy_success'&&Number(entry.amount)>0);
+  return {...source,version:1,claimedIds:Array.isArray(source.claimedIds)?[...new Set(source.claimedIds.filter(id=>typeof id==='string'))]:[],alchemyCount:Math.max(nonNegativeInteger(source.alchemyCount),priorAlchemy?1:0)};
+}
+function recordHomeMissionAlchemyExecution(){
+  save.homeMissions=normalizeHomeMissions(save.homeMissions);
+  save.homeMissions.alchemyCount++;
+}
+
 // Later prologue progress is independent of the published first-six-episode flags.
 function normalizeProloguePart2(value){
   const s=isSaveObject(value)?value:{};
@@ -278,6 +289,7 @@ function initSave() {
     saveMeta:{migrations:['character_first_lock_v1',...(skill110MigrationAvailable() ? ['skill_system_110_v1','equipped_skill_cards_v1','evolution_native_cards_v1'] : [])], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
     items:{potion:3, antidote:0, paralysis_heal:0, confusion_heal:0, awakening:0, full_heal:0, defense_potion:0, speed_potion:0, max_potion:0, revive_drop:0, strong_incense:0, gold_dust:0, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0, g_ichor:0},
+    homeMissions:normalizeHomeMissions(null),
     lifeQuestClaimedIds:[], giftReceiptVersion:1, giftClaimedIds:[], giftHistory:[], coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false, strongIncenseRemainingDepartures:0,
     contractor:contractorSaveDefaults(),
@@ -548,6 +560,7 @@ function repairSave(payload,report=[]){
   payload.instances.forEach(entry=>{payload.levels[entry.id]=clampLevel(Math.max(nonNegativeInteger(payload.levels[entry.id],1),entry.level));payload.exp[entry.id]=isMaxLevel(payload.levels[entry.id])?0:Math.max(nonNegativeInteger(payload.exp[entry.id]),entry.exp);});
   payload.party=[...new Set(Array.isArray(payload.party)?payload.party:[])].filter(value=>seenUids.has(value)).slice(0,3);
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
+  payload.homeMissions=normalizeHomeMissions(payload.homeMissions,payload);
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
   payload.worldMap=normalizeWorldMapSaveState(payload.worldMap);
   payload.mapStories=normalizeMapStories(payload.mapStories);

@@ -1480,7 +1480,7 @@ function handleTutorialLuminaAlchemyCompleted(){
 }
 const TUTORIAL_EXPEDITION_OPERATION_STEPS=Object.freeze([
   'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save',
-  'expedition_home_open','expedition_destination','expedition_distance',
+  'expedition_home_open','expedition_battle_open','expedition_destination','expedition_distance',
   'expedition_member','expedition_suitability','expedition_dispatch','expedition_active'
 ]);
 function tutorialHasExistingExpeditionActivity(){
@@ -2138,7 +2138,8 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'expedition_party_plan',screenId:'home',persistAs:'expedition_party_plan',nextStepId:'expedition_party_open',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'capital',title:'4つの契約の力',text:'ちぇ～。君がそういうなら仕方ないか。\nでもこれで、君が使える契約の力は4つになったぞ！ だけど1度のバトルで使える力は3つまで…。あ、そうだ！ ガルドラはボク達と一緒に行こう。今回はフレイガルに遠征を頼むんだ！ まずは編成でフレイガルとガルドラを入れ替えよう！',progressLabel:'PROLOGUE'},
   {id:'expedition_party_open',screenId:'home',target:'#homePartyEditButton',advanceOnTarget:true,persistAs:'expedition_party_plan',disableBack:true,title:'編成を開こう',text:'編成を開いて、フレイガルを控えにし、ガルドラを仲間へ入れよう！',progressLabel:'PARTY'},
   {id:'expedition_party_save',screenId:'partySet',target:'#partySetupSaveButton',externalAdvance:true,persistAs:'expedition_party_save',disableBack:true,title:'3体の編成を保存',text:'ガルドラ・アクアロン・エルナの3体に入れ替えたら、「この編成を保存」を押そう！',progressLabel:'PARTY'},
-  {id:'expedition_home_open',screenId:'home',target:'#homeExpeditionPreview button',advanceOnTarget:true,persistAs:'expedition_home_open',disableBack:true,title:'遠征を開こう',text:'フレイガルを控えにして、ガルドラ・アクアロン・エルナの編成を保存できたな！ 次は遠征を開こう！',progressLabel:'EXPEDITION'},
+  {id:'expedition_home_open',screenId:'home',target:'.home-battle-button',advanceOnTarget:true,persistAs:'expedition_home_open',disableBack:true,title:'バトルを開こう',text:'フレイガルを控えにして、ガルドラ・アクアロン・エルナの編成を保存できたな！ 「バトル」を押そう！',progressLabel:'EXPEDITION'},
+  {id:'expedition_battle_open',screenId:'battleChoices',target:'#battleExpeditionButton',advanceOnTarget:true,persistAs:'expedition_home_open',disableBack:true,title:'遠征を開こう',text:'ここから遠征を開こう！',progressLabel:'EXPEDITION'},
   {id:'expedition_destination',screenId:'expedition',target:'[data-tutorial-expedition-map="grassland"]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'短い遠征先を選ぼう',text:'草原を押して、最初の遠征先に選ぶぞ！',progressLabel:'EXPEDITION'},
   {id:'expedition_distance',screenId:'expedition',target:'[data-tutorial-expedition-distance="short"]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'短距離を選ぼう',text:'短距離は、バトルに1回勝つと帰還する遠征だぞ！',progressLabel:'EXPEDITION'},
   {id:'expedition_member',screenId:'expedition',target:'[data-tutorial-expedition-member]',externalAdvance:true,persistAs:'expedition_home_open',disableBack:true,title:'フレイガルを選ぼう',text:'控えのフレイガルを選ぼう！ 今回の遠征はフレイガルに任せるぞ！',progressLabel:'EXPEDITION'},

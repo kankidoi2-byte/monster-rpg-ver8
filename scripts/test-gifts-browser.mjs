@@ -45,8 +45,8 @@ try{
    DEV_GIFTS.push({id:'test-mixed',title:'開発者からの贈り物',letter:'いつもありがとう。\n受け取ってね。<script>bad</script>',startAt:'2026-01-01',until:null,rewards:[{kind:'monster',id:'false_dragon_alfa',level:30},{kind:'character',id:'character_vera_3',level:1},{kind:'skill',id:'s110_110',count:2},{kind:'item',id:'rainbow_contract_scroll',count:3},{kind:'coins',amount:5000}]});
    save.giftClaimedIds=['20261102-present-box-open'];save.coins=17;if(!saveGame())throw Error('fixture');show('home');
   });
-  assert.equal(await page.locator('#giftUnreadCount').innerText(),'3');assert.equal(await page.locator('#homeQuickLinks button').count(),5);
-  assert(await page.locator('#homeQuickLinks').evaluate(el=>{const r=el.getBoundingClientRect();return r.height===72&&r.left>=0&&r.right<=innerWidth&&[...el.querySelectorAll('button')].every(b=>{const x=b.getBoundingClientRect();return b.contains(document.elementFromPoint(x.x+x.width/2,x.y+x.height/2));})}));
+  assert.equal(await page.locator('#giftUnreadCount').innerText(),'3');assert.equal(await page.locator('#homeSideLinks button').count(),2);
+  assert(await page.locator('#homeSideLinks').evaluate(el=>{const r=el.getBoundingClientRect();return r.height>0&&r.left>=0&&r.right<=innerWidth&&[...el.querySelectorAll('button')].every(b=>{const x=b.getBoundingClientRect();return b.contains(document.elementFromPoint(x.x+x.width/2,x.y+x.height/2));})}));
   await page.screenshot({path:out+'/home-'+viewport.width+'.png'});
   await page.locator('#homeGiftButton').click();assert.equal(await page.locator('.gift-row').count(),3);
   await page.locator('[data-gift-filter="developer"]').click();assert.equal(await page.locator('.gift-row').count(),1);
