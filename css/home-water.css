@@ -109,7 +109,10 @@ body:has(#home#home#home.active) #homeNoticePreview [data-notice-unread]{positio
 @media(max-height:500px){#home#home#home .home-actions{height:64px}#home#home#home.nonbattle-screen.active .home-battle-button{height:64px;min-height:64px}#home#home#home .home-side-links{gap:2px}}
 /* Keep expedition clear of the resource header, left-side world toggle and map panels. */
 #battleChoices#battleChoices:has(.world-map-root)>#battleExpeditionButton{top:auto;bottom:14px;right:12px;width:88px;max-width:calc(100% - 190px);z-index:4}
-#battleChoices#battleChoices:has(.wm-sheet)>#battleExpeditionButton,#battleChoices#battleChoices:has(#prologuePart2WorldReturn:not([hidden]))>#battleExpeditionButton{display:none}
+#battleChoices#battleChoices:has(.wm-sheet)>#battleExpeditionButton:not(.tutorial-target-active),#battleChoices#battleChoices:has(#prologuePart2WorldReturn:not([hidden]))>#battleExpeditionButton{display:none}
+/* The guided expedition starts from the overview, even when a previous scene
+   left the academy or another map sheet open. Keep saved navigation untouched. */
+#battleChoices#battleChoices:has(>#battleExpeditionButton.tutorial-target-active) .wm-sheet{display:none}
 /* Image banners fill the entire adopted card; their accessible label remains on the button. */
 #home#home#home .home-banner-slide:has(.home-banner-image){position:relative;padding:0;overflow:hidden}
 #home#home#home .home-banner-slide>.home-banner-image{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;border-radius:0;object-fit:cover;filter:none}

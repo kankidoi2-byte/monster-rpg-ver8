@@ -68,9 +68,13 @@ const {chromium}=require('playwright');
    await page.locator('#partySetupSaveButton').click();
    await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_home_open');
    assert.deepEqual(await page.evaluate(()=>save.party),[ids.a,ids.e,ids.g]);
+   // The fresh story leaves an academy sheet selected from a preceding scene.
+   await page.evaluate(()=>{worldMapCityOpen=true;});
    await page.locator('.home-battle-button').click();
    await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_battle_open');
    assert.equal(await page.evaluate(()=>save.progress.tutorial.stepId),'expedition_home_open');
+   assert.equal(await page.locator('#battleChoiceList .wm-sheet').count(),1);
+   assert(await page.locator('#battleChoiceList .wm-sheet').isHidden());
    await page.locator('#battleExpeditionButton').click();
    await page.locator('[data-tutorial-expedition-map="grassland"]').click();
    await page.locator('[data-tutorial-expedition-distance="short"]').click();
