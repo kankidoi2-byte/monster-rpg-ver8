@@ -15,7 +15,7 @@ try{
  await page.route('**/*',route=>new URL(route.request().url()).origin===new URL(origin).origin?route.continue():route.abort());
  await page.goto(origin,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save.instances=[];save.party=[];for(const id of ['freigal','aquaron','elna_beginner']){const ins=addInstance(id,1);save.party.push(ins.uid);}for(const id of Object.keys(BATTLE_IDLE_MEDIA))if(!save.instances.some(i=>i.id===id))save.instances.push({uid:'home-test-'+id,id,level:1,exp:0,locked:false,evolutionOffset:0});save.homeFavoriteId='freigal';save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');saveGame();show('home');});
- for(const [width,height] of [[360,640],[390,844],[412,780],[844,390]]){
+ for(const [width,height] of [[360,640],[390,844],[412,780],[430,932],[844,390]]){
   await page.setViewportSize({width,height});
   await page.waitForTimeout(350);
   const results=await page.evaluate(async()=>{
@@ -41,7 +41,7 @@ try{
  }
 
  // Coin extremes must not overflow, overlap, or make the topbar controls untappable.
- for(const viewport of [{width:360,height:640},{width:390,height:844},{width:412,height:780}]){
+ for(const viewport of [{width:360,height:640},{width:390,height:844},{width:412,height:780},{width:430,height:932}]){
   await page.setViewportSize(viewport);
   for(const coins of [9999999,999999999,Number.MAX_SAFE_INTEGER]){
    await page.evaluate(coins=>{save.coins=coins;updateAppResourceBar();},coins);
@@ -60,7 +60,7 @@ try{
   assert(layout.mission.bottom<=layout.gift.top,'mission above gift');assert(Math.abs(layout.story.width-layout.battle.width)<=1,'equal action widths');assert(Math.abs(layout.story.height-layout.battle.height)<=1,'equal action heights');
   await page.screenshot({path:`${output}/organized-${viewport.width}x${viewport.height}.png`});
  }
- report.checks.push('three requested portrait viewports, 7/9/16 digit coin topbar containment');
+ report.checks.push('four portrait viewports, 7/9/16 digit coin topbar containment');
  await page.emulateMedia({reducedMotion:'reduce'});
  assert.equal(await page.locator('#homeBannerDots button').count(),5);
  await page.locator('#homeBannerDots button').nth(2).click();
@@ -82,10 +82,10 @@ try{
  await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('#homeBannerDots button').first().click();
  await page.waitForTimeout(2400);await page.locator('#homeBannerDots button').nth(3).click();await page.waitForTimeout(2000);assert.equal(await page.evaluate(()=>homeBannerIndex),3,'dot resets timer');
  await page.waitForFunction(()=>homeBannerIndex===4,null,{timeout:3000});
- assert.match(await page.locator('#homeBannerTrack').getAttribute('style'),/-400%/);
+ assert.equal(await page.locator('#homeBannerDots button[aria-current=true]').evaluate(dot=>[...dot.parentElement.children].indexOf(dot)),4);
  report.checks.push('banner 4s timer/reset, horizontal track, dot and destination actions, reduced-motion manual navigation');
  assert.equal(await page.locator('.home-battle-button').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(23, 28, 40)');
- report.checks.push('all animated species × 4 viewport sizes; controls above oversized monsters; character frame');
+ report.checks.push('all animated species × 5 viewport sizes; controls above oversized monsters; character frame');
  await page.evaluate(()=>{save.homeFavoriteId='freigal';renderHome();});
  await page.waitForFunction(()=>waterHomeRecord?.art?.classList.contains('is-playing'),{timeout:10000});
  report.checks.push('transparent video plays');
@@ -126,5 +126,127 @@ try{
   link.disabled=true;const before=colors();link.disabled=false;const after=colors();overlay.classList.add('hidden');return {before,after};
  });
  assert.deepEqual(cinematic.after,cinematic.before);report.checks.push('home ink does not leak into contract cinematic');
+ // Isolate real input and the virtual autoplay clock from the media/layout tests.
+ const gesture=await browser.newPage({viewport:{width:412,height:780},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ gesture.on('pageerror',e=>errors.push(e.message));
+ await gesture.route('**/*',route=>new URL(route.request().url()).origin===new URL(origin).origin?route.continue():route.abort());
+ await gesture.goto(origin,{waitUntil:'networkidle'});
+ await gesture.locator('#titleScreen').tap();
+ await gesture.locator('#titleScreen').waitFor({state:'detached'});
+ await gesture.evaluate(()=>{
+  clearTutorialUi();save=initSave();completeTutorial();
+  save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);
+  document.getElementById('contractorRankUpOverlay').classList.add('hidden');
+  show('home');
+ });
+ const viewport=gesture.locator('.home-banner-viewport');
+ const track=gesture.locator('#homeBannerTrack');
+ const dots=gesture.locator('#homeBannerDots button');
+ const trackX=()=>track.evaluate(el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).m41);
+ const index=()=>gesture.evaluate(()=>homeBannerIndex);
+ const current=()=>track.locator('.home-banner-slide[aria-hidden=false]');
+ const chosen=async i=>{
+  assert.equal(await index(),i);
+  assert.equal(await dots.nth(i).getAttribute('aria-current'),'true');
+  assert.equal(await current().count(),1,'one in-view, keyboard-accessible banner');
+  const v=await viewport.boundingBox(),s=await current().boundingBox();
+  assert(Math.abs(v.x+v.width/2-s.x-s.width/2)<=2,'the selected banner is centered');
+ };
+ const staysHome=async()=>{
+  assert(await gesture.locator('#home').isVisible(),'swipe cannot follow a banner link');
+  assert(await gesture.locator('#homeMissionsSheet').isHidden(),'swipe cannot open missions');
+ };
+ const dot=async i=>{await dots.nth(i).tap();await chosen(i);};
+ const cdp=await gesture.context().newCDPSession(gesture);
+ const touch=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:['touchEnd','touchCancel'].includes(type)?[]:[{x,y,id:1}]});
+ const drag=async (dx,{follow=false,slow=true,cancel=false}={})=>{
+  const b=await viewport.boundingBox(),x=Math.round(b.x+b.width/2),y=Math.round(b.y+b.height/2);
+  const start=await trackX();
+  await touch('touchStart',x,y);
+  const samples=slow?4:2;
+  for(let i=1;i<=samples;i++){
+   if(slow)await gesture.waitForTimeout(105);
+   const next=Math.round(x+dx*i/samples);
+   await touch('touchMove',next,y);
+  }
+  if(follow)await gesture.waitForFunction(({start,dx})=>{
+   const track=document.getElementById('homeBannerTrack');
+   return Math.abs(new DOMMatrixReadOnly(getComputedStyle(track).transform).m41-start-dx)<=2;
+  },{start,dx},{timeout:1500});
+  await touch(cancel?'touchCancel':'touchEnd');
+  await staysHome();
+ };
+ for(const [w,h] of [[360,640],[412,780],[430,932],[800,420]]){
+  await gesture.setViewportSize({width:w,height:h});
+  await dot(2);
+  const width=await viewport.evaluate(el=>el.clientWidth);
+  if(w===800)assert(width<w/2&&width>w*.4,'landscape banner should use its rendered half-width');
+  const shy=Math.floor(width*.2)-4,over=Math.ceil(width*.2)+4;
+  for(const direction of [-1,1]){
+   await drag(direction*shy,{follow:true});await chosen(2);
+   await drag(direction*over,{follow:true});await chosen(2-direction);
+   await dot(2);
+  }
+ }
+ await gesture.setViewportSize({width:412,height:780});
+ assert.equal(await track.evaluate(el=>getComputedStyle(el).transitionDuration),'0s','reduced-motion has no carousel animation');
+ const width=await viewport.evaluate(el=>el.clientWidth);
+ await dot(0);
+ await drag(Math.ceil(width*.24));await chosen(4);
+ await drag(-Math.ceil(width*.24));await chosen(0);
+ await drag(-Math.ceil(width*.24),{cancel:true});await chosen(0);
+ await drag(-Math.floor(width*.12),{slow:false});await chosen(1);
+ await dot(0);
+ // The normal Home screen does not scroll. Put the real banner inside a scrollable
+ // ancestor to demonstrate Chromium's native vertical scrolling is not cancelled.
+ const scrollArea=await gesture.evaluate(()=>{
+  const v=document.querySelector('.home-banner-viewport'),shell=document.createElement('div');
+  shell.id='bannerTestScroll';shell.style.cssText='height:64px;overflow-y:auto';
+  v.before(shell);shell.append(v);
+  const filler=document.createElement('div');filler.style.height='160px';shell.append(filler);
+  const r=v.getBoundingClientRect();return {x:Math.round(r.x+r.width/2),y:Math.round(r.bottom-7)};
+ });
+ await touch('touchStart',scrollArea.x,scrollArea.y);
+ for(const dy of [14,25,36,49]){
+  await touch('touchMove',scrollArea.x,scrollArea.y-dy);await gesture.waitForTimeout(30);
+ }
+ await touch('touchEnd');
+ await gesture.waitForFunction(()=>document.getElementById('bannerTestScroll').scrollTop>0);
+ await staysHome();assert.equal(await index(),0,'vertical scroll does not select a different banner');
+ await gesture.evaluate(()=>{
+  const shell=document.getElementById('bannerTestScroll');shell.before(shell.firstChild);shell.remove();
+ });
+ await current().tap();assert(await gesture.locator('#homeMissionsSheet').isVisible(),'same genuine touch still opens a banner on tap');
+ await gesture.locator('#homeMissionsClose').tap();
+ report.checks.push('banner: rendered-width 20% boundary in both directions on 360/412/430 and landscape; follows real drag; touch flick, wraps, cancels, scrolls and taps');
+ // Under ordinary motion, each boundary goes to the adjacent visual copy
+ // and then returns to the centered real slide (rather than crossing four).
+ await gesture.emulateMedia({reducedMotion:'no-preference'});
+ await drag(Math.ceil(width*.26));
+ assert.deepEqual(await gesture.evaluate(()=>[homeBannerIndex,homeBannerWrap?.slot]),[4,-1]);
+ await gesture.waitForFunction(()=>!homeBannerWrap);await chosen(4);
+ await drag(-Math.ceil(width*.26));
+ assert.deepEqual(await gesture.evaluate(()=>[homeBannerIndex,homeBannerWrap?.slot]),[0,5]);
+ await gesture.waitForFunction(()=>!homeBannerWrap);await chosen(0);
+ report.checks.push('banner: animated wrap uses the adjacent card in both directions');
+ await gesture.emulateMedia({reducedMotion:'reduce'});
+ const clockTime=new Date();
+ await gesture.clock.install({time:clockTime});
+ await gesture.clock.pauseAt(new Date(clockTime.getTime()+1000));
+ await gesture.emulateMedia({reducedMotion:'no-preference'});
+ await dots.nth(1).tap();
+ await gesture.clock.runFor(3500);assert.equal(await index(),1);
+ const b=await viewport.boundingBox();
+ await touch('touchStart',Math.round(b.x+b.width/2),Math.round(b.y+b.height/2));
+ await gesture.clock.runFor(6000);assert.equal(await index(),1,'autoplay pauses even while a finger is held still');
+ await touch('touchMove',Math.round(b.x+b.width*.24),Math.round(b.y+b.height/2));
+ await gesture.clock.runFor(500);await touch('touchEnd');await staysHome();
+ assert.equal(await index(),2);
+ await gesture.clock.runFor(3990);assert.equal(await index(),2,'a committed swipe resets the full 4-second countdown');
+ await gesture.clock.runFor(20);assert.equal(await index(),3);
+ await gesture.emulateMedia({reducedMotion:'reduce'});
+ await gesture.clock.runFor(8500);assert.equal(await index(),3,'autoplay stays off with reduced motion');
+ await gesture.close();
+ report.checks.push('banner: timer pauses while held, resets for 4s on swipe; reduced-motion disables timer and transition');
  assert.deepEqual(errors,[]);console.log(JSON.stringify(report,null,2));
 }finally{fs.writeFileSync(output+'/report.json',JSON.stringify(report,null,2));await browser.close();server?.kill();}
