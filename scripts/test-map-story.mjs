@@ -6,6 +6,13 @@ const r=runtime({save:src=>src+'\nvar mapStoryRealSave=saveGame;'}),run=r.run;
 for(const file of ['map-story-data','map-story'])vm.runInContext(fs.readFileSync(new URL(`../js/${file}.js`,import.meta.url),'utf8'),r.context);
 run(`saveGame=mapStoryRealSave;renderBattleInputState=()=>{};showUiNotice=()=>{};save=initSave();save.progress.tutorial.status='completed';for(const id of ['galdra','freigal','aquaron']){const ins=addInstance(id,1);save.party.push(ins.uid);}saveGame();`);
 const json=code=>JSON.parse(run(`JSON.stringify(${code})`));
+// The controller's presentation contract is independent of the DOM implementation.
+run(`var mapStoryCompletionSignals=[], mapStoryProcessEvolution=processNextEvolution;
+  document.querySelector=selector=>selector==='#mapStoryContent [data-next-episode]'&&document.getElementById('mapStoryContent').innerHTML.includes('data-next-episode')?{dataset:{nextEpisode:''}}:null;
+  showStoryEpisodeCompletion=(card,label,reward)=>mapStoryCompletionSignals.push({type:'notice',hasNext:!!card,label,reward});
+  processNextEvolution=()=>{mapStoryCompletionSignals.push({type:'evolution'});return mapStoryProcessEvolution();};`);
+const signals=()=>json('mapStoryCompletionSignals.splice(0)');
+const storyHtml=()=>run('document.getElementById("mapStoryContent").innerHTML');
 const episodes=json('GRASSLAND_STORY.episodes');
 assert.equal(episodes.length,11);assert.equal(episodes.filter(e=>e.battleMode==='three_way').length,2);
 assert.equal(episodes.reduce((sum,e)=>sum+e.firstReward.exp,0),4070);
@@ -38,7 +45,23 @@ assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id
 const beforeNormal=json('createHuntRequest(MAPS.find(m=>m.id==="grassland"),by("slime"),"d1",[],{allowOvertier:false})');
 function pre(id){assert.equal(run(`startMapStoryEpisode('${id}')`),true);for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');}
 function victory(){run('if(multiBattle?.active){multiBattle.enemies.forEach(e=>{e.hp=0;e.alive=false;});winMultiBattle();}else{eHp=0;win();}');}
-function finish(){run('resumeMapStoryAfterBattle()');for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');run('completeMapStoryEpisode()');}
+function finish(testSaveFailure=false){
+ run('resumeMapStoryAfterBattle()');
+ for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');
+ if(!testSaveFailure){run('completeMapStoryEpisode()');return;}
+ const before=json('save'),originalSet=r.context.localStorage.setItem,originalConsole=r.context.console;
+ try{
+  r.context.localStorage.setItem=(key,value)=>{if(key==='mb_v95c')throw Error('quota');originalSet(key,value);};
+  r.context.console={...console,error(){}};
+  run('completeMapStoryEpisode()');
+  assert.deepEqual(json('save'),before);
+  assert.match(storyHtml(),/保存を再試行/);
+  assert.deepEqual(signals(),[],'completion notice waits for the committed save');
+ }finally{
+  r.context.localStorage.setItem=originalSet;r.context.console=originalConsole;
+ }
+ run('retryMapStorySave();retryMapStorySave()');
+}
 for(const e of episodes){
  pre(e.id);const coins=run('save.coins');assert(run(`launchMapStoryBattle('${e.id}')`));
  assert.equal(run(`launchMapStoryBattle('${e.id}')`),false,'double start rejected');
@@ -68,7 +91,17 @@ for(const e of episodes){
   assert.equal(run('save.coins'),beforeSkip.coins);assert.deepEqual(json('save.instances'),beforeSkip.instances);
   run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),e.postNodes.at(-1).id);
  }
- finish();assert.equal(run(`mapStoryProgress('${e.id}').completed`),true);
+ finish(e.number===1);assert.equal(run(`mapStoryProgress('${e.id}').completed`),true);
+ if(e.number<episodes.length){
+  assert.match(storyHtml(),/class="map-story-list"/);
+  assert(storyHtml().includes(`data-next-episode><small>第${e.number+1}話 · NEXT · 解放済`));
+  assert.doesNotMatch(storyHtml(),/<h2>第\d+話 完了<\/h2>/);
+  assert.deepEqual(signals(),[{type:'notice',hasNext:true,label:`第${e.number}話`,reward:{...e.firstReward,base:true}},{type:'evolution'}]);
+ }else{
+  assert.match(storyHtml(),/全11話 完了/);
+  assert.doesNotMatch(storyHtml(),/class="map-story-list"/);
+  assert.deepEqual(signals(),[{type:'evolution'}]);
+ }
 }
 assert.equal(run('save.coins'),initial.coins+1265);
 assert(json('save.instances').every(i=>i.level===12&&i.exp===110));
@@ -79,7 +112,11 @@ run('readMapStoryEpisode("gl_01");advanceMapStoryNode();previousMapStoryNode()')
 run('skipMapStoryDialogue()');assert.equal(run('mapStoryUi.phase'),'pre');assert.equal(run('mapStoryUi.cursor'),episodes[0].preNodes.length);
 run('advanceMapStoryNode();skipMapStoryDialogue();previousMapStoryNode()');assert.equal(run('mapStoryUi.cursor'),episodes[0].postNodes.length-1);
 run('skipMapStoryDialogue();completeMapStoryEpisode()');assert.deepEqual(json('save'),completed,'replay back/skip never writes progress or rewards');
+assert.deepEqual(signals(),[],'re-reading does not trigger completion or evolution');
 run('startMapStoryEpisode("gl_01",true)');assert.equal(run('mapStoryState().resume.nodeId'),null);run('launchMapStoryBattle("gl_01")');victory();assert.equal(run('save.coins'),completed.coins+10);assert.equal(run('mapStoryProgress("gl_01").victoryCount'),2);finish();
+assert.match(storyHtml(),/class="map-story-list"/);
+assert.doesNotMatch(storyHtml(),/data-next-episode/);
+assert.deepEqual(signals(),[{type:'notice',hasNext:false,label:'第1話',reward:{...episodes[0].repeatReward,base:true}},{type:'evolution'}]);
 // Save failure rolls back EXP/coins/flags together; retry commits exactly once.
 run('startMapStoryEpisode("gl_01",true);launchMapStoryBattle("gl_01")');
 const beforeFailure=json('save');const originalSet=r.context.localStorage.setItem;

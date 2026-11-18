@@ -56,11 +56,12 @@ function renderMapStory(){
   if(mapStoryUi?.identity!==saveTransactionIdentity())mapStoryUi=null;
   if(mapStoryUi){renderMapStoryDialogue();return;}
   const story=currentMapStory(),map=mapStoryMap(story),total=story.episodes.length,count=mapStoryCompletedCount(story);
+  const next=resume?null:story.episodes.find(e=>!mapStoryProgress(e.id).completed&&mapStoryUnlocked(e));
   root.innerHTML=`<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>${mapStoryEscape(story.title)}</h2><p>全${total}話 · ${count}/${total} 完了</p>${count===total?`<p>${mapStoryEscape(story.completedText)}</p>`:''}<div class="map-story-list">${story.episodes.map(e=>{
     const p=mapStoryProgress(e.id),unlocked=mapStoryUnlocked(e),pending=resume?.episodeId===e.id;
     const status=p.completed?'完了':pending?'進行中':unlocked?'解放済':'未解放';
     const action=pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}')">${resume.phase==='post'?'戦闘後から再開':'つづきから'}</button>`:!p.completed?`<button type="button" onclick="startMapStoryEpisode('${e.id}')" ${unlocked?'':'disabled'}>第${e.number}話を始める</button>`:'';
-    return `<article class="map-story-card"><small>第${e.number}話 · ${status}</small><h3>${mapStoryEscape(e.title)}</h3><p>推奨Lv.${e.recommendedLevel} · ${e.battleMode==='three_way'?'三つ巴戦':'1対1'}</p><p>${mapStoryEscape(mapStoryEnemiesLabel(e))}</p><p>初回：各個体EXP ${e.firstReward.exp}／コイン ${e.firstReward.coins}<br>再戦：各個体EXP ${e.repeatReward.exp}／コイン ${e.repeatReward.coins}</p>${action}${p.completed?`<button type="button" onclick="readMapStoryEpisode('${e.id}')">読み返す</button>${!pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}',true)">再戦する</button>`:''}`:''}</article>`;
+    return `<article class="map-story-card"${e===next?' data-next-episode':''}><small>第${e.number}話 · ${e===next?'NEXT · ':''}${status}</small><h3>${mapStoryEscape(e.title)}</h3><p>推奨Lv.${e.recommendedLevel} · ${e.battleMode==='three_way'?'三つ巴戦':'1対1'}</p><p>${mapStoryEscape(mapStoryEnemiesLabel(e))}</p><p>初回：各個体EXP ${e.firstReward.exp}／コイン ${e.firstReward.coins}<br>再戦：各個体EXP ${e.repeatReward.exp}／コイン ${e.repeatReward.coins}</p>${action}${p.completed?`<button type="button" onclick="readMapStoryEpisode('${e.id}')">読み返す</button>${!pending?`<button type="button" onclick="startMapStoryEpisode('${e.id}',true)">再戦する</button>`:''}`:''}</article>`;
   }).join('')}</div><button type="button" onclick="leaveMapStory()">${mapStoryEscape(map.name)}へ戻る</button>`;
 }
 function leaveMapStory(){
@@ -323,12 +324,19 @@ function completeMapStoryEpisode(){
   if(mapStoryUi.replay){mapStoryUi=null;renderMapStory();return;}
   const id=mapStoryUi.episodeId,e=mapStoryEpisode(id),r=mapStoryState().resume;
   if(r?.episodeId!==id||r.phase!=='post'||r.nodeId!==null)return;
+  const progress=mapStoryProgress(id),repeat=progress.completed||progress.victoryCount>1;
   mapStoryWrite(()=>{mapStoryState().episodes[id].completed=true;mapStoryState().resume=null;},()=>{
     mapStoryUi=null;
     const root=document.getElementById('mapStoryContent');
-    const story=currentMapStory(),next=story.episodes.find(episode=>episode.unlockAfter===id);
-    root.innerHTML=next?`<h2>第${e.number}話 完了</h2><button type="button" onclick="startMapStoryEpisode('${next.id}')">次の話へ</button><button type="button" onclick="openMapStory()">話一覧へ</button>`:
-      `<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>${mapStoryEscape(story.title)} 全${story.episodes.length}話 完了</h2><p>${mapStoryEscape(story.completedText)}</p><button type="button" onclick="leaveMapStory()">${mapStoryEscape(mapStoryMap(story).name)}へ戻る</button><button type="button" onclick="openMapStory()">読み返す</button>`;
+    const story=currentMapStory();
+    if(e===story.episodes.at(-1)){
+      root.innerHTML=`<button type="button" onclick="returnToStoryMapCatalog()">‹ ストーリーへ戻る</button><h2>${mapStoryEscape(story.title)} 全${story.episodes.length}話 完了</h2><p>${mapStoryEscape(story.completedText)}</p><button type="button" onclick="leaveMapStory()">${mapStoryEscape(mapStoryMap(story).name)}へ戻る</button><button type="button" onclick="openMapStory()">読み返す</button>`;
+    }else{
+      // These are the battle's base rewards, not a second grant or its trait-adjusted total.
+      const reward=repeat?e.repeatReward:e.firstReward;
+      renderMapStory();
+      showStoryEpisodeCompletion(document.querySelector('#mapStoryContent [data-next-episode]'),`第${e.number}話`,{...reward,base:true});
+    }
     if(typeof processNextEvolution==='function')processNextEvolution();
   });
 }

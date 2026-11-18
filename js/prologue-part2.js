@@ -8,6 +8,7 @@ const prologuePart2Escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'
 function prologuePart2Data(){return typeof PROLOGUE_PART2_DATA==='undefined'?null:PROLOGUE_PART2_DATA;}
 function prologuePart2Episodes(){return prologuePart2Data()?.episodes||[];}
 function prologuePart2Episode(id){return prologuePart2Episodes().find(e=>e.id===id);}
+function prologuePart2UiEpisode(ui=prologuePart2Ui){return ui?.tutorialReplay||prologuePart2Episode(ui?.id);}
 function prologuePart2DefaultEpisode(){return {phase:'pre',cursor:null,wonBattleIds:[],completed:false,rewardClaimed:false,rewardTargetUids:[]};}
 function prologuePart2EpisodeState(id){return save.prologuePart2?.episodes?.[id]||prologuePart2DefaultEpisode();}
 function prologuePart2WritableEpisode(id){return save.prologuePart2.episodes[id]??=prologuePart2DefaultEpisode();}
@@ -20,7 +21,7 @@ function prologuePart2Label(episode){return episode?.id==='pb_ep'?'終幕':`第$
 function prologuePart2Opened(id){const e=prologuePart2Episode(id);return Boolean(e&&prologuePart2Available()&&(e===prologuePart2CurrentEpisode()||prologuePart2EpisodeState(id).completed));}
 function prologuePart2Root(){return document.getElementById('prologuePart2Content');}
 function prologuePart2Write(mutate,onSaved){
-  if(!prologuePart2Ui||prologuePart2Retry)return false;
+  if(!prologuePart2Ui||prologuePart2Ui.replay||prologuePart2Retry)return false;
   const context=prologuePart2Ui;
   const attempt=()=>{
     if(prologuePart2Ui!==context||context.identity!==saveTransactionIdentity()){prologuePart2Retry=null;return false;}
@@ -47,7 +48,7 @@ function prologuePart2Index(episode,context=prologuePart2Ui){
   const index=episode.steps.findIndex(step=>step.id===cursor);
   return index<0?0:index;
 }
-function prologuePart2Step(){const ep=prologuePart2Episode(prologuePart2Ui?.id);return ep?.steps[prologuePart2Index(ep)];}
+function prologuePart2Step(){const ep=prologuePart2UiEpisode();return ep?.steps[prologuePart2Index(ep)];}
 function prologuePart2ApplyMilestone(step){
   const {grants,evidence}=save.prologuePart2;
   if(step.action==='evidence'){
@@ -69,13 +70,13 @@ function prologuePart2SetNext(episode,position){
   entry.phase=next.kind==='battle'?'pre':next.kind==='complete'?'post':'scene';
 }
 function prologuePart2AdvanceEvent(expectedId,{mutate,onSaved}={}){
-  const context=prologuePart2Ui,episode=prologuePart2Episode(context?.id);
+  const context=prologuePart2Ui,episode=prologuePart2UiEpisode(context);
   if(!episode||context.identity!==saveTransactionIdentity()||prologuePart2Retry)return false;
   const index=prologuePart2Index(episode),step=episode.steps[index];
   if(!step||step.id!==expectedId||step.kind==='complete')return false;
   if(context.replay){
     context.index++;
-    (onSaved||renderProloguePart2)();
+    (context.tutorialReplay?renderProloguePart2:(onSaved||renderProloguePart2))();
     return true;
   }
   return prologuePart2Write(()=>{if(mutate)mutate();prologuePart2SetNext(episode,index);},onSaved||renderProloguePart2);
@@ -88,12 +89,34 @@ function openProloguePart2(id=prologuePart2CurrentEpisode()?.id,{replay=false}={
   show('prologuePart2');renderProloguePart2();
   return true;
 }
+function openPrologueReplay(id){
+  const index=PROLOGUE_STORY_EPISODES.findIndex(episode=>episode.id===id);
+  if(prologuePart2Retry||prologuePart2Raid||tutorialUiState.active||!storyPrologueReplayAvailable(index))return false;
+  const episode=storyPrologueReplayEpisode(id);
+  if(!episode)return false;
+  prologuePart2StopText();
+  prologuePart2Ui={id,replay:true,tutorialReplay:episode,index:0,identity:saveTransactionIdentity(),seen:[],auto:false};
+  show('prologuePart2',{readOnlyStoryReplay:true});
+  renderProloguePart2();
+  return true;
+}
 function prologuePart2Leave(){
   if(prologuePart2Retry||prologuePart2Raid)return;
   prologuePart2StopText();
+  const replay=prologuePart2Ui?.tutorialReplay;
+  prologuePart2Ui=null;prologuePart2PartyReturn=false;
+  if(replay){
+    show('storyMode',{readOnlyStoryReplay:true});
+    const button=document.querySelector(`[data-prologue-replay="${replay.id}"]`);
+    if(button){
+      const chapter=document.getElementById('storyPrologueChapter');
+      if(chapter)chapter.open=true;
+      button.focus();
+    }
+    return;
+  }
   if(typeof closeProloguePart2Battle==='function')closeProloguePart2Battle();
   if(typeof prologuePart2LinkPracticeClear==='function')prologuePart2LinkPracticeClear();
-  prologuePart2Ui=null;prologuePart2PartyReturn=false;
   openStoryMode();
 }
 function prologuePart2StopText(){
@@ -104,6 +127,7 @@ function prologuePart2ScreenChanged(id){
   if(id!=='prologuePart2'){
     prologuePart2StopText();
     prologuePart2Root()?.replaceChildren();
+    if(prologuePart2Ui?.tutorialReplay)prologuePart2Ui=null;
     if(typeof prologuePart2LinkPracticeClear==='function')prologuePart2LinkPracticeClear();
   }
   if(!['battle','battleItemSelect','contractConfirm','prologuePart2'].includes(id)&&!prologuePart2Retry&&typeof isProloguePart2Battle==='function'&&isProloguePart2Battle()){
@@ -115,10 +139,11 @@ function prologuePart2ScreenChanged(id){
 }
 function prologuePart2Return(){
   if(!prologuePart2Ui||prologuePart2Ui.identity!==saveTransactionIdentity())return openStoryMode();
-  show('prologuePart2');renderProloguePart2();
+  show('prologuePart2',{readOnlyStoryReplay:Boolean(prologuePart2Ui.tutorialReplay)});
+  renderProloguePart2();
 }
 function prologuePart2ShowParty(){
-  if(prologuePart2Retry)return;
+  if(prologuePart2Retry||prologuePart2Ui?.tutorialReplay)return;
   prologuePart2PartyReturn=true;show('partySet');
 }
 function renderProloguePart2PartyReturn(){
@@ -171,8 +196,8 @@ function prologuePart2AwardExp(uids,amount){
   }
 }
 function prologuePart2Complete(){
-  const ui=prologuePart2Ui,e=prologuePart2Episode(ui?.id);
-  if(!e||prologuePart2Step()?.kind!=='complete'||prologuePart2Retry)return;
+  const ui=prologuePart2Ui,e=prologuePart2UiEpisode(ui);
+  if(!e||ui.identity!==saveTransactionIdentity()||prologuePart2Step()?.kind!=='complete'||prologuePart2Retry)return;
   if(ui.replay)return prologuePart2Leave();
   const targets=[...(prologuePart2EpisodeState(e.id).rewardTargetUids||[])];
   return prologuePart2Write(()=>{
@@ -188,9 +213,13 @@ function prologuePart2Complete(){
     }
   },()=>{
     for(const uid of targets){const ins=save.instances.find(i=>i.uid===uid);if(ins&&typeof checkEvolution==='function')checkEvolution(ins);}
-    const next=prologuePart2CurrentEpisode();
+    if(e.id!=='pb_ep'){
+      prologuePart2Leave();
+      showStoryEpisodeCompletion(document.querySelector('#storyEpisodeList .story-episode-card.is-current'),prologuePart2Label(e),e.rewards);
+      return;
+    }
     show('prologuePart2');
-    prologuePart2Root().innerHTML=`<section class="prologue-part2-finish"><h2>${prologuePart2Label(e)} 完了</h2>${next?`<button type="button" onclick="openProloguePart2('${next.id}')">次の話へ</button>`:'<button type="button" onclick="prologuePart2GoHome()">拠点へ</button>'}<button type="button" onclick="prologuePart2Leave()">話一覧へ</button></section>`;
+    prologuePart2Root().innerHTML=`<section class="prologue-part2-finish"><h2>${prologuePart2Label(e)} 完了</h2><button type="button" onclick="prologuePart2GoHome()">拠点へ</button><button type="button" onclick="prologuePart2Leave()">話一覧へ</button></section>`;
   });
 }
 function prologuePart2GoHome(){prologuePart2Ui=null;show('home');}
@@ -305,6 +334,10 @@ function prologuePart2EventMarkup(step){
   return button(action,prologuePart2Escape(step.label||'次へ'));
 }
 function prologuePart2Presentation(episode,step,index){
+  if(prologuePart2Ui?.tutorialReplay)return {
+    background:step.background,
+    portraits:step.portrait?`<img class="map-story-speaker story-scene-portrait is-speaking" style="left:50%" src="${prologuePart2Escape(step.portrait)}" alt="${prologuePart2Escape(step.speaker)}">`:''
+  };
   const portraits=prologuePart2Data().portraits;
   const background=step.background||episode.background||'images/maps/world_between.webp';
   const earlier=episode.steps.slice(Math.max(0,index-4),index+1);
@@ -317,7 +350,7 @@ function prologuePart2Presentation(episode,step,index){
 }
 function renderProloguePart2(){
   prologuePart2StopText();
-  const ui=prologuePart2Ui,episode=prologuePart2Episode(ui?.id),root=prologuePart2Root();
+  const ui=prologuePart2Ui,episode=prologuePart2UiEpisode(ui),root=prologuePart2Root();
   if(!root||!episode||ui.identity!==saveTransactionIdentity()||prologuePart2Retry)return;
   const index=prologuePart2Index(episode),step=episode.steps[index];
   if(!step)return;
@@ -341,7 +374,7 @@ function renderProloguePart2(){
   const log=ui.seen.map(s=>`<article>${s.speaker?`<b>${prologuePart2Escape(s.speaker)}</b>`:''}<p>${prologuePart2Escape(s.text)}</p></article>`).join('');
   const cinematic=!ui.captionShown;ui.captionShown=true;
   root.innerHTML=`<div class="map-story-scene prologue-part2-scene" data-card="${prologuePart2Escape(step.id)}" data-kind="${step.kind}" data-effect="${prologuePart2Escape(effect)}" onclick="prologuePart2Tap(event)">
-    <img class="map-story-bg story-scene-bg" src="${prologuePart2Escape(background)}" alt="">
+    ${background?`<img class="map-story-bg story-scene-bg" src="${prologuePart2Escape(background)}" alt="">`:''}
     <div class="map-story-character-stage">${portraits}</div>
     <div class="prologue-part2-effect" aria-hidden="true"></div>
     <header class="map-story-heading"><span>序章 · ${label}${ui.replay?' · 読み返し':''}</span><h2 id="prologuePart2Title" class="${cinematic?'is-intro':''}">${prologuePart2Escape(episode.title)}</h2></header>

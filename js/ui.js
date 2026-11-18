@@ -37,7 +37,8 @@ function showUiNotice(message, kind='success') {
   notice.textContent = message;
   replayUiMotion(notice, 'is-visible', 2200);
 }
-function show(id) {
+function show(id,{readOnlyStoryReplay=false}={}) {
+  const replayNavigation=readOnlyStoryReplay&&(id==='prologuePart2'||id==='storyMode');
   if(typeof prologuePart2ScreenChanged==='function')prologuePart2ScreenChanged(id);
   if(typeof renewalScreenChanged==='function')renewalScreenChanged(id);
   if(typeof autoScreenChange==='function')autoScreenChange(id);
@@ -69,8 +70,12 @@ function show(id) {
   if(typeof PersonalGifts!=='undefined')PersonalGifts.screenChanged(id);
   replayUiMotion(target, 'ui-screen-enter', 320);
   updateAppNavigation(id);
-  updateAppResourceBar();
-  updateContractorRankHeader();
+  // Replay switches between two story screens without refreshing lazy save state
+  // (including G-BLESS's weekly reset) or presenting a pending rank reward.
+  if(!replayNavigation){
+    updateAppResourceBar();
+    updateContractorRankHeader();
+  }
   if (id === 'home') renderHome();
   if (id === 'homeFavoriteSelect') renderHomeFavoriteOptions();
   if (id === 'giftBox' && typeof renderGiftBox === 'function') renderGiftBox();
@@ -101,8 +106,10 @@ function show(id) {
   if (id === 'skillEdit') renderSkillEdit();
   if (id === 'moreMenu' && typeof updateTutorialMenuSummary === 'function') updateTutorialMenuSummary();
   if(gachaTarget)openGachaTab(typeof gachaTarget==='string'?gachaTarget:gachaTab,{guide:false});
-  if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(gachaTarget&&gachaTab==='skill'?'skillGacha':id);
-  scheduleContractorRankUpPresentation();
+  if(!replayNavigation){
+    if(typeof handleTutorialScreenChange==='function')handleTutorialScreenChange(gachaTarget&&gachaTab==='skill'?'skillGacha':id);
+    scheduleContractorRankUpPresentation();
+  }else clearTimeout(contractorRankUpTimer);
   if(typeof prologuePart2RenderOptionalEntry==='function')prologuePart2RenderOptionalEntry(id);
   if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
   if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();

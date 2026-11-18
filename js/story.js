@@ -7,6 +7,65 @@ const PROLOGUE_STORY_EPISODES=Object.freeze([
   Object.freeze({id:'expedition',number:6,title:'最初の遠征',startStepId:'expedition_intro',endStepId:'prologue_epilogue',image:'images/maps/grassland.webp',summary:'仲間を草原へ送り出し、契約者としての最初の一歩を踏み出す。'})
 ]);
 
+// Only narrative pages are adapted. Action metadata (inputs, rewards, fights,
+// choices and retry routes) never enters the reader.
+const PROLOGUE_REPLAY_NARRATIVE=Object.freeze({
+  awakening:['intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent'],
+  rescue:['elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts','starter_contracts_received','elna_guest_join','elna_rescue_complete','elna_contract_intro','elna_contract_consent','elna_contract_execute','elna_contract_departure','elna_contract_body'],
+  preparations:['home_requests','request_accept','request_reward_received'],
+  stella:['stella_intro','stella_road_response','stella_mock_enemy','stella_mock_victory'],
+  lumina:['lumina_intro','lumina_academy_arrival','lumina_world_map_visit','lumina_encounter','lumina_wait','lumina_alchemy_result','lumina_farewell'],
+  expedition:['expedition_intro','expedition_party_plan','prologue_epilogue']
+});
+// For a mixed page, take the source text verbatim up to the start of its UI instructions.
+const PROLOGUE_REPLAY_GUIDANCE_START=Object.freeze({
+  elna_contract_body:' フレイガル、アクアロンと一緒に編成しておいたぞ！',
+  home_requests:' ここを押すと、',
+  request_accept:' このボタンを押して、',
+  lumina_world_map_visit:'「錬成工房へ入る」を押して',
+  expedition_party_plan:' まずは編成で'
+});
+const PROLOGUE_REPLAY_BACKGROUNDS=Object.freeze({
+  void:null,
+  world_descent:null,
+  grassland:'images/maps/grassland_battle_v1.webp',
+  academy:'images/maps/magic_academy_battle_v1.webp',
+  capital:'images/maps/capital_market_story_v1.webp',
+  workshop:'images/maps/lumina_secret_workshop_story_v1.webp'
+});
+function storyPrologueReplayEpisode(id){
+  const entry=PROLOGUE_STORY_EPISODES.find(episode=>episode.id===id);
+  if(!entry||typeof tutorialFlowSteps!=='function')return null;
+  const source=tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID);
+  const start=source.findIndex(step=>step.id===entry.startStepId);
+  const end=source.findIndex(step=>step.id===entry.endStepId);
+  if(start<0||end<start)return null;
+  const selected=new Set(PROLOGUE_REPLAY_NARRATIVE[id]);
+  const steps=[];
+  let background=entry.image;
+  for(const step of source.slice(start,end+1)){
+    if(!selected.has(step.id))continue;
+    const pages=step.dialogue||[step];
+    pages.forEach((page,i)=>{
+      if(step.id==='elna_contract_departure'&&i===4)return; // Standalone operation prompt, not the farewell.
+      const marker=PROLOGUE_REPLAY_GUIDANCE_START[step.id];
+      const end=marker?page.text.indexOf(marker):page.text.length;
+      if(end<=0)return;
+      if(Object.hasOwn(PROLOGUE_REPLAY_BACKGROUNDS,page.scene))background=PROLOGUE_REPLAY_BACKGROUNDS[page.scene];
+      steps.push({id:step.dialogue?`${step.id}:${i+1}`:step.id,sourceId:step.id,
+        kind:page.speaker?'dialogue':'narration',speaker:page.speaker,portrait:page.portrait,text:page.text.slice(0,end),background});
+    });
+  }
+  if(!steps.length)return null;
+  steps.push({id:`${id}:complete`,kind:'complete',background});
+  return {...entry,steps};
+}
+function storyPrologueReplayAvailable(index,snapshot=storyProgressSnapshot()){
+  if(!PROLOGUE_STORY_EPISODES[index])return false;
+  const state=storyEpisodeState(index,snapshot);
+  return state==='completed'||state==='skipped'&&typeof prologuePart2Available==='function'&&prologuePart2Available();
+}
+
 function storyEpisodeIndexForStep(stepId){
   const steps=typeof tutorialFlowSteps==='function'?tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID):[];
   if(!steps.length)return 0;
@@ -20,7 +79,7 @@ function storyEpisodeIndexForStep(stepId){
   return episodeIndex>=0?episodeIndex:0;
 }
 function storyProgressSnapshot(){
-  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():{status:'not_started',stepId:null};
+  const tutorial=typeof normalizeTutorialSave==='function'?normalizeTutorialSave(save.progress?.tutorial):{status:'not_started',stepId:null};
   const finished=tutorial.status==='completed'||tutorial.status==='skipped';
   const currentIndex=finished?PROLOGUE_STORY_EPISODES.length:storyEpisodeIndexForStep(tutorial.stepId);
   return {tutorial,finished,currentIndex};
@@ -38,6 +97,18 @@ function currentStoryEpisode(){
 function openStoryMode(){
   if(typeof tutorialUiState==='object'&&tutorialUiState.active&&typeof pauseTutorial==='function')pauseTutorial();
   show('storyMode');
+}
+function showStoryEpisodeCompletion(nextCard,label,{coins=0,exp=0,base=false}={}){
+  if(nextCard){
+    nextCard.classList.add('story-episode-next-highlight');
+    nextCard.scrollIntoView({block:'center',behavior:'instant'});
+  }
+  const parts=[label+' 完了'];
+  const reward=[];
+  if(coins>0)reward.push('コイン+'+coins.toLocaleString('ja-JP'));
+  if(exp>0)reward.push('EXP+'+exp.toLocaleString('ja-JP'));
+  if(reward.length)parts.push(base?`基本報酬：${reward.join('　')}`:reward.join('　'));
+  showUiNotice(parts.join('　'),'story-complete');
 }
 function continuePrologueStory(){
   if(typeof currentTutorialState!=='function'||typeof startTutorialFlow!=='function')return false;
@@ -123,7 +194,7 @@ function renderStoryMode(){
   list.innerHTML=PROLOGUE_STORY_EPISODES.map((entry,index)=>{
     const state=storyEpisodeState(index,snapshot);
     const statusLabel=state==='completed'?'完了':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';
-    const action=state==='current'?`<button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'つづきから'} ›</button>`:'';
+    const action=storyPrologueReplayAvailable(index,snapshot)?`<button type="button" data-prologue-replay="${entry.id}" onclick="openPrologueReplay('${entry.id}')">読み返す ›</button>`:state==='current'?`<button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'つづきから'} ›</button>`:'';
     return `<article class="story-episode-card is-${state}"><img src="${entry.image}" alt=""><div class="story-episode-copy"><span>序章 第${entry.number}話</span><h3>${entry.title}</h3><p>${state==='locked'?'前の話を完了すると解放されます。':entry.summary}</p>${action}</div><strong class="story-episode-status">${statusLabel}</strong></article>`;
   }).join('')+(late?renderProloguePart2EpisodeCards():'');
 }
