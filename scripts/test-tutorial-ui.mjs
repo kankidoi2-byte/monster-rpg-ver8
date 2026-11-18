@@ -61,7 +61,7 @@ assert.ok(tutorial.includes('queueTutorialActionAdvance'),'the guide must advanc
 ].forEach(id=>assert.match(tutorial,new RegExp(`id:'${id}'[^\\n]+(?:advanceOnTarget|externalAdvance):true`),`${id} must be classified as a real-screen action`));
 assert.match(tutorial,/id:'gnosis_name'[^\n]+mode:'external_action'/,'player-name entry must be classified as a blocking external action');
 assert.ok(tutorial.includes('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID'),'the required onboarding flow must use the shared tutorial engine');
-assert.ok(ui.includes("typeof handleTutorialScreenChange === 'function'"),'screen changes must notify the tutorial engine');
+assert.match(ui,/if\s*\(!replayNavigation\)\s*\{\s*if\s*\(typeof handleTutorialScreenChange\s*===\s*'function'\)\s*handleTutorialScreenChange\(/,'ordinary screen changes must notify the tutorial engine; read-only story replay must not');
 assert.ok(init.includes('setTimeout(resumeTutorialIfNeeded,0)'),'reload/title entry must resume an interrupted tutorial');
 
 const placementStart=tutorial.indexOf('function calculateTutorialPlacement');
