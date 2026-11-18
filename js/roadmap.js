@@ -12,7 +12,7 @@ function cardHTML(it){
       <div class="tx"><div class="k">${ROADMAP.ui.main}</div><h4>${it.title}</h4><p>${it.sub}</p></div></button></div>`;
   }
   const ic=it.iconImg?`<img src="${it.iconImg}" alt="">`:(it.icon||'');
-  if(it.kind==='side') return `<div class="side" style="--c:${c}"><button class="card" data-id="${it.id}"><div class="ic">${ic}</div>
+  if(it.kind==='side') return `<div class="side" style="--c:${c}"><button class="card" data-id="${it.id}">${wip}<div class="ic">${ic}</div>
       <div><span class="om">${ROADMAP.ui.side}</span><h4>${it.title}</h4><p>${it.sub}</p></div></button></div>`;
   return `<div class="node ${it.wip?'wip':''}" style="--c:${c}"><button class="card" data-id="${it.id}">${wip}<div class="ic">${ic}</div><h4>${it.title}</h4><p>${it.sub}</p></button></div>`;
 }

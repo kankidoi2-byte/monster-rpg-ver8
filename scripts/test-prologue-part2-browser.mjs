@@ -26,6 +26,57 @@ try{
  }
  async function next(){await page.evaluate(()=>prologuePart2Typewriter?.finish());await page.locator('#prologuePart2Content [aria-label="次へ"]').click();}
  const card=()=>page.locator('#prologuePart2Content [data-card]').getAttribute('data-card');
+ // The first six episodes use the same reader without tutorial or save side effects.
+ await page.evaluate(()=>{
+  clearTutorialUi();save=initSave();save.progress.tutorial.status='in_progress';save.progress.tutorial.stepId='stella_intro';
+  save.progress.tutorial.chapterGate=true;save.contractor.pendingRankUps=[];openStoryMode();
+ });
+ assert.equal(await page.locator('[data-prologue-replay]').count(),3);
+ assert.equal(await page.evaluate(()=>openPrologueReplay('stella')),false);
+ assert.equal(await page.evaluate(()=>openPrologueReplay('expedition')),false);
+ await page.evaluate(()=>{
+  skipTutorial();save.progress.tutorial.playerName='テスト契約者';
+  openStoryMode();
+  // A replay must not refresh old G-BLESS data or normalize progress into the live save.
+  save.gBless.weekKey='2026-01-01';save.gBless.week=7;
+  window.replayStorageSet=Storage.prototype.setItem;window.replayStorageWrites=0;
+  Storage.prototype.setItem=function(...args){if(!String(args[0]).startsWith('mb_analytics_queue_'))window.replayStorageWrites++;return window.replayStorageSet.apply(this,args);};
+  window.replaySave=JSON.stringify(save);window.replayTutorial=save.progress.tutorial;
+ });
+ assert.equal(await page.locator('[data-prologue-replay]').count(),6);
+ // Mixed pages retain only the original narrative substring, not the action text.
+ const condensed=await page.evaluate(()=>PROLOGUE_STORY_EPISODES.flatMap(e=>storyPrologueReplayEpisode(e.id).steps)
+  .filter(s=>Object.hasOwn(PROLOGUE_REPLAY_GUIDANCE_START,s.sourceId)).map(s=>[s.sourceId,s.text]));
+ assert.deepEqual(condensed,[
+  ['elna_contract_body','これがエルナの契約体だ！'],
+  ['home_requests','エルナを助けたことを報告しに行こう！'],
+  ['request_accept','救援が依頼として認められたぞ！'],
+  ['lumina_world_map_visit','魔法使いは学園の地下へ行ったぞ。'],
+  ['expedition_party_plan','ちぇ～。君がそういうなら仕方ないか。\nでもこれで、君が使える契約の力は4つになったぞ！ だけど1度のバトルで使える力は3つまで…。あ、そうだ！ ガルドラはボク達と一緒に行こう。今回はフレイガルに遠征を頼むんだ！']
+ ]);
+ assert.deepEqual(await page.evaluate(()=>storyPrologueReplayEpisode('preparations').steps.slice(0,-1).map(s=>s.sourceId)),['home_requests','request_accept','request_reward_received']);
+ assert.equal(await page.evaluate(()=>PROLOGUE_STORY_EPISODES.some(e=>storyPrologueReplayEpisode(e.id).steps.some(s=>['stella_card_receive','stella_mock_battle','expedition_active','expedition_dispatch','expedition_replay'].includes(s.sourceId)))),false);
+ const replayIds=await page.locator('[data-prologue-replay]').evaluateAll(buttons=>buttons.map(button=>button.dataset.prologueReplay));
+ for(const id of replayIds){
+  const replayCard=page.locator(`[data-prologue-replay="${id}"]`);
+  await replayCard.click();
+  const expected=await page.evaluate(id=>storyPrologueReplayEpisode(id).steps.filter(s=>s.kind!=='complete').map(s=>[s.id,prologuePart2PlayerText(s.text)]),id);
+  assert(expected.length>0);
+  for(const [stepId,text] of expected){
+   assert.equal(await card(),stepId);
+   assert.equal(await page.evaluate(()=>{prologuePart2Typewriter?.finish();return document.querySelector('#prologuePart2Text').textContent;}),text);
+   assert.equal(await page.evaluate(()=>tutorialUiState.active||Boolean(activeHuntRequest)),false);
+   assert.equal(await page.locator('#prologuePart2Content button').filter({hasText:/戦闘開始|編成を確認|契約を確認/}).count(),0);
+   await next();
+  }
+  await page.getByRole('button',{name:'読み返しを終える',exact:true}).click();
+  assert(await page.locator('#storyMode.active').isVisible());
+  assert.equal(await replayCard.evaluate(button=>document.activeElement===button),true);
+ }
+ await page.locator('[data-prologue-replay="awakening"]').click();
+ await page.getByRole('button',{name:'会話を閉じて話一覧へ戻る'}).click();
+ assert.deepEqual(await page.evaluate(()=>({writes:window.replayStorageWrites,same:window.replaySave===JSON.stringify(save),sameTutorial:window.replayTutorial===save.progress.tutorial})),{writes:0,same:true,sameTutorial:true});
+ await page.evaluate(()=>{Storage.prototype.setItem=window.replayStorageSet;});
  // Complete the real first-half finish transaction and enter episode 7 directly.
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.progress.tutorial.expeditionDispatched=true;
@@ -117,6 +168,23 @@ try{
  }
  assert(seen22.includes('pb_22_post_13'));assert.equal(seen22.at(-1),'pb_22_complete');
  await page.screenshot({path:out+'/episode22-mobile.png'});
+ // Ordinary completion saves once, returns directly to the list, and calls out the next card.
+ const rewards22=await page.evaluate(()=>prologuePart2Episode('pb_22').rewards);
+ const coins22=await page.evaluate(()=>save.coins);
+ await page.getByRole('button',{name:'第22話を終える',exact:true}).click();
+ assert(await page.locator('#storyMode.active').isVisible());
+ assert.equal(await page.locator('#prologuePart2Content .prologue-part2-finish').count(),0);
+ let highlight=page.locator('#storyEpisodeList .story-episode-next-highlight');
+ assert.match(await highlight.innerText(),/終幕/);
+ assert.equal(await highlight.locator('.story-episode-status').innerText(),'NEXT');
+ assert.equal(await page.evaluate(()=>save.coins),coins22+rewards22.coins);
+ assert.equal(await page.evaluate(()=>save.prologuePart2.episodes.pb_22.completed),true);
+ const completionNotice=page.locator('#uiNotice.is-story-complete.is-visible');
+ assert.match(await completionNotice.innerText(),/第22話 完了/);
+ if(rewards22.coins)assert((await completionNotice.innerText()).includes('コイン+'+rewards22.coins.toLocaleString('ja-JP')));
+ if(rewards22.exp)assert((await completionNotice.innerText()).includes('EXP+'+rewards22.exp.toLocaleString('ja-JP')));
+ assert.equal(await completionNotice.evaluate(node=>getComputedStyle(node).opacity),'1','reduced motion does not hide completion toast');
+ await completionNotice.waitFor({state:'detached'});
  // Verify reordered epilogue with real navigation; no removed duplicate decision cards.
  await seed('pb_ep','pb_ep_dragon_15');const observed=[];
  for(let i=0;i<35;i++){const id=await card();observed.push(id);if(id==='pb_ep_gacha_01')break;await next();}
@@ -132,6 +200,8 @@ try{
  await page.evaluate(()=>{Storage.prototype.setItem=window.p2StorageSet;});
  await page.getByRole('button',{name:'保存を再試行',exact:true}).click();
  assert.deepEqual(await page.evaluate(()=>({coins:save.coins,completed:save.prologuePart2.completed,hub:save.prologuePart2.hubArrived,authority:authorityUnlocked(),claimed:save.prologuePart2.episodes.pb_ep.rewardClaimed})),{coins:before.coins+100,completed:true,hub:true,authority:true,claimed:true});
+ assert.equal(await page.locator('#prologuePart2Content .prologue-part2-finish h2').innerText(),'終幕 完了');
+ assert(await page.locator('#prologuePart2Content').getByRole('button',{name:'拠点へ',exact:true}).isVisible());
  await boot();await page.evaluate(()=>{clearTutorialUi();show('growthHub')});
  assert(await page.locator('#authoritySection').isVisible());await page.locator('#authorityBoard button').click();assert.equal(await page.locator('#authorityEffect').innerText(),'0の権能');
  const after=await page.evaluate(()=>({coins:save.coins,items:JSON.stringify(save.items),instances:JSON.stringify(save.instances),tutorial:JSON.stringify(save.progress.tutorial)}));
