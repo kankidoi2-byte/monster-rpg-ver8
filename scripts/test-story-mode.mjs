@@ -37,6 +37,8 @@ let checkpoint='intro_gnosis';
 const context=vm.createContext({
   document:{getElementById:id=>elements.get(id)},
   currentTutorialState:()=>tutorialState,
+  save:{progress:{get tutorial(){return tutorialState;}}},
+  normalizeTutorialSave:value=>({...value}),
   tutorialCurrentStepId:()=>checkpoint
 });
 vm.runInContext(story,context);
@@ -48,6 +50,7 @@ for(const status of ['not_started','in_progress','completed','skipped']){
   assert.equal(elements.get('storyContinueCard').hidden,['completed','skipped'].includes(status));
   assert.equal(elements.get('storyPrologueChapter').open,!['completed','skipped'].includes(status),'unfinished prologue exposes its continuation; completed/skipped returns to collapsed chapters');
   assert.equal((elements.get('storyEpisodeList').innerHTML.match(/<article /g)||[]).length,6);
+  assert.equal((elements.get('storyEpisodeList').innerHTML.match(/data-prologue-replay=/g)||[]).length,status==='completed'?6:0);
   if(status==='completed')assert.equal((elements.get('storyEpisodeList').innerHTML.match(/story-episode-status">完了/g)||[]).length,6);
   assert.ok(!elements.get('homeAdventureKicker').textContent.includes('序章クリア'));
   assert.ok(index.includes('aria-label="序章 第7話は準備中です"'));

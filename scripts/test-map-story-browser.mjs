@@ -68,6 +68,21 @@ try{
  const previousPage=async()=>{await page.locator('#mapStoryLogButton').click();await previous().click();};
  const previous=()=>page.locator('#mapStory button[onclick="previousMapStoryNode()"]');
  const skip=()=>page.locator('#mapStory button[onclick="skipMapStoryDialogue()"]');
+ const checkCompletedEpisode=async(number,total,returnedFromParty)=>{
+  const list=page.locator('#mapStory .map-story-list');
+  if(number===total){
+   // Evolution can temporarily take over normal navigation; returning from it
+   // already opened the list under the pre-existing party-return behavior.
+   if(returnedFromParty)assert(await list.isVisible());
+   else assert(await page.getByRole('heading',{name:new RegExp(`全${total}話 完了$`)}).isVisible());
+   return;
+  }
+  assert(await list.isVisible(),'regular completion returns directly to the chapter list');
+  const next=list.locator('[data-next-episode]');
+  assert.equal(await next.count(),1);
+  assert(await next.getByRole('button',{name:`第${number+1}話を始める`,exact:true}).isEnabled());
+  assert.equal(await page.getByRole('heading',{name:`第${number}話 完了`,exact:true}).count(),0);
+ };
  assert(await previous().isDisabled());
  await nextPage();await previousPage();assert(await previous().isDisabled());await nextPage();
  assert.equal(await page.locator('.map-story-speaker.is-speaking').getAttribute('alt'),'グノーシス');
@@ -112,7 +127,9 @@ try{
   while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await nextPage();
   await page.locator('#mapStory button[onclick="completeMapStoryEpisode()"] ').click();
   while(await page.locator('#evolution').isVisible())await page.evaluate(()=>cancelEvolution());
-  if(await page.locator('#partySet').isVisible())await page.locator('#mapStoryPartyReturn').click();else if(number<11)await page.locator('#mapStory button[onclick="openMapStory()"] ').click();
+  const returnedFromParty=await page.locator('#partySet').isVisible();
+  if(returnedFromParty)await page.locator('#mapStoryPartyReturn').click();
+  await checkCompletedEpisode(number,11,returnedFromParty);
  }
  await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof mapStoryState==='function'&&mapStoryState().episodes.gl_11?.completed===true);
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>openMapStory());
@@ -184,8 +201,9 @@ try{
   await skip().click();
   await page.locator('#mapStory button[onclick="completeMapStoryEpisode()"]').click();
   while(await page.locator('#evolution').isVisible())await page.evaluate(()=>cancelEvolution());
-  if(await page.locator('#partySet').isVisible())await page.locator('#mapStoryPartyReturn').click();
-  else if(number<9)await page.getByRole('button',{name:'話一覧へ',exact:true}).click();
+  const returnedFromParty=await page.locator('#partySet').isVisible();
+  if(returnedFromParty)await page.locator('#mapStoryPartyReturn').click();
+  await checkCompletedEpisode(number,9,returnedFromParty);
  }
  assert.equal(await page.evaluate(()=>mapStoryCompletedCount(VOLCANO_STORY)),9);
  assert.equal(await page.evaluate(()=>JSON.stringify(mapStoryState('grassland_whose'))),savedGrassland);

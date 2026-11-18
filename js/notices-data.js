@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261118-story-replay',date:'2026-11-18',category:'update',title:'序章第1〜6話を読み返せるようになりました',body:'ストーリーの各話一覧から第1〜6話の会話を読み返せます。チュートリアルは再開せず、進行や所持品も変わりません。序章後半・マップストーリーの通常回を終えると、完了のお知らせを表示して各話一覧に戻ります。'},
   {id:'20261114-prologue-part2',date:'2026-11-14',category:'update',title:'序章の続きが遊べるようになりました',body:'ストーリーから第7話〜第22話と終幕を進められます。育成画面の権能は終幕で開き、中央の「0」は序章を終えた印になります。仮の最大HP上昇はなくなりました。'},
   {id:'20261114-ice-attribute',date:'2026-11-14',category:'update',title:'氷属性を追加しました',body:'アイスゴーレムが氷属性になりました。火と森の相性は、どちらから攻撃しても等倍になります。'},
   {id:'20261113-battle-skill-effects',date:'2026-11-13',category:'update',title:'技の演出を新しくしました',body:'技の属性や型に合わせて見た目が変わり、強力な技には専用の演出が入ります。技の威力や効果は変わりません。'},
