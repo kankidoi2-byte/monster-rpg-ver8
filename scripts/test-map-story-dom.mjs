@@ -32,7 +32,10 @@ for(let number=1;number<=11;number++){
  while(run('mapStoryState().resume.nodeId!==null')){run('mapStoryTypewriter.finish()');click('#mapStory .map-story-next');}
  click('#mapStory button[onclick="completeMapStoryEpisode()"]');
  if(run('activeScreenId()')==='evolution'){for(let i=0;i<10&&run('activeScreenId()')==='evolution';i++)run('cancelEvolution()');click('#mapStoryPartyReturn');}
- else if(number<11)click('#mapStory button[onclick="openMapStory()"]');
+ else if(number<11){
+  assert(d.querySelector('#mapStory .map-story-list'),'ordinary completion returns directly to the list');
+  assert(d.querySelector('#mapStory [data-next-episode].story-episode-next-highlight'));
+ }
  assert(run(`mapStoryProgress('${id}').completed`));
 }
 run('openMapStory()');assert(d.getElementById('mapStoryContent').textContent.includes('11/11 完了'));click('#mapStory button[onclick="leaveMapStory()"]');assert.equal(run('worldMapSelectedId'),'grassland');assert.equal(run('activeScreenId()'),'battleChoices');

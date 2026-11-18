@@ -52,7 +52,9 @@ console.log(`PASS battle renewal v4: ${cases} real-data matchup, target-fallback
  const context=vm.createContext({WeakMap,Map,document:{getElementById:()=>notice},
   setTimeout:(fn,ms)=>{timers.set(++seq,{fn,at:now+ms});return seq;},clearTimeout:id=>timers.delete(id)});
  const ui=fs.readFileSync(new URL('../js/ui.js',import.meta.url),'utf8');
- vm.runInContext(ui.slice(ui.indexOf('const uiMotionTimers'),ui.indexOf('function show(id)')),context);
+ const start=ui.indexOf('const uiMotionTimers'),end=ui.indexOf('function show(',start);
+ assert(start>=0&&end>start,'UI motion helper source range');
+ vm.runInContext(ui.slice(start,end),context);
  const advance=ms=>{now+=ms;for(const [id,t] of [...timers])if(t.at<=now){timers.delete(id);t.fn();}};
  vm.runInContext("showUiNotice('1件目')",context);advance(2000);vm.runInContext("showUiNotice('2件目')",context);
  advance(200);assert(classes.has('is-visible'));advance(1999);assert(classes.has('is-visible'));advance(1);assert(!classes.has('is-visible'));
