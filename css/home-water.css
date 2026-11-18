@@ -83,9 +83,11 @@ body:has(#home#home#home.active) #homeNoticePreview [data-notice-unread]{positio
 #battleChoices#battleChoices:has(.world-map-root)>#battleExpeditionButton{position:absolute;right:16px;top:84px;z-index:24;margin:0;border:1px solid #b08d55;border-radius:14px;background:#fffdf2!important;color:#1c2230!important;box-shadow:0 3px 10px #171c2822}
 /* Banner content is driven by home-banners.js, not the full notices feed. */
 #home#home#home .home-banner{position:absolute;top:4px;left:16px;right:16px;z-index:6;height:84px}
-.home-banner-viewport{height:64px;overflow:hidden;border:1px solid #b08d55;border-radius:14px;background:#171c28}
-.home-banner-track{height:100%;display:flex;transition:transform .35s ease;will-change:transform}
+.home-banner-viewport{height:64px;overflow:hidden;border:1px solid #b08d55;border-radius:14px;background:#171c28;touch-action:pan-y}
+.home-banner-track{position:relative;height:100%;display:flex;transition:transform .35s ease;will-change:transform;user-select:none}
+.home-banner-track:is(.is-dragging,.is-banner-instant){transition:none}
 #home#home#home .home-banner-slide{box-sizing:border-box;display:flex;align-items:center;gap:10px;flex:0 0 100%;width:100%;min-width:0;height:64px;min-height:64px;margin:0;padding:10px 12px;border:0;border-radius:0;box-shadow:none;background:#171c28!important;color:#f5e8cd!important;text-align:left}
+#home#home#home .home-banner-slide:active{transform:none;filter:none}
 .home-banner-tag{flex:none;max-width:64px;padding:5px 6px;border:1px solid #b08d5580;border-radius:5px;font:700 10px/1.2 system-ui,sans-serif;color:#e5c881}
 .home-banner-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
 .home-banner-copy strong,.home-banner-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit!important}
@@ -115,6 +117,7 @@ body:has(#home#home#home.active) #homeNoticePreview [data-notice-unread]{positio
 #battleChoices#battleChoices:has(>#battleExpeditionButton.tutorial-target-active) .wm-sheet{display:none}
 /* Image banners fill the entire adopted card; their accessible label remains on the button. */
 #home#home#home .home-banner-slide:has(.home-banner-image){position:relative;padding:0;overflow:hidden}
+#home#home#home .home-banner-slide[data-banner-clone]{position:absolute;top:0;pointer-events:none}
 #home#home#home .home-banner-slide>.home-banner-image{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;border-radius:0;object-fit:cover;filter:none}
 #home#home#home .home-portrait-frame[role=button]{cursor:pointer}
 #home#home#home :is(.home-name-plate,.home-water-monster,.home-portrait-frame):focus-visible{outline:3px solid #8d6729;outline-offset:4px}
