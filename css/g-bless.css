@@ -51,3 +51,33 @@
 body.gb-header-stacked>.app-topbar .app-resource-group{display:grid;grid-template-columns:minmax(0,1fr) auto;width:100%}
 body.gb-header-stacked #party#party#party.active,body.gb-header-stacked #gachaHub#gachaHub#gachaHub.active{top:var(--g-bless-bar-height,74px)}
 body.gb-header-stacked #home#home#home.nonbattle-screen.active{height:calc(100dvh - var(--g-bless-bar-height,74px))}
+
+/* Shared top bar for home, monsters and gacha (Nov 18): same rank card and resource chips on every screen. */
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active):not(.title-mode)>.app-topbar{display:flex!important;flex-wrap:nowrap;align-items:flex-start;justify-content:flex-start;gap:6px;box-sizing:border-box;padding:8px 12px!important}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .contractor-rank{flex:none;width:auto;min-width:0;max-width:none;min-height:56px;padding:6px 12px;gap:1px;background:#ffffffcf;border:1px solid #b08d5566;border-radius:16px;color:#1c2230}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .contractor-rank>span:first-child{font-size:9px;color:#1c2230}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .contractor-rank strong{font:700 20px/1.2 'Yu Mincho','Hiragino Mincho ProN','Noto Serif CJK JP',serif;white-space:nowrap}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .home-rank-progress{display:block;width:100%;height:3px;margin-top:3px;border-radius:2px;overflow:hidden;background:#1c22301a}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .app-resource-group{display:flex;flex:0 1 auto;flex-wrap:nowrap;align-items:center;align-self:center;justify-content:flex-end;gap:4px;min-width:0;width:auto;margin:0 0 0 auto}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .app-resource-group :is(#gBlessChip,.app-resource){box-sizing:border-box;display:flex;align-items:center;gap:4px;min-width:0;max-width:none;min-height:34px;margin:0;padding:6px 9px;border-radius:99px;font:800 12px/1.2 system-ui,sans-serif;white-space:nowrap}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .app-resource{background:#ffffffcf;border:1px solid #b08d5566;color:#1c2230}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar #gBlessChip[hidden]{display:none}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar #gBlessChipText{white-space:nowrap;overflow-wrap:normal}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar #gBlessChip .gb-orb{width:16px;height:16px}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .app-resource-group .app-resource>span{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff0b0,#c7a054);border:2px solid #b08d55;color:#9b773a;font-size:9px;box-sizing:border-box;box-shadow:inset 0 0 0 1px #fff1b8}
+body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar #appCoinView{max-width:none;overflow:visible}
+body:has(#home#home#home.active) .app-topbar #homeNoticePreview{flex:none;margin-left:2px}
+@media(max-width:380px){
+ body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active):not(.title-mode)>.app-topbar{gap:4px;padding-left:8px!important;padding-right:8px!important}
+ body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .contractor-rank{padding:6px 8px}
+ body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .contractor-rank strong{font-size:17px}
+ body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .app-resource-group :is(#gBlessChip,.app-resource){padding:5px 6px;font-size:10.5px;gap:3px}
+ body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar #gBlessChip .gb-orb{width:13px;height:13px}
+ body:has(:is(#home#home#home,#party#party#party,#gachaHub#gachaHub#gachaHub).active) .app-topbar .app-resource-group .app-resource>span{width:15px;height:15px}
+}
+
+/* Align the home-only bell with the mission and gift shortcuts in home-water.css. */
+body:has(#home#home#home.active):not(.title-mode)>.app-topbar{padding-right:16px!important}
+@media(max-width:360px){
+ body:has(#home#home#home.active):not(.title-mode)>.app-topbar{padding-right:10px!important}
+}
