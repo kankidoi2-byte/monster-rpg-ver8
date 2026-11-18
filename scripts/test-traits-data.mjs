@@ -64,5 +64,5 @@ vm.runInContext(`traitsForSpecies=()=>[{name:'<img src=x>',description:'<script>
 const escaped=vm.runInContext('monsterStatusTraitsHtml({id:"x"})',context);assert(!escaped.includes('<img'));assert(!escaped.includes('<script>'));
 const status=fs.readFileSync('js/monster-status.js','utf8');assert(status.indexOf('monsterStatusTraitsHtml(ins)}')<status.indexOf('<div class="status-skill-heading">'));
 const roadmap=vm.createContext({});vm.runInContext(fs.readFileSync('js/roadmap-data.js','utf8'),roadmap);
-assert.match(fs.readFileSync('js/roadmap-data.js','utf8'),/id:'traits',lane:'sys',stage:'now',wip:true,title:'特性'/);
+assert.match(fs.readFileSync('js/roadmap-data.js','utf8'),/id:'traits',lane:'sys',stage:'now',note:'追加',title:'特性'/);
 console.log('Traits: all 100 adopted assignments, current-form lookup, names/remnants, safe number-free status UI, unchanged old saves.');

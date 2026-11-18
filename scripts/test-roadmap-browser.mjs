@@ -26,7 +26,7 @@ try{
   const displayedWip=await page.locator('#roadmap .wipb').evaluateAll(badges=>badges.map(b=>b.closest('.card').dataset.id).sort());
   assert.deepEqual(displayedWip,expectedWip);
   assert(await page.locator('#roadmap .node.wip').evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n,'::before').animationName==='none'&&getComputedStyle(n,'::before').backgroundColor!=='rgb(255, 255, 255)')));
-  assert.equal(await page.locator('#roadmap .main').count(),3);assert.equal(await page.locator('#roadmap .side').count(),2);
+  assert.equal(await page.locator('#roadmap .main').count(),3);assert.equal(await page.locator('#roadmap .side').count(),1);
   assert(await page.locator('#roadmap .side .card').evaluateAll(cards=>cards.every(c=>getComputedStyle(c).borderStyle==='dashed'&&c.getBoundingClientRect().height<150)));
   await page.locator('[data-lane="story"]').click();assert.equal(await page.locator('#roadmap .cell.dim').count(),6);assert.equal(await page.locator('[data-lane="story"]').getAttribute('aria-pressed'),'true');await page.locator('[data-lane="story"]').click();assert.equal(await page.locator('#roadmap .cell.dim').count(),0);
   const ids=await page.locator('#roadmap [data-id]').evaluateAll(cards=>cards.map(c=>c.dataset.id));
@@ -50,7 +50,7 @@ try{
  }
  // Change only the data file response: stage and completed-list updates need no renderer edit.
  const page=await browser.newPage();
- await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'material',lane:'sys',stage:'next'","id:'material',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
+ await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'material',lane:'sys',stage:'now'","id:'material',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
  await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
  assert.equal(await page.locator('[data-id="material"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
  assert.equal(await page.locator('#doneList>div').first().locator('span').nth(1).innerText(),'追加テスト');
