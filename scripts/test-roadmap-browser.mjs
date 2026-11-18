@@ -33,11 +33,11 @@ try{
   for(const [index,id] of ids.entries()){
    await page.locator(`[data-id="${id}"]`).click();assert(await page.locator('#sheet.open').isVisible());
    assert.equal(await page.locator('#roadmapSheetTitle').innerText(),await page.evaluate(id=>ROADMAP.items.find(i=>i.id===id).title,id));
-   if(id==='lore'){assert.equal(await page.locator('#sheet .syn p').innerText(),await page.evaluate(()=>ROADMAP.items.find(i=>i.id==='lore').synopsis.text));await page.screenshot({path:`${out}/synopsis-${width}.png`});}
+   if(id==='prologue'){assert.equal(await page.locator('#sheet .syn p').innerText(),await page.evaluate(()=>ROADMAP.items.find(i=>i.id==='prologue').synopsis.text));await page.screenshot({path:`${out}/synopsis-${width}.png`});}
    if(index%2)await page.locator('#mask').click({position:{x:10,y:10}});else await page.locator('#close').click();
    assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
   }
-  await page.locator('[data-id="lore"]').click();await page.keyboard.press('Escape');assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
+  await page.locator('[data-id="prologue"]').click();await page.keyboard.press('Escape');assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
   assert.equal(await page.locator('#doneList>div').count(),4);await page.locator('#more').click();assert.equal(await page.locator('#doneList>div').count(),await page.evaluate(()=>ROADMAP.done.length));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no page horizontal scroll');
   assert(await page.locator('#roadmap').evaluate(root=>[...root.querySelectorAll('.card h4,.card p,.lh,.band,.done-list')].every(el=>el.scrollWidth<=el.clientWidth+1)),'no text horizontal overflow');
