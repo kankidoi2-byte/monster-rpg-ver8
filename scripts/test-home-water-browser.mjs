@@ -232,7 +232,24 @@ try{
  await dots.nth(0).press('Enter');await chosen(0);
  assert.equal(await selectedCalls(),clickCalls+2,'keyboard activation is still handled once');
  await staysHome();
- report.checks.push('banner dots: immediate and delayed touch, physical contact time, mouse and keyboard activate once');
+ // Touches which start on a dot but move, cancel, or add another pointer
+ // must not gain an activation through the pointerup path.
+ const position=await dots.nth(1).boundingBox();
+ const x=Math.round(position.x+position.width/2),y=Math.round(position.y+position.height/2);
+ const rejectCalls=await selectedCalls();
+ await touch('touchStart',x,y);await touch('touchMove',x,y+42);await touch('touchEnd');
+ await touch('touchStart',x,y);await touch('touchCancel');
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1},{x:x+38,y,id:2}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-18,y,id:1},{x:x+56,y,id:2}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await gesture.waitForTimeout(330);
+ assert.equal(await selectedCalls(),rejectCalls,'moved, cancelled and multiple touches on dots do not select');
+ assert.equal(await index(),0);
+ await staysHome();
+ // If the browser recognized the pinch, normalize its zoom for later layout assertions.
+ await cdp.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
+ report.checks.push('banner dots: immediate and delayed touch, physical contact time, mouse and keyboard activate once; drag, cancellation and multi-touch do not activate');
  // The normal Home screen does not scroll. Put the real banner inside a scrollable
  // ancestor to demonstrate Chromium's native vertical scrolling is not cancelled.
  const scrollArea=await gesture.evaluate(()=>{
