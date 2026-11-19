@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261119-prologue-alchemy-guide-shorter',date:'2026-11-19',category:'fix',title:'第5話の入門錬成の案内を短くしました',body:'素材とコインを確認したら、そのまま最終確認に進めます。実行前は消費せずに戻れます。必要な素材とコイン、契約体を消費しない条件は変わりません。'},
   {id:'20261119-tutorial-tap-guidance',date:'2026-11-19',category:'fix',title:'チュートリアルの進め方を分かりやすくしました',body:'敵のHPや図鑑の記録など、見るだけの説明は「次へ」で進めます。実際の操作が必要なときだけ、光っている場所を押すよう案内します。'},
   {id:'20261119-home-banner-swipe',date:'2026-11-19',category:'update',title:'ホームのバナーをスワイプできるようになりました',body:'ホームのバナーを指で左右に動かせます。端まで進むと反対側につながり、バナーに触れている間は自動切り替えが止まります。タップで開く操作は今までどおりです。'},
   {id:'20261118-topbar-align',date:'2026-11-18',category:'fix',title:'画面上部の表示をそろえました',body:'ホーム・モンスター・ガチャで、契約者ランクとG-BLESS・コインの欄が同じ見た目になりました。ランクが2行に折り返したり、コインの数が途中で切れたりしなくなります。'},
