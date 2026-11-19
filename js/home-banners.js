@@ -237,12 +237,14 @@ function addHomeBannerDotGestures(dots){
   document.addEventListener('pointerup',event=>{
     if(!event.isTrusted||press?.id!==event.pointerId)return;
     const p=press;press=null;
+    // Implicit capture can still produce click on the original button after
+    // the finger has left it. Match only this touch and its original button,
+    // regardless of whether the release completes a valid tap.
+    legacyClick={button:p.button,id:p.id,until:performance.now()+700};
+    clicks.set(p.id,legacyClick);
     if(!p.valid||!event.isPrimary||moved(event,p)||scrollX!==p.scrollX||scrollY!==p.scrollY
       ||buttonAt(document.elementFromPoint(event.clientX,event.clientY))!==p.button)return;
     // A rapid tap after a swipe can reach pointerup without a native click.
-    // Complete only that touch, leaving mouse, keyboard and zoom/scroll native.
-    legacyClick={button:p.button,id:p.id,until:performance.now()+700};
-    clicks.set(p.id,legacyClick);
     selectHomeBanner(Array.prototype.indexOf.call(dots.children,p.button));
   },observe);
   dots.addEventListener('click',event=>{

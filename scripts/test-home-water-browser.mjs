@@ -255,6 +255,12 @@ try{
  await gesture.waitForTimeout(330);
  assert.equal(await selectedCalls(),rejectCalls,'a touch released just outside a dot does not select through native click');
  assert.equal(await index(),0);
+ // An independent input on the same button after the rejected touch is still native.
+ await dots.nth(1).press('Enter');await chosen(1);
+ assert.equal(await selectedCalls(),rejectCalls+1,'the rejected touch must not suppress the next keyboard activation');
+ await dots.nth(0).click();await chosen(0);
+ assert.equal(await selectedCalls(),rejectCalls+2,'the rejected touch must not suppress the next mouse activation');
+ const rejectGestureCalls=await selectedCalls();
  await touch('touchStart',x,y);await touch('touchMove',x,y+42);await touch('touchEnd');
  await touch('touchStart',x,y);await touch('touchCancel');
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
@@ -262,7 +268,7 @@ try{
  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-18,y,id:1},{x:x+56,y,id:2}]});
  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  await gesture.waitForTimeout(330);
- assert.equal(await selectedCalls(),rejectCalls,'moved, cancelled and multiple touches on dots do not select');
+ assert.equal(await selectedCalls(),rejectGestureCalls,'moved, cancelled and multiple touches on dots do not select');
  assert.equal(await index(),0);
  await staysHome();
  // If the browser recognized the pinch, normalize its zoom for later layout assertions.
