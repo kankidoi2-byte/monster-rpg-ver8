@@ -43,7 +43,7 @@ async function openRoute(p,route){await quiet(p);await p.evaluate(route=>{
  if(route==='map-final'){openMapStory('grassland_whose');startMapStoryEpisode(currentMapStory().episodes.at(-1).id);}
  if(route==='expedition')showExpedition();if(route==='gift')showGiftBox();
  if(route==='battle'){
-  prepareBattleParty();const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[],{allowOvertier:false});request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
+  Math.random=()=>.5;prepareBattleParty();const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[],{allowOvertier:false});request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
  }
  },route);if(route==='gift')await p.locator('[data-gift-detail="developer:20261102-present-box-open"]').click();}
 async function state(p,route){return p.evaluate(route=>{
@@ -57,7 +57,7 @@ async function action(p,route){
  if(route==='map-final')await p.locator('#mapStoryContent').getByRole('button',{name:/物語を終える/}).click();
  if(route==='expedition')await p.getByRole('button',{name:'報酬を受け取る',exact:true}).click();
  if(route==='gift')await p.locator('#giftDialogClaim').click();
- if(route==='battle'){for(let i=0;i<20;i++){if(await p.evaluate(()=>battleRewardGranted||normalVictoryPending()))break;await p.locator('#commands .skill-button').first().click();await p.waitForFunction(()=>!busy||battleRewardGranted||normalVictoryPending(),null,{timeout:20000});} }
+ if(route==='battle'){for(let i=0;i<20;i++){if(await p.evaluate(()=>battleRewardGranted||normalVictoryPending()))break;if(!await p.locator('#commands').isVisible())await p.locator('#battleSkillButton').click();await p.locator('#commands .skill-button').first().click();await p.waitForFunction(()=>!busy||battleRewardGranted||normalVictoryPending(),null,{timeout:20000});} }
  if(route==='gift')await p.waitForFunction(()=>!giftClaimBusy);}
 async function recovered(p,route,already){await quiet(p);if(!already){await openRoute(p,route);return;}
  if(route==='story22'||route==='finale'){
@@ -70,7 +70,8 @@ async function recovered(p,route,already){await quiet(p);if(!already){await open
 }
 const baselines={};
 try{
- for(const route of routes)for(const variant of variants){
+ for(const route of routes)for(const variant of [...variants,...(['story22','finale','battle'].includes(route)?['animation-reload','animation-reopen']:[])]){
+  if(process.env.AUDIT_FOCUS==='followup'&&!(route==='battle'||(['story22','finale'].includes(route)&&(variant==='baseline'||variant.startsWith('animation')))))continue;
   const row={route,variant,kind:variant.startsWith('quota')?'injected primary storage failure':'UI action from synthetic checkpoint',snapshots:[],errors:[],blocked:[],responses404:[]};report.cases.push(row);
   const ctx=await browser.newContext({viewport:{width:412,height:915},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   await ctx.route('**/*',r=>{if(new URL(r.request().url()).origin===origin&&r.request().method()==='GET')return r.continue();row.blocked.push(r.request().url());return r.abort();});
@@ -80,7 +81,23 @@ try{
   const snap=async label=>{const s=await state(p,route);row.snapshots.push({label,...s});await p.screenshot({path:`${out}/${route}-${variant}-${label}.png`});return s;};
   const interrupt=async()=>{if(variant.includes('reopen')){await p.close();p=await ctx.newPage();attach(p);await p.clock.setFixedTime(new Date('2026-11-19T12:00:00Z'));await boot(p);}else{await p.reload({waitUntil:'load'});await p.locator('#titleScreen').click();await p.locator('#titleScreen').waitFor({state:'detached'});await quiet(p);}};
   try{
-   await boot(p);await seed(p,route);await arm(p,variant.startsWith('quota'));const before=await snap('before');assert.deepEqual(before.memory,before.disk);
+   await boot(p);await seed(p,route);
+   if(variant.startsWith('animation')&&route!=='battle')await p.evaluate(route=>{const id=route==='finale'?'pb_ep':'pb_22';const e=prologuePart2Episode(id);save.prologuePart2.episodes[id].cursor=e.steps.filter(s=>s.kind==='scene').at(-1)?.id||e.steps.at(-2).id;saveGame();openProloguePart2(id);},route);
+   await arm(p,variant.startsWith('quota'));const before=await snap('before');assert.deepEqual(before.memory,before.disk);
+   if(variant.startsWith('animation')){
+    if(route==='battle'){
+     await p.locator('#battleSkillButton').click();await p.locator('#commands .skill-button').first().click();
+     row.cut=await p.evaluate(()=>({busy,committed:battleRewardGranted,primaryWrites:window.auditWrites.length,hp:eHp}));
+     if(!row.cut.busy||row.cut.committed||row.cut.primaryWrites)throw Error('UNVERIFIED: animation interruption window was missed');
+    }else{
+     await p.evaluate(()=>renderProloguePart2());
+     row.cut=await p.evaluate(()=>({typing:Boolean(prologuePart2Typewriter&&!prologuePart2Typewriter.isComplete()),cursor:prologuePart2Step()?.id,claimed:prologuePart2EpisodeState(prologuePart2Ui.id).rewardClaimed}));
+     if(!row.cut.typing||row.cut.claimed)throw Error('UNVERIFIED: narrative typing interruption window was missed');
+    }
+    await interrupt();const resumed=await snap('animation-resumed');assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);
+    if(route!=='battle')for(let i=0;i<12;i++){if(await p.evaluate(()=>prologuePart2Step()?.kind==='complete'))break;await p.locator('#prologuePart2Content [aria-label="次へ"]').click();}
+    await arm(p);
+   }
    if(variant.startsWith('pre')){await interrupt();const resumed=await snap('pre-resumed');assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);await arm(p);}
    if(variant.startsWith('quota')){
     await action(p,route);const failed=await snap('failed');assert.deepEqual(failed.disk,before.disk,'failed primary leaves disk unchanged');assert.deepEqual(failed.memory,before.memory,'failed primary rolls memory back');
@@ -91,8 +108,8 @@ try{
    if(route==='expedition'){assert.equal(after.disk.coins,before.disk.coins+120);assert.equal(after.disk.items.potion,before.disk.items.potion+2);assert.equal(after.disk.expeditions.completedCount,before.disk.expeditions.completedCount+1);}
    if(route==='gift'){assert.equal(after.disk.coins,before.disk.coins+5000);assert.equal(after.disk.giftClaimedIds.filter(id=>id==='20261102-present-box-open').length,1);}
    if(route==='finale'){assert.equal(after.disk.coins,before.disk.coins+100);assert(after.disk.story.completed);}
-   if(variant==='baseline')baselines[route]={before:before.disk,after:after.disk};else{assert.deepEqual(before.disk,baselines[route].before,'identical baseline fixture');assert.deepEqual(after.disk,baselines[route].after,'same outcome as uninterrupted UI');}
-   if(variant.startsWith('post')||variant==='baseline'||variant.startsWith('quota')){
+   if(variant==='baseline')baselines[route]={before:before.disk,after:after.disk};else{if(!variant.startsWith('animation'))assert.deepEqual(before.disk,baselines[route].before,'identical baseline fixture');assert.deepEqual(after.disk,baselines[route].after,'same outcome as uninterrupted UI');}
+   if(variant.startsWith('post')||variant==='baseline'||variant.startsWith('quota')||variant.startsWith('animation')){
     await interrupt();const resumed=await snap('post-resumed');assert.deepEqual(resumed.disk,after.disk,'real reload/reopen preserves committed result');await recovered(p,route,true);const revisit=await snap('revisit');assert.deepEqual(revisit.disk,after.disk,'revisit/replay must not award twice');
    }
    row.result='PASS';
