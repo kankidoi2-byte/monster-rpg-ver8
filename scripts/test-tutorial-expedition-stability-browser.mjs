@@ -16,14 +16,21 @@ try{
   await page.goto('http://127.0.0.1:4199/?legacy=1',{waitUntil:'networkidle'});
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.addStyleTag({content:`#tutorialBubble p{font-size:${fontSize}px}`});
-  await page.evaluate(()=>{
+  const early=width===412;
+  await page.evaluate(early=>{
    clearTutorialUi();save=initSave();ensureTutorialStarterContracts();commitTutorialElnaContract();
    const f=tutorialOwnedStarterInstance('freigal'),a=tutorialOwnedStarterInstance('aquaron'),e=tutorialElnaContractInstance(),g=addInstance('galdra',1);
    save.party=[g.uid,a.uid,e.uid];save.progress.tutorial.alchemyLessonCompleted=true;save.progress.tutorial.alchemyLessonPrepared=true;
    save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);setTutorialStep('expedition_dispatch');show('expedition');
    expeditionSelectedMapId='grassland';expeditionSelectedDistanceId='short';expeditionSelectedUids=[f.uid];renderExpedition();
-   startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'expedition_dispatch',persist:true});startExpedition();
-  });
+   startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:early?'expedition_suitability':'expedition_dispatch',persist:true});
+  },early);
+  await page.locator('#expeditionStartButton').tap();
+  const dispatch=await page.evaluate(()=>({
+   active:save.expeditions.active.length,
+   flagged:save.expeditions.active[0]?.tutorialPrologue===true
+  }));
+  assert.deepEqual(dispatch,{active:1,flagged:true},early?'early dispatch is credited':'normal dispatch is credited');
   await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_active');await page.waitForTimeout(400);
   const samples=await page.evaluate(async()=>{
    const points=[];for(let i=0;i<30;i++){
