@@ -70,8 +70,9 @@ async function recovered(p,route,already){await quiet(p);if(!already){await open
 }
 const baselines={};
 try{
- for(const route of routes)for(const variant of [...variants,...(['story22','finale','battle'].includes(route)?['animation-reload','animation-reopen']:[])]){
+ for(const route of routes)for(const variant of [...variants,...(['story22','finale','battle'].includes(route)?['animation-reload','animation-reopen','animation-reload-2','animation-reopen-2']:[])]){
   if(process.env.AUDIT_FOCUS==='followup'&&!(route==='battle'||(['story22','finale'].includes(route)&&(variant==='baseline'||variant.startsWith('animation')))))continue;
+  if(process.env.AUDIT_FOCUS==='animations'&&(!['story22','finale','battle'].includes(route)||!(variant==='baseline'||variant.startsWith('animation'))))continue;
   const row={route,variant,kind:variant.startsWith('quota')?'injected primary storage failure':'UI action from synthetic checkpoint',snapshots:[],errors:[],blocked:[],responses404:[]};report.cases.push(row);
   const ctx=await browser.newContext({viewport:{width:412,height:915},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   await ctx.route('**/*',r=>{if(new URL(r.request().url()).origin===origin&&r.request().method()==='GET')return r.continue();row.blocked.push(r.request().url());return r.abort();});
@@ -94,14 +95,14 @@ try{
      row.cut=await p.evaluate(()=>({typing:Boolean(prologuePart2Typewriter&&!prologuePart2Typewriter.isComplete()),cursor:prologuePart2Step()?.id,claimed:prologuePart2EpisodeState(prologuePart2Ui.id).rewardClaimed}));
      if(!row.cut.typing||row.cut.claimed)throw Error('UNVERIFIED: narrative typing interruption window was missed');
     }
-    await interrupt();const resumed=await snap('animation-resumed');assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);
-    if(route!=='battle')for(let i=0;i<12;i++){if(await p.evaluate(()=>prologuePart2Step()?.kind==='complete'))break;await p.locator('#prologuePart2Content [aria-label="次へ"]').click();}
+    await interrupt();const resumed=await snap('animation-resumed');if(route==='battle'&&resumed.disk.wins===before.disk.wins+1){row.cut.crossedCommitBeforeUnload=true;assert.deepEqual(resumed.disk,baselines[route].after);await recovered(p,route,true);const revisit=await snap('revisit');assert.deepEqual(revisit.disk,resumed.disk);row.result='PASS';continue;}assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);
+    if(route!=='battle')for(let i=0;i<12;i++){if(await p.evaluate(()=>prologuePart2Step()?.kind==='complete'))break;await p.locator('#prologuePart2Content .map-story-dialogue').click({position:{x:100,y:35}});}
     await arm(p);
    }
-   if(variant.startsWith('pre')){await interrupt();const resumed=await snap('pre-resumed');assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);await arm(p);}
+   if(variant.startsWith('pre')){await interrupt();const resumed=await snap('pre-resumed');if(route==='battle'&&resumed.disk.wins===before.disk.wins+1){row.cut.crossedCommitBeforeUnload=true;assert.deepEqual(resumed.disk,baselines[route].after);await recovered(p,route,true);const revisit=await snap('revisit');assert.deepEqual(revisit.disk,resumed.disk);row.result='PASS';continue;}assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);await arm(p);}
    if(variant.startsWith('quota')){
     await action(p,route);const failed=await snap('failed');assert.deepEqual(failed.disk,before.disk,'failed primary leaves disk unchanged');assert.deepEqual(failed.memory,before.memory,'failed primary rolls memory back');
-    await interrupt();const resumed=await snap('failure-resumed');assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);await arm(p);
+    await interrupt();const resumed=await snap('failure-resumed');if(route==='battle'&&resumed.disk.wins===before.disk.wins+1){row.cut.crossedCommitBeforeUnload=true;assert.deepEqual(resumed.disk,baselines[route].after);await recovered(p,route,true);const revisit=await snap('revisit');assert.deepEqual(revisit.disk,resumed.disk);row.result='PASS';continue;}assert.deepEqual(resumed.disk,before.disk);await recovered(p,route,false);await arm(p);
    }
    await action(p,route);const after=await snap('after');assert.deepEqual(after.memory,after.disk,'displayed result must already be persisted');assert(after.writes.length>=1,'primary save must happen');
    if(route==='battle')assert.equal(after.disk.wins,before.disk.wins+1);
