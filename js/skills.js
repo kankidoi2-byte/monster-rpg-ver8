@@ -293,14 +293,17 @@ function renderSkillEdit({preservePosition=false}={}){
     const costOk = used + sk.cost <= limit;
     const avail = availableSkillCount(sk.id);
     const can = allowed && slotOk && costOk && avail > 0;
+    const wornBySelected=equipped.includes(sk.id);
     const reasons=[];
     if(!allowed)reasons.push('この仲間の区分・属性・タグ条件に合いません');
     if(!slotOk)reasons.push('技枠満杯：装備中の技を1つ外してください');
     if(!costOk)reasons.push(`コストがあと${used+sk.cost-limit}必要`);
     if(avail<=0)reasons.push((save.skillCards[sk.id]||0)>0?'所持カードは全て使用中：同じ技を外すか追加で入手':'未所持：技カードの入手が必要');
-    const reason = can ? '装備する' : '装備できません';
     const tutorialTarget=typeof shouldMarkTutorialStellaSkillCard==='function'&&shouldMarkTutorialStellaSkillCard(sk.id,ins.uid);
-    return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}<p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p>${skillCardEffect(skillToMove(sk.id))}${reasons.length?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:''}<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
+    const status=wornBySelected?`<p class="skill-equip-reason" data-skill-equipped-status>${escapeGameHtml(mon.name)}に装備中</p>`:'';
+    const restriction=reasons.length&&(!wornBySelected||avail>0)?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:'';
+    const action=can||!wornBySelected?`<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${can?'装備する':'装備できません'}</button>`:'';
+    return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}<p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p>${skillCardEffect(skillToMove(sk.id))}${status}${restriction}${action}</div>`;
   }).join('') || '<div class="card" role="status">条件に合う技カードがありません。検索・絞り込みを変更してください。</div>';
   restoreSkillEditPosition(position);
 }
