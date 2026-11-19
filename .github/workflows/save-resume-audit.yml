@@ -1,0 +1,32 @@
+name: Save resume audit (isolated only)
+on:
+  push:
+    branches: ['test/save-resume-audit-20261119']
+    paths: ['scripts/test-save-resume-audit-browser.mjs', '.github/workflows/save-resume-audit.yml']
+permissions:
+  contents: read
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Four reward routes with fresh disposable saves
+        run: node scripts/test-save-resume-audit-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: save-resume-audit
+          path: artifacts/save-resume-audit
+          retention-days: 14
