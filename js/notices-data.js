@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261119-prologue-party-save-return',date:'2026-11-19',category:'fix',title:'物語の戦闘準備から編成を保存したあとの戻り先を修正しました',body:'物語の戦闘前に編成を変更して保存すると、元の戦闘準備画面へ戻ります。戦闘は「戦闘開始」を押すまで始まりません。'},
   {id:'20261119-prologue-slime-contract-choice',date:'2026-11-19',category:'fix',title:'第7話の契約画面を見やすくしました',body:'スライムとの契約画面で、持っている契約書と契約・見送りの選択を確認できます。直前の戦闘結果が残っているときだけ、決着時のターン数と仲間のHPを表示します。'},
   {id:'20261119-tutorial-tap-guidance',date:'2026-11-19',category:'fix',title:'チュートリアルの進め方を分かりやすくしました',body:'敵のHPや図鑑の記録など、見るだけの説明は「次へ」で進めます。実際の操作が必要なときだけ、光っている場所を押すよう案内します。'},
   {id:'20261119-home-banner-swipe',date:'2026-11-19',category:'update',title:'ホームのバナーをスワイプできるようになりました',body:'ホームのバナーを指で左右に動かせます。端まで進むと反対側につながり、バナーに触れている間は自動切り替えが止まります。タップで開く操作は今までどおりです。'},

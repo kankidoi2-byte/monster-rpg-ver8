@@ -218,6 +218,66 @@ try{
  await page.locator('#prologuePart2WorldReturn').click();
  assert.notEqual(await card(),routeCursor);
  assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history})),routeBefore);
+ // Chapter 13: edit from the actual Morglum battle preparation, then
+ // explicitly start the same battle after the game returns from saving.
+ const morglumCursor=await page.evaluate(()=>prologuePart2Episode('pb_13').steps.find(step=>step.battleId==='p2_13_a').id);
+ const editStoryParty=()=>page.getByRole('button',{name:'編成を確認',exact:true}).click();
+ const setPartyButton=page.locator('#partySetupSaveButton');
+ await seed('pb_13',morglumCursor);
+ await page.evaluate(()=>{
+  const second=addInstance('elna_beginner',10);save.party.push(second.uid);
+  save.contractor.pendingRankUps=[];saveGame();
+ });
+ const storyBeforeParty=await page.evaluate(()=>JSON.stringify(save.prologuePart2));
+ await editStoryParty();
+ assert(await page.locator('#partySet').isVisible());
+ assert(await page.locator('#prologuePart2PartyReturn').isVisible());
+ const freigalPartyToggle=page.locator('#partySelectList [data-monster-id="freigal"]');
+ await freigalPartyToggle.click();
+ await freigalPartyToggle.click();
+ assert.equal(await page.locator('#currentPartyView .party-current-member strong').first().innerText(),'初級剣士エルナ');
+ const editedParty=await page.evaluate(()=>[...save.party]);
+ const draftPartyOnDisk=await page.evaluate(()=>safeStorageGet(SAVE_KEY));
+ await page.evaluate(()=>{
+  const key=MonsterProfiles.key(SAVE_KEY);
+  window.__partyTestStorageSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+   if(k===key)throw Error('test quota');
+   return window.__partyTestStorageSet.call(this,k,v);
+  };
+ });
+ await setPartyButton.click();
+ assert(await page.locator('#partySet').isVisible());
+ assert(await page.locator('#prologuePart2PartyReturn').isVisible(),'retry retains the story return');
+ assert.equal(await page.evaluate(()=>safeStorageGet(SAVE_KEY)),draftPartyOnDisk);
+ await page.evaluate(()=>{Storage.prototype.setItem=window.__partyTestStorageSet;delete window.__partyTestStorageSet;});
+ await setPartyButton.click();
+ assert(await page.locator('#prologuePart2').isVisible());
+ assert.equal(await card(),morglumCursor);
+ assert.equal(await page.evaluate(()=>JSON.stringify(save.prologuePart2)),storyBeforeParty,'saving did not move the story cursor or phase');
+ assert.deepEqual(await page.evaluate(()=>JSON.parse(safeStorageGet(SAVE_KEY)).party),editedParty);
+ assert.equal(await page.evaluate(()=>activeHuntRequest),null,'saving did not start battle');
+ assert.equal(await page.evaluate(()=>prologuePart2BattleSession),null);
+ await page.screenshot({path:`${out}/chapter13-party-save-returns-to-prep.png`});
+ await page.getByRole('button',{name:'戦闘開始',exact:true}).click();
+ assert(await page.locator('#battle').isVisible());
+ assert.deepEqual(await page.evaluate(()=>({battle:activeHuntRequest.battleId,opponent:enemy.id,lead:activeInstance.uid})),
+  {battle:'p2_13_a',opponent:'morglum',lead:editedParty[0]});
+
+ // Leaving party setup through Home resets the story-only return; opening
+ // ordinary party setup from the Home/Monsters controls must not revive it.
+ await seed('pb_13',morglumCursor);
+ await editStoryParty();
+ await page.locator('[data-nav="home"]').click();
+ assert(await page.locator('#home').isVisible());
+ await page.locator('#homePartyEditButton').click();
+ await page.locator('#rosterActions [data-roster-party]').click();
+ assert(await page.locator('#partySet').isVisible());
+ assert(await page.locator('#prologuePart2PartyReturn').isHidden());
+ await setPartyButton.click();
+ assert(await page.locator('#home').isVisible());
+ assert.equal(await page.evaluate(()=>activeHuntRequest),null);
+ console.log('PASS Chapter 13 story party save: save failure remains in editor; success returns to same Morglum prep, explicit start uses new lead, normal Home route stays Home');
  // Both shop branches use the actual shop purchase/return UI.
  for(const bought of [false,true]){
   await seed('pb_08',await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(s=>s.action==='shop').id));

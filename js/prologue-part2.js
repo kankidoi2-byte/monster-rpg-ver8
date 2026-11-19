@@ -146,6 +146,13 @@ function prologuePart2ShowParty(){
   if(prologuePart2Retry||prologuePart2Ui?.tutorialReplay)return;
   prologuePart2PartyReturn=true;show('partySet');
 }
+function handleProloguePart2PartySaved(){
+  if(!prologuePart2PartyReturn||!prologuePart2Ui||prologuePart2Retry||prologuePart2Ui.replay
+    ||prologuePart2Ui.identity!==saveTransactionIdentity()||prologuePart2Step()?.kind!=='battle')return false;
+  // Return to the unmodified story cursor; starting the battle stays explicit.
+  prologuePart2Return();
+  return true;
+}
 function renderProloguePart2PartyReturn(){
   const button=document.getElementById('prologuePart2PartyReturn');
   if(button)button.hidden=!prologuePart2PartyReturn;
