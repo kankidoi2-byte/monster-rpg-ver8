@@ -65,3 +65,25 @@ assert.deepEqual(controlState({nextLabel:'つづける'}),{next:true,targetTap:f
 assert.deepEqual(controlState({input:'player_name'}),{next:false,targetTap:false,hint:false});
 assert.deepEqual(controlState({target:'#info',choices:[{}],atChoice:true},{}),{next:false,targetTap:false,hint:false});
 console.log('PASS tutorial controls: information-only Next, actual target-only tap cue, hidden action/choice/name controls');
+
+vm.runInContext(fs.readFileSync(new URL('../js/story.js',import.meta.url),'utf8'),adapter);
+adapter.TUTORIAL_MAIN_FLOW_ID='prologue';
+const realBounds=adapt('PROLOGUE_STORY_EPISODES.flatMap(e=>[{id:e.startStepId},{id:e.endStepId}])');
+adapter.tutorialFlowSteps=()=>realBounds;
+const heading=(flowId,step)=>{
+ adapter.tutorialUiState.flowId=flowId;adapter.headingStep=step;
+ return JSON.parse(adapt('JSON.stringify(tutorialPresentationContext(headingStep))'));
+};
+for(const id of ['shop_buy','shop_use']){
+ assert.deepEqual(heading('guide_shop_items',{id,screenId:'shop'}),{episode:null,label:'ショップの使い方'});
+}
+for(const id of ['evolution_intro','evolution_choice']){
+ assert.deepEqual(heading('guide_evolution',{id,screenId:'evolution'}),{episode:null,label:'進化の使い方'});
+}
+assert.equal(heading('prologue',{id:'intro_gnosis'}).label,'序章 第1話　異世界での目覚め');
+assert.equal(heading('prologue',{id:'stella_intro'}).label,'序章 第4話　王都での出会い');
+assert.deepEqual(heading('guide_shop_items',{id:'intro_gnosis',screenId:'shop'}),{episode:null,label:'ショップの使い方'});
+assert.deepEqual(heading('prologue',{id:'unknown',progressLabel:'GUIDE'}),{episode:null,label:'GUIDE'});
+assert.equal(adapt("storyEpisodeIndexForStep('unknown')"),0,'keep legacy progress fallback');
+assert.equal(adapt("storyEpisodeIndexForStep('unknown',{fallback:-1})"),-1,'do not show a fabricated chapter');
+console.log('PASS facility headings: shop/evolution steps; real Chapters 1 and 4; no standalone-to-Chapter-1 fallback');
