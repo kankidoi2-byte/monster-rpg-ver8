@@ -5,11 +5,11 @@ import path from 'node:path';
 // scrolling is not clipped. Limit checks to the foreground layer at this checkpoint.
 function inspectLayout() {
   const visible = el => el.checkVisibility({checkOpacity:true, checkVisibilityCSS:true}) && el.getClientRects().length;
-  const modal = ['#contractorRankUpOverlay', '#soulContractPresentation', '#prologuePart2Raid', '#tutorialBubble']
+  const modal = ['#titleScreen', 'dialog[open]', '#contractorRankUpOverlay', '#soulContractPresentation', '#prologuePart2Raid', '#tutorialOverlay']
     .map(s => document.querySelector(s)).find(el => el && visible(el));
-  const roots = modal ? [modal] : [...document.querySelectorAll('.screen.active')];
+  const roots = modal ? [modal] : [...document.querySelectorAll('.screen.active,.app-bottom-nav,#uiNotice.is-visible')];
   const target = document.querySelector('.tutorial-target-active');
-  if (modal?.id === 'tutorialBubble' && target) roots.push(target);
+  if (modal?.id === 'tutorialOverlay' && target) roots.push(target);
   const findings = new Set();
   function check(el, rect, label) {
     if (!rect.width || !rect.height) return;

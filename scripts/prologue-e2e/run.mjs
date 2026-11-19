@@ -14,7 +14,7 @@ function readState() {
   const late=card && prologuePart2Ui?.id;
   return {
     screen:activeScreenId(), tutorial:step?.id, page:tutorialDialogueState.page,
-    episode:step ? storyEpisodeIndexForStep(step.id)+1 : late ? (late==='pb_ep'?23:Number(late.slice(3))) : null,
+    episode:step && tutorialUiState.flowId===TUTORIAL_MAIN_FLOW_ID ? storyEpisodeIndexForStep(step.id)+1 : late ? (late==='pb_ep'?23:Number(late.slice(3))) : null,
     typing:!!(step && tutorialPresentation.writer && !tutorialPresentation.writer.isComplete()),
     input:step?.input, target:step?.target && tutorialStepRequiresAction(step),
     card, cardTyping:!!(card && prologuePart2Typewriter && !prologuePart2Typewriter.isComplete()), battle:activeHuntRequest?.battleId, busy:typeof busy!=='undefined' && busy,
@@ -147,12 +147,12 @@ async function journey(page, log) {
       else if(!s.input) await tap('#tutorialText');
       continue;
     }
-    if(await visible('#prologuePart2Raid:not([hidden]) button')){await tap('#prologuePart2Raid button');continue;}
-    if(await visible('#prologuePart2WorldReturn')){await tap('#prologuePart2WorldReturn');continue;}
-    if(await visible('[data-prologue-shop-return]')){await tap('[data-prologue-shop-return]');continue;}
+    if(await visible('#prologuePart2Raid:not([hidden]) button')){await log.shot('raid-interruption');await tap('#prologuePart2Raid button');continue;}
+    if(await visible('#prologuePart2WorldReturn')){await log.shot('epilogue-world-map');await tap('#prologuePart2WorldReturn');continue;}
+    if(await visible('[data-prologue-shop-return]')){await log.shot('shop-visit');await tap('[data-prologue-shop-return]');continue;}
     if(s.screen==='battle'){
       const skip='button:visible:text-is("契約を見送る")';
-      if(await visible(skip)){await tap(skip);continue;}
+      if(await visible(skip)){await log.shot('slime-contract');await tap(skip);continue;}
       if(s.busy) continue;
       const target='#multiTargetSelect button:visible:enabled';
       if(await visible(target)){await tap(target);continue;}
