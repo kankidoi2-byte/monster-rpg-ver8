@@ -27,7 +27,7 @@ const adapter=vm.createContext({
  document:{getElementById:control},clearTimeout(){},setTimeout(){return 1;},
  tutorialUiState:{steps:[{input:'player_name'}],index:0,active:true},
  tutorialStepRequiresAction:step=>Boolean(step.action),
- tutorialDialogueNeedsChoice:step=>Boolean(step.choices&&step.atChoice),tutorialNext(){adapter.advances=(adapter.advances||0)+1;},
+ tutorialDialogueNeedsChoice:step=>Boolean(step.choices&&step.atChoice),tutorialDialogueHasMore:step=>Boolean(step.more),tutorialNext(){adapter.advances=(adapter.advances||0)+1;},
  tutorialResolvedText:view=>view.text||'',tutorialDialogueView:step=>step
 });
 vm.runInContext(fs.readFileSync(new URL('../js/tutorial-presentation.js',import.meta.url),'utf8'),adapter);
@@ -47,3 +47,21 @@ assert.equal(adapter.advances,1,"pre-choice dialogue advances by tapping");
 adapter.tutorialUiState.steps[0].atChoice=true;
 adapt("tutorialPresentationTap({target:{closest(){return null;}}})");
 assert.equal(adapter.advances,1,"visible choices require a choice button");
+
+
+// A spotlight is not in itself a required action. The engine still decides
+// whether advancement is allowed, including external game actions.
+const controlState=(step,target=null)=>{
+ adapter.tutorialUiState.target=target;adapter.tutorialUiState.steps=[step];
+ return JSON.parse(adapt('JSON.stringify(tutorialPresentationControls(tutorialUiState.steps[0]))'));
+};
+for(const target of ['#singleEnemyBox','[data-tutorial-monster="freigal"]']){
+ assert.deepEqual(controlState({target},{}),{next:true,targetTap:false,hint:false});
+}
+assert.deepEqual(controlState({target:'#battleSwitchButton',action:true},{}),{next:false,targetTap:true,hint:true});
+assert.deepEqual(controlState({target:'#battleSwitchButton',action:true}),{next:false,targetTap:false,hint:false});
+assert.deepEqual(controlState({}),{next:false,targetTap:false,hint:true});
+assert.deepEqual(controlState({nextLabel:'つづける'}),{next:true,targetTap:false,hint:false});
+assert.deepEqual(controlState({input:'player_name'}),{next:false,targetTap:false,hint:false});
+assert.deepEqual(controlState({target:'#info',choices:[{}],atChoice:true},{}),{next:false,targetTap:false,hint:false});
+console.log('PASS tutorial controls: information-only Next, actual target-only tap cue, hidden action/choice/name controls');

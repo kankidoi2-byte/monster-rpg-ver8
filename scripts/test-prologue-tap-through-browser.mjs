@@ -16,7 +16,7 @@ try{
   if(process.env.PROLOGUE_TEST_WIDTH&&width!==+process.env.PROLOGUE_TEST_WIDTH)continue;
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage();page.setDefaultTimeout(5000);
-  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[]};reports.push(report);
+  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[],tapGuidance:[]};reports.push(report);
   page.on('pageerror',e=>report.pageErrors.push(e.message));
   page.on('dialog',async d=>{report.dialogs.push(d.message());await d.dismiss()});
   const recordRank=async()=>{
@@ -147,6 +147,28 @@ try{
     // iteration reads the resulting STEP/page instead of assuming either outcome.
     continue;
    }
+   if(['battle_enemy','dex_freigal','battle_actor_open'].includes(state.id)&&!report.tapGuidance.some(entry=>entry.id===state.id)){
+    const targets={battle_enemy:'battle_actor_open',dex_freigal:'home_growth_open',battle_actor_open:'battle_actor_select'};
+    const nextButton=page.locator('#tutorialBubble #tutorialNextButton');
+    const hint=page.locator('#tutorialAdvanceHint');
+    assert(await isVisible('.tutorial-target-active'),'the relevant control or explanation still has a spotlight');
+    if(state.id==='battle_actor_open'){
+     assert.equal(await nextButton.isVisible(),false,'a required action has no Next');
+     assert(await hint.isVisible());assert.equal(await hint.innerText(),'光っている場所をタップ');
+     await tap('#tutorialText');
+     assert.equal(await page.evaluate(()=>tutorialCurrentStepId()),state.id,'tapping the explanation cannot skip a required action');
+     await tap('.tutorial-target-active');
+    }else{
+     assert(await nextButton.isVisible());assert.equal(await nextButton.innerText(),'次へ');
+     assert.equal(await hint.isVisible(),false,'a display-only spotlight cannot prompt an action');
+     await page.screenshot({path:`${out}/${width}-${state.id}-next.png`});
+     await tap('#tutorialNextButton');
+    }
+    await page.waitForFunction(id=>tutorialCurrentStepId()===id,targets[state.id]);
+    report.tapGuidance.push({id:state.id,next:targets[state.id],required:state.action});
+    console.log(`PASS tutorial tap guidance ${width}x${height}: ${state.id} -> ${targets[state.id]}`);
+    continue;
+   }
    if(state.id===longestGuide&&!state.typing&&!longestGuideCaptured){
     await page.screenshot({path:`${out}/${width}-longest-guide.png`});
     assert(await page.locator('#tutorialText').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'longest guide text must not overflow horizontally');
@@ -185,6 +207,7 @@ try{
    else throw Error(`Unhandled UI ${key}`);
   }
   assert(complete,'must reach final episode');
+  assert.deepEqual(report.tapGuidance.map(entry=>entry.id),['battle_enemy','battle_actor_open','dex_freigal']);
   await page.waitForTimeout(550);
   while(await isVisible('#contractorRankUpOverlay:not(.hidden)')){await recordRank();await tap('#contractorRankUpOverlay button');await page.waitForTimeout(550);}
   assert.equal(await page.evaluate(()=>save.contractor.pendingRankUps.length),0,'all queued rank notices remain available through chapter/pause/completion');
