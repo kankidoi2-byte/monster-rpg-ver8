@@ -293,12 +293,12 @@ try{
  const guideFlagState=()=>page.evaluate(()=>{
   const flags=currentTutorialState().guides;
   const saved=JSON.parse(safeStorageGet(SAVE_KEY)).progress.tutorial.guides;
-  return {shop:flags.shopItems,evolution:flags.evolutionFusion,savedShop:saved.shopItems,savedEvolution:saved.evolutionFusion};
+  return {shop:flags.shopItems,evolution:flags.evolution,savedShop:saved.shopItems,savedEvolution:saved.evolution};
  });
  const shopGuideCursor=await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(step=>step.action==='shop').id);
  const openChapter8Shop=()=>page.getByRole('button',{name:'ショップを開く',exact:true}).click();
  await seed('pb_08',shopGuideCursor);
- await page.evaluate(()=>{const flags=currentTutorialState().guides;flags.shopItems=false;flags.evolutionFusion=false;saveGame();});
+ await page.evaluate(()=>{const flags=currentTutorialState().guides;flags.shopItems=false;flags.evolution=false;saveGame();});
  await openChapter8Shop();
  await expectFacilityHeader('shop_buy','ショップの使い方');
  await page.screenshot({path:`${out}/chapter8-shop-first-guide.png`});
@@ -321,7 +321,7 @@ try{
  await seed('pb_13',evolutionStoryCursor);
  await page.evaluate(()=>{
   addInstance('elna_beginner',20);
-  currentTutorialState().guides.evolutionFusion=false;
+  currentTutorialState().guides.evolution=false;
   save.contractor.pendingRankUps=[];
   saveGame();
  });
