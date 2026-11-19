@@ -60,6 +60,10 @@ try{
    assert.equal(await page.locator('#expeditionStartButton').count(),0,'recovery does not offer a second dispatch');
    console.log('PASS expedition reload: the old checkpoint reuses the same active expedition without creating a reward.');
   }
+  // Wait for the complete text before measuring and tapping. A tap during
+  // typing reveals the rest, and repositions the guide as the text grows.
+  await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_active'
+   &&tutorialPresentation.writer?.isComplete()&&Date.now()>=tutorialDialogueState.lockedUntil);
   await page.waitForTimeout(400);
   const samples=await page.evaluate(async()=>{
    const points=[];for(let i=0;i<30;i++){
@@ -70,9 +74,23 @@ try{
    }return points;
   });
   for(const axis of [0,1,2])assert(Math.max(...samples.map(p=>p[axis]))-Math.min(...samples.map(p=>p[axis]))<1,`stable target/guide/scroll at ${width}x${height}, font ${fontSize}`);
-  const point=await page.locator('#tutorialText').evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;return {x,y,hit:el.contains(document.elementFromPoint(x,y))}});
-  assert(point.hit,'Dialogue center must be tappable');await page.touchscreen.tap(point.x,point.y);await page.waitForTimeout(50);await page.touchscreen.tap(point.x,point.y);
-  await page.waitForFunction(()=>tutorialCurrentStepId()==='prologue_epilogue');assert.deepEqual(errors,[]);
+  const text=page.locator('#tutorialText');
+  try{
+   await text.tap({timeout:5000});
+   await page.waitForFunction(()=>tutorialCurrentStepId()==='prologue_epilogue',null,{timeout:5000});
+  }catch(error){
+   const details=await page.evaluate(()=>{
+    const el=document.getElementById('tutorialText'),r=el.getBoundingClientRect();
+    const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+    return {step:tutorialCurrentStepId(),screen:activeScreenId(),text:el.textContent,
+     typing:tutorialPresentation.writer?!tutorialPresentation.writer.isComplete():null,
+     locked:Date.now()<tutorialDialogueState.lockedUntil,
+     hit:hit?.id||hit?.className||hit?.tagName,scrollY};
+   });
+   await page.screenshot({path:`${out}/advance-failure-${width}-${fontSize}.png`});
+   throw new Error(`Expedition guide did not advance after a physical dialogue tap: ${JSON.stringify({details,errors})}`,{cause:error});
+  }
+  assert.deepEqual(errors,[]);
   await page.screenshot({path:`${out}/${width}-${fontSize}.png`});
   console.log(`PASS expedition stable ${width}x${height} font ${fontSize}: 30 frames, target/Dialogue centers, physical Next tap advances.`);
   await context.close();
