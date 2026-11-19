@@ -1,5 +1,7 @@
 /* Dedicated story combat adapter. Rewards and durable progress belong to the controller. */
 let prologuePart2BattleSession=null;
+// Presentation only. No recalled HP/turn data is invented after a page reload.
+let prologuePart2ContractRecap=null;
 function isProloguePart2Battle(){return activeHuntRequest?.source==='prologue_part2';}
 function prologuePart2BattleToken(){return isProloguePart2Battle()?activeHuntRequest:null;}
 function prologuePart2SessionValid(token){return !token||(prologuePart2BattleSession?.request===token&&activeHuntRequest===token&&token.identity===saveTransactionIdentity()&&!prologuePart2BattleSession.closed);}
@@ -27,6 +29,7 @@ function startProloguePart2Battle(episodeId,battle,callbacks={}){
   const party=getPartyInstances().slice(0,3);if(!party.length)return false;
   if(typeof callbacks.onOutcome!=='function')throw new Error('prologue_outcome_callback_required');
   const request=createProloguePart2BattleRequest(episodeId,battle,party);
+  prologuePart2ContractRecap=null;
   prologuePart2BattleSession={request,battle,callbacks,closed:false,settling:false,finished:false};
   endPartyRecovery();prepareBattleParty(party);
   beginChosenBattle(request.mapId,request.enemyId,'normal',request);
@@ -58,7 +61,14 @@ function prologuePart2BattleOutcome(kind){
     if(!prologuePart2SessionValid(request)||session.finished)return;
     session.finished=true;session.settling=false;battleRewardGranted=kind==='victory';
     if(multiBattle)multiBattle.finished=true;
-    completeBattleTurn();resetBattleTransientEffects();resetKokoroLinkBattleState();
+    const turns=completeBattleTurn();
+    if(kind==='victory'&&request.contractAllowed&&turns>0&&activeInstance&&player){
+      prologuePart2ContractRecap={
+        identity:request.identity,episodeId:request.episodeId,battleId:request.battleId,
+        location:request.battleLocation,turns,name:player.name,hp:Math.max(0,pHp),maxHp:playerMaxHp()
+      };
+    }
+    resetBattleTransientEffects();resetKokoroLinkBattleState();
     partyBattle.forEach(p=>{p.hp=instanceMaxHp(p.inst);p.fainted=false;});
     if(activeInstance)pHp=instanceMaxHp(activeInstance);
     session.callbacks.onFinished?.(kind,request);
@@ -70,6 +80,11 @@ function prologuePart2BattleOutcome(kind){
 function closeProloguePart2Battle(){
   const session=prologuePart2BattleSession;if(!session)return;
   session.closed=true;prologuePart2BattleSession=null;
+  if(session.contractChoice){
+    const choice=document.getElementById('prologueContractChoice');
+    if(choice){choice.hidden=true;choice.innerHTML='';}
+    document.getElementById('battle')?.classList.remove('is-prologue-contract-choice');
+  }
   if(activeHuntRequest===session.request){endPartyRecovery();resetBattleTransientEffects();resetKokoroLinkBattleState();multiBattle=null;activeHuntRequest=null;busy=false;battleRewardGranted=false;setMultiBattleLayout(false);hideBattleOutcome();}
 }
 function prologuePart2InvasionStarted(){
@@ -79,26 +94,52 @@ function prologuePart2InvasionStarted(){
   if(session.callbacks.onInvasion){busy=true;renderBattleInputState();session.callbacks.onInvasion(()=>{if(prologuePart2SessionValid(request)&&!session.finished){busy=false;renderBattleInputState();}},session.battle.interruptCards||[]);}
 }
 function prologuePart2ContractAllowed(){return isProloguePart2Battle()&&activeHuntRequest.contractAllowed&&battleRewardGranted&&prologuePart2BattleSession?.finished&&!singleBattleContractAttempted;}
+function renderProloguePart2ContractChoice(request,candidate){
+  const root=document.getElementById('prologueContractChoice');
+  if(!root)return;
+  const stock=SHOP_ITEMS.filter(item=>item.contract&&(save.items[item.id]||0)>0);
+  const saved=prologuePart2ContractRecap;
+  const recap=saved?.identity===request.identity&&saved.episodeId===request.episodeId&&saved.battleId===request.battleId?saved:null;
+  const location=recap?.location||request.battleLocation;
+  root.innerHTML=`<div class="panel">
+    <h1 id="prologueContractChoiceTitle">契約候補：${escapeGameHtml(candidate.name)}</h1>
+    <p>契約するかどうかは自由です。</p>
+    <h2>所持している契約書</h2>
+    ${stock.length?`<ul>${stock.map(item=>`<li>${escapeGameHtml(item.name)}：${save.items[item.id]}枚</li>`).join('')}</ul>`:'<p>契約書を持っていません。</p>'}
+    ${stock.length?`<button type="button" onclick="askUseContractScroll()">${escapeGameHtml(candidate.name)}と契約</button>`:''}
+    <button type="button" onclick="skipProloguePart2Contract()">契約を見送る</button>
+    ${location||recap?`<p data-prologue-contract-recap>${location?escapeGameHtml(location):''}${recap?`${location?' · ':''}${recap.turns}ターン<br>決着時：${escapeGameHtml(recap.name)} · HP ${recap.hp} / ${recap.maxHp}`:''}</p>`:''}
+  </div>`;
+  document.getElementById('battle')?.classList.add('is-prologue-contract-choice');
+  root.hidden=false;
+}
 function resumeProloguePart2Contract(episodeId,battle,callbacks){
+  if(postBattleContractBusy||(typeof normalVictoryPending==='function'&&normalVictoryPending())||(typeof worldMapBattleSavePending==='function'&&worldMapBattleSavePending()))return false;
+  const request=createProloguePart2BattleRequest(episodeId,battle,getPartyInstances().slice(0,3));
+  if(!request.contractAllowed)return false;
   closeProloguePart2Battle();
-  const request=startProloguePart2Battle(episodeId,battle,callbacks);if(!request)return false;
-  if(!request.contractAllowed){closeProloguePart2Battle();return false;}
-  eHp=0;battleRewardGranted=true;prologuePart2BattleSession.finished=true;busy=true;
-  showBattleOutcome({kind:'victory',title:'契約',note:'契約するかどうかは自由です。',restored:true});
-  document.getElementById('next')?.classList.add('hidden');
-  renderSingleBattleContractPanel();
+  // The contract uses the ordinary scroll dialog, not a newly created battle.
+  // Only its target and the finished-session gate are needed here.
+  activeHuntRequest=request;enemy=createProloguePart2Enemy(request.enemies[0]);
+  singleBattleContractAttempted=false;postBattleContractRetry=null;
+  battleRewardGranted=true;busy=true;
+  if(typeof battleFeedback!=='undefined')battleFeedback.finished=true;
+  prologuePart2BattleSession={request,battle,callbacks,closed:false,settling:false,finished:true,contractChoice:true};
+  renderProloguePart2ContractChoice(request,enemy);
+  show('battle');
   return request;
 }
 async function tryProloguePart2Contract(itemId='contract_scroll'){
   if(!prologuePart2ContractAllowed()||postBattleContractBusy)return false;
   const session=prologuePart2BattleSession,request=activeHuntRequest,target=enemy;
   if(!ITEM_BY_ID[itemId]?.contract||!(save.items[itemId]>0)||!isContractableUnit(target)||typeof session.callbacks.onContract!=='function')return false;
-  const stage=postBattleContractStage(target,itemId,null,false),result=stage===3?'ok':'ng';
+  const party=session.contractChoice?request.participantUids.map(uid=>getInstance(uid)).filter(Boolean):undefined;
+  const stage=postBattleContractStage(target,itemId,null,false,party),result=stage===3?'ok':'ng';
   postBattleContractBusy=true;
   const mutate=()=>{if(!(save.items[itemId]>0))throw new Error('prologue_contract_stock');save.items[itemId]--;if(result==='ok'){addInstance(target.id);if(typeof grantContractorContractSuccess==='function')grantContractorContractSuccess(target.id);}};
   const finish=async()=>{
     if(!prologuePart2SessionValid(request))return;
-    singleBattleContractAttempted=true;postBattleContractRetry=null;
+    singleBattleContractAttempted=true;postBattleContractRetry=null;prologuePart2ContractRecap=null;
     try{await playContractAnimation({monsterName:target.name,stage});if(prologuePart2SessionValid(request))session.callbacks.onContractFinished?.(result,request);}
     finally{postBattleContractBusy=false;}
   };
@@ -109,7 +150,7 @@ function skipProloguePart2Contract(){
   if(!prologuePart2ContractAllowed()||postBattleContractBusy)return false;
   const session=prologuePart2BattleSession,request=activeHuntRequest;
   if(typeof session.callbacks.onContract!=='function')return false;
-  return session.callbacks.onContract('skip',request,()=>{},()=>{if(prologuePart2SessionValid(request)){singleBattleContractAttempted=true;session.callbacks.onContractFinished?.('skip',request);}});
+  return session.callbacks.onContract('skip',request,()=>{},()=>{if(prologuePart2SessionValid(request)){singleBattleContractAttempted=true;prologuePart2ContractRecap=null;session.callbacks.onContractFinished?.('skip',request);}});
 }
 function prologuePart2LoanItemMarkup(){
   if(!isProloguePart2Battle()||activeHuntRequest.episodeId!=='pb_09'||!prologuePart2BattleSession?.callbacks.loanHealAvailable?.())return '';

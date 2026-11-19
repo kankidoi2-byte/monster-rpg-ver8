@@ -197,6 +197,42 @@ try{
  await drag(-Math.ceil(width*.24),{cancel:true});await chosen(0);
  await drag(-Math.floor(width*.12),{slow:false});await chosen(1);
  await dot(0);
+ // Preserve the immediate regression above. Compare same-session touch
+ // with physical contact time, an ordinary pause, and non-touch controls.
+ const selectedCalls=()=>gesture.evaluate(()=>window.__bannerDotSelectionCalls);
+ await gesture.evaluate(()=>{
+  window.__bannerDotSelectionCalls=0;
+  const select=selectHomeBanner;
+  selectHomeBanner=(...args)=>{window.__bannerDotSelectionCalls++;return select(...args);};
+ });
+ const physicalDot=async (i,hold=52)=>{
+  const r=await dots.nth(i).boundingBox(),x=Math.round(r.x+r.width/2),y=Math.round(r.y+r.height/2);
+  const calls=await selectedCalls();
+  await touch('touchStart',x,y);
+  await gesture.waitForTimeout(hold);
+  await touch('touchEnd');
+  await chosen(i);
+  await gesture.waitForTimeout(320);
+  assert.equal(await selectedCalls(),calls+1,'a single touch activates the dot exactly once');
+  await staysHome();
+ };
+ for(const [i,pause] of [0,0,350].entries()){
+  await drag(-Math.floor(width*.12),{slow:false});await chosen(1);
+  if(pause)await gesture.waitForTimeout(pause);
+  if(i===0){
+   // Same input driver and short contact as the original fragile sequence.
+   const calls=await selectedCalls();await dot(0);
+   await gesture.waitForTimeout(320);
+   assert.equal(await selectedCalls(),calls+1,'a short touch activates the dot exactly once');
+  }else await physicalDot(0);
+ }
+ const clickCalls=await selectedCalls();
+ await dots.nth(1).click();await chosen(1);
+ assert.equal(await selectedCalls(),clickCalls+1,'mouse activation is still handled once');
+ await dots.nth(0).press('Enter');await chosen(0);
+ assert.equal(await selectedCalls(),clickCalls+2,'keyboard activation is still handled once');
+ await staysHome();
+ report.checks.push('banner dots: immediate and delayed touch, physical contact time, mouse and keyboard activate once');
  // The normal Home screen does not scroll. Put the real banner inside a scrollable
  // ancestor to demonstrate Chromium's native vertical scrolling is not cancelled.
  const scrollArea=await gesture.evaluate(()=>{
