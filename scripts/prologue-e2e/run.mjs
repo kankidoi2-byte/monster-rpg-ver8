@@ -18,7 +18,11 @@ function readState() {
     typing:!!(step && tutorialPresentation.writer && !tutorialPresentation.writer.isComplete()),
     input:step?.input, target:step?.target && tutorialStepRequiresAction(step),
     card, cardTyping:!!(card && prologuePart2Typewriter && !prologuePart2Typewriter.isComplete()), battle:activeHuntRequest?.battleId, busy:typeof busy!=='undefined' && busy,
-    healTarget:activeHuntRequest?.battleId && pHp>0 && pHp<playerMaxHp()*0.35 && save.items.upper_potion>0 ? activePartyIdx : null,
+    combat:activeScreenId()==='battle' && activeHuntRequest?.battleId && activeInstance ? {
+      slot:activePartyIdx, leadDown:partyBattle[0].fainted, hpFraction:pHp/playerMaxHp(),
+      defense:player.itemDefense||1, attack:pAtk,
+      items:Object.fromEntries(['attack_potion','defense_potion','max_potion','upper_potion','revive_drop'].map(id=>[id,save.items[id]||0]))
+    } : null,
     hp:activeScreenId()==='battle'?[pHp,eHp,multiBattle?.enemies?.map(e=>e.hp)]:null,
     cleared:save.progress.tutorial.status==='completed'?6:
       save.progress.tutorial.chapterGate ? storyEpisodeIndexForStep(save.progress.tutorial.stepId) : 0,
@@ -95,8 +99,36 @@ async function journey(page, log) {
         }
       }
       if(await visible('.roster-sheet-close')) await tap('.roster-sheet-close');
+      if(!(await visible('#party.active'))) await tap('#homePartyEditButton');
+      await tap('[data-roster-party]');
+      const others=await page.locator('#partySelectList .is-selected button').evaluateAll(
+        (buttons,leader)=>buttons.map(b=>b.dataset.partyUid).filter(id=>id!==leader),uid);
+      for(const id of others) await tap('[data-party-uid="'+id+'"]');
+      for(const id of others) await tap('[data-party-uid="'+id+'"]');
+      await tap('#partySetupSaveButton');
     }
+    await tap('[data-nav="more"]');
+    await tap('button[onclick="showShop()"]');
+    const until=Date.now()+20000;
+    for(;;){
+      await page.waitForTimeout(120);
+      const guide=await page.evaluate(readState);
+      if(!guide.tutorial) break;
+      if(Date.now()>until) throw Error('ショップガイドで停止');
+      await advanceGuide(guide);
+    }
+    for(const [id,quantity] of [['attack_potion',15],['defense_potion',15],['max_potion',30],['revive_drop',10]]){
+      const buy=page.locator(`#shopList button[onclick="buyItem('${id}')"]`);
+      for(let i=0;i<quantity;i++) await buy.tap();
+    }
+    await log.shot('training-shop');
     await tap('[data-nav="home"]');
+  }
+  async function useItem(item,slot){
+    await tap('#battleItemButton');
+    await tap('#renewalSheet [data-item="'+item+'"]');
+    await tap('#renewalSheet [data-item-target="'+slot+'"]');
+    await tap('#renewalSheet .br-go');
   }
   const wins=new Set(), startedBattles=new Set(), drawn=new Set(), retries=new Map();
   let trained=false, draws=0, active=0, last='', changed=Date.now();
@@ -170,18 +202,27 @@ async function journey(page, log) {
       const skip='button:visible:text-is("契約を見送る")';
       if(await visible(skip)){await log.shot('slime-contract');await tap(skip);continue;}
       if(s.busy) continue;
-      if(s.healTarget!==null && await visible('#battleItemButton:enabled')){
-        await tap('#battleItemButton');
-        await tap('#renewalSheet [data-item="upper_potion"]');
-        await tap('#renewalSheet [data-item-target="'+s.healTarget+'"]');
-        await tap('#renewalSheet .br-go');
-        continue;
+      const c=s.combat;
+      if(c && trained && await visible('#battleItemButton:enabled')){
+        let item;
+        if(c.leadDown && c.items.revive_drop) item='revive_drop';
+        else if(c.hpFraction<0.55) item=c.items.max_potion?'max_potion':c.items.upper_potion?'upper_potion':null;
+        else if(c.slot===0 && c.defense<1.6 && c.items.defense_potion) item='defense_potion';
+        else if(c.slot===0 && c.attack<1.6 && c.items.attack_potion) item='attack_potion';
+        if(item){await useItem(item,item==='revive_drop'?0:c.slot);continue;}
       }
       const target='#multiTargetSelect button:visible:enabled';
       if(await visible(target)){await tap(target);continue;}
       const moves=page.locator('#commands .skill-button:visible:enabled');
       if(await moves.count()){
-        const index=await moves.evaluateAll(buttons=>buttons.map((b,i)=>({i,power:Number(b.ariaLabel?.match(/威力(\d+)/)?.[1]||0)})).sort((a,b)=>b.power-a.power)[0].i);
+        const index=await moves.evaluateAll(buttons=>{
+          const scores=buttons.map(button=>{
+            const power=Number(button.ariaLabel?.match(/威力\s*(\d+)/)?.[1]||0);
+            const effect=button.querySelector('.br-effect')?.classList;
+            return power*(effect?.contains('good')?1.5:effect?.contains('weak')?0.5:1);
+          });
+          return scores.indexOf(Math.max(...scores));
+        });
         log.action('攻撃技を選択'); await moves.nth(index).tap();
       }else if(await visible('#battleSkillButton:enabled')) await tap('#battleSkillButton');
       continue;
