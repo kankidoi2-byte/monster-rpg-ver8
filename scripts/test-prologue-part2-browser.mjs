@@ -208,5 +208,62 @@ try{
  assert.deepEqual(after,{...before,coins:before.coins+100});
  await page.evaluate(()=>{openProloguePart2('pb_ep',{replay:true});prologuePart2Ui.index=prologuePart2Episode('pb_ep').steps.length-1;renderProloguePart2()});
  await page.getByRole('button',{name:'読み返しを終える',exact:true}).click();assert.equal(await page.evaluate(()=>save.coins),before.coins+100);
+ // In episode 7, each official scroll label and its specific stock must be
+ // plain text. Use fresh isolated inventories with every lower tier still owned.
+ const kinds=[
+  ['contract_scroll','契約書'],['silver_contract_scroll','銀の契約書'],
+  ['gold_contract_scroll','金の契約書'],['rainbow_contract_scroll','虹の契約書']
+ ];
+ await page.evaluate(()=>showShop());
+ for(const [id,name] of kinds){
+  const image=page.locator(`#shopList img[src$="/${id}_art_v1.webp"]`);
+  assert(await image.isVisible());
+  assert.equal(await image.getAttribute('alt'),name);
+  await image.evaluate(el=>el.decode());
+ }
+ const contractCursor=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(step=>step.action==='contract').id);
+ const inventoryState=()=>page.evaluate(ids=>({
+  scrolls:Object.fromEntries(ids.map(id=>[id,save.items[id]||0])),
+  coins:save.coins,history:JSON.stringify(save.history),
+  wins:[...save.prologuePart2.episodes.pb_07.wonBattleIds],
+  rewardClaimed:save.prologuePart2.episodes.pb_07.rewardClaimed,
+  slimeCount:save.instances.filter(x=>x.id==='slime').length
+ }),kinds.map(([id])=>id));
+ for(const [tier,[id,name]] of kinds.entries()){
+  await seed('pb_07',contractCursor);
+  await page.evaluate(({tier,ids})=>{
+   const ep=save.prologuePart2.episodes.pb_07;
+   ep.wonBattleIds=['p2_07_a'];save.prologuePart2.grants.pb07Scroll=true;
+   for(const [i,id] of ids.entries())save.items[id]=i<=tier?i+2:0;
+   if(!saveGame())throw Error('Unable to save isolated scroll fixture');
+  },{tier,ids:kinds.map(([id])=>id)});
+  const before=await inventoryState();
+  await page.getByRole('button',{name:'契約を確認',exact:true}).click();
+  const offer=page.getByRole('button',{name:'スライムと契約',exact:true});
+  const text=page.locator('#contractConfirmText');
+  const assertPrompt=async()=>{
+   assert.equal(await text.innerText(),`${name}を1枚使用しますか？（所持：${before.scrolls[id]}枚）`);
+   assert.equal(await text.locator('*').count(),0);
+   assert.equal(await page.evaluate(()=>pendingContractItemId),id);
+  };
+  await offer.click();
+  await assertPrompt();
+  await page.screenshot({path:`${out}/chapter7-confirm-${id}.png`});
+  await page.locator('#contractConfirm').getByRole('button',{name:'いいえ',exact:true}).click();
+  await offer.waitFor({state:'visible'});
+  assert.deepEqual(await inventoryState(),before,'cancel leaves all scrolls and rewards alone');
+  await offer.click();
+  await assertPrompt();
+  await page.evaluate(()=>{window.__nativeScrollTestRandom=Math.random;Math.random=()=>0;});
+  await page.locator('#contractConfirmAcceptButton').click();
+  await page.locator('#prologuePart2 [data-card="pb_07_contract_ok"]').waitFor();
+  await page.evaluate(()=>{Math.random=window.__nativeScrollTestRandom;delete window.__nativeScrollTestRandom;});
+  const expected={...before,scrolls:{...before.scrolls,[id]:before.scrolls[id]-1},slimeCount:before.slimeCount+1};
+  assert.deepEqual(await inventoryState(),expected,'only one selected scroll is consumed and existing battle rewards do not change');
+  await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});
+  assert.equal(await card(),'pb_07_contract_ok');
+  assert.deepEqual(await inventoryState(),expected,'exact selected debit and reward are persisted');
+  console.log(`PASS Chapter 7 scroll confirmation: ${name} • ${before.scrolls[id]} -> ${expected.scrolls[id]} • cancel free, other scrolls and battle rewards unchanged`);
+ }
  assert.deepEqual(errors,[]);console.log('PASS prologue part2 browser: legacy resume, dedicated battle/contract/defeat retry, practice skip, return route, shop branches, episode22 no battle, epilogue exact order, atomic failure/retry/reload, authority, no duplicate reward or unrelated save changes');
 }finally{await browser?.close();server.kill();}
