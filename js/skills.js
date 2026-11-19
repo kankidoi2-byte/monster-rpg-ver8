@@ -301,7 +301,7 @@ function renderSkillEdit({preservePosition=false}={}){
     if(avail<=0)reasons.push((save.skillCards[sk.id]||0)>0?'所持カードは全て使用中：同じ技を外すか追加で入手':'未所持：技カードの入手が必要');
     const tutorialTarget=typeof shouldMarkTutorialStellaSkillCard==='function'&&shouldMarkTutorialStellaSkillCard(sk.id,ins.uid);
     const status=wornBySelected?`<p class="skill-equip-reason" data-skill-equipped-status>${escapeGameHtml(mon.name)}に装備中</p>`:'';
-    const restriction=reasons.length&&(!wornBySelected||avail>0)?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:'';
+    const restriction=reasons.length?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:'';
     const action=can||!wornBySelected?`<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${can?'装備する':'装備できません'}</button>`:'';
     return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}<p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p>${skillCardEffect(skillToMove(sk.id))}${status}${restriction}${action}</div>`;
   }).join('') || '<div class="card" role="status">条件に合う技カードがありません。検索・絞り込みを変更してください。</div>';

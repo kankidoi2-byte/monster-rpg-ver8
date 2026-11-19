@@ -143,6 +143,11 @@ try{
   openSkillEdit(elna.uid);
   return by(elna.id).name;
  });
+ const searchForSkill=()=>equipPage.evaluate(()=>{
+  document.getElementById('skillSearchInput').value='連続斬り';
+  renderSkillEdit();
+ });
+ await searchForSkill();
  const skillCard=equipPage.locator('#skillCardList [data-skill-card-id="s110_041"]');
  const equippedStatus=skillCard.locator('[data-skill-equipped-status]');
  const equipButton=skillCard.getByRole('button',{name:'装備する',exact:true});
@@ -156,6 +161,7 @@ try{
  await equipPage.reload({waitUntil:'networkidle'});
  await leaveTitle();
  await equipPage.evaluate(()=>openSkillEdit(save.instances.find(ins=>ins.id==='elna_beginner').uid));
+ await searchForSkill();
  await assertEquipped('所持:1 / 使用中:1');
  await equipPage.evaluate(()=>openSkillEdit(save.instances.find(ins=>ins.id==='elna_middle').uid));
  assert.equal(await equippedStatus.count(),0);
