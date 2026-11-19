@@ -7,7 +7,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   {id:'20261119-skill-card-equipped-status',date:'2026-11-19',category:'fix',title:'技カードに装備中の仲間が分かる表示を追加しました',body:'選んでいる仲間が技を装備していると、カードに「〇〇に装備中」と表示されます。追加で装備できる場合は、今までどおり装備できます。'},
-  {id:'20261119-home-banner-dot-touch',date:'2026-11-19',category:'fix',title:'ホームのバナーを切り替えやすくしました',body:'バナーを横に動かした直後も、下の丸いボタンをタップして表示するバナーを選べます。'},
+  {id:'20261119-home-banner-dot-touch',date:'2026-11-19',category:'fix',title:'ホームのバナーを切り替えやすくしました',body:'バナーをすばやく動かした直後でも、下の丸いボタンをタップして表示するバナーを選べます。'},
   {id:'20261119-prologue-slime-contract-choice',date:'2026-11-19',category:'fix',title:'第7話の契約画面を見やすくしました',body:'スライムとの契約画面で、持っている契約書と契約・見送りの選択を確認できます。直前の戦闘結果が残っているときだけ、決着時のターン数と仲間のHPを表示します。'},
   {id:'20261119-tutorial-tap-guidance',date:'2026-11-19',category:'fix',title:'チュートリアルの進め方を分かりやすくしました',body:'敵のHPや図鑑の記録など、見るだけの説明は「次へ」で進めます。実際の操作が必要なときだけ、光っている場所を押すよう案内します。'},
   {id:'20261119-home-banner-swipe',date:'2026-11-19',category:'update',title:'ホームのバナーをスワイプできるようになりました',body:'ホームのバナーを指で左右に動かせます。端まで進むと反対側につながり、バナーに触れている間は自動切り替えが止まります。タップで開く操作は今までどおりです。'},
