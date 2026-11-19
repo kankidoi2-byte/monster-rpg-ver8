@@ -1,6 +1,7 @@
 // Focused regression fixture; the separate prologue-taps journey starts fresh
 // and advances only through screen taps. This fixture reproduces sticky-header
-// transitions at the expedition-active checkpoint without replaying every scene.
+// transitions at the expedition-active checkpoint and reloads an old save
+// missing the tutorial dispatch marker without replaying every scene.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn} from 'node:child_process';
@@ -31,7 +32,35 @@ try{
    flagged:save.expeditions.active[0]?.tutorialPrologue===true
   }));
   assert.deepEqual(dispatch,{active:1,flagged:true},early?'early dispatch is credited':'normal dispatch is credited');
-  await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_active');await page.waitForTimeout(400);
+  await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_active');
+  if(early){
+   // Keep the expedition created by the real screen tap, but reproduce the
+   // checkpoint and missing markers an older build left in local storage.
+   const original=await page.evaluate(()=>{
+    const entry=save.expeditions.active[0];
+    delete entry.tutorialPrologue;
+    setTutorialStep('expedition_home_open');
+    currentTutorialState().expeditionDispatched=false;
+    if(!saveGame())throw Error('could not seed the legacy expedition save');
+    return {id:entry.id,coins:save.coins,completed:save.expeditions.completedCount};
+   });
+   await page.reload({waitUntil:'networkidle'});
+   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+   await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_active');
+   await page.locator('[data-tutorial-expedition-active]').waitFor({state:'visible'});
+   await page.addStyleTag({content:`#tutorialBubble p{font-size:${fontSize}px}`});
+   const recovered=await page.evaluate(()=>{
+    const entry=save.expeditions.active[0];
+    return {id:entry?.id,coins:save.coins,completed:save.expeditions.completedCount,
+     count:save.expeditions.active.length,slots:expeditionUnlockedSlots(),
+     flagged:entry?.tutorialPrologue===true,
+     guided:currentTutorialState().expeditionDispatched===true,reward:entry?.reward};
+   });
+   assert.deepEqual(recovered,{...original,count:1,slots:1,flagged:true,guided:true,reward:null});
+   assert.equal(await page.locator('#expeditionStartButton').count(),0,'recovery does not offer a second dispatch');
+   console.log('PASS expedition reload: the old checkpoint reuses the same active expedition without creating a reward.');
+  }
+  await page.waitForTimeout(400);
   const samples=await page.evaluate(async()=>{
    const points=[];for(let i=0;i<30;i++){
     await new Promise(requestAnimationFrame);

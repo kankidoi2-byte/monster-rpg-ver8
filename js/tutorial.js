@@ -768,7 +768,9 @@ function renderTutorialStep(){
   recordTutorialBattleLesson(step);
   prepareTutorialStep(step);
   if(step.screenId&&activeScreenId()!==step.screenId&&!(typeof GACHA_ROUTES!=='undefined'&&GACHA_ROUTES[step.screenId]===gachaTab&&activeScreenId()==='gachaHub')){
-    show(step.screenId);
+    // A fresh page has not rendered the expedition cards yet.
+    if(step.id==='expedition_active'&&typeof showExpedition==='function')showExpedition();
+    else show(step.screenId);
     setTimeout(renderTutorialStep,0);
     return;
   }
