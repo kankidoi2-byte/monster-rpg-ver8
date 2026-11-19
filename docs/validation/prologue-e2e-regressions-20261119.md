@@ -1,13 +1,19 @@
 # 序章E2Eの修正と再検証（2026-11-19）
 
-比較元：[元の検証報告](https://github.com/kankidoi2-byte/monster-rpg-ver8/blob/a895357edd81622fcf0a00bd270f37a699f2714c/docs/validation/prologue-e2e-20261119.md) · [元の通し実行・761枚](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44469331777)。テスト用PR #364 は変更していません。この修正PRの Actions「Prologue E2E repair evidence」で、ZIP内の `report.md` と相対リンクのスクリーンショットを参照できます。
+比較元：[元の検証報告](https://github.com/kankidoi2-byte/monster-rpg-ver8/blob/a895357edd81622fcf0a00bd270f37a699f2714c/docs/validation/prologue-e2e-20261119.md) · [元の通し実行・761枚](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44469331777)。テスト用PR #364 は変更していません。修正後の実行：[成功ログ](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44545100217/job/135633436282) · [画像755枚付きMarkdown（ZIP内の `report.md` と `shots/`）](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44545100217/artifacts/14541077446)。検証した実装・テストは `0f51193eb7ec62400be2016993627076a425bc8d` です。
 
-| 項目 | 修正前 | 修正と確認方法 |
+縦412×915の新規セーブで第1話から終幕までプレイし、全23区間の開始・終了、チュートリアル表示、前半2戦＋後半15戦の勝利、無料ガチャ1回・獲得個体1体と表示結果の一致を確認しました。第13話は通常の育成・再戦で突破。進行停止・未処理のJavaScript例外・コンソールエラー・測定条件の画面外要素はいずれも0件でした。
+
+| 項目 | 修正前 | 修正後・確認結果 |
 | --- | --- | --- |
-| 戦闘背景 | `/css/images/maps/` 以下11パスにコンソールの404が2,732件 | 開発版ルートとPagesと同じサブパス構成で11画像を確認し、草原・城門・森の実際の背景を比較。新規セーブの全行程で旧パスのコンソールエラーとHTTP 404を別々に数える。 |
-| 第7話契約 | 草原・序章後半・0ターン | mainにある #370 を再利用。直後に実際の王都外・街道／ターン数／交代後の仲間とHP、再読み込み後に不明の値が出ないこと、契約と見送りを既存ブラウザテストで確認。 |
-| 施設見出し | 第13話の進化が序章 第1話 | #374の同じ実装を使用。「進化の使い方」「ショップの使い方」、実際の第1話の話数・話名と、再読み込み後の確認済み状態を既存ブラウザテストで確認。 |
-| 会話送り | 412×915で8回、3〜5 CSS px | 話の実行中に、終幕ガチャ前後の▼をアニメーション最下点で止め、全枠が入ることと下端近くの実タップで進めることを確認。従来の2 CSS px超の測定閾値を維持。 |
+| 戦闘背景 | `/css/images/maps/` 以下11パスにコンソールの404が2,732件 | 全行程で旧パスのコンソールエラー **0件**、旧パスの実HTTP 404 **0件**。ルート・Pagesと同じ `/monster-rpg-ver8/` の両方で11パスともHTTP 200。草原・城門・森は実際の画面に設定され、画像のデコードと再描画後の保持も確認。 |
+| 第7話契約 | 草原・序章後半・0ターン | mainの #370 を再利用。交代を含む実戦の例は **王都外・街道／4ターン／初級剣士エルナ HP272/290** と一致。再読み込み後は地名のみで不明の値は出ません。契約・見送りの双方で進行し、契約書・報酬の重複なし。[検証済みの #370 のログ](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44510870698/job/135514474291) |
+| 施設見出し | 第13話の進化が序章 第1話 | #374の同じ実装を使用。**「進化の使い方」「ショップの使い方」** を各2ページで確認。本来の第1話は「序章 第1話　異世界での目覚め」、確認済み状態は再読み込み後も保持。[検証済みの #374 のログ](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44530496850/job/135582192392) |
+| 会話送り | 412×915で8回、3〜5 CSS px | 従来と同じ閾値（2 CSS px超）で **0件**。終幕のガチャ前後は、最下点でも44 CSS pxのボタン全体が収まり、下端に **4.00／5.92 CSS px** の余裕。実際にボタン下端近くをタップして次へ進めました。 |
+
+## 対応する画面写真
+
+上のZIP内：本来の第1話 `shots/003-intro_gnosis-0.jpg`、第7話の契約画面 `shots/179-slime-contract.jpg`、第13話の進化ガイド2ページ `shots/448-evolution_intro-0.jpg`・`shots/449-evolution_choice-0.jpg`、終幕の送りボタン最下点 `shots/732-pb_ep_gacha_01-lowest-frame.jpg`・`shots/737-pb_ep_gacha_03-lowest-frame.jpg`。第1話の見出しは[別の画面テストの画像](https://github.com/kankidoi2-byte/monster-rpg-ver8/actions/runs/44545099816/artifacts/14540981652)でも確認できます。
 
 ## 背景の原因
 
