@@ -23,6 +23,10 @@ try{
   const current=()=>page.evaluate(()=>tutorialUiState.steps[tutorialUiState.index]?.id);
   const shot=async name=>{if(!name.startsWith('grassland-transition'))await page.waitForTimeout(650);await page.screenshot({path:`${out}/${name}-${viewport.width}.png`,fullPage:true});};
   await start('intro_gnosis');await finish();await shot('black-start');
+  assert.equal(await page.locator('#tutorialSceneLabel').innerText(),'序章 第1話　異世界での目覚め');
+  assert.equal(await page.locator('#tutorialEpisodeCaption').textContent(),'第1話　異世界での目覚め');
+  console.log(`PASS Chapter 1 real story heading ${viewport.width}px: 序章 第1話　異世界での目覚め`);
+
   assert((await page.locator('#tutorialBubble').evaluate(e=>getComputedStyle(e).backgroundImage)).includes('linear-gradient'),'navy panel not white theme');
   assert(await page.locator('#tutorialOverlay').evaluate(e=>e.classList.contains('is-story-step')));
   await start('gnosis_contract_power');

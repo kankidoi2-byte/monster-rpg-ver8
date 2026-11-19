@@ -1,0 +1,39 @@
+name: Prologue E2E repair evidence
+on:
+  pull_request:
+    paths:
+      - 'scripts/prologue-e2e/**'
+      - '.github/workflows/prologue-e2e-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install Playwright and Chromium
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Check battle assets at the root and under a Pages-style mount
+        run: node scripts/prologue-e2e/focus.mjs
+      - name: Play from the title through the epilogue
+        env:
+          PROLOGUE_E2E_DIR: artifacts/prologue-e2e
+        run: node scripts/prologue-e2e/run.mjs
+      - name: Save Markdown and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prologue-e2e
+          path: artifacts/prologue-e2e
+          if-no-files-found: error

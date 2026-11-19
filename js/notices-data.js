@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261119-prologue-e2e-regressions',date:'2026-11-19',category:'fix',title:'戦闘背景と序章の画面表示を修正しました',body:'戦闘背景が正しく読み込まれるようにし、会話送りのボタンが動いても画面内に収まるようにしました。施設の初回ガイドには施設名を表示します。'},
   {id:'20261119-prologue-slime-contract-choice',date:'2026-11-19',category:'fix',title:'第7話の契約画面を見やすくしました',body:'スライムとの契約画面で、持っている契約書と契約・見送りの選択を確認できます。直前の戦闘結果が残っているときだけ、決着時のターン数と仲間のHPを表示します。'},
   {id:'20261119-tutorial-tap-guidance',date:'2026-11-19',category:'fix',title:'チュートリアルの進め方を分かりやすくしました',body:'敵のHPや図鑑の記録など、見るだけの説明は「次へ」で進めます。実際の操作が必要なときだけ、光っている場所を押すよう案内します。'},
   {id:'20261119-home-banner-swipe',date:'2026-11-19',category:'update',title:'ホームのバナーをスワイプできるようになりました',body:'ホームのバナーを指で左右に動かせます。端まで進むと反対側につながり、バナーに触れている間は自動切り替えが止まります。タップで開く操作は今までどおりです。'},
