@@ -33,6 +33,14 @@ async function journey(page, log) {
     log.action(selector);
     await page.locator(selector).first().tap();
   }
+  async function touchExposedCenter(selector) {
+    const point=await page.locator(selector).first().evaluate(el=>{
+      const r=el.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
+      return el.contains(document.elementFromPoint(x,y)) ? {x,y} : null;
+    });
+    log.action(selector);
+    if(point) await page.touchscreen.tap(point.x,point.y);
+  }
   // A late Rank notice can appear between locating a button and the tap.
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
     await page.locator('#contractorRankUpOverlay button').first().tap();
@@ -123,7 +131,10 @@ async function journey(page, log) {
       log.totals('全23区間の開始・終了、前半2勝、後半'+expected.length+'勝を確認。終幕で無料ガチャを1回操作し、結果表示と獲得個体1体を照合。敗北後の育成ルート：'+(trained?'使用':'未使用')+'。');
       return;
     }
-    if(await visible('#contractorRankUpOverlay:not(.hidden) button')){await tap('#contractorRankUpOverlay button');continue;}
+    if(await visible('#contractorRankUpOverlay:not(.hidden) button')){
+      await touchExposedCenter('#contractorRankUpOverlay button');
+      continue;
+    }
     if(await visible('.soul-skip')){await log.shot('gacha-presentation');await tap('.soul-skip');continue;}
     if(s.tutorial){
       if(s.typing){await tap('#tutorialText');continue;}
@@ -168,12 +179,7 @@ async function journey(page, log) {
     if(await visible('[data-prologue-character-result]')) drawn.add((await page.locator('[data-prologue-character-result] strong').innerText()).trim());
     if(await visible(actions+' .story-scene-cue')){
       // The cue bounces continuously. Touch a verified on-screen point.
-      const point=await page.locator(actions+' .story-scene-cue').evaluate(el=>{
-        const r=el.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
-        return el.contains(document.elementFromPoint(x,y)) ? {x,y} : null;
-      });
-      log.action('次へ');
-      if(point) await page.touchscreen.tap(point.x,point.y);
+      await touchExposedCenter(actions+' .story-scene-cue');
       continue;
     }
     const free=actions+' button:text-is("無料で1回引く")';
