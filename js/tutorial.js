@@ -836,9 +836,8 @@ function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null,c
   if(!steps.length)return false;
   // Old saves may contain an in-between lesson STEP. Re-enter through
   // the saved workbench checkpoint so its ephemeral fixed recipe is restored.
-  const resumeStepId=['lumina_start','lumina_execute','lumina_wait'].includes(stepId)&&flowId===TUTORIAL_MAIN_FLOW_ID
-    ?'lumina_alchemy':stepId;
-  const resolvedStepId=resolveTutorialStellaSkillResumeStep(resolveTutorialExpeditionResumeStep(flowId,resumeStepId,false));
+  if(['lumina_start','lumina_execute','lumina_wait'].includes(stepId)&&flowId===TUTORIAL_MAIN_FLOW_ID)stepId='lumina_alchemy';
+  const resolvedStepId=resolveTutorialStellaSkillResumeStep(resolveTutorialExpeditionResumeStep(flowId,stepId,false));
   clearTutorialUi();
   tutorialUiState.active=true;tutorialUiState.flowId=flowId;tutorialUiState.steps=steps;
   tutorialUiState.index=tutorialStepIndex(steps,resolvedStepId);tutorialUiState.persist=persist;
