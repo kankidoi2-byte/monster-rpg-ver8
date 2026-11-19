@@ -17,7 +17,7 @@ function readState() {
     episode:step ? storyEpisodeIndexForStep(step.id)+1 : late ? (late==='pb_ep'?23:Number(late.slice(3))) : null,
     typing:!!(step && tutorialPresentation.writer && !tutorialPresentation.writer.isComplete()),
     input:step?.input, target:step?.target && tutorialStepRequiresAction(step),
-    card, battle:activeHuntRequest?.battleId, busy:typeof busy!=='undefined' && busy,
+    card, cardTyping:!!(card && prologuePart2Typewriter && !prologuePart2Typewriter.isComplete()), battle:activeHuntRequest?.battleId, busy:typeof busy!=='undefined' && busy,
     hp:activeScreenId()==='battle'?[pHp,eHp,multiBattle?.enemies?.map(e=>e.hp)]:null,
     cleared:save.progress.tutorial.status==='completed'?6:
       save.progress.tutorial.chapterGate ? storyEpisodeIndexForStep(save.progress.tutorial.stepId) : 0,
@@ -33,8 +33,42 @@ async function journey(page, log) {
     log.action(selector);
     await page.locator(selector).first().tap();
   }
+  // A late Rank notice can appear between locating a button and the tap.
+  await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
+    await page.locator('#contractorRankUpOverlay button').first().tap();
+  });
+  async function trainAfterDefeat() {
+    await tap('.prologue-part2-finish button:text-is("話一覧へ")');
+    await tap('#storyMode .ui-back-link');
+    await tap('#homeGiftButton');
+    const gift='[data-gift-detail="developer:20261102-present-box-open"]';
+    if(await visible(gift)){
+      await tap(gift);await tap('#giftDialogClaim');
+      await page.getByRole('heading',{name:'受け取りました',exact:true}).waitFor();
+      await tap('#giftDialogClose');
+    }
+    await tap('#giftBox .gift-heading button');
+    await tap('#homePartyEditButton');
+    const elna=page.locator('#partyList [data-monster-id="elna_beginner"]').first();
+    if(await elna.isVisible()){
+      const uid=await elna.getAttribute('data-instance-uid');
+      for(let i=0;i<5;i++){
+        if(!(await visible('.roster-sheet'))){
+          if(!(await visible('#party.active'))) await tap('#homePartyEditButton');
+          await tap('#partyList [data-instance-uid="'+uid+'"]');
+        }
+        if(!(await visible('.roster-data-items[open]'))) await tap('.roster-data-items summary');
+        const item='[data-roster-action="giga_data"]:enabled';
+        if(!(await visible(item))) break;
+        await tap(item);
+        if(await visible('#evolution.active')) await tap('#evoChoices button');
+      }
+      if(await visible('.roster-sheet-close')) await tap('.roster-sheet-close');
+    }
+    await tap('[data-nav="home"]');
+  }
   const wins=new Set(), startedBattles=new Set(), drawn=new Set(), retries=new Map();
-  let draws=0, active=0, last='', changed=Date.now();
+  let trained=false, draws=0, active=0, last='', changed=Date.now();
   const startTime=Date.now();
   await page.locator('#titleScreen').waitFor();
   await log.shot('title');
@@ -62,7 +96,7 @@ async function journey(page, log) {
     }
     if(s.tutorial && !(await visible('#tutorialBubble'))) throw Error('ガイド非表示 '+s.tutorial);
     if(!s.typing && s.tutorial) await log.shot(s.tutorial+'-'+s.page);
-    if(s.card) await log.shot(s.card);
+    if(s.card && !s.cardTyping && !(await visible('.soul-skip'))) await log.shot(s.card);
     if(s.battle && !startedBattles.has(s.battle)){
       startedBattles.add(s.battle);
       await log.shot(s.battle+'-battle');
@@ -86,7 +120,7 @@ async function journey(page, log) {
         return {count:r?.count,cost:r?.cost,owned:save.instances.filter(i=>i.uid===r?.instanceUid && i.id===r.unitId).length};
       });
       assert.deepEqual(receipt,{count:1,cost:0,owned:1});
-      log.totals('全23区間の開始・終了、前半2勝、後半'+expected.length+'勝を確認。終幕で無料ガチャを1回操作し、結果表示と獲得個体1体を照合。');
+      log.totals('全23区間の開始・終了、前半2勝、後半'+expected.length+'勝を確認。終幕で無料ガチャを1回操作し、結果表示と獲得個体1体を照合。敗北後の育成ルート：'+(trained?'使用':'未使用')+'。');
       return;
     }
     if(await visible('#contractorRankUpOverlay:not(.hidden) button')){await tap('#contractorRankUpOverlay button');continue;}
@@ -125,14 +159,25 @@ async function journey(page, log) {
       if(await visible(retry)){
         const key=Array.from(startedBattles).at(-1), count=(retries.get(key)||0)+1;
         retries.set(key,count);await log.shot(key+'-retry-'+count);
+        if(!trained){trained=true;await trainAfterDefeat();continue;}
         assert(count<=3,'再挑戦3回後も敗北 '+key);await tap(retry);
       }
       continue;
     }
     const actions='#prologuePart2Content .map-story-actions';
+    if(await visible('[data-prologue-character-result]')) drawn.add((await page.locator('[data-prologue-character-result] strong').innerText()).trim());
+    if(await visible(actions+' .story-scene-cue')){
+      // The cue bounces continuously. Touch a verified on-screen point.
+      const point=await page.locator(actions+' .story-scene-cue').evaluate(el=>{
+        const r=el.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
+        return el.contains(document.elementFromPoint(x,y)) ? {x,y} : null;
+      });
+      log.action('次へ');
+      if(point) await page.touchscreen.tap(point.x,point.y);
+      continue;
+    }
     const free=actions+' button:text-is("無料で1回引く")';
     if(await visible(free)){assert.equal(draws++,0);await tap(free);continue;}
-    if(await visible('[data-prologue-character-result]')) drawn.add((await page.locator('[data-prologue-character-result] strong').innerText()).trim());
     const options=['[data-prologue-loan][aria-pressed="false"]','[data-prologue-synthesize]:enabled',
       actions+' button:text-is("物語を続ける")',actions+' button:text-is("後で見る")',actions+' button:visible:enabled'];
     for(const selector of options){
@@ -150,6 +195,8 @@ try{
   const port=String(banner).match(/:(\d+)/)[1];
   browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined});
   const context=await browser.newContext({...devices['Pixel 7'],viewport:{width:412,height:915},screen:{width:412,height:915},locale:'ja-JP'});
+  // Keep automated play out of the live operator dashboard.
+  await context.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/api/events',route=>route.fulfill({status:204,headers:{'access-control-allow-origin':'*'}}));
   const page=await context.newPage();
   page.setDefaultTimeout(5000);
   log=await evidence(page,dir);

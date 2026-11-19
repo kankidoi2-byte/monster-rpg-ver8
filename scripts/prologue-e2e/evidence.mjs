@@ -5,7 +5,7 @@ import path from 'node:path';
 // scrolling is not clipped. Limit checks to the foreground layer at this checkpoint.
 function inspectLayout() {
   const visible = el => el.checkVisibility({checkOpacity:true, checkVisibilityCSS:true}) && el.getClientRects().length;
-  const modal = ['#contractorRankUpOverlay', '.soul-cinematic', '#prologuePart2Raid', '#tutorialBubble']
+  const modal = ['#contractorRankUpOverlay', '#soulContractPresentation', '#prologuePart2Raid', '#tutorialBubble']
     .map(s => document.querySelector(s)).find(el => el && visible(el));
   const roots = modal ? [modal] : [...document.querySelectorAll('.screen.active')];
   const target = document.querySelector('.tutorial-target-active');
@@ -74,7 +74,7 @@ export async function evidence(page, dir) {
       await shot('stopped',stage+'（停止）').catch(()=>{});
     },
     async report(version){
-      const text=['# 序章のスマホ通しテスト','', 'Chromium '+version+' / Android エミュレーション / 412 × 915 CSS px / 新規ブラウザーコンテキスト。','# 実行結果','',
+      const text=['# 序章のスマホ通しテスト','', 'Chromium '+version+' / Android エミュレーション / 412 × 915 CSS px / 新規ブラウザーコンテキスト。','## 実行結果','',
         failure?'**停止** '+failure:'**終幕完了**', totals, '',
         '## 進行停止','',failure?'直近の操作：'+action+'。 '+link(scenes.get('stopped'),'停止画面'):'なし',
         '', '## コンソールエラーと未処理例外','',
@@ -86,5 +86,7 @@ export async function evidence(page, dir) {
         ...Array.from({length:23},(_,i)=>{const ep=episodes.get(i+1)||{};return '| '+(i===22?'終幕':'第'+(i+1)+'話')+' | '+link(ep.start,'開始')+' | '+link(ep.end,'終了')+' |';}),
         '', '## 場面別スクリーンショット','',...[...scenes].map(([key,file])=>'- '+link(file,key))];
       await fs.writeFile(path.join(dir,'report.md'),text.join('\n')+'\n');
+      console.log('画像',scenes.size,'枚 / エラー',errors.size,'種類 / 画面外',overflow.length,'件');
+      console.log(text.slice(0,text.indexOf('## 各話の到達状況')).join('\n').slice(0,16000));
     }};
 }
