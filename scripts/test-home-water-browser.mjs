@@ -232,7 +232,48 @@ try{
  await dots.nth(0).press('Enter');await chosen(0);
  assert.equal(await selectedCalls(),clickCalls+2,'keyboard activation is still handled once');
  await staysHome();
- report.checks.push('banner dots: immediate and delayed touch, physical contact time, mouse and keyboard activate once');
+ // Touches which start on a dot but move, cancel, or add another pointer
+ // must not gain an activation through the pointerup path.
+ const position=await dots.nth(1).boundingBox();
+ const x=Math.round(position.x+position.width/2),y=Math.round(position.y+position.height/2);
+ const rejectCalls=await selectedCalls();
+ const edgeY=Math.ceil(position.y)+1,outerY=edgeY-5;
+ const edgeHits=await dots.nth(1).evaluate((dot,{x,edgeY,outerY})=>[
+  dot.contains(document.elementFromPoint(x,edgeY)),dot.contains(document.elementFromPoint(x,outerY))
+ ],{x,edgeY,outerY});
+ assert.deepEqual(edgeHits,[true,false],'the small gesture starts on the dot and ends outside it');
+ let edgeRelease;
+ await gesture.evaluate(()=>document.addEventListener('pointerup',event=>{
+  window.__homeDotEdgeRelease={x:event.clientX,y:event.clientY,type:event.pointerType};
+ },{capture:true,once:true}));
+ await touch('touchStart',x,edgeY);
+ await gesture.waitForTimeout(50);
+ await touch('touchMove',x,outerY);
+ await touch('touchEnd');
+ edgeRelease=await gesture.evaluate(()=>window.__homeDotEdgeRelease);
+ assert.deepEqual(edgeRelease,{x,y:outerY,type:'touch'},'the real release is outside the captured dot');
+ await gesture.waitForTimeout(330);
+ assert.equal(await selectedCalls(),rejectCalls,'a touch released just outside a dot does not select through native click');
+ assert.equal(await index(),0);
+ // An independent input on the same button after the rejected touch is still native.
+ await dots.nth(1).press('Enter');await chosen(1);
+ assert.equal(await selectedCalls(),rejectCalls+1,'the rejected touch must not suppress the next keyboard activation');
+ await dots.nth(0).click();await chosen(0);
+ assert.equal(await selectedCalls(),rejectCalls+2,'the rejected touch must not suppress the next mouse activation');
+ const rejectGestureCalls=await selectedCalls();
+ await touch('touchStart',x,y);await touch('touchMove',x,y+42);await touch('touchEnd');
+ await touch('touchStart',x,y);await touch('touchCancel');
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1},{x:x+38,y,id:2}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-18,y,id:1},{x:x+56,y,id:2}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await gesture.waitForTimeout(330);
+ assert.equal(await selectedCalls(),rejectGestureCalls,'moved, cancelled and multiple touches on dots do not select');
+ assert.equal(await index(),0);
+ await staysHome();
+ // If the browser recognized the pinch, normalize its zoom for later layout assertions.
+ await cdp.send('Emulation.setPageScaleFactor',{pageScaleFactor:1});
+ report.checks.push('banner dots: immediate and delayed touch, physical contact time, mouse and keyboard activate once; edge-release, drag, cancellation and multi-touch do not activate');
  // The normal Home screen does not scroll. Put the real banner inside a scrollable
  // ancestor to demonstrate Chromium's native vertical scrolling is not cancelled.
  const scrollArea=await gesture.evaluate(()=>{
