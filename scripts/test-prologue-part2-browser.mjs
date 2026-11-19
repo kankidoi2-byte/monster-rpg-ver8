@@ -198,6 +198,34 @@ try{
  assert.equal(await page.evaluate(()=>save.items.contract_scroll),contractBefore.scroll);
  assert.equal(await page.evaluate(()=>save.instances.filter(i=>i.id==='slime').length),1);
  console.log('PASS Chapter 7 contract: cancel returns to choice; accept spends one scroll, recruits one slime, continues story and cannot repeat on reload');
+ // The hand-off to chapter 8 leaves one completed, replayable chapter 7 card.
+ const complete7=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(step=>step.kind==='complete').id);
+ await seed('pb_07',complete7);
+ await page.evaluate(()=>{save.prologuePart2.episodes.pb_07.wonBattleIds=['p2_07_a','p2_07_b'];saveGame();});
+ await page.locator('#prologuePart2Content button[onclick="prologuePart2Complete()"]').click();
+ const chapter7=page.locator('#storyEpisodeList [data-prologue-episode="pb_07"]');
+ const assertChapter7Completed=async(progress)=>{
+  assert.equal(await chapter7.count(),1);
+  assert(await chapter7.isVisible());
+  assert(await chapter7.evaluate(card=>card.classList.contains('is-completed')));
+  assert(await chapter7.getByRole('button',{name:'読み返す ›',exact:true}).isVisible());
+  assert.equal(await chapter7.locator('.story-episode-status').innerText(),'完了');
+  assert.equal(await page.locator('#storyEpisodeList .story-episode-card').count(),23);
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),progress);
+  assert(!((await page.locator('#storyPanel-main').innerText()).includes('今後追加されます')));
+ };
+ await assertChapter7Completed('続き：第8話 ・ 7/23 完了');
+ assert(await page.locator('#storyEpisodeList [data-prologue-episode="pb_08"].is-current').isVisible());
+ await page.screenshot({path:`${out}/chapter7-completed-list.png`});
+ console.log('PASS Chapter 7 card: actual chapter clear shows one completed card and chapter 8 next (7/23)');
+
+ await seed('pb_ep','pb_ep_complete');
+ const endingSave=await page.evaluate(()=>{const data=JSON.stringify(save);openStoryMode();return data;});
+ await assertChapter7Completed('続き：終幕 ・ 22/23 完了');
+ assert(await page.locator('#storyEpisodeList [data-prologue-episode="pb_ep"].is-current').isVisible());
+ assert.equal(await page.evaluate(()=>JSON.stringify(save)),endingSave,'rendering the chapter list must not change save data');
+ await page.screenshot({path:`${out}/chapter7-finale-list.png`});
+ console.log('PASS Chapter 7 card: one completed card at finale 22/23, no stale copy, no save change');
  // Optional link practice is skippable without changing private party/assets or recorded wins.
  const practiceCursor=await page.evaluate(()=>prologuePart2Episode('pb_14').steps.find(s=>s.action==='linkPractice').id);
  await seed('pb_14',practiceCursor);
