@@ -1,0 +1,50 @@
+name: Home banner dot diagnostic (isolated)
+on:
+  push:
+    branches: [diagnose/home-banner-dot-e453719]
+permissions:
+  contents: read
+jobs:
+  home-banner-dot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install the same isolated browser as the existing Home check
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Run the unchanged Home assertions up to three times
+        env:
+          HOME_BANNER_DIAGNOSTICS: '1'
+        run: |
+          test "$(git rev-parse HEAD^)" = e45371921926e3f6fe92c2d235c154edfff934e3
+          unset GAME_TEST_URL PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+          mkdir -p artifacts/home-banner-dot
+          for attempt in 1 2 3; do
+            echo "::group::Isolated Home browser attempt $attempt"
+            export HOME_WATER_EVIDENCE="$GITHUB_WORKSPACE/artifacts/home-banner-dot/attempt-$attempt"
+            if node scripts/test-home-water-browser.mjs; then
+              echo "::endgroup::"
+            else
+              status=$?
+              echo "::endgroup::"
+              echo "Attempt $attempt failed; stopping without any rerun."
+              exit "$status"
+            fi
+          done
+      - name: Upload input event and state diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-banner-dot-diagnostic
+          path: |
+            artifacts/home-banner-dot/*/dot-input.json
+            artifacts/home-banner-dot/*/report.json
+          if-no-files-found: warn
