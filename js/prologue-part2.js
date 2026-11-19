@@ -124,6 +124,8 @@ function prologuePart2StopText(){
   if(prologuePart2Ui?.autoTimer){clearTimeout(prologuePart2Ui.autoTimer);prologuePart2Ui.autoTimer=null;}
 }
 function prologuePart2ScreenChanged(id){
+  // The special return is for the story exercise, not a later visit from Home.
+  if(id!=='battleChoices'&&prologuePart2Ui?.routeVisit)prologuePart2Ui.routeVisit=null;
   if(id!=='prologuePart2'){
     prologuePart2StopText();
     prologuePart2Root()?.replaceChildren();

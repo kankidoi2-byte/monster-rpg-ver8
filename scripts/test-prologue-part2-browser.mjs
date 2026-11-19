@@ -138,16 +138,50 @@ try{
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,items:save.items,coins:save.coins,skills:save.skillCards,party:save.party})),practiceBefore);
  assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_14.wonBattleIds),['p2_14_a']);
  assert.equal(await page.evaluate(()=>save.prologuePart2.trainingSeen.pb14===true),false);
- // The epilogue route goes out and back via the existing map UI, without a battle/unlock grant.
- const routeCursor=await page.evaluate(()=>prologuePart2Episode('pb_ep').steps.find(s=>s.action==='returnRoute').id);
- await seed('pb_ep',routeCursor);
- const routeBefore=await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history}));
- await page.getByRole('button',{name:'バトルから世界地図へ',exact:true}).click();
- assert(await page.locator('#prologuePart2WorldReturn').isVisible());
- assert.equal(await page.evaluate(()=>activeHuntRequest),null);
- await page.locator('#prologuePart2WorldReturn').click();
- assert.notEqual(await card(),routeCursor);
- assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history})),routeBefore);
+ // Enter the exercise using the displayed copy, then complete the finale both directly
+ // and after leaving for Home. A normal visit to the map never carries the special return.
+ const routeCursor='pb_ep_return_route',routeStart='pb_ep_post_10';
+ const returnLabel='世界の狭間へ戻って物語を続ける';
+ const routeButton=page.getByRole('button',{name:returnLabel,exact:true});
+ const openRoute=()=>page.getByRole('button',{name:'バトルから世界地図へ',exact:true}).click();
+ const home=()=>page.locator('[data-nav="home"]').click();
+ const list=()=>page.locator('#homeAdventureButton').click();
+ const resumeFinale=()=>page.locator('#storyContinueCard').getByRole('button',{name:/再開する/}).click();
+ const mapAssets=()=>page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history}));
+ for(const viaHome of [false,true]){
+  await seed('pb_ep',routeStart);
+  await page.evaluate(()=>prologuePart2Typewriter?.finish());
+  assert((await page.locator('#prologuePart2Text').innerText()).includes('「'+returnLabel+'」'));
+  await next();
+  assert.equal(await card(),routeCursor);
+  const routeBefore=await mapAssets();
+  await openRoute();
+  await routeButton.waitFor({state:'visible'});
+  assert.equal(await page.evaluate(()=>activeHuntRequest),null);
+  if(viaHome){
+   await home();
+   await page.locator('#home .home-battle-button').click();
+   await page.locator('#battleChoices.active').waitFor({state:'visible'});
+   assert.equal(await routeButton.count(),0,'ordinary map has no special return even after leaving the exercise');
+   await home();
+   await list();
+   assert.match(await page.locator('#storyChapterProgress').innerText(),/22\/23 完了/);
+   await resumeFinale();
+   assert.equal(await card(),routeCursor);
+   await openRoute();
+   await routeButton.waitFor({state:'visible'});
+  }
+  await routeButton.click();
+  assert.equal(await card(),'pb_ep_post_11');
+  assert.equal(await mapAssets(),routeBefore);
+  for(let step=0;step<12&&(await card())!=='pb_ep_complete';step++)await next();
+  assert.equal(await card(),'pb_ep_complete');
+  await page.getByRole('button',{name:'序章を終える',exact:true}).click();
+  assert.equal(await page.locator('#prologuePart2Content .prologue-part2-finish h2').innerText(),'終幕 完了');
+  await page.getByRole('button',{name:'話一覧へ',exact:true}).click();
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),'23/23 完了');
+  console.log(`PASS finale map return: ${viaHome?'Home then resume; ordinary map isolated':'direct'} -> 終幕 完了 (23/23)`);
+ }
  // Both shop branches use the actual shop purchase/return UI.
  for(const bought of [false,true]){
   await seed('pb_08',await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(s=>s.action==='shop').id));
