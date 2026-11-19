@@ -195,8 +195,53 @@ try{
  await drag(Math.ceil(width*.24));await chosen(4);
  await drag(-Math.ceil(width*.24));await chosen(0);
  await drag(-Math.ceil(width*.24),{cancel:true});await chosen(0);
+ // Passive observation only. Keep the real inputs and immediate assertions.
+ const diagnostics=process.env.HOME_BANNER_DIAGNOSTICS==='1';
+ if(diagnostics)await gesture.evaluate(()=>{
+  const events=[];
+  const label=node=>{
+   if(!(node instanceof Element))return node?.nodeName||null;
+   const dot=node.closest('#homeBannerDots button');
+   return {tag:node.tagName,id:node.id||null,cls:node.getAttribute('class'),dot:dot?Array.from(dot.parentElement.children).indexOf(dot):null};
+  };
+  const target=e=>{
+   const touch=e.changedTouches?.[0];
+   const x=touch?.clientX??e.clientX??null,y=touch?.clientY??e.clientY??null;
+   events.push({type:e.type,at:e.timeStamp,observedAt:performance.now(),trusted:e.isTrusted,cancelled:e.defaultPrevented,
+    pointer:e.pointerId??null,pointerType:e.pointerType??null,x,y,target:label(e.target),
+    path:e.composedPath().slice(0,6).map(label),hit:x===null||y===null?null:label(document.elementFromPoint(x,y))});
+  };
+  for(const type of ['touchstart','touchend','touchcancel','pointerdown','pointerup','pointercancel','click','gotpointercapture','lostpointercapture'])
+   document.addEventListener(type,target,{capture:true,passive:true});
+  window.__homeBannerDotSnapshot=()=>{
+   const viewport=document.getElementById('homeBannerViewport');
+   const dot=document.querySelector('#homeBannerDots button');
+   const rect=dot?.getBoundingClientRect();
+   const pointer=homeBannerGesture?.id??homeBannerSuppressedClick?.pointerId;
+   return {at:performance.now(),index:homeBannerIndex,
+    current:Array.from(document.querySelectorAll('#homeBannerDots button')).map(el=>el.getAttribute('aria-current')),
+    dotHit:rect?label(document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2)):null,
+    focused:label(document.activeElement),captured:pointer!=null&&viewport.hasPointerCapture(pointer),
+    gesture:homeBannerGesture?{pointer:homeBannerGesture.id,axis:homeBannerGesture.axis}:null,
+    suppressed:homeBannerSuppressedClick,autoplayPending:homeBannerTimer!==null,
+    reducedMotion:homeBannerMotion?.matches,scroll:[scrollX,scrollY],
+    visual:visualViewport?{scale:visualViewport.scale,x:visualViewport.offsetLeft,y:visualViewport.offsetTop}:null,
+    events:[...events]};
+  };
+ });
  await drag(-Math.floor(width*.12),{slow:false});await chosen(1);
- await dot(0);
+ try{await dot(0);}
+ catch(error){
+  if(diagnostics)try{
+   const immediate=await gesture.evaluate(()=>window.__homeBannerDotSnapshot());
+   await gesture.waitForTimeout(1000);
+   const later=await gesture.evaluate(()=>window.__homeBannerDotSnapshot());
+   const sample={error:String(error),immediate,later};
+   console.log('HOME_BANNER_DOT_DIAGNOSTIC '+JSON.stringify(sample));
+   fs.writeFileSync(output+'/dot-input.json',JSON.stringify(sample,null,2));
+  }catch(diagnosticError){console.error('Unable to collect dot timing evidence:',diagnosticError);}
+  throw error;
+ }
  // The normal Home screen does not scroll. Put the real banner inside a scrollable
  // ancestor to demonstrate Chromium's native vertical scrolling is not cancelled.
  const scrollArea=await gesture.evaluate(()=>{
