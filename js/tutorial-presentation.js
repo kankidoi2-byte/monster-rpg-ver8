@@ -55,10 +55,25 @@ function tutorialPresentationControls(step){
   const targetTap=Boolean(action&&tutorialUiState.target);
   return {next,targetTap,hint:!step.input&&!tutorialDialogueNeedsChoice(step)&&!next&&(!action||targetTap)};
 }
+const TUTORIAL_FACILITY_HEADINGS=Object.freeze({
+  shop:'ショップの使い方',evolution:'進化の使い方',fusion:'合成の使い方',
+  alchemy:'錬成の使い方',expedition:'遠征の使い方',skillEdit:'技カードの使い方',
+  skillGacha:'技ガチャの使い方',dexHub:'図鑑の使い方',battleItemSelect:'戦闘アイテムの使い方',
+  contractorRank:'契約者ランクの見方',contractorTitles:'称号の使い方'
+});
+function tutorialPresentationContext(step){
+  const storyFlow=tutorialUiState.flowId===TUTORIAL_MAIN_FLOW_ID;
+  const episodeIndex=storyFlow&&typeof storyEpisodeIndexForStep==='function'
+    ?storyEpisodeIndexForStep(step.id,{fallback:-1}):-1;
+  const episode=episodeIndex>=0&&typeof PROLOGUE_STORY_EPISODES!=='undefined'?PROLOGUE_STORY_EPISODES[episodeIndex]:null;
+  const label=episode?`序章 第${episode.number}話　${episode.title}`
+    :(!storyFlow&&TUTORIAL_FACILITY_HEADINGS[step.screenId])||step.progressLabel;
+  return {episode,label};
+}
 function tutorialPresentationRender(step,view){
   const overlay=document.getElementById('tutorialOverlay');if(!overlay||typeof createStoryTypewriter!=='function')return;
   const state=tutorialPresentation,story=Boolean((view.scene||view.portrait)&&!step.target);
-  const episode=typeof PROLOGUE_STORY_EPISODES!=='undefined'?PROLOGUE_STORY_EPISODES[storyEpisodeIndexForStep(step.id)]:null;
+  const {episode,label}=tutorialPresentationContext(step);
   const episodeKey=tutorialUiState.flowId+':'+(episode?.id||'guide');
   if(state.episode!==episodeKey){state.episode=episodeKey;state.log=[];state.seen.clear();state.portraits.clear();state.scene=null;}
   const key=episodeKey+':'+step.id+':'+tutorialDialogueState.page;
@@ -73,7 +88,7 @@ function tutorialPresentationRender(step,view){
   const text=tutorialResolvedText(view),speaker=tutorialResolvedText({text:view.speaker||''});
   if(!state.seen.has(key)){state.seen.add(key);state.log.push({speaker,text});}
   overlay.classList.toggle('is-story-step',story);overlay.classList.toggle('is-ui-guide-step',!story);
-  document.getElementById('tutorialSceneLabel').textContent=episode?`序章 第${episode.number}話`:step.progressLabel;
+  document.getElementById('tutorialSceneLabel').textContent=label;
   const title=document.getElementById('tutorialTitle'),guideTitle=document.getElementById('tutorialGuideTitle');
   title.textContent=story?speaker:'グノーシス';title.hidden=story&&!speaker;
   guideTitle.textContent=view.title||step.title;guideTitle.hidden=story;
