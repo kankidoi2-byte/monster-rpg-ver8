@@ -350,12 +350,14 @@ function askUseContractScroll(itemId){
 }
 let postBattleContractBusy=false;
 let postBattleContractRetry=null;
-function postBattleContractStage(target,itemId,scope,guaranteed=false){
+function postBattleContractStage(target,itemId,scope,guaranteed=false,party){
   const identity=saveTransactionIdentity();
   if(postBattleContractRetry?.target===target&&postBattleContractRetry.itemId===itemId&&postBattleContractRetry.scope===scope&&postBattleContractRetry.identity===identity)return postBattleContractRetry.stage;
   const it=ITEM_BY_ID[itemId]||ITEM_BY_ID.contract_scroll;
   const baseRate=Math.min(.95,(target.catchRate??.25)*(it.catchMultiplier||1));
-  const rate=typeof traitContractRate==='function'?traitContractRate(baseRate):baseRate;
+  const rate=party&&typeof partyTraitBonus==='function'
+    ? Math.min(1,baseRate+partyTraitBonus(['bond'],party))
+    : typeof traitContractRate==='function'?traitContractRate(baseRate):baseRate;
   const stage=guaranteed?3:contractAnimationStage(Math.random(),rate);
   postBattleContractRetry={target,itemId,scope,identity,stage};return stage;
 }

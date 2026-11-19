@@ -116,3 +116,12 @@ body:has(#battle.active.is-renewed) :is(.app-topbar,.bottom-nav,.app-bottom-nav)
 /* Keep encounter badges independent of the narrow name/HP row. */
 #battle.is-renewed .multi-enemy-copy .br-plate-meta{grid-column:1/-1;grid-row:4;min-width:0}
 #battle.is-renewed .br-overtier-label{display:inline-block;flex:0 0 auto;white-space:nowrap;font-size:9px;font-weight:800;line-height:1.4;padding:1px 4px;border-radius:4px;color:#ffe7a8;background:#6d3f13;border:1px solid #d7a458}
+
+/* Story contract is a choice, not a replay of the battle arena. */
+#battle.is-prologue-contract-choice > :not(#prologueContractChoice){display:none!important}
+#prologueContractChoice{padding:16px;color:#eef3fa}
+#prologueContractChoice .panel{display:grid;gap:12px}
+#prologueContractChoice :is(h1,h2,p,ul){margin:0}
+#prologueContractChoice h2{font-size:1rem}
+#prologueContractChoice button{min-height:44px}
+#prologueContractChoice [data-prologue-contract-recap]{font-size:.875rem;color:#bdcbe0}

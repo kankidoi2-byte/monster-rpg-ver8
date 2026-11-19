@@ -43,7 +43,7 @@ function battleUiSkillInfo(move){
   return `<small class="battle-choice-detail">対象：${battleUiMoveTarget(move)}<br>${battleUiEscape(moveEffectText(move))}${numeric}</small>`;
 }
 function syncBattleUi(){
-  const screen=document.getElementById('battle');if(!screen)return;
+  const screen=document.getElementById('battle');if(!screen||screen.classList.contains('is-prologue-contract-choice'))return;
   if(typeof autoSyncBattle==='function')autoSyncBattle();
   const active=screen.classList.contains('active');
   const processing=busy||battleFeedback.finished||screen.classList.contains('is-finished');
