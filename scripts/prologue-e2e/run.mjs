@@ -18,6 +18,7 @@ function readState() {
     typing:!!(step && tutorialPresentation.writer && !tutorialPresentation.writer.isComplete()),
     input:step?.input, target:step?.target && tutorialStepRequiresAction(step),
     card, cardTyping:!!(card && prologuePart2Typewriter && !prologuePart2Typewriter.isComplete()), battle:activeHuntRequest?.battleId, busy:typeof busy!=='undefined' && busy,
+    healTarget:activeHuntRequest?.battleId && pHp>0 && pHp<playerMaxHp()*0.35 && save.items.upper_potion>0 ? activePartyIdx : null,
     hp:activeScreenId()==='battle'?[pHp,eHp,multiBattle?.enemies?.map(e=>e.hp)]:null,
     cleared:save.progress.tutorial.status==='completed'?6:
       save.progress.tutorial.chapterGate ? storyEpisodeIndexForStep(save.progress.tutorial.stepId) : 0,
@@ -45,6 +46,16 @@ async function journey(page, log) {
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
     await page.locator('#contractorRankUpOverlay button').first().tap();
   });
+  async function advanceGuide(s){
+      if(s.typing){await tap('#tutorialText');return;}
+      if(s.input==='player_name'){
+        await page.locator('#tutorialPlayerNameInput').fill('通し検査');
+        await tap('#tutorialNameForm button');
+      }else if(await visible('#tutorialDialogueChoices:not([hidden]) button')) await tap('#tutorialDialogueChoices button');
+      else if(s.target) await tap('.tutorial-target-active');
+      else if(await visible('#tutorialNextButton:not([hidden]):enabled')) await tap('#tutorialNextButton');
+      else if(!s.input) await tap('#tutorialText');
+  }
   async function trainAfterDefeat() {
     await tap('.prologue-part2-finish button:text-is("話一覧へ")');
     await tap('#storyMode .ui-back-link');
@@ -69,7 +80,19 @@ async function journey(page, log) {
         const item='[data-roster-action="giga_data"]:enabled';
         if(!(await visible(item))) break;
         await tap(item);
-        if(await visible('#evolution.active')) await tap('#evoChoices button');
+        const evolutionDeadline=Date.now()+20000;
+        while(await visible('#evolution.active')){
+          if(Date.now()>evolutionDeadline) throw Error('進化ガイドまたは進化先の選択で停止');
+          await page.waitForTimeout(120);
+          const guide=await page.evaluate(readState);
+          if(guide.tutorial){
+            if(!guide.typing) await log.shot(guide.tutorial+'-'+guide.page);
+            await advanceGuide(guide);
+          }else if(await visible('#evolution.active')) {
+            await log.shot('training-evolution');
+            await tap('#evoChoices button');
+          }
+        }
       }
       if(await visible('.roster-sheet-close')) await tap('.roster-sheet-close');
     }
@@ -137,14 +160,7 @@ async function journey(page, log) {
     }
     if(await visible('.soul-skip')){await log.shot('gacha-presentation');await tap('.soul-skip');continue;}
     if(s.tutorial){
-      if(s.typing){await tap('#tutorialText');continue;}
-      if(s.input==='player_name'){
-        await page.locator('#tutorialPlayerNameInput').fill('通し検査');
-        await tap('#tutorialNameForm button');
-      }else if(await visible('#tutorialDialogueChoices:not([hidden]) button')) await tap('#tutorialDialogueChoices button');
-      else if(s.target) await tap('.tutorial-target-active');
-      else if(await visible('#tutorialNextButton:not([hidden]):enabled')) await tap('#tutorialNextButton');
-      else if(!s.input) await tap('#tutorialText');
+      await advanceGuide(s);
       continue;
     }
     if(await visible('#prologuePart2Raid:not([hidden]) button')){await log.shot('raid-interruption');await tap('#prologuePart2Raid button');continue;}
@@ -154,6 +170,13 @@ async function journey(page, log) {
       const skip='button:visible:text-is("契約を見送る")';
       if(await visible(skip)){await log.shot('slime-contract');await tap(skip);continue;}
       if(s.busy) continue;
+      if(s.healTarget!==null && await visible('#battleItemButton:enabled')){
+        await tap('#battleItemButton');
+        await tap('#renewalSheet [data-item="upper_potion"]');
+        await tap('#renewalSheet [data-item-target="'+s.healTarget+'"]');
+        await tap('#renewalSheet .br-go');
+        continue;
+      }
       const target='#multiTargetSelect button:visible:enabled';
       if(await visible(target)){await tap(target);continue;}
       const moves=page.locator('#commands .skill-button:visible:enabled');
@@ -204,6 +227,8 @@ try{
   // Keep automated play out of the live operator dashboard.
   await context.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/api/events',route=>route.fulfill({status:204,headers:{'access-control-allow-origin':'*'}}));
   const page=await context.newPage();
+  // Reproduce the same shipped recovery gift on later runs. Time ticks normally.
+  await page.clock.setSystemTime(new Date('2026-11-19T12:00:00+09:00'));
   page.setDefaultTimeout(5000);
   log=await evidence(page,dir);
   await page.goto('http://127.0.0.1:'+port+'/?legacy=1');
