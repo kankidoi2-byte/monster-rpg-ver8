@@ -1,0 +1,63 @@
+name: Compare Home banner tap recovery
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  compare-home-dot:
+    if: github.event.pull_request.head.ref == 'fix/home-banner-dot-activation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+      - uses: actions/checkout@v5
+        with:
+          ref: a9fbc1600a91d4f35d149e1694abe1f4c5ce7ebe
+          path: baseline
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install the exact Home browser
+        working-directory: candidate
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Compare isolated baseline and candidate touch input
+        shell: bash
+        run: |
+          unset GAME_TEST_URL PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+          ln -s "$GITHUB_WORKSPACE/candidate/node_modules" baseline/node_modules
+          mkdir -p artifacts/home-dot-comparison
+          for version in baseline candidate; do
+            for attempt in 1 2 3; do
+              export HOME_WATER_EVIDENCE="$GITHUB_WORKSPACE/artifacts/home-dot-comparison/$version-$attempt"
+              export TEST_LOG="$HOME_WATER_EVIDENCE.log"
+              echo "::group::$version attempt $attempt"
+              if (cd "$version" && node scripts/test-home-water-browser.mjs) >"$TEST_LOG" 2>&1; then
+                cat "$TEST_LOG"
+              else
+                status=$?
+                cat "$TEST_LOG"
+                if [[ "$version" != baseline ]] || ! grep -Fq '1 !== 0' "$TEST_LOG" ||
+                   ! grep -Eq 'test-home-water-browser.mjs:(199:2|224:38)' "$TEST_LOG"; then
+                  exit "$status"
+                fi
+                echo "Baseline reproduced the original immediate dot-selection failure at attempt $attempt"
+                echo "::endgroup::"
+                break
+              fi
+              echo "::endgroup::"
+            done
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: home-dot-comparison
+          path: |
+            artifacts/home-dot-comparison/*.log
+            artifacts/home-dot-comparison/*/report.json

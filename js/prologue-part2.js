@@ -293,9 +293,11 @@ function prologuePart2StartBattle(){
   });
 }
 function prologuePart2Contract(){
-  const e=prologuePart2Episode('pb_07'),step=prologuePart2Step(),battle=prologuePart2Data().battles.p2_07_a;
-  if(prologuePart2Ui?.id!=='pb_07'||step?.kind!=='event'||prologuePart2Ui.replay)return false;
-  if(!prologuePart2EpisodeState(e.id).wonBattleIds.includes(battle.id))return false;
+  const e=prologuePart2Episode('pb_07'),step=prologuePart2Step();
+  if(prologuePart2Ui?.id!=='pb_07'||step?.action!=='contract'||prologuePart2Ui.replay)return false;
+  const battle={...prologuePart2Data().battles.p2_07_a,location:e.location};
+  const episodeState=prologuePart2EpisodeState(e.id);
+  if(episodeState.contractOutcome||!episodeState.wonBattleIds.includes(battle.id))return false;
   return resumeProloguePart2Contract(e.id,battle,prologuePart2BattleCallbacks(e,step,battle));
 }
 function renderProloguePart2Raid(){

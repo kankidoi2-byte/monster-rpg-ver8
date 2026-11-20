@@ -622,3 +622,7 @@ body:has(#skillEdit.active) .tutorial-bubble{transition:none}
 .ui-copy-details{margin:8px 0;overflow-wrap:anywhere}
 .ui-copy-details>summary{min-height:44px;align-content:center;cursor:pointer}
 .ui-copy-details>p{margin:6px 0 10px}
+
+/* Keep the final confirmation actions together beside the tutorial spotlight. */
+.tutorial-alchemy-confirm-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;gap:8px}
+.tutorial-alchemy-confirm-actions>button{min-width:0;min-height:44px;margin:0;overflow-wrap:anywhere}

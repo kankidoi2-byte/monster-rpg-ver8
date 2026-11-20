@@ -33,8 +33,10 @@ assert.equal(r.run('prologuePart2ContractAllowed()'),false);
 r.run(`closeProloguePart2Battle();startProloguePart2Battle('pb_12',PROLOGUE_PART2_DATA.battles.p2_12_a,callbacks);runAwayFromMultiBattle();pendingFinish();`);
 assert.equal(r.run('reports.at(-1)[0]'),'retreat');assert.equal(r.run('JSON.stringify(save)===before'),true);
 // Same normal rate/receipt and one atomic controller mutation for slime.
-r.run(`closeProloguePart2Battle();resumeProloguePart2Contract('pb_07',PROLOGUE_PART2_DATA.battles.p2_07_a,{...callbacks,onContract:(result,request,mutate,finish)=>{mutate();reports.push([result,request.battleId]);finish();},onContractFinished:result=>endings.push(result)});save.items.contract_scroll=1;postBattleContractStage=()=>3;playContractAnimation=async()=>{};`);
+r.run(`closeProloguePart2Battle();resumeProloguePart2Contract('pb_07',PROLOGUE_PART2_DATA.battles.p2_07_a,{...callbacks,onContract:(result,request,mutate,finish)=>{mutate();reports.push([result,request.battleId]);finish();},onContractFinished:result=>endings.push(result)});save.items.contract_scroll=1;var contractTraitParty=null;postBattleContractStage=(_target,_itemId,_scope,_guaranteed,party)=>{contractTraitParty=party;return 3;};playContractAnimation=async()=>{};`);
+assert.equal(r.run('partyBattle.length'),0,'reopening the contract must not start a synthetic fight');
 await r.run("tryProloguePart2Contract('contract_scroll')");
+assert.equal(r.run('contractTraitParty[0].uid'),r.run('ins.uid'),'the real participating party still supplies contract trait bonuses');
 assert.equal(r.run('save.items.contract_scroll'),0);assert.equal(r.run('save.instances.filter(i=>i.id===\'slime\').length'),1);
 await r.run("tryProloguePart2Contract('contract_scroll')");assert.equal(r.run('save.instances.filter(i=>i.id===\'slime\').length'),1);
 assert.equal(r.run('prologuePart2ContractAllowed()'),false);

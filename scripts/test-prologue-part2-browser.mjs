@@ -94,21 +94,66 @@ try{
  await page.locator('button[onclick="openProloguePart2()"] ').click();assert.equal(await card(),resume);
  // Dedicated battle controller integration: a won first encounter survives second defeat/reload.
  const firstBattleCursor=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(s=>s.battleId==='p2_07_a').id);
- await seed('pb_07',firstBattleCursor);
- const normalBefore=await page.evaluate(()=>({coins:save.coins,history:JSON.stringify(save.history),autoBattle:JSON.stringify(save.autoBattle),mapStories:JSON.stringify(save.mapStories),expeditions:JSON.stringify(save.expeditions),instances:JSON.stringify(save.instances),scroll:save.items.contract_scroll}));
- await page.getByRole('button',{name:'戦闘開始',exact:true}).click();
- assert.equal(await page.evaluate(()=>activeHuntRequest.battleId),'p2_07_a');
- // Deterministic outcome fixture uses the real win -> durable controller callback.
- await page.evaluate(()=>{eHp=0;win();});
- assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_07.wonBattleIds),['p2_07_a']);
- assert.equal(await page.evaluate(()=>save.items.contract_scroll),normalBefore.scroll+1);
- for(let i=0;i<12;i++){
-  if(await page.getByRole('button',{name:'契約を確認',exact:true}).isVisible())break;
-  await next();
+ const ordinaryState=()=>page.evaluate(()=>({coins:save.coins,history:JSON.stringify(save.history),autoBattle:JSON.stringify(save.autoBattle),mapStories:JSON.stringify(save.mapStories),expeditions:JSON.stringify(save.expeditions),instances:JSON.stringify(save.instances),scroll:save.items.contract_scroll}));
+ const confirmScene=page.getByRole('button',{name:'契約を確認',exact:true});
+ const choice=page.locator('#prologueContractChoice');
+ const recap=choice.locator('[data-prologue-contract-recap]');
+ async function winSlimeWithSwitch(){
+  await seed('pb_07',firstBattleCursor);
+  await page.evaluate(()=>{
+   const elna=addInstance('elna_beginner',30);save.party.push(elna.uid);saveGame();
+   combatRandom=()=>0.9; // Favors offensive moves so the replacement takes damage.
+   if(!window.__observeStorySlime){
+    const settle=prologuePart2BattleOutcome;
+    prologuePart2BattleOutcome=kind=>{
+     if(kind==='victory'&&activeHuntRequest?.battleId==='p2_07_a'&&eHp<=0){
+      window.__actualStorySlime={name:player.name,hp:pHp,maxHp:playerMaxHp(),turns:battleTurnCount+Number(battleTurnInProgress)};
+     }
+     return settle(kind);
+    };
+    window.__observeStorySlime=true;
+   }
+   window.__actualStorySlime=null;
+  });
+  const before=await ordinaryState();
+  await page.getByRole('button',{name:'戦闘開始',exact:true}).click();
+  assert.equal(await page.evaluate(()=>activeHuntRequest.battleId),'p2_07_a');
+  assert.match(await page.locator('#renewalHeader').innerText(),/王都外・街道/);
+  const originalLead=await page.evaluate(()=>player.name);
+  for(const reserve of [1,0,1]){
+   await page.locator(`#renewalParty [data-reserve-index="${reserve}"]`).click();
+   await page.waitForFunction(index=>!busy&&activePartyIdx===index,reserve);
+  }
+  for(let i=0;i<6&&await page.locator('#battle').isVisible();i++){
+   await page.locator('#battleSkillButton').click();
+   await page.locator('#commands .skill-button').first().click();
+   await page.waitForFunction(()=>!busy||activeScreenId()!=='battle');
+  }
+  await confirmScene.waitFor({state:'visible'});
+  const actual=await page.evaluate(()=>window.__actualStorySlime);
+  assert(actual&&actual.turns>=2&&actual.name!==originalLead&&actual.hp<actual.maxHp,JSON.stringify({actual,originalLead}));
+  assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_07.wonBattleIds),['p2_07_a']);
+  assert.deepEqual(await ordinaryState(),{...before,scroll:before.scroll+1});
+  return {before,actual};
  }
- await page.getByRole('button',{name:'契約を確認',exact:true}).click();
- await page.getByRole('button',{name:'契約を見送る',exact:true}).click();
+ const {before:normalBefore,actual}=await winSlimeWithSwitch();
+ await confirmScene.click();
+ assert(await choice.isVisible());
+ assert(await choice.getByRole('heading',{name:'契約候補：スライム'}).isVisible());
+ assert(await choice.getByText(`契約書：${normalBefore.scroll+1}枚`,{exact:false}).isVisible());
+ assert.match(await recap.innerText(),new RegExp(`^王都外・街道 · ${actual.turns}ターン\\s+決着時：${actual.name} · HP ${actual.hp} / ${actual.maxHp}$`));
+ for(const oldBattleDisplay of ['#renewalHeader','.battle-arena','#renewalParty','#battleOutcome'])assert.equal(await page.locator(oldBattleDisplay).isVisible(),false);
+ await page.screenshot({path:`${out}/chapter7-contract-fresh.png`});
+ // A reload retains the earned contract option but has no trustworthy transient turn/HP values.
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});
+ await confirmScene.click();
+ assert.equal(await recap.innerText(),'王都外・街道');
+ assert(!/草原|0ターン|決着時|HP/.test(await choice.innerText()));
+ await page.screenshot({path:`${out}/chapter7-contract-reloaded.png`});
+ await choice.getByRole('button',{name:'契約を見送る',exact:true}).click();
  assert.equal(await page.evaluate(()=>save.prologuePart2.episodes.pb_07.contractOutcome),'skip');
+ assert.deepEqual(await ordinaryState(),{...normalBefore,scroll:normalBefore.scroll+1});
+ console.log(`PASS Chapter 7 contract recap: 王都外・街道 · ${actual.turns}ターン · ${actual.name} HP ${actual.hp}/${actual.maxHp}; reload omits unknown stats; decline does not spend or award twice`);
  for(let i=0;i<12;i++){
   if(await page.getByRole('button',{name:'戦闘開始',exact:true}).isVisible())break;
   await next();
@@ -128,6 +173,31 @@ try{
  await page.evaluate(()=>{eHp=0;win();});
  assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_07.wonBattleIds),['p2_07_a','p2_07_b']);
  assert.deepEqual(await page.evaluate(()=>({coins:save.coins,history:JSON.stringify(save.history),autoBattle:JSON.stringify(save.autoBattle),mapStories:JSON.stringify(save.mapStories),expeditions:JSON.stringify(save.expeditions),instances:JSON.stringify(save.instances),scroll:save.items.contract_scroll})),{...normalBefore,scroll:normalBefore.scroll+1});
+ const {before:contractBefore}=await winSlimeWithSwitch();
+ await confirmScene.click();
+ await choice.getByRole('button',{name:'スライムと契約',exact:true}).click();
+ await page.locator('#contractConfirm').getByRole('button',{name:'いいえ',exact:true}).click();
+ assert(await choice.isVisible(),'cancelling the scroll screen restores the contract choice');
+ assert.equal(await page.evaluate(()=>save.items.contract_scroll),contractBefore.scroll+1,'cancelling a selection does not consume a scroll');
+ await choice.getByRole('button',{name:'スライムと契約',exact:true}).click();
+ await page.evaluate(()=>{window.__nativeContractRandom=Math.random;Math.random=()=>0;}); // Deterministic successful contract using the production path.
+ await page.locator('#contractConfirmAcceptButton').click();
+ await page.locator('#prologuePart2').waitFor({state:'visible'});
+ assert.equal(await card(),'pb_07_contract_ok');
+ assert.equal(await page.evaluate(()=>{Math.random=window.__nativeContractRandom;return save.prologuePart2.episodes.pb_07.contractOutcome;}),'ok');
+ const contractAfter=await ordinaryState();
+ assert.equal(contractAfter.scroll,contractBefore.scroll,'only the one awarded scroll was spent');
+ const {instances:recruited,...ordinaryAfterContract}=contractAfter;
+ const {instances:beforeRecruitment,...ordinaryBeforeContract}=contractBefore;
+ assert.deepEqual(ordinaryAfterContract,ordinaryBeforeContract);
+ assert.equal(JSON.parse(recruited).length,JSON.parse(beforeRecruitment).length+1);
+ assert.equal(JSON.parse(recruited).filter(i=>i.id==='slime').length,1);
+ assert.equal(await page.evaluate(()=>tryProloguePart2Contract('contract_scroll')),false,'cannot reuse a decided contract');
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});
+ assert.equal(await card(),'pb_07_contract_ok');
+ assert.equal(await page.evaluate(()=>save.items.contract_scroll),contractBefore.scroll);
+ assert.equal(await page.evaluate(()=>save.instances.filter(i=>i.id==='slime').length),1);
+ console.log('PASS Chapter 7 contract: cancel returns to choice; accept spends one scroll, recruits one slime, continues story and cannot repeat on reload');
  // Optional link practice is skippable without changing private party/assets or recorded wins.
  const practiceCursor=await page.evaluate(()=>prologuePart2Episode('pb_14').steps.find(s=>s.action==='linkPractice').id);
  await seed('pb_14',practiceCursor);
