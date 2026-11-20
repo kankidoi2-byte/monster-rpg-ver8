@@ -422,13 +422,14 @@ function prologuePart2ReturnFromWorld(){
   }});
 }
 function renderProloguePart2EpisodeCards(){
-  if(!prologuePart2Available())return '';
-  const current=prologuePart2CurrentEpisode();
-  return prologuePart2Episodes().map(e=>{
-    const done=prologuePart2EpisodeState(e.id).completed;
+  const available=prologuePart2Available(),episodes=prologuePart2Episodes();
+  const current=available?prologuePart2CurrentEpisode():null;
+  // Preview only Chapter 7 until the existing Part 2 gate opens.
+  return (available?episodes:episodes.filter(e=>e.id==='pb_07')).map(e=>{
+    const done=available&&prologuePart2EpisodeState(e.id).completed;
     const active=e===current,state=done?'completed':active?'current':'locked';
     const action=done||active?`<button type="button" onclick="openProloguePart2('${e.id}',{replay:${done}})">${done?'読み返す':'つづきから'} ›</button>`:'';
-    return `<article class="story-episode-card is-${state}"><img src="${prologuePart2Escape(e.background)}" alt=""><div class="story-episode-copy"><span>序章 ${prologuePart2Label(e)}</span><h3>${prologuePart2Escape(e.title)}</h3>${action}</div><strong class="story-episode-status">${done?'完了':active?'NEXT':'LOCKED'}</strong></article>`;
+    return `<article class="story-episode-card is-${state}" data-prologue-episode="${e.id}"><img src="${prologuePart2Escape(e.background)}" alt=""><div class="story-episode-copy"><span>序章 ${prologuePart2Label(e)}</span><h3>${prologuePart2Escape(e.title)}</h3>${available?'':'<p>第6話クリアで第7話を解放</p>'}${action}</div><strong class="story-episode-status">${done?'完了':active?'NEXT':'LOCKED'}</strong></article>`;
   }).join('');
 }
 const PROLOGUE_PART2_OPTION_LABELS={gacha:'キャラクターガチャ',evolution:'特殊進化',rank:'Rank・称号',expedition:'遠征',home:'地上との往復'};

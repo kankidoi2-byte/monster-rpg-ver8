@@ -16,7 +16,7 @@ try{
   if(process.env.PROLOGUE_TEST_WIDTH&&width!==+process.env.PROLOGUE_TEST_WIDTH)continue;
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage();page.setDefaultTimeout(5000);
-  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[],tapGuidance:[],alchemyChecks:[]};reports.push(report);
+  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[],tapGuidance:[],alchemyChecks:[],chapter7Card:[]};reports.push(report);
   page.on('pageerror',e=>report.pageErrors.push(e.message));
   page.on('dialog',async d=>{report.dialogs.push(d.message());await d.dismiss()});
   const recordRank=async()=>{
@@ -237,7 +237,22 @@ try{
     else await page.waitForTimeout(250);
    }else if(complete&&state.status==='completed')break;
    else if(state.screen==='storyMode'){
-    report.chapterChecks.push(await page.evaluate(()=>currentTutorialState().stepId));
+    const checkpoint=await page.evaluate(()=>currentTutorialState().stepId);
+    report.chapterChecks.push(checkpoint);
+    if(checkpoint==='expedition_intro'&&!report.chapter7Card.includes('locked')){
+     const chapter7=page.locator('#storyEpisodeList [data-prologue-episode="pb_07"]');
+     assert.equal(await chapter7.count(),1);
+     assert(await chapter7.isVisible());
+     assert(await chapter7.evaluate(card=>card.classList.contains('is-locked')));
+     assert.equal(await chapter7.locator('p').innerText(),'第6話クリアで第7話を解放');
+     assert.equal(await chapter7.getByRole('button').count(),0);
+     assert.equal(await page.locator('#storyEpisodeList [data-prologue-episode]').count(),1);
+     assert.equal(await page.locator('#storyChapterProgress').innerText(),'続き：第6話 ・ 5/6 完了');
+     assert(!((await page.locator('#storyPanel-main').innerText()).includes('今後追加されます')));
+     report.chapter7Card.push('locked');
+     console.log(`PASS Chapter 7 card ${width}x${height}: one locked card at chapter 6 (5/6), with unlock criterion`);
+     await page.screenshot({path:`${out}/${width}-chapter7-locked.png`});
+    }
     await page.waitForTimeout(550);
     if(report.chapterChecks.length===1)await page.screenshot({path:`${out}/${width}-story-open.png`});
     assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open),'unfinished prologue must expose Continue without expanding details');
@@ -265,6 +280,18 @@ try{
   await tap('#prologuePart2Content [aria-label="会話を閉じて話一覧へ戻る"]');
   assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open));
   assert.equal(await page.locator('#storyEpisodeList .story-episode-card.is-completed').count(),6,'all six episodes display completed');
+  const chapter7=page.locator('#storyEpisodeList [data-prologue-episode="pb_07"]');
+  assert.equal(await chapter7.count(),1);
+  assert(await chapter7.isVisible());
+  assert(await chapter7.evaluate(card=>card.classList.contains('is-current')));
+  assert(await chapter7.getByRole('button',{name:'つづきから ›',exact:true}).isVisible());
+  assert.equal(await chapter7.locator('p').count(),0);
+  assert.equal(await page.locator('#storyEpisodeList .story-episode-card').count(),23);
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),'続き：第7話 ・ 6/23 完了');
+  assert(!((await page.locator('#storyPanel-main').innerText()).includes('今後追加されます')));
+  assert.deepEqual(report.chapter7Card,['locked']);
+  report.chapter7Card.push('current');
+  console.log(`PASS Chapter 7 card ${width}x${height}: real chapter 6 clear yields one current card (6/23)`);
   await page.screenshot({path:`${out}/${width}-six-episodes-complete.png`});
   console.log(`PASS ${width}x${height}: ${report.steps.length} steps, ${report.targets.length} target-center checks, ${report.taps.length} coordinate taps`);
   await context.close();
