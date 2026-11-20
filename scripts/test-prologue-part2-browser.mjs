@@ -236,16 +236,50 @@ try{
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,items:save.items,coins:save.coins,skills:save.skillCards,party:save.party})),practiceBefore);
  assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_14.wonBattleIds),['p2_14_a']);
  assert.equal(await page.evaluate(()=>save.prologuePart2.trainingSeen.pb14===true),false);
- // The epilogue route goes out and back via the existing map UI, without a battle/unlock grant.
- const routeCursor=await page.evaluate(()=>prologuePart2Episode('pb_ep').steps.find(s=>s.action==='returnRoute').id);
- await seed('pb_ep',routeCursor);
- const routeBefore=await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history}));
- await page.getByRole('button',{name:'バトルから世界地図へ',exact:true}).click();
- assert(await page.locator('#prologuePart2WorldReturn').isVisible());
- assert.equal(await page.evaluate(()=>activeHuntRequest),null);
- await page.locator('#prologuePart2WorldReturn').click();
- assert.notEqual(await card(),routeCursor);
- assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history})),routeBefore);
+ // Enter the exercise using the displayed copy, then complete the finale both directly
+ // and after leaving for Home. A normal visit to the map never carries the special return.
+ const routeCursor='pb_ep_return_route',routeStart='pb_ep_post_10';
+ const returnLabel='世界の狭間へ戻って物語を続ける';
+ const routeButton=page.getByRole('button',{name:returnLabel,exact:true});
+ const openRoute=()=>page.getByRole('button',{name:'バトルから世界地図へ',exact:true}).click();
+ const home=()=>page.locator('[data-nav="home"]').click();
+ const list=()=>page.locator('#homeAdventureButton').click();
+ const resumeFinale=()=>page.locator('#storyContinueCard').getByRole('button',{name:/再開する/}).click();
+ const mapAssets=()=>page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history}));
+ for(const viaHome of [false,true]){
+  await seed('pb_ep',routeStart);
+  await page.evaluate(()=>prologuePart2Typewriter?.finish());
+  assert((await page.locator('#prologuePart2Text').innerText()).includes('「'+returnLabel+'」'));
+  await next();
+  assert.equal(await card(),routeCursor);
+  const routeBefore=await mapAssets();
+  await openRoute();
+  await routeButton.waitFor({state:'visible'});
+  assert.equal(await page.evaluate(()=>activeHuntRequest),null);
+  if(viaHome){
+   await home();
+   await page.locator('#home .home-battle-button').click();
+   await page.locator('#battleChoices.active').waitFor({state:'visible'});
+   assert.equal(await routeButton.count(),0,'ordinary map has no special return even after leaving the exercise');
+   await home();
+   await list();
+   assert.match(await page.locator('#storyChapterProgress').innerText(),/22\/23 完了/);
+   await resumeFinale();
+   assert.equal(await card(),routeCursor);
+   await openRoute();
+   await routeButton.waitFor({state:'visible'});
+  }
+  await routeButton.click();
+  assert.equal(await card(),'pb_ep_post_11');
+  assert.equal(await mapAssets(),routeBefore);
+  for(let step=0;step<12&&(await card())!=='pb_ep_complete';step++)await next();
+  assert.equal(await card(),'pb_ep_complete');
+  await page.getByRole('button',{name:'序章を終える',exact:true}).click();
+  assert.equal(await page.locator('#prologuePart2Content .prologue-part2-finish h2').innerText(),'終幕 完了');
+  await page.getByRole('button',{name:'話一覧へ',exact:true}).click();
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),'23/23 完了');
+  console.log(`PASS finale map return: ${viaHome?'Home then resume; ordinary map isolated':'direct'} -> 終幕 完了 (23/23)`);
+ }
  // Both shop branches use the actual shop purchase/return UI.
  for(const bought of [false,true]){
   await seed('pb_08',await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(s=>s.action==='shop').id));
@@ -306,5 +340,62 @@ try{
  assert.deepEqual(after,{...before,coins:before.coins+100});
  await page.evaluate(()=>{openProloguePart2('pb_ep',{replay:true});prologuePart2Ui.index=prologuePart2Episode('pb_ep').steps.length-1;renderProloguePart2()});
  await page.getByRole('button',{name:'読み返しを終える',exact:true}).click();assert.equal(await page.evaluate(()=>save.coins),before.coins+100);
+ // In episode 7, each official scroll label and its specific stock must be
+ // plain text. Use fresh isolated inventories with every lower tier still owned.
+ const kinds=[
+  ['contract_scroll','契約書'],['silver_contract_scroll','銀の契約書'],
+  ['gold_contract_scroll','金の契約書'],['rainbow_contract_scroll','虹の契約書']
+ ];
+ await page.evaluate(()=>showShop());
+ for(const [id,name] of kinds){
+  const image=page.locator(`#shopList img[src$="/${id}_art_v1.webp"]`);
+  assert(await image.isVisible());
+  assert.equal(await image.getAttribute('alt'),name);
+  await image.evaluate(el=>el.decode());
+ }
+ const contractCursor=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(step=>step.action==='contract').id);
+ const inventoryState=()=>page.evaluate(ids=>({
+  scrolls:Object.fromEntries(ids.map(id=>[id,save.items[id]||0])),
+  coins:save.coins,history:JSON.stringify(save.history),
+  wins:[...save.prologuePart2.episodes.pb_07.wonBattleIds],
+  rewardClaimed:save.prologuePart2.episodes.pb_07.rewardClaimed,
+  slimeCount:save.instances.filter(x=>x.id==='slime').length
+ }),kinds.map(([id])=>id));
+ for(const [tier,[id,name]] of kinds.entries()){
+  await seed('pb_07',contractCursor);
+  await page.evaluate(({tier,ids})=>{
+   const ep=save.prologuePart2.episodes.pb_07;
+   ep.wonBattleIds=['p2_07_a'];save.prologuePart2.grants.pb07Scroll=true;
+   for(const [i,id] of ids.entries())save.items[id]=i<=tier?i+2:0;
+   if(!saveGame())throw Error('Unable to save isolated scroll fixture');
+  },{tier,ids:kinds.map(([id])=>id)});
+  const before=await inventoryState();
+  await page.getByRole('button',{name:'契約を確認',exact:true}).click();
+  const offer=page.getByRole('button',{name:'スライムと契約',exact:true});
+  const text=page.locator('#contractConfirmText');
+  const assertPrompt=async()=>{
+   assert.equal(await text.innerText(),`${name}を1枚使用しますか？（所持：${before.scrolls[id]}枚）`);
+   assert.equal(await text.locator('*').count(),0);
+   assert.equal(await page.evaluate(()=>pendingContractItemId),id);
+  };
+  await offer.click();
+  await assertPrompt();
+  await page.screenshot({path:`${out}/chapter7-confirm-${id}.png`});
+  await page.locator('#contractConfirm').getByRole('button',{name:'いいえ',exact:true}).click();
+  await offer.waitFor({state:'visible'});
+  assert.deepEqual(await inventoryState(),before,'cancel leaves all scrolls and rewards alone');
+  await offer.click();
+  await assertPrompt();
+  await page.evaluate(()=>{window.__nativeScrollTestRandom=Math.random;Math.random=()=>0;});
+  await page.locator('#contractConfirmAcceptButton').click();
+  await page.locator('#prologuePart2 [data-card="pb_07_contract_ok"]').waitFor();
+  await page.evaluate(()=>{Math.random=window.__nativeScrollTestRandom;delete window.__nativeScrollTestRandom;});
+  const expected={...before,scrolls:{...before.scrolls,[id]:before.scrolls[id]-1},slimeCount:before.slimeCount+1};
+  assert.deepEqual(await inventoryState(),expected,'only one selected scroll is consumed and existing battle rewards do not change');
+  await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});
+  assert.equal(await card(),'pb_07_contract_ok');
+  assert.deepEqual(await inventoryState(),expected,'exact selected debit and reward are persisted');
+  console.log(`PASS Chapter 7 scroll confirmation: ${name} • ${before.scrolls[id]} -> ${expected.scrolls[id]} • cancel free, other scrolls and battle rewards unchanged`);
+ }
  assert.deepEqual(errors,[]);console.log('PASS prologue part2 browser: legacy resume, dedicated battle/contract/defeat retry, practice skip, return route, shop branches, episode22 no battle, epilogue exact order, atomic failure/retry/reload, authority, no duplicate reward or unrelated save changes');
 }finally{await browser?.close();server.kill();}
