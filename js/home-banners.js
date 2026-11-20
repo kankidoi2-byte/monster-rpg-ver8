@@ -209,6 +209,60 @@ function addHomeBannerGestures(track){
     if(Math.abs(bannerTrackX(track)+homeBannerWrap.slot*track.getBoundingClientRect().width)<1)finishHomeBannerWrap();
   });
 }
+function addHomeBannerDotGestures(dots){
+  let press=null,legacyClick=null;
+  const clicks=new Map();
+  const observe={capture:true,passive:true};
+  const buttonAt=target=>{
+    const button=target?.closest?.('button');
+    return button?.parentElement===dots?button:null;
+  };
+  const moved=(event,p)=>Math.hypot(event.clientX-p.x,event.clientY-p.y)>=HOME_BANNER_TAP_SLOP;
+  document.addEventListener('pointerdown',event=>{
+    if(!event.isTrusted)return;
+    const now=performance.now();
+    for(const [id,p] of clicks)if(p.until<now||id===event.pointerId)clicks.delete(id);
+    legacyClick=null;
+    if(press&&event.pointerType==='touch'){press.valid=false;return;}
+    if(event.pointerType!=='touch'||!event.isPrimary||event.button!==0)return;
+    const button=buttonAt(event.target);
+    if(button)press={button,id:event.pointerId,x:event.clientX,y:event.clientY,scrollX,scrollY,valid:true};
+  },observe);
+  document.addEventListener('pointermove',event=>{
+    if(press?.id===event.pointerId&&moved(event,press))press.valid=false;
+  },observe);
+  const cancel=event=>{if(press?.id===event.pointerId)press=null;};
+  document.addEventListener('pointercancel',cancel,observe);
+  document.addEventListener('lostpointercapture',cancel,observe);
+  document.addEventListener('pointerup',event=>{
+    if(!event.isTrusted||press?.id!==event.pointerId)return;
+    const p=press;press=null;
+    // Implicit capture can still produce click on the original button after
+    // the finger has left it. Match only this touch and its original button,
+    // regardless of whether the release completes a valid tap.
+    legacyClick={button:p.button,id:p.id,until:performance.now()+700};
+    clicks.set(p.id,legacyClick);
+    if(!p.valid||!event.isPrimary||moved(event,p)||scrollX!==p.scrollX||scrollY!==p.scrollY
+      ||buttonAt(document.elementFromPoint(event.clientX,event.clientY))!==p.button)return;
+    // A rapid tap after a swipe can reach pointerup without a native click.
+    selectHomeBanner(Array.prototype.indexOf.call(dots.children,p.button));
+  },observe);
+  dots.addEventListener('click',event=>{
+    const button=buttonAt(event.target);
+    if(!button)return;
+    if(event.isTrusted&&event.detail>0){
+      const touchClick=event.pointerType==='touch';
+      const legacy=!event.pointerType&&event.sourceCapabilities?.firesTouchEvents!==false;
+      const completed=touchClick?clicks.get(event.pointerId):legacy?legacyClick:null;
+      if(completed?.button===button&&completed.until>=performance.now()){
+        clicks.delete(completed.id);
+        if(legacyClick===completed)legacyClick=null;
+        return;
+      }
+    }
+    selectHomeBanner(Array.prototype.indexOf.call(dots.children,button));
+  });
+}
 function renderHomeBanners(){
   const track=document.getElementById('homeBannerTrack'),dots=document.getElementById('homeBannerDots');
   if(!track||!dots)return;
@@ -230,10 +284,10 @@ function renderHomeBanners(){
       }
       const dot=document.createElement('button');
       dot.type='button';dot.setAttribute('aria-label',`${index+1}枚目：${banner.title}`);
-      dot.addEventListener('click',()=>selectHomeBanner(index));
       track.append(slide);dots.append(dot);
     }
     addHomeBannerGestures(track);
+    addHomeBannerDotGestures(dots);
     homeBannerReady=true;
     selectHomeBanner(homeBannerIndex);
   }else syncHomeBannerTimer();

@@ -196,6 +196,6 @@ function renderStoryMode(){
     const statusLabel=state==='completed'?'完了':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';
     const action=storyPrologueReplayAvailable(index,snapshot)?`<button type="button" data-prologue-replay="${entry.id}" onclick="openPrologueReplay('${entry.id}')">読み返す ›</button>`:state==='current'?`<button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'つづきから'} ›</button>`:'';
     return `<article class="story-episode-card is-${state}"><img src="${entry.image}" alt=""><div class="story-episode-copy"><span>序章 第${entry.number}話</span><h3>${entry.title}</h3><p>${state==='locked'?'前の話を完了すると解放されます。':entry.summary}</p>${action}</div><strong class="story-episode-status">${statusLabel}</strong></article>`;
-  }).join('')+(late?renderProloguePart2EpisodeCards():'');
+  }).join('')+(typeof renderProloguePart2EpisodeCards==='function'?renderProloguePart2EpisodeCards():'');
 }
 
