@@ -137,11 +137,10 @@ function compactHomeCoinText(coins){
   }
   return coins.toLocaleString('ja-JP');
 }
-function updateAppResourceBar(){
-  if(typeof renderGBless==='function')renderGBless();
+function updateAppCoinBalance(coins=Number(save?.coins||0)){
   const coinView = document.getElementById('appCoinView');
   if(coinView){
-    const coins=Number(save?.coins||0),full=coins.toLocaleString('ja-JP');
+    const full=coins.toLocaleString('ja-JP');
     const compact=document.getElementById('home')?.classList.contains('active')&&coins>=1000000;
     coinView.textContent=compact?compactHomeCoinText(coins):full;
     // The full balance remains available to assistive technology and on other screens.
@@ -149,6 +148,10 @@ function updateAppResourceBar(){
     resource?.setAttribute('aria-label',`所持コイン ${full}`);
     if(compact)coinView.title=full;else coinView.removeAttribute?.('title');
   }
+}
+function updateAppResourceBar(){
+  if(typeof renderGBless==='function')renderGBless();
+  updateAppCoinBalance();
   if(typeof updateExpeditionReturnBadges==='function')updateExpeditionReturnBadges();
 }
 const CONTRACTOR_EXP_SOURCE_LABELS=Object.freeze({

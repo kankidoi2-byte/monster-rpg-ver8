@@ -290,6 +290,44 @@ try{
   assert.equal(await card(),'pb_08_post_01');await page.evaluate(()=>prologuePart2Typewriter?.finish());
   assert.equal(await page.locator('#prologuePart2Text').innerText(),bought?'毎度あり！次もご贔屓に～！':'あら、今日は見るだけ？ 次はちゃんと買ってってね～！');
  }
+ // Verify the actual chapter-8 entry, purchase, persisted re-entry, and
+ // an insufficient-funds purchase on a separate 412px mobile-size fixture.
+ await page.setViewportSize({width:412,height:915});
+ const shopCursor=await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(step=>step.action==='shop').id);
+ const shopEntry=page.getByRole('button',{name:'ショップを開く',exact:true});
+ const purchasePowerPotion=page.locator(`#shopList button[onclick="buyItem('attack_potion')"]`);
+ const assertShopBalance=async(coins,count)=>{
+  assert(await page.locator('#appCoinView').isVisible());
+  assert(await page.locator('#shop #coinView').isVisible());
+  assert.equal(await page.locator('#appCoinView').innerText(),String(coins));
+  assert.equal(await page.locator('#shop #coinView').innerText(),String(coins));
+  assert.equal(await page.locator('.app-resource:has(#appCoinView)').getAttribute('aria-label'),`所持コイン ${coins}`);
+  assert.deepEqual(await page.evaluate(()=>{
+   const disk=JSON.parse(safeStorageGet(SAVE_KEY));
+   return {coins:save.coins,item:save.items.attack_potion,persistedCoins:disk.coins,persistedItem:disk.items.attack_potion};
+  }),{coins,item:count,persistedCoins:coins,persistedItem:count});
+ };
+ await seed('pb_08',shopCursor);
+ await page.evaluate(()=>{save.coins=109;save.items.attack_potion=0;saveGame();document.getElementById('appCoinView').textContent='159';});
+ await shopEntry.click();
+ await assertShopBalance(109,0);
+ await purchasePowerPotion.click();
+ await assertShopBalance(89,1);
+ await page.screenshot({path:`${out}/chapter8-shop-coins-412.png`});
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_08');});
+ await shopEntry.click();
+ await assertShopBalance(89,1);
+ await seed('pb_08',shopCursor);
+ await page.evaluate(()=>{save.coins=19;save.items.attack_potion=2;saveGame();});
+ await shopEntry.click();
+ await assertShopBalance(19,2);
+ await Promise.all([
+  page.waitForEvent('dialog').then(async dialog=>{assert.equal(dialog.message(),'コインが足りない！');await dialog.dismiss();}),
+  purchasePowerPotion.click()
+ ]);
+ await assertShopBalance(19,2);
+ console.log('PASS Chapter 8 shop 412x915: 109 coins on entry, 89 and +1 力の薬 on purchase and reload, 19 and 2 items unchanged on insufficient funds');
+ await page.setViewportSize({width:390,height:844});
  // All of episode 22 advances via displayed cards without entering any battle.
  await seed('pb_22');const seen22=[];
  for(let i=0;i<90;i++){

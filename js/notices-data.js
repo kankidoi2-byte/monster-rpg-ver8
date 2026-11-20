@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261119-shop-balance-header-sync',date:'2026-11-19',category:'fix',title:'ショップと画面上部のコイン表示をそろえました',body:'ショップを開いたときや購入後に、店内と画面上部に同じ所持コインが表示されます。価格やコインの増減は変わりません。'},
   {id:'20261119-single-chapter7-story-card',date:'2026-11-19',category:'fix',title:'第7話が話一覧に重複する表示を修正しました',body:'第7話は話一覧に1枚だけ表示されます。第6話のクリア前は解放条件を案内し、解放後は実際の進み具合が表示されます。'},
   {id:'20261119-contract-scroll-confirmation-copy',date:'2026-11-19',category:'fix',title:'契約書の使用確認を読みやすくしました',body:'使用する契約書の名前と所持枚数だけを表示するようにし、本文に画像のファイル名などが出る不具合を修正しました。'},
   {id:'20261119-finale-map-return',date:'2026-11-19',category:'fix',title:'序章終幕の世界地図からの戻り方を分かりやすくしました',body:'終幕で世界地図を開いたあと、「世界の狭間へ戻って物語を続ける」を押すと、会話の続きに戻れます。'},
