@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import {parse} from 'acorn';
 const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const tutorial=read('js/tutorial.js');
-const names=new Set(['tutorialMonsterInLineage','tutorialOwnedStarterInstance','tutorialInitialPartyReady','tutorialElnaContractInstance','tutorialStellaSkillTargetInstance','tutorialBattlePartyInstances','tutorialExpeditionPartyReady','tutorialExpeditionCandidateInstance','commitTutorialExpeditionDispatch','tutorialSkipRewardInstance','commitTutorialFullSkip']);
+const names=new Set(['tutorialMonsterInLineage','tutorialOwnedStarterInstance','tutorialInitialPartyReady','tutorialElnaContractInstance','tutorialStellaSkillTargetInstance','tutorialBattlePartyInstances','tutorialExpeditionPartyReady','tutorialExpeditionCandidateInstance','tutorialIsExpeditionDispatchStep','tutorialMatchesExpeditionDispatch','recordTutorialExpeditionDispatch','commitTutorialExpeditionDispatch','tutorialSkipRewardInstance','commitTutorialFullSkip']);
 const helpers=parse(tutorial,{ecmaVersion:'latest'}).body.filter(n=>n.type==='FunctionDeclaration'&&names.has(n.id.name)).map(n=>tutorial.slice(n.start,n.end)).join('\n');
 const c=vm.createContext({console:{error(){}},save:null,saveSucceeds:true});
 vm.runInContext(read('js/data.js'),c);

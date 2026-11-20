@@ -124,6 +124,8 @@ function prologuePart2StopText(){
   if(prologuePart2Ui?.autoTimer){clearTimeout(prologuePart2Ui.autoTimer);prologuePart2Ui.autoTimer=null;}
 }
 function prologuePart2ScreenChanged(id){
+  // The special return is for the story exercise, not a later visit from Home.
+  if(id!=='battleChoices'&&prologuePart2Ui?.routeVisit)prologuePart2Ui.routeVisit=null;
   if(id!=='prologuePart2'){
     prologuePart2StopText();
     prologuePart2Root()?.replaceChildren();
@@ -145,6 +147,13 @@ function prologuePart2Return(){
 function prologuePart2ShowParty(){
   if(prologuePart2Retry||prologuePart2Ui?.tutorialReplay)return;
   prologuePart2PartyReturn=true;show('partySet');
+}
+function handleProloguePart2PartySaved(){
+  if(!prologuePart2PartyReturn||!prologuePart2Ui||prologuePart2Retry||prologuePart2Ui.replay
+    ||prologuePart2Ui.identity!==saveTransactionIdentity()||prologuePart2Step()?.kind!=='battle')return false;
+  // Return to the unmodified story cursor; starting the battle stays explicit.
+  prologuePart2Return();
+  return true;
 }
 function renderProloguePart2PartyReturn(){
   const button=document.getElementById('prologuePart2PartyReturn');
@@ -432,13 +441,14 @@ function prologuePart2ReturnFromWorld(){
   }});
 }
 function renderProloguePart2EpisodeCards(){
-  if(!prologuePart2Available())return '';
-  const current=prologuePart2CurrentEpisode();
-  return prologuePart2Episodes().map(e=>{
-    const done=prologuePart2EpisodeState(e.id).completed;
+  const available=prologuePart2Available(),episodes=prologuePart2Episodes();
+  const current=available?prologuePart2CurrentEpisode():null;
+  // Preview only Chapter 7 until the existing Part 2 gate opens.
+  return (available?episodes:episodes.filter(e=>e.id==='pb_07')).map(e=>{
+    const done=available&&prologuePart2EpisodeState(e.id).completed;
     const active=e===current,state=done?'completed':active?'current':'locked';
     const action=done||active?`<button type="button" onclick="openProloguePart2('${e.id}',{replay:${done}})">${done?'読み返す':'つづきから'} ›</button>`:'';
-    return `<article class="story-episode-card is-${state}"><img src="${prologuePart2Escape(e.background)}" alt=""><div class="story-episode-copy"><span>序章 ${prologuePart2Label(e)}</span><h3>${prologuePart2Escape(e.title)}</h3>${action}</div><strong class="story-episode-status">${done?'完了':active?'NEXT':'LOCKED'}</strong></article>`;
+    return `<article class="story-episode-card is-${state}" data-prologue-episode="${e.id}"><img src="${prologuePart2Escape(e.background)}" alt=""><div class="story-episode-copy"><span>序章 ${prologuePart2Label(e)}</span><h3>${prologuePart2Escape(e.title)}</h3>${available?'':'<p>第6話クリアで第7話を解放</p>'}${action}</div><strong class="story-episode-status">${done?'完了':active?'NEXT':'LOCKED'}</strong></article>`;
   }).join('');
 }
 const PROLOGUE_PART2_OPTION_LABELS={gacha:'キャラクターガチャ',evolution:'特殊進化',rank:'Rank・称号',expedition:'遠征',home:'地上との往復'};

@@ -97,15 +97,16 @@ assert.equal(helperContext.advanced,1,'successful party save must advance exactl
 
 const saveStart=party.indexOf('function savePartySetup');
 assert.ok(saveStart>=0);
-function makeSaveContext({valid=true,saveSucceeds=true,tutorialAccepts=true,tutorialHandles=true}={}){
+function makeSaveContext({valid=true,saveSucceeds=true,tutorialAccepts=true,tutorialHandles=true,storyHandles=false}={}){
   const context=vm.createContext({
     party:valid?[{uid:'f'},{uid:'a'},{uid:'e'}]:[],
-    saves:0,renders:0,shown:[],notices:[],
+    saves:0,renders:0,storyCalls:0,shown:[],notices:[],
     getPartyInstances:()=>context.party,
     canConfirmTutorialParty:()=>tutorialAccepts,
     saveGame:()=>{context.saves++;return saveSucceeds;},
     renderPartySetup:()=>context.renders++,
     handleTutorialPartySaved:()=>tutorialHandles,
+    handleProloguePart2PartySaved:()=>{context.storyCalls++;return storyHandles;},
     show:id=>context.shown.push(id),
     showUiNotice:message=>context.notices.push(message)
   });
@@ -117,16 +118,44 @@ assert.equal(vm.runInContext('savePartySetup()',saved),true);
 assert.equal(saved.saves,1);
 assert.equal(saved.renders,1);
 assert.deepEqual(saved.shown,[],'tutorial-owned save must let the STEP engine choose the next screen');
+assert.equal(saved.storyCalls,0,'story return must not override the tutorial');
 const rejected=makeSaveContext({tutorialAccepts:false});
 assert.equal(vm.runInContext('savePartySetup()',rejected),false);
 assert.equal(rejected.saves,0);
 const failed=makeSaveContext({saveSucceeds:false});
 assert.equal(vm.runInContext('savePartySetup()',failed),false);
 assert.equal(failed.renders,0);
+assert.equal(failed.storyCalls,0,'a failed save must not return');
+const story=makeSaveContext({tutorialHandles:false,storyHandles:true});
+assert.equal(vm.runInContext('savePartySetup()',story),true);
+assert.equal(story.saves,1);
+assert.equal(story.storyCalls,1);
+assert.deepEqual(story.shown,[],'successful story party save must not fall through to Home');
 const normal=makeSaveContext({tutorialHandles:false});
 assert.equal(vm.runInContext('savePartySetup()',normal),true);
 assert.deepEqual([...normal.shown],['home'],'normal party save must return home');
 
+const part2=read('js/prologue-part2.js');
+const routeSource=part2.slice(part2.indexOf('function handleProloguePart2PartySaved'),part2.indexOf('function renderProloguePart2PartyReturn'));
+const route=vm.createContext({
+ prologuePart2PartyReturn:true,prologuePart2Ui:{identity:'local',replay:false},prologuePart2Retry:null,
+ saveTransactionIdentity:()=> 'local',prologuePart2Step:()=>({kind:'battle'}),calls:0,
+ prologuePart2Return:()=>{route.calls++;}
+});
+vm.runInContext(routeSource,route);
+assert.equal(route.handleProloguePart2PartySaved(),true);
+assert.equal(route.calls,1);
+for(const patch of [
+ {prologuePart2PartyReturn:false},{prologuePart2Ui:{identity:'old'}},
+ {prologuePart2Ui:{identity:'local',replay:true}},{prologuePart2Retry:()=>{}},
+ {prologuePart2Step:()=>({kind:'event'})}
+]){
+ const before=Object.fromEntries(Object.keys(patch).map(name=>[name,route[name]]));
+ Object.assign(route,patch);
+ assert.equal(route.handleProloguePart2PartySaved(),false);
+ assert.equal(route.calls,1);
+ Object.assign(route,before);
+}
 assert.equal(packageJson.scripts['check:prologue-home-front'],'node scripts/test-prologue-home-front.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-home-front'));
 

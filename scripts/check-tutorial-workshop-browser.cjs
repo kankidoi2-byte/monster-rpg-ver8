@@ -58,7 +58,7 @@ const assert=require('node:assert/strict');
       await page.screenshot({path:'/tmp/tutorial-workshop-'+width+'.png'});
       await next();await at('lumina_alchemy');
       assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),false);
-      await next();await at('lumina_materials');
+      await next();await at('lumina_start');
       assert.equal(await page.evaluate(()=>currentTutorialState().alchemyLessonPrepared),true);
       assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,instances:save.instances,skills:save.skillCards})),inventory);
       const beforeAlchemy=await page.evaluate(()=>({
@@ -66,11 +66,14 @@ const assert=require('node:assert/strict');
         contractIds:save.instances.filter(v=>['freigal','aquaron','elna_beginner'].includes(v.id)).map(v=>v.id).sort()
       }));
       assert.equal(await page.locator('#tutorialTitle').textContent(),'グノーシス');
-      await next();await at('lumina_start');await page.locator('.tutorial-target-active').click();
-      await at('lumina_confirm');
-      assert.equal(await page.locator('#tutorialTitle').textContent(),'グノーシス');
-      assert.ok((await page.locator('#alchemyConfirmContent').textContent()).includes('仲間の消費なし'));
-      await next();await at('lumina_execute');await page.locator('.tutorial-target-active').click();
+      await page.locator('#tutorialAlchemyStartButton').click();
+      await at('lumina_execute');
+      assert.match(await page.locator('#alchemyConfirmContent').textContent(),/仲間の消費なし[\s\S]+250枚/);
+      await page.getByRole('button',{name:'消費せずに戻る'}).click();
+      await at('lumina_start');
+      assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,instances:save.instances,skills:save.skillCards})),inventory);
+      await page.locator('#tutorialAlchemyStartButton').click();await at('lumina_execute');
+      await page.locator('#alchemyExecuteButton').click();
       await at('lumina_wait');
       assert.equal(await page.locator('#tutorialTitle').textContent(),'ルミナ');
       await page.evaluate(()=>tutorialPresentation.writer?.finish());

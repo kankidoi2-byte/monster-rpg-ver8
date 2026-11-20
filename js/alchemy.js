@@ -108,6 +108,7 @@ function showAlchemy(){
   }
   show('alchemy');
   renderAlchemy();
+  if(!alchemyBusy&&isTutorialAlchemyLessonActive()&&typeof handleTutorialAlchemyReturnedToWorkbench==='function')handleTutorialAlchemyReturnedToWorkbench();
 }
 function selectAlchemyRecipe(recipeId){
   selectedAlchemyRecipeId = ALCHEMY_RECIPE_BY_ID[recipeId] ? recipeId : DEFAULT_ALCHEMY_RECIPE_ID;
@@ -443,7 +444,6 @@ function renderTutorialAlchemyLesson(root){
       <div id="tutorialAlchemyCoin"><small>投入コイン</small><strong>🪙 ${plan.coinCost}枚</strong></div>
       <div id="tutorialAlchemyRate"><small>初回成功保証</small><strong>成功率 ${plan.rate}%</strong></div>
     </div>
-    <section class="tutorial-alchemy-lumina"><img src="images/tutorial/characters/lumina_apprentice.png" alt="見習い錬金術師ルミナ"><p><b>ルミナ</b><span>素材とコインを確認できたら、錬成を始めよう！</span></p></section>
     ${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div>`:''}
     <button id="tutorialAlchemyStartButton" class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length||alchemyBusy?'disabled':''}>✦ 入門錬成を始める</button>
   </div>`;
@@ -528,8 +528,10 @@ function openAlchemyConfirmation(){
     <p>${plan.selection.materialIds.map((id,index)=>`${ITEM_BY_ID[id].name} ×${plan.selection.materialCounts[index]}`).join(' / ')}</p>
     <p><b>投入コイン：</b>${plan.coinCost}枚</p><p><b>成功率：</b>${plan.rate}%</p><p><b>錬成傾向：</b>${alchemyTendency(plan)}</p><p class="alchemy-guarantee"><b>${plan.tutorialLesson?'入門錬成は初回100％成功します。':'結果は錬成完了まで不明です。'}</b></p>
     <p class="alchemy-warning">この操作を確定すると、素材・コイン${plan.tutorialLesson?'':'・触媒契約体1体'}を消費します。元には戻せません。</p>
+    ${plan.tutorialLesson?'<div class="tutorial-alchemy-confirm-actions">':''}
     <button id="alchemyExecuteButton" onclick="executeAlchemyConfirmed()">消費して錬成を実行</button>
-    <button onclick="showAlchemy()" class="secondary-button">内容を修正する</button>
+    <button onclick="showAlchemy()" class="secondary-button">${plan.tutorialLesson?'消費せずに戻る':'内容を修正する'}</button>
+    ${plan.tutorialLesson?'</div>':''}
   </div>`;
   show('alchemyConfirm');
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyConfirmationOpened==='function')handleTutorialAlchemyConfirmationOpened();
