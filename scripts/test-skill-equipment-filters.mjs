@@ -30,3 +30,36 @@ for(const [value,count] of [['25',4],['low',60],['high',30],['super',16],['ultim
 }
 assert.equal(r.run('JSON.stringify(save)'),before);
 console.log('PASS equipment cost filters: cost25 and all four tiers, save isolation');
+
+const skill='s110_041';
+r.run(`var elna=addInstance('elna_beginner',1), other=addInstance('elna_middle',1);
+  save.equippedSkills[elna.uid]=[];save.equippedSkills[other.uid]=[];
+  save.skillCards['s110_041']=1;editingSkillUid=elna.uid;`);
+r.context.document.getElementById('skillCostFilter').value='all';
+const skillMarkup=()=>{
+ r.run('renderSkillEdit()');
+ return r.elements.get('skillCardList').innerHTML
+  .split(`data-skill-card-id="${skill}"`)[1].split('data-skill-card-id=')[0];
+};
+assert.match(skillMarkup(),/>装備する<\/button>/);
+assert.equal(r.run(`equipSkill('${skill}')`),true);
+let card=skillMarkup();
+assert.match(card,/所持:1 \/ 使用中:1/);
+assert.match(card,/初級剣士エルナに装備中/);
+assert.doesNotMatch(card,/装備できません/);
+r.run('editingSkillUid=other.uid;');
+card=skillMarkup();
+assert.match(card,/所持:1 \/ 使用中:1/);
+assert.doesNotMatch(card,/に装備中/);
+assert.match(card,/disabled>装備できません<\/button>/);
+r.run(`editingSkillUid=elna.uid;save.skillCards['${skill}']=2;`);
+card=skillMarkup();
+assert.match(card,/所持:2 \/ 使用中:1/);
+assert.match(card,/初級剣士エルナに装備中/);
+assert.match(card,/コストがあと2必要/);
+assert.doesNotMatch(card,/>装備する<\/button>/);
+r.run('elna.level=100;');
+assert.match(skillMarkup(),/>装備する<\/button>/);
+assert.equal(r.run(`equipSkill('${skill}')`),true);
+assert.match(skillMarkup(),/所持:2 \/ 使用中:2/);
+console.log('PASS equipment card: selected wearer, unavailable other companion, additional copy and actual usage');

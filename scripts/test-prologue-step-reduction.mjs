@@ -12,7 +12,7 @@ const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flow
 assert.ok(flowStart>=0&&flowEnd>flowStart,'the prologue main flow is missing');
 const main=tutorial.slice(flowStart,flowEnd);
 const ids=[...main.matchAll(/^\s{2}\{id:'([^']+)'/gm)].map(match=>match[1]);
-assert.equal(ids.length,104,'the reduced prologue includes rescue, Royal Capital facilities, first-alchemy farewell, and the final party swap');
+assert.equal(ids.length,102,'the reduced prologue includes rescue, Royal Capital facilities, first-alchemy farewell, and the final party swap');
 assert.equal(new Set(ids).size,ids.length,'the reduced prologue must not contain duplicate step IDs');
 assert.equal(ids.indexOf('battle_enemy'),ids.indexOf('elna_rescue_start')+1,'rescue start must advance from 13/86 to the adjacent battle step, not jump to 60/86');
 assert.equal(ids.indexOf('home_party'),ids.indexOf('elna_contract_body')+1,'the contract must continue to the adjacent home guidance');
@@ -23,7 +23,7 @@ const removed=[
   'party_review','dex_elna_detail','dex_aquaron','growth_elna','growth_skill_current','growth_skill_cards',
   'request_board','request_reward_preview','stella_card_offer','stella_card_received','stella_skill_current',
   'stella_skill_card_detail','stella_type_special','stella_mock_actor','lumina_recipe_offer','lumina_recipe',
-  'lumina_coin','lumina_rate','battle_ally','battle_hp','battle_type','battle_turn','battle_skill_cost',
+  'lumina_coin','lumina_rate','lumina_materials','lumina_confirm','battle_ally','battle_hp','battle_type','battle_turn','battle_skill_cost',
   'first_hunt','tutorial_hunt_request','battle_retry','victory_exp','victory_coin','victory_material','victory_rank',
   'first_contract','contract_confirm','contract_success','contract_card','contract_type','contract_skills',
   'contract_list','contract_future','growth_open','growth_overview','party_edit_open','party_edit_contract',
@@ -47,6 +47,7 @@ assert.ok(redirectStart>=0&&redirectEnd>redirectStart&&startFlowStart>=0&&startF
   'the runtime resume functions must be available for old-save execution checks');
 
 const resumeContext=vm.createContext({
+  TUTORIAL_MAIN_FLOW_ID:'prologue',
   document:{activeElement:null},
   tutorialUiState:{active:false,flowId:null,steps:[],index:0,persist:false,replay:false,returnScreen:null,previousFocus:null,lastFocusedStep:null},
   tutorialFlowSteps:()=>mainSteps,
@@ -85,7 +86,7 @@ const rewardDigest=save=>JSON.stringify({
   instances:save.instances,coins:save.coins,items:save.items,skillCards:save.skillCards,expeditions:save.expeditions,
   flags:Object.fromEntries(['starterContractsGranted','elnaContractGranted','stellaSkillCardGranted','alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted','expeditionDispatched'].map(flag=>[flag,save.progress.tutorial[flag]]))
 });
-for(const oldStepId of removed){
+for(const oldStepId of [...removed,'lumina_start','lumina_execute','lumina_wait']){
     resumeContext.save=legacyRewardSnapshot();
     resumeContext.save.progress.tutorial.stepId=oldStepId;
     resumeContext.saveCalls=0;resumeContext.rendered=false;
@@ -93,7 +94,7 @@ for(const oldStepId of removed){
     resumeContext.oldStepId=oldStepId;
     assert.equal(vm.runInContext("startTutorialFlow('prologue',{stepId:oldStepId,persist:true})",resumeContext),true,
       `deleted STEP must resume in the main tutorial: ${oldStepId}`);
-    const target=runtimeRedirects[oldStepId];
+    const target=runtimeRedirects[oldStepId]||'lumina_alchemy';
     const targetStep=mainSteps.find(step=>step.id===target);
     assert.ok(targetStep,`redirect target must exist at runtime: ${oldStepId} -> ${target}`);
     assert.equal(resumeContext.tutorialUiState.steps[resumeContext.tutorialUiState.index].id,target,
@@ -130,7 +131,7 @@ for(const id of requiredActions)assert.ok(ids.includes(id),`essential operation 
 assert.match(main,/id:'battle_enemy'[^\n]+敵・味方・HP[^\n]+1ターン/,'battle overview must retain the merged enemy, ally, HP, and turn explanation');
 assert.match(main,/id:'battle_choose_skill'[^\n]+COST[^\n]+実際に使って/,'skill selection must retain the cost explanation and real operation');
 assert.match(main,/id:'stella_skill_equip'[^\n]+無属性・COST 3[^\n]+剣を使う仲間/,'Stella equip must retain the card details');
-assert.match(main,/id:'lumina_materials'[^\n]+4種類[^\n]+250枚[^\n]+必ず成功[^\n]+契約体は消費しない/,'Gnosis must retain all first-alchemy conditions');
+assert.match(main,/id:'lumina_start'[^\n]+4種類[^\n]+250枚[^\n]+必ず成功[^\n]+契約体は消費しない/,'Gnosis must retain all first-alchemy conditions');
 
 const idSet=new Set(ids);
 for(const [,key,target] of main.matchAll(/\b(nextStepId|replayNextStepId|continueAt):'([^']+)'/g)){
@@ -149,7 +150,7 @@ assert.ok(index.includes('prologue-world-map-facilities-1'),'the browser must fe
 assert.equal(packageJson.scripts['check:prologue-step-reduction'],'node scripts/test-prologue-step-reduction.mjs');
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-step-reduction'));
 
-console.log('Prologue step reduction validation passed (130 -> 104, including the two Royal Capital selections and final Galdra party swap and reserve Freigal expedition).');
+console.log('Prologue step reduction validation passed (130 -> 102, including the two Royal Capital selections and final Galdra party swap and reserve Freigal expedition).');
 
 assert.equal(ids.indexOf('expedition_battle_open'),ids.indexOf('expedition_home_open')+1);
 assert.equal(ids.indexOf('expedition_destination'),ids.indexOf('expedition_battle_open')+1);
