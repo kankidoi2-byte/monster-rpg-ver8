@@ -16,7 +16,7 @@ try{
   if(process.env.PROLOGUE_TEST_WIDTH&&width!==+process.env.PROLOGUE_TEST_WIDTH)continue;
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage();page.setDefaultTimeout(5000);
-  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[],tapGuidance:[]};reports.push(report);
+  const report={width,height,steps:[],targets:[],taps:[],rankDismissals:[],pageErrors:[],dialogs:[],sheetChecks:[],reloads:[],pauses:[],retreats:[],retrySkips:[],chapterChecks:[],stabilityChecks:[],tapGuidance:[],alchemyChecks:[],chapter7Card:[]};reports.push(report);
   page.on('pageerror',e=>report.pageErrors.push(e.message));
   page.on('dialog',async d=>{report.dialogs.push(d.message());await d.dismiss()});
   const recordRank=async()=>{
@@ -41,6 +41,17 @@ try{
    await page.touchscreen.tap(point.x,point.y);await page.waitForTimeout(180);
   };
   const isVisible=selector=>page.locator(selector).first().isVisible();
+  const alchemySnapshot=(stored=false)=>page.evaluate(stored=>{
+   const state=stored?JSON.parse(safeStorageGet(SAVE_KEY)):save;
+   return {
+    coins:state.coins,
+    materials:Object.fromEntries(TUTORIAL_LUMINA_ALCHEMY.materials.map(id=>[id,state.items[id]])),
+    uids:state.instances.map(ins=>ins.uid),
+    galdra:state.instances.filter(ins=>ins.id==='galdra').length,
+    completed:state.progress.tutorial.alchemyLessonCompleted
+   };
+  },stored);
+  let alchemyBefore;
   await page.goto(`http://127.0.0.1:${port}/?legacy=1`,{waitUntil:'networkidle'});
   await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
   const longestGuide=await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).filter(s=>s.target).sort((a,b)=>tutorialResolvedText(b).length-tutorialResolvedText(a).length)[0].id);
@@ -169,6 +180,40 @@ try{
     console.log(`PASS tutorial tap guidance ${width}x${height}: ${state.id} -> ${targets[state.id]}`);
     continue;
    }
+   if(state.id==='lumina_start'&&!alchemyBefore){
+    assert.equal(await page.locator('#tutorialAlchemyMaterials .alchemy-material-row').count(),4);
+    assert.match(await page.locator('#tutorialAlchemyMaterials').textContent(),/各1個/);
+    assert.match(await page.locator('#tutorialAlchemyCoin').textContent(),/250枚/);
+    assert.match(await page.locator('#tutorialText').textContent(),/素材4種類を各1個とコイン250枚[\s\S]*契約体は消費しない/);
+    alchemyBefore=await alchemySnapshot();
+    await page.screenshot({path:`${out}/${width}-chapter5-materials.png`});
+   }
+   if(state.id==='lumina_execute'&&!report.alchemyChecks.includes('cancel-and-retry')){
+    assert.deepEqual(await alchemySnapshot(),alchemyBefore,'opening confirmation cannot spend');
+    const summary=await page.locator('#alchemyConfirmContent').textContent();
+    assert.match(summary,/錬成の最終確認/);
+    assert.match(summary,/250枚/);
+    assert.match(summary,/仲間の消費なし/);
+    assert.equal([...summary.matchAll(/×1(?=\s|$)/g)].length,4);
+    await tap('#alchemyConfirmContent .secondary-button');
+    await page.waitForFunction(()=>tutorialCurrentStepId()==='lumina_start'&&activeScreenId()==='alchemy');
+    assert.deepEqual(await alchemySnapshot(),alchemyBefore,'cancel cannot spend or award anything');
+    assert.deepEqual(await alchemySnapshot(true),alchemyBefore,'cancel also leaves saved inventory unchanged');
+    report.alchemyChecks.push('cancel-and-retry');
+    console.log(`PASS Chapter 5 alchemy ${width}x${height}: final confirmation shows four x1, 250 coins and no companion spend; cancel unchanged`);
+    continue;
+   }
+   if(state.id==='lumina_alchemy_result'&&!report.alchemyChecks.includes('single-charge-and-dialogue')){
+    const after=await alchemySnapshot();
+    assert.equal(after.coins,alchemyBefore.coins-250);
+    for(const id of Object.keys(alchemyBefore.materials))assert.equal(after.materials[id],alchemyBefore.materials[id]-1,id);
+    assert(after.completed&&alchemyBefore.uids.every(uid=>after.uids.includes(uid)));
+    assert.equal(after.uids.length,alchemyBefore.uids.length+1);
+    assert.equal(after.galdra,alchemyBefore.galdra+1);
+    assert.deepEqual(await alchemySnapshot(true),after,'the one charge and result are persisted');
+    report.alchemyChecks.push('single-charge-and-dialogue');
+    console.log(`PASS Chapter 5 alchemy ${width}x${height}: retry executes once and resumes the success dialogue`);
+   }
    if(state.id===longestGuide&&!state.typing&&!longestGuideCaptured){
     await page.screenshot({path:`${out}/${width}-longest-guide.png`});
     assert(await page.locator('#tutorialText').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'longest guide text must not overflow horizontally');
@@ -192,7 +237,22 @@ try{
     else await page.waitForTimeout(250);
    }else if(complete&&state.status==='completed')break;
    else if(state.screen==='storyMode'){
-    report.chapterChecks.push(await page.evaluate(()=>currentTutorialState().stepId));
+    const checkpoint=await page.evaluate(()=>currentTutorialState().stepId);
+    report.chapterChecks.push(checkpoint);
+    if(checkpoint==='expedition_intro'&&!report.chapter7Card.includes('locked')){
+     const chapter7=page.locator('#storyEpisodeList [data-prologue-episode="pb_07"]');
+     assert.equal(await chapter7.count(),1);
+     assert(await chapter7.isVisible());
+     assert(await chapter7.evaluate(card=>card.classList.contains('is-locked')));
+     assert.equal(await chapter7.locator('p').innerText(),'第6話クリアで第7話を解放');
+     assert.equal(await chapter7.getByRole('button').count(),0);
+     assert.equal(await page.locator('#storyEpisodeList [data-prologue-episode]').count(),1);
+     assert.equal(await page.locator('#storyChapterProgress').innerText(),'続き：第6話 ・ 5/6 完了');
+     assert(!((await page.locator('#storyPanel-main').innerText()).includes('今後追加されます')));
+     report.chapter7Card.push('locked');
+     console.log(`PASS Chapter 7 card ${width}x${height}: one locked card at chapter 6 (5/6), with unlock criterion`);
+     await page.screenshot({path:`${out}/${width}-chapter7-locked.png`});
+    }
     await page.waitForTimeout(550);
     if(report.chapterChecks.length===1)await page.screenshot({path:`${out}/${width}-story-open.png`});
     assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open),'unfinished prologue must expose Continue without expanding details');
@@ -207,6 +267,7 @@ try{
    else throw Error(`Unhandled UI ${key}`);
   }
   assert(complete,'must reach final episode');
+  assert.deepEqual(report.alchemyChecks,['cancel-and-retry','single-charge-and-dialogue']);
   assert.deepEqual(report.tapGuidance.map(entry=>entry.id),['battle_enemy','battle_actor_open','dex_freigal']);
   await page.waitForTimeout(550);
   while(await isVisible('#contractorRankUpOverlay:not(.hidden)')){await recordRank();await tap('#contractorRankUpOverlay button');await page.waitForTimeout(550);}
@@ -219,6 +280,18 @@ try{
   await tap('#prologuePart2Content [aria-label="会話を閉じて話一覧へ戻る"]');
   assert(await page.locator('#storyPrologueChapter').evaluate(el=>el.open));
   assert.equal(await page.locator('#storyEpisodeList .story-episode-card.is-completed').count(),6,'all six episodes display completed');
+  const chapter7=page.locator('#storyEpisodeList [data-prologue-episode="pb_07"]');
+  assert.equal(await chapter7.count(),1);
+  assert(await chapter7.isVisible());
+  assert(await chapter7.evaluate(card=>card.classList.contains('is-current')));
+  assert(await chapter7.getByRole('button',{name:'つづきから ›',exact:true}).isVisible());
+  assert.equal(await chapter7.locator('p').count(),0);
+  assert.equal(await page.locator('#storyEpisodeList .story-episode-card').count(),23);
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),'続き：第7話 ・ 6/23 完了');
+  assert(!((await page.locator('#storyPanel-main').innerText()).includes('今後追加されます')));
+  assert.deepEqual(report.chapter7Card,['locked']);
+  report.chapter7Card.push('current');
+  console.log(`PASS Chapter 7 card ${width}x${height}: real chapter 6 clear yields one current card (6/23)`);
   await page.screenshot({path:`${out}/${width}-six-episodes-complete.png`});
   console.log(`PASS ${width}x${height}: ${report.steps.length} steps, ${report.targets.length} target-center checks, ${report.taps.length} coordinate taps`);
   await context.close();

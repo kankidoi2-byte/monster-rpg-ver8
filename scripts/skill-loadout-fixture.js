@@ -89,6 +89,8 @@ if(window.parent!==window){
     saveGame=()=>true;
     retryEquip.click();await frame();await frame();
     check(tutorialCurrentStepId()==='stella_attribute_intro','チュートリアル装備から属性案内へ');
+    const tutorialSkill=document.querySelector('#skillCardList [data-skill-card-id="s110_041"] [data-skill-equipped-status]');
+    check(tutorialSkill?.textContent===state.mon.name+'に装備中','第4話の装備直後にエルナの装備中表示');
     report(results.join('\n'));return results;
   }
   window.runSkillQA=async kind=>{try{if(kind==='suite')await suite();else{setup(kind);report('確認中：'+kind);}}catch(error){report('FAIL '+error.message);}};

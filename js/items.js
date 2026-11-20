@@ -444,16 +444,12 @@ function renderSingleBattleContractPanel(){
 function refreshContractScrollDisplay(){
   ensureContractScrollItem();
   const it = ITEM_BY_ID[pendingContractItemId] || ITEM_BY_ID.contract_scroll;
-  const contractItems = SHOP_ITEMS.filter(item => item.contract);
-  const contractStockText = contractItems
-    .map(item => `${itemInlineVisual(item)}${item.name}：${save.items[item.id] || 0}枚`)
-    .join(' / ');
-
   const confirmText=document.getElementById('contractConfirmText');
   const tutorialOffer=typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,it.id);
-  if(confirmText)confirmText.textContent=tutorialOffer
-    ? 'チュートリアル用の通常契約書を1枚支給し、この契約で1枚消費します。最初のスライムとの契約は必ず成功します。'
-    : `${it.name}を使用しますか？ 所持数：${save.items[it.id]||0}　${contractStockText}`;
+  const selectedScrollText=`${it.name}を1枚使用しますか？（所持：${save.items[it.id]||0}枚）`;
+  if(confirmText)confirmText.textContent=selectedScrollText+(tutorialOffer
+    ? ' チュートリアル用に1枚支給し、この契約で使います。最初のスライムとの契約は必ず成功します。'
+    : '');
 
   updateItemText();
 

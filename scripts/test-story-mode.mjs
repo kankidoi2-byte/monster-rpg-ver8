@@ -30,7 +30,7 @@ const { default: vm } = await import('node:vm');
 const elements = new Map();
 for (const id of [...index.matchAll(/id="([^"]+)"/g)].map(match=>match[1])) {
   elements.set(id, {textContent:'',innerHTML:'',hidden:false,attributes:{},
-    setAttribute(name,value){this.attributes[name]=value;},classList:{toggle(){}}});
+    setAttribute(name,value){this.attributes[name]=value;},classList:{toggle(){},remove(){}}});
 }
 let tutorialState={status:'not_started',stepId:'intro_gnosis'};
 let checkpoint='intro_gnosis';
@@ -53,7 +53,6 @@ for(const status of ['not_started','in_progress','completed','skipped']){
   assert.equal((elements.get('storyEpisodeList').innerHTML.match(/data-prologue-replay=/g)||[]).length,status==='completed'?6:0);
   if(status==='completed')assert.equal((elements.get('storyEpisodeList').innerHTML.match(/story-episode-status">完了/g)||[]).length,6);
   assert.ok(!elements.get('homeAdventureKicker').textContent.includes('序章クリア'));
-  assert.ok(index.includes('aria-label="序章 第7話は準備中です"'));
   for(const selected of ['character','side','map','main']){
     vm.runInContext(`selectStoryCategory('${selected}')`,context);
     for(const category of ['main','map','character','side']){
@@ -67,6 +66,32 @@ checkpoint='home_requests';
 vm.runInContext('renderHomeStoryCard()',context);
 assert.equal(elements.get('homeAdventureTitle').textContent,'救援依頼を報告');
 console.log('Story hub behavior passed (four categories, untouched progress, terminal states, six episodes, request guidance).');
+
+assert.doesNotMatch(index,/第6話の続きは、今後追加されます|story-coming-soon/,'no stale fixed Chapter 7 card');
+vm.runInContext(read('js/prologue-part2-data.js'),context);
+vm.runInContext(read('js/prologue-part2.js'),context);
+const plainSteps=vm.runInContext('PROLOGUE_STORY_EPISODES.flatMap(e=>[{id:e.startStepId},{id:e.endStepId}])',context);
+context.tutorialFlowSteps=()=>plainSteps;
+context.TUTORIAL_MAIN_FLOW_ID='prologue';
+const laterIds=vm.runInContext('prologuePart2Episodes().map(e=>e.id)',context);
+for(const [status,complete,cardClass,note,count,progress] of [
+ ['in_progress',[],'locked','第6話クリアで第7話を解放',7,'続き：第6話 ・ 5/6 完了'],
+ ['completed',[],'current','つづきから',23,'続き：第7話 ・ 6/23 完了'],
+ ['completed',['pb_07'],'completed','読み返す',23,'続き：第8話 ・ 7/23 完了'],
+ ['completed',laterIds.slice(0,-1),'completed','読み返す',23,'続き：終幕 ・ 22/23 完了']
+]){
+ tutorialState={status,stepId:status==='in_progress'?'expedition_intro':null};
+ context.save.prologuePart2={episodes:Object.fromEntries(complete.map(id=>[id,{completed:true}]))};
+ const saved=JSON.stringify(context.save);
+ vm.runInContext('renderStoryMode()',context);
+ const html=elements.get('storyEpisodeList').innerHTML;
+ const cards=[...html.matchAll(/<article class="story-episode-card is-([^"]+)" data-prologue-episode="pb_07">[\s\S]*?<\/article>/g)];
+ assert.equal(cards.length,1);assert.equal(cards[0][1],cardClass);assert.ok(cards[0][0].includes(note));
+ assert.equal((html.match(/<article /g)||[]).length,count);
+ assert.equal(elements.get('storyChapterProgress').textContent,progress);
+ assert.equal(JSON.stringify(context.save),saved,'episode list does not mutate unlock state or progress');
+}
+console.log('PASS one Chapter 7 card: before Chapter 6 clear, unlocked, completed, and finale 22/23');
 
 
 vm.runInContext(read('js/map-story-data.js'),context);
