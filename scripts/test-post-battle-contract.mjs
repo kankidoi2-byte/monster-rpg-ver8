@@ -43,3 +43,26 @@ assert.match(singleAttemptSource,/singleBattleContractAttempted = true/,'a norma
 assert.doesNotMatch(singleAttemptSource,/goNextBattleAfterContract\(\)/,'success and failure must remain on the outcome screen');
 
 console.log('Post-battle contract validation passed (victory-only offer, one attempt, exclusions, and no automatic advance).');
+
+const confirmBody={textContent:''};
+const scrollIds=['contract_scroll','silver_contract_scroll','gold_contract_scroll','rainbow_contract_scroll'];
+const scrollNames=['契約書','銀の契約書','金の契約書','虹の契約書'];
+context.document.getElementById=id=>id==='contractConfirmText'?confirmBody:null;
+context.ensureContractScrollItem=()=>{};
+context.updateItemText=()=>{};
+context.ITEM_BY_ID=Object.fromEntries(scrollIds.map((id,i)=>[id,{id,name:scrollNames[i],contract:true}]));
+context.save.items=Object.fromEntries(scrollIds.map((id,i)=>[id,i+1]));
+context.shouldGuaranteeTutorialContract=()=>false;
+context.itemInlineVisual=()=>{throw Error('a plain text prompt must not request icon markup');};
+vm.runInContext(itemsSource.slice(end),context,{filename:'contract-confirmation-copy.js'});
+for(const [i,id] of scrollIds.entries()){
+ context.pendingContractItemId=id;
+ context.refreshContractScrollDisplay();
+ assert.equal(confirmBody.textContent,`${scrollNames[i]}を1枚使用しますか？（所持：${i+1}枚）`);
+}
+context.shouldGuaranteeTutorialContract=()=>true;
+context.pendingContractItemId='contract_scroll';
+context.save.items.contract_scroll=0;
+context.refreshContractScrollDisplay();
+assert.match(confirmBody.textContent,/^契約書を1枚使用しますか？（所持：0枚） .*1枚支給.*必ず成功/);
+console.log('PASS contract scroll confirmation: four selected names/counts, plain text only, tutorial grant preserved');
