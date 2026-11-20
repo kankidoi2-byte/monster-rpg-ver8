@@ -66,17 +66,17 @@ function storyPrologueReplayAvailable(index,snapshot=storyProgressSnapshot()){
   return state==='completed'||state==='skipped'&&typeof prologuePart2Available==='function'&&prologuePart2Available();
 }
 
-function storyEpisodeIndexForStep(stepId){
+function storyEpisodeIndexForStep(stepId,{fallback=0}={}){
   const steps=typeof tutorialFlowSteps==='function'?tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID):[];
-  if(!steps.length)return 0;
-  const foundIndex=typeof tutorialStepIndex==='function'?tutorialStepIndex(steps,stepId):steps.findIndex(step=>step.id===stepId);
-  const stepIndex=foundIndex>=0?foundIndex:0;
+  if(!steps.length||!stepId)return fallback;
+  const stepIndex=typeof tutorialStepIndex==='function'?tutorialStepIndex(steps,stepId):steps.findIndex(step=>step.id===stepId);
+  if(stepIndex<0)return fallback;
   const episodeIndex=PROLOGUE_STORY_EPISODES.findIndex(episode=>{
     const start=steps.findIndex(step=>step.id===episode.startStepId);
     const end=steps.findIndex(step=>step.id===episode.endStepId);
     return start>=0&&end>=start&&stepIndex>=start&&stepIndex<=end;
   });
-  return episodeIndex>=0?episodeIndex:0;
+  return episodeIndex>=0?episodeIndex:fallback;
 }
 function storyProgressSnapshot(){
   const tutorial=typeof normalizeTutorialSave==='function'?normalizeTutorialSave(save.progress?.tutorial):{status:'not_started',stepId:null};

@@ -435,5 +435,69 @@ try{
   assert.deepEqual(await inventoryState(),expected,'exact selected debit and reward are persisted');
   console.log(`PASS Chapter 7 scroll confirmation: ${name} • ${before.scrolls[id]} -> ${expected.scrolls[id]} • cancel free, other scrolls and battle rewards unchanged`);
  }
+ // First-use guides are ordinary facility routes within chapters 8 and 13.
+ const guideLabel=page.locator('#tutorialSceneLabel');
+ const expectFacilityHeader=async(step,label)=>{
+  await page.waitForFunction(id=>tutorialCurrentStepId()===id,step);
+  assert(await guideLabel.isVisible());
+  assert.equal(await guideLabel.innerText(),label);
+  assert(await page.locator('#tutorialEpisodeCaption').isHidden());
+ };
+ const finishGuidePage=async()=>{
+  await page.evaluate(()=>tutorialPresentationFinishTyping());
+  await page.locator('#tutorialNextButton:not([hidden])').click();
+ };
+ const guideFlagState=()=>page.evaluate(()=>{
+  const flags=currentTutorialState().guides;
+  const saved=JSON.parse(safeStorageGet(SAVE_KEY)).progress.tutorial.guides;
+  return {shop:flags.shopItems,evolution:flags.evolution,savedShop:saved.shopItems,savedEvolution:saved.evolution};
+ });
+ const shopGuideCursor=await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(step=>step.action==='shop').id);
+ const openChapter8Shop=()=>page.getByRole('button',{name:'ショップを開く',exact:true}).click();
+ await seed('pb_08',shopGuideCursor);
+ await page.evaluate(()=>{const flags=currentTutorialState().guides;flags.shopItems=false;flags.evolution=false;saveGame();});
+ await openChapter8Shop();
+ await expectFacilityHeader('shop_buy','ショップの使い方');
+ await page.screenshot({path:`${out}/chapter8-shop-first-guide.png`});
+ await finishGuidePage();
+ await expectFacilityHeader('shop_use','ショップの使い方');
+ await finishGuidePage();
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:false,savedShop:true,savedEvolution:false});
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_08');});
+ await openChapter8Shop();
+ await page.waitForTimeout(150);
+ assert(await page.locator('#tutorialOverlay').isHidden());
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:false,savedShop:true,savedEvolution:false});
+ console.log('PASS Chapter 8 facility guide: ショップの使い方 on both pages, independent viewed flag persists and prevents reopening');
+
+ const evolutionStoryCursor=await page.evaluate(()=>prologuePart2Episode('pb_13').steps.find(step=>step.kind==='battle').id);
+ const openElnaEvolution=()=>page.evaluate(()=>{
+  const unit=save.instances.find(ins=>ins.id==='elna_beginner');
+  checkEvolution(unit);processNextEvolution();
+ });
+ await seed('pb_13',evolutionStoryCursor);
+ await page.evaluate(()=>{
+  addInstance('elna_beginner',20);
+  currentTutorialState().guides.evolution=false;
+  save.contractor.pendingRankUps=[];
+  saveGame();
+ });
+ await openElnaEvolution();
+ await expectFacilityHeader('evolution_intro','進化の使い方');
+ assert(await page.locator('#evoChoices button').first().isVisible());
+ await page.screenshot({path:`${out}/chapter13-evolution-intro-guide.png`});
+ await finishGuidePage();
+ await expectFacilityHeader('evolution_choice','進化の使い方');
+ await page.screenshot({path:`${out}/chapter13-evolution-choice-guide.png`});
+ await finishGuidePage();
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:true,savedShop:true,savedEvolution:true});
+ assert.equal(await page.evaluate(()=>save.prologuePart2.episodes.pb_13.cursor),evolutionStoryCursor);
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_13');});
+ await openElnaEvolution();
+ await page.waitForTimeout(150);
+ assert(await page.locator('#evolution').isVisible());
+ assert(await page.locator('#tutorialOverlay').isHidden());
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:true,savedShop:true,savedEvolution:true});
+ console.log('PASS Chapter 13 facility guide: 進化の使い方 on both pages, viewed flag persists without moving story progress');
  assert.deepEqual(errors,[]);console.log('PASS prologue part2 browser: legacy resume, dedicated battle/contract/defeat retry, practice skip, return route, shop branches, episode22 no battle, epilogue exact order, atomic failure/retry/reload, authority, no duplicate reward or unrelated save changes');
 }finally{await browser?.close();server.kill();}
