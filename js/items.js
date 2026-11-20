@@ -5,9 +5,10 @@ function renderShop() {
   ensureContractScrollItem();
   const section = document.getElementById('shop');
   if (!section) return;
+  const coins=Number(save.coins||0);
   section.innerHTML = `
     <div class="ui-page-heading"><span class="ui-eyebrow">ITEM SHOP</span><h1>アイテムショップ</h1></div>
-    <p class="ui-coin-balance">所持コイン <strong id="coinView">${save.coins||0}</strong>枚</p>
+    <p class="ui-coin-balance">所持コイン <strong id="coinView">${coins.toLocaleString('ja-JP')}</strong>枚</p>
     ${typeof ProloguePart2Events!=='undefined'?ProloguePart2Events.shopReturnMarkup():''}
     <div id="shopList" class="grid">
       ${SHOP_ITEMS.filter(it => it.shop !== false).map(it => `
@@ -23,6 +24,9 @@ function renderShop() {
         <div>${(save.history.logs||[]).slice(-5).reverse().map(l=>`<div class="history-entry">${escapeGameHtml(l)}</div>`).join('') || '<p class="small">まだ履歴がありません。</p>'}</div>
       </details>
     </div>`;
+  // The same saved balance drives both displays on entry and on a redraw
+  // after a committed purchase or sale, without replaying header side effects.
+  if(typeof updateAppCoinBalance==='function')updateAppCoinBalance(coins);
 }
 function buyItem(id){
   ensureContractScrollItem();
@@ -440,16 +444,12 @@ function renderSingleBattleContractPanel(){
 function refreshContractScrollDisplay(){
   ensureContractScrollItem();
   const it = ITEM_BY_ID[pendingContractItemId] || ITEM_BY_ID.contract_scroll;
-  const contractItems = SHOP_ITEMS.filter(item => item.contract);
-  const contractStockText = contractItems
-    .map(item => `${itemInlineVisual(item)}${item.name}：${save.items[item.id] || 0}枚`)
-    .join(' / ');
-
   const confirmText=document.getElementById('contractConfirmText');
   const tutorialOffer=typeof shouldGuaranteeTutorialContract==='function'&&shouldGuaranteeTutorialContract(enemy,it.id);
-  if(confirmText)confirmText.textContent=tutorialOffer
-    ? 'チュートリアル用の通常契約書を1枚支給し、この契約で1枚消費します。最初のスライムとの契約は必ず成功します。'
-    : `${it.name}を使用しますか？ 所持数：${save.items[it.id]||0}　${contractStockText}`;
+  const selectedScrollText=`${it.name}を1枚使用しますか？（所持：${save.items[it.id]||0}枚）`;
+  if(confirmText)confirmText.textContent=selectedScrollText+(tutorialOffer
+    ? ' チュートリアル用に1枚支給し、この契約で使います。最初のスライムとの契約は必ず成功します。'
+    : '');
 
   updateItemText();
 

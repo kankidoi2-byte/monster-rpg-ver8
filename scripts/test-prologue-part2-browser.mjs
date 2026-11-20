@@ -198,6 +198,34 @@ try{
  assert.equal(await page.evaluate(()=>save.items.contract_scroll),contractBefore.scroll);
  assert.equal(await page.evaluate(()=>save.instances.filter(i=>i.id==='slime').length),1);
  console.log('PASS Chapter 7 contract: cancel returns to choice; accept spends one scroll, recruits one slime, continues story and cannot repeat on reload');
+ // The hand-off to chapter 8 leaves one completed, replayable chapter 7 card.
+ const complete7=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(step=>step.kind==='complete').id);
+ await seed('pb_07',complete7);
+ await page.evaluate(()=>{save.prologuePart2.episodes.pb_07.wonBattleIds=['p2_07_a','p2_07_b'];saveGame();});
+ await page.locator('#prologuePart2Content button[onclick="prologuePart2Complete()"]').click();
+ const chapter7=page.locator('#storyEpisodeList [data-prologue-episode="pb_07"]');
+ const assertChapter7Completed=async(progress)=>{
+  assert.equal(await chapter7.count(),1);
+  assert(await chapter7.isVisible());
+  assert(await chapter7.evaluate(card=>card.classList.contains('is-completed')));
+  assert(await chapter7.getByRole('button',{name:'読み返す ›',exact:true}).isVisible());
+  assert.equal(await chapter7.locator('.story-episode-status').innerText(),'完了');
+  assert.equal(await page.locator('#storyEpisodeList .story-episode-card').count(),23);
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),progress);
+  assert(!((await page.locator('#storyPanel-main').innerText()).includes('今後追加されます')));
+ };
+ await assertChapter7Completed('続き：第8話 ・ 7/23 完了');
+ assert(await page.locator('#storyEpisodeList [data-prologue-episode="pb_08"].is-current').isVisible());
+ await page.screenshot({path:`${out}/chapter7-completed-list.png`});
+ console.log('PASS Chapter 7 card: actual chapter clear shows one completed card and chapter 8 next (7/23)');
+
+ await seed('pb_ep','pb_ep_complete');
+ const endingSave=await page.evaluate(()=>{const data=JSON.stringify(save);openStoryMode();return data;});
+ await assertChapter7Completed('続き：終幕 ・ 22/23 完了');
+ assert(await page.locator('#storyEpisodeList [data-prologue-episode="pb_ep"].is-current').isVisible());
+ assert.equal(await page.evaluate(()=>JSON.stringify(save)),endingSave,'rendering the chapter list must not change save data');
+ await page.screenshot({path:`${out}/chapter7-finale-list.png`});
+ console.log('PASS Chapter 7 card: one completed card at finale 22/23, no stale copy, no save change');
  // Optional link practice is skippable without changing private party/assets or recorded wins.
  const practiceCursor=await page.evaluate(()=>prologuePart2Episode('pb_14').steps.find(s=>s.action==='linkPractice').id);
  await seed('pb_14',practiceCursor);
@@ -208,16 +236,50 @@ try{
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,items:save.items,coins:save.coins,skills:save.skillCards,party:save.party})),practiceBefore);
  assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_14.wonBattleIds),['p2_14_a']);
  assert.equal(await page.evaluate(()=>save.prologuePart2.trainingSeen.pb14===true),false);
- // The epilogue route goes out and back via the existing map UI, without a battle/unlock grant.
- const routeCursor=await page.evaluate(()=>prologuePart2Episode('pb_ep').steps.find(s=>s.action==='returnRoute').id);
- await seed('pb_ep',routeCursor);
- const routeBefore=await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history}));
- await page.getByRole('button',{name:'バトルから世界地図へ',exact:true}).click();
- assert(await page.locator('#prologuePart2WorldReturn').isVisible());
- assert.equal(await page.evaluate(()=>activeHuntRequest),null);
- await page.locator('#prologuePart2WorldReturn').click();
- assert.notEqual(await card(),routeCursor);
- assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history})),routeBefore);
+ // Enter the exercise using the displayed copy, then complete the finale both directly
+ // and after leaving for Home. A normal visit to the map never carries the special return.
+ const routeCursor='pb_ep_return_route',routeStart='pb_ep_post_10';
+ const returnLabel='世界の狭間へ戻って物語を続ける';
+ const routeButton=page.getByRole('button',{name:returnLabel,exact:true});
+ const openRoute=()=>page.getByRole('button',{name:'バトルから世界地図へ',exact:true}).click();
+ const home=()=>page.locator('[data-nav="home"]').click();
+ const list=()=>page.locator('#homeAdventureButton').click();
+ const resumeFinale=()=>page.locator('#storyContinueCard').getByRole('button',{name:/再開する/}).click();
+ const mapAssets=()=>page.evaluate(()=>JSON.stringify({coins:save.coins,items:save.items,mapDex:save.mapDex,history:save.history}));
+ for(const viaHome of [false,true]){
+  await seed('pb_ep',routeStart);
+  await page.evaluate(()=>prologuePart2Typewriter?.finish());
+  assert((await page.locator('#prologuePart2Text').innerText()).includes('「'+returnLabel+'」'));
+  await next();
+  assert.equal(await card(),routeCursor);
+  const routeBefore=await mapAssets();
+  await openRoute();
+  await routeButton.waitFor({state:'visible'});
+  assert.equal(await page.evaluate(()=>activeHuntRequest),null);
+  if(viaHome){
+   await home();
+   await page.locator('#home .home-battle-button').click();
+   await page.locator('#battleChoices.active').waitFor({state:'visible'});
+   assert.equal(await routeButton.count(),0,'ordinary map has no special return even after leaving the exercise');
+   await home();
+   await list();
+   assert.match(await page.locator('#storyChapterProgress').innerText(),/22\/23 完了/);
+   await resumeFinale();
+   assert.equal(await card(),routeCursor);
+   await openRoute();
+   await routeButton.waitFor({state:'visible'});
+  }
+  await routeButton.click();
+  assert.equal(await card(),'pb_ep_post_11');
+  assert.equal(await mapAssets(),routeBefore);
+  for(let step=0;step<12&&(await card())!=='pb_ep_complete';step++)await next();
+  assert.equal(await card(),'pb_ep_complete');
+  await page.getByRole('button',{name:'序章を終える',exact:true}).click();
+  assert.equal(await page.locator('#prologuePart2Content .prologue-part2-finish h2').innerText(),'終幕 完了');
+  await page.getByRole('button',{name:'話一覧へ',exact:true}).click();
+  assert.equal(await page.locator('#storyChapterProgress').innerText(),'23/23 完了');
+  console.log(`PASS finale map return: ${viaHome?'Home then resume; ordinary map isolated':'direct'} -> 終幕 完了 (23/23)`);
+ }
  // Chapter 13: edit from the actual Morglum battle preparation, then
  // explicitly start the same battle after the game returns from saving.
  const morglumCursor=await page.evaluate(()=>prologuePart2Episode('pb_13').steps.find(step=>step.battleId==='p2_13_a').id);
@@ -288,6 +350,44 @@ try{
   assert.equal(await card(),'pb_08_post_01');await page.evaluate(()=>prologuePart2Typewriter?.finish());
   assert.equal(await page.locator('#prologuePart2Text').innerText(),bought?'毎度あり！次もご贔屓に～！':'あら、今日は見るだけ？ 次はちゃんと買ってってね～！');
  }
+ // Verify the actual chapter-8 entry, purchase, persisted re-entry, and
+ // an insufficient-funds purchase on a separate 412px mobile-size fixture.
+ await page.setViewportSize({width:412,height:915});
+ const shopCursor=await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(step=>step.action==='shop').id);
+ const shopEntry=page.getByRole('button',{name:'ショップを開く',exact:true});
+ const purchasePowerPotion=page.locator(`#shopList button[onclick="buyItem('attack_potion')"]`);
+ const assertShopBalance=async(coins,count)=>{
+  assert(await page.locator('#appCoinView').isVisible());
+  assert(await page.locator('#shop #coinView').isVisible());
+  assert.equal(await page.locator('#appCoinView').innerText(),String(coins));
+  assert.equal(await page.locator('#shop #coinView').innerText(),String(coins));
+  assert.equal(await page.locator('.app-resource:has(#appCoinView)').getAttribute('aria-label'),`所持コイン ${coins}`);
+  assert.deepEqual(await page.evaluate(()=>{
+   const disk=JSON.parse(safeStorageGet(SAVE_KEY));
+   return {coins:save.coins,item:save.items.attack_potion,persistedCoins:disk.coins,persistedItem:disk.items.attack_potion};
+  }),{coins,item:count,persistedCoins:coins,persistedItem:count});
+ };
+ await seed('pb_08',shopCursor);
+ await page.evaluate(()=>{save.coins=109;save.items.attack_potion=0;saveGame();document.getElementById('appCoinView').textContent='159';});
+ await shopEntry.click();
+ await assertShopBalance(109,0);
+ await purchasePowerPotion.click();
+ await assertShopBalance(89,1);
+ await page.screenshot({path:`${out}/chapter8-shop-coins-412.png`});
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_08');});
+ await shopEntry.click();
+ await assertShopBalance(89,1);
+ await seed('pb_08',shopCursor);
+ await page.evaluate(()=>{save.coins=19;save.items.attack_potion=2;saveGame();});
+ await shopEntry.click();
+ await assertShopBalance(19,2);
+ await Promise.all([
+  page.waitForEvent('dialog').then(async dialog=>{assert.equal(dialog.message(),'コインが足りない！');await dialog.dismiss();}),
+  purchasePowerPotion.click()
+ ]);
+ await assertShopBalance(19,2);
+ console.log('PASS Chapter 8 shop 412x915: 109 coins on entry, 89 and +1 力の薬 on purchase and reload, 19 and 2 items unchanged on insufficient funds');
+ await page.setViewportSize({width:390,height:844});
  // All of episode 22 advances via displayed cards without entering any battle.
  await seed('pb_22');const seen22=[];
  for(let i=0;i<90;i++){
@@ -338,5 +438,126 @@ try{
  assert.deepEqual(after,{...before,coins:before.coins+100});
  await page.evaluate(()=>{openProloguePart2('pb_ep',{replay:true});prologuePart2Ui.index=prologuePart2Episode('pb_ep').steps.length-1;renderProloguePart2()});
  await page.getByRole('button',{name:'読み返しを終える',exact:true}).click();assert.equal(await page.evaluate(()=>save.coins),before.coins+100);
+ // In episode 7, each official scroll label and its specific stock must be
+ // plain text. Use fresh isolated inventories with every lower tier still owned.
+ const kinds=[
+  ['contract_scroll','契約書'],['silver_contract_scroll','銀の契約書'],
+  ['gold_contract_scroll','金の契約書'],['rainbow_contract_scroll','虹の契約書']
+ ];
+ await page.evaluate(()=>showShop());
+ for(const [id,name] of kinds){
+  const image=page.locator(`#shopList img[src$="/${id}_art_v1.webp"]`);
+  assert(await image.isVisible());
+  assert.equal(await image.getAttribute('alt'),name);
+  await image.evaluate(el=>el.decode());
+ }
+ const contractCursor=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(step=>step.action==='contract').id);
+ const inventoryState=()=>page.evaluate(ids=>({
+  scrolls:Object.fromEntries(ids.map(id=>[id,save.items[id]||0])),
+  coins:save.coins,history:JSON.stringify(save.history),
+  wins:[...save.prologuePart2.episodes.pb_07.wonBattleIds],
+  rewardClaimed:save.prologuePart2.episodes.pb_07.rewardClaimed,
+  slimeCount:save.instances.filter(x=>x.id==='slime').length
+ }),kinds.map(([id])=>id));
+ for(const [tier,[id,name]] of kinds.entries()){
+  await seed('pb_07',contractCursor);
+  await page.evaluate(({tier,ids})=>{
+   const ep=save.prologuePart2.episodes.pb_07;
+   ep.wonBattleIds=['p2_07_a'];save.prologuePart2.grants.pb07Scroll=true;
+   for(const [i,id] of ids.entries())save.items[id]=i<=tier?i+2:0;
+   if(!saveGame())throw Error('Unable to save isolated scroll fixture');
+  },{tier,ids:kinds.map(([id])=>id)});
+  const before=await inventoryState();
+  await page.getByRole('button',{name:'契約を確認',exact:true}).click();
+  const offer=page.getByRole('button',{name:'スライムと契約',exact:true});
+  const text=page.locator('#contractConfirmText');
+  const assertPrompt=async()=>{
+   assert.equal(await text.innerText(),`${name}を1枚使用しますか？（所持：${before.scrolls[id]}枚）`);
+   assert.equal(await text.locator('*').count(),0);
+   assert.equal(await page.evaluate(()=>pendingContractItemId),id);
+  };
+  await offer.click();
+  await assertPrompt();
+  await page.screenshot({path:`${out}/chapter7-confirm-${id}.png`});
+  await page.locator('#contractConfirm').getByRole('button',{name:'いいえ',exact:true}).click();
+  await offer.waitFor({state:'visible'});
+  assert.deepEqual(await inventoryState(),before,'cancel leaves all scrolls and rewards alone');
+  await offer.click();
+  await assertPrompt();
+  await page.evaluate(()=>{window.__nativeScrollTestRandom=Math.random;Math.random=()=>0;});
+  await page.locator('#contractConfirmAcceptButton').click();
+  await page.locator('#prologuePart2 [data-card="pb_07_contract_ok"]').waitFor();
+  await page.evaluate(()=>{Math.random=window.__nativeScrollTestRandom;delete window.__nativeScrollTestRandom;});
+  const expected={...before,scrolls:{...before.scrolls,[id]:before.scrolls[id]-1},slimeCount:before.slimeCount+1};
+  assert.deepEqual(await inventoryState(),expected,'only one selected scroll is consumed and existing battle rewards do not change');
+  await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});
+  assert.equal(await card(),'pb_07_contract_ok');
+  assert.deepEqual(await inventoryState(),expected,'exact selected debit and reward are persisted');
+  console.log(`PASS Chapter 7 scroll confirmation: ${name} • ${before.scrolls[id]} -> ${expected.scrolls[id]} • cancel free, other scrolls and battle rewards unchanged`);
+ }
+ // First-use guides are ordinary facility routes within chapters 8 and 13.
+ const guideLabel=page.locator('#tutorialSceneLabel');
+ const expectFacilityHeader=async(step,label)=>{
+  await page.waitForFunction(id=>tutorialCurrentStepId()===id,step);
+  assert(await guideLabel.isVisible());
+  assert.equal(await guideLabel.innerText(),label);
+  assert(await page.locator('#tutorialEpisodeCaption').isHidden());
+ };
+ const finishGuidePage=async()=>{
+  await page.evaluate(()=>tutorialPresentationFinishTyping());
+  await page.locator('#tutorialNextButton:not([hidden])').click();
+ };
+ const guideFlagState=()=>page.evaluate(()=>{
+  const flags=currentTutorialState().guides;
+  const saved=JSON.parse(safeStorageGet(SAVE_KEY)).progress.tutorial.guides;
+  return {shop:flags.shopItems,evolution:flags.evolution,savedShop:saved.shopItems,savedEvolution:saved.evolution};
+ });
+ const shopGuideCursor=await page.evaluate(()=>prologuePart2Episode('pb_08').steps.find(step=>step.action==='shop').id);
+ const openChapter8Shop=()=>page.getByRole('button',{name:'ショップを開く',exact:true}).click();
+ await seed('pb_08',shopGuideCursor);
+ await page.evaluate(()=>{const flags=currentTutorialState().guides;flags.shopItems=false;flags.evolution=false;saveGame();});
+ await openChapter8Shop();
+ await expectFacilityHeader('shop_buy','ショップの使い方');
+ await page.screenshot({path:`${out}/chapter8-shop-first-guide.png`});
+ await finishGuidePage();
+ await expectFacilityHeader('shop_use','ショップの使い方');
+ await finishGuidePage();
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:false,savedShop:true,savedEvolution:false});
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_08');});
+ await openChapter8Shop();
+ await page.waitForTimeout(150);
+ assert(await page.locator('#tutorialOverlay').isHidden());
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:false,savedShop:true,savedEvolution:false});
+ console.log('PASS Chapter 8 facility guide: ショップの使い方 on both pages, independent viewed flag persists and prevents reopening');
+
+ const evolutionStoryCursor=await page.evaluate(()=>prologuePart2Episode('pb_13').steps.find(step=>step.kind==='battle').id);
+ const openElnaEvolution=()=>page.evaluate(()=>{
+  const unit=save.instances.find(ins=>ins.id==='elna_beginner');
+  checkEvolution(unit);processNextEvolution();
+ });
+ await seed('pb_13',evolutionStoryCursor);
+ await page.evaluate(()=>{
+  addInstance('elna_beginner',20);
+  currentTutorialState().guides.evolution=false;
+  save.contractor.pendingRankUps=[];
+  saveGame();
+ });
+ await openElnaEvolution();
+ await expectFacilityHeader('evolution_intro','進化の使い方');
+ assert(await page.locator('#evoChoices button').first().isVisible());
+ await page.screenshot({path:`${out}/chapter13-evolution-intro-guide.png`});
+ await finishGuidePage();
+ await expectFacilityHeader('evolution_choice','進化の使い方');
+ await page.screenshot({path:`${out}/chapter13-evolution-choice-guide.png`});
+ await finishGuidePage();
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:true,savedShop:true,savedEvolution:true});
+ assert.equal(await page.evaluate(()=>save.prologuePart2.episodes.pb_13.cursor),evolutionStoryCursor);
+ await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_13');});
+ await openElnaEvolution();
+ await page.waitForTimeout(150);
+ assert(await page.locator('#evolution').isVisible());
+ assert(await page.locator('#tutorialOverlay').isHidden());
+ assert.deepEqual(await guideFlagState(),{shop:true,evolution:true,savedShop:true,savedEvolution:true});
+ console.log('PASS Chapter 13 facility guide: 進化の使い方 on both pages, viewed flag persists without moving story progress');
  assert.deepEqual(errors,[]);console.log('PASS prologue part2 browser: legacy resume, dedicated battle/contract/defeat retry, practice skip, return route, shop branches, episode22 no battle, epilogue exact order, atomic failure/retry/reload, authority, no duplicate reward or unrelated save changes');
 }finally{await browser?.close();server.kill();}

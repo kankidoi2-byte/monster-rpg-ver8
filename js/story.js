@@ -66,17 +66,17 @@ function storyPrologueReplayAvailable(index,snapshot=storyProgressSnapshot()){
   return state==='completed'||state==='skipped'&&typeof prologuePart2Available==='function'&&prologuePart2Available();
 }
 
-function storyEpisodeIndexForStep(stepId){
+function storyEpisodeIndexForStep(stepId,{fallback=0}={}){
   const steps=typeof tutorialFlowSteps==='function'?tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID):[];
-  if(!steps.length)return 0;
-  const foundIndex=typeof tutorialStepIndex==='function'?tutorialStepIndex(steps,stepId):steps.findIndex(step=>step.id===stepId);
-  const stepIndex=foundIndex>=0?foundIndex:0;
+  if(!steps.length||!stepId)return fallback;
+  const stepIndex=typeof tutorialStepIndex==='function'?tutorialStepIndex(steps,stepId):steps.findIndex(step=>step.id===stepId);
+  if(stepIndex<0)return fallback;
   const episodeIndex=PROLOGUE_STORY_EPISODES.findIndex(episode=>{
     const start=steps.findIndex(step=>step.id===episode.startStepId);
     const end=steps.findIndex(step=>step.id===episode.endStepId);
     return start>=0&&end>=start&&stepIndex>=start&&stepIndex<=end;
   });
-  return episodeIndex>=0?episodeIndex:0;
+  return episodeIndex>=0?episodeIndex:fallback;
 }
 function storyProgressSnapshot(){
   const tutorial=typeof normalizeTutorialSave==='function'?normalizeTutorialSave(save.progress?.tutorial):{status:'not_started',stepId:null};
@@ -196,6 +196,6 @@ function renderStoryMode(){
     const statusLabel=state==='completed'?'完了':state==='skipped'?'SKIP':state==='current'?'NEXT':'LOCKED';
     const action=storyPrologueReplayAvailable(index,snapshot)?`<button type="button" data-prologue-replay="${entry.id}" onclick="openPrologueReplay('${entry.id}')">読み返す ›</button>`:state==='current'?`<button type="button" onclick="continuePrologueStory()">${snapshot.tutorial.status==='not_started'?'始める':'つづきから'} ›</button>`:'';
     return `<article class="story-episode-card is-${state}"><img src="${entry.image}" alt=""><div class="story-episode-copy"><span>序章 第${entry.number}話</span><h3>${entry.title}</h3><p>${state==='locked'?'前の話を完了すると解放されます。':entry.summary}</p>${action}</div><strong class="story-episode-status">${statusLabel}</strong></article>`;
-  }).join('')+(late?renderProloguePart2EpisodeCards():'');
+  }).join('')+(typeof renderProloguePart2EpisodeCards==='function'?renderProloguePart2EpisodeCards():'');
 }
 
