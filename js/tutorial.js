@@ -769,7 +769,9 @@ function renderTutorialStep(){
   recordTutorialBattleLesson(step);
   prepareTutorialStep(step);
   if(step.screenId&&activeScreenId()!==step.screenId&&!(typeof GACHA_ROUTES!=='undefined'&&GACHA_ROUTES[step.screenId]===gachaTab&&activeScreenId()==='gachaHub')){
-    show(step.screenId);
+    // A fresh page has not rendered the expedition cards yet.
+    if(step.id==='expedition_active'&&typeof showExpedition==='function')showExpedition();
+    else show(step.screenId);
     setTimeout(renderTutorialStep,0);
     return;
   }
@@ -972,6 +974,7 @@ function tutorialNext(actionCompleted=false,choiceId=null){
     persistTutorialStep();clearTutorialUi();tutorialRankUpWaitScreen=waitScreen;updateTutorialMenuSummary();return;
   }
   let nextStepId=tutorialShouldUseReplayNextStep(step)&&step?.replayNextStepId?step.replayNextStepId:step?.nextStepId;
+  if(step?.id==='expedition_suitability'&&tutorialHasActivePrologueExpedition())nextStepId='expedition_active';
   nextStepId=tutorialRetryBattleGuideStep(step,nextStepId);
   if(step?.chapterBreak&&nextStepId){checkpointTutorialChapter(nextStepId);return;}
   if(nextStepId){
@@ -1524,7 +1527,19 @@ function markTutorialExistingExpeditionGuided(){
   return typeof markTutorialExpeditionDispatched==='function'&&markTutorialExpeditionDispatched();
 }
 function resolveTutorialExpeditionResumeStep(flowId,stepId,replay=false){
-  if(flowId!==TUTORIAL_MAIN_FLOW_ID||!stepId||!tutorialShouldUseExistingExpeditionPath(stepId))return stepId;
+  if(flowId!==TUTORIAL_MAIN_FLOW_ID||!stepId)return stepId;
+  const tutorial=typeof currentTutorialState==='function'?currentTutorialState():null;
+  // Older builds saved all of the on-screen dispatch steps as expedition_home_open.
+  if(!replay&&tutorial?.status==='in_progress'&&!tutorial.replaying&&!tutorial.expeditionDispatched
+      &&['expedition_home_open','expedition_suitability','expedition_dispatch'].includes(stepId)){
+    const entry=save.expeditions?.active?.find(candidate=>candidate?.status==='active'&&tutorialMatchesExpeditionDispatch(candidate));
+    if(entry){
+      return commitSaveMutation(()=>{
+        if(!recordTutorialExpeditionDispatch(entry))throw new Error('tutorial_expedition_recovery');
+      },{requireReadable:true})?'expedition_active':stepId;
+    }
+  }
+  if(!tutorialShouldUseExistingExpeditionPath(stepId))return stepId;
   if(!replay&&!markTutorialExistingExpeditionGuided())return stepId;
   return 'expedition_replay';
 }
@@ -1556,21 +1571,30 @@ function handleTutorialExpeditionMemberSelected(uid,selected){
   if(tutorialCurrentStepId()!=='expedition_member'||selected!==true||uid!==tutorialExpeditionCandidateInstance()?.uid)return false;
   tutorialNext(true);return true;
 }
-function commitTutorialExpeditionDispatch(entry){
-  if(tutorialCurrentStepId()!=='expedition_dispatch')return true;
-  if(typeof currentTutorialState!=='function'||!entry)return false;
-  const tutorial=currentTutorialState();
-  if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
-  if(entry.mapId!=='grassland'||entry.distanceId!=='short'||entry.memberUids.length!==1)return false;
-  const member=typeof getInstance==='function'?getInstance(entry.memberUids[0]):null;
-  if(!tutorialMonsterInLineage(member?.id,'freigal')||!tutorialExpeditionPartyReady())return false;
-  entry.tutorialPrologue=true;
+function tutorialIsExpeditionDispatchStep(stepId=tutorialCurrentStepId()){
+  return stepId==='expedition_suitability'||stepId==='expedition_dispatch';
+}
+function tutorialMatchesExpeditionDispatch(entry){
+  if(entry?.mapId!=='grassland'||entry.distanceId!=='short'||!Array.isArray(entry.memberUids)||entry.memberUids.length!==1)return false;
+  const uid=entry.memberUids[0];
+  const member=typeof getInstance==='function'?getInstance(uid):null;
+  return tutorialMonsterInLineage(member?.id,'freigal')&&!save.party?.includes(uid);
+}
+function recordTutorialExpeditionDispatch(entry){
   if(typeof markTutorialExpeditionDispatched!=='function'||!markTutorialExpeditionDispatched())return false;
-  if(typeof setTutorialStep==='function')setTutorialStep('expedition_active');
+  entry.tutorialPrologue=true;
+  setTutorialStep('expedition_active');
   return true;
 }
+function commitTutorialExpeditionDispatch(entry){
+  if(!tutorialIsExpeditionDispatchStep())return true;
+  if(typeof currentTutorialState!=='function'||!tutorialMatchesExpeditionDispatch(entry)||!tutorialExpeditionPartyReady())return false;
+  const tutorial=currentTutorialState();
+  if(tutorial.replaying||tutorial.expeditionDispatched===true)return false;
+  return recordTutorialExpeditionDispatch(entry);
+}
 function handleTutorialExpeditionStarted(entry){
-  if(!entry?.tutorialPrologue||tutorialCurrentStepId()!=='expedition_dispatch')return false;
+  if(!entry?.tutorialPrologue||!tutorialIsExpeditionDispatchStep())return false;
   tutorialNext(true);return true;
 }
 function commitTutorialPrologueCompletion(){
