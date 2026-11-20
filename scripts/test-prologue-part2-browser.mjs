@@ -93,6 +93,16 @@ try{
  await boot();await page.evaluate(()=>{clearTutorialUi();openStoryMode()});
  await page.locator('button[onclick="openProloguePart2()"] ').click();assert.equal(await card(),resume);
  // Dedicated battle controller integration: a won first encounter survives second defeat/reload.
+ const startStoryBattle=page.getByRole('button',{name:'戦闘開始',exact:true});
+ const assertPreparation=async(opponent,contractNote)=>{
+  const text=await page.locator('#prologuePart2Text').innerText();
+  assert.equal(text,`対戦相手：${opponent}\n${contractNote}`);
+  assert.equal(await startStoryBattle.count(),1);
+  assert(await startStoryBattle.isVisible());
+  assert.equal(await startStoryBattle.getAttribute('onclick'),'prologuePart2StartBattle()');
+  assert.equal(await page.getByRole('button',{name:'先へ進む',exact:true}).count(),0);
+  assert.equal(await page.evaluate(()=>activeHuntRequest),null,'viewing preparation cannot start battle');
+ };
  const firstBattleCursor=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(s=>s.battleId==='p2_07_a').id);
  const ordinaryState=()=>page.evaluate(()=>({coins:save.coins,history:JSON.stringify(save.history),autoBattle:JSON.stringify(save.autoBattle),mapStories:JSON.stringify(save.mapStories),expeditions:JSON.stringify(save.expeditions),instances:JSON.stringify(save.instances),scroll:save.items.contract_scroll}));
  const confirmScene=page.getByRole('button',{name:'契約を確認',exact:true});
@@ -116,7 +126,8 @@ try{
    window.__actualStorySlime=null;
   });
   const before=await ordinaryState();
-  await page.getByRole('button',{name:'戦闘開始',exact:true}).click();
+  await assertPreparation('スライム','勝利後、通常の条件で契約できます。');
+  await startStoryBattle.click();
   assert.equal(await page.evaluate(()=>activeHuntRequest.battleId),'p2_07_a');
   assert.match(await page.locator('#renewalHeader').innerText(),/王都外・街道/);
   const originalLead=await page.evaluate(()=>player.name);
@@ -159,7 +170,9 @@ try{
   await next();
  }
  const secondCursor=await card();
- await page.getByRole('button',{name:'戦闘開始',exact:true}).click();
+ await assertPreparation('ゴブリン','契約不可：通常探索では、契約できる相手と条件を確認できます。');
+ console.log('PASS Chapter 7 prep: Slime contract available; first restriction explained on Goblin');
+ await startStoryBattle.click();
  assert.equal(await page.evaluate(()=>activeHuntRequest.battleId),'p2_07_b');
  await page.evaluate(()=>{pHp=0;partyBattle.forEach(p=>{p.hp=0;p.fainted=true;});losePartyBattle();});
  await page.getByRole('button',{name:'再挑戦',exact:true}).click();
@@ -415,6 +428,47 @@ try{
  if(rewards22.exp)assert((await completionNotice.innerText()).includes('EXP+'+rewards22.exp.toLocaleString('ja-JP')));
  assert.equal(await completionNotice.evaluate(node=>getComputedStyle(node).opacity),'1','reduced motion does not hide completion toast');
  await completionNotice.waitFor({state:'detached'});
+ // The displayed opponent and start button match the encounter actually launched.
+ const morglumPrep=await page.evaluate(()=>prologuePart2Episode('pb_13').steps.find(step=>step.battleId==='p2_13_a').id);
+ await seed('pb_13',morglumPrep);
+ await assertPreparation('モルグラム','契約不可');
+ await page.screenshot({path:`${out}/chapter13-morglum-prep.png`});
+ await startStoryBattle.click();
+ assert.deepEqual(await page.evaluate(()=>[activeHuntRequest.battleId,enemy.id]),['p2_13_a','morglum']);
+ console.log('PASS Chapter 13 prep: モルグラム matches actual battle; only short contract restriction');
+
+ const nemesPrep=await page.evaluate(()=>prologuePart2Episode('pb_19').steps.find(step=>step.battleId==='p2_19_a').id);
+ await seed('pb_19',nemesPrep);
+ await page.evaluate(()=>{
+  getInstance(save.party[0]).level=100;saveGame();
+  combatRandom=()=>0.9; // Real battle actions below, deterministic for this fixture.
+ });
+ async function winCurrentStoryBattle(){
+  for(let i=0;i<8&&await page.locator('#battle').isVisible();i++){
+   await page.locator('#battleSkillButton').click();
+   await page.locator('#commands .skill-button').first().click();
+   await page.waitForFunction(()=>!busy||activeScreenId()!=='battle');
+  }
+  assert(await page.locator('#prologuePart2').isVisible(),'battle must complete through the usual outcome return');
+ }
+ await assertPreparation('ネメス','契約不可');
+ await page.screenshot({path:`${out}/chapter19-nemes-prep.png`});
+ await startStoryBattle.click();
+ assert.deepEqual(await page.evaluate(()=>[activeHuntRequest.battleId,enemy.id]),['p2_19_a','nemes']);
+ await winCurrentStoryBattle();
+ assert.deepEqual(await page.evaluate(()=>prologuePart2EpisodeState('pb_19').wonBattleIds),['p2_19_a']);
+ for(let i=0;i<10&&(await card())!=='p2_19_b_start';i++){
+  assert.equal(await startStoryBattle.count(),0,'dialogue never uses the battle start label');
+  await next();
+ }
+ assert.equal(await card(),'p2_19_b_start');
+ await assertPreparation('ネメシア','契約不可');
+ await page.screenshot({path:`${out}/chapter19-nemesia-prep.png`});
+ await startStoryBattle.click();
+ assert.deepEqual(await page.evaluate(()=>[activeHuntRequest.battleId,enemy.id]),['p2_19_b','nemesia']);
+ await winCurrentStoryBattle();
+ assert.deepEqual(await page.evaluate(()=>prologuePart2EpisodeState('pb_19').wonBattleIds),['p2_19_a','p2_19_b']);
+ console.log('PASS Chapter 19 consecutive battles: ネメス → ネメシア, exact start actions and both actual victories');
  // Verify reordered epilogue with real navigation; no removed duplicate decision cards.
  await seed('pb_ep','pb_ep_dragon_15');const observed=[];
  for(let i=0;i<35;i++){const id=await card();observed.push(id);if(id==='pb_ep_gacha_01')break;await next();}

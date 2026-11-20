@@ -70,3 +70,24 @@ for(const route of d.optionalRoutes){
 }
 assert.equal(d.optionalRoutes.find(r=>r.id==='gacha').afterEpisode,'pb_ep');
 console.log('34 reviewed scene hints, full dragon asset, abstract silhouette and six non-blocking optional routes passed.');
+
+context.by=id=>context.master.find(unit=>unit.id===id);
+vm.runInContext(fs.readFileSync('js/prologue-part2.js','utf8'),context);
+const firstExplanation=[];
+for(const battle of Object.values(d.battles)){
+ const text=context.prologuePart2BattlePreparationText(battle);
+ const opening=battle.mode==='invasion'?battle.enemies.slice(0,1):battle.enemies;
+ const [opponents,notice]=text.split('\n');
+ assert.equal(opponents,'対戦相手：'+opening.map(e=>context.by(e.speciesId).name).join('・'));
+ if(battle.contractAllowed){
+  assert.match(notice,/勝利後、通常の条件で契約できます/);
+  assert.doesNotMatch(notice,/契約不可/);
+ }else if(notice.includes('通常探索')){
+  firstExplanation.push(battle.id);
+ }else{
+  assert.equal(notice,'契約不可');
+ }
+}
+assert.deepEqual(firstExplanation,['p2_07_b'],'explain contract restrictions only at the first restricted battle');
+assert.equal(context.prologuePart2BattlePreparationText(null),'','non-battle cards do not get prep text');
+console.log('PASS prologue prep: names and contract availability derive from all 15 encounters; first restricted encounter explains the rule');

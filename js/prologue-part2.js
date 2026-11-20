@@ -359,6 +359,18 @@ function prologuePart2Presentation(episode,step,index){
     return `<img class="map-story-speaker story-scene-portrait${name===step.speaker?' is-speaking':''}" style="left:${x}%" src="${prologuePart2Escape(portraits[name])}" alt="${prologuePart2Escape(name)}">`;
   }).join('')};
 }
+function prologuePart2BattlePreparationText(battle){
+  if(!battle)return '';
+  // Invasions only show the initial opponent; the second enters on its story cue.
+  const openingEnemies=battle.mode==='invasion'?battle.enemies.slice(0,1):battle.enemies;
+  const names=openingEnemies.map(spec=>by(spec.speciesId)?.name).filter(Boolean);
+  const encounters=prologuePart2Data().battles;
+  const firstRestricted=prologuePart2Episodes().flatMap(episode=>episode.battleIds)
+    .find(id=>encounters[id]?.contractAllowed===false);
+  const contract=battle.contractAllowed===true?'勝利後、通常の条件で契約できます。'
+    :battle.id===firstRestricted?'契約不可：通常探索では、契約できる相手と条件を確認できます。':'契約不可';
+  return [names.length?`対戦相手：${names.join('・')}`:'',contract].filter(Boolean).join('\n');
+}
 function renderProloguePart2(){
   prologuePart2StopText();
   const ui=prologuePart2Ui,episode=prologuePart2UiEpisode(ui),root=prologuePart2Root();
@@ -373,14 +385,14 @@ function renderProloguePart2(){
   const effect=step.effect||(['pb_15_post_05','pb_18_post_01'].includes(step.id)?'closeRift':'');
   const conversation=textKind||production;
   const battle=step.kind==='battle'?prologuePart2Data().battles[step.battleId]:null;
-  const text=textKind?prologuePart2ResolveText(step):battle?(battle.contractAllowed?'この戦闘のあと、通常の条件で契約できます。':episode.id==='pb_12'?'今は隊商の退路確保を優先します。通常探索の三つ巴では、結果画面で契約候補を確認できます':'この物語の戦闘では契約できません。通常探索では対象と条件を確認できます。'):'';
+  const text=textKind?prologuePart2ResolveText(step):prologuePart2BattlePreparationText(battle);
   if(textKind&&!ui.seen.some(s=>s.id===step.id))ui.seen.push({id:step.id,text,speaker:step.speaker});
   const label=prologuePart2Label(episode);
   const eventButtons=step.kind==='event'?prologuePart2EventMarkup(step):'';
   const receipt=step.id==='pb_ep_gacha_03'?ProloguePart2Events.characterResultMarkup():step.id==='pb_11_post_01'?ProloguePart2Events.synthesisResultMarkup():'';
   const actions=conversation?'<button type="button" class="map-story-next story-scene-cue" onclick="prologuePart2Tap(event)" aria-label="次へ">▼</button>':
     step.kind==='complete'?`<button type="button" class="map-story-next" onclick="prologuePart2Complete()">${ui.replay?'読み返しを終える':episode.id==='pb_ep'?'序章を終える':label+'を終える'}</button>`:
-    battle?`<button type="button" class="map-story-next" onclick="prologuePart2StartBattle()">${step.battleId==='p2_19_b'?'先へ進む':'戦闘開始'}</button><button type="button" onclick="prologuePart2ShowParty()">編成を確認</button><button type="button" onclick="prologuePart2Leave()">戻る</button>`:eventButtons;
+    battle?`<button type="button" class="map-story-next" onclick="prologuePart2StartBattle()">戦闘開始</button><button type="button" onclick="prologuePart2ShowParty()">編成を確認</button><button type="button" onclick="prologuePart2Leave()">戻る</button>`:eventButtons;
   const optional=step.kind==='complete'&&episode.id==='pb_16'?prologuePart2OptionalButtons('episode16'):'';
   const log=ui.seen.map(s=>`<article>${s.speaker?`<b>${prologuePart2Escape(s.speaker)}</b>`:''}<p>${prologuePart2Escape(s.text)}</p></article>`).join('');
   const cinematic=!ui.captionShown;ui.captionShown=true;
