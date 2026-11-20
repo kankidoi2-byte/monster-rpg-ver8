@@ -20,6 +20,7 @@ try{
   await page.locator('#game').evaluate((el,size)=>{el.width=size.width;el.height=size.height;},{width,height});
   await page.locator('[data-case="suite"]').click();
   await page.waitForFunction(()=>document.querySelector('#report').textContent.includes('チュートリアル装備から属性案内')||document.querySelector('#report').textContent.includes('FAIL'));
+  await page.waitForFunction(()=>document.querySelector('#report').textContent.includes('第4話の装備直後にエルナの装備中表示')||document.querySelector('#report').textContent.includes('FAIL'));
   const suite=await page.locator('#report').textContent();assert(!suite.includes('FAIL'),suite);
   await frame.evaluate(()=>{
    clearTutorialUi();save.tutorial=tutorialSaveDefaults({legacy:true});
@@ -121,6 +122,65 @@ try{
  assert.equal(errors.length,0,errors.join('\n'));
  results.push({scenario:'Freigal Lv100 COST25: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
  await page.close();
+
+ const equipPage=await browser.newPage({viewport:{width:412,height:915},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ const equipErrors=[];
+ equipPage.on('pageerror',error=>equipErrors.push(error.message));
+ const leaveTitle=async()=>{
+  await equipPage.locator('#titleScreen').tap();
+  await equipPage.locator('#titleScreen').waitFor({state:'detached'});
+ };
+ await equipPage.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
+ await leaveTitle();
+ const wearer=await equipPage.evaluate(()=>{
+  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
+  save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
+  save.instances=[];save.party=[];save.equippedSkills={};
+  const elna=addInstance('elna_beginner',100),other=addInstance('elna_middle',100);
+  save.party=[elna.uid,other.uid];save.equippedSkills[elna.uid]=[];save.equippedSkills[other.uid]=[];
+  save.skillCards.s110_041=1;
+  openSkillEdit(elna.uid);
+  return by(elna.id).name;
+ });
+ const searchForSkill=()=>equipPage.evaluate(()=>{
+  document.getElementById('skillSearchInput').value='連続斬り';
+  renderSkillEdit();
+ });
+ await searchForSkill();
+ const skillCard=equipPage.locator('#skillCardList [data-skill-card-id="s110_041"]');
+ const equippedStatus=skillCard.locator('[data-skill-equipped-status]');
+ const equipButton=skillCard.getByRole('button',{name:'装備する',exact:true});
+ const assertEquipped=async (counts)=>{
+  assert.equal(await equippedStatus.textContent(),wearer+'に装備中');
+  assert((await skillCard.textContent()).includes(counts));
+  assert(!((await skillCard.textContent()).includes('装備できません')));
+ };
+ await equipButton.tap();
+ await assertEquipped('所持:1 / 使用中:1');
+ await equipPage.reload({waitUntil:'networkidle'});
+ await leaveTitle();
+ await equipPage.evaluate(()=>openSkillEdit(save.instances.find(ins=>ins.id==='elna_beginner').uid));
+ await searchForSkill();
+ await assertEquipped('所持:1 / 使用中:1');
+ await equipPage.evaluate(()=>openSkillEdit(save.instances.find(ins=>ins.id==='elna_middle').uid));
+ assert.equal(await equippedStatus.count(),0);
+ assert(await skillCard.getByRole('button',{name:'装備できません',exact:true}).isDisabled());
+ assert((await skillCard.textContent()).includes('所持:1 / 使用中:1'));
+
+ await equipPage.evaluate(()=>{
+  save.skillCards.s110_041=2;
+  openSkillEdit(save.instances.find(ins=>ins.id==='elna_beginner').uid);
+ });
+ await assertEquipped('所持:2 / 使用中:1');
+ assert(await equipButton.isEnabled());
+ await equipButton.tap();
+ await assertEquipped('所持:2 / 使用中:2');
+ assert.equal(await equipButton.count(),0);
+ assert.deepEqual(await equipPage.evaluate(()=>save.equippedSkills[editingSkillUid]),['s110_041','s110_041']);
+ assert.equal(equipErrors.length,0,equipErrors.join('\n'));
+ results.push({scenario:'412x915 Elna skill card: equip, reload, switch companion, and legitimately equip an extra copy',result:'PASS'});
+ await equipPage.close();
  fs.writeFileSync(`${out}/results.json`,JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
 }catch(error){
  // Capture before closing contexts, including failures in the first 320px case.

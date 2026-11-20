@@ -48,6 +48,13 @@ function tutorialPresentationSkipMenu(){
   document.getElementById('tutorialOverlay').classList.remove('is-descent');
   const root=document.getElementById('tutorialSkipMenu');root.hidden=!root.hidden;
 }
+function tutorialPresentationControls(step){
+  const action=tutorialStepRequiresAction(step);
+  const next=Boolean(!action&&!tutorialDialogueNeedsChoice(step)&&
+    ((step.nextLabel&&!tutorialDialogueHasMore(step))||(step.target&&!step.input)));
+  const targetTap=Boolean(action&&tutorialUiState.target);
+  return {next,targetTap,hint:!step.input&&!tutorialDialogueNeedsChoice(step)&&!next&&(!action||targetTap)};
+}
 function tutorialPresentationRender(step,view){
   const overlay=document.getElementById('tutorialOverlay');if(!overlay||typeof createStoryTypewriter!=='function')return;
   const state=tutorialPresentation,story=Boolean((view.scene||view.portrait)&&!step.target);
@@ -76,9 +83,10 @@ function tutorialPresentationRender(step,view){
   (story?document.getElementById('tutorialLogBack'):document.getElementById('tutorialGuideBack')).append(back);
   back.textContent=story?'1つ戻る':'戻る';back.hidden=!story&&back.disabled;
   const next=document.getElementById('tutorialNextButton');
-  const custom=Boolean(step.nextLabel&&!tutorialDialogueHasMore(step));
-  next.hidden=next.hidden||!custom;
-  const hint=document.getElementById('tutorialAdvanceHint');hint.textContent=step.target?'光っている場所をタップ':'▼';hint.hidden=Boolean(step.input||tutorialDialogueNeedsChoice(step)||custom);
+  const controls=tutorialPresentationControls(step);
+  next.hidden=next.hidden||!controls.next;
+  const hint=document.getElementById('tutorialAdvanceHint');
+  hint.textContent=controls.targetTap?'光っている場所をタップ':'▼';hint.hidden=!controls.hint;
   const form=document.getElementById('tutorialNameForm'),choices=document.getElementById('tutorialDialogueChoices');
   overlay.append(form,choices);
   document.getElementById('tutorialSkipMenu').append(document.getElementById('tutorialDialogueSkipButton'),document.getElementById('tutorialSkipButton'));

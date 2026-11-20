@@ -27,7 +27,7 @@ assert.ok(galdraStory.byteLength<=600*1024,'Galdra story art must stay within th
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
-const required=['lumina_intro','lumina_encounter','lumina_alchemy','lumina_materials','lumina_start','lumina_confirm','lumina_execute','lumina_wait','lumina_alchemy_result','lumina_farewell','lumina_alchemy_replay','expedition_intro'];
+const required=['lumina_intro','lumina_encounter','lumina_alchemy','lumina_start','lumina_execute','lumina_wait','lumina_alchemy_result','lumina_farewell','lumina_alchemy_replay','expedition_intro'];
 let previous=-1;
 for(const id of required){
   const current=main.indexOf(`id:'${id}'`);
@@ -63,7 +63,10 @@ assert.ok(data.includes("id:'alchemion'")&&data.includes("recipeId:'alchemion_st
 assert.ok(alchemy.includes("mode:'tutorial_lesson'"),'lesson selection must be isolated from normal alchemy');
 assert.ok(alchemy.includes('rate:tutorialLesson?100:'),'the first lesson must force 100% success');
 assert.ok(alchemy.includes('if(!plan.tutorialLesson){\n      save.instances = save.instances.filter'),'the lesson must not consume a companion');
-assert.ok(alchemy.includes("images/tutorial/characters/lumina_apprentice.png"),'the lesson UI must use the transparent Lumina portrait');
+assert.match(tutorial,/lumina_materials:'lumina_alchemy',lumina_confirm:'lumina_alchemy'/,'resume old checkpoints through the workbench setup');
+assert.match(luminaFlow,/id:'lumina_start'[^\n]+nextStepId:'lumina_execute'/,'workbench opens final confirmation without a second instructional STEP');
+assert.doesNotMatch(luminaFlow,/id:'lumina_(materials|confirm)'/,'obsolete guide pages are not in the live flow');
+assert.ok(alchemy.includes("消費せずに戻る"),'tutorial confirmation has a clear cancel action');
 assert.ok(alchemy.includes("if(!ins) errors.push('触媒契約体を1体選択してください。')"),'normal alchemy must still require a catalyst');
 assert.match(tutorialCss,/tutorial-story-backdrop\[data-scene="workshop"\]/);
 assert.match(uiCss,/\.tutorial-alchemy-lesson\{/);

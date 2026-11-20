@@ -195,7 +195,8 @@ const TUTORIAL_REMOVED_STEP_REDIRECTS=Object.freeze({
   stella_card_offer:'stella_card_receive',stella_card_received:'stella_skill_open',
   stella_skill_current:'stella_skill_unequip',stella_skill_card_detail:'stella_skill_equip',
   stella_type_special:'stella_mock_battle',stella_mock_actor:'stella_mock_skill_open',
-  lumina_recipe_offer:'lumina_alchemy',lumina_recipe:'lumina_materials',lumina_coin:'lumina_start',lumina_rate:'lumina_start',
+  lumina_recipe_offer:'lumina_alchemy',lumina_recipe:'lumina_alchemy',lumina_coin:'lumina_alchemy',lumina_rate:'lumina_alchemy',
+  lumina_materials:'lumina_alchemy',lumina_confirm:'lumina_alchemy',
   battle_ally:'battle_actor_open',battle_hp:'battle_actor_open',battle_type:'battle_actor_open',battle_turn:'battle_actor_open',
   battle_skill_cost:'battle_choose_skill',first_hunt:'elna_rescue_start',tutorial_hunt_request:'elna_rescue_start',battle_retry:'elna_rescue_start',
   victory_exp:'elna_contract_intro',victory_coin:'elna_contract_intro',victory_material:'elna_contract_intro',victory_rank:'elna_contract_intro',
@@ -835,6 +836,9 @@ function persistTutorialStep(){
 function startTutorialFlow(flowId,{stepId=null,persist=false,returnScreen=null,checkpointSaved=false}={}){
   const steps=tutorialFlowSteps(flowId);
   if(!steps.length)return false;
+  // Old saves may contain an in-between lesson STEP. Re-enter through
+  // the saved workbench checkpoint so its ephemeral fixed recipe is restored.
+  if(['lumina_start','lumina_execute','lumina_wait'].includes(stepId)&&flowId===TUTORIAL_MAIN_FLOW_ID)stepId='lumina_alchemy';
   const resolvedStepId=resolveTutorialStellaSkillResumeStep(resolveTutorialExpeditionResumeStep(flowId,stepId,false));
   clearTutorialUi();
   tutorialUiState.active=true;tutorialUiState.flowId=flowId;tutorialUiState.steps=steps;
@@ -1472,7 +1476,20 @@ function commitTutorialLuminaAlchemySuccess(){
   return true;
 }
 function handleTutorialAlchemyConfirmationOpened(){
-  return tutorialCurrentStepId()==='lumina_start'&&queueTutorialActionAdvance('lumina_start');
+  if(tutorialCurrentStepId()!=='lumina_start')return false;
+  tutorialNext(true);
+  return true;
+}
+function handleTutorialAlchemyReturnedToWorkbench(){
+  if(!['lumina_execute','lumina_wait'].includes(tutorialCurrentStepId()))return false;
+  const index=tutorialStepIndex(tutorialUiState.steps,'lumina_start');
+  if(index<0)return false;
+  // Both screens persist as lumina_alchemy. Returning only changes the guide,
+  // with no extra save, resource grant, or execution.
+  tutorialUiState.index=index;
+  tutorialUiState.lastFocusedStep=null;
+  renderTutorialStep();
+  return true;
 }
 function handleTutorialAlchemyExecutionStarted(){
   return tutorialCurrentStepId()==='lumina_execute'&&queueTutorialActionAdvance('lumina_execute');
@@ -2149,11 +2166,9 @@ registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID,[
   {id:'lumina_academy_arrival',screenId:'battleChoices',persistAs:'lumina_academy_arrival',disableBack:true,scene:'academy',speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'魔導学園へ',text:"うわっ！広い建物だなぁー！それであの魔法使いはどこに…っていた！待てー！",progressLabel:'PROLOGUE'},
   {id:'lumina_world_map_visit',screenId:'battleChoices',target:'[data-wm-facility-visit]',externalAdvance:true,persistAs:'lumina_intro',disableBack:true,title:'錬成工房へ入ろう',text:'魔法使いは学園の地下へ行ったぞ。「錬成工房へ入る」を押して追いかけよう！',progressLabel:'WORLD MAP'},
   {id:'lumina_encounter',screenId:'home',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'見習い錬金術師ルミナ',dialogue:[{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"うぇーん！ルミナー！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"うわっ！ステラ、どうしたの？"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"変な奴らにいじめられたのぉー！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"変な奴らとはなんだ！ぶつかってきたのはそっちだろ！"},{"speaker":"ステラ・ルミナ","portrait":null,"scene":"workshop","text":"うわぁっ！"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"なによ！わざわざ私をつけてきたっていうの！？さてはストーカーね、あなたたち！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"そんなわけあるか！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"あ、あなた達がステラをいじめたんですか…？"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"ちっがーう！ そっちからバトルしてきたから返り討ちにしただけ！負けた途端に逃げたから文句でも言ってやろうと思ったんだ！"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"別に、負けてないわ"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"どっからどう見ても負けただろ！…って、もしかしてここで｢錬成｣とかしてる？"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"えっ！すごい！どうして分かったの！？"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"ふふん！｢錬成｣についてはそれなりに詳しいからな！でもあんまり上手くいってなさそう？"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"うっ…。じ、実は色々試してるんだけど、まだ1回も成功したことなくて…。"},{"speaker":"ステラ","portrait":"images/tutorial/characters/stella_apprentice.png","scene":"workshop","text":"あっ、ルミナまでいじめるのね！このストーカー共！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"だからストーカーじゃない！｢錬成｣が上手くいってないのは多分、素材が揃ってないからだね。"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"素材…？それなら、ここにたくさんあるけど…。"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"いや、1個足りてないのがあるよ！素になるモンスターを入れないと！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"えぇっ！？でもモンスターを捕獲なんて、私じゃ出来ないし…。それに可哀想だよ？"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"ふふん！なら、良い方法があるよ！{{playerName}}が契約したモンスターを使うんだ！あれならボクの力でモンスターを再現しただけだから、問題なし！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"すごい…。それなら出来るかも…！"},{"speaker":"グノーシス","portrait":"images/tutorial/characters/gnosis-dialogue-transparent-final.png","scene":"workshop","text":"さっそくやってみよう！"},{"speaker":"ルミナ","portrait":"images/tutorial/characters/lumina_apprentice.png","scene":"workshop","text":"それじゃあ、やってみよう！ 今度こそ、うまくいくといいな…。"}],progressLabel:'LUMINA'},
-  {id:'lumina_alchemy',screenId:'home',persistAs:'lumina_alchemy',transition:'prepare_lumina_alchemy',nextStepId:'lumina_materials',replayNextStepId:'lumina_alchemy_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'錬成台を開こう！',text:'ここを押すと、素材を組み合わせて新しい契約体を生み出せるぞ！',progressLabel:'ALCHEMY',nextLabel:'錬成台へ'},
-  {id:'lumina_materials',screenId:'alchemy',target:'#tutorialAlchemyMaterials',persistAs:'lumina_alchemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'投入内容を確認',text:'今回使うのは素材4種類を各1個とコイン250枚だ！ 初回は必ず成功して、契約体は消費しないぞ！',progressLabel:'ALCHEMY'},
-  {id:'lumina_start',screenId:'alchemy',target:'#tutorialAlchemyStartButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を始めよう',text:'ここを押すと、入門錬成の確認へ進めるぞ！',progressLabel:'ALCHEMY'},
-  {id:'lumina_confirm',screenId:'alchemyConfirm',target:'#alchemyConfirmContent',persistAs:'lumina_alchemy',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'消費内容を確認',text:'実行する前に、消費する素材とコインを確認しよう！ 契約体は消費しない。確認できたな？ よし、始めるぞ！',progressLabel:'CONFIRM'},
-  {id:'lumina_execute',screenId:'alchemyConfirm',target:'#alchemyExecuteButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成を実行',text:'ここを押すと、素材とコインを使って錬成を実行するぞ！',progressLabel:'ALCHEMY'},
+  {id:'lumina_alchemy',screenId:'home',persistAs:'lumina_alchemy',transition:'prepare_lumina_alchemy',nextStepId:'lumina_start',replayNextStepId:'lumina_alchemy_replay',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',scene:'workshop',title:'錬成台を開こう！',text:'ここを押すと、素材を組み合わせて新しい契約体を生み出せるぞ！',progressLabel:'ALCHEMY',nextLabel:'錬成台へ'},
+  {id:'lumina_start',screenId:'alchemy',target:'#tutorialAlchemyStartButton',externalAdvance:true,persistAs:'lumina_alchemy',nextStepId:'lumina_execute',disableBack:true,speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',title:'入門錬成の材料',text:'素材4種類を各1個とコイン250枚だ！ 初回は必ず成功して、契約体は消費しないぞ！',progressLabel:'ALCHEMY'},
+  {id:'lumina_execute',screenId:'alchemyConfirm',target:'#alchemyExecuteButton',externalAdvance:true,persistAs:'lumina_alchemy',disableBack:true,title:'錬成の最終確認',text:'まだ消費していない。見直したいときは戻れるぞ！',progressLabel:'CONFIRM'},
   {id:'lumina_wait',screenId:'alchemyResult',target:'#alchemyResultContent',persistAs:'lumina_alchemy',waitForEvent:'alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',title:'錬成核を構築中',text:'あっ、素材が反応してる…！ 今までと違うよ。お願い、うまくいって…！',progressLabel:'ALCHEMY'},
   {id:'lumina_alchemy_result',screenId:'alchemyResult',persistAs:'lumina_alchemy_result',disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'入門錬成成功！',dialogue:[{text:'やった！成功だよ！ これでこれからも錬成できるね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'appear',text:'ガルル！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'わっ！こいつ、動いた！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガァ～ウ'},{speaker:'グノーシス',portrait:'images/tutorial/characters/gnosis-dialogue-transparent-final.png',storyEffect:'images/tutorial/characters/galdra_story_v1.webp',storyMotion:'fly',text:'なんだ？{{playerName}}の方に飛んでいったぞ？'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'うふふ。あなたのこと、親だと思ってるのかもね！'},{speaker:'ガルドラ',portrait:'images/tutorial/characters/galdra_story_v1.webp',text:'ガル！'}],progressLabel:'LUMINA',nextStepId:'lumina_farewell'},
   {id:'lumina_farewell',screenId:'home',persistAs:'lumina_farewell',chapterBreak:true,disableBack:true,speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',scene:'workshop',title:'工房での別れ',dialogue:[{text:'錬成に協力してくれてありがとう！あなた達のおかげだね！'},{speaker:'ステラ',portrait:'images/tutorial/characters/stella_apprentice.png',text:'ふん、少しはやるじゃない！'},{speaker:'ルミナ',portrait:'images/tutorial/characters/lumina_apprentice.png',text:'…これからも手伝ってくれる？部屋の鍵なら開けておくから、いつでも来てね。'}],progressLabel:'LUMINA',nextStepId:'expedition_intro',nextLabel:'第5話を終える'},
