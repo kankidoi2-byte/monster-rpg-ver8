@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261119-prologue-party-save-return',date:'2026-11-19',category:'fix',title:'物語の戦闘準備から編成を保存したあとの戻り先を修正しました',body:'物語の戦闘前に編成を変更して保存すると、元の戦闘準備画面へ戻ります。戦闘は「戦闘開始」を押すまで始まりません。'},
   {id:'20261119-facility-guide-heading',date:'2026-11-19',category:'fix',title:'施設の初回ガイドに正しい見出しを表示します',body:'ショップや進化などの初回ガイドでは施設名を表示します。物語のガイドでは実際の話数と話名が表示されます。'},
   {id:'20261119-shop-balance-header-sync',date:'2026-11-19',category:'fix',title:'ショップと画面上部のコイン表示をそろえました',body:'ショップを開いたときや購入後に、店内と画面上部に同じ所持コインが表示されます。価格やコインの増減は変わりません。'},
   {id:'20261119-single-chapter7-story-card',date:'2026-11-19',category:'fix',title:'第7話が話一覧に重複する表示を修正しました',body:'第7話は話一覧に1枚だけ表示されます。第6話のクリア前は解放条件を案内し、解放後は実際の進み具合が表示されます。'},

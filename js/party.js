@@ -280,6 +280,7 @@ function savePartySetup(){
   }
   renderPartySetup();
   if(typeof handleTutorialPartySaved==='function'&&handleTutorialPartySaved())return true;
+  if(typeof handleProloguePart2PartySaved==='function'&&handleProloguePart2PartySaved())return true;
   show('home');
   return true;
 }
