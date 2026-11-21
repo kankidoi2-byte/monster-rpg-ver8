@@ -17,7 +17,15 @@ function setupBattle() {
     const request = activeHuntRequest || createHuntRequest(selectedMap, enemy, 'd2',[],{allowOvertier:false});
     const mapImage = battleMapImage(selectedMap);
     const battleScreen = document.getElementById('battle');
-    if (battleScreen) battleScreen.style.setProperty('--battle-map-image', `url("${mapImage}")`);
+    if(battleScreen){
+      // A custom property used in a stylesheet resolves relative URLs against
+      // that stylesheet. Resolve against the document once before assigning it.
+      const imageUrl=new URL(mapImage,document.baseURI).href;
+      const background=`url("${imageUrl}")`;
+      battleScreen.style.setProperty('--battle-map-image',background);
+      const arena=battleScreen.querySelector('.battle-arena');
+      if(arena)arena.style.backgroundImage=background;
+    }
     document.getElementById('battleMapBanner').innerHTML =
       `<div class="panel"><img class="map-img" src="${mapImage}" alt="${selectedMap.name}"><h2>${selectedMap.name}</h2>
         <div class="battle-hunt-summary"><span class="hunt-difficulty difficulty-${request.difficultyId}">${request.difficultyLabel}</span>

@@ -12,7 +12,7 @@ function renderItemDex(){
     const unlocked = save.itemDex.includes(it.id);
     const count = Number(save.items?.[it.id] || 0);
     return `<div class="item-dex-card ${unlocked ? '' : 'locked'}" onclick="showItemDexDetail('${it.id}')">
-      <div class="item-dex-image">${itemDexVisual(it, !unlocked)}</div>
+      <div class="item-dex-image">${itemDexVisual(it, !unlocked, true)}</div>
       <span class="item-category">${unlocked ? itemDexCategory(it) : '未入手'}</span>
       <h2 style="margin:8px 0 4px">${unlocked ? it.name : '？？？'}</h2>
       <div class="small">${unlocked ? `所持数：${count}` : 'まだ入手していません'}</div>

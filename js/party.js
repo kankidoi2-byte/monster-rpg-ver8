@@ -260,7 +260,7 @@ function renderPartySetup() {
     const inParty = (save.party||[]).includes(ins.uid);
     const onExpedition = typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(ins.uid);
     return `<article class="party-select-card${inParty?' is-selected':''}${onExpedition?' is-expedition':''}">
-      <div class="party-select-visual">${vis(m)}${inParty?'<span>編成中</span>':onExpedition?'<span>遠征中</span>':''}</div><div><h2>${m.name}</h2>
+      <div class="party-select-visual">${vis(m,'loading="lazy" decoding="async"')}${inParty?'<span>編成中</span>':onExpedition?'<span>遠征中</span>':''}</div><div><h2>${m.name}</h2>
       <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
       <button data-monster-id="${m.id}" data-party-uid="${rosterEscape(ins.uid)}"${ins.uid===tutorialContractUid?' data-tutorial-contract-party="true"':''} onclick="togglePartyMember(this.dataset.partyUid)" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
     </article>`;

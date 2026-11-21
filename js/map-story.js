@@ -148,7 +148,7 @@ function renderMapStoryDialogue(){
   const label=node?(names[node.speaker]||(isVolcano?'':'情景')):ui.phase==='pre'?(ui.replay?'戦闘の記録':'戦闘の準備'):'この話の終わり';
   const narration=!node||node.kind==='stage'||!node.speaker;
   const speaker=node?.speaker;
-  const portraitFor=id=>id==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.png':(id==='galdra'||id==='tsubaki')?IMG[by(id).imgKey]:null;
+  const portraitFor=id=>id==='gnosis'?'images/tutorial/characters/gnosis-dialogue-transparent-final.compact.png':(id==='galdra'||id==='tsubaki')?IMG[by(id).imgKey]:null;
   const lighting=isVolcano?(episode.number>=7&&episode.number<=8?'ash':episode.number>=5&&episode.number<=6?'warm':''):'';
   const text=node?mapStoryNodeText(node):ui.phase==='pre'?(ui.replay?`${mapStoryEnemiesLabel(episode)}との戦闘を切り抜けた。`:`敵：${mapStoryEnemiesLabel(episode)}／推奨Lv.${episode.recommendedLevel}。ストーリー戦では契約できません。`):ui.replay?'戦闘後の会話を読み終えました。':finalEpisode?`${map.name}の物語を読み終えました。`:'戦闘後の会話を読み終えました。次の話へ進めます。';
   const primary=node?'<button type="button" class="map-story-next" onclick="mapStoryTap(event)" aria-label="次へ">▼</button>':ui.phase==='pre'?(ui.replay?'<button type="button" class="map-story-next" onclick="advanceMapStoryNode()">戦闘後へ</button>':`<button type="button" class="map-story-next" onclick="launchMapStoryBattle('${episode.id}')">戦闘開始</button>`):`<button type="button" class="map-story-next" onclick="completeMapStoryEpisode()">${ui.replay?'読み返しを終える':finalEpisode?`${mapName}の物語を終える`:`第${episode.number}話を終える`}</button>`;
