@@ -20,8 +20,9 @@ try{
  const luminaIds=['lumina_apprentice','lumina_wizard','lumina_sorcerer'];
  const elysiaIds=['elysia','elysia_prayer','hikari'];
  const brigitteIds=['character_brigitte_2','character_brigitte_3','character_brigitte_4'];
- const ids=[...elnaIds,...stellaIds,...luminaIds,...elysiaIds,...brigitteIds];
- const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':(elysiaIds.includes(id)||brigitteIds.includes(id))?'20261122':'20261121'}.webp`;
+ const tobiaIds=['character_tobia_2','character_tobia_3','character_tobia_4'];
+ const ids=[...elnaIds,...stellaIds,...luminaIds,...elysiaIds,...brigitteIds,...tobiaIds];
+ const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':(elysiaIds.includes(id)||brigitteIds.includes(id)||tobiaIds.includes(id))?'20261122':'20261121'}.webp`;
  await page.evaluate(ids=>{
   clearTutorialUi();save=initSave();completeTutorial();
   Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
@@ -71,7 +72,7 @@ try{
   assert.equal(await page.locator('#battle video,#battle .battle-idle-details').count(),0);
   for(const selector of ['#pVis img','#eVis img'])assert((await page.locator(selector).getAttribute('src')).endsWith(expectedPoster(id)));
   assert(await page.locator('#pVis .battle-static-media').evaluate(el=>getComputedStyle(el).backgroundColor==='rgba(0, 0, 0, 0)'));
-  const trio=[stellaIds,luminaIds,elysiaIds,brigitteIds].find(forms=>forms[2]===id);
+  const trio=[stellaIds,luminaIds,elysiaIds,brigitteIds,tobiaIds].find(forms=>forms[2]===id);
   if(!trio)continue;
   await page.screenshot({path:`${output}/${id}-single-battle.png`});
   await page.evaluate(([first,second])=>{
@@ -88,7 +89,7 @@ try{
   await page.evaluate(()=>{show('party');});
  }
  assert.equal(await page.evaluate(()=>battleIdleSizeDisplays.size),0);
- for(const id of ['lumina_sorcerer',...elysiaIds,...brigitteIds]){
+ for(const id of ['lumina_sorcerer',...elysiaIds,...brigitteIds,...tobiaIds]){
   assert.equal(await page.evaluate(id=>{save.homeFavoriteId=id;return saveGame();},id),true);
   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
   await page.locator('#titleScreen').waitFor({state:'detached'});
@@ -99,5 +100,5 @@ try{
  }
  await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('#home video').count(),0);
  assert.deepEqual(errors,[]);
- console.log('PASS Elna, Stella, Lumina, Elysia and Brigitte cutouts: 17 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
+ console.log('PASS Elna, Stella, Lumina, Elysia, Brigitte and Tobia cutouts: 20 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
 }finally{await browser?.close();server.kill();}
