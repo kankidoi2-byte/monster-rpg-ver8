@@ -4,8 +4,8 @@ import vm from 'node:vm';
 import {webcrypto} from 'node:crypto';
 
 const source=name=>fs.readFileSync(new URL(`../js/${name}.js`,import.meta.url),'utf8');
-const startupSave=source('init').split('\n').find(line=>line.includes('save-result-allow: startup-migration'));
-assert.match(startupSave,/saveGame\(\)/,'exercise the actual optionless startup save call');
+const startupSave=source('init').split('\n').find(line=>line.trim()==='saveStartupState();');
+assert.match(startupSave,/saveStartupState\(\)/,'exercise the actual optionless startup save call');
 const primary=slot=>slot===1?'mb_v95c':'mb_v95c_profile2';
 const backup=slot=>`${primary(slot)}_lastKnownGood`;
 const original=JSON.stringify({schemaVersion:4,coins:2000});

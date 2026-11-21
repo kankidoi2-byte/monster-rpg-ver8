@@ -1,0 +1,68 @@
+/* The first row is the permanent migration baseline (no gift for this row).
+ * Append releases oldest-first. Never edit or drop a published row.
+ * Set index.html's update-releases.js?v= to the new latest version.
+ * Optional extraRewards use the same records as gifts-data.js.
+ */
+const UPDATE_RELEASES = [
+  {version:'8.0.1',date:'2026-11-21',change:'アップデートごとにプレゼントBOXへ報酬が届くようになりました。'}
+];
+
+const UpdateReleases = (() => {
+  const LIMIT = 20;
+  const baseline = UPDATE_RELEASES[0].version;
+  const current = UPDATE_RELEASES.at(-1).version;
+  const rewards = {
+    small:[{kind:'coins',amount:100},{kind:'bless',amount:10}],
+    medium:[{kind:'coins',amount:500},{kind:'bless',amount:50},{kind:'item',id:'max_potion',count:1}],
+    large:[{kind:'coins',amount:2000},{kind:'bless',amount:200},{kind:'item',id:'revive_drop',count:1}]
+  };
+  function parts(version){
+    if(typeof version!=='string'||!/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*))?$/.test(version))return null;
+    const numbers=version.split('.').map(Number);
+    if(!numbers.every(Number.isSafeInteger))return null;
+    return [numbers[0],numbers[1],numbers[2]??0];
+  }
+  function compare(a,b){
+    const first=parts(a),second=parts(b);
+    return first[0]-second[0]||first[1]-second[1]||first[2]-second[2];
+  }
+  function size(previous,next){
+    const [major,minor]=parts(previous),[nextMajor,nextMinor]=parts(next);
+    return major!==nextMajor?'large':minor!==nextMinor?'medium':'small';
+  }
+  function normalize(state){
+    const delivered=parts(state?.delivered)?state.delivered:baseline;
+    const pending=Array.isArray(state?.pending)?[...new Set(state.pending.filter(v=>parts(v)&&compare(v,baseline)>0&&compare(v,delivered)<=0))]:[];
+    return {delivered,pending:pending.sort(compare).slice(-LIMIT)};
+  }
+  function advance(state){
+    const next=normalize(state);
+    // Do not rewind markers or erase gifts from a newer build on downgrade.
+    if(compare(next.delivered,current)>=0)return next;
+    return normalize({
+      delivered:current,
+      pending:[...next.pending,...UPDATE_RELEASES.slice(1).filter(r=>compare(r.version,next.delivered)>0).map(r=>r.version)]
+    });
+  }
+  function gifts(state){
+    const pending=new Set(normalize(state).pending);
+    // Newest version first even when several releases share the same date.
+    return UPDATE_RELEASES.slice(1).map((release,index)=>{
+      if(!pending.has(release.version))return null;
+      const tier=size(UPDATE_RELEASES[index].version,release.version);
+      return {
+        id:release.version,key:'update:'+release.version,source:'update',tier,
+        title:'Ver'+release.version+' アップデート報酬',letter:release.change,
+        createdAt:new Date(release.date+'T00:00:00+09:00').toISOString(),until:null,
+        rewards:[...rewards[tier],...(release.extraRewards||[])]
+      };
+    }).filter(Boolean).reverse();
+  }
+  function notices(){
+    return UPDATE_RELEASES.slice().reverse().map(r=>({
+      id:r.date.replaceAll('-','')+'-release-'+r.version.replaceAll('.','-'),
+      date:r.date,category:'update',title:'Ver'+r.version+' アップデート',body:r.change
+    }));
+  }
+  return {current,parts,compare,normalize,advance,gifts,notices};
+})();

@@ -12,12 +12,6 @@
     "reason": "Both runtime victory callers use saveNow:false and commit with the surrounding victory transaction. This optional standalone save retains progress and the already-rolled reward plan for the next successful save; no reward is claimed here."
   },
   {
-    "id": "startup-migration",
-    "file": "js/init.js",
-    "function": "<program>",
-    "reason": "Startup initialization/migration remains available in memory and is retried on startup or included in a later successful save. A failed write must not prevent opening the game or exporting its current save."
-  },
-  {
     "id": "party-exp-helper",
     "file": "js/progression.js",
     "function": "grantPartyExp",
