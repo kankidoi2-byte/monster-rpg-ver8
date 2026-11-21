@@ -9,7 +9,7 @@
     "dev": "node scripts/dev-server.mjs",
     "check:story-mode": "node scripts/test-story-mode.mjs",
     "check:first-play-clarity": "node scripts/test-first-play-clarity.mjs",
-    "check:home-water": "node scripts/test-home-water.mjs && node scripts/test-home-missions.mjs && node scripts/test-elna-fullbody-browser.mjs",
+    "check:home-water": "node scripts/test-home-water.mjs && node scripts/test-home-missions.mjs && node scripts/test-character-fullbody-browser.mjs",
     "check:life-quest": "node scripts/test-life-quest.mjs && node scripts/test-life-quest-browser.mjs",
     "check:auto-battle": "node scripts/test-auto-battle.mjs && node scripts/test-auto-battle-browser.mjs",
     "check:syntax": "node scripts/check-tool-syntax.mjs",

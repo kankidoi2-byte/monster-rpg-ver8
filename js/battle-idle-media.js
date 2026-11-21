@@ -304,13 +304,16 @@ kimeragna_apex:Object.freeze({
 // Full-body character cutouts share the monster geometry, without video decoders.
 // Keep card/encyclopedia artwork in IMG; these assets belong to home and battle.
 const BATTLE_STATIC_MEDIA=Object.freeze(Object.fromEntries([
-  ['elna_beginner',1254,1254,153,4,875,1251],
-  ['elna_middle',1024,1536,17,20,998,1498],
-  ['elna_advanced',1024,1536,14,30,1011,1479],
-  ['elna_water',1024,1536,19,97,1020,1500],
-  ['elna_kaen',1024,1536,0,8,1022,1534]
-].map(([id,width,height,x,y,right,bottom])=>[id,Object.freeze({
-  poster:`images/monsters/${id}_fullbody_20261104.webp`,
+  ['elna_beginner','20261104',1254,1254,153,4,875,1251],
+  ['elna_middle','20261104',1024,1536,17,20,998,1498],
+  ['elna_advanced','20261104',1024,1536,14,30,1011,1479],
+  ['elna_water','20261104',1024,1536,19,97,1020,1500],
+  ['elna_kaen','20261104',1024,1536,0,8,1022,1534],
+  ['stella_apprentice','20261121',1024,1536,33,7,1014,1517],
+  ['stella_wizard','20261121',1024,1536,17,6,1022,1526],
+  ['stella_sorcerer','20261121',1024,1536,9,0,1018,1490]
+].map(([id,version,width,height,x,y,right,bottom])=>[id,Object.freeze({
+  poster:`images/monsters/${id}_fullbody_${version}.webp`,
   allyFlip:false,enemyFlip:true,
   // Human characters keep one stature across growth stages.
   layout:Object.freeze({x:0.5,y:1,scale:0.75}),
