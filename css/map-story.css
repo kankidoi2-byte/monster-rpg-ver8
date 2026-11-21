@@ -27,9 +27,13 @@ body:has(:is(#mapStory,#prologuePart2).active .map-story-scene)>.app-topbar,body
 :is(#mapStory,#prologuePart2) .map-story-message p{margin:0;font-size:clamp(15px,4.5vw,23px);color:#fff}
 .map-story-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
 :is(#mapStory,#prologuePart2) .map-story-actions .map-story-next{color:#141a2c;background:#e2cd96;border-color:#fff3cf}
-.map-story-actions.is-conversation{position:absolute;right:4vw;bottom:3%;margin:0}
+.map-story-actions.is-conversation{position:absolute;right:4vw;bottom:max(8px,3%,env(safe-area-inset-bottom));margin:0}
 :is(#mapStory,#prologuePart2) .is-conversation .map-story-next{color:#e2cd96;background:transparent;border:0;padding:6px 12px;font-size:18px}
 :is(#mapStory,#prologuePart2) .is-conversation .map-story-next.is-typing{opacity:0}
+/* Keep the full 44px touch target above the clipped scene even at the
+   lowest point of the cue. The generic 35% bounce also applies to small glyphs. */
+@media(prefers-reduced-motion:no-preference){:is(#mapStory,#prologuePart2) .is-conversation .map-story-next.story-scene-cue{animation-name:map-story-cue}}
+@keyframes map-story-cue{50%{transform:translateY(4px)}}
 .map-story-log-lines{flex:1;overflow:auto;margin:12px 0}
 .map-story-log-lines p{margin:5px 0}
 @keyframes map-story-caption{0%{opacity:0}18%,75%{opacity:1}100%{opacity:0;visibility:hidden}}

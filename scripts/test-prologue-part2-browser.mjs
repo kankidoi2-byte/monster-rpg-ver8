@@ -10,6 +10,10 @@ try{
  browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
+ // A real battle can earn a rank just before the contract choice is tapped.
+ const rankContinue=page.getByRole('button',{name:'冒険を続ける',exact:true});
+ await page.addLocatorHandler(rankContinue,()=>rankContinue.click());
+
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  const boot=async()=>{await page.goto('http://127.0.0.1:4387/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
  await boot();

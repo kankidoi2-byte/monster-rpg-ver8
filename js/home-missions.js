@@ -1,6 +1,6 @@
 // Home missions are claim receipts, separate from tutorial/progression missions.
 const HOME_MISSIONS=Object.freeze([
-  Object.freeze({id:'prologue_clear',name:'序章ストーリーをクリアする',reward:500}),
+  Object.freeze({id:'prologue_clear',name:'序章前半（第6話まで）を終える',reward:500}),
   Object.freeze({id:'alchemy_once',name:'錬成を 1 回実行する',reward:500})
 ]);
 function homeMissionStoryProgress(){
