@@ -545,6 +545,16 @@ function renderTutorialDialogueChoices(step){
     root.appendChild(button);
   }
 }
+const compactDialoguePortraits = new Map([
+  'gnosis-dialogue-transparent-final', 'elna_beginner', 'stella_apprentice', 'lumina_apprentice'
+].map(name => {
+  const base = 'images/tutorial/characters/' + name;
+  return [base + '.png', base + '.compact.png'];
+}));
+function dialoguePortraitUrl(source) {
+  return compactDialoguePortraits.get(source) || source;
+}
+
 function renderTutorialStoryStep(step){
   const overlay=document.getElementById('tutorialOverlay');
   const backdrop=document.getElementById('tutorialStoryBackdrop');
