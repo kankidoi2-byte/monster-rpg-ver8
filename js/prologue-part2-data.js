@@ -2122,7 +2122,7 @@
           "id": "pb_13_pre_07",
           "kind": "system",
           "speaker": "システム",
-          "text": "この戦闘では、相手の攻撃を退けて安全な距離を作ります。HP0で退避の演出へ進みます。",
+          "text": "モルグラムのHPを0にすると、攻撃を退けて安全な距離まで退避できます。",
           "sourceText": "システム：この戦闘では、相手の攻撃を退けて安全な距離を作ります。HP0で退避の演出へ進みます。",
           "sourceLine": 447,
           "background": "images/maps/forest.webp"
