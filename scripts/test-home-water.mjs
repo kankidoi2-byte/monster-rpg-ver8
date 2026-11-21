@@ -34,4 +34,4 @@ for(const id of ['homeBanner','homeBannerTrack','homeBannerDots','homeSideLinks'
 assert.match(html,/id="homeNoticePreview"><button[^>]*showNotices/);
 assert(!html.includes('id="homePartyPreview"'));
 assert(fs.statSync('images/maps/home_water_mirror_v1.webp').size<700*1024);
-console.log('PASS water home: all 55 species × 3 viewports, body scale/centering/containment, equal slime size, bounds, navigation anchors, image budget.');
+console.log(`PASS water home: all ${Object.keys(media).length} species × 3 viewports, body scale/centering/containment, equal slime size, bounds, navigation anchors, image budget.`);
