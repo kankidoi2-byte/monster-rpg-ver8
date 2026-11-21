@@ -523,7 +523,9 @@ function tutorialDialogueView(step){
     tutorialDialogueState.renderToken+=1;
   }
   const page=step?.dialogue?.[tutorialDialogueState.page];
-  return page?{...step,...page}:step;
+  const view=page?{...step,...page}:step;
+  const portrait=dialoguePortraitUrl(view?.portrait);
+  return portrait===view?.portrait?view:{...view,portrait};
 }
 function tutorialDialogueHasMore(step){
   return Boolean(step?.dialogue&&tutorialDialogueState.page<step.dialogue.length-1);
@@ -576,11 +578,10 @@ function renderTutorialStoryStep(step){
     backdrop.dataset.scene=step?.scene||'';
   }
   if(layer)layer.hidden=!step?.portrait;
-  if(layer)layer.dataset.portrait=step?.portrait?.split('/').pop()?.split('?')[0]?.replace(/\.png$/,'')||'';
+  if(layer)layer.dataset.portrait=step?.portrait?.split('/').pop()?.split('?')[0]?.replace(/(?:\.compact)?\.png$/,'')||'';
   if(portrait){
     portrait.hidden=!step?.portrait;
-    const src=dialoguePortraitUrl(step?.portrait);
-    if(src&&portrait.getAttribute('src')!==src)portrait.setAttribute('src',src);
+    if(step?.portrait&&portrait.getAttribute('src')!==step.portrait)portrait.setAttribute('src',step.portrait);
     portrait.alt=step?.speaker?step.speaker:'';
   }
   if(effectLayer){

@@ -13,6 +13,11 @@ try{
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  const boot=async()=>{await page.goto('http://127.0.0.1:4387/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
  await boot();
+ const openingPortrait=page.locator('#tutorialCast img.is-speaking');
+ await openingPortrait.waitFor({state:'visible'});
+ await openingPortrait.evaluate(img=>img.decode());
+ assert.match(await openingPortrait.getAttribute('src'),/gnosis-dialogue-transparent-final\.compact\.png$/);
+ assert.equal(await page.evaluate(()=>performance.getEntriesByType('resource').some(entry=>entry.name.endsWith('/gnosis-dialogue-transparent-final.png'))),false);
  // Compare the decoded pixels the player sees, including antialiased edges.
  const portraits=JSON.parse(fs.readFileSync('images/tutorial/characters/manifest.json','utf8')).characters.filter(asset=>asset.runtimeImage);
  assert.equal(portraits.length,4);
