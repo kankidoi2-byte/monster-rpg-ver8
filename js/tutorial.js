@@ -523,7 +523,9 @@ function tutorialDialogueView(step){
     tutorialDialogueState.renderToken+=1;
   }
   const page=step?.dialogue?.[tutorialDialogueState.page];
-  return page?{...step,...page}:step;
+  const view=page?{...step,...page}:step;
+  const portrait=dialoguePortraitUrl(view?.portrait);
+  return portrait===view?.portrait?view:{...view,portrait};
 }
 function tutorialDialogueHasMore(step){
   return Boolean(step?.dialogue&&tutorialDialogueState.page<step.dialogue.length-1);
@@ -545,6 +547,16 @@ function renderTutorialDialogueChoices(step){
     root.appendChild(button);
   }
 }
+const compactDialoguePortraits = new Map([
+  'gnosis-dialogue-transparent-final', 'elna_beginner', 'stella_apprentice', 'lumina_apprentice'
+].map(name => {
+  const base = 'images/tutorial/characters/' + name;
+  return [base + '.png', base + '.compact.png'];
+}));
+function dialoguePortraitUrl(source) {
+  return compactDialoguePortraits.get(source) || source;
+}
+
 function renderTutorialStoryStep(step){
   const overlay=document.getElementById('tutorialOverlay');
   const backdrop=document.getElementById('tutorialStoryBackdrop');
@@ -566,7 +578,7 @@ function renderTutorialStoryStep(step){
     backdrop.dataset.scene=step?.scene||'';
   }
   if(layer)layer.hidden=!step?.portrait;
-  if(layer)layer.dataset.portrait=step?.portrait?.split('/').pop()?.split('?')[0]?.replace(/\.png$/,'')||'';
+  if(layer)layer.dataset.portrait=step?.portrait?.split('/').pop()?.split('?')[0]?.replace(/(?:\.compact)?\.png$/,'')||'';
   if(portrait){
     portrait.hidden=!step?.portrait;
     if(step?.portrait&&portrait.getAttribute('src')!==step.portrait)portrait.setAttribute('src',step.portrait);

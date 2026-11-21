@@ -28,7 +28,12 @@ for(const [id,file] of [
   const png=fs.readFileSync(new URL(`../images/tutorial/characters/${file}`,import.meta.url));
   assert.ok(png.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),`${id} must be a decoded PNG`);
   assert.equal(png[25],6,`${id} must use RGBA color type`);
-  assert.ok(main.includes(`images/tutorial/characters/${file}`),`${id} transparent portrait must be runtime-referenced`);
+  assert.equal(asset.runtimeImage,asset.cutout.replace(/\.png$/,'.compact.png'));
+  const delivered=fs.readFileSync(new URL('../'+asset.runtimeImage,import.meta.url));
+  assert(delivered.subarray(0,8).equals(png.subarray(0,8)),id+' must use PNG');
+  assert.equal(crypto.createHash('sha256').update(delivered).digest('hex'),asset.runtimeSha256);
+  assert(delivered.length<png.length);
+  assert.ok(main.includes(asset.cutout),`${id} transparent portrait must be runtime-referenced`);
 }
 assert.equal(manifest.characters.find(entry=>entry.id==='gnosis')?.dexRegistered,false,'Gnosis must stay outside the dex');
 const elnaAsset=manifest.characters.find(entry=>entry.id==='elna_beginner');
