@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  {id:'20261121-lumina-fullbody',date:'2026-11-21',category:'update',title:'ルミナの3形態に全身立ち絵を追加しました',body:'見習い魔法使いルミナ・魔法使いルミナ・魔導師ルミナの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261121-stella-fullbody',date:'2026-11-21',category:'update',title:'ステラの3形態に全身立ち絵を追加しました',body:'見習い魔法使いステラ・魔法使いステラ・魔導師ステラの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261119-prologue-battle-prep-opponents',date:'2026-11-19',category:'fix',title:'物語の戦闘前に対戦相手の名前を表示します',body:'第7話以降の戦闘準備で対戦相手が分かるようになり、戦闘を始めるボタン名を「戦闘開始」に統一しました。契約できない戦闘の案内も短くしました。'},
   {id:'20261119-prologue-party-save-return',date:'2026-11-19',category:'fix',title:'物語の戦闘準備から編成を保存したあとの戻り先を修正しました',body:'物語の戦闘前に編成を変更して保存すると、元の戦闘準備画面へ戻ります。戦闘は「戦闘開始」を押すまで始まりません。'},
