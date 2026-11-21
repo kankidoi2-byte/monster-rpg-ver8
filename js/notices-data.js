@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const GAME_NOTICES = Object.freeze([
+  ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
   {id:'20261121-lumina-fullbody',date:'2026-11-21',category:'update',title:'ルミナの3形態に全身立ち絵を追加しました',body:'見習い魔法使いルミナ・魔法使いルミナ・魔導師ルミナの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261121-stella-fullbody',date:'2026-11-21',category:'update',title:'ステラの3形態に全身立ち絵を追加しました',body:'見習い魔法使いステラ・魔法使いステラ・魔導師ステラの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261119-prologue-battle-prep-opponents',date:'2026-11-19',category:'fix',title:'物語の戦闘前に対戦相手の名前を表示します',body:'第7話以降の戦闘準備で対戦相手が分かるようになり、戦闘を始めるボタン名を「戦闘開始」に統一しました。契約できない戦闘の案内も短くしました。'},
@@ -785,5 +786,4 @@ const GAME_NOTICES = Object.freeze([
     title: 'キメラグナ・アペクスを★4へ調整しました',
     body: 'キメラグナ・アペクスのレアリティを★5から★4へ変更し、装備できる技コスト上限も調整しました。'
   })
-]);
-
+].sort((a,b)=>b.date.localeCompare(a.date)));

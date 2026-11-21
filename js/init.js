@@ -34,7 +34,7 @@ if(typeof PersonalGifts!=='undefined')PersonalGifts.start();
 const evolutionNativeMigrationInstances = [...(save.instances || [])];
 initStarters();
 migrateSkillSystem(evolutionNativeMigrationInstances);
-/* save-result-allow: startup-migration */saveGame();
+saveStartupState();
 renderParty();
 
 function chooseDifferentTitleMap(){
@@ -59,6 +59,10 @@ function initTitleScreen(){
   try{
     const screen=document.getElementById('titleScreen');
     if(!screen) return;
+    if(typeof UpdateReleases!=='undefined'){
+      screen.querySelector('.title-version').textContent='Ver'+UpdateReleases.current;
+      document.title='モンスターバトル Ver'+UpdateReleases.current;
+    }
     const map=chooseDifferentTitleMap();
     const monster=chooseTitleMonster(map);
     const bg=document.getElementById('titleBg');

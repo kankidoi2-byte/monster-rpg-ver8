@@ -64,3 +64,9 @@ body:has(#giftBox#giftBox#giftBox.active){overflow:hidden;padding-bottom:0}
 #giftBox#giftBox#giftBox h1 svg{width:23px;height:23px;flex:none;stroke:#a78a58}
 #giftBox#giftBox#giftBox .gift-row-details{border:0!important;border-radius:0;min-height:44px}
 #giftBox#giftBox#giftBox .gift-claim{min-height:44px}
+
+/* Medium and major releases are distinct without altering other gift rows. */
+#giftBox#giftBox#giftBox .gift-update-medium .gift-row-copy>strong{color:#215496}
+#giftBox#giftBox#giftBox .gift-update-large .gift-row-copy>strong{color:#89520b}
+#giftBox#giftBox#giftBox .gift-update-medium .gift-sender-icon{background:#e8f1ff;color:#215496}
+#giftBox#giftBox#giftBox .gift-update-large .gift-sender-icon{background:#fff0c7;color:#89520b}
