@@ -314,7 +314,10 @@ const BATTLE_STATIC_MEDIA=Object.freeze(Object.fromEntries([
   ['stella_sorcerer','20261121',1024,1536,9,0,1018,1490],
   ['lumina_apprentice','20261121',1024,1536,159,16,911,1520],
   ['lumina_wizard','20261121',1024,1536,59,38,961,1500],
-  ['lumina_sorcerer','20261121',1024,1536,20,14,1012,1438]
+  ['lumina_sorcerer','20261121',1024,1536,20,14,1012,1438],
+  ['elysia','20261122',1024,1536,26,18,1024,1495],
+  ['elysia_prayer','20261122',1024,1536,22,17,991,1522],
+  ['hikari','20261122',1024,1536,12,0,1014,1526]
 ].map(([id,version,width,height,x,y,right,bottom])=>[id,Object.freeze({
   poster:`images/monsters/${id}_fullbody_${version}.webp`,
   allyFlip:false,enemyFlip:true,

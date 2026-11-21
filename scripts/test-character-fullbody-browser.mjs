@@ -18,8 +18,9 @@ try{
  const elnaIds=['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'];
  const stellaIds=['stella_apprentice','stella_wizard','stella_sorcerer'];
  const luminaIds=['lumina_apprentice','lumina_wizard','lumina_sorcerer'];
- const ids=[...elnaIds,...stellaIds,...luminaIds];
- const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':'20261121'}.webp`;
+ const elysiaIds=['elysia','elysia_prayer','hikari'];
+ const ids=[...elnaIds,...stellaIds,...luminaIds,...elysiaIds];
+ const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':elysiaIds.includes(id)?'20261122':'20261121'}.webp`;
  await page.evaluate(ids=>{
   clearTutorialUi();save=initSave();completeTutorial();
   Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
@@ -69,7 +70,7 @@ try{
   assert.equal(await page.locator('#battle video,#battle .battle-idle-details').count(),0);
   for(const selector of ['#pVis img','#eVis img'])assert((await page.locator(selector).getAttribute('src')).endsWith(expectedPoster(id)));
   assert(await page.locator('#pVis .battle-static-media').evaluate(el=>getComputedStyle(el).backgroundColor==='rgba(0, 0, 0, 0)'));
-  const trio=[stellaIds,luminaIds].find(forms=>forms[2]===id);
+  const trio=[stellaIds,luminaIds,elysiaIds].find(forms=>forms[2]===id);
   if(!trio)continue;
   await page.screenshot({path:`${output}/${id}-single-battle.png`});
   await page.evaluate(([first,second])=>{
@@ -86,12 +87,16 @@ try{
   await page.evaluate(()=>{show('party');});
  }
  assert.equal(await page.evaluate(()=>battleIdleSizeDisplays.size),0);
- await page.evaluate(()=>{save.homeFavoriteId='lumina_sorcerer';saveGame();show('home');});
- await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
- await page.locator('#titleScreen').waitFor({state:'detached'});
- assert.equal(await page.evaluate(()=>save.homeFavoriteId),'lumina_sorcerer');
- assert((await page.locator('#home .home-water-monster img').getAttribute('src')).endsWith(expectedPoster('lumina_sorcerer')));
+ for(const id of ['lumina_sorcerer',...elysiaIds]){
+  assert.equal(await page.evaluate(id=>{save.homeFavoriteId=id;return saveGame();},id),true);
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+  await page.locator('#titleScreen').waitFor({state:'detached'});
+  assert.equal(await page.evaluate(()=>save.homeFavoriteId),id);
+  const img=page.locator('#home .home-water-monster img');
+  await img.evaluate(el=>el.decode());
+  assert((await img.getAttribute('src')).endsWith(expectedPoster(id)));
+ }
  await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('#home video').count(),0);
  assert.deepEqual(errors,[]);
- console.log('PASS Elna, Stella and Lumina cutouts: 11 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
+ console.log('PASS Elna, Stella, Lumina and Elysia cutouts: 14 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
 }finally{await browser?.close();server.kill();}
