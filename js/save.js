@@ -285,6 +285,7 @@ function initSave() {
     authority:normalizeAuthoritySave(null),
     autoBattle:normalizeAutoBattle(null),
     gBless:normalizeGBless(null),
+    ...(typeof UpdateReleases!=="undefined"?{updateRewards:{delivered:UpdateReleases.current,pending:[]}}:{}),
     schemaVersion:SAVE_SCHEMA_VERSION,
     saveMeta:{migrations:['character_first_lock_v1',...(skill110MigrationAvailable() ? ['skill_system_110_v1','equipped_skill_cards_v1','evolution_native_cards_v1'] : [])], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
@@ -527,6 +528,7 @@ function repairSave(payload,report=[]){
   payload.giftReceiptVersion=payload.giftReceiptVersion===1?1:0;
   payload.lifeQuestClaimedIds=Array.isArray(payload.lifeQuestClaimedIds)?[...new Set(payload.lifeQuestClaimedIds.filter(id=>typeof id==='string'))]:[];
   if(payload.giftReceiptVersion!==1)payload.lifeQuestClaimedIds=payload.lifeQuestClaimedIds.slice(-500);
+  if(typeof UpdateReleases!=='undefined')payload.updateRewards=UpdateReleases.normalize(payload.updateRewards);
   payload.giftClaimedIds=Array.isArray(payload.giftClaimedIds)?[...new Set(payload.giftClaimedIds.filter(id=>typeof id==='string'&&id))]:[];
   payload.giftHistory=Array.isArray(payload.giftHistory)?payload.giftHistory.filter(g=>isSaveObject(g)&&typeof g.key==='string'&&Array.isArray(g.rewards)&&Number.isFinite(Date.parse(g.receivedAt))&&Date.now()-Date.parse(g.receivedAt)<=90*86400000).sort((a,b)=>Date.parse(b.receivedAt)-Date.parse(a.receivedAt)).slice(0,200):[];
   if(!isSaveObject(payload.quarantine))payload.quarantine=defaults.quarantine;
@@ -974,6 +976,15 @@ function acknowledgeReplacementRecovery(){
     record.status='acknowledged';if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,JSON.stringify(record)))throw new Error('確認状態を保存できませんでした。');
     refreshReplacementRecoveryStatus();
   }catch(error){saveTransactionNotice(error.message);}
+}
+// Persist the delivered marker and inbox IDs together before displaying new gifts.
+function saveStartupState(){
+  if(typeof UpdateReleases==='undefined')return saveGame();
+  const previous=save.updateRewards;
+  save.updateRewards=UpdateReleases.advance(previous);
+  if(saveGame())return true;
+  save.updateRewards=previous;
+  return false;
 }
 function saveGame({requireBackup=false,requireReadable=false}={}) {
   if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null)return false;

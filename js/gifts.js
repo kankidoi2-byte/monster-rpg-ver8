@@ -62,7 +62,8 @@ function lifeQuestGiftEntries(){
 function pendingGifts(now=Date.now()){
   let lifeGifts=[];
   try{lifeGifts=lifeQuestGiftEntries();lifeGiftReadFailed=false;}catch(error){lifeGiftReadFailed=true;}
-  return [...developerGiftEntries(now),...(typeof PersonalGifts!=='undefined'?PersonalGifts.entries():[]),...lifeGifts].sort((a,b)=>{
+  const updateGifts=typeof UpdateReleases!=='undefined'?UpdateReleases.gifts(save.updateRewards).filter(g=>g.rewards.every(giftRewardValid)):[];
+  return [...developerGiftEntries(now),...updateGifts,...(typeof PersonalGifts!=='undefined'?PersonalGifts.entries():[]),...lifeGifts].sort((a,b)=>{
     const deadline=giftDeadline(a)-giftDeadline(b);
     return (Number.isNaN(deadline)?0:deadline)||(Date.parse(b.createdAt)||0)-(Date.parse(a.createdAt)||0);
   });
@@ -122,6 +123,10 @@ function commitGiftClaim(keys,identity,owner){
     }
     const receivedAt=new Date().toISOString();
     for(const g of selected){
+      if(g.source==='update'){
+        save.updateRewards.pending=save.updateRewards.pending.filter(version=>version!==g.id);
+        continue;
+      }
       const field=g.source==='developer'?'giftClaimedIds':'lifeQuestClaimedIds';
       save[field]=[...new Set([...(save[field]||[]),g.id])];
     }
@@ -154,8 +159,8 @@ async function claimGifts(keys){
 function giftDateLabel(s){
   const n=Date.parse(s);return Number.isFinite(n)?new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'numeric',day:'numeric'}).format(n):'—';
 }
-function giftSource(g){return ['developer','lifequest'].includes(g.source)?g.source:'unknown';}
-function giftSender(g){return {developer:'開発者（土井さん）',lifequest:'Life Quest',unknown:'不明'}[giftSource(g)];}
+function giftSource(g){return ['developer','lifequest','update'].includes(g.source)?g.source:'unknown';}
+function giftSender(g){return {developer:'開発者（土井さん）',lifequest:'Life Quest',update:'アップデート',unknown:'不明'}[giftSource(g)];}
 function giftIcon(g){return g.source==='developer'?'✉':'✦';}
 function giftRewardName(r){return r.kind==='bless'?'G-BLESS 予備の加護':r.kind==='coins'?'コイン':r.kind==='item'?ITEM_DEX_BY_ID[r.id]?.name:r.kind==='skill'?SKILL_BY_ID[r.id]?.name:by(r.id)?.name;}
 function giftRewardArt(r){
@@ -175,7 +180,8 @@ function giftRewardCards(rewards){
 }
 function giftRow(g,history=false){
   const soon=g.until!==null&&giftDeadline(g)-Date.now()<=14*86400000;
-  return `<article class="gift-row"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${giftEscape(g.title)}の詳細"><span class="gift-sender-icon ${giftSource(g)}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受領 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${giftEscape(g.title)}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
+  const tier=g.source==='update'&&['medium','large'].includes(g.tier)?' gift-update-'+g.tier:'';
+  return `<article class="gift-row${tier}"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${giftEscape(g.title)}の詳細"><span class="gift-sender-icon ${giftSource(g)}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受領 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${giftEscape(g.title)}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
 }
 function refreshGiftUi(){
   const badge=document.getElementById('giftUnreadCount');if(!badge)return;
@@ -192,7 +198,7 @@ function renderGiftBox(entries){
     const filtered=all.filter(g=>giftFilter==='all'||g.source===giftFilter);
     document.getElementById('giftPendingTab').innerHTML='受け取れる <b'+(entries.length?'':' hidden')+'>'+entries.length+'</b>';
     for(const [id,active] of [['giftPendingTab',!history],['giftHistoryTab',history]])document.getElementById(id).setAttribute('aria-selected',String(active));
-    document.getElementById('giftFilters').innerHTML=[['all','すべて'],['developer','開発者'],['lifequest','Life Quest']].map(([id,label])=>`<button type="button" data-gift-filter="${id}" aria-pressed="${id===giftFilter}">${label} <span>${all.filter(g=>id==='all'||g.source===id).length}</span></button>`).join('');
+    document.getElementById('giftFilters').innerHTML=[['all','すべて'],['developer','開発者'],['lifequest','Life Quest'],...(all.some(g=>g.source==='update')||giftFilter==='update'?[['update','アップデート']]:[])].map(([id,label])=>`<button type="button" data-gift-filter="${id}" aria-pressed="${id===giftFilter}">${label} <span>${all.filter(g=>id==='all'||g.source===id).length}</span></button>`).join('');
     document.getElementById('giftList').innerHTML=filtered.length?filtered.map(g=>giftRow(g,history)).join(''):'<p class="gift-empty">'+(history?'受け取り履歴はありません。':'受け取れるプレゼントはありません。')+'</p>';
     document.getElementById('giftClaimHint').hidden=giftReceivingUnlocked();
     document.getElementById('giftCount').textContent=filtered.length+'件';

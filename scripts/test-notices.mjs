@@ -24,6 +24,7 @@ const context = {
   show(id) { context.shownScreen = id; }
 };
 vm.createContext(context);
+vm.runInContext(fs.readFileSync(path.join(root, 'js/update-releases.js'), 'utf8'), context);
 vm.runInContext(`${source}\nglobalThis.__gameNotices = GAME_NOTICES;\nglobalThis.__noticeCategories = NOTICE_CATEGORIES;`, context);
 
 const notices = context.__gameNotices;
