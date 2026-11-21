@@ -189,7 +189,24 @@ async function journey(page, log) {
       await tap('#homePartyEditButton');
       await page.locator('#party.active').waitFor();
       await log.shot('roster-after-epilogue');
-      console.log('PASS epilogue -> home -> monster roster');
+      await tap('#party [data-nav="growth"]');
+      await page.getByRole('button',{name:'0の権能'}).tap();
+      await log.shot('authority-after-epilogue');
+      const snapshot=()=>page.evaluate(()=>({
+        coins:save.coins,items:save.items,party:save.party,
+        owned:save.instances.map(i=>i.uid),receipt:ProloguePart2Events.characterReceipt(),
+        complete:save.prologuePart2.completed,authority:authorityUnlocked()
+      }));
+      const saved=await snapshot();
+      assert(saved.complete && saved.authority);
+      await page.reload();
+      await tap('#titleScreen');
+      await page.locator('#titleScreen').waitFor({state:'detached'});
+      await page.locator('#home.active').waitFor();
+      assert.deepEqual(await snapshot(),saved,'終幕後の再読み込みで報酬・仲間・解放を保持');
+      await log.shot('home-reloaded');
+      console.log('PASS epilogue -> home -> roster -> authority -> reload');
+
       log.totals('全23区間の開始・終了、前半2勝、後半'+expected.length+'勝を確認。終幕で無料ガチャを1回操作し、結果表示と獲得個体1体を照合。敗北後の育成ルート：'+(trained?'使用':'未使用')+'。');
       return;
     }
@@ -284,6 +301,7 @@ try{
   log=await evidence(page,dir);
   await page.goto('http://127.0.0.1:'+port+'/?legacy=1');
   await journey(page,log);
+  log.assertRegressions();
 }catch(err){
   await log?.fail(err);
   console.error(err);
