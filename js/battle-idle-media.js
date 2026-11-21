@@ -311,7 +311,10 @@ const BATTLE_STATIC_MEDIA=Object.freeze(Object.fromEntries([
   ['elna_kaen','20261104',1024,1536,0,8,1022,1534],
   ['stella_apprentice','20261121',1024,1536,33,7,1014,1517],
   ['stella_wizard','20261121',1024,1536,17,6,1022,1526],
-  ['stella_sorcerer','20261121',1024,1536,9,0,1018,1490]
+  ['stella_sorcerer','20261121',1024,1536,9,0,1018,1490],
+  ['lumina_apprentice','20261121',1024,1536,159,16,911,1520],
+  ['lumina_wizard','20261121',1024,1536,59,38,961,1500],
+  ['lumina_sorcerer','20261121',1024,1536,20,14,1012,1438]
 ].map(([id,version,width,height,x,y,right,bottom])=>[id,Object.freeze({
   poster:`images/monsters/${id}_fullbody_${version}.webp`,
   allyFlip:false,enemyFlip:true,

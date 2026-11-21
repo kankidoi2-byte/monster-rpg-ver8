@@ -17,8 +17,9 @@ try{
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  const elnaIds=['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'];
  const stellaIds=['stella_apprentice','stella_wizard','stella_sorcerer'];
- const ids=[...elnaIds,...stellaIds];
- const expectedPoster=id=>`${id}_fullbody_${stellaIds.includes(id)?'20261121':'20261104'}.webp`;
+ const luminaIds=['lumina_apprentice','lumina_wizard','lumina_sorcerer'];
+ const ids=[...elnaIds,...stellaIds,...luminaIds];
+ const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':'20261121'}.webp`;
  await page.evaluate(ids=>{
   clearTutorialUi();save=initSave();completeTutorial();
   Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
@@ -68,26 +69,29 @@ try{
   assert.equal(await page.locator('#battle video,#battle .battle-idle-details').count(),0);
   for(const selector of ['#pVis img','#eVis img'])assert((await page.locator(selector).getAttribute('src')).endsWith(expectedPoster(id)));
   assert(await page.locator('#pVis .battle-static-media').evaluate(el=>getComputedStyle(el).backgroundColor==='rgba(0, 0, 0, 0)'));
-  if(id==='stella_sorcerer')await page.screenshot({path:`${output}/single-battle.png`});
+  const trio=[stellaIds,luminaIds].find(forms=>forms[2]===id);
+  if(!trio)continue;
+  await page.screenshot({path:`${output}/${id}-single-battle.png`});
+  await page.evaluate(([first,second])=>{
+   ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by(first),'enemy_a'),createMultiEnemy(by(second),'enemy_b')],pendingMoveIndex:null};
+   setMultiBattleLayout(true);setupMultiBattle();
+  },trio);
+  for(const [side,form] of [['pVis',id],['enemy_aVis',trio[0]],['enemy_bVis',trio[1]]]){
+   await page.locator(`#${side} img`).evaluate(el=>el.decode());
+   assert((await page.locator(`#${side} img`).getAttribute('src')).endsWith(expectedPoster(form)));
+   assert.equal(await page.locator(`#${side} .has-idle-size`).count(),1);
+  }
+  assert.equal(await page.locator('#battle video,#battle .battle-idle-details').count(),0);
+  await page.screenshot({path:`${output}/${id}-three-way-battle.png`});
+  await page.evaluate(()=>{show('party');});
  }
- await page.evaluate(()=>{
-  ensureMultiBattleDom();multiBattle={active:true,finished:false,enemies:[createMultiEnemy(by('stella_apprentice'),'enemy_a'),createMultiEnemy(by('stella_wizard'),'enemy_b')],pendingMoveIndex:null};
-  setMultiBattleLayout(true);setupMultiBattle();
- });
- for(const [side,id] of [['pVis','stella_sorcerer'],['enemy_aVis','stella_apprentice'],['enemy_bVis','stella_wizard']]){
-  await page.locator(`#${side} img`).evaluate(el=>el.decode());
-  assert((await page.locator(`#${side} img`).getAttribute('src')).endsWith(expectedPoster(id)));
-  assert.equal(await page.locator(`#${side} .has-idle-size`).count(),1);
- }
- assert.equal(await page.locator('#battle video,#battle .battle-idle-details').count(),0);
- await page.screenshot({path:`${output}/three-way-battle.png`});
- await page.evaluate(()=>{show('party');});assert.equal(await page.evaluate(()=>battleIdleSizeDisplays.size),0);
- await page.evaluate(()=>{save.homeFavoriteId='stella_sorcerer';saveGame();show('home');});
+ assert.equal(await page.evaluate(()=>battleIdleSizeDisplays.size),0);
+ await page.evaluate(()=>{save.homeFavoriteId='lumina_sorcerer';saveGame();show('home');});
  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
  await page.locator('#titleScreen').waitFor({state:'detached'});
- assert.equal(await page.evaluate(()=>save.homeFavoriteId),'stella_sorcerer');
- assert((await page.locator('#home .home-water-monster img').getAttribute('src')).endsWith(expectedPoster('stella_sorcerer')));
+ assert.equal(await page.evaluate(()=>save.homeFavoriteId),'lumina_sorcerer');
+ assert((await page.locator('#home .home-water-monster img').getAttribute('src')).endsWith(expectedPoster('lumina_sorcerer')));
  await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('#home video').count(),0);
  assert.deepEqual(errors,[]);
- console.log('PASS Elna and Stella cutouts: 8 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
+ console.log('PASS Elna, Stella and Lumina cutouts: 11 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
 }finally{await browser?.close();server.kill();}
