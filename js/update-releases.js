@@ -4,7 +4,8 @@
  * Optional extraRewards use the same records as gifts-data.js.
  */
 const UPDATE_RELEASES = [
-  {version:'8.0.1',date:'2026-11-21',change:'アップデートごとにプレゼントBOXへ報酬が届くようになりました。'}
+  {version:'8.0.1',date:'2026-11-21',change:'アップデートごとにプレゼントBOXへ報酬が届くようになりました。'},
+  {version:'8.0.2',date:'2026-11-21',change:'画質を保ったまま、タイトルや会話、仲間の編成で画像を読み込む待ち時間を短くしました。'}
 ];
 
 const UpdateReleases = (() => {

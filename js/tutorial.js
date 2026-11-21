@@ -569,7 +569,8 @@ function renderTutorialStoryStep(step){
   if(layer)layer.dataset.portrait=step?.portrait?.split('/').pop()?.split('?')[0]?.replace(/\.png$/,'')||'';
   if(portrait){
     portrait.hidden=!step?.portrait;
-    if(step?.portrait&&portrait.getAttribute('src')!==step.portrait)portrait.setAttribute('src',step.portrait);
+    const src=dialoguePortraitUrl(step?.portrait);
+    if(src&&portrait.getAttribute('src')!==src)portrait.setAttribute('src',src);
     portrait.alt=step?.speaker?step.speaker:'';
   }
   if(effectLayer){

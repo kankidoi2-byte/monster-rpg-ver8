@@ -347,7 +347,7 @@ function prologuePart2EventMarkup(step){
 function prologuePart2Presentation(episode,step,index){
   if(prologuePart2Ui?.tutorialReplay)return {
     background:step.background,
-    portraits:step.portrait?`<img class="map-story-speaker story-scene-portrait is-speaking" style="left:50%" src="${prologuePart2Escape(step.portrait)}" alt="${prologuePart2Escape(step.speaker)}">`:''
+    portraits:step.portrait?`<img class="map-story-speaker story-scene-portrait is-speaking" style="left:50%" src="${prologuePart2Escape(dialoguePortraitUrl(step.portrait))}" alt="${prologuePart2Escape(step.speaker)}">`:''
   };
   const portraits=prologuePart2Data().portraits;
   const background=step.background||episode.background||'images/maps/world_between.webp';
@@ -356,7 +356,7 @@ function prologuePart2Presentation(episode,step,index){
   const shown=(Array.isArray(step.cast)?step.cast.filter(name=>portraits[name]):cast).slice(-3);
   return {background,portraits:shown.map((name,i)=>{
     const x=shown.length===1?50:shown.length===2?(i===0?27:73):[20,50,80][i];
-    return `<img class="map-story-speaker story-scene-portrait${name===step.speaker?' is-speaking':''}" style="left:${x}%" src="${prologuePart2Escape(portraits[name])}" alt="${prologuePart2Escape(name)}">`;
+    return `<img class="map-story-speaker story-scene-portrait${name===step.speaker?' is-speaking':''}" style="left:${x}%" src="${prologuePart2Escape(dialoguePortraitUrl(portraits[name]))}" alt="${prologuePart2Escape(name)}">`;
   }).join('')};
 }
 function prologuePart2BattlePreparationText(battle){

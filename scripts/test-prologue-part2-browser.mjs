@@ -13,6 +13,24 @@ try{
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  const boot=async()=>{await page.goto('http://127.0.0.1:4387/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
  await boot();
+ // Compare the decoded pixels the player sees, including antialiased edges.
+ const portraits=JSON.parse(fs.readFileSync('images/tutorial/characters/manifest.json','utf8')).characters.filter(asset=>asset.runtimeImage);
+ assert.equal(portraits.length,4);
+ for(const {id,cutout,runtimeImage} of portraits){
+   assert.equal(await page.evaluate(src=>dialoguePortraitUrl(src),cutout),runtimeImage);
+   const identical=await page.evaluate(async ([original,delivered])=>{
+     async function pixels(src){
+       const image=new Image();image.src=src;await image.decode();
+       const canvas=document.createElement('canvas');
+       canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+       const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+       return ctx.getImageData(0,0,canvas.width,canvas.height);
+     }
+     const [a,b]=await Promise.all([pixels(original),pixels(delivered)]);
+     return a.width===b.width&&a.height===b.height&&a.data.every((value,i)=>value===b.data[i]);
+   },[cutout,runtimeImage]);
+   assert(identical,id+' rendered portrait must match the reviewed PNG pixel for pixel');
+ }
  async function seed(id,cursor=null){
   await page.evaluate(({id,cursor})=>{
    clearTutorialUi();closeProloguePart2Battle();prologuePart2StopText();prologuePart2Ui=null;prologuePart2Retry=null;

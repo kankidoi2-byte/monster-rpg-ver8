@@ -64,11 +64,13 @@ function syncWaterHomeRank(){
 function syncWaterHomeMedia(){
   syncWaterHomeRank();
   if(!document.getElementById('home')?.classList.contains('active')){disposeWaterHome();return;}
-  const r=waterHomeRecord;if(!r?.video||r.failed)return;
-  if(document.hidden||waterHomePageHidden||!waterHomeCanAnimate()){
+  const r=waterHomeRecord;if(!r?.video)return;
+  // Motion preferences can change while the still is downloading.
+  if(!waterHomeCanAnimate()){renderHomeFavorite();return;}
+  if(r.failed)return;
+  if(document.hidden||waterHomePageHidden){
     clearTimeout(r.timer);r.timer=null;r.video.pause();r.art.classList.remove('is-playing');return;
   }
-  if(!r.video.getAttribute('src'))r.video.src=r.config.src;
   if(!r.video.paused)return;
   const fail=()=>{
     if(waterHomeRecord!==r)return;
@@ -80,6 +82,8 @@ function syncWaterHomeMedia(){
     if(waterHomeRecord!==r||r.video.paused)return;
     clearTimeout(r.timer);r.timer=null;r.art.classList.add('is-playing');
   };
+  if(!r.poster.complete)return;
+  if(!r.video.getAttribute('src'))r.video.src=r.config.src;
   if(!r.timer)r.timer=setTimeout(fail,5000);
   try{Promise.resolve(r.video.play()).catch(()=>{if(!document.hidden&&!waterHomePageHidden)fail();});}catch{fail();}
 }
@@ -91,16 +95,21 @@ function renderWaterHomeFavorite(stage,mon){
     const heart=document.createElement('span');heart.className='home-favorite-heart';heart.setAttribute('aria-hidden','true');heart.textContent='♥';plate.replaceChildren(name,heart);
   }
   const config=mon&&typeof battleDisplayMedia==='function'?battleDisplayMedia(mon.id):null;
-  const r={stage,config,art:null,video:null,timer:null,observer:null,failed:false};waterHomeRecord=r;
+  const r={stage,config,art:null,poster:null,video:null,timer:null,observer:null,failed:false};waterHomeRecord=r;
   if(config){
     const shadow=document.createElement('div');shadow.className='home-water-shadow';shadow.setAttribute('aria-hidden','true');r.shadow=shadow;
     const art=document.createElement('button');art.type='button';art.className='home-water-monster';art.setAttribute('aria-label',mon.name+'：お気に入りを選ぶ');r.art=art;
-    const poster=document.createElement('img');poster.src=config.poster;poster.alt=mon.name;poster.draggable=false;
-    art.append(poster);
+    const poster=document.createElement('img');poster.fetchPriority='high';poster.src=config.poster;poster.alt=mon.name;poster.draggable=false;
+    r.poster=poster;art.append(poster);
     if(config.src&&waterHomeCanAnimate()){
       const video=document.createElement('video');video.className='home-water-video';video.muted=true;video.defaultMuted=true;
       video.loop=true;video.playsInline=true;video.preload='none';video.poster=config.poster;video.setAttribute('aria-hidden','true');
-      if(video.canPlayType(config.type)){r.video=video;art.append(video);}
+      if(video.canPlayType(config.type)){
+        r.video=video;art.append(video);
+        // Give the full-quality still the connection first, including on a slow link.
+        const startMotion=()=>{if(waterHomeRecord===r)syncWaterHomeMedia();};
+        poster.onload=startMotion;poster.onerror=startMotion;
+      }
     }
     art.addEventListener('click',()=>show('homeFavoriteSelect'));stage.append(shadow,art);
   }else{
@@ -117,5 +126,5 @@ window.addEventListener('resize',scheduleWaterHomeLayout);
 window.visualViewport?.addEventListener('resize',scheduleWaterHomeLayout);
 document.addEventListener('visibilitychange',syncWaterHomeMedia);
 window.addEventListener('pagehide',()=>{waterHomePageHidden=true;disposeWaterHome();});
-window.addEventListener('pageshow',()=>{waterHomePageHidden=false;if(document.getElementById('home')?.classList.contains('active'))renderHomeFavorite();});
-waterHomeReduced?.addEventListener?.('change',()=>{if(document.getElementById('home')?.classList.contains('active'))renderHomeFavorite();});
+window.addEventListener('pageshow',()=>{waterHomePageHidden=false;if(!document.body.classList.contains('title-mode')&&document.getElementById('home')?.classList.contains('active'))renderHomeFavorite();});
+waterHomeReduced?.addEventListener?.('change',()=>{if(!document.body.classList.contains('title-mode')&&document.getElementById('home')?.classList.contains('active'))renderHomeFavorite();});

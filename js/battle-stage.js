@@ -6,10 +6,6 @@ function syncSingleBattleStage(){
   const single=!multiBattle?.active&&!screen.classList.contains('is-multi-battle');
   screen.classList.add('is-battle-stage');
   screen.classList.toggle('is-single-stage',single);
-  // Resolve the existing map image relative to the document, not the CSS file.
-  const mapImage=screen.querySelector('#battleMapBanner .map-img');
-  if(mapImage)arena.style.backgroundImage=`url("${mapImage.src}")`;
-  else arena.style.removeProperty('background-image');
   if(single)document.getElementById('multiEnemyGrid')?.replaceChildren();
   const enemyBox=document.getElementById('singleEnemyBox');
   if(single&&enemyBox&&arena.firstElementChild!==enemyBox)arena.prepend(enemyBox);

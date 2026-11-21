@@ -370,11 +370,21 @@ function itemDexObtain(it){
   if(it.id === 'fire_orb') return '炎の精霊ツバキからドロップ';
   return '特殊報酬・イベントで入手';
 }
-function itemDexVisual(it, locked=false){
+const compactDialoguePortraits = new Map([
+  'gnosis-dialogue-transparent-final', 'elna_beginner', 'stella_apprentice', 'lumina_apprentice'
+].map(name => {
+  const base = 'images/tutorial/characters/' + name;
+  return [base + '.png', base + '.compact.png'];
+}));
+function dialoguePortraitUrl(source) {
+  return compactDialoguePortraits.get(source) || source;
+}
+
+function itemDexVisual(it, locked=false, lazy=false){
   if(locked) return '<div class="item-dex-placeholder">❔</div>';
   const src = ITEM_IMG[it.id];
   return src
-    ? `<img src="${src}" alt="${it.name}">`
+    ? `<img${lazy?' loading="lazy" decoding="async"':''} src="${src}" alt="${it.name}">`
     : `<div class="item-dex-placeholder">${it.icon || '📦'}</div>`;
 }
 function itemInlineVisual(it, className='item-inline-image'){
