@@ -64,7 +64,7 @@
    const label=el('label','lbl','どの画面のこと？');label.htmlFor='fb-screen';const select=el('select');select.id='fb-screen';for(const [id,name] of Object.entries(SCREENS)){const option=el('option','',name);option.value=id;select.append(option);}select.value=draft.screen;select.onchange=()=>{draft.screen=select.value;};form.append(label,select);
    const bodyLabel=el('label','lbl','内容');bodyLabel.htmlFor='fb-body';const count=el('small','count');count.id='fb-count';const thanks=el('small','hint',`お礼は${THANKS_MIN_LENGTH}文字から`);thanks.id='fb-thanks-min';bodyLabel.append(count,thanks);const body=el('textarea');body.id='fb-body';body.maxLength=1200;body.placeholder=KINDS[draft.kind]?.ph||'先に種類を選んでください';body.value=draft.body;body.oninput=()=>{draft.body=body.value;refresh();};form.append(bodyLabel,body,el('p','hint','名前・連絡先・SNSのIDなど、個人が分かることは書かないでください。'));
    const c=context(),attach=el('details','attach'),info=el('dl','info');attach.append(el('summary','','一緒に送られる情報'));
-   for(const [label,value] of [['バージョン',c.version],['端末',deviceLabel(c.device)],['直前の画面',SCREENS[classify(contextScreen)]],['進み具合',c.progress],['プロフィール名',c.profileName]])info.append(el('dt','',label),el('dd','',value));attach.append(info,el('p','hint','セーブデータそのものは送りません。'));form.append(attach);
+   for(const [label,value] of [['端末',deviceLabel(c.device)],['直前の画面',SCREENS[classify(contextScreen)]],['進み具合',c.progress],['プロフィール名',c.profileName]])info.append(el('dt','',label),el('dd','',value));attach.append(info,el('p','hint','セーブデータそのものは送りません。'));form.append(attach);
    if(error){const e=el('p','err',error);e.setAttribute('role','alert');form.append(e);}const send=el('button','send','送る');send.type='submit';send.id='fb-send';form.append(send,el('p','quota'));form.onsubmit=e=>{e.preventDefault();void submit();};host.append(form);
   }
   const hist=el('section','panel hist');hist.append(el('h2','','送った意見'));if(!s.history.length)hist.append(el('p','empty','まだ送った意見はありません。'));
@@ -134,7 +134,10 @@
   const p=profile();if(!p)return;let staged=false;sending=true;error='';refresh();
   try{await scopedLock(p.id,async()=>{
    const s=read(p.id);if(!remaining(s))throw Error('今日はもう送れません');if(s.queue.length>=20)throw Error('送信待ちがいっぱいです。通信を確認してから、もう一度お試しください。');
-   const at=Date.now(),payload={id:crypto.randomUUID(),profileId:p.id,...context(),kind:draft.kind,screen:draft.screen,body:draft.body.trim(),createdAt:new Date(at).toISOString()};
+   // Freeze this build with the original outbox entry; retries keep its provenance.
+   const build=typeof UpdateReleases!=='undefined'?UpdateReleases.current:null;
+   const at=Date.now(),payload={id:crypto.randomUUID(),profileId:p.id,...context(),
+    ...(typeof build==='string'&&build?{build}:{}),kind:draft.kind,screen:draft.screen,body:draft.body.trim(),createdAt:new Date(at).toISOString()};
    const item={payload,reservedAt:at};s.queue.push(item);s.history.unshift({...payload,state:'wait'});s.history=s.history.slice(0,20);s.quota={day:day(),count:(s.quota.day===day()?s.quota.count:0)+1};write(p.id,s);staged=true;
    const result=await transmit(p,item);
    if(result.limited||result.state==='auth'){

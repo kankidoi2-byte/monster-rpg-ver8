@@ -80,14 +80,15 @@
   }
 
   function readAppVersion(documentValue) {
+    // The catalog script loads later; resolve its internal release only when read.
+    const current = safeText(safeValue(() => typeof UpdateReleases !== 'undefined' ? UpdateReleases.current : '', ''));
+    if (/^[0-9]+(?:\.[0-9]+){0,3}$/.test(current)) return current;
     const metaVersion = safeValue(
       () => documentValue?.querySelector?.('meta[name="app-version"], meta[name="application-version"]')?.content,
       ''
     );
     const candidate = safeText(metaVersion);
-    if (/^[0-9]+(?:\.[0-9]+){0,3}$/.test(candidate)) return candidate;
-    const title = safeText(safeValue(() => documentValue?.title, ''));
-    return title.match(/\bVer(?:sion)?\s*([0-9]+(?:\.[0-9]+){0,3})/i)?.[1] || '';
+    return /^[0-9]+(?:\.[0-9]+){0,3}$/.test(candidate) ? candidate : '';
   }
 
   function readBuildCommit(documentValue) {
