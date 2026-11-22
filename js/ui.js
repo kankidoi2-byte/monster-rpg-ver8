@@ -48,6 +48,7 @@ function show(id,{readOnlyStoryReplay=false}={}) {
   if(id!=='home'&&typeof closeHomeMissions==='function')closeHomeMissions();
   const feedbackPreviousScreen=document.querySelector('.screen.active')?.id;
   if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
+  if(typeof worldMapPartyScreenChanged==='function')worldMapPartyScreenChanged(id);
   if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
   if(typeof gachaCinema!=='undefined'&&gachaCinema)gachaCinema.finish();
   if(typeof closeGachaRates==='function')closeGachaRates();
@@ -99,6 +100,7 @@ function show(id,{readOnlyStoryReplay=false}={}) {
   if (id === 'partySet' && typeof renderProloguePart2PartyReturn==='function') renderProloguePart2PartyReturn();
   if (id === 'battleChoices' && typeof renderProloguePart2ReturnRoute==='function') renderProloguePart2ReturnRoute();
   if (id === 'partySet' && typeof renderMapStoryPartyReturn==='function') renderMapStoryPartyReturn();
+  if (id === 'partySet' && typeof renderWorldMapPartyReturn==='function') renderWorldMapPartyReturn();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
   if (id === 'characterGacha') renderCharacterGacha();

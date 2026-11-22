@@ -177,7 +177,7 @@ async function assertSuccessfulUi(page,kind,surface,expected){
   else if(kind==='lock'||kind==='unlock')assert.match(await page.locator(surface.selector).textContent(),kind==='lock'?/ロック解除/:/ロックする/);
   else if(kind.startsWith('party-')){
     assert.equal(await page.locator('#currentPartyView .party-current-member').count(),expected.party.length);
-    assert.equal(await page.locator(surface.selector).textContent(),kind==='party-add'?'パーティーから外す':'パーティーに入れる');
+    assert.ok((await page.locator(surface.selector).getAttribute('aria-label')).endsWith(kind==='party-add'?'パーティーから外す':'パーティーに入れる'));
   }else{
     assert(await page.locator(surface.selector).isDisabled());
     assert.match(await page.locator(surface.selector).textContent(),/予約済み/);

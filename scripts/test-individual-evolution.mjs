@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {runtime} from '../tools/balance-audit/runtime.mjs';
-const r=runtime({save:source=>source+"\nglobalThis.individualRealSaveGame=saveGame;"}),run=r.run,json=value=>JSON.parse(JSON.stringify(value));
+const r=runtime({
+ save:source=>source+"\nglobalThis.individualRealSaveGame=saveGame;",
+ party:source=>source+"\nglobalThis.individualRenderParty=renderParty;"
+}),run=r.run,json=value=>JSON.parse(JSON.stringify(value));
 const expected={freigal:14,aquaron:16,highaquaron:36,grassbeat:10,thornbeat:26,rikasheef:24,volteck:13,spaquinn:30,sylphin:12,zephyray:28,luxseed:18,luxiard:38,nocle:17,noclaid:37,orcana:22,orca_stream:42,volmoog:26,nemes:25,nemesia:48,kimeragna:45};
 const routes=json(run(`M.filter(m=>m.entityKind==='monster').flatMap(m=>(m.evolutions||(m.evolution?[{to:m.evolution,level:m.evolutionLevel}]:[])).map(e=>({from:m.id,...e})))`));
 assert.equal(run(`M.filter(m=>m.entityKind==='monster').length`),50);
@@ -52,7 +55,7 @@ run(`save=initSave();var special=addInstance('nemesion',1,0,{evolutionOffset:2})
 assert.equal(run('special.id'),'doom_nemesion');assert.equal(run('special.evolutionOffset'),2);assert.equal(run('save.items.doom_fragment'),0);
 // The engine retains thresholds, but roster/dex presentation must not disclose them.
 r.context.typesHtml=()=>'';
-vm.runInContext(fs.readFileSync(new URL('../js/party.js',import.meta.url),'utf8'),r.context);
+run('renderParty=individualRenderParty');
 run(`var branch=addInstance('highaquaron',34,0,{evolutionOffset:-2});renderParty()`);
 const roster=r.elements.get('partyList').innerHTML;
 assert.doesNotMatch(roster,/instance-evolution-summary|進化レベル|条件達成/);

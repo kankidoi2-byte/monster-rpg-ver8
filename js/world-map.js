@@ -154,6 +154,43 @@ function worldMapFacilityTabsHTML(mapId=null) {
     return worldMapVisible(map)?`<button type="button" data-wm-place="${id}" aria-pressed="${id===mapId}">${worldMapEscape(map.name)}</button>`:'';
   }).join('')}</div>`;
 }
+let worldMapPartyReturnRoute=null;
+function worldMapPartyBandHTML(){
+  if(typeof tutorialCurrentStepId==='function'&&tutorialCurrentStepId())return '';
+  if(typeof getPartyInstances!=='function'||typeof by!=='function'||typeof vis!=='function')return '';
+  const party=getPartyInstances();
+  const icons=party.map((ins,index)=>{
+    const unit=by(ins.id);if(!unit)return '';
+    return `<span class="wm-party-unit ${worldMapEscape(unit.types?.[0]||'normal')}" title="${worldMapEscape(unit.name)}">${vis(unit)}${index===0?'<b aria-label="リーダー">L</b>':''}</span>`;
+  }).join('');
+  return `<div class="wm-party-band"><div class="wm-party-units" aria-label="現在のパーティー">${icons||'<span>仲間を編成してください</span>'}</div><button type="button" data-wm-party-edit>編成</button></div>`;
+}
+function editWorldMapParty(){
+  if(!worldMapSelectedId||(typeof tutorialCurrentStepId==='function'&&tutorialCurrentStepId()))return false;
+  worldMapPartyReturnRoute={mapId:worldMapSelectedId,eventKey:worldMapSelectedEvent,difficultyId:worldMapSelectedDifficulty,identity:saveTransactionIdentity()};
+  show('partySet');
+  return true;
+}
+function worldMapPartyScreenChanged(id){
+  if(id!=='partySet')worldMapPartyReturnRoute=null;
+}
+function renderWorldMapPartyReturn(){
+  const button=document.getElementById('partyWorldMapReturn');
+  if(!button)return;
+  button.hidden=!worldMapPartyReturnRoute||worldMapPartyReturnRoute.identity!==saveTransactionIdentity();
+  // The generic map-story return links may be visible because an unrelated story was open previously.
+  const oldStory=document.getElementById('mapStoryPartyReturn');
+  if(oldStory&&!button.hidden)oldStory.hidden=true;
+}
+function returnToWorldMapFromParty(){
+  const route=worldMapPartyReturnRoute;
+  worldMapPartyReturnRoute=null;
+  if(!route||route.identity!==saveTransactionIdentity())return false;
+  worldMapSelectedId=route.mapId;worldMapSelectedEvent=route.eventKey;worldMapSelectedDifficulty=route.difficultyId;
+  worldMapPanelMode=null;worldMapCityOpen=false;worldMapNavigationHydrated=true;
+  showBattleChoices();
+  return true;
+}
 function worldMapDetailHTML(map,eventKey=null) {
   if(!worldMapVisible(map))return '';
   const events=worldMapEventsForUI().filter(entry=>entry.mapId===map.id&&worldMapCanEnter(map,entry.key));
@@ -170,7 +207,7 @@ function worldMapDetailHTML(map,eventKey=null) {
     ${['arena','magic_academy'].includes(map.id)?worldMapFacilityTabsHTML(map.id):''}<p>${worldMapEscape(map.desc)}</p>
     ${entries.length>1?`<div class="wm-entries" role="group" aria-label="入口">${entries.map(entry=>`<button type="button" data-wm-place="${map.id}"${entry.key?` data-wm-event="${entry.key}"`:''} aria-pressed="${entry.key===eventKey}">${worldMapEscape(entry.title)}</button>`).join('')}</div>`:''}
     ${event?`<aside class="wm-event-notice${event.guideUnread?' is-first-guide':''}" role="status">${event.guideUnread?`<small>NEW GUIDE</small><strong>${worldMapEscape(event.guideTitle||event.title)}</strong><p>${worldMapEscape(event.guideDescription||'')}</p>`:''}<strong>${worldMapEscape(event.title)}</strong><p>${worldMapEscape(event.description||'')}</p>${event.key==='crisis'?'<button type="button" class="wm-skip" data-wm-skip>今回は対処を任せる</button>':''}</aside>`:''}
-    ${facilityVisit?`<div class="wm-facility-visit"><p>${worldMapEscape(facilityVisit.description)}</p><button type="button" class="wm-depart" data-wm-facility-visit="${map.id}">${worldMapEscape(facilityVisit.label)}</button></div>`:available?`<fieldset class="wm-difficulty"><legend class="wm-sr-only">探索の難易度</legend>${difficulties.map(value=>`<button type="button" data-wm-difficulty="${value.id}" aria-pressed="${value.id===difficulty?.id}">${worldMapEscape(value.label)}<small>報酬×${worldMapEscape(value.rewardText)}</small>${typeof autoDifficultyLabel==='function'?autoDifficultyLabel(map,value.id,eventKey):''}</button>`).join('')}</fieldset>${difficulty?`<p class="wm-danger">${worldMapEscape(difficulty.danger)}</p>`:''}${map.goldenLand&&!eventKey&&goldenLandMapIsReady()?'<p class="wm-entry-note">出発時に「黄金郷への地図」を1枚消費します。</p>':''}${typeof autoSheet==='function'&&difficulty?autoSheet(map,difficulty,eventKey):''}<button type="button" class="wm-depart" data-wm-depart${hasCandidates?'':' disabled'}>${typeof autoDepartureLabel==='function'?autoDepartureLabel(map,difficulty,eventKey):'出発'}</button>`:''}
+    ${facilityVisit?`<div class="wm-facility-visit"><p>${worldMapEscape(facilityVisit.description)}</p><button type="button" class="wm-depart" data-wm-facility-visit="${map.id}">${worldMapEscape(facilityVisit.label)}</button></div>`:available?`<fieldset class="wm-difficulty"><legend class="wm-sr-only">探索の難易度</legend>${difficulties.map(value=>`<button type="button" data-wm-difficulty="${value.id}" aria-pressed="${value.id===difficulty?.id}">${worldMapEscape(value.label)}<small>報酬×${worldMapEscape(value.rewardText)}</small>${typeof autoDifficultyLabel==='function'?autoDifficultyLabel(map,value.id,eventKey):''}</button>`).join('')}</fieldset>${worldMapPartyBandHTML()}${difficulty?`<p class="wm-danger">${worldMapEscape(difficulty.danger)}</p>`:''}${map.goldenLand&&!eventKey&&goldenLandMapIsReady()?'<p class="wm-entry-note">出発時に「黄金郷への地図」を1枚消費します。</p>':''}${typeof autoSheet==='function'&&difficulty?autoSheet(map,difficulty,eventKey):''}<button type="button" class="wm-depart" data-wm-depart${hasCandidates?'':' disabled'}>${typeof autoDepartureLabel==='function'?autoDepartureLabel(map,difficulty,eventKey):'出発'}</button>`:''}
     <div class="wm-story-entry">${typeof mapStoryEntryHtml==='function'?mapStoryEntryHtml(map):''}</div><details class="wm-ecology"><summary>生態系</summary><p>${worldMapEscape(map.ecosystem)}</p></details></div></article>`;
 }
 function worldMapPanelHTML() {
@@ -213,7 +250,8 @@ function renderWorldMap(list,{saveNavigation=true}={}) {
       list.querySelector(`[data-wm-difficulty="${worldMapSelectedDifficulty}"]`)?.focus();
     }else if(button.hasAttribute('data-wm-facility-visit')){
       if(typeof handleTutorialWorldMapFacilityVisit==='function')handleTutorialWorldMapFacilityVisit(button.dataset.wmFacilityVisit);
-    }else if(button.hasAttribute('data-wm-depart')){
+    }else if(button.hasAttribute('data-wm-party-edit'))editWorldMapParty();
+    else if(button.hasAttribute('data-wm-depart')){
       persistWorldMapNavigation();startWorldMapExploration(worldMapSelectedId,worldMapSelectedDifficulty,worldMapSelectedEvent,true);
     }else if(button.hasAttribute('data-wm-skip')){
       if(typeof worldMapSkipCrisis==='function'&&worldMapSkipCrisis()){worldMapSelectedEvent=null;renderWorldMap(list);}

@@ -279,6 +279,15 @@ function normalizeAutoBattleRun(r){
     stop:r.stop===true,reason:typeof r.reason==='string'?r.reason.slice(0,160):''
   };
 }
+function normalizedPartyPresetName(name,index){
+  return (typeof name==='string'?Array.from(name.trim()).slice(0,10).join(''):'')||`編成${index+1}`;
+}
+function normalizePartyPresets(value,owned=new Set()){
+  return Array.from({length:3},(_,index)=>{
+    const entry=Array.isArray(value)?value[index]:null;
+    return {name:normalizedPartyPresetName(entry?.name,index),uids:[...new Set(Array.isArray(entry?.uids)?entry.uids:[])].filter(uid=>owned.has(uid)).slice(0,3)};
+  });
+}
 function initSave() {
   return {
     prologuePart2:normalizeProloguePart2(null),
@@ -291,7 +300,7 @@ function initSave() {
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
     items:{potion:3, antidote:0, paralysis_heal:0, confusion_heal:0, awakening:0, full_heal:0, defense_potion:0, speed_potion:0, max_potion:0, revive_drop:0, strong_incense:0, gold_dust:0, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0, g_ichor:0},
     homeMissions:normalizeHomeMissions(null),
-    lifeQuestClaimedIds:[], giftReceiptVersion:1, giftClaimedIds:[], giftHistory:[], coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
+    lifeQuestClaimedIds:[], giftReceiptVersion:1, giftClaimedIds:[], giftHistory:[], coins:0, alchemyResonance:0, party:[], partyPresets:normalizePartyPresets(null), history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
     expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false, strongIncenseRemainingDepartures:0,
     contractor:contractorSaveDefaults(),
     worldMap:normalizeWorldMapSaveState(null),
@@ -561,6 +570,7 @@ function repairSave(payload,report=[]){
   Object.keys(payload.levels).forEach(id=>{payload.levels[id]=clampLevel(nonNegativeInteger(payload.levels[id],1));});
   payload.instances.forEach(entry=>{payload.levels[entry.id]=clampLevel(Math.max(nonNegativeInteger(payload.levels[entry.id],1),entry.level));payload.exp[entry.id]=isMaxLevel(payload.levels[entry.id])?0:Math.max(nonNegativeInteger(payload.exp[entry.id]),entry.exp);});
   payload.party=[...new Set(Array.isArray(payload.party)?payload.party:[])].filter(value=>seenUids.has(value)).slice(0,3);
+  payload.partyPresets=normalizePartyPresets(payload.partyPresets,seenUids);
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
   payload.homeMissions=normalizeHomeMissions(payload.homeMissions,payload);
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);

@@ -18,7 +18,9 @@ try{
    return r.abort();
   });
   await page.goto('http://127.0.0.1:4266/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
-  await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];save.giftClaimedIds=DEV_GIFTS.map(g=>g.id);save.coins=7;saveGame();show('feedbackBox');});
+  // The unrelated rank-up dialog must not compete with the gift history test,
+  // including after the intentional title reload and save migration.
+  await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.exp=CONTRACTOR_MAX_EXP;save.contractor.pendingRankUps=[];save.giftClaimedIds=DEV_GIFTS.map(g=>g.id);save.coins=7;saveGame();show('feedbackBox');});
   await page.locator('.kind[data-k="idea"]').click();await page.locator('#fb-body').fill('操作がわかりやすくなりました。');assert(await page.locator('#fb-thanks-min').isHidden());
   await page.screenshot({path:out+'/feedback-'+viewport.width+'.png'});
   await page.locator('#fb-send').click();await page.getByRole('heading',{name:'届きました。お礼をプレゼントBOXに届けました。',exact:true}).waitFor();

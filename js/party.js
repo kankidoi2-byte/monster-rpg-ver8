@@ -19,16 +19,16 @@ function setRosterView(kind,value){
   renderParty();
 }
 function rosterSpeciesCounts(){const counts=new Map();for(const ins of save.instances)counts.set(ins.id,(counts.get(ins.id)||0)+1);return counts;}
-function rosterVisibleInstances(){
+function rosterVisibleInstances(view=rosterUi){
   const counts=rosterSpeciesCounts(),order=new Map(save.instances.map((ins,i)=>[ins.uid,i]));
   const stars=ins=>(by(ins.id)?.rarity.match(/★/g)||[]).length;
   return save.instances.filter(ins=>{
     const mon=by(ins.id);if(!mon)return false;
-    const f=rosterUi.filter;
-    return f==='all'||(f==='monster'&&!isCharacterUnit(mon))||(f==='character'&&isCharacterUnit(mon))||
+    const f=view.filter;
+    return f==='all'||(f==='type'&&mon.types?.includes(view.type))||(f==='monster'&&!isCharacterUnit(mon))||(f==='character'&&isCharacterUnit(mon))||
       (f==='star1'&&stars(ins)===1)||(f==='star2'&&stars(ins)===2)||(f==='star3'&&stars(ins)>=3)||(f==='duplicates'&&counts.get(ins.id)>1);
   }).sort((a,b)=>{
-    const s=rosterUi.sort;
+    const s=view.sort;
     const primary=s==='newest'?order.get(b.uid)-order.get(a.uid):s==='oldest'?order.get(a.uid)-order.get(b.uid):
       s==='rarity'?stars(b)-stars(a):s==='level'?b.level-a.level:(by(a.id).no??Infinity)-(by(b.id).no??Infinity);
     return primary||b.level-a.level||order.get(a.uid)-order.get(b.uid);
@@ -185,6 +185,7 @@ function performRosterRecycle(uids,{identity=rosterIdentity(),before=null}={}){
   const snapshot=captureSaveTransaction(),removed=new Set(uids);rosterUi.busy=true;
   try{
     save.instances=save.instances.filter(i=>!removed.has(i.uid));
+    if(Array.isArray(save.partyPresets))for(const preset of save.partyPresets)if(Array.isArray(preset?.uids))preset.uids=preset.uids.filter(uid=>!removed.has(uid));
     for(const uid of uids)if(save.equippedSkills)delete save.equippedSkills[uid];
     for(const [id,count] of Object.entries(plan.items)){save.items[id]=(save.items[id]||0)+count;registerItemDex(id);}
     save.coins=(save.coins||0)+plan.coins;
@@ -207,6 +208,7 @@ function confirmRosterRecycle(){
 }
 function rosterScreenChanged(id){
   if(typeof closeMonsterStatus==='function')closeMonsterStatus(false);
+  if(id!=='partySet'){partySetupUi.slot=null;finishPartyPresetDialog();}
   if(id==='party')return;
   rosterUi.detailUid=null;rosterUi.confirmation=null;rosterUi.selecting=false;rosterUi.selected.clear();
   renderRosterSheet();document.getElementById('party')?.classList?.remove('is-selecting');
@@ -228,43 +230,180 @@ function toggleInstanceLock(uidValue){
   });
   return true;
 }
-function togglePartyMember(u) {
-  if (!(save.party||[]).includes(u)) {
-    if (typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(u)) { alert('遠征中のモンスターはパーティーに編成できません。'); return; }
-    if ((save.party||[]).length >= 3) { alert('パーティーは最大3体まで！'); return; }
-    if (!getInstance(u))return false;
+// The screen has three visual slots, but authoritative order is always a compact UID list.
+const partySetupUi={identity:null,slot:null,preset:0,filter:'all',type:'',sort:'newest',confirmation:null};
+const samePartyOrder=(a,b)=>a.length===b.length&&a.every((uid,index)=>uid===b[index]);
+function partyPresetAvailable(){
+  const tutorial=save.progress?.tutorial;
+  return !!tutorial&&(tutorial.completed||tutorial.skipped||['completed','skipped'].includes(tutorial.status));
+}
+function partySetupPreferenceKey(){return `mb_party_view_v1:${rosterIdentity()}`;}
+function validPartyType(type){return typeof TN!=='undefined'&&typeof type==='string'&&Object.hasOwn(TN,type);}
+function ensurePartySetupState(){
+  const identity=rosterIdentity();if(partySetupUi.identity===identity)return;
+  Object.assign(partySetupUi,{identity,slot:null,preset:0,filter:'all',type:'',sort:'newest',confirmation:null});
+  try{
+    const v=JSON.parse(localStorage.getItem(partySetupPreferenceKey())||'null');
+    if(Object.hasOwn(ROSTER_FILTERS,v?.filter)||(v?.filter==='type'&&validPartyType(v.type)))partySetupUi.filter=v.filter;
+    if(validPartyType(v?.type))partySetupUi.type=v.type;
+    if(Object.hasOwn(ROSTER_SORTS,v?.sort))partySetupUi.sort=v.sort;
+  }catch(_error){}
+}
+function setPartySetupView(kind,value){
+  ensurePartySetupState();
+  if(kind==='filter'&&Object.hasOwn(ROSTER_FILTERS,value))partySetupUi.filter=value;
+  else if(kind==='type'&&validPartyType(value)){partySetupUi.type=value;partySetupUi.filter='type';}
+  else if(kind==='type'&&value===''){
+    partySetupUi.type='';
+    if(partySetupUi.filter==='type')partySetupUi.filter='all';
   }
-  if(!commitSaveMutation(()=>{
-    if(!save.party)save.party=[];
-    const idx=save.party.indexOf(u);
-    if(idx>=0)save.party.splice(idx,1);
-    else save.party.push(u);
-  }))return false;
+  else if(kind==='sort'&&Object.hasOwn(ROSTER_SORTS,value))partySetupUi.sort=value;
+  else return;
+  try{const {filter,type,sort}=partySetupUi;localStorage.setItem(partySetupPreferenceKey(),JSON.stringify({filter,type,sort}));}catch(_error){}
+  const list=document.getElementById('partySelectList');if(list)list.scrollTop=0;
+  renderPartySetup();
+  document.getElementById(kind==='type'?'partyType':kind==='sort'?'partySort':'partyFilter-'+value)?.focus();
+}
+function partySetupNotice(message){if(typeof showUiNotice==='function')showUiNotice(message,'warning');}
+function partyInstanceOnExpedition(uid){
+  return typeof isInstanceOnExpedition==='function'?isInstanceOnExpedition(uid):
+    (save.expeditions?.active||[]).some(entry=>entry.memberUids?.includes(uid));
+}
+function partySetupRefresh(focus){
+  renderPartySetup();
+  if(typeof refreshTutorialPartyGuide==='function')refreshTutorialPartyGuide();
+  if(focus)document.querySelector?.(focus)?.focus();
+}
+function partyCommitOrder(next,{preset=null,notice='',focus=null}={}){
+  const current=save.party||[];
+  if(!samePartyOrder(current,next)&&!commitSaveMutation(()=>{save.party=next;}))return false;
+  if(preset!==null)partySetupUi.preset=preset;
+  partySetupUi.slot=null;
   showCommittedSaveResult(()=>{
-    renderPartySetup();
-    if(typeof refreshTutorialPartyGuide==='function')refreshTutorialPartyGuide();
+    partySetupRefresh(focus);
+    if(notice)partySetupNotice(notice);
   });
   return true;
 }
+function choosePartySlot(index){
+  ensurePartySetupState();
+  if(!Number.isInteger(index)||index<0||index>=3)return false;
+  const from=partySetupUi.slot;
+  const focus=`[data-party-slot="${index}"]`;
+  if(from===null||from===index){partySetupUi.slot=from===index?null:index;partySetupRefresh(focus);return true;}
+  const slots=[...(save.party||[])];slots.length=3;
+  [slots[from],slots[index]]=[slots[index],slots[from]];
+  return partyCommitOrder(slots.filter(Boolean),{focus});
+}
+function usePartySlotAction(action){
+  ensurePartySetupState();
+  const index=partySetupUi.slot,order=[...(save.party||[])];
+  if(index===null||!order[index])return false;
+  if(action==='remove')order.splice(index,1);
+  else if(action==='leader'&&index>0)[order[0],order[index]]=[order[index],order[0]];
+  else return false;
+  return partyCommitOrder(order,{focus:`[data-party-slot="${action==='leader'?0:index}"]`});
+}
+function togglePartyMember(uid) {
+  ensurePartySetupState();
+  if(!getInstance(uid))return false;
+  const next=[...(save.party||[])],from=next.indexOf(uid),slot=partySetupUi.slot;
+  if(from===-1&&partyInstanceOnExpedition(uid)){partySetupNotice('遠征中は編成できません');return false;}
+  if(slot===null){
+    if(from>=0)next.splice(from,1);
+    else if(next.length<3)next.push(uid);
+    else {partySetupNotice('入れ替える枠を上で選んでください');return false;}
+  }else if(from>=0){
+    next.length=3;[next[from],next[slot]]=[next[slot],next[from]];
+  }else next[slot]=uid;
+  return partyCommitOrder(next.filter(Boolean),{focus:slot===null?null:`[data-party-slot="${slot}"]`});
+}
+function partyPresetsForEdit(){
+  return normalizePartyPresets(save.partyPresets,new Set((save.instances||[]).map(ins=>ins.uid)));
+}
+function loadPartyPreset(index){
+  ensurePartySetupState();
+  if(!partyPresetAvailable()||!Number.isInteger(index)||index<0||index>=3)return false;
+  const record=save.partyPresets?.[index],preset=partyPresetsForEdit()[index];
+  const raw=Array.isArray(record?.uids)?record.uids:[];
+  const missing=raw.filter(uid=>!getInstance(uid)).length;
+  const available=preset.uids.filter(uid=>!partyInstanceOnExpedition(uid));
+  const away=preset.uids.length-available.length;
+  const notice=[away?`${away}体は遠征中のため外しました`:'',missing?`${missing}体は手持ちにいないため外しました`:''].filter(Boolean).join('。');
+  return partyCommitOrder(available,{preset:index,notice,focus:`[data-party-preset="${index}"]`});
+}
+function finishPartyPresetDialog(){
+  partySetupUi.confirmation=null;
+  const dialog=document.getElementById('partyPresetDialog');if(dialog?.open)dialog.close();
+}
+function showPartyPresetDialog(action){
+  ensurePartySetupState();
+  if(!partyPresetAvailable())return false;
+  const index=partySetupUi.preset,record=partyPresetsForEdit()[index];
+  if(action==='register'&&!record.uids.length)return writePartyPreset(action,index);
+  if(action!=='rename'&&action!=='register')return false;
+  const dialog=document.getElementById('partyPresetDialog');if(!dialog)return false;
+  partySetupUi.confirmation={action,index,identity:rosterIdentity(),before:JSON.stringify(save)};
+  dialog.innerHTML=action==='rename'?
+    `<form onsubmit="event.preventDefault();confirmPartyPresetDialog()"><h2>編成名を変更</h2><label>編成名 <input name="partyPresetName" value="${rosterEscape(record.name)}" maxlength="10" required autofocus></label><div class="party-preset-dialog-actions"><button type="button" onclick="finishPartyPresetDialog()">キャンセル</button><button type="submit">変更</button></div></form>`:
+    `<h2>${rosterEscape(record.name)}を上書きしますか？</h2><div class="party-preset-dialog-actions"><button type="button" onclick="finishPartyPresetDialog()" autofocus>キャンセル</button><button type="button" onclick="confirmPartyPresetDialog()">上書きする</button></div>`;
+  dialog.showModal();
+  return true;
+}
+function writePartyPreset(action,index,name){
+  if(!partyPresetAvailable())return false;
+  const records=partyPresetsForEdit();
+  if(action==='register')records[index].uids=[...(save.party||[])];
+  else records[index].name=normalizedPartyPresetName(name,index);
+  if(!commitSaveMutation(()=>{save.partyPresets=records;})){
+    // A modal must not cover the existing save failure notification.
+    finishPartyPresetDialog();return false;
+  }
+  finishPartyPresetDialog();
+  showCommittedSaveResult(()=>partySetupRefresh(`[data-party-preset="${index}"]`));
+  return true;
+}
+function confirmPartyPresetDialog(){
+  const c=partySetupUi.confirmation;
+  if(!c||!partyPresetAvailable())return false;
+  if(c.identity!==rosterIdentity()||c.before!==JSON.stringify(save)){
+    finishPartyPresetDialog();partySetupNotice('状態が変わりました。もう一度お試しください');return false;
+  }
+  const input=document.querySelector?.('#partyPresetDialog [name="partyPresetName"]');
+  return writePartyPreset(c.action,c.index,input?.value);
+}
 function renderPartySetup() {
-  const cur  = document.getElementById('currentPartyView');
-  const list = document.getElementById('partySelectList');
-  if (!cur || !list) return;
-  const party = getPartyInstances();
-  const tutorialContractUid=typeof tutorialContractInstanceUid==='function'?tutorialContractInstanceUid():null;
-  cur.innerHTML = party.length
-    ? party.map((ins,i) => { const m=by(ins.id); return `<div class="party-current-member"><span>${i===0?'LEADER':i+1}</span>${vis(m)}<strong>${m.name}</strong><small>Lv.${ins.level}</small></div>`; }).join('')
-    : '<p class="small">まだ設定されていません。</p>';
-  list.innerHTML = save.instances.map(ins => {
-    const m = by(ins.id); if (!m) return '';
-    const inParty = (save.party||[]).includes(ins.uid);
-    const onExpedition = typeof isInstanceOnExpedition === 'function' && isInstanceOnExpedition(ins.uid);
-    return `<article class="party-select-card${inParty?' is-selected':''}${onExpedition?' is-expedition':''}">
-      <div class="party-select-visual">${vis(m,'loading="lazy" decoding="async"')}${inParty?'<span>編成中</span>':onExpedition?'<span>遠征中</span>':''}</div><div><h2>${m.name}</h2>
-      <p><span class="rarity">${m.rarity}</span> ${typesHtml(m.types)}</p><strong>Lv.${ins.level}</strong><small>${isMaxLevel(ins.level)?'EXP MAX':`EXP ${ins.exp}/${needExp(ins.level)}`}</small></div>
-      <button data-monster-id="${m.id}" data-party-uid="${rosterEscape(ins.uid)}"${ins.uid===tutorialContractUid?' data-tutorial-contract-party="true"':''} onclick="togglePartyMember(this.dataset.partyUid)" ${onExpedition&&!inParty?'disabled':''}>${inParty?'パーティーから外す':onExpedition?'遠征中':'パーティーに入れる'}</button>
-    </article>`;
+  const cur=document.getElementById('currentPartyView'),list=document.getElementById('partySelectList');
+  if(!cur||!list)return;
+  ensurePartySetupState();
+  const party=getPartyInstances(),slot=partySetupUi.slot;
+  cur.innerHTML=Array.from({length:3},(_,i)=>{
+    const ins=party[i],m=ins&&by(ins.id);
+    return `<button type="button" class="party-edit-slot ${m?'party-current-member':'is-empty'}" data-party-slot="${i}" aria-pressed="${slot===i}" onclick="choosePartySlot(${i})"><span>${i===0?'LEADER':i+1}</span>${m?`${vis(m)}<strong>${rosterEscape(m.name)}</strong><small>Lv.${ins.level}</small><small>${typesHtml(m.types)}</small>`:'<strong>空き</strong>'}</button>`;
   }).join('');
+  const actions=document.getElementById('partySlotActions');
+  if(actions)actions.innerHTML=slot!==null&&party[slot]?`${slot>0?'<button type="button" onclick="usePartySlotAction(\'leader\')">リーダーにする</button>':''}<button type="button" onclick="usePartySlotAction('remove')">外す</button>`:'';
+  const presets=document.getElementById('partyPresets');
+  if(presets){
+    presets.hidden=!partyPresetAvailable();
+    presets.innerHTML=presets.hidden?'':`<div class="party-preset-tabs" role="group" aria-label="編成プリセット">${partyPresetsForEdit().map((p,i)=>`<button type="button" data-party-preset="${i}" aria-pressed="${partySetupUi.preset===i}" onclick="loadPartyPreset(${i})">${rosterEscape(p.name)}${p.uids.length&&samePartyOrder(p.uids,save.party||[])?'<span aria-label="現在のパーティーと一致"> ✓</span>':''}</button>`).join('')}</div><div class="party-preset-actions"><button type="button" onclick="showPartyPresetDialog('register')">今の編成を登録</button><button type="button" aria-label="選んだ編成の名前を変更" onclick="showPartyPresetDialog('rename')">✎</button></div>`;
+  }
+  const prefs=document.getElementById('partyViewControls');
+  if(prefs){
+    prefs.hidden=!partyPresetAvailable();
+    const filter=partySetupUi.filter;
+    const types=typeof TN==='undefined'?[]:Object.keys(TN);
+    prefs.innerHTML=`<div class="roster-chips" role="group" aria-label="候補を絞り込む">${Object.entries(ROSTER_FILTERS).map(([id,label])=>`<button type="button" id="partyFilter-${id}" data-party-filter="${id}" aria-pressed="${filter===id}" onclick="setPartySetupView('filter',this.dataset.partyFilter)">${label}</button>`).join('')}<label><span>属性</span><select id="partyType" aria-label="属性" onchange="setPartySetupView('type',this.value)"><option value="">属性指定なし</option>${types.map(type=>`<option value="${rosterEscape(type)}" ${filter==='type'&&partySetupUi.type===type?'selected':''}>${rosterEscape(TN[type])}</option>`).join('')}</select></label></div><label class="roster-sort"><span>並び替え</span><select id="partySort" aria-label="並び替え" onchange="setPartySetupView('sort',this.value)">${Object.entries(ROSTER_SORTS).map(([id,label])=>`<option value="${id}" ${partySetupUi.sort===id?'selected':''}>${label}</option>`).join('')}</select></label>`;
+  }
+  const tutorialContractUid=typeof tutorialContractInstanceUid==='function'?tutorialContractInstanceUid():null;
+  const visible=rosterVisibleInstances(partyPresetAvailable()?partySetupUi:{filter:'all',sort:partySetupUi.sort}),scroll=list.scrollTop||0;
+  list.innerHTML=visible.map(ins=>{
+    const m=by(ins.id),index=(save.party||[]).indexOf(ins.uid),away=partyInstanceOnExpedition(ins.uid);
+    const badges=[index===0?'L':index>0?index+1:'',away?'遠':'',ins.locked?'🔒':''].filter(Boolean).join(' ');
+    const operation=away?'遠征中':slot!==null?`枠${slot+1}に入れる`:index>=0?'パーティーから外す':'パーティーに入れる';
+    return `<button type="button" class="roster-icon${index>=0?' is-selected':''}${away?' is-unavailable':''}" data-stars="${Math.min(4,m.rarity.length)}" data-monster-id="${rosterEscape(ins.id)}" data-party-uid="${rosterEscape(ins.uid)}"${ins.uid===tutorialContractUid?' data-tutorial-contract-party="true"':''} aria-label="${rosterEscape(m.name)} Lv.${ins.level} ${operation}" onclick="togglePartyMember(this.dataset.partyUid)">${vis(m,'loading="lazy" decoding="async"')}<span class="roster-badges">${badges}</span><span class="roster-level">Lv.${ins.level}<small>${m.rarity}</small></span></button>`;
+  }).join('')||'<p class="roster-empty">表示する仲間がいません。</p>';
+  list.scrollTop=scroll;
 }
 
 function savePartySetup(){
@@ -281,6 +420,7 @@ function savePartySetup(){
   renderPartySetup();
   if(typeof handleTutorialPartySaved==='function'&&handleTutorialPartySaved())return true;
   if(typeof handleProloguePart2PartySaved==='function'&&handleProloguePart2PartySaved())return true;
+  if(typeof returnToWorldMapFromParty==='function'&&returnToWorldMapFromParty())return true;
   show('home');
   return true;
 }
