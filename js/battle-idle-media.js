@@ -329,7 +329,10 @@ const BATTLE_STATIC_MEDIA=Object.freeze(Object.fromEntries([
   ['character_roden_4','20261122',1199,1312,0,0,1199,1312],
   ['character_selene_2','20261123',1024,1536,49,17,1012,1521],
   ['character_selene_3','20261123',1024,1536,0,19,1006,1512],
-  ['character_selene_4','20261123',1024,1536,65,30,975,1520]
+  ['character_selene_4','20261123',1024,1536,65,30,975,1520],
+  ['character_safira_2','20261123',1254,1254,41,8,1222,1232],
+  ['character_safira_3','20261123',1254,1254,0,13,1218,1230],
+  ['character_safira_4','20261123',1024,1536,0,22,1002,1514]
 ].map(([id,version,width,height,x,y,right,bottom])=>[id,Object.freeze({
   poster:`images/monsters/${id}_fullbody_${version}.webp`,
   allyFlip:false,enemyFlip:true,
