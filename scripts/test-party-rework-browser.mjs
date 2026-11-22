@@ -74,10 +74,17 @@ try {
       openBattleHub();
       if(!showWorldMapLocation('starsea','crisis'))throw Error('starsea crisis fixture unavailable');
     });
-    await page.locator('[data-wm-difficulty="d4"]').tap();
+    // The crisis forces a ★5 opponent, so only the Extreme option exists.
+    const difficultyButtons=page.locator('#battleChoices.active [data-wm-difficulty]');
+    assert.deepEqual(await difficultyButtons.evaluateAll(buttons=>buttons.map(button=>button.dataset.wmDifficulty)),['extreme']);
+    await difficultyButtons.tap();
     const assertMap=async()=>{
-      await page.locator('#battleChoices.active [data-wm-difficulty="d4"][aria-pressed="true"]').waitFor();
-      assert.deepEqual(await page.evaluate(()=>[worldMapSelectedId,worldMapSelectedEvent,worldMapSelectedDifficulty]),['starsea','crisis','d4']);
+      await page.locator('#battleChoices.active [data-wm-difficulty="extreme"][aria-pressed="true"]').waitFor();
+      assert.deepEqual(await page.evaluate(()=>[worldMapSelectedId,worldMapSelectedEvent,worldMapSelectedDifficulty]),['starsea','crisis','extreme']);
+      assert.deepEqual(await page.evaluate(()=>{
+        const {mapId,eventKey,difficultyId}=save.worldMap.navigation;
+        return [mapId,eventKey,difficultyId];
+      }),['starsea','crisis','extreme'],'return keeps persisted map navigation');
       assert.equal(await page.evaluate(()=>Boolean(save.worldMap.active.crisis)),true);
     };
     await assertMap();
@@ -86,7 +93,7 @@ try {
     await mapReturn.tap();await assertMap();
     await mapEdit.tap();await saveButton.tap();await assertMap();
     assert.deepEqual(await party(),[ids.b,ids.a]);
-    console.log(`PASS ${viewport.width}×${viewport.height}: map cancel and save return to starsea/crisis/d4 without consuming the event`);
+    console.log(`PASS ${viewport.width}×${viewport.height}: map cancel and save return to starsea/crisis/extreme without consuming the event`);
 
     await page.evaluate(()=>show('partySet'));
     const count=await renderedCandidates();
