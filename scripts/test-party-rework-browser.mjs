@@ -17,12 +17,6 @@ try {
     const page=await context.newPage(), errors=[];
     page.setDefaultTimeout(10000);
     page.on('pageerror',error=>errors.push(error.message));
-    // New species in the fixture can earn rank. Acknowledge the same dialog
-    // a player would, including when it is presented asynchronously on reload.
-    const rankUp=page.locator('#contractorRankUpOverlay:not(.hidden)');
-    await page.addLocatorHandler(rankUp,async overlay=>{
-      await overlay.getByRole('button',{name:'冒険を続ける',exact:true}).tap();
-    });
     await context.route('**/*',route=>new URL(route.request().url()).origin===new URL(url).origin?route.continue():route.abort());
     const boot=async()=>{
       await page.goto(url);
@@ -33,10 +27,15 @@ try {
     const ids=await page.evaluate(()=>{
       clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
       Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);
-      save.contractor.pendingRankUps=[];save.instances=[];save.party=[];
+      // Use a valid max-rank sandbox save: registering candidates and maps
+      // still runs production code, but cannot queue an unrelated rank modal.
+      save.contractor.exp=CONTRACTOR_MAX_EXP;save.contractor.pendingRankUps=[];
+      save.instances=[];save.party=[];
       const a=addInstance('freigal',15), b=addInstance('aquaron',10), e=addInstance('elna_beginner',21);
       for(let i=0;i<103;i++)addInstance(i%2?'grassbeat':'volteck',1+i%6);
       save.party=[a.uid,b.uid];
+      if(save.contractor.pendingRankUps.length)throw Error('test fixture unexpectedly queued a rank-up');
+      scheduleContractorRankUpPresentation(); // Clear any timer from the pre-fixture title bootstrap.
       if(!saveGame())throw Error('independent fixture could not be saved');
       show('partySet');
       return {a:a.uid,b:b.uid,e:e.uid};
@@ -141,12 +140,15 @@ try {
     console.log(`PASS ${viewport.width}×${viewport.height}: 106 candidates without horizontal overflow; filters/sort and preset register/cancel/apply/rename/overwrite work`);
 
     const guided=await page.evaluate(()=>{
-      clearTutorialUi();save=initSave();ensureTutorialStarterContracts();commitTutorialElnaContract();
+      clearTutorialUi();save=initSave();
+      save.contractor.exp=CONTRACTOR_MAX_EXP;save.contractor.pendingRankUps=[];
+      ensureTutorialStarterContracts();commitTutorialElnaContract();
       const f=tutorialOwnedStarterInstance('freigal'),a=tutorialOwnedStarterInstance('aquaron'),e=tutorialElnaContractInstance();
       const g=addInstance('galdra',1);save.party=[f.uid,a.uid,e.uid];
-      save.contractor.pendingRankUps=[];
       save.progress.tutorial.alchemyLessonCompleted=true;save.progress.tutorial.alchemyLessonPrepared=true;
       setTutorialStep('expedition_party_save');
+      if(save.contractor.pendingRankUps.length)throw Error('test fixture unexpectedly queued a rank-up');
+      scheduleContractorRankUpPresentation(); // Clear any timer from the pre-fixture title bootstrap.
       if(!saveGame())throw Error('guide fixture could not be saved');
       startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'expedition_party_save',persist:true});
       return {f:f.uid,a:a.uid,e:e.uid,g:g.uid};
