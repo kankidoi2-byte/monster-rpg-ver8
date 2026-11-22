@@ -16,11 +16,27 @@ const UpdateReleases = (() => {
   const LIMIT = 20;
   const baseline = UPDATE_RELEASES[0].version;
   const current = UPDATE_RELEASES.at(-1).version;
-  const rewards = {
-    small:[{kind:'coins',amount:100},{kind:'bless',amount:10}],
-    medium:[{kind:'coins',amount:500},{kind:'bless',amount:50},{kind:'item',id:'max_potion',count:1}],
-    large:[{kind:'coins',amount:2000},{kind:'bless',amount:200},{kind:'item',id:'revive_drop',count:1}]
-  };
+  const rewards = {small:[{kind:'coins',amount:100},{kind:'bless',amount:10}]};
+  const dates = new Map(UPDATE_RELEASES.map(r=>[r.version,r.date]));
+  function monthDay(date){
+    const [,month,day]=date.split('-');
+    return Number(month)+'/'+Number(day);
+  }
+  function giftTitle(version,createdAt){
+    const date=dates.get(version);
+    if(date)return 'アップデート報酬（'+monthDay(date)+'）';
+    // A receipt can outlive its catalog row (for example when opening an older build).
+    // Only use a complete timestamp with an explicit zone, so it cannot depend on the device zone.
+    if(typeof createdAt==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(createdAt)){
+      const time=Date.parse(createdAt), calendarDate=createdAt.slice(0,10);
+      const midnight=Date.parse(calendarDate+'T00:00:00Z');
+      if(Number.isFinite(time)&&Number.isFinite(midnight)&&new Date(midnight).toISOString().startsWith(calendarDate+'T')){
+        const jstDate=new Date(time+9*3600000);
+        return 'アップデート報酬（'+(jstDate.getUTCMonth()+1)+'/'+jstDate.getUTCDate()+'）';
+      }
+    }
+    return 'アップデート報酬';
+  }
   function parts(version){
     if(typeof version!=='string'||!/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*))?$/.test(version))return null;
     const numbers=version.split('.').map(Number);
@@ -30,10 +46,6 @@ const UpdateReleases = (() => {
   function compare(a,b){
     const first=parts(a),second=parts(b);
     return first[0]-second[0]||first[1]-second[1]||first[2]-second[2];
-  }
-  function size(previous,next){
-    const [major,minor]=parts(previous),[nextMajor,nextMinor]=parts(next);
-    return major!==nextMajor?'large':minor!==nextMinor?'medium':'small';
   }
   function normalize(state){
     const delivered=parts(state?.delivered)?state.delivered:baseline;
@@ -52,12 +64,12 @@ const UpdateReleases = (() => {
   function gifts(state){
     const pending=new Set(normalize(state).pending);
     // Newest version first even when several releases share the same date.
-    return UPDATE_RELEASES.slice(1).map((release,index)=>{
+    return UPDATE_RELEASES.slice(1).map(release=>{
       if(!pending.has(release.version))return null;
-      const tier=size(UPDATE_RELEASES[index].version,release.version);
+      const tier='small';
       return {
         id:release.version,key:'update:'+release.version,source:'update',tier,
-        title:'Ver'+release.version+' アップデート報酬',letter:release.change,
+        title:giftTitle(release.version),letter:release.change,
         createdAt:new Date(release.date+'T00:00:00+09:00').toISOString(),until:null,
         rewards:[...rewards[tier],...(release.extraRewards||[])]
       };
@@ -66,8 +78,8 @@ const UpdateReleases = (() => {
   function notices(){
     return UPDATE_RELEASES.slice().reverse().map(r=>({
       id:r.date.replaceAll('-','')+'-release-'+r.version.replaceAll('.','-'),
-      date:r.date,category:'update',title:'Ver'+r.version+' アップデート',body:r.change
+      date:r.date,category:'update',title:'アップデート（'+monthDay(r.date)+'）',body:r.change
     }));
   }
-  return {current,parts,compare,normalize,advance,gifts,notices};
+  return {current,parts,compare,normalize,advance,gifts,notices,giftTitle};
 })();
