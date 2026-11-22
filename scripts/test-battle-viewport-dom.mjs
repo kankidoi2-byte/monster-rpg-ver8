@@ -133,7 +133,7 @@ run('renewalClose();toggleBattleSkillPanel()');
 assert(by('commands').classList.contains('battle-inline-panel'));assert.equal(panelScrolls,0);
 assert.equal(by('commands').querySelector('[data-battle-panel-back]').textContent,'‹ 戻る');
 by('enemy_bCard').querySelector('.battle-stage-slot').click();
-assert.match(by('commands').querySelector('.br-skill-heading').textContent,/🎯.*フレイガル/);
+assert.match(by('commands').querySelector('.br-skill-heading').textContent,/対象：フレイガル/);
 assert(by('multiTargetSelect').classList.contains('hidden'));
 run('battleUiBack();battleHistoryEntry("確認ログ");renewalHistory()');
 assert.match(by('renewalSheetBody').textContent,/確認ログ/);

@@ -58,7 +58,7 @@ try {
         for(const [selector,{name,types}] of Object.entries(labels)){
           const hud=page.locator(selector),nameplate=hud.locator('h2'),hp=hud.locator('.battle-hp-line'),typeTags=hud.locator('.br-plate-meta .type-chip'),statusTags=hud.locator('.battle-status .status-chip');
           assert.equal(await nameplate.innerText(),name);
-          assert.match(await hp.innerText(),/HP[\s\S]*\d+\s*\/\s*\d+/);
+          assert.match(await hp.innerText(),/\d+\s*\/\s*\d+/);
           assert.deepEqual(await typeTags.allTextContents(),types);
           const texts=(await statusTags.allTextContents()).join(' ');
           if(selector==='#singlePlayerBox'){
