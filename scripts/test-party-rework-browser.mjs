@@ -147,7 +147,11 @@ try {
     console.log(`PASS ${viewport.width}×${viewport.height}: 106 candidates without horizontal overflow; filters/sort and preset register/cancel/apply/rename/overwrite work`);
 
     const guided=await page.evaluate(()=>{
-      clearTutorialUi();save=initSave();
+      clearTutorialUi();
+      // The prior preset checks leave this screen active. Start from Home so
+      // tutorial entry opens and renders the editor for the newly seeded save.
+      show('home');
+      save=initSave();
       save.contractor.exp=CONTRACTOR_MAX_EXP;save.contractor.pendingRankUps=[];
       ensureTutorialStarterContracts();commitTutorialElnaContract();
       const f=tutorialOwnedStarterInstance('freigal'),a=tutorialOwnedStarterInstance('aquaron'),e=tutorialElnaContractInstance();
@@ -157,18 +161,23 @@ try {
       if(save.contractor.pendingRankUps.length)throw Error('test fixture unexpectedly queued a rank-up');
       scheduleContractorRankUpPresentation(); // Clear any timer from the pre-fixture title bootstrap.
       if(!saveGame())throw Error('guide fixture could not be saved');
-      startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'expedition_party_save',persist:true});
+      if(!startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'expedition_party_save',persist:true}))throw Error('guide fixture failed to enter the party step');
       return {f:f.uid,a:a.uid,e:e.uid,g:g.uid};
     });
     await page.locator('#partySet.active').waitFor();
+    await page.waitForFunction(uid=>tutorialCurrentStepId()==='expedition_party_save'&&tutorialUiState.target?.dataset.partyUid===uid,guided.f);
+    assert.deepEqual(await page.evaluate(()=>[save.progress.tutorial.status,save.progress.tutorial.completed,save.progress.tutorial.skipped]),['in_progress',false,false]);
     assert.equal(await page.locator('#partyPresets').isVisible(),false);
-    await page.waitForFunction(uid=>tutorialUiState.target?.dataset.partyUid===uid,guided.f);
     await candidate(guided.f).tap();
     await page.waitForFunction(uid=>tutorialUiState.target?.dataset.partyUid===uid,guided.g);
     await candidate(guided.g).tap();
     await page.waitForFunction(()=>tutorialUiState.target?.id==='partySetupSaveButton');
     assert.deepEqual(await party(),[guided.a,guided.e,guided.g]);
-    console.log(`PASS ${viewport.width}×${viewport.height}: tutorial hides presets and still targets remove, add, confirm in order`);
+    await saveButton.tap();
+    await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_home_open');
+    await page.locator('#home.active').waitFor();
+    assert.deepEqual(await party(),[guided.a,guided.e,guided.g]);
+    console.log(`PASS ${viewport.width}×${viewport.height}: tutorial hides presets; remove, add, confirm advances to expedition guide`);
     assert.deepEqual(errors,[]);
     await context.close();
   }
