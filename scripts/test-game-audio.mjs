@@ -38,7 +38,7 @@ function makeHarness(options = {}) {
   }
   const buffers = new Map();
   for (const [key, entry] of Object.entries(manifest.bgm)) {
-    buffers.set(entry.file, { key, duration: key === 'title' ? 5 : key === 'home' ? 180 : 50 });
+    buffers.set(entry.file, { key, duration: key === 'title' ? 5 : key === 'home' ? 180 : key === 'battle_grassland' ? 50 : 150 });
   }
   for (const [key, entry] of Object.entries(manifest.se)) {
     const channels = [new Float32Array(1000), new Float32Array(1000)];
@@ -118,7 +118,8 @@ function makeHarness(options = {}) {
   assert.equal(h.fetches.length, 0);
   assert.equal(await unlocking, true);
   assert.equal(h.fetches.filter(path => path === 'sound-manifest.json').length, 1);
-  assert.equal(h.fetches.filter(path => path.startsWith('audio/se/')).length, 10);
+  await flush();
+  assert.equal(h.fetches.filter(path => path.startsWith('audio/se/')).length, 21);
   assert.deepEqual(h.fetches.filter(path => path.startsWith('audio/bgm/')), [manifest.bgm.title.file]);
   assert.deepEqual(clone(h.api.debugState().seBuffers).sort(), Object.keys(manifest.se).sort());
   assert.equal(h.music()[0].loop, false);
@@ -135,6 +136,26 @@ function makeHarness(options = {}) {
   near(h.music()[1].startAt, h.ctx.currentTime, 'remaining title gap survives visibility suspension');
   h.ctx.advance(5);
   near(h.music()[2].startAt, 16, 'successive title repeats keep their gap');
+}
+
+{
+  const h = makeHarness();
+  h.hold(manifest.se.encounter.file);
+  assert.equal(await h.api.unlock(),true,'Pack 2 effect cannot block existing first-input readiness');
+  assert.ok(!h.api.debugState().seBuffers.includes('encounter'));
+  assert.deepEqual(h.fetches.filter(path=>path.startsWith('audio/bgm/')),[manifest.bgm.title.file]);
+  h.release(manifest.se.encounter.file);
+  await flush();
+  for (const [scene,key] of Object.entries(manifest.screenBgm).filter(([scene])=>scene.startsWith('battle:')&&scene!=='battle:grassland')) {
+    assert.equal(await h.api.beginBattle(scene),true);
+    const music=h.music().at(-1);
+    assert.equal(music.buffer.key,key); assert.equal(music.offset,0);
+    assert.equal(music.loop,true); assert.equal(music.loopStart,manifest.bgm[key].loopStartSec); assert.equal(music.loopEnd,manifest.bgm[key].loopEndSec);
+    h.ctx.advance(1);
+    const at=h.ctx.currentTime;
+    assert.equal(await h.api.endBattle(false),true);
+    near(music.stopAt,at+.6,'all adopted battle tracks fade out');
+  }
 }
 
 {

@@ -76,6 +76,7 @@ function markLatestGameNoticeRead() {
 }
 
 function showNotices() {
+  if(typeof gameAudioPlay==='function')gameAudioPlay('notify');
   show('notices');
   renderNotices();
   markLatestGameNoticeRead();

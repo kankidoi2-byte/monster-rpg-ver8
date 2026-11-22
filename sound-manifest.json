@@ -1,6 +1,6 @@
 {
-  "version": "sound-pack-01",
-  "date": "2026-11-07",
+  "version": "sound-pack-02",
+  "date": "2026-11-22",
   "note": "source は Googleドライブにある元ファイル（名前とファイルID）。file はゲーム内に置くときの名前",
   "defaults": { "bgmVolume": 0.5, "seVolume": 0.8 },
   "bgm": {
@@ -26,13 +26,21 @@
       "loop": true,
       "loopStartSec": 14.420,
       "loopEndSec": 41.425
-    }
+    },
+    "battle_volcano": {"label": "火山の戦闘", "source": {"name": "脈動の火山.m4a", "driveId": "1Q9N2_BJalVXy13p2M9fb-XyO_bImvMHo"}, "file": "audio/bgm/bgm_battle_volcano.m4a", "loop": true, "loopStartSec": 9.44, "loopEndSec": 59.965},
+    "battle_lake": {"label": "湖の戦闘", "source": {"name": "清らかなる澄んだ湖.m4a", "driveId": "1pY-V4jpT8xHDISOaqijEBI74sCNj2mHG"}, "file": "audio/bgm/bgm_battle_lake.m4a", "loop": true, "loopStartSec": 31.55, "loopEndSec": 119.98},
+    "battle_strong": {"label": "強敵！（格上）", "source": {"name": "強敵！.m4a", "driveId": "1veYbkgbERzqy4CwRZhgKEaA1nzG9ji5t"}, "file": "audio/bgm/bgm_battle_strong.m4a", "loop": true, "loopStartSec": 27.725, "loopEndSec": 65.415},
+    "battle_nushi": {"label": "ヌシ", "source": {"name": "大自然の頂に君臨する者.m4a", "driveId": "180zdHcZfQeQ1jufcHw7FPbDERLjZzt0B"}, "file": "audio/bgm/bgm_battle_nushi.m4a", "loop": true, "loopStartSec": 25.51, "loopEndSec": 106.365}
   },
   "screenBgm": {
     "title": "title",
     "home": "home",
     "mapSelect": "home",
-    "battle:grassland": "battle_grassland"
+    "battle:grassland": "battle_grassland",
+    "battle:volcano": "battle_volcano",
+    "battle:lake": "battle_lake",
+    "battle:strong": "battle_strong",
+    "battle:nushi": "battle_nushi"
   },
   "se": {
     "tap":        { "label": "タップ",             "file": "audio/se/se_ui_tap.mp3",             "source": { "name": "Soft,_clean_UI_tap_s_#2-1793954426846.mp3",   "driveId": "18csMTpeKwCtTtSW0xgHS_vtah8295Umz" } },
@@ -44,6 +52,17 @@
     "slashLight": { "label": "斬撃（軽い）",       "file": "audio/se/se_battle_slash_light.mp3", "source": { "name": "Quick_light_sword_sl_#3-1794024490328.mp3",   "driveId": "18mLRUP3TfbRY-3-88-n5Y7jYumAkR4f2" } },
     "fire":       { "label": "炎",                 "file": "audio/se/se_battle_fire.mp3",        "source": { "name": "Fire_attack,_burst_o_#1-1793956155483.mp3",   "driveId": "1TwbxCJCPQBFcqJQrP1OwyWLevYITkZNl" } },
     "kokoroLink": { "label": "ココロリンク",       "file": "audio/se/se_battle_kokoro_link.mp3", "source": { "name": "Emotional_bond_activ_#3-1793954682223.mp3",   "driveId": "1IG8vq2cgf1HPTT4XqmUwaXdV4yuTDi29" } },
-    "victory":    { "label": "勝利ファンファーレ", "file": "audio/se/jingle_victory.mp3",        "source": { "name": "Short_triumphant_vic_#2-1793956394639.mp3",   "driveId": "145jsqGqUj66knteoBcJ20wvBiDNxsAfN" } }
+    "victory":    { "label": "勝利ファンファーレ", "file": "audio/se/jingle_victory.mp3",        "source": { "name": "Short_triumphant_vic_#2-1793956394639.mp3",   "driveId": "145jsqGqUj66knteoBcJ20wvBiDNxsAfN" } },
+    "tab": {"label": "タブ切替", "file": "audio/se/se_ui_tab.mp3", "source": {"name": "Very_short,_subtle_U_#2-1794046692353.mp3", "driveId": "1zdmjAwm1XCzyk0H8pdY8ZmEacZd0v9av"}},
+    "page": {"label": "スワイプ・ページ送り", "file": "audio/se/se_ui_page.mp3", "source": {"name": "Quick_soft_swipe_who_#3-1794046740187.mp3", "driveId": "1Ke_XOeKptUbjlqIYrfapI9w7V_xrEf9K"}},
+    "error": {"label": "できない操作", "file": "audio/se/se_ui_error.mp3", "source": {"name": "Soft_UI_error_sound__#3-1794046908221.mp3", "driveId": "10pOPfTotVqoCnsn8t77ywrvKMJrqXJ3c"}},
+    "notify": {"label": "お知らせ", "file": "audio/se/se_ui_notify.mp3", "source": {"name": "Pleasant_notificatio_#1-1794398548451.mp3", "driveId": "1s8NFokERe1byucGZK7rlyDMNlNnPiHex"}},
+    "save": {"label": "セーブ", "file": "audio/se/se_ui_save.mp3", "source": {"name": "Gentle_save_complete_#2-1794398597460.mp3", "driveId": "1G5WfufeqJkwgRJUDulPInZ2mw5IYHsXI"}},
+    "start": {"label": "ゲーム開始", "file": "audio/se/se_ui_game_start.mp3", "source": {"name": "Grand_game_start_sou_#2-1794398651291.mp3", "driveId": "1Yud6GSaswUkF6loHZ9isaPFLI3t2v-h9"}},
+    "text": {"label": "会話の文字送り", "file": "audio/se/se_ui_text.mp3", "source": {"name": "Tiny_soft_blip_for_d_#4-1794398463556.mp3", "driveId": "1r35LiwK8rfMMtkCaqYanqQCvZkMSo4fQ"}},
+    "encounter": {"label": "モンスターと遭遇", "file": "audio/se/se_battle_encounter.mp3", "source": {"name": "Monster_encounter_st_#1-1794471341129.mp3", "driveId": "1AZZLsQOn0k9FiANnbC4MQeVocmtxwMEy"}},
+    "encounterStrong": {"label": "格上・ヌシと遭遇", "file": "audio/se/se_battle_encounter_strong.mp3", "source": {"name": "Ominous_boss_encount_#2-1794471397817.mp3", "driveId": "1OHpL4mnV13jFDF7Rmgj5qu4EJHJTbFWS"}},
+    "swing": {"label": "攻撃（振り）", "file": "audio/se/se_battle_swing.mp3", "source": {"name": "Fast_attack_swing_wh_#1-1794471497319.mp3", "driveId": "18UWPQ5cDaT42kwbfWbo6JsmU6QgSjCrc"}},
+    "turn": {"label": "ターン開始", "file": "audio/se/se_battle_turn.mp3", "source": {"name": "Short_turn_start_chi_#4-1794471453685.mp3", "driveId": "1EEJZ9diNqrvkCpctNoQ-KSk2y5LBEHQb"}}
   }
 }

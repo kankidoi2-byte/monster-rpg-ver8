@@ -258,6 +258,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
     current.hp = faintCurrent ? 0 : Math.max(0,pHp);
     if (faintCurrent) current.fainted = true;
   }
+  if(typeof gameAudioPlay==='function'){if(!faintCurrent)gameAudioPlay('page');gameAudioPlay('turn',faintCurrent?0:0.1);}
   activePartyIdx = nextIndex;
   activeInstance = next.inst;
   player = next.mon;

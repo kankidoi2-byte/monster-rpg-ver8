@@ -74,6 +74,7 @@ function showSkill110MigrationNotice(){
 function startFromTitle(){
   if(titleStarted) return;
   titleStarted=true;
+  if(typeof gameAudioPlay==='function')gameAudioPlay('start');
   const screen=document.getElementById('titleScreen');
   if(screen) screen.classList.add('title-leaving');
   setTimeout(()=>{

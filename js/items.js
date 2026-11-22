@@ -276,13 +276,13 @@ function battlePotionHealing(id, mon, ins, maxHp) {
 function useBattleItem(id) {
   if(busy || battleItemSaveBusy)return;
   ensureContractScrollItem();
-  if(ITEM_BY_ID[id]?.contract) { alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
+  if(ITEM_BY_ID[id]?.contract) { if(typeof gameAudioPlay==='function')gameAudioPlay('error');alert('契約書は敵を倒した後に使用できます。'); show('battle'); return; }
   const it = ITEM_BY_ID[id];
-  if(!it || !it.usableInBattle){ alert('そのアイテムは使えません。'); return; }
-  if (!player || !enemy) { alert('バトル中だけ使えます。'); return; }
-  if ((save.items[id]||0) <= 0) { alert(`${it.name}を持っていない！`); return; }
+  if(!it || !it.usableInBattle){ if(typeof gameAudioPlay==='function')gameAudioPlay('error');alert('そのアイテムは使えません。'); return; }
+  if (!player || !enemy) { if(typeof gameAudioPlay==='function')gameAudioPlay('error');alert('バトル中だけ使えます。'); return; }
+  if ((save.items[id]||0) <= 0) { if(typeof gameAudioPlay==='function')gameAudioPlay('error');alert(`${it.name}を持っていない！`); return; }
 
-  const reason=battleItemUnavailableReason(id);if(reason){alert(reason);return;}
+  const reason=battleItemUnavailableReason(id);if(reason){if(typeof gameAudioPlay==='function')gameAudioPlay('error');alert(reason);return;}
   const msg=`${it.name}を${player.name}に使った！`;
   battleItemSaveBusy = true;
   try {
