@@ -110,6 +110,7 @@ try {
     });
     const practice=page.getByRole('region',{name:'ココロリンクの練習'});
     await practice.waitFor();
+    assert.match(await practice.innerText(),/生存している控えの仲間から力を借ります/);
     assert.match(await practice.innerText(),/ガルドラ（貸与）/);
     assert.match(await practice.innerText(),/アクアロン（貸与）/);
     await practice.getByRole('button',{name:'アクアロンを選ぶ',exact:true}).tap();
