@@ -32,7 +32,7 @@ assert.ok(threeWayFlow.includes('敵同士も攻撃します'),'the three-way gu
 assert.ok(threeWayFlow.includes('攻撃技を選ぶと')&&threeWayFlow.includes('攻撃したい敵の画像かHP欄をタップ'),'the three-way guide must explain target selection after choosing a move');
 assert.ok(threeWayFlow.includes('もう一方の敵に倒された相手とは契約できません'),'the three-way guide must explain the contract-candidate exclusion');
 assert.ok(invasionFlow.includes('2〜4ターン目')&&invasionFlow.includes('このターンは行動しません'),'the invasion guide must explain timing and its no-action arrival turn');
-assert.ok(kokoroFlow.includes('控えモンスター1体')&&kokoroFlow.includes('ターンは消費しません'),'the Kokoro Link guide must explain its source and free activation');
+assert.ok(kokoroFlow.includes('控えの仲間1体')&&kokoroFlow.includes('ターンは消費しません'),'the Kokoro Link guide must explain its source and free activation');
 assert.ok(kokoroFlow.includes('1戦につき1回')&&kokoroFlow.includes('戦闘終了まで続きます'),'the Kokoro Link guide must explain use and duration');
 
 const helperStart=tutorial.indexOf('function tutorialFlowSteps');
