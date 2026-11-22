@@ -11,6 +11,7 @@ function createStoryTypewriter(element,text,onComplete){
   const tick=()=>{
     if(cancelled||!element.isConnected)return;
     element.textContent=characters.slice(0,++cursor).join('');
+    if(cursor%4===1&&characters.length>1&&typeof gameAudioPlay==='function')gameAudioPlay('text');
     if(cursor>=characters.length)finish();else timer=setTimeout(tick,30);
   };
   if(!characters.length)timer=setTimeout(finish,0);else timer=setTimeout(tick,30);

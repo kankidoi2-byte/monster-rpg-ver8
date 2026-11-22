@@ -64,6 +64,7 @@ function renderBattleInputState(){
   const screen=document.getElementById('battle');if(!screen)return;
   const finished=battleFeedback.finished||screen.classList.contains('is-finished');
   const processing=busy||finished;
+  if(typeof gameAudioBattleInput==='function'&&screen.classList.contains('active'))gameAudioBattleInput(processing,finished);
   screen.classList.toggle('is-processing',processing);
   const dock=screen.querySelector('.battle-command-dock');
   if(dock){dock.inert=processing&&!(typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&!autoRun.manual);dock.setAttribute('aria-busy',String(busy&&!finished));}

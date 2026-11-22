@@ -1,10 +1,14 @@
-/* Sound Pack 01: one Web Audio clock owns music, fades, loops and effect timing. */
+/* Sound Packs 01–02: one Web Audio clock owns music, fades, loops and effect timing. */
 (function (root) {
   'use strict';
 
   const STORAGE_KEY = 'monster_game_audio_v1';
-  const SCENE_TRACKS = { title: 'title', home: 'home', mapSelect: 'home', 'battle:grassland': 'battle_grassland' };
-  const UI_EFFECTS = new Set(['tap', 'confirm', 'cancel', 'menuOpen', 'menuClose']);
+  const SCENE_TRACKS = { title: 'title', home: 'home', mapSelect: 'home', 'battle:grassland': 'battle_grassland',
+    'battle:volcano': 'battle_volcano', 'battle:lake': 'battle_lake',
+    'battle:strong': 'battle_strong', 'battle:nushi': 'battle_nushi' };
+  const PACK_1_EFFECTS = ['tap','confirm','cancel','menuOpen','menuClose','slashHeavy','slashLight','fire','kokoroLink','victory'];
+  const UI_EFFECTS = new Set(['tap','confirm','cancel','menuOpen','menuClose','tab','page','error','notify','save','start','text']);
+  let extraEffectsPreloaded = false;
   const settings = { bgmVolume: 0.5, seVolume: 0.8, bgmMuted: false, seMuted: false };
   let context = null, bgmGain = null, seGain = null, unlocked = false;
   let manifest = null, manifestJob = null, scene = 'title', desiredTrack = 'title';
@@ -57,7 +61,7 @@
   function loadManifest() {
     if (manifest) return Promise.resolve(manifest);
     if (manifestJob) return manifestJob;
-    manifestJob = Promise.resolve().then(() => root.fetch('sound-manifest.json'))
+    manifestJob = Promise.resolve().then(() => root.fetch('sound-manifest.json', {cache:'no-cache'}))
       .then(response => {
         if (!response.ok) throw new Error('Sound manifest HTTP ' + response.status);
         return response.json();
@@ -293,13 +297,20 @@
       unlocked = true;
       if (hidden()) syncVisibility();
     } catch (error) { return Promise.resolve(rememberError(error)); }
-    const preload = loadManifest().then(data => Promise.all(Object.keys(data.se).map(key => loadSe(key).catch(rememberError)))).catch(rememberError);
+    const preload = loadManifest().then(data => Promise.all(PACK_1_EFFECTS.filter(key => data.se[key]).map(key => loadSe(key).catch(rememberError)))).catch(rememberError);
     return Promise.all([resumeJob, preload, ensureScene()]).then(async results => {
       // A UI enable/retry button must not claim success when decoding failed.
       // Navigation may have replaced the original scene while assets loaded.
       const sceneReady = !desiredTrack || !!current || (sceneJob ? await sceneJob.promise : false);
       const ready = results[0] && Array.isArray(results[1]) && results[1].every(Boolean) && sceneReady;
-      if (ready) lastError = null;
+      if (ready) {
+        lastError = null;
+        // The added effects never block first-tap audio readiness. They can also load on demand.
+        if (!extraEffectsPreloaded) {
+          extraEffectsPreloaded = true;
+          for (const key of Object.keys(manifest.se)) if (!PACK_1_EFFECTS.includes(key)) loadSe(key).catch(() => {});
+        }
+      }
       return ready;
     }).catch(rememberError);
   }

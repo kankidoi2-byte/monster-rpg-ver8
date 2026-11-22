@@ -174,7 +174,7 @@ function endHomeBannerGesture(event,cancelled=false){
   }
   if(swipe.axis)suppressHomeBannerClick(swipe.id);
   settleHomeBannerGesture(swipe);
-  if(direction)stepHomeBanner(direction);
+  if(direction){if(typeof gameAudioPlay==='function')gameAudioPlay('page');stepHomeBanner(direction);}
   else selectHomeBanner(homeBannerIndex);
 }
 function addHomeBannerGestures(track){

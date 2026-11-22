@@ -1012,6 +1012,7 @@ function saveGame({requireBackup=false,requireReadable=false}={}) {
   if(replacementRecord)completeReplacementRecovery(replacementRecord);
   if(!previous)safeStorageSet(SAVE_BACKUP_KEY,raw);
   if(typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(raw);
+  if(typeof gameAudioPlay==='function')gameAudioPlay('save');
   return true;
 }
 

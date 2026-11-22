@@ -54,11 +54,11 @@ try {
   // Exercise the actual title enable button and trusted-input listener rather
   // than calling unlock through evaluate. The button must retain the title.
   await page.locator('#titleScreen button[data-sound="none"]').click();
-  await page.waitForFunction(() => GameAudio.debugState().currentTrack === 'title' && GameAudio.debugState().seBuffers.length === 10, null, { timeout: 60000 });
+  await page.waitForFunction(() => GameAudio.debugState().currentTrack === 'title' && GameAudio.debugState().seBuffers.length === 21, null, { timeout: 60000 });
   assert.equal(await page.locator('#titleScreen').count(), 1);
   assert.equal(await page.evaluate(() => GameAudio.debugState().contextState), 'running');
   assert.equal(await page.evaluate(() => GameAudio.debugState().lastError), null, 'all initial real assets decoded successfully');
-  assert.equal(requests.filter(path => path.startsWith('/audio/se/')).length, 10);
+  assert.equal(requests.filter(path => path.startsWith('/audio/se/')).length, 21);
   assert.deepEqual(requests.filter(path => path.startsWith('/audio/bgm/')), ['/' + manifest.bgm.title.file]);
   const title = await page.evaluate(() => soundTestStarts[0]);
   assert.equal(title.loop, false);
@@ -97,7 +97,18 @@ try {
   assert.equal(grass.offset, 0);
   assert.ok(grass.duration >= grass.loopEnd);
   assert.equal(await page.evaluate(() => GameAudio.debugState().lastError), null);
-  assert.deepEqual([...new Set(requests.filter(path => path.startsWith('/audio/')))].sort(), expectedFiles.sort(), 'all 13 original assets were fetched and decoded across the relevant scenes');
+  assert.deepEqual(requests.filter(path=>path.startsWith('/audio/bgm/')), ['/' + manifest.bgm.title.file,'/' + manifest.bgm.home.file,'/' + manifest.bgm.battle_grassland.file], 'new BGM remains unloaded until its scene');
+  for (const [scene,key] of Object.entries(manifest.screenBgm).filter(([scene])=>scene.startsWith('battle:')&&scene!=='battle:grassland')) {
+    await page.evaluate(scene=>GameAudio.beginBattle(scene),scene);
+    await page.waitForFunction(key=>GameAudio.debugState().currentTrack===key,key,{timeout:60000});
+    const {loopStartSec,loopEndSec}=manifest.bgm[key];
+    const track=await page.evaluate(start=>soundTestStarts.find(node=>node.loop&&node.loopStart===start),loopStartSec);
+    assert.ok(track); assert.equal(track.offset,0); assert.equal(track.loopEnd,loopEndSec); assert.ok(track.duration>=loopEndSec);
+    await page.evaluate(()=>GameAudio.endBattle(false));
+  }
+  await page.evaluate(()=>GameAudio.beginBattle('battle:grassland'));
+  await page.waitForFunction(() => GameAudio.debugState().currentTrack === 'battle_grassland', null, { timeout: 60000 });
+  assert.deepEqual([...new Set(requests.filter(path => path.startsWith('/audio/')))].sort(), expectedFiles.sort(), 'all 28 assets were fetched and decoded across the relevant scenes');
   assert.deepEqual(failedAudio, []);
   assert.equal(await page.evaluate(() => GameAudio.playSe('fire')), true);
   assert.equal(await page.evaluate(() => GameAudio.endBattle(true)), true);
@@ -127,7 +138,7 @@ try {
   assert.deepEqual(await page.evaluate(() => GameAudio.getSettings()), expectedSettings, 'independent volumes and mutes survive reload');
   assert.deepEqual(errors, [], 'no uncaught browser errors');
   await context.close();
-  console.log('Game audio browser checks passed: fresh gesture unlock, 13 real asset decodes, title/home/grass loops, map continuity, battle end, settings and save isolation.');
+  console.log('Game audio browser checks passed: fresh gesture unlock, 28 real asset decodes, title/home and five battle scenes, map continuity, battle end, settings and save isolation.');
 } finally {
   await browser?.close();
   server.kill();

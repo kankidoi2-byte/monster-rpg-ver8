@@ -7,6 +7,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+  {id:'20261122-sound-pack-02',date:'2026-11-22',category:'update',title:'戦闘BGMと効果音を追加しました',body:'火山・湖の戦闘と、格上・ヌシとの遭遇に専用BGMが流れます。会話やタブの切り替え、敵との遭遇などにも効果音を追加しました。音量はサウンド設定で調整できます。'},
   {id:'20261121-lumina-fullbody',date:'2026-11-21',category:'update',title:'ルミナの3形態に全身立ち絵を追加しました',body:'見習い魔法使いルミナ・魔法使いルミナ・魔導師ルミナの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261121-stella-fullbody',date:'2026-11-21',category:'update',title:'ステラの3形態に全身立ち絵を追加しました',body:'見習い魔法使いステラ・魔法使いステラ・魔導師ステラの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261119-prologue-battle-prep-opponents',date:'2026-11-19',category:'fix',title:'物語の戦闘前に対戦相手の名前を表示します',body:'第7話以降の戦闘準備で対戦相手が分かるようになり、戦闘を始めるボタン名を「戦闘開始」に統一しました。契約できない戦闘の案内も短くしました。'},

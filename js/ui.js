@@ -24,6 +24,7 @@ function replayUiMotion(element, className, duration=700) {
   }, duration));
 }
 function showUiNotice(message, kind='success') {
+  if(kind==='error'&&typeof gameAudioPlay==='function')gameAudioPlay('error');
   let notice = document.getElementById('uiNotice');
   if (!notice) {
     notice = document.createElement('div');

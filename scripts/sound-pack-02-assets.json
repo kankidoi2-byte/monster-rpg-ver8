@@ -1,0 +1,636 @@
+[
+  {
+    "key": "battle_volcano",
+    "driveId": "1Q9N2_BJalVXy13p2M9fb-XyO_bImvMHo",
+    "file": "audio/bgm/bgm_battle_volcano.m4a",
+    "bytes": 1647025,
+    "sha256": "dc9d50b1270e17db0d4557127580649b90eeedf2e0cce7f8d1b7982e22df3a71",
+    "codec": "aac",
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0.0,
+    "bitRate": 193203,
+    "decodedSamples": 3246080,
+    "source": {
+      "codec": "opus",
+      "sha256": "abedbaba512e5728bad4be3b7f7812c30232a1d3ca00ec72495ebc7823d9eee1",
+      "bytes": 1125674,
+      "decodedSamples": 3245448
+    },
+    "conversion": {
+      "tool": "ffmpeg",
+      "version": "7.1.5",
+      "targetBitrate": 192000,
+      "arguments": [
+        "-map",
+        "0:a:0",
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-b:a",
+        "192k",
+        "-movflags",
+        "+faststart"
+      ]
+    },
+    "alignment": {
+      "onset": [
+        [
+          0,
+          0.99538422
+        ],
+        [
+          0,
+          0.99601781
+        ]
+      ],
+      "body": [
+        [
+          0,
+          0.99435824
+        ],
+        [
+          0,
+          0.99450988
+        ]
+      ],
+      "loopStart": [
+        [
+          0,
+          0.99655145
+        ],
+        [
+          0,
+          0.99730527
+        ]
+      ],
+      "loopEnd": [
+        [
+          0,
+          0.99679393
+        ],
+        [
+          0,
+          0.99661201
+        ]
+      ]
+    },
+    "firstCrossingsSamples": {
+      "source": {
+        "-60": 1,
+        "-50": 7973,
+        "-40": 8051
+      },
+      "output": {
+        "-60": 1,
+        "-50": 7973,
+        "-40": 8051
+      }
+    },
+    "loop": {
+      "start_sample": 453120,
+      "end_sample": 2878320,
+      "source": {
+        "step_max": 0.3769805431365967,
+        "before_100ms_rms_dbfs": -18.573341369628906,
+        "after_100ms_rms_dbfs": -17.088424682617188
+      },
+      "output": {
+        "step_max": 0.3821406066417694,
+        "before_100ms_rms_dbfs": -18.640012741088867,
+        "after_100ms_rms_dbfs": -17.157121658325195
+      }
+    }
+  },
+  {
+    "key": "battle_lake",
+    "driveId": "1pY-V4jpT8xHDISOaqijEBI74sCNj2mHG",
+    "file": "audio/bgm/bgm_battle_lake.m4a",
+    "bytes": 3217582,
+    "sha256": "0036de791470c750dfae3c642f9abdf898edcc517323493312877c620df2df7c",
+    "codec": "aac",
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0.0,
+    "bitRate": 193454,
+    "decodedSamples": 6335488,
+    "source": {
+      "codec": "opus",
+      "sha256": "3ac579a1397ebd377cae393b0c80dadb8f396748613ae4704c05ae8b3065f0e8",
+      "bytes": 2327771,
+      "decodedSamples": 6334728
+    },
+    "conversion": {
+      "tool": "ffmpeg",
+      "version": "7.1.5",
+      "targetBitrate": 192000,
+      "arguments": [
+        "-map",
+        "0:a:0",
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-b:a",
+        "192k",
+        "-movflags",
+        "+faststart"
+      ]
+    },
+    "alignment": {
+      "onset": [
+        [
+          0,
+          0.99962211
+        ],
+        [
+          0,
+          0.99957782
+        ]
+      ],
+      "body": [
+        [
+          0,
+          0.99980265
+        ],
+        [
+          0,
+          0.99979967
+        ]
+      ],
+      "loopStart": [
+        [
+          0,
+          0.99971622
+        ],
+        [
+          0,
+          0.99972159
+        ]
+      ],
+      "loopEnd": [
+        [
+          0,
+          0.99984545
+        ],
+        [
+          0,
+          0.99984723
+        ]
+      ]
+    },
+    "firstCrossingsSamples": {
+      "source": {
+        "-60": 0,
+        "-50": 1,
+        "-40": 3
+      },
+      "output": {
+        "-60": 0,
+        "-50": 0,
+        "-40": 8
+      }
+    },
+    "loop": {
+      "start_sample": 1514400,
+      "end_sample": 5759040,
+      "source": {
+        "step_max": 0.20805196464061737,
+        "before_100ms_rms_dbfs": -19.48295783996582,
+        "after_100ms_rms_dbfs": -18.056976318359375
+      },
+      "output": {
+        "step_max": 0.20310291647911072,
+        "before_100ms_rms_dbfs": -19.499662399291992,
+        "after_100ms_rms_dbfs": -18.091590881347656
+      }
+    }
+  },
+  {
+    "key": "battle_strong",
+    "driveId": "1veYbkgbERzqy4CwRZhgKEaA1nzG9ji5t",
+    "file": "audio/bgm/bgm_battle_strong.m4a",
+    "bytes": 2388235,
+    "sha256": "d08c6139221750afa965dd6120e3b9494b51d61fef1c904c8628566c3d8795ca",
+    "codec": "aac",
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0.0,
+    "bitRate": 193311,
+    "decodedSamples": 4705280,
+    "source": {
+      "codec": "opus",
+      "sha256": "dfb803635d841c00bb6a61c14e3df314853d2a80e5e2da6c7931317528769a9b",
+      "bytes": 1587661,
+      "decodedSamples": 4704648
+    },
+    "conversion": {
+      "tool": "ffmpeg",
+      "version": "7.1.5",
+      "targetBitrate": 192000,
+      "arguments": [
+        "-map",
+        "0:a:0",
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-b:a",
+        "192k",
+        "-movflags",
+        "+faststart"
+      ]
+    },
+    "alignment": {
+      "onset": [
+        [
+          0,
+          0.99577534
+        ],
+        [
+          0,
+          0.99494183
+        ]
+      ],
+      "body": [
+        [
+          0,
+          0.99819076
+        ],
+        [
+          0,
+          0.99805325
+        ]
+      ],
+      "loopStart": [
+        [
+          0,
+          0.99741745
+        ],
+        [
+          0,
+          0.99744463
+        ]
+      ],
+      "loopEnd": [
+        [
+          0,
+          0.99834782
+        ],
+        [
+          0,
+          0.99831975
+        ]
+      ]
+    },
+    "firstCrossingsSamples": {
+      "source": {
+        "-60": 0,
+        "-50": 32,
+        "-40": 8445
+      },
+      "output": {
+        "-60": 1,
+        "-50": 31,
+        "-40": 8445
+      }
+    },
+    "loop": {
+      "start_sample": 1330800,
+      "end_sample": 3139920,
+      "source": {
+        "step_max": 0.06486546993255615,
+        "before_100ms_rms_dbfs": -17.509933471679688,
+        "after_100ms_rms_dbfs": -18.684785842895508
+      },
+      "output": {
+        "step_max": 0.052469365298748016,
+        "before_100ms_rms_dbfs": -17.53968620300293,
+        "after_100ms_rms_dbfs": -18.762704849243164
+      }
+    }
+  },
+  {
+    "key": "battle_nushi",
+    "driveId": "180zdHcZfQeQ1jufcHw7FPbDERLjZzt0B",
+    "file": "audio/bgm/bgm_battle_nushi.m4a",
+    "bytes": 2893503,
+    "sha256": "2428a5a4222bff75069643203fc719e7c2d995f12cef80c09cd225e3a6f06e6d",
+    "codec": "aac",
+    "profile": "LC",
+    "sampleRate": 48000,
+    "channels": 2,
+    "startTime": 0.0,
+    "bitRate": 192574,
+    "decodedSamples": 5723136,
+    "source": {
+      "codec": "opus",
+      "sha256": "918b6fc727869d35da443f7c36f3bb3e59c273fa2eb8b6c3f71ddf1b7831d072",
+      "bytes": 1919419,
+      "decodedSamples": 5722248
+    },
+    "conversion": {
+      "tool": "ffmpeg",
+      "version": "7.1.5",
+      "targetBitrate": 192000,
+      "arguments": [
+        "-map",
+        "0:a:0",
+        "-c:a",
+        "aac",
+        "-profile:a",
+        "aac_low",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-b:a",
+        "192k",
+        "-movflags",
+        "+faststart"
+      ]
+    },
+    "alignment": {
+      "onset": [
+        [
+          0,
+          0.9987781
+        ],
+        [
+          0,
+          0.9990837
+        ]
+      ],
+      "body": [
+        [
+          0,
+          0.99844134
+        ],
+        [
+          0,
+          0.99862498
+        ]
+      ],
+      "loopStart": [
+        [
+          0,
+          0.99724609
+        ],
+        [
+          0,
+          0.99705333
+        ]
+      ],
+      "loopEnd": [
+        [
+          0,
+          0.99921387
+        ],
+        [
+          0,
+          0.99932957
+        ]
+      ]
+    },
+    "firstCrossingsSamples": {
+      "source": {
+        "-60": 0,
+        "-50": 9547,
+        "-40": 9944
+      },
+      "output": {
+        "-60": 0,
+        "-50": 9548,
+        "-40": 9945
+      }
+    },
+    "loop": {
+      "start_sample": 1224480,
+      "end_sample": 5105520,
+      "source": {
+        "step_max": 0.1089254841208458,
+        "before_100ms_rms_dbfs": -23.588268280029297,
+        "after_100ms_rms_dbfs": -23.43191146850586
+      },
+      "output": {
+        "step_max": 0.10960426926612854,
+        "before_100ms_rms_dbfs": -23.642425537109375,
+        "after_100ms_rms_dbfs": -23.510494232177734
+      }
+    }
+  },
+  {
+    "key": "tab",
+    "driveId": "1zdmjAwm1XCzyk0H8pdY8ZmEacZd0v9av",
+    "file": "audio/se/se_ui_tab.mp3",
+    "bytes": 13293,
+    "sha256": "90a96fa1f26571ebdcb0ca472eb0e86a761634ffad39df962ab50a5198336b67",
+    "codec": "mp3",
+    "source": {
+      "sha256": "90a96fa1f26571ebdcb0ca472eb0e86a761634ffad39df962ab50a5198336b67",
+      "bytes": 13293
+    },
+    "decodedSamples": 23352,
+    "firstCrossingsSamples": {
+      "-60": 2200,
+      "-50": 2332,
+      "-40": 2518
+    }
+  },
+  {
+    "key": "page",
+    "driveId": "1Ke_XOeKptUbjlqIYrfapI9w7V_xrEf9K",
+    "file": "audio/se/se_ui_page.mp3",
+    "bytes": 25389,
+    "sha256": "0036178d5479b2f28c78f7e5abd8dc798d55539ce4a295d8affbc24b2cd2958f",
+    "codec": "mp3",
+    "source": {
+      "sha256": "0036178d5479b2f28c78f7e5abd8dc798d55539ce4a295d8affbc24b2cd2958f",
+      "bytes": 25389
+    },
+    "decodedSamples": 48000,
+    "firstCrossingsSamples": {
+      "-60": 8736,
+      "-50": 8968,
+      "-40": 10391
+    }
+  },
+  {
+    "key": "error",
+    "driveId": "10pOPfTotVqoCnsn8t77ywrvKMJrqXJ3c",
+    "file": "audio/se/se_ui_error.mp3",
+    "bytes": 36909,
+    "sha256": "bba778a4347a646c8a036b546b72d612899770a9ce47660f177e3387b2697d7f",
+    "codec": "mp3",
+    "source": {
+      "sha256": "bba778a4347a646c8a036b546b72d612899770a9ce47660f177e3387b2697d7f",
+      "bytes": 36909
+    },
+    "decodedSamples": 71040,
+    "firstCrossingsSamples": {
+      "-60": 0,
+      "-50": 0,
+      "-40": 0
+    }
+  },
+  {
+    "key": "notify",
+    "driveId": "1s8NFokERe1byucGZK7rlyDMNlNnPiHex",
+    "file": "audio/se/se_ui_notify.mp3",
+    "bytes": 73197,
+    "sha256": "64de49b3d5f3d148ec81ff680063715f21da18b557f913577e6b002d643b6e3c",
+    "codec": "mp3",
+    "source": {
+      "sha256": "64de49b3d5f3d148ec81ff680063715f21da18b557f913577e6b002d643b6e3c",
+      "bytes": 73197
+    },
+    "decodedSamples": 144000,
+    "firstCrossingsSamples": {
+      "-60": 144,
+      "-50": 244,
+      "-40": 378
+    }
+  },
+  {
+    "key": "save",
+    "driveId": "1G5WfufeqJkwgRJUDulPInZ2mw5IYHsXI",
+    "file": "audio/se/se_ui_save.mp3",
+    "bytes": 73197,
+    "sha256": "197ce54de54d7a5f80fa5c9e133c81008f710f970ac674ee6c87e5d85e7a82fa",
+    "codec": "mp3",
+    "source": {
+      "sha256": "197ce54de54d7a5f80fa5c9e133c81008f710f970ac674ee6c87e5d85e7a82fa",
+      "bytes": 73197
+    },
+    "decodedSamples": 144000,
+    "firstCrossingsSamples": {
+      "-60": 4,
+      "-50": 61,
+      "-40": 257
+    }
+  },
+  {
+    "key": "start",
+    "driveId": "1Yud6GSaswUkF6loHZ9isaPFLI3t2v-h9",
+    "file": "audio/se/se_ui_game_start.mp3",
+    "bytes": 121581,
+    "sha256": "82df1db619d04426a388b0077eb5cc5612eeea436ac5f52f8b007b61a67e4a9b",
+    "codec": "mp3",
+    "source": {
+      "sha256": "82df1db619d04426a388b0077eb5cc5612eeea436ac5f52f8b007b61a67e4a9b",
+      "bytes": 121581
+    },
+    "decodedSamples": 240000,
+    "firstCrossingsSamples": {
+      "-60": 3168,
+      "-50": 3171,
+      "-40": 3259
+    }
+  },
+  {
+    "key": "text",
+    "driveId": "1r35LiwK8rfMMtkCaqYanqQCvZkMSo4fQ",
+    "file": "audio/se/se_ui_text.mp3",
+    "bytes": 13293,
+    "sha256": "feadf0c22e9cdb3b98190cdbf3d83f5d01d84a0fef1f33f260f1aed416c388c8",
+    "codec": "mp3",
+    "source": {
+      "sha256": "feadf0c22e9cdb3b98190cdbf3d83f5d01d84a0fef1f33f260f1aed416c388c8",
+      "bytes": 13293
+    },
+    "decodedSamples": 23352,
+    "firstCrossingsSamples": {
+      "-60": 0,
+      "-50": 0,
+      "-40": 0
+    }
+  },
+  {
+    "key": "encounter",
+    "driveId": "1AZZLsQOn0k9FiANnbC4MQeVocmtxwMEy",
+    "file": "audio/se/se_battle_encounter.mp3",
+    "bytes": 73197,
+    "sha256": "4aab58797a1e716682b251de93e201d5ac59983aa01717cfb2dd1adfdeb3aad8",
+    "codec": "mp3",
+    "source": {
+      "sha256": "4aab58797a1e716682b251de93e201d5ac59983aa01717cfb2dd1adfdeb3aad8",
+      "bytes": 73197
+    },
+    "decodedSamples": 144000,
+    "firstCrossingsSamples": {
+      "-60": 0,
+      "-50": 0,
+      "-40": 0
+    }
+  },
+  {
+    "key": "encounterStrong",
+    "driveId": "1OHpL4mnV13jFDF7Rmgj5qu4EJHJTbFWS",
+    "file": "audio/se/se_battle_encounter_strong.mp3",
+    "bytes": 193581,
+    "sha256": "6bf8780b0e6322eca8d3877c6e7de37cc14f5349c34ca65e726f0e24e56446e1",
+    "codec": "mp3",
+    "source": {
+      "sha256": "6bf8780b0e6322eca8d3877c6e7de37cc14f5349c34ca65e726f0e24e56446e1",
+      "bytes": 193581
+    },
+    "decodedSamples": 384000,
+    "firstCrossingsSamples": {
+      "-60": 0,
+      "-50": 0,
+      "-40": 0
+    }
+  },
+  {
+    "key": "swing",
+    "driveId": "18UWPQ5cDaT42kwbfWbo6JsmU6QgSjCrc",
+    "file": "audio/se/se_battle_swing.mp3",
+    "bytes": 49581,
+    "sha256": "5bdd0b6e088df62897976e90056326810d31f839478d030f3e60e4f2f62deced",
+    "codec": "mp3",
+    "source": {
+      "sha256": "5bdd0b6e088df62897976e90056326810d31f839478d030f3e60e4f2f62deced",
+      "bytes": 49581
+    },
+    "decodedSamples": 96000,
+    "firstCrossingsSamples": {
+      "-60": 2017,
+      "-50": 7473,
+      "-40": 9388
+    }
+  },
+  {
+    "key": "turn",
+    "driveId": "1EEJZ9diNqrvkCpctNoQ-KSk2y5LBEHQb",
+    "file": "audio/se/se_battle_turn.mp3",
+    "bytes": 73197,
+    "sha256": "1a20b539a0613d16910a2bf1b29d5cf0f8f669c8f31a6b3349b6aa8958aa307e",
+    "codec": "mp3",
+    "source": {
+      "sha256": "1a20b539a0613d16910a2bf1b29d5cf0f8f669c8f31a6b3349b6aa8958aa307e",
+      "bytes": 73197
+    },
+    "decodedSamples": 144000,
+    "firstCrossingsSamples": {
+      "-60": 2629,
+      "-50": 2789,
+      "-40": 4104
+    }
+  }
+]
