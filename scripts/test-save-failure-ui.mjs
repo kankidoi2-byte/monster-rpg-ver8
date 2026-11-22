@@ -322,9 +322,9 @@ try{
       assert.deepEqual(committed.other,before.other);
       assert(!committed.probe.notices.some(notice=>notice.kind==='error'),`${slot}/${kind}: retry has no error`);
       const successNotices=committed.probe.notices.filter(notice=>notice.kind==='success');
-      assert.equal(successNotices.length,/^(reward|title)-/.test(kind)?1:0,`${slot}/${kind}: success notice count`);
-      if(kind==='golden-map')assert.equal(dialogs.slice(dialogStart).filter(dialog=>/地図を使用した/.test(dialog.message)).length,1);
-      else assert.equal(dialogs.length,dialogStart);
+      assert.equal(successNotices.length,/^(reward|title)-/.test(kind)||kind==='golden-map'?1:0,`${slot}/${kind}: success notice count`);
+      if(kind==='golden-map')assert.match(successNotices[0].message,/地図を使用した/);
+      assert.equal(dialogs.length,dialogStart);
       await assertSuccessfulUi(page,kind,surface,expected);
       await assertNoDuplicateGrant(page,kind,committed,surface,dialogs);
       const settled=await snapshot(page,surface);
