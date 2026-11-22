@@ -17,6 +17,12 @@ try {
     const page=await context.newPage(), errors=[];
     page.setDefaultTimeout(10000);
     page.on('pageerror',error=>errors.push(error.message));
+    // New species in the fixture can earn rank. Acknowledge the same dialog
+    // a player would, including when it is presented asynchronously on reload.
+    const rankUp=page.locator('#contractorRankUpOverlay:not(.hidden)');
+    await page.addLocatorHandler(rankUp,async overlay=>{
+      await overlay.getByRole('button',{name:'冒険を続ける',exact:true}).tap();
+    });
     await context.route('**/*',route=>new URL(route.request().url()).origin===new URL(url).origin?route.continue():route.abort());
     const boot=async()=>{
       await page.goto(url);
