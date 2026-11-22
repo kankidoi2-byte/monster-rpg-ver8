@@ -29,8 +29,8 @@ try{
   assert.equal(geometry.columns,5);assert(geometry.scroll>geometry.height);assert(!geometry.bodyOverflow);
   await page.locator(`[data-instance-uid="${ids.first}"]`).click();
   assert(await page.locator('.roster-sheet').isVisible());assert.match(await page.locator('.roster-sheet').innerText(),/所持 3体/);
-  await page.getByRole('button',{name:'🔒 ロックする',exact:true}).click();assert(await page.getByRole('button',{name:'🔓 ロック解除',exact:true}).isVisible());
-  await page.getByRole('button',{name:'🔓 ロック解除',exact:true}).click();
+  await page.getByRole('button',{name:'ロックする',exact:true}).click();assert(await page.getByRole('button',{name:'ロック解除',exact:true}).isVisible());
+  await page.getByRole('button',{name:'ロック解除',exact:true}).click();
   await page.locator('.roster-data-items summary').click();await page.locator('.roster-data-items button').filter({hasText:'キロデータ'}).click();
   const quantity=page.locator('#itemQuantityDialog');
   await quantity.locator('[data-item-quantity-action="submit"]').click();

@@ -84,7 +84,7 @@ try{
  assert((await page.locator('#pBattleStatus').innerText()).includes('リンク中'));
  await page.screenshot({path:`${output}/linked.png`});
  await start();await page.evaluate(()=>{eHp=0;win();});await page.locator('#battleOutcome:not(.hidden)').waitFor();
- assert((await page.locator('#renewalResultMeta').innerText()).includes('✓ 討伐'));
+ assert((await page.locator('#renewalResultMeta').innerText()).includes('討伐済み'));
  assert.equal(await page.locator('#renewalResultExp .br-exp-row').count(),3);
  assert((await page.locator('#battleOutcomeActions').innerText()).includes('契約書'));
  const stock=await page.evaluate(()=>save.items.contract_scroll);
