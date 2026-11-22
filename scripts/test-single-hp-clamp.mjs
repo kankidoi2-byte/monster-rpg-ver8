@@ -21,12 +21,15 @@ const before=make(()=>original),after=make(s=>s);
 after.run('battleStatDamageMultiplier=()=>1;normalRecoilDamage=()=>8;');
 let count=0,detected=0;
 const plain=x=>JSON.parse(JSON.stringify(x));
+// Historical display-only prefixes; do not touch the live log or any body text.
+const historicalAttackLog=log=>log.replace(/(^|<br>)(?:⚔️|💢|💥|⚡|🔥|🌱|💚|🌑|💞) /gu,'$1');
 for(const options of plain(after.run('singleHpCases()'))){
  const a=plain(await after.run(`singleHpScenario(${JSON.stringify(options)})`));
  const b=plain(await before.run(`singleHpScenario(${JSON.stringify(options)},false)`));
  assert(a.observations.every(o=>o.pHp>=0&&o.eHp>=0));
  if(b.observations.some(o=>o.pHp<0||o.eHp<0))detected++;
  delete a.observations;delete b.observations;
+ b.log=historicalAttackLog(b.log);
  // Guard + shield now use strongest-only defense (and the whole repeat attack).
  // Keep immediate HP observations for these cases, compare terminal HP/consumption;
  // exact new damage/charge behavior has its independent story-defense matrix.

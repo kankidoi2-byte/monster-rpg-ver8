@@ -13,7 +13,8 @@ for(const opts of plain(after.run('poweredModifierCases()'))){
  const multi=opts.mode!=='single',p=opts.direction==='player',dp=opts.direction==='enemy-player';
  const hp=x=>multi?(dp?x.pHp:x.enemyHp[p?0:1]):p?x.eHp:x.pHp;
  const atk=x=>a.move[3]==='buff'?(p?x.pAtk:multi?x.attacks[0]:x.eAtk):(dp?x.pAtk:multi?x.attacks[p?0:1]:x.eAtk);
- if(opts.zero){assert.equal(hp(a),hp(b));assert.equal(atk(a),atk(b));assert.equal(a.log,b.log);}
+ // The historical zero-power modifier only decorated its opening log label.
+ if(opts.zero){assert.equal(hp(a),hp(b));assert.equal(atk(a),atk(b));assert.equal(a.log,b.log.replace(/^(?:⬆️|⬇️) /u,''));}
  else{
   if(!opts.miss&&!opts.barrier){assert(hp(a)<hp(a.before),JSON.stringify(opts));assert.equal(hp(b),hp(b.before));reproduced++;}
   if(opts.miss){assert.equal(atk(a),atk(a.before));assert.equal(hp(a),hp(a.before));}
