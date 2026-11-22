@@ -14,6 +14,17 @@ run(`saveGame=realPartySaveGame;save=initSave();save.progress.tutorial={complete
 const ids=json('[a.uid,b.uid,c.uid,d.uid]');
 const array=()=>json('save.party');
 const disk=()=>run('localStorage.getItem(SAVE_KEY)');
+for(const id of ["partySort","partyType"])r.context.document.getElementById(id).focus=()=>{};
+const prefs=()=>json('JSON.parse(localStorage.getItem(partySetupPreferenceKey()))');
+run("setPartySetupView('sort','level');setPartySetupView('type','water')");
+assert.deepEqual(json('rosterVisibleInstances(partySetupUi).map(ins=>ins.uid)'),[ids[1]]);
+assert.deepEqual(prefs(),{filter:'type',type:'water',sort:'level'});
+run("setPartySetupView('type','')");
+assert.deepEqual(json('rosterVisibleInstances(partySetupUi).map(ins=>ins.uid)'),[ids[0],ids[2],ids[1],ids[3]]);
+assert.deepEqual(prefs(),{filter:'all',type:'',sort:'level'});
+run("partySetupUi.identity=null;ensurePartySetupState()");
+assert.deepEqual(json('[partySetupUi.filter,partySetupUi.type,partySetupUi.sort]'),['all','','level']);
+
 assert.equal(run('choosePartySlot(0)&&choosePartySlot(2)'),true);
 assert.deepEqual(array(),[ids[1],ids[0]]);
 assert.deepEqual(JSON.parse(disk()).party,[ids[1],ids[0]]);

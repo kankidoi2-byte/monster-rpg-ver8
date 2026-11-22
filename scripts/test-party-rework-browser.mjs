@@ -101,7 +101,15 @@ try {
     await page.locator('#partyType').selectOption(await page.evaluate(()=>by('aquaron').types[0]));
     assert(await candidate(ids.b).count());
     assert((await renderedCandidates())<count);
-    await filter('all').tap();
+    await page.locator('#partyType').selectOption('');
+    assert.equal(await renderedCandidates(),count,'clearing the attribute restores all candidates');
+    assert.equal(await filter('all').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#partySort').inputValue(),'level');
+    await boot();
+    await page.evaluate(()=>show('partySet'));
+    assert.equal(await page.locator('#partyType').inputValue(),'');
+    assert.equal(await renderedCandidates(),count,'cleared attribute preference survives reload');
+    assert.equal(await page.locator('#partySort').inputValue(),'level');
 
     const register=page.getByRole('button',{name:'今の編成を登録',exact:true});
     const preset=page.locator('[data-party-preset="0"]');

@@ -253,6 +253,10 @@ function setPartySetupView(kind,value){
   ensurePartySetupState();
   if(kind==='filter'&&Object.hasOwn(ROSTER_FILTERS,value))partySetupUi.filter=value;
   else if(kind==='type'&&validPartyType(value)){partySetupUi.type=value;partySetupUi.filter='type';}
+  else if(kind==='type'&&value===''){
+    partySetupUi.type='';
+    if(partySetupUi.filter==='type')partySetupUi.filter='all';
+  }
   else if(kind==='sort'&&Object.hasOwn(ROSTER_SORTS,value))partySetupUi.sort=value;
   else return;
   try{const {filter,type,sort}=partySetupUi;localStorage.setItem(partySetupPreferenceKey(),JSON.stringify({filter,type,sort}));}catch(_error){}
@@ -389,7 +393,7 @@ function renderPartySetup() {
     prefs.hidden=!partyPresetAvailable();
     const filter=partySetupUi.filter;
     const types=typeof TN==='undefined'?[]:Object.keys(TN);
-    prefs.innerHTML=`<div class="roster-chips" role="group" aria-label="候補を絞り込む">${Object.entries(ROSTER_FILTERS).map(([id,label])=>`<button type="button" id="partyFilter-${id}" data-party-filter="${id}" aria-pressed="${filter===id}" onclick="setPartySetupView('filter',this.dataset.partyFilter)">${label}</button>`).join('')}<label><span>属性</span><select id="partyType" aria-label="属性" onchange="setPartySetupView('type',this.value)"><option value="">選択</option>${types.map(type=>`<option value="${rosterEscape(type)}" ${filter==='type'&&partySetupUi.type===type?'selected':''}>${rosterEscape(TN[type])}</option>`).join('')}</select></label></div><label class="roster-sort"><span>並び替え</span><select id="partySort" aria-label="並び替え" onchange="setPartySetupView('sort',this.value)">${Object.entries(ROSTER_SORTS).map(([id,label])=>`<option value="${id}" ${partySetupUi.sort===id?'selected':''}>${label}</option>`).join('')}</select></label>`;
+    prefs.innerHTML=`<div class="roster-chips" role="group" aria-label="候補を絞り込む">${Object.entries(ROSTER_FILTERS).map(([id,label])=>`<button type="button" id="partyFilter-${id}" data-party-filter="${id}" aria-pressed="${filter===id}" onclick="setPartySetupView('filter',this.dataset.partyFilter)">${label}</button>`).join('')}<label><span>属性</span><select id="partyType" aria-label="属性" onchange="setPartySetupView('type',this.value)"><option value="">属性指定なし</option>${types.map(type=>`<option value="${rosterEscape(type)}" ${filter==='type'&&partySetupUi.type===type?'selected':''}>${rosterEscape(TN[type])}</option>`).join('')}</select></label></div><label class="roster-sort"><span>並び替え</span><select id="partySort" aria-label="並び替え" onchange="setPartySetupView('sort',this.value)">${Object.entries(ROSTER_SORTS).map(([id,label])=>`<option value="${id}" ${partySetupUi.sort===id?'selected':''}>${label}</option>`).join('')}</select></label>`;
   }
   const tutorialContractUid=typeof tutorialContractInstanceUid==='function'?tutorialContractInstanceUid():null;
   const visible=rosterVisibleInstances(partyPresetAvailable()?partySetupUi:{filter:'all',sort:partySetupUi.sort}),scroll=list.scrollTop||0;
