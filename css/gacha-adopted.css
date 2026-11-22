@@ -117,3 +117,6 @@ body:has(#tutorialOverlay:not(.hidden)) .gacha-sheet{max-height:65dvh}
 .tcg-card .tcg-power{flex:none}
 
 .gacha-result-card.tier-gold::after,.gacha-result-card.tier-rainbow::after{background:linear-gradient(115deg,transparent 36%,#fff8 48%,transparent 60%);background-size:250% 100%;animation:gacha-gold-glow 2.4s ease-in-out infinite,tcg-holo 3s linear infinite}
+
+/* Attribute chips stay legible even on compact gacha result cards. */
+.tcg-compact .type-chip-group{gap:2px}.tcg-compact .type-chip{min-block-size:15px;padding:0 3px;font-size:9px}
