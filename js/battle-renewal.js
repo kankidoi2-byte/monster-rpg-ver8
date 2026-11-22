@@ -74,7 +74,7 @@ function renewalRender(){
     if(button.innerHTML!==label)button.innerHTML=label;
   }
   const link=kokoroLinkEffectForInstance(activeInstance),sources=currentKokoroLinkSources({includeUsed:true}),available=sources.filter(s=>s.available).length;
-  const reason=player.entityKind!=='monster'?'対象外':link?'発動中':!available?(sources.some(s=>s.used)?'使用済み':'利用可能な控えなし'):'';
+  const reason=!kokoroLinkEligibleUnit(player,activeInstance)?'対象外':link?'発動中':!available?(sources.some(s=>s.used)?'使用済み':'利用可能な控えなし'):'';
   renewalMarkup('kokoroLinkButton',`<strong>リンク (${available})</strong>${reason?`<small>${reason}</small>`:''}`);
   renewalEl('battleSkillButton').classList.toggle('has-effective',renewalBest(activeInstance));
   renewalEl('battleSkillButton').setAttribute('data-effective',renewalBest(activeInstance)?'◎ 効果抜群あり':'');

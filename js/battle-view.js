@@ -471,7 +471,7 @@ function kokoroLinkFailureText(reason){
   return {
     'invalid-target':'現在の戦闘個体はココロリンクの対象外です。',
     'target-linked':'この戦闘個体にはすでにココロリンクが発動しています。',
-    'invalid-source':'その控えモンスターは現在リンクできません。'
+    'invalid-source':'その控えは現在リンクできません。'
   }[reason] || 'ココロリンクを発動できませんでした。';
 }
 function renderKokoroLinkPanel(){
@@ -480,7 +480,7 @@ function renderKokoroLinkPanel(){
   if(!panel||!button)return;
   const current=typeof kokoroLinkEffectForInstance==='function' ? kokoroLinkEffectForInstance(activeInstance) : null;
   const sources=typeof currentKokoroLinkSources==='function' ? currentKokoroLinkSources({includeUsed:true}) : [];
-  const targetEligible=player?.entityKind==='monster';
+  const targetEligible=typeof kokoroLinkEligibleUnit==='function'&&kokoroLinkEligibleUnit(player,activeInstance);
   const available=sources.filter(source=>source.available).length;
   button.disabled=!targetEligible||(!current&&available===0);
   button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}${!targetEligible?'<small>対象外</small>':available===0?'<small>利用可能な控えなし</small>':''}`;
@@ -494,7 +494,7 @@ function renderKokoroLinkPanel(){
     : current
       ? '<p class="kokoro-link-empty">この個体へのリンクは発動済みです。効果は戦闘終了まで保持されます。</p>'
       : !sources.length
-        ? '<p class="kokoro-link-empty">リンクできる控えモンスターがいません。</p>'
+        ? '<p class="kokoro-link-empty">リンクできる控えがいません。</p>'
         : '';
   const cards=sources.map(source=>{
     const preview=resolveKokoroLink(source.entry.mon,source.entry.inst,kokoroLinkTargetStats());

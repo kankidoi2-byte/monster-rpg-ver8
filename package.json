@@ -31,7 +31,7 @@
     "check:kokoro-link-complete": "node scripts/test-kokoro-link-phase4-complete.mjs",
     "check:kokoro-link-balance": "node scripts/test-kokoro-link-phase5-balance.mjs",
     "check:kokoro-link-party": "node scripts/test-kokoro-link-party-state.mjs",
-    "check:kokoro-link-battle": "node scripts/test-kokoro-link-battle.mjs",
+    "check:kokoro-link-battle": "node scripts/test-kokoro-link-battle.mjs && node scripts/test-kokoro-link-character-browser.mjs",
     "check:kokoro-link-animation": "node scripts/test-kokoro-link-animation.mjs",
     "check:kokoro-link-analysis": "node scripts/test-kokoro-link-analysis.mjs",
     "check:notices": "node scripts/test-notices.mjs",

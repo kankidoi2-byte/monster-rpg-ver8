@@ -35,7 +35,7 @@ function prologuePart2LinkPracticeMarkup(eventId){
   return `<section aria-label="ココロリンクの練習"><h3>ココロリンク</h3><p>練習用です。手持ちは変わりません</p>
     <p>前衛：ガルドラ（貸与） HP ${p.party[0].hp} / ${p.party[0].maxHp}</p>
     <p>控え：アクアロン（貸与）${source?.available?'・発動可能':'・使用済み'}</p>
-    <p>生存している控えのモンスターから力を借ります。控えは1戦につき1回、前衛はリンク中でないときに発動できます。</p>
+    <p>生存している控えの仲間から力を借ります。控えは1戦につき1回、前衛はリンク中でないときに発動できます。</p>
     ${p.link?'<p role="status">ココロリンク発動！ アクアロンの力がガルドラを支えています。</p>':`<button type="button" onclick="prologuePart2LinkPracticeSelect(${arg})" ${source?.available?'':'disabled'}>アクアロンを選ぶ</button>`}
     ${p.selected||p.link?`<p>障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</p><p>${esc(preview.powerAbility?.summary||'')}</p>${p.link?'':`<button type="button" onclick="prologuePart2LinkPracticeActivate(${arg})">リンクする</button>`}`:''}
     ${p.link?`<button type="button" onclick="prologuePart2LinkPracticeReset(${arg})">もう一度練習する</button>`:''}
