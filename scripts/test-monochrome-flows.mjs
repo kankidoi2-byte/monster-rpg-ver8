@@ -48,6 +48,7 @@ export async function runMonochromeFlows(page,out,record){
  for(let n=0;n<3;n++)await click(page.locator('#synthesis-add-s110_091'));
  const beforeCraft=await page.evaluate(()=>({...save.skillCards}));
  await click(page.locator('#skillSynthesisSubmit'));
+ await click(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
  const crafted=await page.evaluate(()=>({cards:{...save.skillCards},id:save.skillSynthesis.lastResultId}));
  assert.equal(crafted.cards.s110_091,(beforeCraft.s110_091-3)+(crafted.id==='s110_091'?1:0));
  assert.equal(crafted.cards[crafted.id],(beforeCraft[crafted.id]||0)+1-(crafted.id==='s110_091'?3:0));
@@ -98,6 +99,7 @@ export async function runMonochromeFlows(page,out,record){
  // Exercise actual early-return confirmation, then actual reward-claim controls
  // after calling the same win-progress handler used by completed battles.
  await click(page.locator('.expedition-active-grid button[data-expedition-id][data-action="recall"]'));
+ await click(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
  assert.equal(await page.evaluate(()=>save.expeditions.active.length),0);
  await click(page.locator('.expedition-member').first());
  await click(page.locator('#expeditionStartButton'));

@@ -11,8 +11,7 @@ try{
  browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const viewport of [{width:360,height:800},{width:390,height:844}]){
   const page=await browser.newPage({viewport,isMobile:true,hasTouch:true,reducedMotion:'no-preference'}),errors=[];
-  let acceptSkip=false,skipConfirmations=0;
-  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',async d=>{if(acceptSkip&&d.type()==='confirm'){assert.match(d.message(),/必須チュートリアルを全体スキップ/);skipConfirmations++;await d.accept();}else await d.dismiss();});
+  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>page.locator('#contractorRankUpOverlay button').first().click());
   await page.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
   await page.goto(publicUrl||'http://127.0.0.1:4377/?legacy=1');
@@ -100,8 +99,18 @@ try{
 
   await resetControls();await start('intro_gnosis',true);await finish();
   await page.locator('.tutorial-tools button').filter({hasText:'スキップ'}).click();
-  acceptSkip=true;await page.locator('#tutorialSkipButton').click();acceptSkip=false;
-  assert.equal(skipConfirmations,1,'full skip requires accepted confirmation');
+  await page.locator('#tutorialSkipButton').click();
+  const skipConfirm=page.locator('#gameConfirmDialog');
+  assert.match(await skipConfirm.innerText(),/必須チュートリアルを全体スキップ/);
+  await skipConfirm.getByRole('button',{name:'キャンセル',exact:true}).click();
+  await skipConfirm.waitFor({state:'detached'});
+  assert.equal(await page.evaluate(()=>currentTutorialState().status),'in_progress','declining full skip preserves the checkpoint');
+  // Opening the skip controls again is harmless if they were already open.
+  const skipButton=page.locator('#tutorialSkipButton');
+  if(!await skipButton.isVisible())await page.locator('.tutorial-tools button').filter({hasText:'スキップ'}).click();
+  await skipButton.click();
+  await skipConfirm.getByRole('button',{name:'全体スキップする',exact:true}).click();
+  await skipConfirm.waitFor({state:'detached'});
   assert(await page.locator('#tutorialOverlay').isHidden());
   const skipResult=await page.evaluate(()=>({ids:save.instances.map(x=>x.id).sort(),party:save.party.map(uid=>save.instances.find(x=>x.uid===uid)?.id),reserve:save.instances.some(x=>x.id==='freigal'&&!save.party.includes(x.uid)),card:save.skillCards.s110_041,flags:TUTORIAL_REQUIRED_SKIP_FLAGS.map(flag=>currentTutorialState()[flag]),status:currentTutorialState().status,chapter:save.progress.chapterId,completed:save.progress.storyFlags.prologueCompleted,guest:currentTutorialState().elnaGuestActive,battle:tutorialBattleSession.active,expeditions:save.expeditions.active.length}));
   // Same mandatory-reward expectations as test-prologue-comprehensive.mjs, exercised through UI.

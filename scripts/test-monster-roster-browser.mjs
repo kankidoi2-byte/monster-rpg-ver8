@@ -32,6 +32,9 @@ try{
   await page.getByRole('button',{name:'🔒 ロックする',exact:true}).click();assert(await page.getByRole('button',{name:'🔓 ロック解除',exact:true}).isVisible());
   await page.getByRole('button',{name:'🔓 ロック解除',exact:true}).click();
   await page.locator('.roster-data-items summary').click();await page.locator('.roster-data-items button').filter({hasText:'キロデータ'}).click();
+  const quantity=page.locator('#itemQuantityDialog');
+  await quantity.locator('[data-item-quantity-action="submit"]').click();
+  await quantity.waitFor({state:'hidden'});
   assert.match(await page.locator('.roster-sheet').innerText(),/EXP 20\/60/);assert.match(await page.locator('.roster-data-items').innerText(),/キロデータ × 1/);
   await page.getByRole('button',{name:'詳細を閉じる'}).click();
   const countBefore=await page.evaluate(()=>save.instances.length);

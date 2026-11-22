@@ -56,12 +56,14 @@ try{
    for(let n=0;n<needed;n++)await tap(page.locator(`#synthesis-add-${material}`));
    assert(await page.locator('#skillSynthesisSubmit').isEnabled());
    const beforeCancel=await page.evaluate(()=>JSON.stringify(save));
-   await tap(page.locator('#skillSynthesisSubmit'));assert.equal(await page.evaluate(()=>JSON.stringify(save)),beforeCancel);
+   await tap(page.locator('#skillSynthesisSubmit'));
+   await tap(page.locator('#gameConfirmDialog [data-game-confirm-action="cancel"]'));
+   assert.equal(await page.evaluate(()=>JSON.stringify(save)),beforeCancel);
    await page.screenshot({path:`${out}/synthesis-${tier}-${width}.png`,fullPage:true,animations:'disabled'});
   }
-  page.removeAllListeners('dialog');page.on('dialog',dialog=>dialog.accept());
   const beforeCraft=await page.evaluate(()=>({...save.skillCards}));
   await tap(page.locator('#skillSynthesisSubmit'));
+  await tap(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
   const result=await page.evaluate(()=>({id:save.skillSynthesis.lastResultId,cards:save.skillCards}));
   assert.equal(result.cards.s110_107,(beforeCraft.s110_107-2)+(result.id==='s110_107'?1:0));
   assert.equal(Object.values(result.cards).reduce((n,v)=>n+v,0),Object.values(beforeCraft).reduce((n,v)=>n+v,0)-1);
@@ -71,6 +73,7 @@ try{
   await tap(page.locator('#synthesis-add-s110_001'));await tap(page.locator('#synthesis-add-s110_002'));await tap(page.locator('#synthesis-add-s110_001'));
   assert.equal(await page.locator('[data-selected-count="s110_001"]').textContent(),'2');
   await tap(page.locator('#skillSynthesisSubmit'));
+  await tap(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'material/result overflow');
   await page.screenshot({path:`${out}/synthesis-result-${width}.png`,fullPage:true,animations:'disabled'});
   await page.evaluate(()=>show('skillDex'));

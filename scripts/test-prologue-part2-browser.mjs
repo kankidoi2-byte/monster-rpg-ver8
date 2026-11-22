@@ -417,10 +417,10 @@ try{
  await page.evaluate(()=>{save.coins=19;save.items.attack_potion=2;saveGame();});
  await shopEntry.click();
  await assertShopBalance(19,2);
- await Promise.all([
-  page.waitForEvent('dialog').then(async dialog=>{assert.equal(dialog.message(),'コインが足りない！');await dialog.dismiss();}),
-  purchasePowerPotion.click()
- ]);
+ await purchasePowerPotion.click();
+ const shopWarning=page.locator('#uiNotice.is-warning.is-visible');
+ await shopWarning.waitFor({state:'visible'});
+ assert.equal(await shopWarning.innerText(),'コインが足りません。');
  await assertShopBalance(19,2);
  console.log('PASS Chapter 8 shop 412x915: 109 coins on entry, 89 and +1 力の薬 on purchase and reload, 19 and 2 items unchanged on insufficient funds');
  await page.setViewportSize({width:390,height:844});
