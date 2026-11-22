@@ -9,7 +9,7 @@ function fixture(id='aquaron',level=100){
   r.run(`save=initSave();save.progress.tutorial.status='completed';
     var ins=addInstance(testId,testLevel,0,{evolutionOffset:0});save.party=[ins.uid];
     save.items.kilo_data=3;pendingEvolutions=[];currentEvolution=null;
-    var alerts=[],screens=[],writes=0;alert=m=>alerts.push(m);show=s=>screens.push(s);
+    var alerts=[],screens=[],writes=0;showUiNotice=m=>alerts.push(m);gameConfirm=async()=>true;show=s=>screens.push(s);
     saveGame=()=>{writes++;return true;};
     renderExpedition=renderParty=renderPartySetup=()=>{};typesHtml=()=>"";renderBattleInputState=()=>{};
     processNextEvolution=realProcessEvolution;
@@ -18,8 +18,8 @@ function fixture(id='aquaron',level=100){
 }
 function queued(r){assert(r.run("pendingEvolutions.some(p=>p.uid===ins.uid&&p.choices.includes('highaquaron'))"));}
 function maxUnchanged(r){assert.equal(r.run('ins.level'),100);assert.equal(r.run('ins.exp'),0);}
-function expedition(r,recall=false){
-  r.run(`save.party=[];var entry={id:'exp_save03',mapId:'grassland',distanceId:'short',memberUids:[ins.uid],
+async function expedition(r,recall=false){
+  await r.run(`save.party=[];var entry={id:'exp_save03',mapId:'grassland',distanceId:'short',memberUids:[ins.uid],
     progress:1,requiredWins:1,status:'${recall?'active':'complete'}',
     suitability:{grade:'D',total:0,greatRate:0,reasons:[]},
     reward:${recall?'null':"{coins:25,exp:20,items:{monster_bone:2},great:false}"}};
@@ -55,17 +55,17 @@ function expedition(r,recall=false){
 }
 {
   const r=fixture('slime');r.run("useExpItemOnInstance('kilo_data',ins.uid)");
-  assert.match(r.run('alerts.at(-1)'),/はすでに Lv.MAX です！$/);
+  assert.match(r.run('alerts.at(-1)'),/すでに Lv.MAX です/);
   assert.equal(r.run('pendingEvolutions.length'),0);assert.equal(r.run('currentEvolution'),null);
   assert.equal(r.run('JSON.stringify(save.items)'),r.run('beforeItems'));
   console.log('PASS C: ineligible MAX item behavior unchanged');
 }
 // D: actual claim and recall, normal rewards and post-commit delayed presentation.
 for(const recall of [false,true]){
-  const r=fixture();expedition(r,recall);queued(r);maxUnchanged(r);
+  const r=fixture();await expedition(r,recall);queued(r);maxUnchanged(r);
   assert.equal(r.run('currentEvolution'),null);await r.flush();
   assert.equal(r.run('currentEvolution.uid'),r.run('ins.uid'));
-  const coins=r.run('save.coins');r.run(`${recall?'recallExpedition':'claimExpedition'}('exp_save03')`);
+  const coins=r.run('save.coins');await r.run(`${recall?'recallExpedition':'claimExpedition'}('exp_save03')`);
   assert.equal(r.run('save.coins'),coins);
   console.log(`PASS D: ${recall?'recall':'claim'} rewards once and reoffers after commit`);
 }
@@ -90,7 +90,7 @@ for(const path of ['party','item','claim','recall','story']){
     r.run("useExpItemOnInstance('kilo_data',ins.uid)");
     assert.equal(r.run('save.items.kilo_data'),2);assert.equal(r.run('currentEvolution.uid'),r.run('ins.uid'));
   }
-  if(path==='claim'||path==='recall')expedition(r,path==='recall');
+  if(path==='claim'||path==='recall')await expedition(r,path==='recall');
   if(path==='story'){
     for(const file of ['map-story-data','map-story'])vm.runInContext(fs.readFileSync(new URL(`../js/${file}.js`,import.meta.url),'utf8'),r.context);
     r.run("startMapStoryEpisode('gl_01');skipMapStoryDialogue();launchMapStoryBattle('gl_01');eHp=0;win()");

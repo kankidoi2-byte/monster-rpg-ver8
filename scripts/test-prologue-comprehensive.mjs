@@ -68,7 +68,7 @@ assert.equal(dialogueContext.persisted,true);assert.equal(dialogueContext.render
 assert.equal(vm.runInContext('tutorialDialogueSkipTargetIndex()',dialogueContext),-1,'an operation wait must never be bypassed');
 
 const skipStart=tutorial.indexOf('function tutorialSkipRewardInstance');
-const skipEnd=tutorial.indexOf('function requestTutorialSkip',skipStart);
+const skipEnd=tutorial.indexOf('async function requestTutorialSkip',skipStart);
 assert.ok(skipStart>=0&&skipEnd>skipStart);
 const requiredFlags=['starterContractsGranted','elnaContractGranted','stellaSkillCardGranted','alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted','expeditionDispatched','prologueCompleted'];
 function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress',instances=[],flags={}}={}){

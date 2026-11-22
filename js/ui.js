@@ -38,7 +38,63 @@ function showUiNotice(message, kind='success') {
   notice.textContent = message;
   replayUiMotion(notice, 'is-visible', 2200);
 }
+let gameConfirmSession=null;
+function closeGameConfirmForNavigation(){
+  gameConfirmSession?.finish(false,{restoreFocus:false});
+}
+function gameConfirm({title='確認',body='',okLabel='OK',cancelLabel='キャンセル',danger=false}={}){
+  // Reject overlapping confirmations rather than replacing an approved action.
+  if(gameConfirmSession||document.getElementById('itemQuantityDialog')?.open)return Promise.resolve(false);
+  const dialog=document.createElement('dialog');
+  if(typeof dialog.showModal!=='function')return Promise.resolve(false);
+  dialog.id='gameConfirmDialog';
+  dialog.className='game-confirm-dialog';
+  dialog.setAttribute('aria-labelledby','gameConfirmTitle');
+  if(body)dialog.setAttribute('aria-describedby','gameConfirmBody');
+  const sheet=document.createElement('section');
+  sheet.className='game-confirm-sheet roster-sheet';
+  const heading=document.createElement('h2');heading.id='gameConfirmTitle';heading.textContent=title;
+  const copy=document.createElement('p');copy.id='gameConfirmBody';copy.className='game-confirm-body';copy.textContent=body;
+  const actions=document.createElement('div');actions.className='roster-sheet-buttons';
+  const cancel=document.createElement('button');cancel.type='button';cancel.dataset.gameConfirmAction='cancel';cancel.textContent=cancelLabel;cancel.autofocus=true;
+  const ok=document.createElement('button');ok.type='button';ok.dataset.gameConfirmAction='ok';ok.textContent=okLabel;
+  if(danger)ok.className='roster-danger';
+  actions.append(cancel,ok);sheet.append(heading);if(body)sheet.append(copy);sheet.append(actions);dialog.append(sheet);
+  const previousFocus=document.activeElement;
+  return new Promise(resolve=>{
+    const session={finish};
+    function onNavigation(){finish(false,{restoreFocus:false});}
+    function finish(accepted,{restoreFocus=true}={}){
+      if(gameConfirmSession!==session)return;
+      gameConfirmSession=null;
+      ok.disabled=true;cancel.disabled=true;
+      window.removeEventListener('pagehide',onNavigation);
+      window.removeEventListener('popstate',onNavigation);
+      if(dialog.open)dialog.close();
+      dialog.remove();
+      if(restoreFocus&&previousFocus?.isConnected)previousFocus.focus?.({preventScroll:true});
+      resolve(accepted===true);
+    }
+    gameConfirmSession=session;
+    cancel.addEventListener('click',()=>finish(false));
+    ok.addEventListener('click',()=>finish(true));
+    dialog.addEventListener('click',event=>{if(event.target===dialog)finish(false);});
+    dialog.addEventListener('cancel',event=>{event.preventDefault();event.stopPropagation();finish(false);});
+    dialog.addEventListener('close',()=>finish(false));
+    dialog.addEventListener('keydown',event=>{if(event.key==='Escape')event.stopPropagation();});
+    try{
+      document.body.append(dialog);
+      dialog.showModal();
+      window.addEventListener('pagehide',onNavigation);
+      window.addEventListener('popstate',onNavigation);
+    }catch(_error){finish(false);}
+  });
+}
 function show(id,{readOnlyStoryReplay=false}={}) {
+  if(document.querySelector('.screen.active')?.id!==id){
+    closeGameConfirmForNavigation();
+    if(typeof closeItemQuantity==='function')closeItemQuantity();
+  }
   const replayNavigation=readOnlyStoryReplay&&(id==='prologuePart2'||id==='storyMode');
   if(typeof prologuePart2ScreenChanged==='function')prologuePart2ScreenChanged(id);
   if(typeof renewalScreenChanged==='function')renewalScreenChanged(id);

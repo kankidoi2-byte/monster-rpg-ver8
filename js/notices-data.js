@@ -7,6 +7,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+  {id:'20261122-bulk-items-dialogs',date:'2026-11-22',category:'update',title:'経験値データをまとめて使えるように、ショップでまとめて買えるようにしました。',body:'使った後のレベルや、購入後に残るコインを確定前に確認できます。'},
   {id:'20261122-character-kokoro-link',date:'2026-11-22',category:'update',title:'キャラクターもココロリンクできるようになりました。',body:'控えのキャラクターから力を借りたり、戦闘中のキャラクターへ仲間の力をつないだりできます。'},
   {id:'20261122-party-rework',date:'2026-11-22',category:'update',title:'パーティー編成を改良しました',body:'並び替え・プリセット・絞り込みに対応し、世界地図からも編成できます。'},
   {id:'20261122-sound-pack-02',date:'2026-11-22',category:'update',title:'戦闘BGMと効果音を追加しました',body:'火山・湖の戦闘と、格上・ヌシとの遭遇に専用BGMが流れます。会話やタブの切り替え、敵との遭遇などにも効果音を追加しました。音量はサウンド設定で調整できます。'},

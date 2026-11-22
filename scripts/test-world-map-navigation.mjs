@@ -23,7 +23,7 @@ const context=vm.createContext({
   MAX_LEVEL:100,clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),isMaxLevel:value=>Number(value)>=100,
   M:[],MAPS:maps,HUNT_DIFFICULTIES:difficulties,
   localStorage:{getItem:key=>storage.has(key)?storage.get(key):null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
-  confirm:()=>true,alert(){},setTimeout:fn=>{fn();return 1;},clearTimeout(){},
+  gameConfirm:async()=>true,showUiNotice(){},setTimeout:fn=>{fn();return 1;},clearTimeout(){},
   document:{getElementById:()=>list},saveCalls:0,
   worldMapActiveEvents:()=>[],worldMapEntryAvailable:()=>true,
   worldMapAvailableDifficulties:()=>Object.values(difficulties),
@@ -68,7 +68,7 @@ assert.ok(list.innerHTML.includes('data-wm-difficulty="d4" aria-pressed="true"')
 run("save.worldMap.active.crisis={mapId:'starsea',monsterId:'doom_nemesion'}");
 vm.runInContext(fs.readFileSync(new URL('../js/world-map-flow.js',import.meta.url),'utf8'),context);
 run("save.worldMap.navigation={...save.worldMap.navigation,mapId:'starsea',eventKey:'crisis',difficultyId:'d4'};worldMapSelectedEvent='crisis';saveGame=()=>false");
-assert.equal(run('worldMapSkipCrisis()'),false,'failed persistence aborts crisis skip');
+assert.equal(await run('worldMapSkipCrisis()'),false,'failed persistence aborts crisis skip');
 assert.equal(run('save.worldMap.navigation.eventKey'),'crisis');
 assert.equal(run('worldMapSelectedEvent'),'crisis','failed persistence keeps the visible event route');
 run('saveGame=()=>{saveCalls++;return true}');

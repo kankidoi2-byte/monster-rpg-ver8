@@ -232,7 +232,7 @@ function renderWorldMap(list,{saveNavigation=true}={}) {
   if(typeof setupWorldMapViewport==='function')setupWorldMapViewport(list);
   if(typeof worldMapDismissOverviewIntro==='function'&&list.innerHTML)worldMapDismissOverviewIntro();
   if(worldMapSelectedId&&worldMapSelectedEvent&&typeof worldMapAcknowledgeEventGuide==='function')worldMapAcknowledgeEventGuide(worldMapSelectedEvent);
-  list.onclick=event=>{
+  list.onclick=async event=>{
     if(typeof worldMapIgnoreClick==='function'&&worldMapIgnoreClick()&&event.target.closest('.wm-viewport'))return;
     const button=event.target.closest('button');
     if(!button||!list.contains(button)){
@@ -254,7 +254,7 @@ function renderWorldMap(list,{saveNavigation=true}={}) {
     else if(button.hasAttribute('data-wm-depart')){
       persistWorldMapNavigation();startWorldMapExploration(worldMapSelectedId,worldMapSelectedDifficulty,worldMapSelectedEvent,true);
     }else if(button.hasAttribute('data-wm-skip')){
-      if(typeof worldMapSkipCrisis==='function'&&worldMapSkipCrisis()){worldMapSelectedEvent=null;renderWorldMap(list);}
+      if(typeof worldMapSkipCrisis==='function'&&await worldMapSkipCrisis()){worldMapSelectedEvent=null;renderWorldMap(list);}
     }
   };
   if(list.querySelector?.('[data-tutorial-golden-land]')&&typeof offerGoldenLandTutorialGuide==='function')setTimeout(offerGoldenLandTutorialGuide,0);
@@ -290,11 +290,11 @@ function startWorldMapExploration(mapId,difficultyId,eventKey=null,fromSheet=fal
   if (worldMapDeparting || (typeof bossCautionPlaying!=='undefined'&&bossCautionPlaying)) return false;
   if(typeof handleTutorialWorldMapDeparture==='function'&&handleTutorialWorldMapDeparture(mapId,difficultyId,eventKey))return true;
   const map=MAPS.find(value=>value.id===mapId);
-  if (!map || !worldMapCanEnter(map,eventKey)) { alert('この入口は現在利用できません。世界地図で確認してください。');return false; }
+  if (!map || !worldMapCanEnter(map,eventKey)) { showUiNotice('この入口は現在利用できません。世界地図で確認してください。','warning');return false; }
   if (!worldMapDifficultiesForUI(map,eventKey).some(value=>value.id===difficultyId)) return false;
   const candidates=worldMapCandidatesForUI(map,difficultyId,eventKey);
   if (!candidates.length) return false;
-  if (!getPartyInstances().length) { alert('パーティーにモンスターを入れてください。');return false; }
+  if (!getPartyInstances().length) { showUiNotice('パーティーにモンスターを入れてください。','warning');return false; }
   if(fromSheet&&typeof autoPrepareDeparture==='function')autoPrepareDeparture();
   const random=typeof autoDepartureRandom==='function'?autoDepartureRandom():Math.random;
   const mon=candidates[Math.floor(random()*candidates.length)];

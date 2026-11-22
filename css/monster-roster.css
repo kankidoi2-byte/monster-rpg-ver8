@@ -56,6 +56,66 @@ body:has(#party.active #rosterSheetHost .roster-sheet-backdrop)>:is(.app-topbar,
 #party#party#party .roster-data-items button{display:block;width:calc(100% - 16px);margin:6px 8px}
 .roster-sheet-buttons{display:flex;gap:10px;position:sticky;bottom:-18px;background:#fffdf7;padding:12px 0}
 .roster-sheet-buttons button{flex:1}
+
+/* Game-wide confirmation and quantity sheets share the roster's paper panel. */
+.game-confirm-dialog,.item-quantity-dialog{
+  --game-sheet-paper:#fffdf7;--game-sheet-ink:#1c2230;--game-sheet-brass:#b08d55;
+  --game-sheet-danger:#922c39;
+  position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;
+  margin:0;border:0;padding:0;background:transparent;color:var(--game-sheet-ink);overflow:hidden;
+}
+.game-confirm-dialog[open],.item-quantity-dialog[open]{display:grid;align-items:end;justify-items:center}
+.game-confirm-dialog::backdrop,.item-quantity-dialog::backdrop{background:#10162580}
+.game-confirm-sheet,.item-quantity-sheet{
+  box-sizing:border-box;width:min(100%,480px);max-height:88vh;max-height:88dvh;
+  overflow:auto;overscroll-behavior:contain;touch-action:pan-y;
+  border:1px solid var(--game-sheet-brass);border-bottom:0;border-radius:22px 22px 0 0;
+  padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));background:var(--game-sheet-paper);
+  color:var(--game-sheet-ink);box-shadow:0 -8px 40px #10162530;
+  font:14px/1.55 system-ui;text-align:center;animation:gameSheetEnter .18s ease-out both;
+}
+.game-confirm-sheet h2,.item-quantity-sheet h2{font:700 21px 'Yu Mincho',serif;margin:0 0 10px}
+.game-confirm-body{white-space:pre-line;overflow-wrap:anywhere;margin:0 0 16px}
+.game-confirm-sheet button,.item-quantity-sheet button{min-width:44px;min-height:44px}
+.game-confirm-sheet .roster-sheet-buttons,.item-quantity-sheet .roster-sheet-buttons{
+  position:static;display:flex;gap:10px;background:transparent;padding:0;
+}
+.game-confirm-sheet .roster-danger{
+  background:var(--game-sheet-danger);border-color:var(--game-sheet-danger);color:#fff;
+}
+.item-quantity-target{
+  display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 12px;text-align:left;
+}
+.item-quantity-target img{width:52px;height:52px;object-fit:contain;flex:none}
+.item-quantity-target p,.item-quantity-preview p{margin:0}
+.item-quantity-target progress{display:block;max-width:100%;height:10px;accent-color:#866132}
+.item-quantity-tabs,.item-quantity-shortcuts{display:flex;gap:6px;margin:10px 0}
+.item-quantity-tabs button,.item-quantity-shortcuts button{flex:1;min-width:0;overflow-wrap:anywhere}
+.item-quantity-stepper{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0}
+.item-quantity-stepper input,.item-quantity-stepper output{
+  width:4.5em;min-height:44px;text-align:center;font:700 20px/44px system-ui;
+}
+.game-confirm-sheet button,.item-quantity-sheet button{
+  margin:0;border:1px solid #b08d5578;border-radius:11px;background:#fff;color:var(--game-sheet-ink);
+  box-shadow:none;padding:7px 9px;font:700 13px/1.35 system-ui;
+}
+.game-confirm-sheet [data-game-confirm-action="ok"]:not(.roster-danger),
+.item-quantity-tabs [aria-pressed="true"],.item-quantity-sheet [data-item-quantity-action="submit"]{
+  background:#232535;color:#fff7e5;border-color:var(--game-sheet-brass);
+}
+.game-confirm-sheet button:disabled,.item-quantity-sheet button:disabled{opacity:.42;cursor:default}
+.item-quantity-preview{margin:12px 0;padding:9px;background:#f3ead9;border-radius:11px}
+.item-quantity-footer{display:flex;gap:8px;margin-top:12px}
+.item-quantity-footer button{flex:1}
+.item-quantity-sheet>header{justify-content:space-between;align-items:center;margin:0 0 12px}
+.item-quantity-sheet>header h2{margin:0}
+.item-quantity-sheet>header button{flex:none}
+body>.ui-notice.is-error{background:#ffe8eb;color:#8d2030}
+@keyframes gameSheetEnter{from{transform:translateY(24px);opacity:.8}to{transform:translateY(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){
+  .game-confirm-sheet,.item-quantity-sheet{animation:none}
+  body>.ui-notice.is-visible{opacity:1;transform:translate(-50%,0) scale(1)}
+}
 .roster-warning{padding:10px;border:1px solid #c89188;border-radius:10px;background:#fff1ed;color:#822536!important;text-align:left}
 .roster-confirm-icons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:12px 0}
 .roster-confirm-icons>div{min-width:0}

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {runtime} from '../tools/balance-audit/runtime.mjs';
 
 const r=runtime();
+r.context.gameConfirm=async()=>true;
 const run=source=>r.run(source);
 const payload='<img src=x onerror="globalThis.__xss=1">';
 r.context.payload=payload;
@@ -49,7 +50,7 @@ const root=r.elements.get('expeditionContent')||r.context.document.getElementByI
 let buttons=[];
 Object.defineProperty(root,'innerHTML',{get(){return this.html||'';},set(html){this.html=html;buttons=[...html.matchAll(/<button\b([^>]*)>/g)].map(([,attrs])=>{
   const dataset={};for(const [,key,value] of attrs.matchAll(/data-([a-z-]+)="([^"]*)"/g))dataset[key.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=decode(value);
-  const handlers={};return {dataset,attrs,addEventListener(type,fn){handlers[type]=fn;},click(){assert(handlers.click,'render must install click listener');handlers.click({currentTarget:this,target:this});}};
+  const handlers={};return {dataset,attrs,addEventListener(type,fn){handlers[type]=fn;},click(){assert(handlers.click,'render must install click listener');return handlers.click({currentTarget:this,target:this});}};
 });}});
 root.querySelectorAll=selector=>buttons.filter(b=>b.dataset.expeditionId!==undefined);
 run(`save=initSave();save.progress.tutorial.status='completed';save.coins=100;
@@ -70,7 +71,7 @@ for(const [id,count] of Object.entries(run('reward.items')))assert.equal(run(`sa
 button.click();assert.equal(run('save.expeditions.completedCount'),1,'D: repeated click cannot duplicate claim');
 run(`expeditionSelectedDistanceId='medium';expeditionSelectedUids=[member.uid];startExpedition();progressActiveExpeditions(()=>.99,{saveNow:false});var recallId=save.expeditions.active[0].id;coinsBefore=save.coins;expBefore=member.exp;Math.random=()=>.99;renderExpedition();`);
 button=buttons.find(b=>b.dataset.expeditionId===run('recallId'));
-assert(button,'D: active expedition button exists');assert(!/\bonclick=/.test(button.attrs),'D: no inline handler on recall button');button.click();
+assert(button,'D: active expedition button exists');assert(!/\bonclick=/.test(button.attrs),'D: no inline handler on recall button');await button.click();
 assert.equal(run('save.expeditions.active.length'),0,'D: recall frees slot');
 assert.equal(run('isInstanceOnExpedition(member.uid)'),false,'D: recall unlocks member');
 assert.equal(run('save.coins-coinsBefore'),8,'D: recall grants 50% of completed progress coins');

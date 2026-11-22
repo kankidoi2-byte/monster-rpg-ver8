@@ -48,8 +48,9 @@ delete context.document;
 
 // UI draws are rolled back if persistence fails; do not display an acquisition.
 let persistSuccess=false,renderCalls=0,resourceUpdates=0,presentations=0;
-const alerts=[];
-context.alert=message=>alerts.push(message);
+const notices=[];
+context.alert=()=>{throw Error('native alert is forbidden for skill gacha');};
+context.showUiNotice=(message,kind)=>notices.push({message,kind});
 context.saveGame=()=>{context.save.saveMeta.lastSavedAt='attempted';return persistSuccess;};
 context.updateAppResourceBar=()=>{resourceUpdates++;};
 context.renderStub=()=>{renderCalls++;};
@@ -63,7 +64,7 @@ assert.equal(JSON.stringify(context.save),beforeFailedSave,'failed persistence m
 assert.equal(presentations,0);
 assert.equal(renderCalls,1);
 assert.equal(resourceUpdates,1);
-assert(alerts.some(message=>message.includes('抽選を取り消しました')));
+assert(notices.some(({message,kind})=>kind==='error'&&message.includes('抽選を取り消しました')));
 persistSuccess=true;
 vm.runInContext("rollSkillGacha('character',10)",context);
 assert.equal(context.save.coins,0);

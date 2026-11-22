@@ -14,8 +14,8 @@ const context=vm.createContext({
   save:{instances:[{id:'m',uid:'first',level:1,exp:0},{id:'m',uid:'second',level:1,exp:0}],party:['first','second'],items:{kilo_data:3},coins:0,expeditions:{active:[]}},
   by:()=>mon,instanceEvolutionRoutes:()=>[],ensureContractScrollItem(){},getDataItems:()=>[item],itemCountText:()=>'',itemInlineVisual:()=>'',
   ITEM_DEX_BY_ID:{water_mirror:{}},ITEM_BY_ID:{kilo_data:item},SHOP_ITEMS:[],vis:()=>'',typesHtml:()=>'',
-  isMaxLevel:level=>level>=100,needExp:()=>100,getEquippedSkillIds:()=>[],SKILL_BY_ID:{},equippedSkillCost:()=>0,skillCostLimitFor:()=>1,isCharacterUnit:()=>false,
-  pendingEvolutions:[],checkEvolution(){},saveGame:()=>true,alert(){},setTimeout(){},
+  MAX_LEVEL:100,isMaxLevel:level=>level>=100,needExp:()=>100,getEquippedSkillIds:()=>[],SKILL_BY_ID:{},equippedSkillCost:()=>0,skillCostLimitFor:()=>1,isCharacterUnit:()=>false,
+  pendingEvolutions:[],checkEvolution(){},saveGame:()=>true,alert(){throw Error('native alert is forbidden here');},showUiNotice(){},setTimeout(){},
   // Persistence is exercised by test-save-transactions; this fixture isolates roster rendering.
   commitSaveMutation:mutate=>{mutate();return true;},showCommittedSaveResult:render=>render(),
   activeHuntRequest:null

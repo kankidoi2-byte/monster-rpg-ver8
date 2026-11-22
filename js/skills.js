@@ -325,10 +325,10 @@ function equipSkill(skillId){
   const arr = save.equippedSkills[ins.uid] || [];
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return;
-  if (arr.length >= 3) { alert('技は最大3つまでです。'); return; }
-  if (!isSkillAllowedForMonster(skillId, mon)) { alert('このユニットは区分・属性・タグ条件を満たしていません。'); return; }
-  if (equippedSkillCost(ins) + sk.cost > skillCostLimitFor(mon, ins)) { alert('コスト上限を超えています。'); return; }
-  if (availableSkillCount(skillId) <= 0) { alert('この技カードの未使用分がありません。'); return; }
+  if (arr.length >= 3) { showUiNotice('技は最大3つまでです。','warning'); return; }
+  if (!isSkillAllowedForMonster(skillId, mon)) { showUiNotice('このユニットは区分・属性・タグ条件を満たしていません。','warning'); return; }
+  if (equippedSkillCost(ins) + sk.cost > skillCostLimitFor(mon, ins)) { showUiNotice('コスト上限を超えています。','warning'); return; }
+  if (availableSkillCount(skillId) <= 0) { showUiNotice('この技カードの未使用分がありません。','warning'); return; }
   const previous=[...arr];
   arr.push(skillId);
   save.equippedSkills[ins.uid] = arr;

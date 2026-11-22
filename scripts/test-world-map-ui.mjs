@@ -11,7 +11,7 @@ const maps=ids.map(id=>({id,name:id,image:'test.webp',desc:'<safe>',region:'r',c
 const list={classList:{add(){}},innerHTML:'',querySelector(selector){return selector==='[data-tutorial-golden-land]'&&this.innerHTML.includes('data-tutorial-golden-land')?{}:null;},contains(){return true;}};
 const context={
   mapPortraitImage:map=>`new-${map.id}.webp`,
-  MAPS:maps,HUNT_DIFFICULTIES:difficulties,Math,Map,Object,String,alert(){},setTimeout:fn=>{fn();return 1;},document:{getElementById(){return list;}},
+  MAPS:maps,HUNT_DIFFICULTIES:difficulties,Math,Map,Object,String,showUiNotice(){},setTimeout:fn=>{fn();return 1;},document:{getElementById(){return list;}},
   worldMapActiveEvents:()=>eventList,worldMapEntryAvailable:()=>available,
   worldMapAvailableDifficulties:()=>Object.values(difficulties),worldMapCandidates:()=>[{id:'m',name:'Enemy',rarity:'★'}],
   huntLevelFor:()=>1,goldenLandMapIsReady:()=>true,getPartyInstances:()=>party,
