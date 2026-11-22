@@ -56,10 +56,10 @@ try{
   assert.equal(await page.locator('.br-selected .br-target-label').count(),0,'ring has no text');
   await page.locator('#battleSkillButton').click();
   assert.equal(await page.locator('#commands [data-battle-panel-back]').innerText(),'‹ 戻る');
-  assert((await page.locator('#commands .br-effect').first().innerText()).includes('◎'));
+  assert((await page.locator('#commands .br-effect').first().innerText()).includes('効果抜群'));
   await page.locator('#enemy_bCard .battle-stage-slot').click();
   assert((await page.locator('.br-skill-heading').innerText()).includes('アクアロン'));
-  assert((await page.locator('#commands .br-effect').first().innerText()).includes('○'));
+  assert((await page.locator('#commands .br-effect').first().innerText()).includes('ふつう'));
   const geometry=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,view:innerHeight,commands:document.getElementById('commands').getBoundingClientRect().toJSON()}));
   assert(geometry.width<=width,JSON.stringify(geometry));assert(geometry.commands.bottom<=height+2,JSON.stringify(geometry));
   await page.screenshot({path:`${output}/skills-${width}.png`});

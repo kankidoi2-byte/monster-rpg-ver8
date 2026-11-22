@@ -29,7 +29,7 @@ function refreshGachaBanner(){
  const banner=document.getElementById('gachaBanner');if(!banner)return;
  banner.dataset.kind=gachaTab;
  const vera=by('character_vera_3');
- const art=gachaTab==='character'?`<img class="gacha-vera" src="${IMG[vera.imgKey]}" alt="${gachaEscape(vera.name)}">`:gachaTab==='skill'?'<div class="gacha-fan" aria-hidden="true"><i></i><i></i><i></i><b>✦</b></div>':`<div class="gacha-item-scatter" aria-hidden="true">${ITEM_GACHA_POOL.filter(e=>ITEM_IMG[e.id]).map(e=>gachaItemVisual(ITEM_BY_ID[e.id])).join('')}</div>`;
+ const art=gachaTab==='character'?`<img class="gacha-vera" src="${IMG[vera.imgKey]}" alt="${gachaEscape(vera.name)}">`:gachaTab==='skill'?'<div class="gacha-fan" aria-hidden="true"><i></i><i></i><i></i><b aria-hidden="true"></b></div>':`<div class="gacha-item-scatter" aria-hidden="true">${ITEM_GACHA_POOL.filter(e=>ITEM_IMG[e.id]).map(e=>gachaItemVisual(ITEM_BY_ID[e.id])).join('')}</div>`;
  const title={character:'キャラクター契約',skill:'技カード',item:'冒険の道具'}[gachaTab];
  const tag={character:'★3 人間兵器ヴェーラ',skill:`全${skillGachaPool('monster').length}種・10回で上級以上1枚`,item:'最高 虹の契約書'}[gachaTab];
  banner.innerHTML=`${art}<div class="gacha-banner-label"><span>${tag}</span><h1>${title}</h1></div>`;
@@ -72,7 +72,7 @@ function showGachaResult(kind,result,entries){
 function openGachaResultDetail(index){
  const s=gachaResultSession,e=s?.entries[index];if(!e)return;
  const box=document.getElementById('gachaResultDetail');
- box.innerHTML=`<button type="button" onclick="closeGachaResultDetail()">閉じる</button>`+(s.kind==='skill'?tcgSkillCardMarkup(e.card):s.kind==='character'?`${vis(e.unit)}<h2>${gachaEscape(e.unit.name)}</h2><p>${e.unit.rarity}${e.instance?.locked?'・🔒 自動ロック':''}</p>`:`${gachaItemVisual(e.item)}<h2>${gachaEscape(e.item.name)}</h2><p>${gachaEscape(e.item.desc)}</p>`);
+ box.innerHTML=`<button type="button" onclick="closeGachaResultDetail()">閉じる</button>`+(s.kind==='skill'?tcgSkillCardMarkup(e.card):s.kind==='character'?`${vis(e.unit)}<h2>${gachaEscape(e.unit.name)}</h2><p>${e.unit.rarity}${e.instance?.locked?'・自動ロック':''}</p>`:`${gachaItemVisual(e.item)}<h2>${gachaEscape(e.item.name)}</h2><p>${gachaEscape(e.item.desc)}</p>`);
  box.hidden=false;box.querySelector('button').focus();bindTcgTilt(box);
 }
 function closeGachaResultDetail(){const el=document.getElementById('gachaResultDetail');el.hidden=true;el.innerHTML='';document.querySelector('#gachaResultCards button')?.focus();}

@@ -90,11 +90,11 @@ function battleCombatants(){
 function battleStateLabels(u){
   if(u.hp<=0)return ['戦闘不能'];
   const labels=[];
-  if(u.status==='poison'&&u.poison>0)labels.push(`☠ 毒 ${u.poison}T`);
-  if(u.paralysis>0)labels.push(`⚡ 麻痺 ${u.paralysis}T`);
+  if(u.status==='poison'&&u.poison>0)labels.push(`毒 ${u.poison}T`);
+  if(u.paralysis>0)labels.push(`麻痺 ${u.paralysis}T`);
   if(u.sleep>0)labels.push(`眠り ${u.sleep}T`);
   if(u.confusion>0)labels.push(`混乱 ${u.confusion}T`);
-  if(u.freeze>0)labels.push(`❄️ 凍結 ${u.freeze}T`);
+  if(u.freeze>0)labels.push(`凍結 ${u.freeze}T`);
   if(u.guard)labels.push('防御 次の被弾');
   if(u.shield)labels.push('水の盾 次の被弾');
   if(u.charge)labels.push('溜め 次の攻撃+20%');

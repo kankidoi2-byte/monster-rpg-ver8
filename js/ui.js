@@ -1,3 +1,13 @@
+const GAME_LINE_ICONS=Object.freeze({
+  lock:'<rect x="6" y="10" width="12" height="10" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
+  unlock:'<rect x="6" y="10" width="12" height="10" rx="2"/><path d="M9 10V7a3 3 0 0 1 5.7-1.3"/>',
+  edit:'<path d="m5 15-1 5 5-1L20 8l-4-4ZM14 6l4 4"/>',
+  check:'<path d="m5 12 4 4L19 6"/>'
+});
+function gameLineIcon(name){
+  const paths=Object.hasOwn(GAME_LINE_ICONS,name)?GAME_LINE_ICONS[name]:'';
+  return paths?`<svg class="game-line-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`:'';
+}
 function typesHtml(ts) {
   return skillTypeChips(ts);
 }
@@ -6,8 +16,8 @@ function vis(m, imageAttributes = '') {
     const attributes = imageAttributes ? ` ${imageAttributes}` : '';
     return `<img${attributes} src="${IMG[m.imgKey]}" alt="${m.name}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
   }
-  if (m.artworkPending && isCharacterUnit(m)) return `<div class="character-artwork-pending" role="img" aria-label="${m.name}"><div class="emoji" aria-hidden="true">${m.icon || '❓'}</div><small>${m.name}</small></div>`;
-  return `<div class="emoji">${m.icon || '❓'}</div>`;
+  if (m.artworkPending && isCharacterUnit(m)) return `<div class="character-artwork-pending" role="img" aria-label="${m.name}"><div class="emoji" aria-hidden="true">画像準備中</div><small>${m.name}</small></div>`;
+  return `<div class="unit-artwork-placeholder" role="img" aria-label="${escapeGameHtml(m.name)}">画像準備中</div>`;
 }
 const uiMotionTimers = new WeakMap();
 function replayUiMotion(element, className, duration=700) {
@@ -280,7 +290,7 @@ function renderContractorRank(){
     </section>
     <section class="contractor-rank-card contractor-exp-guide">
       <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">HOW TO GROW</span><h2>Rankを上げる方法</h2></div></div>
-      <div><span>⚔️<strong>討伐・ボス撃破</strong></span><span>🤝<strong>契約・図鑑登録</strong></span><span>✦<strong>進化・錬成</strong></span><span>🧭<strong>遠征完了</strong></span></div>
+      <div><span><strong>討伐・ボス撃破</strong></span><span><strong>契約・図鑑登録</strong></span><span><strong>進化・錬成</strong></span><span><strong>遠征完了</strong></span></div>
       <p>Rankで能力や機能は変わらない</p>
     </section>`;
 }
@@ -288,10 +298,10 @@ function contractorRewardItemMeta(itemId){return (typeof ITEM_BY_ID!=='undefined
 function contractorRewardParts(reward){
   if(!reward)return [];
   const parts=[];
-  if(reward.coins>0)parts.push(`🪙 コイン ${reward.coins.toLocaleString('ja-JP')}枚`);
+  if(reward.coins>0)parts.push(`コイン ${reward.coins.toLocaleString('ja-JP')}枚`);
   Object.entries(reward.items).forEach(([itemId,count])=>{const item=contractorRewardItemMeta(itemId);parts.push(`${item.icon||'🎁'} ${item.name} ×${count}`);});
   const title=reward.titleId?contractorTitleById(reward.titleId):null;
-  if(title)parts.push(`🎖️ 称号「${title.name}」（到達時獲得）`);
+  if(title)parts.push(`称号「${title.name}」（到達時獲得）`);
   return parts;
 }
 function contractorRewardCard(reward,{compact=false}={}){
@@ -371,12 +381,12 @@ function renderContractorTitles(){
       ?`<button type="button" aria-pressed="${isEquipped}" onclick="setContractorTitle('${isEquipped?'':title.id}')">${isEquipped?'称号を外す':'この称号を装備'}</button>`
       :`<button type="button" disabled>Rank ${title.rank}で獲得</button>`;
     return `<article class="contractor-title-card${isUnlocked?' is-unlocked':' is-locked'}${isEquipped?' is-equipped':''}">
-      <div class="contractor-title-medal" aria-hidden="true">${isUnlocked?'✦':'?'}</div>
+      <div class="contractor-title-medal" aria-hidden="true">${isUnlocked?gameLineIcon('check'):gameLineIcon('lock')}</div>
       <div class="contractor-title-copy"><span>RANK ${title.rank}${isEquipped?'・装備中':''}</span><h2>${title.name}</h2><p>${title.description}</p><small>${isUnlocked?'獲得済み':`契約者Rank ${title.rank}で獲得`}</small></div>${action}
     </article>`;
   }).join('');
   content.innerHTML=`<section class="contractor-title-current">
-      <span class="ui-eyebrow">EQUIPPED TITLE</span><div><i aria-hidden="true">🎖️</i><p><small>現在の称号</small><strong>${equipped?.name||'称号未設定'}</strong></p></div>
+      <span class="ui-eyebrow">EQUIPPED TITLE</span><div><p><small>現在の称号</small><strong>${equipped?.name||'称号未設定'}</strong></p></div>
       <small>獲得済み ${unlockedCount} / ${CONTRACTOR_TITLE_CATALOG.length}</small>
     </section>
     <section class="contractor-title-list" aria-label="称号一覧">${cards}</section>
@@ -523,7 +533,7 @@ function showTypeChart() {
      <span class="tw-adv">→×1.5 </span><span class="tw-type ${adv}">${TN[adv]}</span>
      <span class="tw-bad"> →×0.7 </span><span class="tw-type ${bad}">${TN[bad]}</span></div>`;
   el.innerHTML =
-    `<div id="typeBasicChart" class="chart-group"><h2>🔥❄️🌿🌬️⚡💧 基本6属性</h2><div class="type-wheel">${basic6.map(row).join('')}</div></div>` +
-    `<div id="typeSpecialChart" class="chart-group"><h2>✨🌙🌌 特殊3属性</h2><div class="type-wheel">${special3.map(row).join('')}</div></div>` +
+    `<div id="typeBasicChart" class="chart-group"><h2>基本6属性</h2><div class="type-wheel">${basic6.map(row).join('')}</div></div>` +
+    `<div id="typeSpecialChart" class="chart-group"><h2>特殊3属性</h2><div class="type-wheel">${special3.map(row).join('')}</div></div>` +
     `<div id="typeDragonChart" class="chart-group"><h2><span class="dragon">竜</span>属性</h2><p style="text-align:left">竜は独立属性。竜同士の攻撃で少し有利（×1.2）。</p></div>`;
 }

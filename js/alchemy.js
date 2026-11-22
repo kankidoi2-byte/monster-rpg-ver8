@@ -431,7 +431,7 @@ function renderTutorialAlchemyLesson(root){
   const errors=validateAlchemyPlan(plan);
   const result=by(tutorialAlchemyLessonConfig.resultId);
   root.innerHTML=`<div class="alchemy-workbench tutorial-alchemy-lesson">
-    <header class="alchemy-workbench-header"><div><span class="ui-eyebrow">LUMINA'S LESSON</span><h1>入門錬成</h1></div><div class="alchemy-resources"><span>🪙 <b>${Number(save.coins||0).toLocaleString('ja-JP')}</b></span></div></header>
+    <header class="alchemy-workbench-header"><div><span class="ui-eyebrow">LUMINA'S LESSON</span><h1>入門錬成</h1></div><div class="alchemy-resources"><span>コイン <b>${Number(save.coins||0).toLocaleString('ja-JP')}</b></span></div></header>
     <section id="tutorialAlchemyRecipeCard" class="tutorial-alchemy-recipe">
       <div><small>序章専用レシピ</small><h2>${tutorialAlchemyLessonConfig.displayName}</h2><p>練習用錬成核を使用。仲間は消費しません。</p></div>
       <span class="tutorial-alchemy-result-hint">完成候補 ${result?.name||'？？？'}</span>
@@ -441,11 +441,11 @@ function renderTutorialAlchemyLesson(root){
       return `<div class="alchemy-material-row ${owned<1?'is-short':''}"><span class="alchemy-material-icon" aria-hidden="true">${itemInlineVisual(item, 'alchemy-material-image')}</span><div><b>${item?.name||itemId}</b><small>所持 ${owned} / 必要 1</small></div></div>`;
     }).join('')}</div></section>
     <div class="tutorial-alchemy-summary">
-      <div id="tutorialAlchemyCoin"><small>投入コイン</small><strong>🪙 ${plan.coinCost}枚</strong></div>
+      <div id="tutorialAlchemyCoin"><small>投入コイン</small><strong>${plan.coinCost}枚</strong></div>
       <div id="tutorialAlchemyRate"><small>初回成功保証</small><strong>成功率 ${plan.rate}%</strong></div>
     </div>
-    ${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div>`:''}
-    <button id="tutorialAlchemyStartButton" class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length||alchemyBusy?'disabled':''}>✦ 入門錬成を始める</button>
+    ${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>${error}</p>`).join('')}</div>`:''}
+    <button id="tutorialAlchemyStartButton" class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length||alchemyBusy?'disabled':''}>入門錬成を始める</button>
   </div>`;
 }
 function renderAlchemy(){
@@ -469,7 +469,7 @@ function renderAlchemy(){
     <div class="alchemy-workbench">
       <header class="alchemy-workbench-header">
         <div><span class="ui-eyebrow">ALCHEMY</span><h1>錬成</h1></div>
-        <div class="alchemy-resources"><span>🪙 <b>${Number(save.coins || 0).toLocaleString('ja-JP')}</b></span></div>
+        <div class="alchemy-resources"><span>コイン <b>${Number(save.coins || 0).toLocaleString('ja-JP')}</b></span></div>
       </header>
       <p class="alchemy-outcome-note">完成するモンスターは錬成後に判明</p>
       <section class="alchemy-material-board">
@@ -489,7 +489,7 @@ function renderAlchemy(){
         <label class="alchemy-catalyst"><span>触媒契約体 <small>必須・1体消費</small></span><select id="alchemyMonsterSelect" onchange="selectAlchemyCatalyst(this.value)"><option value="">選択してください</option>${eligible.map(ins => `<option value="${escapeGameHtml(ins.uid)}" ${ins.uid===selectedAlchemyCatalystUid?'selected':''}>${by(ins.id)?.name || ins.id} Lv.${ins.level || 1}</option>`).join('')}</select></label>
         <fieldset class="alchemy-coin-compact"><legend>投入コイン</legend>${recipe.coinOptions.map(option => {
           const failureCount = eligibleAlchemyCandidates(recipe, false, option).length;
-          return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="selectAlchemyCoin(this.value)" ${option.id===selectedAlchemyCoinOptionId?'checked':''} ${failureCount?'':'disabled'}><span>🪙 ${option.amount}</span></label>`;
+          return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="selectAlchemyCoin(this.value)" ${option.id===selectedAlchemyCoinOptionId?'checked':''} ${failureCount?'':'disabled'}><span>コイン ${option.amount}</span></label>`;
         }).join('')}</fieldset>
       </div>
       <div id="alchemyPreview"></div>
@@ -509,8 +509,8 @@ function updateAlchemyPreview(){
       <span class="alchemy-lumina-bubble"><b>ルミナの見立て</b><span>${advice.short}</span><small>${alchemyGuideOpen?'説明を閉じる':'タップで詳しく'}</small></span>
     </button>
     <div class="alchemy-lumina-detail ${alchemyGuideOpen?'is-open':''}"><p>${advice.detail}</p></div>
-    <details class="alchemy-judgement-details"><summary>判定の詳細</summary><p>素材一致 ${plan.recipeMatchScore}/4・品質補正 +${plan.fineCount*plan.recipe.fineMaterialBonus}%・数量補正 +${plan.quantityBonus}%・触媒補正 +${plan.monsterBonus.total}%・${alchemyFailureGuaranteeText(plan.coinOption)}</p>${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div>`:''}</details>
-    <button class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length || alchemyBusy?'disabled':''}>✦ 錬成開始</button>
+    <details class="alchemy-judgement-details"><summary>判定の詳細</summary><p>素材一致 ${plan.recipeMatchScore}/4・品質補正 +${plan.fineCount*plan.recipe.fineMaterialBonus}%・数量補正 +${plan.quantityBonus}%・触媒補正 +${plan.monsterBonus.total}%・${alchemyFailureGuaranteeText(plan.coinOption)}</p>${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>${error}</p>`).join('')}</div>`:''}</details>
+    <button class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length || alchemyBusy?'disabled':''}>錬成開始</button>
   </section>`;
 }
 function openAlchemyConfirmation(){
@@ -522,7 +522,7 @@ function openAlchemyConfirmation(){
   alchemyDiagnosticsStage='confirming';
   alchemyDiagnosticsResultKind='none';
   target.innerHTML = `<div class="alchemy-confirm-card">
-    ${plan.instance ? vis(by(plan.instance.id)) : '<div class="alchemy-core">⚗</div>'}
+    ${plan.instance ? vis(by(plan.instance.id)) : '<div class="alchemy-core">錬成</div>'}
     <h2>錬成の最終確認</h2>
     <p><b>${plan.tutorialLesson?'錬成核':'触媒'}：</b>${plan.tutorialLesson?'ルミナの練習用錬成核（仲間の消費なし）':escapeGameHtml(alchemyInstanceLabel(plan.instance))}</p>
     <p>${plan.selection.materialIds.map((id,index)=>`${ITEM_BY_ID[id].name} ×${plan.selection.materialCounts[index]}`).join(' / ')}</p>
@@ -547,7 +547,7 @@ async function executeAlchemyConfirmed(){
   const plan = alchemyPlan();
   const errors = validateAlchemyPlan(plan);
   if(errors.length){
-    document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
+    document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
   if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1){
@@ -620,7 +620,7 @@ function finalizeAlchemy(originalPlan){
     const content = document.getElementById('alchemyResultContent');
     const modifierHtml = archetype ? instanceAlchemySummary(resultInstance) : '<p class="small">通常モンスターとして完成しました。</p>';
     content.innerHTML = `<div ${plan.tutorialLesson?'id="tutorialAlchemyResult" ':''}class="alchemy-result-card ${success?'success':'fallback'}">
-      <p class="alchemy-result-label">${success?'✨ 錬成成功！':'🔹 通常個体が完成'}</p>
+      <p class="alchemy-result-label">${success?'錬成成功！':'通常個体が完成'}</p>
       ${vis(resultMonster)}<h1>${resultMonster.name}</h1>
       <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${escapeGameHtml(String(resultInstance.uid).slice(-8))}</p>
       ${modifierHtml}

@@ -101,7 +101,7 @@ function tutorialPresentationRender(step,view){
   const controls=tutorialPresentationControls(step);
   next.hidden=next.hidden||!controls.next;
   const hint=document.getElementById('tutorialAdvanceHint');
-  hint.textContent=controls.targetTap?'光っている場所をタップ':'▼';hint.hidden=!controls.hint;
+  hint.textContent=controls.targetTap?'光っている場所をタップ':'';hint.classList.toggle('is-advance-arrow',!controls.targetTap);hint.hidden=!controls.hint;
   const form=document.getElementById('tutorialNameForm'),choices=document.getElementById('tutorialDialogueChoices');
   overlay.append(form,choices);
   document.getElementById('tutorialSkipMenu').append(document.getElementById('tutorialDialogueSkipButton'),document.getElementById('tutorialSkipButton'));

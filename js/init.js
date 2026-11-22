@@ -4,7 +4,7 @@ function initSaveManagementUi(){
   if(!resetButton||document.querySelector('#moreMenu .save-management'))return;
   const panel=document.createElement('details');
   panel.className='save-management';
-  panel.innerHTML=`<summary>💾 セーブ管理</summary>
+  panel.innerHTML=`<summary>セーブ管理</summary>
     <p>機種変更や破損に備えて、セーブデータを端末へ保存できます。</p>
     <p id="replacementRecoveryStatus">${replacementRecoveryStatusText()}</p>
     <div class="save-management-actions">

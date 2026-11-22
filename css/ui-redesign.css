@@ -626,3 +626,10 @@ body:has(#skillEdit.active) .tutorial-bubble{transition:none}
 /* Keep the final confirmation actions together beside the tutorial spotlight. */
 .tutorial-alchemy-confirm-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;gap:8px}
 .tutorial-alchemy-confirm-actions>button{min-width:0;min-height:44px;margin:0;overflow-wrap:anywhere}
+
+/* Labels stand on their own after removing decorative emoji. */
+#moreMenu .ui-menu-list > button{grid-template-columns:minmax(0,1fr) auto}
+.app-bottom-nav button>small{font-size:clamp(10px,2.75vw,13px);line-height:1.15;overflow-wrap:anywhere}
+.app-resource .app-coin-dot{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:currentColor}
+.game-line-icon{display:inline-block;flex:none;vertical-align:-.2em}
+.unit-artwork-placeholder{display:grid;place-items:center;min-height:100px;font-size:12px}

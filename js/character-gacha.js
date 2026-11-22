@@ -367,7 +367,7 @@ function renderCharacterGachaResults(result,{recovered=false}={}){
   const target=document.getElementById('characterGachaResult');
   if(!target)return false;
   target.classList?.remove('is-mirrored-result');
-  target.innerHTML=`<h2>${result.count}体が仲間になりました</h2>${recovered?'<p>保存済みの契約結果です。コインや仲間の追加処理は行っていません。</p>':''}<div class="character-gacha-grid">${result.entries.map(({unit,isNew,instance})=>`<article class="character-gacha-card">${vis(unit)}<strong>${unit.name}</strong><small>${unit.rarity} / Lv.1</small><span>${isNew?'NEW・図鑑登録':'同じ形態の別個体を獲得'}${instance.locked?'・🔒 自動ロック':''}</span></article>`).join('')}</div><button onclick="show('partySet')">編成する</button><button type="button" onclick="acknowledgeCharacterGachaReceipt()">結果を確認して閉じる</button>`;
+  target.innerHTML=`<h2>${result.count}体が仲間になりました</h2>${recovered?'<p>保存済みの契約結果です。コインや仲間の追加処理は行っていません。</p>':''}<div class="character-gacha-grid">${result.entries.map(({unit,isNew,instance})=>`<article class="character-gacha-card">${vis(unit)}<strong>${unit.name}</strong><small>${unit.rarity} / Lv.1</small><span>${isNew?'NEW・図鑑登録':'同じ形態の別個体を獲得'}${instance.locked?'・自動ロック':''}</span></article>`).join('')}</div><button onclick="show('partySet')">編成する</button><button type="button" onclick="acknowledgeCharacterGachaReceipt()">結果を確認して閉じる</button>`;
   characterGachaSeenReceipt={owner:save,id:result.receiptId};
   if(typeof showGachaResult==='function'){target.classList.add('is-mirrored-result');showGachaResult('character',result,result.entries);}
   if(typeof replayUiMotion==='function')replayUiMotion(target,'ui-reward-pop',850);

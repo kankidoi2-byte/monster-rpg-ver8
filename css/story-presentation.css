@@ -39,3 +39,5 @@
   .story-episode-next-highlight{animation:none}
   .ui-notice.is-story-complete.is-visible{opacity:1;transform:translate(-50%,0) scale(1)}
 }
+
+.is-advance-arrow::after{content:"";display:inline-block;border:.37em solid transparent;border-top:.55em solid currentColor;border-bottom:0;vertical-align:middle}

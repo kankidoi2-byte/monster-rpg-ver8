@@ -390,7 +390,7 @@ function renderProloguePart2(){
   const label=prologuePart2Label(episode);
   const eventButtons=step.kind==='event'?prologuePart2EventMarkup(step):'';
   const receipt=step.id==='pb_ep_gacha_03'?ProloguePart2Events.characterResultMarkup():step.id==='pb_11_post_01'?ProloguePart2Events.synthesisResultMarkup():'';
-  const actions=conversation?'<button type="button" class="map-story-next story-scene-cue" onclick="prologuePart2Tap(event)" aria-label="次へ">▼</button>':
+  const actions=conversation?'<button type="button" class="map-story-next story-scene-cue is-advance-arrow" onclick="prologuePart2Tap(event)" aria-label="次へ"></button>':
     step.kind==='complete'?`<button type="button" class="map-story-next" onclick="prologuePart2Complete()">${ui.replay?'読み返しを終える':episode.id==='pb_ep'?'序章を終える':label+'を終える'}</button>`:
     battle?`<button type="button" class="map-story-next" onclick="prologuePart2StartBattle()">戦闘開始</button><button type="button" onclick="prologuePart2ShowParty()">編成を確認</button><button type="button" onclick="prologuePart2Leave()">戻る</button>`:eventButtons;
   const optional=step.kind==='complete'&&episode.id==='pb_16'?prologuePart2OptionalButtons('episode16'):'';

@@ -3,7 +3,7 @@ function battleOvertierLabel(request=activeHuntRequest){
 }
 function battleOvertierLog(){
   const label=battleOvertierLabel();
-  return label?`⚠️ ${label}の相手だ！<br>`:'';
+  return label?`${label}の相手だ！<br>`:'';
 }
 function prepareBattleParty(storyInstances=null) {
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
@@ -109,13 +109,13 @@ function showBattleChoices() {
       </div>
       <div class="hunt-card-body">
         <div class="hunt-primary-rewards"><span><small>ENEMY</small><strong>Lv.${difficulty.levelRange.join("〜")}</strong></span><span><small>REWARD</small><strong>×${difficulty.rewardText}</strong></span></div>
-        ${secondEnemy ? `<div class="three-way-preview"><b>⚔️ 三つ巴バトル</b><span>敵2体分の報酬を獲得できる</span></div>` : ''}
-        ${hasInvasion ? '<div class="three-way-preview"><b>❗ 不穏な気配</b><span>戦闘中に別の敵が現れる可能性あり</span></div>' : ''}
-        ${goldenLandMapEntry?'<p class="hunt-map-notice">🗺️ 地図で出現確定・出発時に1枚消費</p>':''}
+        ${secondEnemy ? `<div class="three-way-preview"><b>三つ巴バトル</b><span>敵2体分の報酬を獲得できる</span></div>` : ''}
+        ${hasInvasion ? '<div class="three-way-preview"><b>不穏な気配</b><span>戦闘中に別の敵が現れる可能性あり</span></div>' : ''}
+        ${goldenLandMapEntry?'<p class="hunt-map-notice">地図で出現確定・出発時に1枚消費</p>':''}
         <details class="hunt-card-details"><summary>依頼の詳細を見る</summary>
           <p class="hunt-danger">${difficulty.danger}</p>
           <div class="hunt-stats"><span>攻撃 ×${difficulty.attackText}</span></div>
-          ${map.rareOnly?'<p>✨ 特殊マップ</p>':''}${map.goldenLand?'<p>💰 ゴールド系モンスター限定</p>':''}
+          ${map.rareOnly?'<p>特殊マップ</p>':''}${map.goldenLand?'<p>ゴールド系モンスター限定</p>':''}
           ${huntConditionsHtml(request)}
         </details>
         <button class="hunt-accept-button" onclick="startChosenBattle('${map.id}','${request.enemyId}','${difficulty.id}','${request.requestId}')">この依頼へ出発 ›</button>
@@ -293,7 +293,7 @@ function performManualPartySwitch(nextIndex) {
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
   const freeTraitSwitch=typeof traitValue==='function'&&traitValue(partyBattle[nextIndex].inst,'swift',0)>0;
   if(!freeTraitSwitch)startBattleTurn();
-  if (!changeActivePartyMember(nextIndex, {message:`🔄 ${previousName}から<b>${partyBattle[nextIndex].mon.name}</b>へ交代した！`})) {
+  if (!changeActivePartyMember(nextIndex, {message:`${previousName}から<b>${partyBattle[nextIndex].mon.name}</b>へ交代した！`})) {
     busy = false;if(typeof renderBattleInputState==='function')renderBattleInputState();
     return false;
   }
@@ -330,7 +330,7 @@ function losePartyBattle() {
   if(typeof mapStoryOutcome==='function'&&mapStoryOutcome('defeat'))return;
   if(typeof recordWorldMapBattleResult==='function')recordWorldMapBattleResult({saveNow:true,autoEnd:'defeat'});
   completeBattleTurn();
-  document.getElementById('log').innerHTML += '<br>💔 パーティーが全滅した……敗北！';if(typeof captureBattleLog==='function')captureBattleLog();
+  document.getElementById('log').innerHTML += '<br>パーティーが全滅した……敗北！';if(typeof captureBattleLog==='function')captureBattleLog();
   endPartyRecovery();
   showBattleOutcome({kind:'defeat',title:'パーティー全滅',note:'編成や相性を見直して、もう一度挑もう。'});
   if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('defeat');
@@ -370,7 +370,7 @@ function runAway() {
   resetBattleTransientEffects();
   if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();
   resetBattleTurnCounter();
-  document.getElementById('log').innerHTML = '🏃 うまく逃げきった！';if(typeof captureBattleLog==='function')captureBattleLog();
+  document.getElementById('log').innerHTML = 'うまく逃げきった！';if(typeof captureBattleLog==='function')captureBattleLog();
   showBattleOutcome({kind:'retreat',title:'撤退成功',...traitReward,note:'態勢を整えてから再挑戦できる。'});
   if(typeof handleTutorialBattleOutcome==='function')handleTutorialBattleOutcome('retreat');
   busy = true;if(typeof renderBattleInputState==='function')renderBattleInputState();
@@ -416,24 +416,24 @@ function prepareSingleVictoryReward(){
   const coinGain = typeof traitCoinReward==='function'?traitCoinReward(rawCoins):rawCoins;
   let displayedCoinGain = coinGain;
   save.coins += coinGain;
-  let msg = `🏆 ${enemy.name}を倒した！<br>`;
+  let msg = `${enemy.name}を倒した！<br>`;
   const materialRewards=[];
   if (turnBonusActive) {
     msg += turnBonusSucceeded
-      ? `⏱️ ${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`
-      : `⌛ ${battleTurnCount}ターンで撃破。迅速討伐失敗（8ターン以内）<br>`;
+      ? `${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`
+      : `${battleTurnCount}ターンで撃破。迅速討伐失敗（8ターン以内）<br>`;
   }
   msg += grantPartyExp(expGain,{saveNow:false,animate:false});
-  msg += `<br>🪙 コイン${coinGain}枚獲得！`;
+  msg += `<br>コイン${coinGain}枚獲得！`;
   if (selectedMap?.goldenLand) {
     const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);
     const bonus = typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;
     save.coins += bonus;
     displayedCoinGain += bonus;
     if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}
-    msg += `<br>💰 黄金郷ボーナス：コイン${bonus}枚獲得！`;
+    msg += `<br>黄金郷ボーナス：コイン${bonus}枚獲得！`;
   } else if (grantGoldenLandMapFromHuntWin(activeHuntRequest?.difficultyId)) {
-    msg += '<br>🗺️ 黄金郷への地図を入手！';
+    msg += '<br>黄金郷への地図を入手！';
   }
   if (enemy.dropItem) {
     const dropRate = Number.isFinite(enemy.dropRate) ? enemy.dropRate : 1;
@@ -441,13 +441,13 @@ function prepareSingleVictoryReward(){
       save.items[enemy.dropItem] = (save.items[enemy.dropItem]||0)+1;
       materialRewards.push(enemy.dropItemName||ITEM_BY_ID[enemy.dropItem]?.name||enemy.dropItem);
       const dropVisual = enemy.dropItem === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : '';
-      msg += `<br>🎁 ${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`;
+      msg += `<br>${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`;
     }
   }
   const alchemyMaterial = grantAlchemyMaterialReward();
   if (alchemyMaterial) {
     materialRewards.push(alchemyMaterial.name);
-    msg += `<br>⚗️ ${itemInlineVisual(alchemyMaterial)} ${alchemyMaterial.name}を入手！`;
+    msg += `<br>${itemInlineVisual(alchemyMaterial)} ${alchemyMaterial.name}を入手！`;
   }
   save.history.wins = (save.history.wins||0)+1;
   save.history.logs = save.history.logs||[];
@@ -457,7 +457,7 @@ function prepareSingleVictoryReward(){
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions(Math.random,{saveNow:false});
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
   const itemRewards=grantWorldMapVictoryItems(activeHuntRequest);
-  if(itemRewards.length)msg+=`<br>🎁 ${huntVictoryItemsLine(itemRewards)}を入手！`;
+  if(itemRewards.length)msg+=`<br>${huntVictoryItemsLine(itemRewards)}を入手！`;
   return {message:msg,outcome:{
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain, ...(bless?{bless}:{}),
     ...(itemRewards.length?{itemRewards}:{}),
@@ -517,7 +517,7 @@ function showNormalVictoryRetry(stale=false){
   // with no victory label or reward amounts, until the candidate is committed.
   document.getElementById('battle')?.classList.add('is-finished');
   const outcome=document.getElementById('battleOutcome');if(outcome)outcome.className='battle-outcome is-save-pending';
-  document.getElementById('battleOutcomeIcon').textContent='！';
+  document.getElementById('battleOutcomeIcon').textContent='';
   document.getElementById('battleOutcomeEyebrow').textContent='SAVE PENDING';
   document.getElementById('battleOutcomeTitle').textContent=stale?'報酬の確定を停止しました':'勝利報酬の保存待ち';
   document.getElementById('battleOutcomeRewards').innerHTML='';

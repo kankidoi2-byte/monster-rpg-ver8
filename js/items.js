@@ -25,12 +25,12 @@ function renderShop() {
         <article class="shop-item-card">
           <h2>${itemInlineVisual(it)} ${it.name}</h2>
           <p>${it.desc}</p>
-          <strong>💰 ${it.price}枚</strong>
+          <strong>コイン ${it.price}枚</strong>
           <p class="small">所持数：${save.items[it.id]||0}個</p>
           <button type="button" data-shop-buy="${it.id}" onclick="${directBuy?'buyItem':'openShopQuantity'}('${it.id}')">購入</button>
         </article>`).join('')}
       ${renderItemSellSection()}
-      <details class="shop-history"><summary>📊 バトル履歴・通算${save.history.wins||0}勝</summary>
+      <details class="shop-history"><summary>バトル履歴・通算${save.history.wins||0}勝</summary>
         <div>${(save.history.logs||[]).slice(-5).reverse().map(l=>`<div class="history-entry">${escapeGameHtml(l)}</div>`).join('') || '<p class="small">まだ履歴がありません。</p>'}</div>
       </details>
     </div>`;
@@ -111,7 +111,7 @@ function grantAlchemyMaterialReward(randomFn=Math.random){
 }
 function itemCountText(){
   ensureContractScrollItem();
-  return `💊 回復薬 ${itemCount('potion')}個 / 💉 上回復薬 ${itemCount('upper_potion')}個 / ⚡ 力の薬 ${itemCount('attack_potion')}個 / 📜 契約書 ${itemCount('contract_scroll')}枚 / 📃 銀の契約書 ${itemCount('silver_contract_scroll')}枚 / 📒 金の契約書 ${itemCount('gold_contract_scroll')}枚 / 🌈 虹の契約書 ${itemCount('rainbow_contract_scroll')}枚`;
+  return `回復薬 ${itemCount('potion')}個 / 上回復薬 ${itemCount('upper_potion')}個 / 力の薬 ${itemCount('attack_potion')}個 / 契約書 ${itemCount('contract_scroll')}枚 / 銀の契約書 ${itemCount('silver_contract_scroll')}枚 / 金の契約書 ${itemCount('gold_contract_scroll')}枚 / 虹の契約書 ${itemCount('rainbow_contract_scroll')}枚`;
 }
 function useGoldenLandMap(){
   ensureContractScrollItem();
@@ -155,7 +155,7 @@ function renderItemGacha(){
   const coin = document.getElementById('gachaCoinView');
   if(coin) coin.textContent = save.coins || 0;
   const result = document.getElementById('gachaResult');
-  if(result && !result.innerHTML) result.innerHTML = '🎰 ボタンを押すとアイテムガチャを回せます。';
+  if(result && !result.innerHTML) result.innerHTML = 'ボタンを押すとアイテムガチャを回せます。';
   const rateList = document.getElementById('gachaRateList');
   if(rateList){
     const total = ITEM_GACHA_POOL.reduce((sum,x)=>sum+x.weight,0);
@@ -567,7 +567,7 @@ async function tryContractWithScroll(itemId='contract_scroll',{tutorialGuarantee
     await playContractAnimation({monsterName:target.name,stage:animationStage});
     if(snapshot.identity!==saveTransactionIdentity())return true;
     const logBox=document.getElementById('log');
-    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}${ok?`🤝 ${it.name}を使い、${target.name}との契約に成功した！<br>${target.name}が手持ちに加わった！`:`📜 ${it.name}を使ったが、${target.name}との契約には失敗した……`}`;
+    if(logBox)logBox.innerHTML+=`${logBox.innerHTML?'<br>':''}${ok?`${it.name}を使い、${target.name}との契約に成功した！<br>${target.name}が手持ちに加わった！`:`${it.name}を使ったが、${target.name}との契約には失敗した……`}`;
     updateItems();renderParty();renderDex();refreshContractScrollDisplay();show('battle');renderSingleBattleContractPanel();
     if(guaranteed&&typeof handleTutorialContractAnimationComplete==='function')handleTutorialContractAnimationComplete();
     return true;
@@ -588,15 +588,15 @@ function renderSingleBattleContractPanel(){
   const actions=document.getElementById('battleOutcomeActions');
   if(!actions||multiBattle?.active||!battleRewardGranted)return;
   if(!isContractableUnit(enemy)){
-    actions.innerHTML='<div class="multi-contract-panel"><h3>🤝 契約</h3><p class="small">この相手とは契約できません。</p></div>';
+    actions.innerHTML='<div class="multi-contract-panel"><h3>契約</h3><p class="small">この相手とは契約できません。</p></div>';
     return;
   }
   if(singleBattleContractAttempted){
-    actions.innerHTML='<div class="multi-contract-panel"><h3>🤝 契約</h3><p class="small">この相手への契約判定は完了しました。</p></div>';
+    actions.innerHTML='<div class="multi-contract-panel"><h3>契約</h3><p class="small">この相手への契約判定は完了しました。</p></div>';
     return;
   }
   const hasScroll=SHOP_ITEMS.some(item=>item.contract&&(save.items[item.id]||0)>0);
-  actions.innerHTML=`<div class="multi-contract-panel"><h3>🤝 契約候補</h3>${hasScroll?`<button onclick="askUseContractScroll()">${enemy.name}と契約</button>`:'<p class="small">契約書を持っていません。</p>'}</div>`;
+  actions.innerHTML=`<div class="multi-contract-panel"><h3>契約候補</h3>${hasScroll?`<button onclick="askUseContractScroll()">${enemy.name}と契約</button>`:'<p class="small">契約書を持っていません。</p>'}</div>`;
   if(typeof isProloguePart2Battle==='function'&&isProloguePart2Battle())actions.innerHTML+='<button type="button" onclick="skipProloguePart2Contract()">契約を見送る</button>';
 }
 function refreshContractScrollDisplay(){

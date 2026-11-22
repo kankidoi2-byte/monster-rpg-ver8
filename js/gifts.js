@@ -166,18 +166,17 @@ function giftDisplayTitle(g){
   return (typeof UpdateReleases!=='undefined'&&UpdateReleases.giftTitle?.(version,g.createdAt))||'アップデート報酬';
 }
 function giftSender(g){return {developer:'開発者（土井さん）',lifequest:'Life Quest',update:'アップデート',unknown:'不明'}[giftSource(g)];}
-function giftIcon(g){return g.source==='developer'?'✉':'✦';}
 function giftRewardName(r){return r.kind==='bless'?'G-BLESS 予備の加護':r.kind==='coins'?'コイン':r.kind==='item'?ITEM_DEX_BY_ID[r.id]?.name:r.kind==='skill'?SKILL_BY_ID[r.id]?.name:by(r.id)?.name;}
 function giftRewardArt(r){
-  if(r.kind==='bless')return '<span aria-hidden="true">✦</span>';
-  if(r.kind==='coins')return '<span class="gift-coin" aria-hidden="true">●</span>';
-  if(r.kind==='skill')return `<span class="gift-skill-thumb" aria-hidden="true">✧</span>`;
+  if(r.kind==='bless')return '<span aria-hidden="true">加護</span>';
+  if(r.kind==='coins')return '<span class="gift-reward-text" aria-hidden="true">コイン</span>';
+  if(r.kind==='skill')return `<span class="gift-skill-thumb" aria-hidden="true">技</span>`;
   if(r.kind==='item'){
     const src=typeof ITEM_IMG!=='undefined'?ITEM_IMG[r.id]:null;
     return src?`<img src="${giftEscape(src)}" alt="">`:`<span aria-hidden="true">${giftEscape(ITEM_DEX_BY_ID[r.id]?.icon||'◇')}</span>`;
   }
   const unit=by(r.id),src=unit?.imgKey&&IMG[unit.imgKey];
-  return src?`<img src="${giftEscape(src)}" alt="">`:`<span aria-hidden="true">${giftEscape(unit?.icon||'◇')}</span>`;
+  return src?`<img src="${giftEscape(src)}" alt="">`:`<span aria-hidden="true">${giftEscape(unit?.name||'仲間')}</span>`;
 }
 function giftRewardQuantity(r){if(r.kind==='bless')return '+'+r.amount.toLocaleString('ja-JP');return ['monster','character'].includes(r.kind)?'Lv.'+r.level:'×'+(r.kind==='coins'?r.amount:r.count).toLocaleString('ja-JP');}
 function giftRewardCards(rewards){
@@ -187,7 +186,7 @@ function giftRow(g,history=false){
   const soon=g.until!==null&&giftDeadline(g)-Date.now()<=14*86400000;
   const tier=g.source==='update'&&['medium','large'].includes(g.tier)?' gift-update-'+g.tier:'';
   const title=giftEscape(giftDisplayTitle(g));
-  return `<article class="gift-row${tier}"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${title}の詳細"><span class="gift-sender-icon ${giftSource(g)}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受領 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${title}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
+  return `<article class="gift-row${tier}"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${title}の詳細"><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受領 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${title}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
 }
 function refreshGiftUi(){
   const badge=document.getElementById('giftUnreadCount');if(!badge)return;

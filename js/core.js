@@ -379,7 +379,7 @@ function itemDexObtain(it){
   return '特殊報酬・イベントで入手';
 }
 function itemDexVisual(it, locked=false, lazy=false){
-  if(locked) return '<div class="item-dex-placeholder">❔</div>';
+  if(locked) return '<div class="item-dex-placeholder" role="img" aria-label="未登録">未</div>';
   const src = ITEM_IMG[it.id];
   return src
     ? `<img${lazy?' loading="lazy" decoding="async"':''} src="${src}" alt="${it.name}">`

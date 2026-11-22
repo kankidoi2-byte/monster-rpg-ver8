@@ -19,7 +19,7 @@ function renewalSelectTarget(id){
 function renewalEffect(move,target=renewalTarget()?.mon){
   if(!Number(move?.[1]))return {label:'補助',kind:'support'};
   const ratio=typeEff(moveTypes(move),target?.types||[]);
-  return ratio>1?{label:'◎ 効果抜群',kind:'good'}:ratio<1?{label:'△ いまひとつ',kind:'weak'}:{label:'○ ふつう',kind:'normal'};
+  return ratio>1?{label:'効果抜群',kind:'good'}:ratio<1?{label:'いまひとつ',kind:'weak'}:{label:'ふつう',kind:'normal'};
 }
 function renewalBest(inst){return getEquippedMovesForInstance(inst).some(m=>renewalEffect(m).kind==='good');}
 function renewalMount(){
@@ -30,7 +30,7 @@ function renewalMount(){
   dock.insertAdjacentHTML('beforebegin','<div id="renewalMessages" class="br-messages" aria-live="polite"></div><div id="renewalParty" class="br-party" aria-label="編成中の仲間"></div>');
   dock.insertAdjacentHTML('beforeend','<p id="renewalHint" class="br-hint"></p>');
   battle.querySelector('.battle-arena').insertAdjacentHTML('beforeend','<div id="renewalBanner" class="br-banner" role="status"></div>');
-  document.body.insertAdjacentHTML('beforeend','<dialog id="renewalSheet" class="br-sheet" aria-labelledby="renewalSheetTitle"><header><h2 id="renewalSheetTitle"></h2><button type="button" onclick="renewalClose()" aria-label="閉じる">×</button></header><div id="renewalSheetBody"></div></dialog>');
+  document.body.insertAdjacentHTML('beforeend','<dialog id="renewalSheet" class="br-sheet" aria-labelledby="renewalSheetTitle"><header><h2 id="renewalSheetTitle"></h2><button type="button" onclick="renewalClose()" aria-label="閉じる">閉じる</button></header><div id="renewalSheetBody"></div></dialog>');
   const dialog=renewalEl('renewalSheet');dialog.addEventListener('close',()=>{renewal.focus?.focus?.({preventScroll:true});renewal.focus=null;syncBattleIdleMedia();});
   dialog.addEventListener('click',e=>{if(e.target===dialog){const b=dialog.getBoundingClientRect();if(e.clientY<b.top||e.clientY>b.bottom||e.clientX<b.left||e.clientX>b.right)renewalClose();}});
   // Result sections must survive reconciliation by the engine's actions panel.
@@ -59,9 +59,9 @@ function renewalRender(){
   renewal.turns=Math.max(renewal.turns,battleTurnCount+(battleTurnInProgress?1:0));
   const r=autoRun,participating=r?.phase==='fight'&&r.request===activeHuntRequest;
   const autoVisible=!renewalEl('autoControls').hidden;
-  renewalMarkup('renewalHeader',`<div class="br-location"><b>${renewalHtml(selectedMap?.name||'バトル')}</b><span>${renewalHtml(activeHuntRequest?.difficultyLabel||'')}</span>${kind?`<span class="br-kind">${kind}</span>`:''}<small>ターン <b>${battleFeedback.finished?Math.max(1,renewal.turns):battleTurnCount+1}</b></small>${save.gBless?.on?'<small>✦ G-BLESS</small>':''}</div><div class="br-tools">${autoVisible?`<button onclick="autoControl('manual')" aria-pressed="${auto}">⏩ ${auto?'AUTO':'オート'}</button><button onclick="autoControl('speed')" ${participating?'':'disabled'}>×${r?.settings?.speed||1}</button>`:''}<button onclick="renewalHistory()" aria-label="戦闘の履歴">≡</button></div>`);
+  renewalMarkup('renewalHeader',`<div class="br-location"><b>${renewalHtml(selectedMap?.name||'バトル')}</b><span>${renewalHtml(activeHuntRequest?.difficultyLabel||'')}</span>${kind?`<span class="br-kind">${kind}</span>`:''}<small>ターン <b>${battleFeedback.finished?Math.max(1,renewal.turns):battleTurnCount+1}</b></small>${save.gBless?.on?'<small>G-BLESS</small>':''}</div><div class="br-tools">${autoVisible?`<button onclick="autoControl('manual')" aria-pressed="${auto}">${auto?'AUTO':'オート'}</button><button onclick="autoControl('speed')" ${participating?'':'disabled'}>×${r?.settings?.speed||1}</button>`:''}<button onclick="renewalHistory()" aria-label="戦闘の履歴">履歴</button></div>`);
   const loop=renewalEl('renewalLoop');loop.hidden=!participating;
-  if(participating)renewalMarkup('renewalLoop',`<span>⏩ オート周回 <b>${Math.min(r.times,r.battles.length+1)}/${r.times}戦目</b></span><div class="ab-bars">${autoBars(r)}</div><button onclick="autoControl('end')">${r.stop?'✓ この戦闘で終了':'周回を終える'}</button>`);
+  if(participating)renewalMarkup('renewalLoop',`<span>オート周回 <b>${Math.min(r.times,r.battles.length+1)}/${r.times}戦目</b></span><div class="ab-bars">${autoBars(r)}</div><button onclick="autoControl('end')">${r.stop?'この戦闘で終了':'周回を終える'}</button>`);
   const latest=battleFeedback.history.filter(h=>h.kind==='result'||h.kind==='action').slice(-2).reverse();
   renewalMarkup('renewalMessages',latest.map((h,i)=>`<p class="${i?'old':''}">${auto?'[AUTO] ':''}${renewalHtml(h.text.split('\n').filter(Boolean).slice(-1)[0]||'')}</p>`).join('')||'<p>コマンドを選んでください</p>');
   renewalEl('battle').classList.toggle('br-auto',auto);
@@ -77,11 +77,11 @@ function renewalRender(){
   const reason=!kokoroLinkEligibleUnit(player,activeInstance)?'対象外':link?'発動中':!available?(sources.some(s=>s.used)?'使用済み':'利用可能な控えなし'):'';
   renewalMarkup('kokoroLinkButton',`<strong>リンク (${available})</strong>${reason?`<small>${link?battleEffectChip('リンク中','link'):reason}</small>`:''}`);
   renewalEl('battleSkillButton').classList.toggle('has-effective',renewalBest(activeInstance));
-  renewalEl('battleSkillButton').setAttribute('data-effective',renewalBest(activeInstance)?'◎ 効果抜群あり':'');
+  renewalEl('battleSkillButton').setAttribute('data-effective',renewalBest(activeInstance)?'効果抜群あり':'');
   renewalMarkup('renewalParty',partyBattle.map((entry,index)=>{
     const hp=index===activePartyIdx?pHp:entry.hp,max=instanceMaxHp(entry.inst),active=index===activePartyIdx,down=entry.fainted||hp<=0;
     const activeLink=active&&link?battleEffectChip('リンク中','link'):'';
-    return `<button type="button" data-reserve-index="${index}" class="br-member ${active?'active':''} ${down?'down':''}" ${!canAct||active||down?'disabled':''} onclick="renewalSwitch(${index})"><img src="${renewalHtml(IMG[entry.mon.id]||'')}" alt=""><span><b>${renewalHtml(entry.mon.name)}</b><small>Lv.${entry.inst.level} · ${Math.max(0,hp)}/${max}</small><i class="br-mini"><i style="width:${Math.max(0,hp)/max*100}%"></i></i>${activeLink?`<small>${activeLink}</small>`:''}</span>${active?'<em>出撃中</em>':!down&&renewalBest(entry.inst)?'<em class="good">◎技あり</em>':''}</button>`;
+    return `<button type="button" data-reserve-index="${index}" class="br-member ${active?'active':''} ${down?'down':''}" ${!canAct||active||down?'disabled':''} onclick="renewalSwitch(${index})"><img src="${renewalHtml(IMG[entry.mon.id]||'')}" alt=""><span><b>${renewalHtml(entry.mon.name)}</b><small>Lv.${entry.inst.level} · ${Math.max(0,hp)}/${max}</small><i class="br-mini"><i style="width:${Math.max(0,hp)/max*100}%"></i></i>${activeLink?`<small>${activeLink}</small>`:''}</span>${active?'<em>出撃中</em>':!down&&renewalBest(entry.inst)?'<em class="good">効果抜群の技あり</em>':''}</button>`;
   }).join(''));
   const reserve=partyBattle.find((entry,i)=>i!==activePartyIdx&&!entry.fainted&&entry.hp>0&&renewalBest(entry.inst));
   renewalEl('renewalHint').textContent=multiBattle?.active?'相手の絵か札をタップすると、狙う相手を変えられます':!renewalBest(activeInstance)&&reserve?`ヒント：${reserve.mon.name}には効果抜群の技がある`:'';
@@ -211,7 +211,7 @@ function renewalDelayLink(uid,targetId,source){
   renewalEl('kokoroLinkPanel').classList.add('hidden');
   const effect=document.createElement('div');effect.id='renewalLinkFx';effect.className='br-link-fx';
   const preview=resolveKokoroLink(source.entry.mon,source.entry.inst,kokoroLinkTargetStats());
-  effect.innerHTML=`<h2>💞 ココロリンク</h2><img src="${renewalHtml(IMG[source.entry.mon.id]||'')}" alt="${renewalHtml(source.entry.mon.name)}"><p>${renewalHtml(source.entry.mon.name)} の力を ${renewalHtml(player.name)} へ</p><b>障壁 ${preview.effects.barrier} · 攻撃 +${Math.round(preview.effects.attackBonus*100)}% · 素早さ +${preview.effects.speedBonus}</b>`;
+  effect.innerHTML=`<h2>ココロリンク</h2><img src="${renewalHtml(IMG[source.entry.mon.id]||'')}" alt="${renewalHtml(source.entry.mon.name)}"><p>${renewalHtml(source.entry.mon.name)} の力を ${renewalHtml(player.name)} へ</p><b>障壁 ${preview.effects.barrier} · 攻撃 +${Math.round(preview.effects.attackBonus*100)}% · 素早さ +${preview.effects.speedBonus}</b>`;
   renewalEl('battle').querySelector('.battle-arena').append(effect);renewalRender();
   setTimeout(()=>effect.classList.add('fly'),1300);
   setTimeout(()=>{effect.remove();if(epoch!==renewal.epoch)return;renewal.linkPending=false;if(identity!==saveTransactionIdentity()||actor!==activeInstance?.uid||!renewalEl('battle').classList.contains('active'))return;renewal.linkReady=true;activateKokoroLinkFromBattle(uid,targetId);renewalEl('pVis')?.classList.add('br-linked');setTimeout(()=>renewalEl('pVis')?.classList.remove('br-linked'),800);renewalRender();},1800);return true;
@@ -224,7 +224,7 @@ function renewalOutcome({kind}){
   renewal.result={map:selectedMap?.id,enemy:enemy?.id,request};
   const defeated=multiBattle?.enemies||[{mon:enemy,defeatedByPlayer:kind==='victory'}];
   renewalEl('battleOutcomeEyebrow').prepend(document.createTextNode(kind==='victory'?'VICTORY · ':kind==='defeat'?'DEFEAT · ':''));
-  renewalMarkup('renewalResultMeta',`<p>${renewalHtml(selectedMap?.name||'')} · ${renewalHtml(request?.difficultyLabel||'')} · ${renewal.turns}ターン${defeated.length>1?` · ${defeated.length}体`:''}</p>${kind==='victory'?defeated.map(e=>`<p>${renewalHtml(e.mon.name)} <b>${e.defeatedByPlayer?'✓ 討伐':'(敵どうしで倒れた)'}</b></p>`).join(''):kind==='retreat'?'<p>撤退・報酬はありません</p>':`<div class="br-defeat-tip"><b>💡 次へのヒント</b><p>相手は${skillTypeLabel(enemy.types)}。${Object.keys(TN).filter(t=>typeEff(t,enemy.types)>1).map(t=>TN[t]).join('・')||'相性のよい'}属性の技を試そう。</p><p>${renewalHtml((enemy.moves||[]).filter(m=>['poison','paralysis','sleep','confusion'].includes(m[3])).map(m=>m[0]+'に注意。').join(''))}</p></div>`}`);
+  renewalMarkup('renewalResultMeta',`<p>${renewalHtml(selectedMap?.name||'')} · ${renewalHtml(request?.difficultyLabel||'')} · ${renewal.turns}ターン${defeated.length>1?` · ${defeated.length}体`:''}</p>${kind==='victory'?defeated.map(e=>`<p>${renewalHtml(e.mon.name)} <b>${e.defeatedByPlayer?'討伐済み':'(敵どうしで倒れた)'}</b></p>`).join(''):kind==='retreat'?'<p>撤退・報酬はありません</p>':`<div class="br-defeat-tip"><b>次へのヒント</b><p>相手は${skillTypeLabel(enemy.types)}。${Object.keys(TN).filter(t=>typeEff(t,enemy.types)>1).map(t=>TN[t]).join('・')||'相性のよい'}属性の技を試そう。</p><p>${renewalHtml((enemy.moves||[]).filter(m=>['poison','paralysis','sleep','confusion'].includes(m[3])).map(m=>m[0]+'に注意。').join(''))}</p></div>`}`);
   if(kind==='victory'&&normalVictoryReceipt?.committed){
     const before=JSON.parse(normalVictoryReceipt.before);
     renewalMarkup('renewalResultExp',partyBattle.map(p=>{const old=before.instances.find(i=>i.uid===p.inst.uid),now=getInstance(p.inst.uid)||p.inst;return `<div class="br-exp-row"><b>${renewalHtml(p.mon.name)}</b><span>Lv.${old?.level||now.level} → ${now.level} ${old&&now.level>old.level?'<em>LEVEL UP!</em>':''}</span><div class="br-exp ${old&&now.level>old.level?'br-levelup':''}"><i style="--exp-before:${(old?.exp||0)/needExp(old?.level||1)*100}%;width:${isMaxLevel(now.level)?100:(now.exp||0)/needExp(now.level)*100}%"></i></div></div>`;}).join(''));

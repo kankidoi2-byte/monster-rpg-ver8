@@ -338,7 +338,7 @@ function consumeKokoroLinkForesightMove(targetKey){
 function kokoroLinkForesightTextForTarget(targetKey){
   for(const link of kokoroLinkBattleState.linksByTargetUid.values()){
     const ability=link.tacticsAbility;
-    if(ability?.id==='foresight'&&ability.targetKey===targetKey&&ability.charges>0&&Array.isArray(ability.predictedMove))return `🔮予知：${ability.predictedMove[0]}`;
+    if(ability?.id==='foresight'&&ability.targetKey===targetKey&&ability.charges>0&&Array.isArray(ability.predictedMove))return `予知：${ability.predictedMove[0]}`;
   }
   return '';
 }

@@ -14,7 +14,7 @@ function battleUiClear(){
   pendingKokoroLinkStatusSourceUid=null;pendingKokoroLinkTacticsMode=null;
   const skillButton=document.getElementById('battleSkillButton');
   skillButton?.setAttribute('aria-expanded','false');
-  if(skillButton)skillButton.innerHTML='<span aria-hidden="true">✨</span><strong>技</strong><small>決定</small>';
+  if(skillButton)skillButton.innerHTML='<strong>技</strong><small>決定</small>';
 }
 function battleUiBack(){
   if(!battleUiCanAct())return;

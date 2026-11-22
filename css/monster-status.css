@@ -47,3 +47,5 @@
 @media(max-width:350px){#monsterStatus header{gap:4px;padding-inline:8px}#monsterStatus h1{font-size:15px}#monsterStatus header button{padding:0 9px}.status-nav{gap:3px}}
 
 .status-trait>div{display:flex;align-items:baseline;gap:8px}.status-trait b{font-size:14px;color:#1c2230}.status-trait small{font-size:11px;color:#7a5a24}.status-trait p{margin:5px 0 0;color:#5b6474;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+
+.status-dot{display:inline-block;width:.62em;height:.62em;border-radius:50%;background:currentColor}.status-dot.ice{border:1px solid #315469}
