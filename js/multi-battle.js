@@ -135,7 +135,7 @@ function setupMultiBattle() {
 
 function aliveMultiEnemies() { return multiBattle?.enemies?.filter(entry => entry.alive && entry.hp > 0) || []; }
 function multiEnemy(id) { return multiBattle?.enemies?.find(entry => entry.id === id) || null; }
-function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield,entry.freezeTurns)+enemyKokoroLinkStatusHtml(entry.id); }
+function multiStatusHtml(entry) { return statusHtml(entry.status,entry.poisonTurns,entry.paralysisTurns,entry.confusionTurns,entry.sleepTurns,entry.flareCharge,entry.aquaShield,entry.freezeTurns)+kokoroLinkEnemyChips(entry.id); }
 function multiEnemyKokoroLinkSpeed(entry){return enemyKokoroLinkSpeed(entry.mon,entry.id,entry.level);}
 function multiStatChangeHtml(entry) {
   const changes=[];
@@ -166,7 +166,7 @@ function updateMultiBattleView() {
       `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
       `<div id="${entry.id}Status" class="battle-status" aria-label="${enemyLabel}の有効状態"></div>`+
       `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp-trail" style="width:${pct}%" aria-hidden="true"></div><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+
-      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':['map_story','prologue_part2'].includes(activeHuntRequest?.source)?'その場を離れた':'💀 撃破済み'}</p>`+
+      `<p class="multi-warning">${linkTargeting&&entry.alive?'タップしてリンク能力を発動':targetable?'タップして攻撃':entry.alive?'タップで詳細':['map_story','prologue_part2'].includes(activeHuntRequest?.source)?'その場を離れた':'撃破済み'}</p>`+
       `${entry.detailsOpen?`<div class="multi-enemy-details"><span>Lv.${entry.level}</span><span>${typesHtml(entry.mon.types)}</span><span>素早さ ${multiEnemyKokoroLinkSpeed(entry)}</span><small>もう一方の敵とプレイヤーの両方を攻撃対象にする。</small></div>`:''}</div></article>`;
   }).join('');
   if(typeof renderMultiBattleCards==='function')renderMultiBattleCards(cardsHtml);else document.getElementById('multiEnemyGrid').innerHTML=cardsHtml;

@@ -7,6 +7,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+  {id:'20261122-type-status-chips',date:'2026-11-22',category:'update',title:'属性と状態異常の表示を、色の札で見やすくしました。',body:'札には属性や状態異常の名前を表示します。'},
   {id:'20261122-bulk-items-dialogs',date:'2026-11-22',category:'update',title:'経験値データをまとめて使えるように、ショップでまとめて買えるようにしました。',body:'使った後のレベルや、購入後に残るコインを確定前に確認できます。'},
   {id:'20261122-character-kokoro-link',date:'2026-11-22',category:'update',title:'キャラクターもココロリンクできるようになりました。',body:'控えのキャラクターから力を借りたり、戦闘中のキャラクターへ仲間の力をつないだりできます。'},
   {id:'20261122-party-rework',date:'2026-11-22',category:'update',title:'パーティー編成を改良しました',body:'並び替え・プリセット・絞り込みに対応し、世界地図からも編成できます。'},

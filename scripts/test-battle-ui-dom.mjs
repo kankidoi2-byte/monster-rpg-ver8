@@ -62,7 +62,7 @@ run('save.items.potion=0;openBattleItemSelect()');
 assert(by('renewalSheet').querySelector('[data-item="potion"]').disabled);run('renewalClose()');
 // The new badges retain every condition without replacing the media node.
 run("pStatus='poison';pPoisonTurns=2;pParalysisTurns=2;pSleepTurns=1;pConfusionTurns=3;pGuard=true;update()");
-assert.equal(by('pBattleStatus').querySelectorAll('.br-status').length,5);
+assert.equal(by('pBattleStatus').querySelectorAll('.status-chip').length,5);
 assert.match(by('pBattleStatus').textContent,/毒/);
 assert.equal(by('pVis').querySelector('img'),p);
 // Link confirmation latches one source and applies after its animation.
@@ -80,7 +80,7 @@ run("getEquippedMovesForInstance=()=>Array.from({length:12},()=>['長い技名'.
 multi();
 run("Object.assign(multiBattle.enemies[0],{poisonTurns:2,status:'poison',paralysisTurns:2,sleepTurns:1,guard:true});update()");
 const enemyMedia=by('enemy_aVis').querySelector('img');
-assert.equal(by('enemy_aStatus').querySelectorAll('.br-status').length,4);
+assert.equal(by('enemy_aStatus').querySelectorAll('.status-chip').length,4);
 assert.equal(by('enemy_aVis').querySelector('img'),enemyMedia);
 const mBefore=snapshot();run('toggleBattleSkillPanel()');
 by('enemy_bCard').querySelector('.battle-stage-slot').click();

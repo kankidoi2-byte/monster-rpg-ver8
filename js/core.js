@@ -7,8 +7,16 @@ function normalizeMoveTypes(value){
 }
 function moveTypes(mv){ return normalizeMoveTypes(mv?.[2]); }
 function skillTypes(sk){ return normalizeMoveTypes(sk?.types?.length ? sk.types : sk?.type); }
-function skillTypeIcon(type){return TYPE_ICONS[type]||'🃏';}
-function skillTypeLabel(types){return normalizeMoveTypes(types).map(t=>`${skillTypeIcon(t)}${TN[t]||t}`).join(' / ');}
+function displayType(type){return typeof type==='string'&&Object.hasOwn(TN,type)?type:'normal';}
+function typeChip(type){
+  const key=displayType(type);
+  return `<span class="type-chip type-chip--${key}">${TN[key]}</span>`;
+}
+function skillTypeLabel(types){return normalizeMoveTypes(types).map(t=>TN[displayType(t)]).join(' / ');}
+function skillTypeChips(types){
+  const keys=[...new Set(normalizeMoveTypes(types).map(displayType))];
+  return `<span class="type-chip-group">${(keys.length?keys:['normal']).map(typeChip).join(' ')}</span>`;
+}
 function skillCardClass(typeOrTypes){
   const types=normalizeMoveTypes(typeOrTypes);
   return types.length>1 ? `skill-card skill-dual-${types.join('-')}` : `skill-card skill-${types[0]||'normal'}`;
@@ -18,7 +26,7 @@ function skillButtonClass(typeOrTypes){
   return types.length>1 ? `dual-${types.join('-')}` : (types[0]||'normal');
 }
 function skillCardHeader(sk){return `<div class="skill-card-head"><h3 class="skill-card-title">${sk.name}</h3><span class="skill-cost-badge">COST ${sk.cost}</span></div>`;}
-function skillCardStats(sk){return `<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / ${sk.power === 0 ? '補助技' : `威力 ${sk.power}`}</p>`;}
+function skillCardStats(sk){return `<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeChips(skillTypes(sk))} / ${sk.power === 0 ? '補助技' : `威力 ${sk.power}`}</p>`;}
 function skillCardEffect(mv){
   const text=moveEffectText(mv,{includeBase:false});
   const short=text ? `<p class="small skill-effect-text">${text}</p>` : '';

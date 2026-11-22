@@ -45,9 +45,9 @@ try{
     }),`${width}px six-row chart fits portrait width`);
     if(evidence)await page.screenshot({path:`${evidence}/chart-${width}.png`});
     await page.evaluate(()=>{show('dex');showDexDetail('icegolem');});
-    assert.equal(await page.locator('#dexDetail .ice').first().textContent(),'氷');
+    assert.equal(await page.locator('#dexDetail .type-chip--ice').first().textContent(),'氷');
     await page.evaluate(uid=>{show('party');openMonsterStatus(uid);},uid);
-    assert.equal(await page.locator('#monsterStatus .status-chips .ice').textContent(),'氷');
+    assert.equal(await page.locator('#monsterStatus .status-chips .type-chip--ice').textContent(),'氷');
     assert.match(await page.locator('#monsterStatus .status-skill:has(.status-dot.ice)').first().innerText(),/氷の拳/);
     await page.evaluate(uid=>{closeMonsterStatus(false);openSkillEdit(uid);},uid);
     assert.equal(await page.locator('#skillTypeFilter option[value=ice]').textContent(),'氷');
@@ -56,19 +56,20 @@ try{
     for(const [id,name] of [['s110_055','氷の拳'],['s110_057','氷塊拳']]){
       const card=page.locator(`#skillDexList [data-skill-dex-id=${id}]`);
       const label=await card.innerText();
-      assert(label.includes(name)&&label.includes('氷属性'));
+      assert(label.includes(name));
+      assert.equal(await card.locator('.type-chip--ice').textContent(),'氷');
       assert.equal(await card.locator('.tcg-card').evaluate(el=>el.style.getPropertyValue('--art-color')),'#bfefff');
     }
-    assert.deepEqual(await page.evaluate(()=>[SKILL_ART_KANJI.ice,TYPE_ICONS.ice,battleSkillEffectProfile(skillToMove('s110_055')).elements,battleSkillEffectProfile(skillToMove('s110_057')).elements,SKILL_DEX_TYPE_ORDER[SKILL_DEX_TYPE_ORDER.indexOf('water')+1]]),['氷','❄️',['ice'],['ice'],'ice']);
+    assert.deepEqual(await page.evaluate(()=>[SKILL_ART_KANJI.ice,typeChip('ice'),battleSkillEffectProfile(skillToMove('s110_055')).elements,battleSkillEffectProfile(skillToMove('s110_057')).elements,SKILL_DEX_TYPE_ORDER[SKILL_DEX_TYPE_ORDER.indexOf('water')+1]]),['氷','<span class="type-chip type-chip--ice">氷</span>',['ice'],['ice'],'ice']);
     await page.evaluate(()=>{
       endPartyRecovery();prepareBattleParty();selectedMap=MAPS[0];enemy=by('grassbeat');
       activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});
       activeHuntRequest.battleMode='single';beginChosenBattle(selectedMap.id,enemy.id,'normal',activeHuntRequest);show('battle');
       pFreezeTurns=1;update();
     });
-    assert.equal(await page.locator('#pInfo .ice').textContent(),'氷');
-    assert.match(await page.locator('#pBattleStatus .br-status.freeze').textContent(),/凍結 1T/);
-    assert.match(await page.evaluate(()=>statusHtml(null,0,0,0,0,false,false,1)),/凍結\(1\)/);
+    assert.equal(await page.locator('#pInfo .type-chip--ice').textContent(),'氷');
+    assert.match(await page.locator('#pBattleStatus .status-chip--freeze').textContent(),/^凍結 1$/);
+    assert.match(await page.evaluate(()=>statusHtml(null,0,0,0,0,false,false,1)),/凍結 1/);
     assert.deepEqual(errors,[]);
     await ctx.close();
     console.log(`Ice UI ${width}px: six matchup rows, portrait fit, Ice Golem dex/status/battle, skill filters/card/effect and freeze badge passed.`);

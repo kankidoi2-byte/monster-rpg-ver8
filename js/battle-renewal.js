@@ -75,13 +75,13 @@ function renewalRender(){
   }
   const link=kokoroLinkEffectForInstance(activeInstance),sources=currentKokoroLinkSources({includeUsed:true}),available=sources.filter(s=>s.available).length;
   const reason=!kokoroLinkEligibleUnit(player,activeInstance)?'対象外':link?'発動中':!available?(sources.some(s=>s.used)?'使用済み':'利用可能な控えなし'):'';
-  renewalMarkup('kokoroLinkButton',`<strong>リンク (${available})</strong>${reason?`<small>${reason}</small>`:''}`);
+  renewalMarkup('kokoroLinkButton',`<strong>リンク (${available})</strong>${reason?`<small>${link?battleEffectChip('リンク中','link'):reason}</small>`:''}`);
   renewalEl('battleSkillButton').classList.toggle('has-effective',renewalBest(activeInstance));
   renewalEl('battleSkillButton').setAttribute('data-effective',renewalBest(activeInstance)?'◎ 効果抜群あり':'');
   renewalMarkup('renewalParty',partyBattle.map((entry,index)=>{
     const hp=index===activePartyIdx?pHp:entry.hp,max=instanceMaxHp(entry.inst),active=index===activePartyIdx,down=entry.fainted||hp<=0;
-    const states=active?battleStateLabels(battleCombatants()[0]):[];
-    return `<button type="button" data-reserve-index="${index}" class="br-member ${active?'active':''} ${down?'down':''}" ${!canAct||active||down?'disabled':''} onclick="renewalSwitch(${index})"><img src="${renewalHtml(IMG[entry.mon.id]||'')}" alt=""><span><b>${renewalHtml(entry.mon.name)}</b><small>Lv.${entry.inst.level} · ${Math.max(0,hp)}/${max}</small><i class="br-mini"><i style="width:${Math.max(0,hp)/max*100}%"></i></i><small>${renewalHtml(states.map(s=>s.includes('💞')?'💞':s.split(' ')[0]).join(' '))}</small></span>${active?'<em>出撃中</em>':!down&&renewalBest(entry.inst)?'<em class="good">◎技あり</em>':''}</button>`;
+    const activeLink=active&&link?battleEffectChip('リンク中','link'):'';
+    return `<button type="button" data-reserve-index="${index}" class="br-member ${active?'active':''} ${down?'down':''}" ${!canAct||active||down?'disabled':''} onclick="renewalSwitch(${index})"><img src="${renewalHtml(IMG[entry.mon.id]||'')}" alt=""><span><b>${renewalHtml(entry.mon.name)}</b><small>Lv.${entry.inst.level} · ${Math.max(0,hp)}/${max}</small><i class="br-mini"><i style="width:${Math.max(0,hp)/max*100}%"></i></i>${activeLink?`<small>${activeLink}</small>`:''}</span>${active?'<em>出撃中</em>':!down&&renewalBest(entry.inst)?'<em class="good">◎技あり</em>':''}</button>`;
   }).join(''));
   const reserve=partyBattle.find((entry,i)=>i!==activePartyIdx&&!entry.fainted&&entry.hp>0&&renewalBest(entry.inst));
   renewalEl('renewalHint').textContent=multiBattle?.active?'相手の絵か札をタップすると、狙う相手を変えられます':!renewalBest(activeInstance)&&reserve?`ヒント：${reserve.mon.name}には効果抜群の技がある`:'';
@@ -96,7 +96,7 @@ function renewalNameplates(target){
     if(!meta){meta=document.createElement('div');meta.className='br-plate-meta';hud.querySelector('h2')?.insertAdjacentElement('afterend',meta);}
     const selected=!!entry&&!!target&&entry.id===target.id&&multiBattle?.active;
     const overtier=entry?.id==='enemy_a'&&typeof battleOvertierLabel==='function'?battleOvertierLabel():'';
-    meta.innerHTML=`${overtier?`<span class="br-overtier-label">${renewalHtml(overtier)}</span>`:''}<span>Lv.${level}</span>${!playerBox?`<span class="br-stars">${renewalHtml(mon.rarity)}</span>`:''}<span>${multiBattle?.active?normalizeMoveTypes(mon.types).map(t=>skillTypeIcon(t)).join(''):skillTypeLabel(mon.types)}</span>${selected?'<span class="br-target-label">🎯狙う</span>':''}`;
+    meta.innerHTML=`${overtier?`<span class="br-overtier-label">${renewalHtml(overtier)}</span>`:''}<span>Lv.${level}</span>${!playerBox?`<span class="br-stars">${renewalHtml(mon.rarity)}</span>`:''}<span>${skillTypeChips(mon.types)}</span>${selected?'<span class="br-target-label">狙う</span>':''}`;
     hud.classList.toggle('br-target',!!selected);
     if(!playerBox){
       let info=hud.querySelector('.br-info');if(!info){info=document.createElement('button');info.className='br-info';info.type='button';info.textContent='i';info.setAttribute('aria-label',`${mon.name}の詳細`);hud.append(info);}
@@ -113,10 +113,7 @@ function renewalNameplates(target){
   }
   renewalEl('pBattleSlot')?.classList.toggle('br-ko',pHp<=0);
   renewalEl('eBattleSlot')?.classList.toggle('br-ko',!multiBattle?.active&&eHp<=0);
-  for(const el of document.querySelectorAll('#battle .battle-status')){
-    const id=el.id,unit=battleCombatants().find(u=>u.statusId===id);if(!unit)continue;
-    el.innerHTML=battleStateLabels(unit).map(s=>`<span class="br-status ${/毒/.test(s)?'poison':/麻痺/.test(s)?'para':/眠/.test(s)?'sleep':/混乱/.test(s)?'conf':/凍結/.test(s)?'freeze':/防御|盾/.test(s)?'guard':/💞/.test(s)?'link':'buff'}">${renewalHtml(s.includes('💞')?'💞リンク中':s)}</span>`).join('');
-  }
+
 }
 function renewalDecorateSkills(){
   const commands=renewalEl('commands');if(!commands||!activeInstance)return;
@@ -130,7 +127,7 @@ function renewalDecorateSkills(){
     // Equipped COST is a loadout budget, not a consumable combat resource.
   }
   let head=commands.querySelector('.br-skill-heading');if(!head){head=document.createElement('div');head.className='br-skill-heading';commands.prepend(head);}
-  const heading=`<span>技を選んでください</span>${multiBattle?.active&&target?`<small>🎯 ${renewalHtml(target.mon.name)}</small>`:''}<button type="button" class="br-skill-help" aria-label="装備中の技の詳細" onclick="renewalSkillHelp()">詳細</button>`;
+  const heading=`<span>技を選んでください</span>${multiBattle?.active&&target?`<small>対象：${renewalHtml(target.mon.name)}</small>`:''}<button type="button" class="br-skill-help" aria-label="装備中の技の詳細" onclick="renewalSkillHelp()">詳細</button>`;
   if(head.innerHTML!==heading)head.innerHTML=heading;
 }
 function renewalSkillHelp(){
@@ -164,7 +161,7 @@ function renewalEnemyInfo(id=null){
   const weak=Object.keys(TN).filter(t=>typeEff(t,mon.types)>1),resist=Object.keys(TN).filter(t=>typeEff(t,mon.types)<1);
   const traits=renewalTraits(mon),known=caughtHas(mon.id),owned=save.instances.some(i=>i.id===mon.id);
   const unit=battleCombatants().find(u=>u.vis===(id?id+'Vis':'eVis'));
-  renewalOpen('相手の詳細',`<div class="br-enemy-head"><img src="${renewalHtml(IMG[mon.id]||'')}" alt=""><div><h3>${renewalHtml(mon.name)}</h3><p>Lv.${entry.level} · ${renewalHtml(mon.rarity)} · ${skillTypeLabel(mon.types)}</p><p>HP ${Math.max(0,entry.hp)} / ${entry.maxHp}</p><p>${renewalHtml(unit?battleStateLabels(unit).join('・'):'')}</p></div></div><h3>能力の目安</h3>${traits.map((n,i)=>{const d=renewalDistribution[i],rank=d.filter(v=>v<n).length/d.length;return `<p class="br-stat"><span>${['攻撃','防御','素早さ'][i]}</span><i><i style="width:${Math.max(8,rank*100)}%"></i></i><span>${n>d[Math.floor(d.length*2/3)]?'高い':n<d[Math.floor(d.length/3)]?'低い':'ふつう'}</span></p>`;}).join('')}<h3>弱点</h3><p>${weak.map(t=>skillTypeLabel(t)).join('・')||'なし'}</p><h3>効きにくい属性</h3><p>${resist.map(t=>skillTypeLabel(t)).join('・')||'なし'}</p><h3>使ってくる技</h3>${(mon.moves||[]).map(m=>`<div class="br-info-move"><b>${renewalHtml(m[0])}</b><small>${skillTypeLabel(moveTypes(m))} · ${m[1]?'威力 '+m[1]:'補助'}</small><p>${renewalHtml(moveEffectText(m).replace(/\d+(?:\.\d+)?[%％]/g,'').replace(/確率[^。]*/g,'ことがある'))}</p></div>`).join('')}<p class="br-dex">図鑑：${known?'登録済み':'未登録'} · ${owned?'契約済み':'未契約'}</p>`);
+  renewalOpen('相手の詳細',`<div class="br-enemy-head"><img src="${renewalHtml(IMG[mon.id]||'')}" alt=""><div><h3>${renewalHtml(mon.name)}</h3><p>Lv.${entry.level} · ${renewalHtml(mon.rarity)} · ${skillTypeChips(mon.types)}</p><p>HP ${Math.max(0,entry.hp)} / ${entry.maxHp}</p><p class="battle-effect-chips">${battleStateChips(unit)}</p></div></div><h3>能力の目安</h3>${traits.map((n,i)=>{const d=renewalDistribution[i],rank=d.filter(v=>v<n).length/d.length;return `<p class="br-stat"><span>${['攻撃','防御','素早さ'][i]}</span><i><i style="width:${Math.max(8,rank*100)}%"></i></i><span>${n>d[Math.floor(d.length*2/3)]?'高い':n<d[Math.floor(d.length/3)]?'低い':'ふつう'}</span></p>`;}).join('')}<h3>弱点</h3><p>${(weak.length?skillTypeChips(weak):'')||'なし'}</p><h3>効きにくい属性</h3><p>${(resist.length?skillTypeChips(resist):'')||'なし'}</p><h3>使ってくる技</h3>${(mon.moves||[]).map(m=>`<div class="br-info-move"><b>${renewalHtml(m[0])}</b><small>${skillTypeChips(moveTypes(m))} · ${m[1]?'威力 '+m[1]:'補助'}</small><p>${renewalHtml(moveEffectText(m).replace(/\d+(?:\.\d+)?[%％]/g,'').replace(/確率[^。]*/g,'ことがある'))}</p></div>`).join('')}<p class="br-dex">図鑑：${known?'登録済み':'未登録'} · ${owned?'契約済み':'未契約'}</p>`);
 }
 function renewalBanner(text,kind=''){
   renewalMount();const el=renewalEl('renewalBanner');el.textContent=text;el.className='br-banner on '+kind;clearTimeout(renewal.bannerTimer);renewal.bannerTimer=setTimeout(()=>el.classList.remove('on'),1100/autoSpeed());
@@ -247,7 +244,7 @@ renewalMount();
 function renewalLinkPreview(uid){
   if(!renewalCanAct())return;const source=currentKokoroLinkSources({includeUsed:true}).find(s=>s.uid===uid);if(!source?.available)return;
   const preview=resolveKokoroLink(source.entry.mon,source.entry.inst,kokoroLinkTargetStats());renewal.linkUid=uid;
-  renewalOpen('ココロリンク',`<div class="br-enemy-head"><img src="${renewalHtml(IMG[source.entry.mon.id]||'')}" alt=""><h3>${renewalHtml(source.entry.mon.name)} · ${renewalHtml(source.entry.mon.rarity)}</h3></div><p>控えの仲間から力を借ります。</p><p>障壁 ${preview.effects.barrier} / 攻撃ダメージ +${Math.round(preview.effects.attackBonus*100)}% / 素早さ +${preview.effects.speedBonus}</p>${[preview.powerAbility,preview.statusAbility,preview.tacticsAbility].filter(Boolean).map(a=>`<p>${renewalHtml(a.label)}：${renewalHtml(a.summary)}</p>`).join('')}<p>行動を使わずに発動します</p><button class="br-go" onclick="renewalLinkConfirm()">リンクする</button>`);
+  renewalOpen('ココロリンク',`<div class="br-enemy-head"><img src="${renewalHtml(IMG[source.entry.mon.id]||'')}" alt=""><h3>${renewalHtml(source.entry.mon.name)} · ${renewalHtml(source.entry.mon.rarity)}</h3></div><p>控えの仲間から力を借ります。</p><p class="battle-effect-chips">${kokoroLinkStatChips(preview.effects.barrier,Math.round(preview.effects.attackBonus*100),preview.effects.speedBonus)}</p>${[preview.powerAbility,preview.statusAbility,preview.tacticsAbility].filter(Boolean).map(a=>`<p>${renewalHtml(a.label)}：${renewalHtml(a.summary)}</p>`).join('')}<p>行動を使わずに発動します</p><button class="br-go" onclick="renewalLinkConfirm()">リンクする</button>`);
 }
 function renewalLinkConfirm(){if(!renewalCanAct())return;const uid=renewal.linkUid;renewal.linkUid=null;renewalClose();if(uid)activateKokoroLinkFromBattle(uid);}
 function renewalContracts(){

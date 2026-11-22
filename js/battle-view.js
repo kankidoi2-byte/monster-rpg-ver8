@@ -395,16 +395,59 @@ function updateHuntTurnDisplay() {
   if (!el) return;
   el.textContent = battleTurnCount > 8 ? '残り0ターン（制限超過）' : `残り${huntTurnRemaining()}ターン`;
 }
+const BATTLE_STATUS_CHIP_NAMES=Object.freeze({poison:'毒',sleep:'ねむり',paralysis:'麻痺',confusion:'こんらん',freeze:'凍結',burn:'火傷'});
+function statusChip(kind,turns){
+  if(!Object.hasOwn(BATTLE_STATUS_CHIP_NAMES,kind))return '';
+  return `<span class="status-chip status-chip--${kind}">${BATTLE_STATUS_CHIP_NAMES[kind]}${Number.isInteger(turns)&&turns>0?' '+turns:''}</span>`;
+}
+function battleEffectChip(text,kind='buff'){
+  if(!text)return '';
+  const tone=['buff','debuff','guard','link'].includes(kind)?kind:'buff';
+  return `<span class="status-chip status-chip--${tone}">${escapeGameHtml(text)}</span>`;
+}
 function statusHtml(status, poisonTurns=0, paralysisTurns=0, confusionTurns=0, sleepTurns=0, flareCharge=false, aquaShield=false, freezeTurns=0) {
-  const parts = [];
-  if (status === 'poison' && poisonTurns > 0) parts.push(`<span style="color:#bbf7d0">☠️毒(${poisonTurns})</span>`);
-  if (sleepTurns > 0) parts.push(`<span style="color:#93c5fd">💤ねむり(${sleepTurns})</span>`);
-  if (paralysisTurns > 0) parts.push(`<span style="color:#fde047">⚡麻痺(${paralysisTurns})</span>`);
-  if (confusionTurns > 0) parts.push(`<span style="color:#c4b5fd">🌀こんらん(${confusionTurns})</span>`);
-  if (freezeTurns > 0) parts.push(`<span class="ice">❄️凍結(${freezeTurns})</span>`);
-  if (flareCharge) parts.push('<span style="color:#fb923c">🔥攻撃強化(次の攻撃)</span>');
-  if (aquaShield) parts.push('<span style="color:#60a5fa">💧アクアシールド</span>');
-  return parts.length ? ' / 状態:' + parts.join('・') : '';
+  return [
+    status==='poison'&&poisonTurns>0?statusChip('poison',poisonTurns):'',
+    sleepTurns>0?statusChip('sleep',sleepTurns):'',
+    paralysisTurns>0?statusChip('paralysis',paralysisTurns):'',
+    confusionTurns>0?statusChip('confusion',confusionTurns):'',
+    freezeTurns>0?statusChip('freeze',freezeTurns):'',
+    flareCharge?battleEffectChip('攻撃強化（次の攻撃）'):'',
+    aquaShield?battleEffectChip('水の盾','guard'):''
+  ].join('');
+}
+function kokoroLinkStatChips(barrier,attack,speed){
+  return battleEffectChip('障壁 '+barrier,'guard')+battleEffectChip('攻撃+'+attack+'%')+battleEffectChip('素早さ+'+speed);
+}
+function kokoroLinkActorChips(){
+  const link=typeof kokoroLinkEffectForInstance==='function'?kokoroLinkEffectForInstance(activeInstance):null;
+  if(!link)return '';
+  const barrier=Math.max(0,Number(link.barrierRemaining)||0),attack=Math.round((link.effects.attackMultiplier-1)*100);
+  const ability=typeof kokoroLinkPowerAbilityStatus==='function'?kokoroLinkPowerAbilityStatus(activeInstance):'';
+  const tactics=typeof kokoroLinkTacticsAbilityStatus==='function'?kokoroLinkTacticsAbilityStatus(activeInstance):'';
+  return battleEffectChip('リンク中','link')+kokoroLinkStatChips(barrier,attack,link.effects.speedBonus)+
+    battleEffectChip(ability,'link')+battleEffectChip(tactics,'link');
+}
+function kokoroLinkEnemyChips(targetKey){
+  const groups=new Map();
+  if(typeof kokoroLinkEnemyEffectsFor==='function'){
+    for(const effect of kokoroLinkEnemyEffectsFor(targetKey))groups.set(effect.label,effect);
+  }
+  const effects=[...groups.values()].map(effect=>Object.hasOwn(BATTLE_STATUS_CHIP_NAMES,effect.category)
+    ?statusChip(effect.category,effect.remainingTurns)
+    :battleEffectChip(effect.label+' '+(effect.remainingTurns>0?effect.remainingTurns:'次行動'),'debuff')).join('');
+  const foresight=typeof kokoroLinkForesightTextForTarget==='function'?kokoroLinkForesightTextForTarget(targetKey):'';
+  return effects+battleEffectChip(foresight.replace(/^🔮/u,''),'link');
+}
+function battleStateChips(unit){
+  if(!unit)return '';
+  if(unit.hp<=0)return battleEffectChip('戦闘不能','debuff');
+  const attack=Number(unit.attack);
+  const attackChange=Number.isFinite(attack)?Math.round((attack-1)*100):0;
+  return statusHtml(unit.status,unit.poison,unit.paralysis,unit.confusion,unit.sleep,unit.charge,unit.shield,unit.freeze)+
+    (unit.guard?battleEffectChip('防御（次の被弾）','guard'):'')+
+    (attackChange?battleEffectChip('攻撃'+(attackChange>0?'+':'−')+Math.abs(attackChange)+'%',attackChange>0?'buff':'debuff'):'')+
+    (unit.vis==='pVis'?kokoroLinkActorChips():kokoroLinkEnemyChips(unit.vis==='eVis'?'single':unit.key));
 }
 function kokoroLinkTargetStats(){
   return {maxHp:playerMaxHp(),speed:baseBattleSpeed(player,activeInstance,activeInstance?.level)};
@@ -483,11 +526,11 @@ function renderKokoroLinkPanel(){
   const targetEligible=typeof kokoroLinkEligibleUnit==='function'&&kokoroLinkEligibleUnit(player,activeInstance);
   const available=sources.filter(source=>source.available).length;
   button.disabled=!targetEligible||(!current&&available===0);
-  button.innerHTML=current?'💞 発動中':`💞 リンク${available?` (${available})`:''}${!targetEligible?'<small>対象外</small>':available===0?'<small>利用可能な控えなし</small>':''}`;
+  button.innerHTML=current?battleEffectChip('リンク中','link'):`リンク${available?` (${available})`:''}${!targetEligible?'<small>対象外</small>':available===0?'<small>利用可能な控えなし</small>':''}`;
   syncKokoroLinkAura();
   const tacticsActionHtml=current?.tacticsAbility?.id==='origin_choice'&&!current.tacticsAbility.resolved?'<button onclick="beginKokoroLinkOriginChoice()">原初選択を決める</button>':current?.tacticsAbility?.id==='free_switch'&&current.tacticsAbility.charges>0?'<button onclick="beginKokoroLinkFreeSwitch()">無消費交代を使う</button>':'';
   const activeHtml=current
-    ? `<div class="kokoro-link-active"><b>💞 ${current.sourceName} → ${current.targetName}</b><span>最終効果：障壁 ${current.barrierRemaining} / 攻撃ダメージ +${Math.round((current.effects.attackMultiplier-1)*100)}% / 素早さ +${current.effects.speedBonus}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}${current.statusAbility?`<small>★2リンク能力：${current.statusAbility.label}（${kokoroLinkStatusAbilityStateText(current.statusAbility)}）</small>`:''}${current.tacticsAbility?`<small>★3リンク能力：${current.tacticsAbility.label}（${kokoroLinkTacticsAbilityStatus(activeInstance)}）</small>${tacticsActionHtml}`:''}</div>`
+    ? `<div class="kokoro-link-active"><b>${current.sourceName} → ${current.targetName}</b><span class="battle-effect-chips">最終効果：${kokoroLinkStatChips(current.barrierRemaining,Math.round((current.effects.attackMultiplier-1)*100),current.effects.speedBonus)}</span>${current.powerAbility?`<small>★1リンク能力：${current.powerAbility.label}（${current.powerAbility.summary}）</small>`:''}${current.statusAbility?`<small>★2リンク能力：${current.statusAbility.label}（${kokoroLinkStatusAbilityStateText(current.statusAbility)}）</small>`:''}${current.tacticsAbility?`<small>★3リンク能力：${current.tacticsAbility.label}（${kokoroLinkTacticsAbilityStatus(activeInstance)}）</small>${tacticsActionHtml}`:''}</div>`
     : '';
   const message=!targetEligible
     ? '<p class="kokoro-link-empty">現在の戦闘個体はリンク対象外です。</p>'
@@ -504,7 +547,7 @@ function renderKokoroLinkPanel(){
     return `<button class="kokoro-link-source${source.used?' is-used':''}" data-uid="${escapeGameHtml(source.uid)}" onclick="typeof renewalLinkPreview==='function'?renewalLinkPreview(this.dataset.uid):activateKokoroLinkFromBattle(this.dataset.uid)" ${disabled?'disabled':''}>`+
       `<img src="${IMG[source.entry.mon.id]}" alt=""><span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
       `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
-      `<strong>最終効果：障壁 ${effects.barrier} / 攻撃ダメージ +${Math.round(effects.attackBonus*100)}% / 素早さ +${effects.speedBonus}</strong>`+
+      `<strong class="battle-effect-chips">最終効果：${kokoroLinkStatChips(effects.barrier,Math.round(effects.attackBonus*100),effects.speedBonus)}</strong>`+
       `${preview.powerAbility?`<small>★1リンク能力：${preview.powerAbility.label}（${preview.powerAbility.summary}）</small>`:''}`+
       `${preview.statusAbility?`<small>★2リンク能力：${preview.statusAbility.label}（${preview.statusAbility.summary}）</small>`:''}`+
       `${preview.tacticsAbility?`<small>★3リンク能力：${preview.tacticsAbility.label}（${preview.tacticsAbility.summary}）</small>`:''}`+

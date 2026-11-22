@@ -257,7 +257,7 @@ function showMapDexDetail(mapId){
     <button type="button" class="map-dex-hero-stage" onclick="openMapArtwork('${map.id}')" aria-label="${map.name}の全景を表示" aria-haspopup="dialog"><span class="map-dex-hero-backdrop" style="background-image:url('${mapImage}')" aria-hidden="true"></span><img class="map-dex-hero" src="${mapImage}" alt="${map.name}"><span class="map-dex-hero-hint" aria-hidden="true">⛶ 全景を見る</span></button><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
     <section class="map-dex-ecosystem" aria-labelledby="mapDexEcosystemHeading"><h3 id="mapDexEcosystemHeading">生態系</h3><p>${map.ecosystem||mapDexEcosystemFallback(map,ecosystem)}</p>
     ${mapDexEcosystemDiagram(map)}
-    <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${skillTypeIcon(entry.type)} ${TN[entry.type]||entry.type}<small>${entry.rate}%</small></span>`).join('')}</div>
+    <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${typeChip(entry.type)}<small>${entry.rate}%</small></span>`).join('')}</div>
     <h4>主な生息種</h4><div class="map-dex-ecosystem-species">${ecosystem.species.slice(0,5).map(entry=>`<span>${entry.unit.name}<small>${mapEnemyFrequencyLabel(map,entry.unit.id)}</small></span>`).join('')}</div></section>
     <h3>挑戦できる難易度</h3><div class="map-dex-tags">${mapDexDifficulties(map).map(label=>`<span>${label}</span>`).join('')}</div>
     <h3>特殊イベント</h3><div class="map-dex-tags">${mapDexEvents(map).map(label=>`<span>${label}</span>`).join('')}</div>
