@@ -17,25 +17,25 @@ body:has(#party.active #rosterSheetHost .roster-sheet-backdrop)>:is(.app-topbar,
 #party#party#party [aria-pressed=true]:not(.roster-icon){background:#171c28;color:#f7e9ca;border-color:#b08d55}
 #rosterControls{display:flex;gap:6px;min-width:0;flex:none;align-items:center}
 .roster-chips{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1;padding:2px 0}
-#party#party#party .roster-chips button{white-space:nowrap;border-radius:24px;font-size:11px;padding:8px 10px;flex:none}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-chips button{white-space:nowrap;border-radius:24px;font-size:11px;padding:8px 10px;flex:none}
 .roster-sort{display:flex;flex-direction:column;gap:2px;width:100px;flex:none;font-size:10px;color:#48566c}
 .roster-sort select{width:100%;min-height:42px;border:1px solid #b08d5566;border-radius:10px;background:#fff;color:#1c2230;font-size:11px}
 #rosterCount{display:flex;justify-content:space-between;align-items:center;min-height:36px;gap:6px;flex:none;font-size:12px}
 #party#party#party #rosterCount button{font-size:11px;padding:5px 8px;min-height:36px}
 #party#party#party #partyList{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:max-content;align-content:start;gap:7px;margin:0;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;flex:1;padding:3px 2px 12px;scrollbar-width:thin}
-#party#party#party .roster-icon{position:relative;aspect-ratio:1;width:100%;height:auto;min-height:0;padding:0;overflow:hidden;border:2px solid #777;border-radius:10px;background:#ece9e2;isolation:isolate}
-#party#party#party .roster-icon[data-stars="2"]{border-color:#bac2cb}
-#party#party#party .roster-icon[data-stars="3"]{border-color:#bd943e}
-#party#party#party .roster-icon[data-stars="4"]{border-color:#9167b0}
-#party#party#party .roster-icon img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 15%;border-radius:0!important;margin:0!important}
-#party .roster-icon :is(.emoji,.character-artwork-pending){width:100%;height:100%;min-height:0;font-size:30px;padding:0}
-#party .roster-badges{position:absolute;top:2px;left:2px;font:700 10px system-ui;background:#101622ce;border-radius:4px;color:#fff;padding:1px 3px}
-#party .roster-badges:empty{display:none}
-#party .roster-level{position:absolute;inset:auto 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:28px;background:linear-gradient(transparent,#0d111ceb 55%);padding:9px 3px 3px;color:#fff;font:700 10px system-ui;white-space:nowrap}
-#party .roster-level small{font-size:7px;color:#f2d184}
-#party#party#party .roster-icon.is-selected{border-color:#c63336;box-shadow:0 0 0 1px #c63336}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-icon{position:relative;aspect-ratio:1;width:100%;height:auto;min-height:0;padding:0;overflow:hidden;border:2px solid #777;border-radius:10px;background:#ece9e2;isolation:isolate}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-icon[data-stars="2"]{border-color:#bac2cb}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-icon[data-stars="3"]{border-color:#bd943e}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-icon[data-stars="4"]{border-color:#9167b0}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-icon img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 15%;border-radius:0!important;margin:0!important}
+:is(#party,#partySet) .roster-icon :is(.emoji,.character-artwork-pending){width:100%;height:100%;min-height:0;font-size:30px;padding:0}
+:is(#party,#partySet) .roster-badges{position:absolute;top:2px;left:2px;font:700 10px system-ui;background:#101622ce;border-radius:4px;color:#fff;padding:1px 3px}
+:is(#party,#partySet) .roster-badges:empty{display:none}
+:is(#party,#partySet) .roster-level{position:absolute;inset:auto 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:28px;background:linear-gradient(transparent,#0d111ceb 55%);padding:9px 3px 3px;color:#fff;font:700 10px system-ui;white-space:nowrap}
+:is(#party,#partySet) .roster-level small{font-size:7px;color:#f2d184}
+:is(#party#party#party,#partySet#partySet#partySet) .roster-icon.is-selected{border-color:#c63336;box-shadow:0 0 0 1px #c63336}
 .roster-check{position:absolute;top:2px;right:2px;display:grid;place-items:center;width:19px;height:19px;background:#b82832;border-radius:50%;color:#fff;font:700 13px system-ui}
-#party .roster-icon.is-unavailable img{filter:brightness(.35)}
+:is(#party,#partySet) .roster-icon.is-unavailable img{filter:brightness(.35)}
 .roster-blocked{position:absolute;inset:20px 2px auto;color:#fff;font:700 9px/1.3 system-ui;text-shadow:0 1px 3px #000;overflow-wrap:anywhere;background:#101622a0;border-radius:3px}
 #rosterActions{display:flex;align-items:center;gap:6px;flex:none;min-height:62px;padding:8px 0;border-top:1px solid #b08d5540;background:#faf8f2}
 #rosterActions>button{flex:1}
@@ -81,3 +81,29 @@ body:has(#party.active #rosterSheetHost .roster-sheet-backdrop)>:is(.app-topbar,
   #party#party#party #partyList{min-height:80px;max-height:32vh;margin:6px 0}
   #party #rosterControls{margin-top:6px}
 }
+
+/* Shared roster icons, with a normal scrolling page for party editing. */
+#partySet #partySelectList{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+#partySet #partyViewControls:not([hidden]){display:flex;align-items:end;gap:6px;margin:0 0 8px;min-width:0}
+#partySet .roster-chips{align-items:end}
+#partySet .roster-chips button{margin:0;min-height:44px}
+#partySet .roster-chips label{display:grid;flex:none;gap:2px;font-size:10px}
+#partySet .roster-chips select{min-height:42px;color:#162035;background:#fff;border-radius:10px;padding:3px 5px}
+#partySet .party-edit-slot{position:relative;min-width:0;margin:0;min-height:108px;padding:7px;color:#1c2230}
+#partySet .party-edit-slot.is-empty{display:grid;place-content:center;border:2px dashed #a49d8d;background:#ffffff90;font-size:12px}
+#partySet .party-edit-slot.is-empty span{position:absolute;top:5px;left:5px;font-size:9px}
+#partySet .party-edit-slot[aria-pressed=true]{outline:2px solid #b48d3d;box-shadow:0 3px 10px #b48d3d80;transform:translateY(-2px)}
+#partySet .party-edit-slot img{height:clamp(48px,18vw,78px)!important}
+#partySet .party-edit-slot small{line-height:1.3}
+#partySet :is(.party-preset-tabs,.party-preset-actions,#partySlotActions){display:flex;gap:6px;justify-content:center}
+#partySet :is(.party-preset-tabs,.party-preset-actions,#partySlotActions) button{margin:3px 0;min-height:44px;font-size:12px}
+#partySet .party-preset-tabs button{flex:1;min-width:0;padding:4px;overflow-wrap:anywhere}
+#partySet .party-preset-tabs button[aria-pressed=true]{outline:2px solid #b48d3d}
+#partySet .party-preset-actions{margin-bottom:6px}
+#partyPresetDialog{width:min(calc(100% - 24px),420px);padding:18px;color:#1c2230;background:#fffdf7;border:1px solid #aa894c;border-radius:17px}
+#partyPresetDialog::backdrop{background:#10162590}
+#partyPresetDialog h2{overflow-wrap:anywhere;font-size:18px}
+#partyPresetDialog input{max-width:100%;font-size:16px}
+#partyPresetDialog .party-preset-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+#partyPresetDialog button{min-height:44px}
+@media(max-width:359px){#partySet #partySelectList{grid-template-columns:repeat(4,minmax(0,1fr))}}

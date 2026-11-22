@@ -77,3 +77,11 @@ body:has(#battleChoices.active .world-map-root)>.app-bottom-nav{z-index:30;backg
 
 #battleChoices#battleChoices .wm-story-entry .wm-event-notice{margin-top:14px;border:0;border-top:1px solid #b08d5540;padding:10px 0;background:none}
 #battleChoices#battleChoices .wm-story-entry .wm-depart{display:inline-block;width:auto;min-height:44px;margin:4px 0;border:1px solid #b08d5570;border-radius:10px;background:#fff!important;color:#1c2230!important;font:600 13px/1.4 var(--wm-serif);padding:8px 12px}
+
+.wm-party-band{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:10px 0;padding:6px;border:1px solid #b18b54;border-radius:12px;background:#fff;color:#172034}
+.wm-party-units{display:flex;align-items:center;gap:4px;min-width:0;font-size:12px}
+.wm-party-unit{display:grid;place-items:center;position:relative;width:40px;height:40px;border:2px solid currentColor;border-radius:9px;overflow:hidden}
+.wm-party-unit img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:0!important}
+.wm-party-unit .emoji{font-size:22px;line-height:1}
+.wm-party-unit b{position:absolute;inset:auto auto 1px 1px;padding:1px 3px;border-radius:4px;background:#172034;color:#fff;font-size:9px;line-height:1}
+.wm-party-band button{flex:none;min-height:44px;margin:0}

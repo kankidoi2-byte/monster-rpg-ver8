@@ -1,0 +1,96 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {runtime} from '../tools/balance-audit/runtime.mjs';
+
+const r=runtime({save:source=>`${source}\nglobalThis.realPartySaveGame=saveGame;`});
+const run=r.run,json=expr=>JSON.parse(run(`JSON.stringify(${expr})`));
+r.context.typesHtml=types=>types.join(' / ');
+r.context.console={...console,error(){}};
+const notices=[];r.context.showUiNotice=message=>notices.push(message);
+run(`saveGame=realPartySaveGame;save=initSave();save.progress.tutorial={completed:true};
+  const a=addInstance('freigal',14),b=addInstance('aquaron',10),c=addInstance('elna_beginner',12),d=addInstance('freiwolf',7);
+  save.party=[a.uid,b.uid];if(!saveGame())throw Error('fixture commit failed');`);
+const ids=json('[a.uid,b.uid,c.uid,d.uid]');
+const array=()=>json('save.party');
+const disk=()=>run('localStorage.getItem(SAVE_KEY)');
+assert.equal(run('choosePartySlot(0)&&choosePartySlot(2)'),true);
+assert.deepEqual(array(),[ids[1],ids[0]]);
+assert.deepEqual(JSON.parse(disk()).party,[ids[1],ids[0]]);
+assert.deepEqual(json('getPartyInstances().map(ins=>ins.uid)'),[ids[1],ids[0]]);
+
+assert.equal(run("choosePartySlot(1)&&usePartySlotAction('leader')"),true);
+assert.deepEqual(array(),[ids[0],ids[1]]);
+assert.equal(run('choosePartySlot(2)&&togglePartyMember(c.uid)'),true);
+assert.deepEqual(array(),ids.slice(0,3));
+assert.equal(run('togglePartyMember(d.uid)'),false);
+assert.match(notices.at(-1),/入れ替える枠/);
+assert.equal(run('choosePartySlot(0)&&togglePartyMember(c.uid)'),true);
+assert.deepEqual(array(),[ids[2],ids[1],ids[0]],'selecting a candidate already in party swaps rather than duplicates');
+assert.equal(run("choosePartySlot(1)&&usePartySlotAction('remove')"),true);
+assert.deepEqual(array(),[ids[2],ids[0]]);
+
+assert.equal(run("showPartyPresetDialog('register')"),true);
+assert.deepEqual(json('save.partyPresets[0].uids'),[ids[2],ids[0]]);
+assert.equal(run("writePartyPreset('rename',0,'123456789🚀xx')"),true);
+assert.equal(run('save.partyPresets[0].name'),'123456789🚀');
+assert.deepEqual(json('normalizePartyPresets(null,new Set())'),[{name:'編成1',uids:[]},{name:'編成2',uids:[]},{name:'編成3',uids:[]}]);
+assert.deepEqual(json("normalizePartyPresets([null,{name:18,uids:[a.uid,a.uid,'gone',false,b.uid,c.uid,d.uid]}, {name:'   '}, {name:'extra'}],new Set([a.uid,b.uid,c.uid,d.uid]))"),[
+  {name:'編成1',uids:[]},{name:'編成2',uids:ids.slice(0,3)},{name:'編成3',uids:[]}
+]);
+run("save.partyPresets[1].uids=[b.uid,'gone',d.uid];isInstanceOnExpedition=uid=>uid===b.uid;");
+assert.equal(run('loadPartyPreset(1)'),true);
+assert.deepEqual(array(),[ids[3]]);
+assert.match(notices.at(-1),/1体は遠征中.*1体は手持ちにいない/);
+assert.equal(run('togglePartyMember(b.uid)'),false);
+assert.match(notices.at(-1),/遠征中は編成できません/);
+
+const baseline=disk(),savedPreset=json('save.partyPresets');
+run('saveGame=()=>false;choosePartySlot(1)');
+assert.equal(run('choosePartySlot(0)&&togglePartyMember(a.uid)'),false);
+assert.deepEqual(array(),[ids[3]]);
+assert.equal(run("writePartyPreset('register',1)"),false);
+assert.deepEqual(json('save.partyPresets'),savedPreset);
+assert.equal(disk(),baseline,'failed commit keeps all persisted bytes unchanged');
+run('saveGame=realPartySaveGame;partySetupUi.slot=null;isInstanceOnExpedition=()=>false;');
+run('d.locked=false;save.party=[a.uid];save.partyPresets[0].uids=[d.uid];save.partyPresets[1].uids=[d.uid,b.uid];');
+assert.equal(run('performRosterRecycle([d.uid]).ok'),true);
+assert.deepEqual(json('save.partyPresets.map(p=>p.uids)'),[[],[ids[1]],[]]);
+assert.equal(run('loadPartyPreset(2)'),true);
+assert.deepEqual(array(),[],'an explicitly selected empty preset loads an empty compact team');
+run('save.progress.tutorial={completed:false,skipped:false,status:"active"};renderPartySetup()');
+assert.equal(run('partyPresetAvailable()'),false);
+assert.equal(run('loadPartyPreset(0)'),false);
+assert.equal(r.elements.get('partyPresets').hidden,true);
+
+const worldSource=fs.readFileSync(new URL('../js/world-map.js',import.meta.url),'utf8');
+vm.runInContext(worldSource,r.context);
+r.context.vis=unit=>unit.name;
+run(`var currentTestStep=null;var testShown=null;
+  var tutorialCurrentStepId=()=>currentTestStep;
+  show=id=>{testShown=id;worldMapPartyScreenChanged(id);};
+  showBattleChoices=()=>{testShown='battleChoices';};
+  worldMapSelectedId='starsea';worldMapSelectedEvent='crisis';worldMapSelectedDifficulty='d4';`);
+assert.match(run('worldMapPartyBandHTML()'),/仲間を編成してください.*data-wm-party-edit/);
+run('currentTestStep="rescue_world_map_grassland"');
+assert.equal(run('worldMapPartyBandHTML()'),'');
+assert.equal(run('editWorldMapParty()'),false);
+run('currentTestStep=null');
+assert.equal(run('editWorldMapParty()'),true);
+assert.equal(run('testShown'),'partySet');
+run('worldMapSelectedId="forest";worldMapSelectedEvent=null;worldMapSelectedDifficulty="d1"');
+assert.equal(run('returnToWorldMapFromParty()'),true);
+assert.deepEqual(json('[worldMapSelectedId,worldMapSelectedEvent,worldMapSelectedDifficulty,testShown]'),['starsea','crisis','d4','battleChoices']);
+assert.equal(run('returnToWorldMapFromParty()'),false,'return context is one-use');
+assert.equal(run("editWorldMapParty()&&Boolean(worldMapPartyReturnRoute)"),true);
+assert.equal(run("show('home');returnToWorldMapFromParty()"),false,'leaving by other routes clears the stale world context');
+run("save.party=[a.uid,b.uid];editWorldMapParty();renderWorldMapPartyReturn()");
+assert.equal(r.elements.get('partyWorldMapReturn').hidden,false);
+assert.equal(r.elements.get('mapStoryPartyReturn').hidden,true,'unrelated map-story shortcut cannot claim a map-origin edit');
+assert.match(run('worldMapPartyBandHTML()'),/wm-party-unit fire.*リーダー.*wm-party-unit water/);
+run("saveTransactionIdentity=()=> 'another-profile';renderWorldMapPartyReturn()");
+assert.equal(r.elements.get('partyWorldMapReturn').hidden,true);
+assert.equal(run('returnToWorldMapFromParty()'),false,'profile change cannot reuse the other profile map context');
+assert.equal(run('worldMapPartyReturnRoute'),null);
+
+console.log('Party rework: compact slot mutations, preset normalization/actions/transaction rollback/recycle, tutorial guard and exact world-map context PASS');
