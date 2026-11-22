@@ -268,6 +268,11 @@ function itemQuantityState(){
   const ins=getInstance(session.uid);
   return item?.expItem&&ins?{...session,item,ins,mon:by(ins.id),...expItemLimits(item,ins,itemCount(item.id))}:null;
 }
+function itemQuantityQuote({kind,item,cap,ins}){
+  const owned=itemCount(item.id);
+  return kind==='shop'?JSON.stringify([item.id,item.price,owned,save.coins||0,cap]):
+    JSON.stringify([item.id,ins.id,ins.level,ins.exp||0,expItemGain(ins,item),owned,cap]);
+}
 function itemQuantityDialog(){
   const existing=document.getElementById('itemQuantityDialog');
   if(existing)return existing;
@@ -291,6 +296,7 @@ function renderItemQuantity(focusSelector=null){
   const {item,kind,cap,ins,mon,next}=state;
   const count=Math.max(1,Math.min(cap,state.count));
   itemQuantitySession.count=count;
+  itemQuantitySession.quote=itemQuantityQuote(state);
   const shop=kind==='shop',title=shop?'購入する':'データを使う';
   const projected=shop?null:previewExpItems(item,ins,cap?count:0);
   const total=shop?item.price*count:0;
@@ -322,6 +328,10 @@ function renderItemQuantity(focusSelector=null){
     const live=itemQuantityState();
     if(!live){closeItemQuantity();return;}
     if(action==='submit'){
+      if(itemQuantitySession.quote!==itemQuantityQuote(live)){
+        renderItemQuantity('[data-item-quantity-action="submit"]');
+        return;
+      }
       const qty=itemQuantitySession.count;
       closeItemQuantity(); // Reveal transaction failures outside the native modal.
       if(live.kind==='shop')buyItem(live.id,qty);

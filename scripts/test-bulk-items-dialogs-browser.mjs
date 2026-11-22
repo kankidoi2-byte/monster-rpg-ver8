@@ -53,13 +53,33 @@ try {
       assert.deepEqual(await inventory(),[105,0,2,0]);
       await page.evaluate(()=>show('shop'));
       await buy.tap();
+      const sheet=await qty.locator('.item-quantity-sheet').boundingBox();
+      const target=await act('submit').boundingBox();
+      assert(sheet&&target&&sheet.x>=0&&sheet.x+sheet.width<=viewport.width+1&&
+        Math.abs(sheet.y+sheet.height-viewport.height)<=1&&target.height>=44,
+        'sheet is bottom-aligned, not clipped, with a touch-size submit target');
+      // A changed balance must refresh the prior quote instead of buying blindly.
+      await page.evaluate(()=>{save.coins=110;});
+      await act('submit').tap();
+      assert(await qty.isVisible());
+      assert.deepEqual(await inventory(),[110,0,2,0]);
+      assert.match((await qty.locator('.item-quantity-preview').innerText()).replaceAll(/\s/g,''),
+        new RegExp(`購入後のコイン：${110-seed.unitPrice}枚`));
+      await page.evaluate(()=>{save.coins=105;});
       await act('max').tap();
       const max=Math.floor(105/seed.unitPrice);
       assert.equal(await readQty(),max);
       assert(await act('increase').isDisabled());
+      await page.evaluate(()=>{window.bulkTestFail=true;});
       await act('submit').tap();
       await qty.waitFor({state:'hidden'});
-      assert.deepEqual(await inventory(),[105-seed.unitPrice*max,max,2,1]);
+      assert.match(await page.locator('#uiNotice.is-error.is-visible').innerText(),/保存できません/);
+      assert.deepEqual(await inventory(),[105,0,2,1]);
+      await page.evaluate(()=>{window.bulkTestFail=false;});
+      await buy.tap();await act('max').tap();
+      await act('submit').tap();
+      await qty.waitFor({state:'hidden'});
+      assert.deepEqual(await inventory(),[105-seed.unitPrice*max,max,2,2]);
       assert.equal(Number((await page.locator('#coinView').innerText()).replaceAll(',','')),105-seed.unitPrice*max);
 
       const original=await inventory();
@@ -126,12 +146,23 @@ try {
       assert.match(prediction,new RegExp(`Lv\\.${expCase.level}→Lv\\.${expCase.level+1}`));
       assert.match(prediction,new RegExp(`EXP${remaining}/`));
       const previousWrites=(await inventory())[3];
+      await page.evaluate(()=>{window.bulkTestFail=true;});
+      await act('submit').tap();
+      await qty.waitFor({state:'hidden'});
+      assert.match(await page.locator('#uiNotice.is-error.is-visible').innerText(),/保存できません/);
+      assert.deepEqual(await page.evaluate(uid=>{
+        const unit=getInstance(uid);
+        return [unit.level,unit.exp,save.items.kilo_data,window.bulkTestWrites];
+      },seed.uid),[expCase.level,expCase.exp,expCase.stock,previousWrites+1]);
+      await page.evaluate(()=>{window.bulkTestFail=false;});
+      await page.locator('[data-roster-action="kilo_data"]').tap();
+      await act('next').tap();
       await act('submit').tap();
       await qty.waitFor({state:'hidden'});
       assert.deepEqual(await page.evaluate(uid=>{
         const unit=getInstance(uid);
         return [unit.level,unit.exp,save.items.kilo_data,window.bulkTestWrites];
-      },seed.uid),[expCase.level+1,remaining,expCase.stock-n,previousWrites+1]);
+      },seed.uid),[expCase.level+1,remaining,expCase.stock-n,previousWrites+2]);
       assert.deepEqual(native,[],'ordinary game flows do not open a browser dialog');
       assert.deepEqual(errors,[]);
       console.log(`PASS ${viewport.width}×${viewport.height}: bulk buy/EXP, cancellation/background/back/navigation, rollback notice, double OK once`);
