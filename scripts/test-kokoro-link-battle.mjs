@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-const context=vm.createContext({console,Date,JSON,Math});
-for(const file of ['data.js','kokoro-link.js']){
+const context=vm.createContext({console,Date,JSON,Math,document:{addEventListener(){},getElementById(){return null}},window:{addEventListener(){}}});
+for(const file of ['data.js','kokoro-link.js','tutorial.js']){
   vm.runInContext(fs.readFileSync(new URL(`../js/${file}`,import.meta.url),'utf8'),context,{filename:`js/${file}`});
 }
 
@@ -12,6 +12,9 @@ const contract=vm.runInContext(`({
   resetKokoroLinkBattleState,
   kokoroLinkBattleSnapshot,
   activateKokoroLinkSource,
+  listKokoroLinkSources,
+  tutorialElnaGuestInstance,
+  tutorialReplayContractInstance,
   kokoroLinkEffectForInstance,
   kokoroLinkAttackMultiplierFor,
   kokoroLinkSpeedBonusFor,
@@ -51,6 +54,36 @@ assert.equal(contract.kokoroLinkEffectForInstance(party[0].inst).sourceUid,'sour
 contract.resetKokoroLinkBattleState();
 assert.equal(contract.kokoroLinkEffectForInstance(party[0].inst),null);
 assert.deepEqual(plain(contract.kokoroLinkBattleSnapshot()),{usedSourceUids:[],activeLinks:[],enemyEffects:[]});
+
+// Canonical character templates and the exact temporary instances from the walkthrough.
+const ownedElna=entry('owned-elna','elna_beginner');
+Object.assign(ownedElna.inst,{tutorialContract:true,tutorialRole:'contract_body',locked:true});
+const guestElna=contract.tutorialElnaGuestInstance();
+const replayMonster=contract.tutorialReplayContractInstance('freigal',0);
+const asEntry=inst=>({uid:inst.uid,inst,mon:contract.byId(inst.id),hp:120,fainted:false});
+assert.equal(guestElna.id,ownedElna.inst.id);
+assert.equal(guestElna.guest,true);
+assert.equal(replayMonster.guest,true);
+const monster=entry('monster','aquaron');
+const secondCharacter=entry('other-char','elna_middle');
+for(const [from,to] of [[ownedElna,monster],[monster,ownedElna],[ownedElna,secondCharacter]]){
+  contract.resetKokoroLinkBattleState();
+  const party=[to,from,entry('unused','grassbeat')];
+  const activated=contract.activateKokoroLinkSource(from.uid,party,0,targetStats);
+  assert.equal(activated.ok,true,`${from.inst.id} → ${to.inst.id}`);
+  assert.equal(activated.link.profile.monsterId,from.inst.id);
+  assert.equal(activated.link.targetUid,to.uid);
+  assert.equal(contract.activateKokoroLinkSource('unused',party,0,targetStats).reason,'target-linked');
+  assert.equal(contract.activateKokoroLinkSource(from.uid,party,2,targetStats).reason,'invalid-source');
+  assert.deepEqual(plain(contract.kokoroLinkBattleSnapshot().usedSourceUids),[from.uid]);
+}
+for(const guest of [asEntry(guestElna),asEntry(replayMonster)]){
+  contract.resetKokoroLinkBattleState();
+  assert.deepEqual(plain(contract.listKokoroLinkSources([monster,guest,ownedElna],0)).map(source=>source.uid),[ownedElna.uid]);
+  assert.equal(contract.activateKokoroLinkSource(guest.uid,[monster,guest,ownedElna],0,targetStats).reason,'invalid-source');
+  assert.equal(contract.activateKokoroLinkSource(monster.uid,[guest,monster,ownedElna],0,targetStats).reason,'invalid-target');
+  assert.deepEqual(plain(contract.kokoroLinkBattleSnapshot().usedSourceUids),[]);
+}
 
 const indexSource=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const coreSource=fs.readFileSync(new URL('../js/core.js',import.meta.url),'utf8');

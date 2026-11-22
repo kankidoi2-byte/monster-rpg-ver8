@@ -163,15 +163,21 @@ function kokoroLinkClamp(value, minimum, maximum){
   return Math.min(maximum, Math.max(minimum, safe));
 }
 
+function kokoroLinkEligibleUnit(unit,instance){
+  // Battle entries keep temporary guest ownership on the instance, not the species.
+  return instance?.guest!==true&&(unit?.entityKind==='monster'||unit?.entityKind==='character'||
+    (!unit?.entityKind&&unit?.unitType==='character'));
+}
+
 function buildKokoroLinkProfile(monster, instance={}){
-  if(!monster || monster.entityKind !== 'monster') return null;
+  if(!kokoroLinkEligibleUnit(monster,instance)) return null;
   const rarity=kokoroLinkRarity(monster);
   const multiplier=KOKORO_LINK_CONFIG.rarityMultipliers[rarity]*(typeof traitValue==='function'?traitValue(instance,'resonance',1):1);
   const abilityBand=KOKORO_LINK_CONFIG.abilityBands[rarity];
   return {
     sourceUid:typeof instance?.uid === 'string' ? instance.uid : null,
     monsterId:monster.id || null,
-    monsterName:monster.name || monster.id || '不明なモンスター',
+    monsterName:monster.name || monster.id || '不明な仲間',
     level:kokoroLinkLevel(instance),
     rarity,
     multiplier,
@@ -469,7 +475,7 @@ function listKokoroLinkSources(partyEntries, activeIndex, options={}){
     const uid=kokoroLinkPartyEntryUid(entry);
     const monster=entry?.mon;
     const instance=entry?.inst;
-    if(!uid || seen.has(uid) || !monster || monster.entityKind !== 'monster' || !instance) return [];
+    if(!uid || seen.has(uid) || !instance || !kokoroLinkEligibleUnit(monster,instance)) return [];
     seen.add(uid);
     const used=kokoroLinkBattleState.usedSourceUids.has(uid);
     if(used && !includeUsed) return [];
@@ -517,7 +523,7 @@ function activateKokoroLinkSource(sourceUid, partyEntries, activeIndex, targetSt
   if(!Array.isArray(partyEntries) || !Number.isInteger(activeIndex)) return {ok:false,reason:'invalid-party'};
   const target=partyEntries[activeIndex];
   const targetUid=kokoroLinkTargetUid(target);
-  if(!targetUid || !kokoroLinkPartyEntryAlive(target) || target?.mon?.entityKind !== 'monster') return {ok:false,reason:'invalid-target'};
+  if(!targetUid || !kokoroLinkPartyEntryAlive(target) || !kokoroLinkEligibleUnit(target?.mon,target?.inst)) return {ok:false,reason:'invalid-target'};
   if(kokoroLinkEffectForTarget(targetUid)) return {ok:false,reason:'target-linked'};
   const source=listKokoroLinkSources(partyEntries,activeIndex).find(candidate => candidate.uid === sourceUid);
   if(!source) return {ok:false,reason:'invalid-source'};
@@ -527,7 +533,7 @@ function activateKokoroLinkSource(sourceUid, partyEntries, activeIndex, targetSt
     sourceUid,
     sourceName:resolved.profile.monsterName,
     targetUid,
-    targetName:target.mon.name || target.mon.id || '不明なモンスター',
+    targetName:target.mon.name || target.mon.id || '不明な仲間',
     profile:resolved.profile,
     effects:resolved.effects,
     powerAbility:resolved.powerAbility,
