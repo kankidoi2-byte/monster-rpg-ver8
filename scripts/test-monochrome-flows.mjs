@@ -77,12 +77,13 @@ export async function runMonochromeFlows(page,out,record){
  const catalyst=await page.evaluate(()=>alchemyEligibleInstances()[0]?.uid);
  assert(catalyst,'alchemy fixture has an unlocked, non-party catalyst');
  await page.locator('#alchemyMonsterSelect').selectOption(catalyst);
- const plan=await page.evaluate(()=>{const p=alchemyPlan();return {errors:validateAlchemyPlan(p),coins:save.coins,cost:p.coinCost,materials:p.selection.materialIds,counts:p.selection.materialCounts,items:{...save.items}};});
+ const plan=await page.evaluate(()=>{const p=alchemyPlan();return {errors:validateAlchemyPlan(p),lastCharacter:isCharacterUnit(by(p.instance?.id))&&save.instances.filter(ins=>ins.id===p.instance.id).length===1,coins:save.coins,cost:p.coinCost,materials:p.selection.materialIds,counts:p.selection.materialCounts,items:{...save.items}};});
  assert.deepEqual(plan.errors,[]);
  await click(page.locator('#alchemy .alchemy-start-button'));
  assert(await page.locator('#alchemyConfirm').isVisible());
  await pass('alchemy-confirmation');
  await click(page.locator('#alchemyExecuteButton'));
+ if(plan.lastCharacter)await click(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"].roster-danger'));
  await page.locator('#alchemyResult .alchemy-result-card').waitFor({timeout:15000});
  assert.equal(await page.evaluate(uid=>save.instances.some(ins=>ins.uid===uid),catalyst),false);
  assert.equal(await page.evaluate(()=>save.coins),plan.coins-plan.cost);
