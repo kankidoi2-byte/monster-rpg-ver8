@@ -107,6 +107,7 @@ assert.equal(run('battleTurnCount'),1);
 assert(run('battleFeedback.history.some(h=>h.kind==="hp"&&h.text.includes("敵B：スライム"))'));
 // Manual swap consumes one action; repeated submission while busy is ignored.
 setup();run('openBattleSwitchPicker();selectBattleSwitchTarget(1);selectBattleSwitchTarget(2)');await wait();assert.equal(run('activePartyIdx'),1);assert.equal(run('battleTurnCount'),1);assert(!d.querySelector('.battle-command-pad').hidden);
+assert.equal(d.activeElement.id,'battleSwitchButton','focus returns after the next turn enables the switch button');
 // Finished and next battle clear old panels/locks.
 run('toggleBattleSkillPanel();runAway();renderBattleInputState()');assert(by('commands').classList.contains('hidden'));run('toggleBattleSkillPanel();openBattleItemSelect()');assert(by('commands').classList.contains('hidden'));assert(by('battle').classList.contains('active'));
 setup();assert(!run('busy'));assert(!d.querySelector('.battle-command-pad').hidden);checkIds();assert.equal(errors.length,0,errors.join('\n'));

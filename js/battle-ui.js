@@ -142,6 +142,8 @@ function syncBattleUi(){
     }
     const back=panel.querySelector('[data-battle-panel-back]');if(back)back.textContent=enemyTarget?'‹ 技に戻る':'‹ 戻る';
   }
+  // Re-enable native buttons before attempting to restore focus after an action.
+  if(typeof renewalRender==='function')renewalRender();
   const changed=battleUi.panel!==panel?.id;
   if(active&&processing&&battleUi.awaitingReturn){const status=document.getElementById('battleActionStatus');status?.setAttribute('tabindex','-1');status?.focus({preventScroll:true});}
   if(active&&!processing&&battleUi.awaitingReturn){battleUi.awaitingReturn=false;battleUiFocus(document.getElementById(battleUi.origin));}
@@ -150,7 +152,6 @@ function syncBattleUi(){
     else if(battleUi.panel)battleUiFocus(document.getElementById(battleUi.origin));
   }
   battleUi.panel=panel?.id||null;
-  if(typeof renewalRender==='function')renewalRender();
 }
 function battleUiScreenChanged(id){
   if(id==='battleItemSelect'){
