@@ -18,7 +18,8 @@ assert.equal(run("UpdateReleases.giftTitle('99.0','2026-11-20T15:00:00')"),'ア�
 assert.equal(run("UpdateReleases.giftTitle('99.0','2026-02-30T00:00:00Z')"),'アップデート報酬');
 assert.equal(run("UpdateReleases.giftTitle('99.0',null)"),'アップデート報酬');
 const index=fs.readFileSync('index.html','utf8');
-assert.equal(index.match(/js\/update-releases\.js\?v=([^"]+)/)?.[1],run('UpdateReleases.current'),'bump the cache version in index.html to match the last release');
+const cacheVersion=index.match(/js\/update-releases\.js\?v=([^"]+)/)?.[1];
+assert.equal(cacheVersion?.replace(/-hide-version-20261123$/,''),run('UpdateReleases.current'),'keep the latest internal release number in the cache token, allowing the one-time display migration suffix');
 assert(index.indexOf('js/update-releases.js')<index.indexOf('js/save.js'));
 assert.equal(run("UpdateReleases.compare('9.0','9.0.0')"),0);
 assert(run("UpdateReleases.compare('8.0.10','8.0.9')>0"));

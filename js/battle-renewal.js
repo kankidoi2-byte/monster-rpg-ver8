@@ -27,7 +27,7 @@ function renewalMount(){
   battle.classList.add('is-renewed');
   battle.insertAdjacentHTML('afterbegin','<header id="renewalHeader" class="br-header"></header><div id="renewalLoop" class="br-loop" hidden></div>');
   const dock=battle.querySelector('.battle-command-dock');
-  dock.insertAdjacentHTML('beforebegin','<div id="renewalMessages" class="br-messages" aria-live="polite"></div><div id="renewalParty" class="br-party" aria-label="編成中の仲間"></div>');
+  dock.insertAdjacentHTML('beforebegin','<div id="renewalMessages" class="br-messages" aria-live="polite"></div>');
   dock.insertAdjacentHTML('beforeend','<p id="renewalHint" class="br-hint"></p>');
   battle.querySelector('.battle-arena').insertAdjacentHTML('beforeend','<div id="renewalBanner" class="br-banner" role="status"></div>');
   document.body.insertAdjacentHTML('beforeend','<dialog id="renewalSheet" class="br-sheet" aria-labelledby="renewalSheetTitle"><header><h2 id="renewalSheetTitle"></h2><button type="button" onclick="renewalClose()" aria-label="閉じる">×</button></header><div id="renewalSheetBody"></div></dialog>');
@@ -67,6 +67,7 @@ function renewalRender(){
   renewalEl('battle').classList.toggle('br-auto',auto);
   const pad=renewalEl('battle').querySelector('.battle-command-pad');pad.inert=!canAct;
   const commands=renewalEl('commands');commands.inert=!canAct;
+  const switchButton=renewalEl('battleSwitchButton');if(switchButton)switchButton.disabled=!canAct||!livingPartySwitchCandidates().length;
   for(const [id,text] of [['battleSkillButton','技'],['battleItemButton','道具'],['battleSwitchButton','交代'],['battleEscapeButton','逃走']]){
     const button=renewalEl(id);
     if(!button||id==='battleItemButton')continue;
@@ -78,11 +79,6 @@ function renewalRender(){
   renewalMarkup('kokoroLinkButton',`<strong>リンク (${available})</strong>${reason?`<small>${link?battleEffectChip('リンク中','link'):reason}</small>`:''}`);
   renewalEl('battleSkillButton').classList.toggle('has-effective',renewalBest(activeInstance));
   renewalEl('battleSkillButton').setAttribute('data-effective',renewalBest(activeInstance)?'◎ 効果抜群あり':'');
-  renewalMarkup('renewalParty',partyBattle.map((entry,index)=>{
-    const hp=index===activePartyIdx?pHp:entry.hp,max=instanceMaxHp(entry.inst),active=index===activePartyIdx,down=entry.fainted||hp<=0;
-    const activeLink=active&&link?battleEffectChip('リンク中','link'):'';
-    return `<button type="button" data-reserve-index="${index}" class="br-member ${active?'active':''} ${down?'down':''}" ${!canAct||active||down?'disabled':''} onclick="renewalSwitch(${index})"><img src="${renewalHtml(IMG[entry.mon.id]||'')}" alt=""><span><b>${renewalHtml(entry.mon.name)}</b><small>Lv.${entry.inst.level} · ${Math.max(0,hp)}/${max}</small><i class="br-mini"><i style="width:${Math.max(0,hp)/max*100}%"></i></i>${activeLink?`<small>${activeLink}</small>`:''}</span>${active?'<em>出撃中</em>':!down&&renewalBest(entry.inst)?'<em class="good">◎技あり</em>':''}</button>`;
-  }).join(''));
   const reserve=partyBattle.find((entry,i)=>i!==activePartyIdx&&!entry.fainted&&entry.hp>0&&renewalBest(entry.inst));
   renewalEl('renewalHint').textContent=multiBattle?.active?'相手の絵か札をタップすると、狙う相手を変えられます':!renewalBest(activeInstance)&&reserve?`ヒント：${reserve.mon.name}には効果抜群の技がある`:'';
   renewalNameplates(target);
@@ -134,11 +130,6 @@ function renewalSkillHelp(){
   if(!renewalCanAct())return;
   const cards=[...renewalEl('commands').querySelectorAll('.skill-button')];
   renewalOpen('装備中の技の詳細',`<p>COSTは編成用。戦闘では減らない</p>${cards.map(card=>`<div class="br-info-move"><b>${renewalHtml(card.querySelector('strong')?.textContent||'')}</b><p>${renewalHtml(card.querySelector('small')?.textContent||'')}</p>${card.querySelector('.battle-choice-detail')?.outerHTML||''}</div>`).join('')}`);
-}
-function renewalSwitch(index){
-  if(!renewalCanAct())return;const picker=renewalEl('multiTargetSelect');
-  if(picker?.querySelector('[data-tutorial-actor-select]'))selectBattleSwitchTarget(index);
-  else{battleUiClear();performManualPartySwitch(index);}
 }
 function renewalHistory(){renewalOpen('戦闘の履歴',`<div class="br-history">${[...battleFeedback.history].reverse().map(h=>`<p><small>ターン ${h.turn}</small>${renewalHtml(h.text)}</p>`).join('')||'<p>まだ履歴はありません</p>'}</div>`);
  const failed=typeof battleIdleRecords==='undefined'?[]:[...battleIdleRecords.values()].filter(r=>battleIdleCurrent(r)&&r.failed&&!r.retried);

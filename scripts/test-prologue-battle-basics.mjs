@@ -30,7 +30,7 @@ assert.ok(order.every(id=>tutorial.match(new RegExp(`id:'${id}'[^\\n]+persistAs:
 assert.ok(tutorial.includes("function isTutorialRescueBattleActive()")&&tutorial.includes("action==='actor_picker_opened'?'battle_actor_open'")&&tutorial.includes("action==='skill_panel_opened'")&&tutorial.includes("actor_selected:'battle_actor_select'")&&tutorial.includes("normal_attack:'battle_normal_attack'")&&tutorial.includes("skill:'battle_choose_skill'"),'real battle operations must map to their expected blocking step');
 assert.ok(tutorial.includes("queueTutorialActionAdvance"),'successful battle operations must advance after their DOM event completes');
 
-assert.ok(battleView.includes('data-tutorial-actor-select'),'switch candidates must expose a stable tutorial target');
+assert.ok(fs.readFileSync(new URL('../js/battle-ui.js',import.meta.url),'utf8').includes('data-tutorial-actor-select'),'switch candidates must expose a stable tutorial target');
 assert.ok(battleView.includes("handleTutorialBattleAction('actor_picker_opened')")&&battleView.includes("handleTutorialBattleAction('skill_panel_opened')"),'actor and skill panels must release their waits only after opening');
 assert.ok(battleView.includes("const switched=performManualPartySwitch(nextIndex)")&&battleView.includes("if(switched&&typeof handleTutorialBattleAction==='function')handleTutorialBattleAction('actor_selected')"),'actor selection must advance only after a successful real switch');
 

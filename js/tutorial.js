@@ -2264,7 +2264,7 @@ registerTutorialFlow(TUTORIAL_BATTLE_ITEMS_FLOW_ID,[
   {id:'battle_items_shop',screenId:'battleItemSelect',target:'#battleItemList',title:'道具はショップなどで入手',text:'契約書は勝利後の契約で使う。',progressLabel:'SHOP & ITEMS',nextLabel:'道具を選ぶ'}
 ]);
 registerTutorialFlow(TUTORIAL_CONTRACTOR_RANK_FLOW_ID,[
-  {id:'rank_progress',screenId:'contractorRank',target:'#contractorRankContent',title:'契約者Rankは冒険全体の記録',text:'討伐、契約、図鑑、進化、錬成、遠征などで契約者EXPを獲得します。モンスターのレベルとは別です。',progressLabel:'CONTRACTOR RANK'},
+  {id:'rank_progress',screenId:'contractorRank',target:'#contractorRankContent',title:'契約者ランクは冒険全体の記録',text:'討伐、契約、図鑑、進化、錬成、遠征などで契約者EXPを獲得します。モンスターのレベルとは別です。',progressLabel:'CONTRACTOR RANK'},
   {id:'rank_titles',screenId:'contractorRank',target:'.contractor-title-link',title:'Rankで称号や報酬を獲得',text:'達成した称号を1つ飾れる',progressLabel:'CONTRACTOR RANK',nextLabel:'Rankへ戻る'}
 ]);
 registerTutorialFlow(TUTORIAL_CONTRACTOR_TITLES_FLOW_ID,[

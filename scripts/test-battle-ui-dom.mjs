@@ -37,6 +37,15 @@ const before=snapshot(),p=by('pVis').querySelector('img');
 for(const expression of ['toggleBattleSkillPanel();battleUiBack()','openBattleSwitchPicker();battleUiBack()','toggleKokoroLinkPanel();battleUiBack()','openBattleItemSelect();renewalClose()']){
  run(expression);assert.equal(snapshot(),before,expression);assert.equal(run('window.qaRolls'),0);assert.equal(by('pVis').querySelector('img'),p);
 }
+run('openBattleSwitchPicker()');
+assert(!by('battleSwitchLayer').classList.contains('hidden'));
+assert.equal(d.activeElement.textContent,'戻る');
+assert.equal(by('battleSwitchCards').querySelectorAll('.br-switch-card').length,3);
+assert(by('battleSwitchCards').querySelector('[data-switch-index="0"]').disabled);
+assert(by('battleSwitchCards').querySelector('[data-switch-index="1"]').hasAttribute('data-tutorial-actor-select'));
+run('selectBattleSwitchTarget(0)');assert.equal(snapshot(),before);
+run('cancelBattleSwitchPicker()');assert.equal(d.activeElement.id,'battleSwitchButton');
+assert(by('battleSwitchLayer').classList.contains('hidden'));
 run('Math.random=window.qaRandom;toggleBattleSkillPanel()');
 assert(by('commands').querySelector('.br-effect'));
 assert(d.querySelector('.battle-command-pad').hidden);
@@ -98,6 +107,7 @@ assert.equal(run('battleTurnCount'),1);
 assert(run('battleFeedback.history.some(h=>h.kind==="hp"&&h.text.includes("敵B：スライム"))'));
 // Manual swap consumes one action; repeated submission while busy is ignored.
 setup();run('openBattleSwitchPicker();selectBattleSwitchTarget(1);selectBattleSwitchTarget(2)');await wait();assert.equal(run('activePartyIdx'),1);assert.equal(run('battleTurnCount'),1);assert(!d.querySelector('.battle-command-pad').hidden);
+assert.equal(d.activeElement.id,'battleSwitchButton','focus returns after the next turn enables the switch button');
 // Finished and next battle clear old panels/locks.
 run('toggleBattleSkillPanel();runAway();renderBattleInputState()');assert(by('commands').classList.contains('hidden'));run('toggleBattleSkillPanel();openBattleItemSelect()');assert(by('commands').classList.contains('hidden'));assert(by('battle').classList.contains('active'));
 setup();assert(!run('busy'));assert(!d.querySelector('.battle-command-pad').hidden);checkIds();assert.equal(errors.length,0,errors.join('\n'));

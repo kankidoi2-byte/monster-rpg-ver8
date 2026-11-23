@@ -42,7 +42,7 @@ assert.equal(by('pHpBar').getAttribute('aria-valuenow'),String(run('pHp')));
 run('toggleBattleSkillPanel()');assert(!by('commands').classList.contains('hidden'));
 run('busy=true;renderBattleInputState();toggleBattleSkillPanel();openBattleSwitchPicker();runAway()');
 assert(d.querySelector('.battle-command-dock').inert);assert(!by('commands').classList.contains('hidden'));assert(by('battle').classList.contains('active'));
-run('busy=false;closeBattleSkillPanel();renderBattleInputState();openBattleSwitchPicker()');assert.match(by('multiTargetSelect').textContent,/交代する仲間/);
+run('busy=false;closeBattleSkillPanel();renderBattleInputState();openBattleSwitchPicker()');assert(by('multiTargetSelect').classList.contains('hidden'));assert(!by('battleSwitchLayer').classList.contains('hidden'));assert(by('battleSwitchCards').querySelector('[data-tutorial-actor-select]'));
 run('cancelBattleSwitchPicker();toggleKokoroLinkPanel()');assert(!by('kokoroLinkPanel').classList.contains('hidden'));
 run('openBattleItemSelect()');assert(by('renewalSheet').open);
 run("renewalClose();update()");assert.equal(by('pVis').querySelector('img'),p);

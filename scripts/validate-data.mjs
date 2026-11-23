@@ -235,7 +235,7 @@ if (data) {
   }
   for (const recipe of data.ALCHEMY_RECIPES) {
     for (const choice of recipe.materialChoices || []) {
-      for (const itemId of [choice.normal, choice.fine]) {
+      for (const itemId of (choice.fine === null ? [choice.normal] : [choice.normal, choice.fine])) {
         if (!itemIdSet.has(itemId)) fail(`Alchemy recipe ${recipe.recipeId} uses unknown item ${itemId}`);
       }
     }

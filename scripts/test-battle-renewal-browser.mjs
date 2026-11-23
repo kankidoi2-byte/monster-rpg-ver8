@@ -12,17 +12,17 @@ try{
  const page=await browser.newPage({viewport:{width:360,height:640},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  await page.goto('http://127.0.0.1:4327/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
- async function start(mode='single'){
-  await page.evaluate(mode=>{
+ async function start(mode='single',unitIds=['freigal','aquaron','volteck']){
+  await page.evaluate(({mode,unitIds})=>{
    clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
    save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
-   save.instances=[];save.party=[];for(const id of ['freigal','aquaron','volteck']){const ins=addInstance(id,12);save.party.push(ins.uid);}
+   save.instances=[];save.party=[];for(const id of unitIds){const ins=addInstance(id,12);save.party.push(ins.uid);}
    save.items.potion=5;save.items.contract_scroll=5;saveGame();endPartyRecovery();prepareBattleParty();selectedMap=MAPS[0];enemy=by(mode==='multi'?'icegolem':'grassbeat');
    activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle(selectedMap.id,enemy.id,'normal',activeHuntRequest);
    if(mode==='multi'){activeHuntRequest.secondEnemyId='aquaron';activeHuntRequest.battleMode='three_way';beginThreeWayBattle();}
    show('battle');
-  },mode);
-  await page.locator('#renewalParty .br-member').first().waitFor();
+  },{mode,unitIds});
+  await page.locator('#battle.active #renewalHeader').first().waitFor();
  }
  // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
  await page.emulateMedia({reducedMotion:'no-preference'});
@@ -40,18 +40,21 @@ try{
  await page.emulateMedia({reducedMotion:'reduce'});
  for(const [width,height] of [[360,640],[412,780],[430,700]]){
   await page.setViewportSize({width,height});await start('multi');
-  assert.equal(await page.locator('#renewalParty button').count(),3);
+  assert.equal(await page.locator('#renewalParty').count(),0);
   const info=page.locator('#enemy_bCard .br-info');
   const hit=await info.boundingBox();assert(hit.width>=44&&hit.height>=44,JSON.stringify(hit));
   const selected=await page.evaluate(()=>renewal.targetId);
   await info.click();assert.equal(await page.evaluate(()=>renewal.targetId),selected);
   assert(await page.locator('#renewalSheet').evaluate(e=>e.open));await page.locator('#renewalSheet header button').click();
-  const party=await page.locator('.br-member').evaluateAll(els=>els.map(el=>({
+  await page.locator('#battleSwitchButton').click();
+  assert.equal(await page.locator('#battleSwitchSheet .br-switch-card').count(),3);
+  const party=await page.locator('.br-switch-card').evaluateAll(els=>els.map(el=>({
    children:[...el.querySelectorAll('b,small')].map(e=>({font:parseFloat(getComputedStyle(e).fontSize),width:e.clientWidth,scroll:e.scrollWidth})),
    width:el.clientWidth,scroll:el.scrollWidth
   })));
   for(const member of party){assert(member.scroll<=member.width);for(const text of member.children){assert(text.font>=10);assert(text.scroll<=text.width);}}
 
+  await page.locator('#battleSwitchSheet').getByRole('button',{name:'戻る',exact:true}).click();
   const labels=await page.locator('.battle-command-pad button').allTextContents();assert(labels.every(t=>!/[💞✨🎒🔄🏃]/u.test(t)),labels.join(','));
   assert.equal(await page.locator('.br-selected .br-target-label').count(),0,'ring has no text');
   await page.locator('#battleSkillButton').click();
@@ -67,6 +70,78 @@ try{
   assert(await page.locator('#commands').evaluate(el=>el.classList.contains('hidden')));
   assert.equal(await page.evaluate(()=>battleTurnCount),1,'one selection -> exactly one turn');
  }
+ // Adopted trial: three vertical cards, no fixed party row, no activation on dismissal.
+ await page.setViewportSize({width:390,height:844});
+ await start();
+ await page.evaluate(()=>{
+   const ins=addInstance('character_vera_4',22);
+   partyBattle[2]={...partyBattle[2],inst:ins,mon:{...by(ins.id)},hp:0,fainted:true};
+   update();
+ });
+ const layer=page.locator('#battleSwitchLayer'),sheet=page.locator('#battleSwitchSheet'),cards=sheet.locator('[data-switch-index]');
+ const openSwitch=()=>page.locator('#battleSwitchButton').click();
+ const current=()=>page.evaluate(()=>({turn:battleTurnCount,active:activePartyIdx,history:battleFeedback.history.length}));
+ const beforeSwitch=await current();
+ const size=await page.evaluate(()=>{
+  updateBattleViewport();
+  const arena=document.querySelector('#battle .battle-arena'),full=arena.getBoundingClientRect().height;
+  const former=document.createElement('div');former.style.height='66px';
+  document.getElementById('renewalMessages').after(former);updateBattleViewport();
+  const previous=arena.getBoundingClientRect().height;former.remove();updateBattleViewport();
+  return {full,previous};
+ });
+ assert(size.full>=size.previous+65,JSON.stringify(size));
+ await page.screenshot({path:`${output}/switch-field-390x844.png`});
+ await openSwitch();
+ assert(await layer.isVisible());assert.equal(await cards.count(),3);
+ assert.equal(await sheet.locator('h1,h2,h3,p').count(),0,'no redundant heading or explanatory copy');
+ assert(await cards.nth(0).isDisabled());assert.match(await cards.nth(0).innerText(),/出撃中/);
+ assert(await cards.nth(2).isDisabled());assert(await cards.nth(1).isEnabled());
+ assert(await cards.nth(2).evaluate(card=>{
+  const img=card.querySelector('img'),unit=partyBattle[2].mon;
+  return unit.id!==unit.imgKey&&img?.getAttribute('src')===IMG[unit.imgKey];
+ }), 'Vera uses its differing imgKey');
+ await cards.nth(2).locator('img').evaluate(img=>img.decode());
+ assert(await cards.nth(1).locator('.br-switch-hpbar i').count());
+ const box=await sheet.boundingBox();assert(box&&box.x>=0&&box.y>=0&&box.x+box.width<=390&&box.y+box.height<=844,JSON.stringify(box));
+ await page.screenshot({path:`${output}/switch-panel-390x844.png`});
+ const back=sheet.getByRole('button',{name:'戻る',exact:true});
+ await back.click();
+ assert(!await layer.isVisible());assert.deepEqual(await current(),beforeSwitch);
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'battleSwitchButton');
+ await openSwitch();await layer.locator('.br-switch-scrim').click({position:{x:8,y:8}});
+ assert(!await layer.isVisible());assert.deepEqual(await current(),beforeSwitch);
+ await page.evaluate(()=>{busy=true;renderBattleInputState();openBattleSwitchPicker();});
+ assert(await page.locator('#battleSwitchButton').isDisabled());assert(!await layer.isVisible());
+ await page.evaluate(()=>{busy=false;renderBattleInputState();});
+ await openSwitch();await page.keyboard.press('Escape');
+ assert(!await layer.isVisible());assert.deepEqual(await current(),beforeSwitch);
+ await openSwitch();
+ await page.evaluate(()=>{selectBattleSwitchTarget(0);selectBattleSwitchTarget(2);});
+ assert.deepEqual(await current(),beforeSwitch);
+ await cards.nth(1).click();
+ await page.waitForFunction(()=>!busy&&battleTurnCount===1);
+ assert(!await layer.isVisible());assert.equal((await current()).active,1);
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'battleSwitchButton');
+
+ // Wind tactics uses the same cards: cancelling preserves the prepared charge.
+ // Use the real party initializer so both the entry UID and the instance UID
+ // belong to Tempestray. A transplanted instance leaves the old entry UID.
+ await start('single',['freigal','aquaron','tempestray']);
+ await page.evaluate(()=>{
+   const source=partyBattle[2].inst;
+   const result=activateCurrentKokoroLink(source.uid,kokoroLinkTargetStats());
+   if(!result.ok||result.link.tacticsAbility?.id!=='free_switch')throw Error(`fixture did not prepare Wind tactics: ${result.reason||result.link.tacticsAbility?.id}`);
+   window.qaWindOwner=activeInstance;
+   beginKokoroLinkFreeSwitch();
+ });
+ assert(await layer.isVisible());
+ await back.click();assert(await page.locator('#kokoroLinkPanel').isVisible());
+ assert.equal(await page.evaluate(()=>kokoroLinkTacticsAbilityFor(window.qaWindOwner).charges),1);
+ await page.locator('#kokoroLinkPanel').getByRole('button',{name:'無消費交代を使う',exact:true}).click();
+ await cards.nth(1).click();
+ assert(!await layer.isVisible());assert.equal((await current()).active,1);assert.equal((await current()).turn,0);
+ assert.equal(await page.evaluate(()=>kokoroLinkTacticsAbilityFor(window.qaWindOwner).charges),0);
  await start();await page.locator('#singleEnemyBox .br-info').click();
  assert((await page.locator('#renewalSheetBody').innerText()).includes('弱点'));assert(!/\d+[%％]/.test(await page.locator('#renewalSheetBody').innerText()));
  await page.locator('#renewalSheet header button').click();
