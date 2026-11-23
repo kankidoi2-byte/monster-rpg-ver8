@@ -22,7 +22,7 @@ try{
    if(mode==='multi'){activeHuntRequest.secondEnemyId='aquaron';activeHuntRequest.battleMode='three_way';beginThreeWayBattle();}
    show('battle');
   },mode);
-  await page.locator('#renewalParty .br-member').first().waitFor();
+  await page.locator('#battle.active #renewalHeader').first().waitFor();
  }
 
  const records=[];
