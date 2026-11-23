@@ -24,9 +24,10 @@ try{
  const rodenIds=['character_roden_2','character_roden_3','character_roden_4'];
  const seleneIds=['character_selene_2','character_selene_3','character_selene_4'];
  const safiraIds=['character_safira_2','character_safira_3','character_safira_4'];
+ const bordoIds=['character_bordo_2','character_bordo_3','character_bordo_4'];
  const safiraCanvases=[[1254,1254],[1254,1254],[1024,1536]];
- const ids=[...elnaIds,...stellaIds,...luminaIds,...elysiaIds,...brigitteIds,...tobiaIds,...rodenIds,...seleneIds,...safiraIds];
- const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':(seleneIds.includes(id)||safiraIds.includes(id))?'20261123':(elysiaIds.includes(id)||brigitteIds.includes(id)||tobiaIds.includes(id)||rodenIds.includes(id))?'20261122':'20261121'}.webp`;
+ const ids=[...elnaIds,...stellaIds,...luminaIds,...elysiaIds,...brigitteIds,...tobiaIds,...rodenIds,...seleneIds,...safiraIds,...bordoIds];
+ const expectedPoster=id=>`${id}_fullbody_${elnaIds.includes(id)?'20261104':(seleneIds.includes(id)||safiraIds.includes(id)||bordoIds.includes(id))?'20261123':(elysiaIds.includes(id)||brigitteIds.includes(id)||tobiaIds.includes(id)||rodenIds.includes(id))?'20261122':'20261121'}.webp`;
  await page.evaluate(ids=>{
   clearTutorialUi();save=initSave();completeTutorial();
   Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
@@ -60,7 +61,7 @@ try{
    });
    assert(result.contained,`${id} home containment at ${width}`);
    assert(result.opaque>10000&&result.transparent>10000&&result.corner<=1,`${id} actual alpha`);
-   if(seleneIds.includes(id))assert.deepEqual([result.width,result.height],[1024,1536],`${id} retains the supplied canvas`);
+   if(seleneIds.includes(id)||bordoIds.includes(id))assert.deepEqual([result.width,result.height],[1024,1536],`${id} retains the supplied canvas`);
    if(safiraIds.includes(id))assert.deepEqual([result.width,result.height],safiraCanvases[safiraIds.indexOf(id)],`${id} retains the supplied canvas`);
    if(width===412)await page.screenshot({path:`${output}/${id}-home.png`});
   }
@@ -78,7 +79,7 @@ try{
   assert.equal(await page.locator('#battle video,#battle .battle-idle-details').count(),0);
   for(const selector of ['#pVis img','#eVis img'])assert((await page.locator(selector).getAttribute('src')).endsWith(expectedPoster(id)));
   assert(await page.locator('#pVis .battle-static-media').evaluate(el=>getComputedStyle(el).backgroundColor==='rgba(0, 0, 0, 0)'));
-  const trio=[stellaIds,luminaIds,elysiaIds,brigitteIds,tobiaIds,rodenIds,seleneIds,safiraIds].find(forms=>forms[2]===id);
+  const trio=[stellaIds,luminaIds,elysiaIds,brigitteIds,tobiaIds,rodenIds,seleneIds,safiraIds,bordoIds].find(forms=>forms[2]===id);
   if(!trio)continue;
   await page.screenshot({path:`${output}/${id}-single-battle.png`});
   await page.evaluate(([first,second])=>{
@@ -95,7 +96,7 @@ try{
   await page.evaluate(()=>{show('party');});
  }
  assert.equal(await page.evaluate(()=>battleIdleSizeDisplays.size),0);
- for(const id of ['lumina_sorcerer',...elysiaIds,...brigitteIds,...tobiaIds,...rodenIds,...seleneIds,...safiraIds]){
+ for(const id of ['lumina_sorcerer',...elysiaIds,...brigitteIds,...tobiaIds,...rodenIds,...seleneIds,...safiraIds,...bordoIds]){
   assert.equal(await page.evaluate(id=>{save.homeFavoriteId=id;return saveGame();},id),true);
   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
   await page.locator('#titleScreen').waitFor({state:'detached'});
@@ -106,5 +107,5 @@ try{
  }
  await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('#home video').count(),0);
  assert.deepEqual(errors,[]);
- console.log('PASS Elna, Stella, Lumina, Elysia, Brigitte, Tobia, Roden, Selene and Safira cutouts: 29 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
+ console.log('PASS Elna, Stella, Lumina, Elysia, Brigitte, Tobia, Roden, Selene, Safira and Bordo cutouts: 32 forms, 2 mobile widths, real alpha, normal/three-way battle, no decoders, exit cleanup, save/reload, reduced motion.');
 }finally{await browser?.close();server.kill();}
