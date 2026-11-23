@@ -326,7 +326,22 @@ const BATTLE_STATIC_MEDIA=Object.freeze(Object.fromEntries([
   ['character_tobia_4','20261122',1024,1536,0,44,1024,1536],
   ['character_roden_2','20261122',1024,1536,40,57,993,1516],
   ['character_roden_3','20261122',1198,1313,0,0,1184,1313],
-  ['character_roden_4','20261122',1199,1312,0,0,1199,1312]
+  ['character_roden_4','20261122',1199,1312,0,0,1199,1312],
+  ['character_selene_2','20261123',1024,1536,49,17,1012,1521],
+  ['character_selene_3','20261123',1024,1536,0,19,1006,1512],
+  ['character_selene_4','20261123',1024,1536,65,30,975,1520],
+  ['character_safira_2','20261123',1254,1254,41,8,1222,1232],
+  ['character_safira_3','20261123',1254,1254,0,13,1218,1230],
+  ['character_safira_4','20261123',1024,1536,0,22,1002,1514],
+  ['character_bordo_2','20261123',1024,1536,0,15,964,1520],
+  ['character_bordo_3','20261123',1024,1536,0,15,995,1518],
+  ['character_bordo_4','20261123',1024,1536,0,1,1024,1522],
+  ['character_lize_2','20261123',1024,1536,51,16,976,1522],
+  ['character_lize_3','20261123',968,1625,44,43,967,1596],
+  ['character_lize_4','20261123',1140,1380,0,9,1124,1364],
+  ['character_regus_2','20261123',1024,1536,34,20,1015,1536],
+  ['character_regus_3','20261123',1024,1536,0,0,1024,1536],
+  ['character_regus_4','20261123',1024,1536,0,15,1014,1536]
 ].map(([id,version,width,height,x,y,right,bottom])=>[id,Object.freeze({
   poster:`images/monsters/${id}_fullbody_${version}.webp`,
   allyFlip:false,enemyFlip:true,

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
-const ids=['raptor_feather','fine_raptor_feather','venom_carapace','fine_venom_carapace','golden_land_map','g_ichor'];
+const ids=['raptor_feather','fine_raptor_feather','venom_carapace','fine_venom_carapace','golden_land_map','g_ichor','god_core'];
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4389'],{stdio:['ignore','pipe','inherit']});
 const out=process.env.ITEM_ARTWORK_EVIDENCE||'/tmp/item-artwork-qa';fs.mkdirSync(out,{recursive:true});
 let browser;const errors=[];
@@ -25,6 +25,14 @@ try{
    const img=page.locator('#itemDexDetail .item-dex-detail-image img');
    await img.evaluate(i=>i.decode());assert((await img.getAttribute('src')).endsWith(`${id}_art_v1.webp`));
    assert(await img.evaluate(i=>i.naturalWidth===768&&i.naturalHeight===768));
+   if(id==='god_core'){
+    assert.match(await page.locator('#itemDexDetail').innerText(),/光の平原に降臨した光の女神エリシアに勝利すると、まれに入手/);
+    assert(await img.evaluate(i=>{
+      const c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;
+      const ctx=c.getContext('2d');ctx.drawImage(i,0,0);
+      return ctx.getImageData(0,0,1,1).data[3]===0&&ctx.getImageData(c.width/2,c.height/2,1,1).data[3]>200;
+    }));
+   }
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
    await page.screenshot({path:`${out}/${id}-${width}.png`});
   }
@@ -38,7 +46,8 @@ try{
   for(const id of ids.slice(0,4)){
    const imgs=page.locator(`#shop img[src="images/items/${id}_art_v1.webp"]`);assert(await imgs.count()>0);await imgs.first().evaluate(i=>i.decode());
   }
+  assert.equal(await page.locator('#shop img[src="images/items/god_core_art_v1.webp"]').count(),0);
   await page.screenshot({path:`${out}/shop-${width}.png`});await ctx.close();
  }
- assert.deepEqual(errors,[]);console.log('Item artwork browser: locked/unlocked dex, all six details, shop, navigation, save/reload at 360 and 1280px passed.');
+ assert.deepEqual(errors,[]);console.log('Item artwork browser: locked/unlocked dex, all seven details, shop, navigation, save/reload at 360 and 1280px passed.');
 }finally{await browser?.close();server.kill();}
