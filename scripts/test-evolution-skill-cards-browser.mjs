@@ -33,8 +33,11 @@ try{
   const a=addInstance('elna_advanced',3),b=addInstance('elna_advanced',3);save.items.fire_orb=2;showFusion();
  });
  const first=await page.evaluate(()=>({...save.skillCards}));
- await page.evaluate(()=>tryFusion(FUSIONS.findIndex(f=>f.to==='elna_kaen')));
- await page.evaluate(()=>tryFusion(FUSIONS.findIndex(f=>f.to==='elna_kaen')));
+ for(let i=0;i<2;i++){
+  const confirming=page.evaluate(()=>tryFusion(FUSIONS.findIndex(f=>f.to==='elna_kaen')));
+  await page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]').click();
+  await confirming;
+ }
  const special=await page.evaluate(()=>({ids:evolutionSkillCardIdsForMonster(by('elna_kaen')),cards:{...save.skillCards},count:save.instances.filter(i=>i.id==='elna_kaen').length,materials:save.items.fire_orb}));
  assert.equal(special.count,2);assert.equal(special.materials,0);
  for(const id of special.ids)assert.equal(special.cards[id],first[id]+2);

@@ -62,13 +62,13 @@ console.log(`PASS evolution/battle items: ${results.length} isolated fault/norma
 // Adjacent special evolution: a failed backup-source read must not proceed to write.
 for(const slot of [1,2])for(const readAt of [1,2,3]){
  const r=h(slot);r.context.console={...console,error(){}};
- r.run(`var recipe=FUSIONS[0];var hero=addInstance(recipe.from,1);save.items[recipe.item]=recipe.count;saveGame();var key=MonsterProfiles.key(SAVE_KEY),before=JSON.stringify(save),disk=localStorage.getItem(key),get=localStorage.getItem,reads=0;localStorage.getItem=k=>{if(k===key&&++reads===${readAt})throw Error('read');return get(k)};tryFusion(0);localStorage.getItem=get;`);
+ await r.run(`gameConfirm=async()=>true;var recipe=FUSIONS[0];var hero=addInstance(recipe.from,1);save.items[recipe.item]=recipe.count;saveGame();var key=MonsterProfiles.key(SAVE_KEY),before=JSON.stringify(save),disk=localStorage.getItem(key),get=localStorage.getItem,reads=0;localStorage.getItem=k=>{if(k===key&&++reads===${readAt})throw Error('read');return get(k)};tryFusion(0);`);r.run('localStorage.getItem=get');
  assert.equal(r.run('JSON.stringify(save)'),r.run('before'),`fusion read ${readAt}`);assert.equal(r.run('localStorage.getItem(key)'),r.run('disk'));
- r.run('tryFusion(0)');assert.equal(r.run('getInstance(hero.uid).id'),r.run('recipe.to'));
+ await r.run('tryFusion(0)');assert.equal(r.run('getInstance(hero.uid).id'),r.run('recipe.to'));
 }
 console.log('PASS 6 adjacent fusion read failures and recovery');
 {
- const r=h();vm.runInContext(fs.readFileSync(root+'/js/progression.js','utf8').replace('let evolutionSaveBusy = false;','evolutionSaveBusy = false;'),r.context);
+ const r=h();vm.runInContext(fs.readFileSync(root+'/js/progression.js','utf8').replace('let fusionConfirmBusy=false;','fusionConfirmBusy=false;').replace('let evolutionSaveBusy = false;','evolutionSaveBusy = false;'),r.context);
  r.run(`var first=addInstance('aquaron',50),second=addInstance('freigal',50);checkEvolution(first);checkEvolution(second);globalThis.battleFeedback={finished:false};var node=document.getElementById('evoVisual');Object.defineProperty(node,'innerHTML',{configurable:true,set(){throw Error('display')}});`);
  assert.throws(()=>r.run('processNextEvolution()'),/display/);
  const choice=r.run('JSON.stringify(currentEvolution)'),queue=r.run('JSON.stringify(pendingEvolutions)');

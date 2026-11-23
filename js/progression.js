@@ -20,7 +20,9 @@ function renderFusion() {
       </div></div>`;
   }).join('');
 }
-function tryFusion(idx) {
+let fusionConfirmBusy=false;
+async function tryFusion(idx) {
+  if(fusionConfirmBusy||!FUSIONS[idx])return;
   const r = FUSIONS[idx], from = by(r.from), to = by(r.to);
   const log = document.getElementById('fusionLog');
   const candidates = save.instances.filter(x => x.id === r.from && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(x.uid)));
@@ -42,7 +44,13 @@ function tryFusion(idx) {
     ins = candidates[choice];
   }
 
-  if (!confirm(`${from.name}と${r.itemName} × ${r.count}を合成して${to.name}に進化させますか？`)) return;
+  const owner=save, sourceUid=ins.uid, sourceLevel=ins.level, sourceExp=ins.exp;
+  fusionConfirmBusy=true;
+  try{
+  if(!await gameConfirm({title:'素材で進化',body:`${from.name}と${r.itemName} × ${r.count}を合成して${to.name}に進化させますか？`,okLabel:'進化させる'}))return;
+  if(save!==owner||!save.instances.includes(ins)||ins.uid!==sourceUid||ins.id!==r.from||
+      ins.level!==sourceLevel||ins.exp!==sourceExp||(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(sourceUid))||
+      (save.items[r.item]||0)<r.count||(!r.repeatable&&caughtHas(r.to)))return;
 
   if(!commitSaveMutation(()=>{
   const firstRegistration=!caughtHas(r.to);
@@ -67,6 +75,7 @@ function tryFusion(idx) {
   if(typeof replayUiMotion==='function')replayUiMotion(log,'ui-reward-pop',850);
   if(typeof showUiNotice==='function')showUiNotice(`${to.name}への合成成功！`);
   });
+  }finally{fusionConfirmBusy=false;}
 }
 function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
   const battleParty=typeof traitRewardParty==='function'?traitRewardParty():[];
@@ -148,7 +157,7 @@ function confirmEvolution(toId) {
   currentEvolution = null;
   showCommittedSaveResult(()=>{
   renderParty(); renderDex();
-  alert(`✨ ${from.name}は${to.name}に進化した！`);
+  showUiNotice(`${from.name}は${to.name}に進化した！`);
   if(pendingEvolutions.length)processNextEvolution();
   else if(typeof autoEvolutionFinished!=='function'||!autoEvolutionFinished())show('partySet');
   });

@@ -57,7 +57,7 @@ function assertOriginal(r,label){
 // C: over-progress is safe to clamp; stale active rewards must not become claimable.
 for(const path of ['load','runtime']){
   const r=fixture();
-  r.run(`entry.status='active';entry.distanceId='medium';entry.requiredWins=3;entry.progress=99;
+  await r.run(`gameConfirm=async()=>true;entry.status='active';entry.distanceId='medium';entry.requiredWins=3;entry.progress=99;
     entry.reward={coins:9999,exp:9999,great:true,items:{monster_bone:9999}};`);
   r.run(path==='load'?'save=parseAndPrepareSave(JSON.stringify(save),[]);':'normalizeExpeditionSave();');
   assert.equal(r.run('save.expeditions.active.length'),1,`C/${path}: active record retained`);
@@ -87,7 +87,7 @@ console.log('PASS SAVE-04 C: shared load/runtime normalization clamps progress a
 // E: unchanged early-return formula: medium distance, 1/3 progress, 50% reward.
 {
   const r=fixture();
-  r.run(`entry.status='active';entry.distanceId='medium';entry.requiredWins=3;entry.progress=1;
+  await r.run(`gameConfirm=async()=>true;entry.status='active';entry.distanceId='medium';entry.requiredWins=3;entry.progress=1;
     Math.random=()=>.99;var expBefore=member.exp;recallExpedition(entry.id);`);
   assert.equal(r.run('save.coins'),2008,'E: 24 × 2 × 1/3 × 50% coins');
   assert.equal(r.run('getInstance(member.uid).exp-expBefore'),6,'E: 18 × 2 × 1/3 × 50% EXP');

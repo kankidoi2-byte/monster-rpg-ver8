@@ -18,7 +18,7 @@ function setup(){
  const before=run('JSON.stringify(save)');
  run('var plan=alchemyPlan(selection);finalizeAlchemy(plan)');
  assert.equal(run('JSON.stringify(save)'),before,'A: direct finalizer rejects without consuming any resources');
- run('alchemyPlan=()=>plan;executeAlchemyConfirmed()');
+ await run('alchemyPlan=()=>plan;executeAlchemyConfirmed()');
  assert.equal(run('JSON.stringify(save)'),before,'A: direct execution also rejects');
  console.log('PASS A: suspended participant excluded and both execution entries preserve resources');
 }

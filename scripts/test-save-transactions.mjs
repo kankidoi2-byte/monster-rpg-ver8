@@ -7,6 +7,7 @@ const profileSource=fs.readFileSync(root+'/js/profiles.js','utf8');
 const results=[];
 function h(slot=1){
  const r=runtime({data:s=>`globalThis.crypto={randomUUID:()=>String(Math.random())};globalThis.sessionStorage={getItem:()=> '${slot}',setItem(){}};localStorage.setItem('mb_v95c',JSON.stringify({coins:11111,auditMarker:'profile1'}));\n${profileSource}\n${s}`,save:s=>s+'\nglobalThis.originalSaveGame=saveGame;'});
+ r.context.gameConfirm=async()=>true;
  r.context.document.addEventListener=()=>{};r.context.window={addEventListener(){}};
  for(const file of ['contractor-rank','tutorial'])vm.runInContext(fs.readFileSync(root+'/js/'+file+'.js','utf8'),r.context);
  r.run('saveGame=originalSaveGame;save=initSave();save.coins=20000;renderShop=()=>{};updateItems=()=>{};renderItemGacha=()=>{};renderFusion=()=>{};renderPartySetup=()=>{};renderExpedition=()=>{};typesHtml=()=>"";battleRewardGranted=true;var auditNotices=[];showUiNotice=(text)=>auditNotices.push(text);saveGame();');
@@ -61,7 +62,7 @@ for(const slot of [1,2])for(const feature of ['shop','itemGacha','fusion','exped
  if(fault==='quota')r.run(`localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return originalSet(k,v)}`);
  if(fault==='conflict')r.run(`var newer=JSON.parse(disk);newer.coins=99999;originalSet(key,JSON.stringify(newer));`);
  if(fault==='DOM')r.run('renderShop=renderItemGacha=renderFusion=renderExpedition=()=>{throw Error("DOM")}');
- try{r.run(({shop:'buyItem(item.id)',itemGacha:'rollItemGacha()',fusion:'tryFusion(0)',expedition:'claimExpedition("test")'})[feature]);}catch(error){assert.equal(fault,'DOM');}
+ try{await r.run(({shop:'buyItem(item.id)',itemGacha:'rollItemGacha()',fusion:'tryFusion(0)',expedition:'claimExpedition("test")'})[feature]);}catch(error){assert.equal(fault,'DOM');}
  if(['quota','conflict'].includes(fault)){
   assert.equal(r.run('JSON.stringify(save)'),r.run('before'));assert.equal(r.run('JSON.stringify(pendingEvolutions)'),r.run('beforeQueue'));
   assert(r.run('partyBattle[0].inst===save.instances.find(x=>x.uid===unit.uid)'));
@@ -155,7 +156,7 @@ for(const slot of [1,2])for(const feature of ['expItem','recall'])for(const faul
   if(['read','lateRead'].includes(fault))r.run(`var realGet=localStorage.getItem;var reads=0;localStorage.getItem=k=>{if(k===key&&(${fault==='read'?'true':'++reads===2'}))throw Error('read');return realGet(k)}`);
   if(fault==='display')r.run(`renderParty=()=>{throw Error('display')}`);
   const action=feature==='expItem'?'useExpItemOnInstance(item.id,hero.uid)':"recallExpedition('early-audit')";
-  r.run(action);
+  await r.run(action);
   if(['read','lateRead'].includes(fault))r.run('localStorage.getItem=realGet;');
   if(['quota','conflict','read','lateRead'].includes(fault)){
     assert.equal(r.run('JSON.stringify(save)'),r.run('before'));
@@ -167,12 +168,12 @@ for(const slot of [1,2])for(const feature of ['expItem','recall'])for(const faul
     assert.equal(r.run('localStorage.getItem(key)'),r.run('JSON.stringify(save)'));
     if(feature==='expItem'){assert.equal(r.run('save.items[item.id]'),0);assert(r.run('getInstance(hero.uid).level>1||getInstance(hero.uid).exp>0'));}
     else assert.equal(r.run("save.expeditions.active.some(e=>e.id==='early-audit')"),false);
-    r.run('var committed=localStorage.getItem(key);');r.run(action);
+    r.run('var committed=localStorage.getItem(key);');await r.run(action);
     assert.equal(r.run('localStorage.getItem(key)'),r.run('committed'),'repeated consumed action cannot grant twice');
   }
   if(slot===2)assert.equal(r.run("localStorage.getItem('mb_v95c')"),r.run('other'));
   if(['quota','read','lateRead'].includes(fault)){
-    r.run('localStorage.setItem=realSet;');r.run(action);
+    r.run('localStorage.setItem=realSet;');await r.run(action);
     assert.equal(r.run('localStorage.getItem(key)'),r.run('JSON.stringify(save)'),'retry commits once');
   }
 }

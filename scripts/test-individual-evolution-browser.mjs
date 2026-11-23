@@ -32,6 +32,7 @@ try{
   // Advance through a real item action, then use the rendered evolution choice.
   await page.locator('#rosterSheetHost summary').click();
   await page.locator('#rosterSheetHost button').filter({hasText:'ギガデータ'}).click();
+  await page.locator('#itemQuantityDialog [data-item-quantity-action="submit"]').click();
   await page.locator('#evolution').waitFor({state:'visible'});
   await page.locator('#evoChoices button').filter({hasText:'ハイアクアロンに進化する'}).click();
   const evolved=await page.evaluate(uid=>getInstance(uid),uid);

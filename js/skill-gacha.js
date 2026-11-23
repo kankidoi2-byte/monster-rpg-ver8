@@ -245,7 +245,7 @@ function rollSkillGacha(kind,count){
   const hadMeta=Object.prototype.hasOwnProperty.call(save,'saveMeta');
   const beforeMeta=save.saveMeta ? {...save.saveMeta} : save.saveMeta;
   const result=performSkillGacha(kind,count);
-  if(!result.ok){alert(result.error);return;}
+  if(!result.ok){showUiNotice(result.error,'warning');return;}
   const entries=skillGachaInventorySnapshots(result.cards,beforeInventory);
   let persisted=false;
   try{persisted=saveGame()!==false;}catch(error){persisted=false;}
@@ -255,7 +255,7 @@ function rollSkillGacha(kind,count){
     if(hadMeta)save.saveMeta=beforeMeta;else delete save.saveMeta;
     renderSkillGacha();
     if(typeof updateAppResourceBar==='function') updateAppResourceBar();
-    alert('技ガチャの結果を保存できなかったため、抽選を取り消しました。コインと技カードは抽選前の状態です。');
+    showUiNotice('技ガチャの結果を保存できなかったため、抽選を取り消しました。コインと技カードは抽選前の状態です。','error');
     return;
   }
   renderSkillGacha();

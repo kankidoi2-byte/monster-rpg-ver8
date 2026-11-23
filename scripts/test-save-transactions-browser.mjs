@@ -51,15 +51,20 @@ try{
   }
   await page.screenshot({path:`${out}/${width}-slot${slot}-recovery-controls.png`});
   for(const feature of ['expItem','recall']){
-   const outcome=await page.evaluate(feature=>{
+   const outcome=await page.evaluate(async feature=>{
     clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.coins=20000;
     const hero=addInstance('aquaron',1);save.party=[];const item=SHOP_ITEMS.find(x=>x.expItem);save.items[item.id]=1;
     save.expeditions.active=[{id:'browser-recall',mapId:'grassland',distanceId:'short',memberUids:[hero.uid],progress:1,requiredWins:3,status:'active',suitability:{greatRate:0},reward:null}];
     saveGame();const before=JSON.stringify(save),key=MonsterProfiles.key(SAVE_KEY),disk=localStorage.getItem(key),otherKey=MonsterProfiles.slot()===1?'mb_v95c_profile2':'mb_v95c',other=localStorage.getItem(otherKey);
-    const action=()=>feature==='expItem'?useExpItemOnInstance(item.id,hero.uid):recallExpedition('browser-recall');
+    const action=async()=>{
+     if(feature==='expItem')return useExpItemOnInstance(item.id,hero.uid);
+     const recall=recallExpedition('browser-recall');
+     document.querySelector('#gameConfirmDialog [data-game-confirm-action="ok"]')?.click();
+     return recall;
+    };
     const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===key)throw new DOMException('Injected quota','QuotaExceededError');return set.call(this,k,v);};
-    try{action();}finally{Storage.prototype.setItem=set;}
-    const rolledBack=before===JSON.stringify(save)&&disk===localStorage.getItem(key);action();const committed=localStorage.getItem(key);action();
+    try{await action();}finally{Storage.prototype.setItem=set;}
+    const rolledBack=before===JSON.stringify(save)&&disk===localStorage.getItem(key);await action();const committed=localStorage.getItem(key);await action();
     return {rolledBack,committed:committed===JSON.stringify(save),once:committed===localStorage.getItem(key),otherSame:other===localStorage.getItem(otherKey),feature};
    },feature);
    assert(outcome.rolledBack&&outcome.committed&&outcome.once&&outcome.otherSame);

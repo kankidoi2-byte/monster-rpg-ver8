@@ -548,15 +548,30 @@ function openAlchemyConfirmation(){
 }
 let alchemyTransactionRetry=null;
 const committedAlchemyPlans=new WeakSet();
-function executeAlchemyConfirmed(){
-  if(alchemyBusy) return;
+let alchemyLastCharacterConfirmBusy=false;
+function alchemyLastCharacterQuote(plan){
+  return JSON.stringify([plan.selection,plan.instance?.id,plan.coinCost,plan.rate,plan.tutorialLesson]);
+}
+async function executeAlchemyConfirmed(){
+  if(alchemyBusy||alchemyLastCharacterConfirmBusy) return;
   const plan = alchemyPlan();
   const errors = validateAlchemyPlan(plan);
   if(errors.length){
     document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
-  if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1 && !confirm('この形態のキャラクターは最後の1体です。錬成で消費してもよろしいですか？'))return;
+  if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1){
+    const owner=save, identity=saveTransactionIdentity(), quote=alchemyLastCharacterQuote(plan);
+    alchemyLastCharacterConfirmBusy=true;
+    try{
+      if(!await gameConfirm({title:'最後のキャラクターを消費',body:'この形態のキャラクターは最後の1体です。錬成で消費してもよろしいですか？',okLabel:'消費して錬成する',danger:true}))return;
+      if(save!==owner||saveTransactionIdentity()!==identity)return;
+      const current=alchemyPlan();
+      if(current.instance!==plan.instance||alchemyLastCharacterQuote(current)!==quote||validateAlchemyPlan(current).length||
+          save.instances.filter(ins=>ins.id===current.instance.id).length!==1)return;
+      plan.lastCharacterQuote=quote;
+    }finally{alchemyLastCharacterConfirmBusy=false;}
+  }
   try{alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);}
   catch(_error){alchemyDiagnosticsSelection=null;}
   plan.transactionIdentity=saveTransactionIdentity();
@@ -585,6 +600,8 @@ function finalizeAlchemy(originalPlan){
     const plan = alchemyPlan(originalPlan.selection);
     const errors = validateAlchemyPlan(plan);
     if(errors.length) throw new Error(errors.join('\n'));
+    if(originalPlan.lastCharacterQuote&&alchemyLastCharacterQuote(plan)!==originalPlan.lastCharacterQuote)
+      throw new Error('確認した錬成内容が変わっています。');
 
     plan.selection.materialIds.forEach((id,index) => { save.items[id] -= plan.selection.materialCounts[index]; });
     save.coins -= plan.coinCost;

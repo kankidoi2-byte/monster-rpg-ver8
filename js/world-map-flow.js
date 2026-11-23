@@ -80,14 +80,20 @@ function worldMapAvailableDifficulties(map,eventKey=null){
     worldMapCandidates(map,d.id,eventKey).length
   );
 }
-function worldMapSkipCrisis(){
-  if(!normalizeWorldMapState(save.worldMap).active.crisis)return false;
-  if(!confirm('今回は危機への挑戦を見送りますか？ 偽竜が対処し、世界の狭間へ向かう痕跡が残ります。'))return false;
+let worldMapCrisisSkipBusy=false;
+async function worldMapSkipCrisis(){
+  if(worldMapCrisisSkipBusy||!normalizeWorldMapState(save.worldMap).active.crisis)return false;
+  const owner=save, crisis=save.worldMap.active.crisis, quote=JSON.stringify(crisis);
+  worldMapCrisisSkipBusy=true;
+  try{
+  if(!await gameConfirm({title:'危機への挑戦',body:'今回は危機への挑戦を見送りますか？ 偽竜が対処し、世界の狭間へ向かう痕跡が残ります。',okLabel:'見送る'}))return false;
+  if(save!==owner||save.worldMap.active?.crisis!==crisis||JSON.stringify(crisis)!==quote)return false;
   const previous=save.worldMap;
   save.worldMap=clearResolvedWorldMapNavigation(resolveWorldEvent(save.worldMap,'crisis','skip'),'crisis');
-  if(saveGame()===false){save.worldMap=previous;alert('記録を保存できませんでした。もう一度お試しください。');return false;}
+  if(saveGame()===false){save.worldMap=previous;showUiNotice('記録を保存できませんでした。もう一度お試しください。','error');return false;}
   clearWorldMapRuntimeEventSelection('crisis');
   return true;
+  }finally{worldMapCrisisSkipBusy=false;}
 }
 function recordWorldMapVictory(){
   const request=activeHuntRequest;

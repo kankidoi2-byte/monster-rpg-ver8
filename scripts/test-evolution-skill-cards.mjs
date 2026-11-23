@@ -16,9 +16,9 @@ function setup(route,second=false){
  if(route.special)save.items[route.item]=route.count*2;
  currentEvolution={uid:ins.uid,from:ins.id,choices:[route.to]};pendingEvolutions=[];
  renderFusion=()=>{};renderPartySetup=()=>{};`);
- r.context.confirm=()=>true;r.context.prompt=()=>'1';
+ r.context.gameConfirm=async ()=>true;r.context.showUiNotice=()=>{};r.context.prompt=()=>'1';
 }
-function evolve(route){r.run(route.special?'tryFusion(route.index)':'confirmEvolution(route.to)');}
+function evolve(route){return r.run(route.special?'tryFusion(route.index)':'confirmEvolution(route.to)');}
 for(const route of routes){
  setup(route,true);
  const expected=json(r.run(`[...new Set(by(route.to).moves.map(move=>canonicalSkillId(skillIdFromMove(move))))]`));
@@ -27,7 +27,7 @@ for(const route of routes){
  const before=json(r.run(fields));
  old.context.route=route;
  const previous=json(old.run('defaultSkillIdsForMonster(by(route.to),{level:route.level})'));
- evolve(route);
+ await evolve(route);
  const after=json(r.run(fields));
  const delta=Object.keys(after.skillCards).filter(id=>after.skillCards[id]!==before.skillCards[id]);
  assert.deepEqual(delta.sort(),[...expected].sort(),`${route.from}->${route.to}`);
@@ -43,7 +43,7 @@ for(const route of routes){
  if(route.special)assert.equal(after.items[route.item],before.items[route.item]-route.count);
  else assert.deepEqual(after.items,before.items);
  if(!route.special||route.repeatable){
-   r.run('currentEvolution={uid:other.uid,from:other.id,choices:[route.to]}');evolve(route);
+   r.run('currentEvolution={uid:other.uid,from:other.id,choices:[route.to]}');await evolve(route);
    for(const id of expected)assert.equal(r.run(`save.skillCards['${id}']`),before.skillCards[id]+2,'each individual grants cards');
  }
  const stable=json(r.run(fields));
@@ -56,16 +56,16 @@ for(const route of routes){
  // Cancel, invalid/stale choices, insufficient materials, completed nonrepeatable fusion.
  setup(route);const untouched=json(r.run(fields));
  if(route.special){
-   r.context.confirm=()=>false;evolve(route);assert.deepEqual(json(r.run(fields)),untouched);
-   r.context.confirm=()=>true;r.run('save.items[route.item]=0');const noItems=json(r.run(fields));evolve(route);assert.deepEqual(json(r.run(fields)),noItems);
-   setup(route);r.run('save.instances=[]');const missing=json(r.run(fields));evolve(route);assert.deepEqual(json(r.run(fields)),missing);
-   if(!route.repeatable){setup(route);r.run('save.caught.push(route.to)');const done=json(r.run(fields));evolve(route);assert.deepEqual(json(r.run(fields)),done);}
-   setup(route,true);r.context.prompt=()=>null;const cancelled=json(r.run(fields));evolve(route);assert.deepEqual(json(r.run(fields)),cancelled);
+   r.context.gameConfirm=async()=>false;await evolve(route);assert.deepEqual(json(r.run(fields)),untouched);
+   r.context.gameConfirm=async ()=>true;r.context.showUiNotice=()=>{};r.run('save.items[route.item]=0');const noItems=json(r.run(fields));await evolve(route);assert.deepEqual(json(r.run(fields)),noItems);
+   setup(route);r.run('save.instances=[]');const missing=json(r.run(fields));await evolve(route);assert.deepEqual(json(r.run(fields)),missing);
+   if(!route.repeatable){setup(route);r.run('save.caught.push(route.to)');const done=json(r.run(fields));await evolve(route);assert.deepEqual(json(r.run(fields)),done);}
+   setup(route,true);r.context.prompt=()=>null;const cancelled=json(r.run(fields));await evolve(route);assert.deepEqual(json(r.run(fields)),cancelled);
  }else{
    r.run("confirmEvolution('missing');confirmEvolution(ins.id)");assert.deepEqual(json(r.run(fields)),untouched);
    r.run('cancelEvolution();confirmEvolution(route.to)');assert.deepEqual(json(r.run(fields)),untouched);
-   setup(route);r.run('currentEvolution.from="missing"');const stale=json(r.run(fields));evolve(route);assert.deepEqual(json(r.run(fields)),stale);
-   setup(route);r.run('ins.level=1');const tooLow=json(r.run(fields));evolve(route);assert.deepEqual(json(r.run(fields)),tooLow);
+   setup(route);r.run('currentEvolution.from="missing"');const stale=json(r.run(fields));await evolve(route);assert.deepEqual(json(r.run(fields)),stale);
+   setup(route);r.run('ins.level=1');const tooLow=json(r.run(fields));await evolve(route);assert.deepEqual(json(r.run(fields)),tooLow);
  }
 }
 // Synthetic >3 moves, repeated canonical move, merged raw ID, legacy alias and invalid ID.

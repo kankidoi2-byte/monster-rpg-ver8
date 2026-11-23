@@ -10,10 +10,10 @@ for(const [id,weight] of Object.entries({potion:28.2,upper_potion:16,attack_poti
 assert.equal(weights.length,13);
 for(const id of ['max_potion','revive_drop'])assert.equal(r.run(`gachaItemTier('${id}')`),'gold');
 r.run('save.items.gold_dust=3;save.coins=0;');assert.ok(r.run('renderItemSellSection()').includes('全部売る'));
-r.context.confirm=()=>false;assert.equal(r.run('sellGoldDust(true)'),false);assert.equal(r.run('save.items.gold_dust'),3);
-r.context.confirm=()=>true;assert.equal(r.run('sellGoldDust(false)'),true);assert.equal(r.run('save.coins'),100);assert.equal(r.run('save.items.gold_dust'),2);
-assert.equal(r.run('sellGoldDust(true)'),true);assert.equal(r.run('save.coins'),300);assert.equal(r.run('renderItemSellSection()'),'');assert.equal(r.run('sellGoldDust(true)'),false);
-r.run('save.items.gold_dust=2;saveGame=()=>false;');assert.equal(r.run('sellGoldDust(true)'),false);assert.equal(r.run('save.items.gold_dust'),2);assert.equal(r.run('save.coins'),300);
+r.context.gameConfirm=()=>false;assert.equal(await r.run('sellGoldDust(true)'),false);assert.equal(r.run('save.items.gold_dust'),3);
+r.context.gameConfirm=()=>true;assert.equal(await r.run('sellGoldDust(false)'),true);assert.equal(r.run('save.coins'),100);assert.equal(r.run('save.items.gold_dust'),2);
+assert.equal(await r.run('sellGoldDust(true)'),true);assert.equal(r.run('save.coins'),300);assert.equal(r.run('renderItemSellSection()'),'');assert.equal(await r.run('sellGoldDust(true)'),false);
+r.run('save.items.gold_dust=2;saveGame=()=>false;');assert.equal(await r.run('sellGoldDust(true)'),false);assert.equal(r.run('save.items.gold_dust'),2);assert.equal(r.run('save.coins'),300);
 r.run('saveGame=()=>true;save.items.strong_incense=2;save.strongIncenseRemainingDepartures=0;');assert.equal(r.run('useStrongIncense()'),true);assert.equal(r.run('save.strongIncenseRemainingDepartures'),10);assert.equal(r.run('save.items.strong_incense'),1);assert.equal(r.run('useStrongIncense()'),false);assert.equal(r.run('save.items.strong_incense'),1);
 r.run('save.strongIncenseRemainingDepartures=0;saveGame=()=>false;');assert.equal(r.run('useStrongIncense()'),false);assert.equal(r.run('save.items.strong_incense'),1);assert.equal(r.run('save.strongIncenseRemainingDepartures'),0);
 assert.ok(fs.readFileSync(new URL('../js/tutorial.js',import.meta.url),'utf8').includes('回復薬や強化薬は、使うと所持数が1個減ります。所持数と効果を確認してください。'));

@@ -31,7 +31,7 @@ function startBattleFromParty() {
   if(worldMapBattleSavePending()){show('battle');return;}
   if(normalVictoryPending())return;
   const party = getPartyInstances();
-  if (!party.length) { alert('パーティーにモンスターを入れてください。'); return; }
+  if (!party.length) { showUiNotice('パーティーにモンスターを入れてください。','warning'); return; }
   prepareBattleParty();
   showBattleChoices();
 }
@@ -185,7 +185,7 @@ function beginChosenBattle(mapId, enemyId, difficultyId='normal', request=null) 
   if (activeHuntRequest.goldenLandMapEntry) {
     const previousMapCount=save.items.golden_land_map;
     if (!consumeReservedGoldenLandMap()) {
-      alert('黄金郷への地図が見つかりません。討伐依頼を選び直してください。');
+      showUiNotice('黄金郷への地図が見つかりません。討伐依頼を選び直してください。','warning');
       showBattleChoices();
       return;
     }

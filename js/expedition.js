@@ -187,9 +187,9 @@ function startExpedition(){
   normalizeExpeditionSave();
   const map=MAPS.find(x=>x.id===expeditionSelectedMapId),distance=EXPEDITION_DISTANCES[expeditionSelectedDistanceId];
   const members=expeditionSelectedUids.map(getInstance).filter(ins=>ins&&expeditionAvailableInstances().some(x=>x.uid===ins.uid));
-  if(!map||!expeditionDestinations().some(x=>x.id===map.id)){alert('遠征先を選んでください。');return false;}
-  if(!distance){alert('距離を選んでください。');return false;}if(!members.length){alert('派遣するモンスターを1～3体選んでください。');return false;}
-  if(save.expeditions.active.length>=expeditionUnlockedSlots()){alert('使用できる遠征枠がありません。');return false;}
+  if(!map||!expeditionDestinations().some(x=>x.id===map.id)){showUiNotice('遠征先を選んでください。','warning');return false;}
+  if(!distance){showUiNotice('距離を選んでください。','warning');return false;}if(!members.length){showUiNotice('派遣するモンスターを1～3体選んでください。','warning');return false;}
+  if(save.expeditions.active.length>=expeditionUnlockedSlots()){showUiNotice('使用できる遠征枠がありません。','warning');return false;}
   let entry;
   if(!commitSaveMutation(()=>{
     const suitability=expeditionSuitability(members.map(x=>x.uid),map);
@@ -242,8 +242,18 @@ function claimExpedition(id){
   if(typeof showUiNotice==='function')showUiNotice(notice);setTimeout(processNextEvolution,250);
   });
 }
-function recallExpedition(id){
-  const index=save.expeditions.active.findIndex(x=>x.id===id),entry=save.expeditions.active[index];if(!entry||entry.status!=='active')return;if(!confirm('途中帰還しますか？ 完了進捗分の50％だけ受け取ります。'))return;
+let expeditionRecallBusy=false;
+async function recallExpedition(id){
+  if(expeditionRecallBusy)return;
+  const entry=save.expeditions.active.find(x=>x.id===id);
+  if(!entry||entry.status!=='active')return;
+  const owner=save, quote=JSON.stringify(entry);
+  expeditionRecallBusy=true;
+  try{
+  if(!await gameConfirm({title:'遠征の途中帰還',body:'途中帰還しますか？ 完了進捗分の50％だけ受け取ります。',okLabel:'途中帰還する'}))return;
+  if(save!==owner||JSON.stringify(entry)!==quote)return;
+  const index=save.expeditions.active.indexOf(entry);
+  if(index<0)return;
   if(!commitSaveMutation(()=>{
     if(entry.progress>0){const map=MAPS.find(x=>x.id===entry.mapId),distance=EXPEDITION_DISTANCES[entry.distanceId],factor=(entry.progress/entry.requiredWins)*.5;const reward=expeditionRewardPlan(map,distance,{...entry.suitability,greatRate:0},Math.random,factor);grantExpeditionReward(entry,reward);}
     save.expeditions.active.splice(index,1);
@@ -251,6 +261,7 @@ function recallExpedition(id){
   showCommittedSaveResult(()=>{
     renderExpedition();renderParty();if(typeof renderPartySetup==='function')renderPartySetup();setTimeout(processNextEvolution,250);
   });
+  }finally{expeditionRecallBusy=false;}
 }
 function expeditionRewardText(reward){if(!reward)return '完了時に確定';const items=Object.entries(reward.items||{}).map(([id,n])=>`${ITEM_BY_ID[id]?.icon||'📦'}${escapeGameHtml(ITEM_BY_ID[id]?.name||id)}×${escapeGameHtml(n)}`).join(' / ')||'アイテムなし';return `${reward.great?'🌟 大成功！ ':''}コイン${escapeGameHtml(reward.coins)}・各個体EXP ${escapeGameHtml(reward.exp)}・${items}`;}
 function expeditionEmptyMemberGuide(){
@@ -273,8 +284,8 @@ function renderExpedition(){
   root.querySelectorAll?.('[data-expedition-id][data-action]').forEach(button=>{
     button.addEventListener('click',()=>{
       const {expeditionId,action}=button.dataset;
-      if(action==='claim')claimExpedition(expeditionId);
-      else if(action==='recall')recallExpedition(expeditionId);
+      if(action==='claim')return claimExpedition(expeditionId);
+      if(action==='recall')return recallExpedition(expeditionId);
     });
   });
 }

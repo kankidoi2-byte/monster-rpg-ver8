@@ -1075,14 +1075,21 @@ function commitTutorialFullSkip(){
     return false;
   }
 }
-function requestTutorialSkip(){
-  if(tutorialElnaContractBusy||!tutorialUiState.active)return;
+let tutorialSkipConfirmBusy=false;
+async function requestTutorialSkip(){
+  if(tutorialSkipConfirmBusy||tutorialElnaContractBusy||!tutorialUiState.active)return;
   if(!tutorialUiState.persist){pauseTutorial();return;}
-  if(!confirm('必須チュートリアルを全体スキップしますか？ 必須報酬を受け取り、自由行動へ移ります。'))return;
-  if(!commitTutorialFullSkip())return;
-  clearTutorialUi();
-  if(typeof show==='function')show('home');
-  updateTutorialMenuSummary();
+  const owner=save, steps=tutorialUiState.steps, index=tutorialUiState.index;
+  const checkpoint=save.progress?.tutorial?.stepId;
+  tutorialSkipConfirmBusy=true;
+  try{
+    if(!await gameConfirm({title:'チュートリアルをスキップ',body:'必須チュートリアルを全体スキップしますか？ 必須報酬を受け取り、自由行動へ移ります。',okLabel:'全体スキップする'}))return;
+    if(save!==owner||tutorialElnaContractBusy||!tutorialUiState.active||!tutorialUiState.persist||tutorialUiState.steps!==steps||tutorialUiState.index!==index||save.progress?.tutorial?.stepId!==checkpoint)return;
+    if(!commitTutorialFullSkip())return;
+    clearTutorialUi();
+    if(typeof show==='function')show('home');
+    updateTutorialMenuSummary();
+  }finally{tutorialSkipConfirmBusy=false;}
 }
 function clearTutorialUi(){
   if(typeof tutorialPresentationStop==='function')tutorialPresentationStop();

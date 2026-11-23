@@ -51,7 +51,7 @@ for(const bad of [null,'2',4,-3,1.5]){
 run("var character=addInstance('elna_beginner',1,0);var nextCharacter=instanceEvolutionRoutes(character)");
 assert.equal(run('Object.hasOwn(character,"evolutionOffset")'),false);
 assert.deepEqual(json(run('nextCharacter')),[{to:'elna_middle',level:2}]);
-run(`save=initSave();var special=addInstance('nemesion',1,0,{evolutionOffset:2});save.items.doom_fragment=1;save.party=[special.uid];renderFusion=()=>{};renderPartySetup=()=>{};tryFusion(FUSIONS.findIndex(f=>f.from==='nemesion'));`);
+await run(`gameConfirm=async()=>true;save=initSave();var special=addInstance('nemesion',1,0,{evolutionOffset:2});save.items.doom_fragment=1;save.party=[special.uid];renderFusion=()=>{};renderPartySetup=()=>{};tryFusion(FUSIONS.findIndex(f=>f.from==='nemesion'));`);
 assert.equal(run('special.id'),'doom_nemesion');assert.equal(run('special.evolutionOffset'),2);assert.equal(run('save.items.doom_fragment'),0);
 // The engine retains thresholds, but roster/dex presentation must not disclose them.
 r.context.typesHtml=()=>'';

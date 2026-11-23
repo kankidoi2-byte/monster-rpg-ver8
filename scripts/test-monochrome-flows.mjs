@@ -48,6 +48,7 @@ export async function runMonochromeFlows(page,out,record){
  for(let n=0;n<3;n++)await click(page.locator('#synthesis-add-s110_091'));
  const beforeCraft=await page.evaluate(()=>({...save.skillCards}));
  await click(page.locator('#skillSynthesisSubmit'));
+ await click(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
  const crafted=await page.evaluate(()=>({cards:{...save.skillCards},id:save.skillSynthesis.lastResultId}));
  assert.equal(crafted.cards.s110_091,(beforeCraft.s110_091-3)+(crafted.id==='s110_091'?1:0));
  assert.equal(crafted.cards[crafted.id],(beforeCraft[crafted.id]||0)+1-(crafted.id==='s110_091'?3:0));
@@ -76,12 +77,13 @@ export async function runMonochromeFlows(page,out,record){
  const catalyst=await page.evaluate(()=>alchemyEligibleInstances()[0]?.uid);
  assert(catalyst,'alchemy fixture has an unlocked, non-party catalyst');
  await page.locator('#alchemyMonsterSelect').selectOption(catalyst);
- const plan=await page.evaluate(()=>{const p=alchemyPlan();return {errors:validateAlchemyPlan(p),coins:save.coins,cost:p.coinCost,materials:p.selection.materialIds,counts:p.selection.materialCounts,items:{...save.items}};});
+ const plan=await page.evaluate(()=>{const p=alchemyPlan();return {errors:validateAlchemyPlan(p),lastCharacter:isCharacterUnit(by(p.instance?.id))&&save.instances.filter(ins=>ins.id===p.instance.id).length===1,coins:save.coins,cost:p.coinCost,materials:p.selection.materialIds,counts:p.selection.materialCounts,items:{...save.items}};});
  assert.deepEqual(plan.errors,[]);
  await click(page.locator('#alchemy .alchemy-start-button'));
  assert(await page.locator('#alchemyConfirm').isVisible());
  await pass('alchemy-confirmation');
  await click(page.locator('#alchemyExecuteButton'));
+ if(plan.lastCharacter)await click(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"].roster-danger'));
  await page.locator('#alchemyResult .alchemy-result-card').waitFor({timeout:15000});
  assert.equal(await page.evaluate(uid=>save.instances.some(ins=>ins.uid===uid),catalyst),false);
  assert.equal(await page.evaluate(()=>save.coins),plan.coins-plan.cost);
@@ -98,6 +100,7 @@ export async function runMonochromeFlows(page,out,record){
  // Exercise actual early-return confirmation, then actual reward-claim controls
  // after calling the same win-progress handler used by completed battles.
  await click(page.locator('.expedition-active-grid button[data-expedition-id][data-action="recall"]'));
+ await click(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
  assert.equal(await page.evaluate(()=>save.expeditions.active.length),0);
  await click(page.locator('.expedition-member').first());
  await click(page.locator('#expeditionStartButton'));
