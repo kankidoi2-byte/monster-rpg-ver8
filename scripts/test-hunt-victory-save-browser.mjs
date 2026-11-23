@@ -32,8 +32,16 @@ try{
   });assert(failure.same&&failure.disk&&failure.pending&&!failure.reward,JSON.stringify({slot,width,font,...failure}));
   const retry=page.locator('#battleOutcomeActions button[onclick="retryNormalVictorySave()"]');assert(await retry.isVisible());assert(await retry.isEnabled());
   assert(await page.locator('#next').isHidden());
+  assert(await page.locator('#battleOutcomeNote').isVisible());
+  assert.equal(await page.locator('#uiNotice.is-visible').count(),0,'save-pending result replaces the redundant save-error notice');
   const blocked=await page.evaluate(()=>{const request=activeHuntRequest;afterBattleNext();beginChosenBattle('volcano','freigal');askUseContractScroll('contract_scroll');processNextEvolution();return {same:activeHuntRequest===request,switched:MonsterProfiles.switchTo(MonsterProfiles.slot()===1?2:1),screen:document.querySelector('.screen.active')?.id};});
   assert(blocked.same&&!blocked.switched);assert.equal(blocked.screen,'battle');
+  await retry.scrollIntoViewIfNeeded();
+  assert(await retry.evaluate(button=>{
+   const {left,top,width,height}=button.getBoundingClientRect();
+   const hit=document.elementFromPoint(left+width/2,top+height/2);
+   return button===hit||button.contains(hit);
+  }),'retry receives a real tap');
   const bounds=await retry.boundingBox();assert(bounds&&bounds.width>0&&bounds.x>=0&&bounds.x+bounds.width<=width+1);
   await page.screenshot({path:`${out}/slot${slot}-${width}-${font}-pending.png`});
   await page.evaluate(()=>{Storage.prototype.setItem=storageSet;window.victoryWrites=0;Storage.prototype.setItem=function(k,v){if(k===victoryKey)victoryWrites++;return storageSet.call(this,k,v)};Math.random=()=>{throw Error('Reward rerolled')};});
@@ -47,7 +55,15 @@ try{
   await page.waitForFunction(()=>singleBattleContractAttempted&&!postBattleContractBusy);
   assert(await page.locator('#battleOutcome').isVisible());
   assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='slime').length),1);
-  await page.evaluate(()=>afterBattleNext());assert(await page.locator('#evolution').isVisible());
+  await page.evaluate(()=>{showUiNotice('前の画面の通知','warning');afterBattleNext();});
+  assert(await page.locator('#evolution').isVisible());
+  assert.equal(await page.locator('#uiNotice.is-visible').count(),0,'evolution clears an older notice');
+  if(width===390&&font===100){
+   await page.emulateMedia({reducedMotion:'reduce'});
+   await page.evaluate(()=>showUiNotice('進化確認の通知','warning'));
+   const toast=await page.locator('#uiNotice.is-visible').boundingBox(),heading=await page.locator('#evoQuestion').boundingBox();
+   assert(toast&&heading&&toast.y>=heading.y+heading.height,'fresh evolution notice does not cover the heading');
+  }
   await page.evaluate(()=>{cancelEvolution();startBattleFromParty();});assert(await page.locator('#battleChoices').isVisible());
   await page.reload({waitUntil:'networkidle'});
   assert.equal(await page.evaluate(()=>save.history.wins),1);assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='slime').length),1);
