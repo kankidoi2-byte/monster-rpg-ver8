@@ -12,16 +12,16 @@ try{
  const page=await browser.newPage({viewport:{width:360,height:640},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  await page.goto('http://127.0.0.1:4327/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
- async function start(mode='single'){
-  await page.evaluate(mode=>{
+ async function start(mode='single',unitIds=['freigal','aquaron','volteck']){
+  await page.evaluate(({mode,unitIds})=>{
    clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
    save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
-   save.instances=[];save.party=[];for(const id of ['freigal','aquaron','volteck']){const ins=addInstance(id,12);save.party.push(ins.uid);}
+   save.instances=[];save.party=[];for(const id of unitIds){const ins=addInstance(id,12);save.party.push(ins.uid);}
    save.items.potion=5;save.items.contract_scroll=5;saveGame();endPartyRecovery();prepareBattleParty();selectedMap=MAPS[0];enemy=by(mode==='multi'?'icegolem':'grassbeat');
    activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle(selectedMap.id,enemy.id,'normal',activeHuntRequest);
    if(mode==='multi'){activeHuntRequest.secondEnemyId='aquaron';activeHuntRequest.battleMode='three_way';beginThreeWayBattle();}
    show('battle');
-  },mode);
+  },{mode,unitIds});
   await page.locator('#battle.active #renewalHeader').first().waitFor();
  }
  // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
@@ -125,18 +125,20 @@ try{
  assert.equal(await page.evaluate(()=>document.activeElement.id),'battleSwitchButton');
 
  // Wind tactics uses the same cards: cancelling preserves the prepared charge.
- await start();await page.evaluate(()=>{
-   const ins=addInstance('tempestray',12);
-   partyBattle[2]={...partyBattle[2],inst:ins,mon:{...by(ins.id)},hp:instanceMaxHp(ins),fainted:false};
-   const result=activateCurrentKokoroLink(ins.uid,kokoroLinkTargetStats());
-   if(!result.ok||result.link.tacticsAbility?.id!=='free_switch')throw Error('fixture did not prepare Wind tactics');
+ // Use the real party initializer so both the entry UID and the instance UID
+ // belong to Tempestray. A transplanted instance leaves the old entry UID.
+ await start('single',['freigal','aquaron','tempestray']);
+ await page.evaluate(()=>{
+   const source=partyBattle[2].inst;
+   const result=activateCurrentKokoroLink(source.uid,kokoroLinkTargetStats());
+   if(!result.ok||result.link.tacticsAbility?.id!=='free_switch')throw Error(`fixture did not prepare Wind tactics: ${result.reason||result.link.tacticsAbility?.id}`);
    window.qaWindOwner=activeInstance;
    beginKokoroLinkFreeSwitch();
  });
  assert(await layer.isVisible());
  await back.click();assert(await page.locator('#kokoroLinkPanel').isVisible());
  assert.equal(await page.evaluate(()=>kokoroLinkTacticsAbilityFor(window.qaWindOwner).charges),1);
- await page.evaluate(()=>beginKokoroLinkFreeSwitch());
+ await page.locator('#kokoroLinkPanel').getByRole('button',{name:'無消費交代を使う',exact:true}).click();
  await cards.nth(1).click();
  assert(!await layer.isVisible());assert.equal((await current()).active,1);assert.equal((await current()).turn,0);
  assert.equal(await page.evaluate(()=>kokoroLinkTacticsAbilityFor(window.qaWindOwner).charges),0);
