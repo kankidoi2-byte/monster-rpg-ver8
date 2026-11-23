@@ -533,6 +533,7 @@ function showNormalVictoryRetry(stale=false){
   document.getElementById('battleOutcomeTitle').textContent=stale?'報酬の確定を停止しました':'勝利報酬の保存待ち';
   document.getElementById('battleOutcomeRewards').innerHTML='';
   document.getElementById('battleOutcomeNote').textContent=message;
+  if(typeof dismissUiNotice==='function')dismissUiNotice();
   document.getElementById('battleOutcomeActions').innerHTML=stale?'':'<button onclick="retryNormalVictorySave()">保存を再試行</button>';
   document.getElementById('next')?.classList.add('hidden');
   document.getElementById('singleContractPanel')?.classList.add('hidden');
