@@ -160,6 +160,11 @@ function giftDateLabel(s){
   const n=Date.parse(s);return Number.isFinite(n)?new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'numeric',day:'numeric'}).format(n):'—';
 }
 function giftSource(g){return ['developer','lifequest','update'].includes(g.source)?g.source:'unknown';}
+function giftDisplayTitle(g){
+  if(g.source!=='update')return g.title;
+  const version=g.key.startsWith('update:')?g.key.slice('update:'.length):g.id;
+  return (typeof UpdateReleases!=='undefined'&&UpdateReleases.giftTitle?.(version,g.createdAt))||'アップデート報酬';
+}
 function giftSender(g){return {developer:'開発者（土井さん）',lifequest:'Life Quest',update:'アップデート',unknown:'不明'}[giftSource(g)];}
 function giftIcon(g){return g.source==='developer'?'✉':'✦';}
 function giftRewardName(r){return r.kind==='bless'?'G-BLESS 予備の加護':r.kind==='coins'?'コイン':r.kind==='item'?ITEM_DEX_BY_ID[r.id]?.name:r.kind==='skill'?SKILL_BY_ID[r.id]?.name:by(r.id)?.name;}
@@ -181,7 +186,8 @@ function giftRewardCards(rewards){
 function giftRow(g,history=false){
   const soon=g.until!==null&&giftDeadline(g)-Date.now()<=14*86400000;
   const tier=g.source==='update'&&['medium','large'].includes(g.tier)?' gift-update-'+g.tier:'';
-  return `<article class="gift-row${tier}"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${giftEscape(g.title)}の詳細"><span class="gift-sender-icon ${giftSource(g)}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受け取り日 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${giftEscape(g.title)}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
+  const title=giftEscape(giftDisplayTitle(g));
+  return `<article class="gift-row${tier}"><button type="button" class="gift-row-details" data-gift-detail="${giftEscape(g.key)}" aria-label="${title}の詳細"><span class="gift-sender-icon ${giftSource(g)}">${giftIcon(g)}</span><span class="gift-row-copy"><small>${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}</small><small class="${soon?'gift-soon':''}">${history?'受け取り日 '+giftDateLabel(g.receivedAt):g.until?'期限 '+giftEscape(g.until):'期限なし'}</small><strong>${title}</strong><span class="gift-thumbs">${g.rewards.slice(0,5).map(r=>`<span title="${giftEscape(giftRewardName(r))}">${giftRewardArt(r)}<small>${giftRewardQuantity(r)}</small></span>`).join('')}${g.rewards.length>5?'<small>+'+(g.rewards.length-5)+'</small>':''}</span></span></button>${history?'':`<button type="button" class="gift-claim" data-gift-claim="${giftEscape(g.key)}" ${giftClaimBusy||!giftReceivingUnlocked()?'disabled':''}>受け取る</button>`}</article>`;
 }
 function refreshGiftUi(){
   const badge=document.getElementById('giftUnreadCount');if(!badge)return;
@@ -228,7 +234,7 @@ function openGiftDetail(key){
   const history=giftTab==='history';let g;
   try{g=(history?giftHistoryEntries():pendingGifts()).find(g=>g.key===key);}catch(error){showUiNotice('読み込めません。','error');return;}
   if(!g){refreshGiftUi();return;}
-  openGiftDialog(g.title,`<p class="gift-letter">${giftEscape(g.letter)}</p><p class="gift-detail-meta">${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}<br>${g.until?'期限 '+giftEscape(g.until):'期限なし'}${history?'<br>受け取り日 '+giftDateLabel(g.receivedAt):''}</p><div class="gift-rewards">${giftRewardCards(g.rewards)}</div>`,history?[]:[g.key]);
+  openGiftDialog(giftDisplayTitle(g),`<p class="gift-letter">${giftEscape(g.letter)}</p><p class="gift-detail-meta">${giftEscape(giftSender(g))} ・ ${giftDateLabel(g.createdAt)}<br>${g.until?'期限 '+giftEscape(g.until):'期限なし'}${history?'<br>受け取り日 '+giftDateLabel(g.receivedAt):''}</p><div class="gift-rewards">${giftRewardCards(g.rewards)}</div>`,history?[]:[g.key]);
 }
 function confirmAllGifts(){
   if(giftClaimBusy||!giftReceivingUnlocked())return;

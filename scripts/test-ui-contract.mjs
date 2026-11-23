@@ -32,8 +32,11 @@ expect(!index.includes('‹ ガチャ一覧'),'the adopted view must not return 
 for(const tab of ['character','skill','item'])expect(index.includes(`data-gacha-tab="${tab}"`),tab+' tab is reachable');
 
 const saveKey = 'mb_v95c';
-expect(index.includes('<title>モンスターバトル Ver8.0</title>'), 'browser title must use the public game name');
-expect(index.includes('<div class="title-version">Ver8.0</div>'), 'title screen version must match the public game name');
+expect(index.includes('<title>モンスターバトル</title>'), 'browser title must use the public game name without a version');
+const titleMarkup=(index.match(/<div id="titleScreen"[^>]*>[\s\S]*?<\/div>\s*<header class="app-topbar"/)?.[0]||'').replace(/<!--[\s\S]*?-->/g,'');
+expect(titleMarkup.includes('class="title-logo"'), 'title screen markup must be inspected');
+expect(!index.includes('class="title-version"') && !/Ver\s*\d/i.test(titleMarkup), 'title screen must not expose a version badge');
+expect(!/document\.title\s*=/.test(read('js/init.js')), 'title initialization must not restore the version');
 expect(!index.includes('Ver8.0 Claude'), 'obsolete development attribution must not remain player-visible');
 expect(save.includes(`const SAVE_KEY = '${saveKey}'`), `primary save key must keep ${saveKey}`);
 expect(save.includes('safeStorageGet(SAVE_KEY)'), `save loader must use protected ${saveKey} access`);

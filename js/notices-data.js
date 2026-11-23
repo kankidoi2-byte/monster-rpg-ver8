@@ -495,7 +495,7 @@ const GAME_NOTICES = Object.freeze([
     date: '2026-08-30',
     category: 'update',
     title: 'ゲーム名の表示を整理しました',
-    body: 'タイトル画面とブラウザのタブに表示されるゲーム名を「モンスターバトル Ver8.0」に統一しました。ゲーム内容やセーブデータへの変更はありません。'
+    body: 'タイトル画面とブラウザのタブで、ゲーム名の表記を統一しました。ゲーム内容やセーブデータへの変更はありません。'
   }),
   Object.freeze({
     id: '20260829-tutorial-action-guidance',

@@ -8,22 +8,45 @@ class Node{
  append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}setAttribute(k,v){this.attrs[k]=v;}querySelector(sel){const match=n=>sel.startsWith('#')?n.id===sel.slice(1):sel.startsWith('.')?n.className.split(' ').includes(sel.slice(1)):n.tag===sel;for(const c of this.children){if(match(c))return c;const found=c.querySelector(sel);if(found)return found;}return null;}
 }
 const code=fs.readFileSync('js/feedback.js','utf8');
-function setup(storage=new Map(),which=0){
+function setup(storage=new Map(),which=0,build='8.0.6'){
  const profiles=[0,1].map(n=>({id:'profile-'+n,name:'枠'+n,token:'token-'+n}));let selected=which,mode=200,calls=[];const host=new Node();host.id='feedbackBox';host.className='active';const newTag=new Node(),menu=new Node(),events={};
  const document={createElement:t=>new Node(t),getElementById:id=>id==='feedbackBox'?host:id==='feedbackNew'?newTag:id==='feedbackMenuButton'?menu:null};
  const context=vm.createContext({document,crypto:{randomUUID},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},navigator:{userAgent:'Android',locks:{request:async(_k,fn)=>fn()}},MonsterProfiles:{current:()=>profiles[selected],available:()=>true},MonsterAnalytics:{feedbackDevice:()=>({model:'SCG30'})},save:{progress:{tutorial:{stepId:'step42'}}},setTimeout,clearTimeout,Date,AbortController,show:()=>{},addEventListener:(k,fn)=>{events[k]=fn;},fetch:async(_url,opts)=>{calls.push(JSON.parse(opts.body));if(mode==='offline')throw Error('offline');return Response.json(mode===429?{retryAt:new Date(Date.now()+86400000).toISOString()}:{accepted:1},{status:mode});}});
+ if(build!==null)vm.runInContext(`const UpdateReleases = ${JSON.stringify({current:build})};`,context);
  vm.runInContext(code,context);const api=context.MonsterFeedback;const open=(from='battleChoices')=>api.screenChanged('feedbackBox',from);
  const find=sel=>host.querySelector(sel);const submit=async(text='テスト',kind='bug')=>{find('.kinds').children[['bug','idea','praise'].indexOf(kind)].onclick();find('#fb-body').value=text;find('#fb-body').oninput();find('form').onsubmit({preventDefault(){}});await new Promise(r=>setImmediate(r));};
  return {api,context,storage,host,find,open,submit,calls,events,newTag,setMode:m=>{mode=m;},select:n=>{selected=n;},read:()=>JSON.parse(storage.get('mb_feedback_v1_'+profiles[selected].id)||'null')};
 }
-const app=setup();app.open();assert.equal(app.find('#fb-send').disabled,true);assert.equal(app.find('#fb-screen').value,'battleChoices');assert.equal(app.newTag.hidden,true);
+const wireKeys=['body','createdAt','device','id','kind','profileId','profileName','progress','screen','token','version'];
+const assertLegacyWire=payload=>{
+ assert.deepEqual(Object.keys(payload).sort(),wireKeys);
+ assert.equal(payload.version,'Ver8.0-feedback-thanks-20261113');
+};
+const app=setup();app.open();
+const visibleText=node=>[node.textContent,...node.children.map(visibleText)].join(' ');
+const attachmentCopy=visibleText(app.find('.attach'));
+assert.doesNotMatch(attachmentCopy,/バージョン|Ver8|8\.0\.6|build/i);
+assert.match(attachmentCopy,/端末.*Android.*直前の画面.*進み具合.*プロフィール名/);
+assert.equal(app.find('#fb-send').disabled,true);assert.equal(app.find('#fb-screen').value,'battleChoices');assert.equal(app.newTag.hidden,true);
 app.find('#fb-body').value='x';app.find('#fb-body').oninput();app.find('.kinds').children[0].onclick();assert.equal(app.find('#fb-send').disabled,true);
 app.find('#fb-body').value='x'.repeat(1001);app.find('#fb-body').oninput();assert.equal(app.find('#fb-send').disabled,true);assert(app.find('#fb-count').classList.contains('over'));
-await app.submit('<script>globalThis.pwned=1</script>');assert.equal(app.calls.length,1);assert.equal(app.calls[0].screen,'battleChoices');assert.equal(app.calls[0].device.model,'SCG30');assert.equal(app.calls[0].progress,'序章 step42');assert.equal(app.read().history[0].state,'sent');assert.equal(app.read().queue.length,0);assert(!JSON.stringify(app.read()).includes('token-'));assert.equal(app.context.pwned,undefined);assert.equal(app.find('.hist-item').querySelector('p').textContent,'<script>globalThis.pwned=1</script>');
+await app.submit('<script>globalThis.pwned=1</script>');assert.equal(app.calls.length,1);assertLegacyWire(app.calls[0]);assert.equal(app.calls[0].screen,'battleChoices');assert.equal(app.calls[0].device.model,'SCG30');assert.equal(app.calls[0].progress,'序章 step42');assert.equal(app.read().history[0].state,'sent');assert.equal(app.read().queue.length,0);assert(!JSON.stringify(app.read()).includes('token-'));assert.equal(app.context.pwned,undefined);assert.equal(app.find('.hist-item').querySelector('p').textContent,'<script>globalThis.pwned=1</script>');
 for(let i=0;i<4;i++){app.open();await app.submit('追加'+i);}app.open();assert.equal(app.find('#fb-send').disabled,true);assert.equal(app.find('.quota').textContent,'今日あと0件送れます');await app.submit('六件目');assert.equal(app.calls.length,5);
 const offline=setup();offline.setMode('offline');offline.open();await offline.submit('送信を予約');assert.equal(offline.read().queue.length,1);assert.equal(offline.read().history[0].state,'wait');const id=offline.calls[0].id;
-const reloaded=setup(offline.storage);reloaded.api.start();await new Promise(r=>setImmediate(r));assert.equal(reloaded.calls[0].id,id);assert.equal(reloaded.read().queue.length,0);assert.equal(reloaded.read().history[0].state,'sent');await reloaded.api.flush();assert.equal(reloaded.calls.length,1);
-reloaded.select(1);reloaded.open();assert.equal(reloaded.read(),null);await reloaded.submit('別枠');assert.equal(reloaded.calls.at(-1).profileId,'profile-1');assert.equal(reloaded.read().history.length,1);
+const staged=offline.read().queue[0].payload;
+assert.equal(Object.hasOwn(staged,'build'),false);assert.equal(Object.hasOwn(offline.read().history[0],'build'),false);
+const reloaded=setup(offline.storage,0,'8.0.7');reloaded.api.start();await new Promise(r=>setImmediate(r));assert.equal(reloaded.calls[0].id,id);assertLegacyWire(reloaded.calls[0]);assert.deepEqual(reloaded.calls[0],{...staged,token:'token-0'});assert.equal(reloaded.read().queue.length,0);assert.equal(reloaded.read().history[0].state,'sent');await reloaded.api.flush();assert.equal(reloaded.calls.length,1);
+reloaded.select(1);reloaded.open();assert.equal(reloaded.read(),null);await reloaded.submit('別枠');assert.equal(reloaded.calls.at(-1).profileId,'profile-1');assertLegacyWire(reloaded.calls.at(-1));assert.equal(reloaded.read().history.length,1);
+const preBuild=setup(new Map(),0,null);preBuild.setMode('offline');preBuild.open();await preBuild.submit('旧版で予約');
+assert.equal(Object.hasOwn(preBuild.read().queue[0].payload,'build'),false);
+const preview=preBuild.read();const previewBody=preview.queue[0].payload;
+preview.queue[0].payload={...previewBody,build:'8.0.6'}; // Simulate an outbox from the unreleased preview.
+preBuild.storage.set('mb_feedback_v1_profile-0',JSON.stringify(preview));
+const previewRetry=setup(preBuild.storage,0,'8.0.7');await previewRetry.api.flush();
+assertLegacyWire(previewRetry.calls[0]);
+assert.deepEqual(previewRetry.calls[0],{...previewBody,token:'token-0'});
+assert.equal(previewRetry.read().queue.length,0);
+assert.equal(previewRetry.read().history[0].state,'sent');
 const limited=setup();limited.open();limited.setMode(429);await limited.submit('上限');assert.equal(limited.read().queue.length,0);assert.equal(limited.read().history.length,0);assert.equal(limited.find('#fb-body').value,'上限');const calls=limited.calls.length;await limited.api.flush();assert.equal(limited.calls.length,calls);limited.open();assert.equal(limited.find('.quota').textContent,'今日あと0件送れます');
 const rejected=setup();rejected.open();rejected.setMode(401);await rejected.submit('認証拒否');assert.equal(rejected.read().queue.length,0);assert.equal(rejected.read().history.length,0);assert.equal(rejected.find('#fb-body').value,'認証拒否');
 const broken=setup();broken.context.localStorage.setItem=()=>{throw Error('満杯');};broken.open();await broken.submit('保存失敗');assert.equal(broken.calls.length,0,'never transmit without durable outbox');

@@ -26,7 +26,7 @@ const context = {
     onLine: true
   },
   document: {
-    title: 'モンスターバトル Ver8.0',
+    title: 'モンスターバトル',
     body: { classList: { contains: () => false } },
     querySelector(selector) {
       if (selector === '.screen.active') return { id: 'home' };
@@ -47,6 +47,9 @@ const context = {
 context.window = context;
 vm.createContext(context);
 vm.runInContext(source, context);
+// Diagnostics is loaded before the release catalog on the real page.
+if(context.GameDiagnostics.getEnvironment().app.version!=='') throw Error('a missing catalog and meta should remain unknown');
+vm.runInContext("const UpdateReleases = {current:'8.0.6'};",context);
 
 const errors = [];
 const expect = (condition, message) => { if (!condition) errors.push(message); };
@@ -67,7 +70,7 @@ expect((listeners.get('unhandledrejection') || []).length === 1, 'one rejection 
 
 const environment = context.GameDiagnostics.getEnvironment();
 expect(!Number.isNaN(Date.parse(environment.capturedAt)), 'environment timestamp must be ISO formatted');
-expect(environment.app?.version === '8.0', 'app version must be read without exposing title text');
+expect(environment.app?.version === '8.0.6', 'diagnostics must read the internal release without exposing title text');
 expect(environment.app?.buildCommit === '', 'unknown build commit must stay empty');
 expect(environment.page?.url === 'https://example.test/game/index.html', 'page URL must omit query and fragment');
 expect(environment.page?.screen === 'home', 'active screen id was not collected');

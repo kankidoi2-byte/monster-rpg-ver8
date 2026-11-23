@@ -41,10 +41,6 @@ function initTitleScreen(){
   try{
     const screen=document.getElementById('titleScreen');
     if(!screen) return;
-    if(typeof UpdateReleases!=='undefined'){
-      screen.querySelector('.title-version').textContent='Ver'+UpdateReleases.current;
-      document.title='モンスターバトル Ver'+UpdateReleases.current;
-    }
     const begin=()=>startFromTitle();
     screen.addEventListener('click',begin,{once:true});
     screen.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&!titleStarted){event.preventDefault();begin();}});
