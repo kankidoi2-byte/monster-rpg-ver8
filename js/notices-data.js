@@ -7,6 +7,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+  {id:'20261123-god-core-elixion',date:'2026-11-23',category:'update',title:'「神核」を追加しました',body:'光の平原の「女神の降臨」で、光の女神エリシアに勝つとまれに手に入ります。エリクシオンの錬成には、毒虫の甲殻の代わりに神核が必要です。'},
   {id:'20261122-character-kokoro-link',date:'2026-11-22',category:'update',title:'キャラクターもココロリンクできるようになりました。',body:'控えのキャラクターから力を借りたり、戦闘中のキャラクターへ仲間の力をつないだりできます。'},
   {id:'20261122-party-rework',date:'2026-11-22',category:'update',title:'パーティー編成を改良しました',body:'並び替え・プリセット・絞り込みに対応し、世界地図からも編成できます。'},
   {id:'20261122-sound-pack-02',date:'2026-11-22',category:'update',title:'戦闘BGMと効果音を追加しました',body:'火山・湖の戦闘と、格上・ヌシとの遭遇に専用BGMが流れます。会話やタブの切り替え、敵との遭遇などにも効果音を追加しました。音量はサウンド設定で調整できます。'},

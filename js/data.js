@@ -1163,7 +1163,7 @@ const ALCHEMY_RECIPES = Object.freeze([
       Object.freeze({label:'魔晶石', normal:'magic_crystal', fine:'fine_magic_crystal'}),
       Object.freeze({label:'金属鉱石', normal:'metal_ore', fine:'fine_metal_ore'}),
       Object.freeze({label:'猛禽の羽', normal:'raptor_feather', fine:'fine_raptor_feather'}),
-      Object.freeze({label:'毒虫の甲殻', normal:'venom_carapace', fine:'fine_venom_carapace'})
+      Object.freeze({label:'神核', normal:'god_core', fine:null})
     ]),
     coinOptions:ALCHEMY_COIN_OPTIONS,
     defaultCoinOptionId:'high',
@@ -1178,11 +1178,13 @@ const ALCHEMY_RECIPES = Object.freeze([
 const ALCHEMY_RECIPE_BY_ID = Object.freeze(Object.fromEntries(ALCHEMY_RECIPES.map(recipe => [recipe.recipeId, recipe])));
 const DEFAULT_ALCHEMY_RECIPE_ID = 'alchemion_standard';
 const ITEM_DEX_EXTRA = [
+  {id:'god_core', name:'神核', icon:'💠', price:0, desc:'神の力の核。古の錬成に用いられたという。', shop:false, category:'錬成素材', obtain:'光の平原に降臨した光の女神エリシアに勝利すると、まれに入手', alchemyMaterial:true, quality:'normal'},
   {id:'g_ichor', name:'G-ICHOR', icon:'🧪', price:0, desc:'神々の血を封じたアンプル。使うと今週のG-BLESSの加護が満タンになる。予備の加護は変わらない。', shop:false, category:'特殊アイテム', obtain:'開発者からのプレゼントBOX。G-BLESSの画面から使う'},
   {id:'water_mirror', name:'水鏡', icon:'🪞', price:0, desc:'水の力を映し出す神秘的な鏡。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'},
   {id:'doom_fragment', name:'滅亡のカケラ', icon:'🔻', price:0, desc:'滅亡の力が凝縮された危険なカケラ。特殊進化に使用する素材。', shop:false, category:'進化素材', obtain:'特殊報酬・イベントで入手'}
 ];
 const ITEM_IMG = {
+  god_core: 'images/items/god_core_art_v1.webp',
   raptor_feather: 'images/items/raptor_feather_art_v1.webp',
   fine_raptor_feather: 'images/items/fine_raptor_feather_art_v1.webp',
   venom_carapace: 'images/items/venom_carapace_art_v1.webp',
