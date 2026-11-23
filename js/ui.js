@@ -38,6 +38,15 @@ function showUiNotice(message, kind='success') {
   notice.textContent = message;
   replayUiMotion(notice, 'is-visible', 2200);
 }
+function dismissUiNotice() {
+  const notice = document.getElementById('uiNotice');
+  if (!notice) return;
+  const timers = uiMotionTimers.get(notice);
+  clearTimeout(timers?.get('is-visible'));
+  timers?.delete('is-visible');
+  notice.classList.remove('is-visible');
+  notice.textContent = '';
+}
 let gameConfirmSession=null;
 function closeGameConfirmForNavigation(){
   gameConfirmSession?.finish(false,{restoreFocus:false});
@@ -120,6 +129,7 @@ function show(id,{readOnlyStoryReplay=false}={}) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
   if (!target) return;
+  if (id !== feedbackPreviousScreen && (id === 'battle' || id === 'evolution')) dismissUiNotice();
   target.classList.add('active');
   if(typeof syncHomeBannerTimer==='function')syncHomeBannerTimer(id);
   if(id==='expedition'&&typeof markExpeditionReturnsSeen==='function')markExpeditionReturnsSeen();
@@ -260,7 +270,7 @@ function renderContractorRank(){
   content.innerHTML=`
     <section class="contractor-rank-hero">
       <span>CONTRACTOR STATUS</span><strong>Rank ${progress.rank}</strong><p>${equipped?.name||'称号未設定'}</p><button type="button" class="contractor-title-link" onclick="showContractorTitles()">称号を変更 ›</button>
-      <div class="contractor-rank-progress" role="progressbar" aria-label="次の契約者Rankまで" aria-valuemin="0" aria-valuemax="${progress.requiredExp||1}" aria-valuenow="${progress.isMax?1:progress.currentExp}"><i style="width:${Math.round(progress.ratio*100)}%"></i></div>
+      <div class="contractor-rank-progress" role="progressbar" aria-label="次の契約者ランクまで" aria-valuemin="0" aria-valuemax="${progress.requiredExp||1}" aria-valuenow="${progress.isMax?1:progress.currentExp}"><i style="width:${Math.round(progress.ratio*100)}%"></i></div>
       <div class="contractor-rank-progress-copy"><span>${progressText}</span><span>${progress.isMax?'最高Rank到達':`あと ${progress.remainingExp.toLocaleString('ja-JP')} EXP`}</span></div>
       <small>累計 ${progress.totalExp.toLocaleString('ja-JP')} EXP</small>
     </section>
@@ -372,7 +382,7 @@ function renderContractorTitles(){
       :`<button type="button" disabled>Rank ${title.rank}で獲得</button>`;
     return `<article class="contractor-title-card${isUnlocked?' is-unlocked':' is-locked'}${isEquipped?' is-equipped':''}">
       <div class="contractor-title-medal" aria-hidden="true">${isUnlocked?'✦':'?'}</div>
-      <div class="contractor-title-copy"><span>RANK ${title.rank}${isEquipped?'・装備中':''}</span><h2>${title.name}</h2><p>${title.description}</p><small>${isUnlocked?'獲得済み':`契約者Rank ${title.rank}で獲得`}</small></div>${action}
+      <div class="contractor-title-copy"><span>RANK ${title.rank}${isEquipped?'・装備中':''}</span><h2>${title.name}</h2><p>${title.description}</p><small>${isUnlocked?'獲得済み':`契約者ランク ${title.rank}で獲得`}</small></div>${action}
     </article>`;
   }).join('');
   content.innerHTML=`<section class="contractor-title-current">

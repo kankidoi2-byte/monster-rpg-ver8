@@ -387,7 +387,15 @@ function win() {
 // These drops are per completed world-map battle, not per enemy. The primary
 // request is the only source of a 格上 / ヌシ encounter; secondary enemies opt out.
 const HUNT_GOLD_DUST_RATES=Object.freeze({d1:0,d2:.01,d3:.02,d4:.03,d5:.04,extreme:.05});
-function grantWorldMapVictoryItems(request,randomFn=Math.random){
+function canDropGodCoreFromVictory(request, defeatedEnemy){
+  if(!request?.worldMapExploration||request.worldMapResultRecorded||request.source==='map_story'||
+    request.mapId!=='light_plain'||request.worldMapEventKey!=='elysia'||
+    request.worldMapEventMonsterId!=='hikari'||defeatedEnemy?.id!=='hikari'||
+    !['d4','d5'].includes(huntDifficulty(request.difficultyId).id))return false;
+  const event=normalizeWorldMapState(save.worldMap).active.elysia;
+  return event?.mapId==='light_plain'&&event.monsterId==='hikari';
+}
+function grantWorldMapVictoryItems(request,randomFn=Math.random,godCoreEligible=false){
   if(!request?.worldMapExploration||request.source==='map_story'||
     (typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active))return [];
   const nushi=request.overtier==='nushi';
@@ -397,9 +405,10 @@ function grantWorldMapVictoryItems(request,randomFn=Math.random){
     ids.push(randomFn()<.60?'max_potion':'revive_drop');
   }
   if(nushi||(rate>0&&randomFn()<rate))ids.push('gold_dust');
+  if(godCoreEligible&&randomFn()<.30)ids.push('god_core');
   return ids.map(id=>{
     save.items[id]=(save.items[id]||0)+1;
-    return ITEM_BY_ID[id].name;
+    return ITEM_DEX_BY_ID[id].name;
   });
 }
 function huntVictoryItemsLine(items){
@@ -455,8 +464,10 @@ function prepareSingleVictoryReward(){
   if (save.history.logs.length > 30) save.history.logs = save.history.logs.slice(-30);
   const contractorReward=typeof grantContractorBattleWin==='function'?grantContractorBattleWin({difficultyId:activeHuntRequest?.difficultyId||'normal',enemies:[enemy]}):{amount:0};
   if(typeof progressActiveExpeditions==='function') progressActiveExpeditions(Math.random,{saveNow:false});
+  // The event is resolved before rewards are staged; capture eligibility first.
+  const godCoreEligible=canDropGodCoreFromVictory(activeHuntRequest,enemy);
   if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();
-  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest);
+  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest,Math.random,godCoreEligible);
   if(itemRewards.length)msg+=`<br>🎁 ${huntVictoryItemsLine(itemRewards)}を入手！`;
   return {message:msg,outcome:{
     kind:'victory', title:`${enemy.name}を討伐！`, exp:expGain, coins:displayedCoinGain, ...(bless?{bless}:{}),
@@ -522,6 +533,7 @@ function showNormalVictoryRetry(stale=false){
   document.getElementById('battleOutcomeTitle').textContent=stale?'報酬の確定を停止しました':'勝利報酬の保存待ち';
   document.getElementById('battleOutcomeRewards').innerHTML='';
   document.getElementById('battleOutcomeNote').textContent=message;
+  if(typeof dismissUiNotice==='function')dismissUiNotice();
   document.getElementById('battleOutcomeActions').innerHTML=stale?'':'<button onclick="retryNormalVictorySave()">保存を再試行</button>';
   document.getElementById('next')?.classList.add('hidden');
   document.getElementById('singleContractPanel')?.classList.add('hidden');

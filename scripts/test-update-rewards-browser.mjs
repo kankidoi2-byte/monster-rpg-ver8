@@ -40,9 +40,11 @@ try{
     await page.clock.setFixedTime(new Date('2026-11-22T12:00:00+09:00'));
     return page;
   };
-  const boot=async page=>{
+  const boot=async(page, key)=>{
     await page.goto(origin,{waitUntil:'domcontentloaded'});
-    await page.locator('#titleScreen').click();
+    const title=page.locator('#titleScreen');
+    if(key) await title.press(key);
+    else await title.click();
     await page.locator('#titleScreen').waitFor({state:'detached'});
   };
   const open=page=>page.evaluate(()=>{clearTutorialUi();showGiftBox();});
@@ -53,7 +55,7 @@ try{
     if(!saveGame())throw Error('fixture save');
   });
   const legacy=await createPage(412);
-  await boot(legacy);await ready(legacy);
+  await boot(legacy,'Enter');await ready(legacy);
   await legacy.evaluate(()=>{
     save.coins=37;save.gBless.reserve=3;
     if(!saveGame())throw Error('fixture save');
@@ -70,7 +72,7 @@ try{
   // New players in a later release get only updates after their first launch.
   rows=[baseline,patch,minor];
   const fresh=await createPage(360);
-  await boot(fresh);
+  await boot(fresh,'Space');
   assert.deepEqual(await fresh.evaluate(()=>JSON.parse(localStorage.getItem(MonsterProfiles.key(SAVE_KEY))).updateRewards),{delivered:'8.1.0',pending:[]});
   await open(fresh);assert.equal(await fresh.getByText('プレゼントBOX開設記念',{exact:true}).count(),1);
   rows=[baseline,patch,minor,major];

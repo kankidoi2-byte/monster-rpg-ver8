@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const read=p=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
 const ctx=vm.createContext({console});
 vm.runInContext(read('js/data.js')+read('js/core.js'),ctx);
-const x=vm.runInContext('({M,INITIAL_PARTY_IDS,MOVE_CARDS,SKILL_BY_ID,SKILL110_MIGRATION_MAP,skillIdFromMove,canonicalSkillId,skillCostLimitFor,defaultSkillIdsForMonster,isCharacterUnit,isContractableUnit,isAlchemyCatalystUnit,SHOP_ITEMS,ALCHEMY_RECIPES,ALCHEMY_ALL_FAILURE_CANDIDATES,MAPS})',ctx);
+const x=vm.runInContext('({M,INITIAL_PARTY_IDS,MOVE_CARDS,SKILL_BY_ID,SKILL110_MIGRATION_MAP,skillIdFromMove,canonicalSkillId,skillCostLimitFor,defaultSkillIdsForMonster,isCharacterUnit,isContractableUnit,isAlchemyCatalystUnit,SHOP_ITEMS,ITEM_BY_ID,ITEM_DEX_BY_ID,ALCHEMY_RECIPES,ALCHEMY_ALL_FAILURE_CANDIDATES,MAPS})',ctx);
 const by=id=>x.M.find(m=>m.id===id);
 assert.equal(x.M.length,100);assert.deepEqual([...x.INITIAL_PARTY_IDS],['elna_beginner','freigal','aquaron']);
 assert.equal(x.M.filter(m=>m.entityKind==='character').length,50);
@@ -19,6 +19,13 @@ const apex=by('kimeragna_apex');assert(apex.evolutionOnly);assert.equal(apex.rar
 assert.deepEqual([...by('elixion').types],['normal','dragon']);assert.deepEqual([...by('galdra').types],['normal','dragon']);assert.equal(by('galdra').dexNo,46);assert.equal(by('astralepis').dexNo,38);
 assert(!x.ALCHEMY_ALL_FAILURE_CANDIDATES.some(s=>['elna_advanced','stella_wizard','lumina_wizard'].includes(s.monsterId)));
 for(const id of ['elixion_standard','galdra_standard'])assert(x.ALCHEMY_RECIPES.some(r=>r.recipeId===id));
+const core=x.ITEM_DEX_BY_ID.god_core;
+assert.equal(core.name,'神核');assert.equal(core.shop,false);assert.equal(core.category,'錬成素材');assert.equal(core.alchemyMaterial,true);
+assert.equal(core.quality,'normal');assert.equal(x.ITEM_BY_ID.god_core,undefined);assert.equal(x.ITEM_DEX_BY_ID.fine_god_core,undefined);
+assert.equal(core.obtain,'光の平原に降臨した光の女神エリシアに勝利すると、まれに入手');
+const elixion=x.ALCHEMY_RECIPES.find(r=>r.recipeId==='elixion_standard');
+assert.deepEqual(Array.from(elixion.materialChoices,m=>[m.normal,m.fine]),[['magic_crystal','fine_magic_crystal'],['metal_ore','fine_metal_ore'],['raptor_feather','fine_raptor_feather'],['god_core',null]]);
+assert(x.ALCHEMY_RECIPES.some(r=>r.recipeId==='kimeragna_standard'&&r.materialChoices.some(m=>m.normal==='venom_carapace')));
 for(const [id,name,no,dex,type,map,level] of [['ashleia','アシュレイア',30,39,'fire','volcano',92],['morglum','モルグラム',31,40,'grass','forest',94]]){
  const m=by(id);assert.equal(m.name,name);assert.equal(m.no,no);assert.equal(m.dexNo,dex);assert.equal(m.rarity,'★★★★');assert.equal(m.types.join(','),type);assert.equal(m.huntLevels.hard,level);assert.equal(x.MAPS.filter(a=>a.enemyIds?.includes(id)).map(a=>a.id).join(','),map);
  assert.deepEqual([...m.legacyMoves.map(mv=>mv[8])],[1,2,3].map(n=>`skill_${id}_0${n}`));

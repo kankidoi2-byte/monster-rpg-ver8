@@ -17,6 +17,11 @@ function setup(storage=new Map(),which=0,build='8.0.6'){
  const find=sel=>host.querySelector(sel);const submit=async(text='テスト',kind='bug')=>{find('.kinds').children[['bug','idea','praise'].indexOf(kind)].onclick();find('#fb-body').value=text;find('#fb-body').oninput();find('form').onsubmit({preventDefault(){}});await new Promise(r=>setImmediate(r));};
  return {api,context,storage,host,find,open,submit,calls,events,newTag,setMode:m=>{mode=m;},select:n=>{selected=n;},read:()=>JSON.parse(storage.get('mb_feedback_v1_'+profiles[selected].id)||'null')};
 }
+const wireKeys=['body','createdAt','device','id','kind','profileId','profileName','progress','screen','token','version'];
+const assertLegacyWire=payload=>{
+ assert.deepEqual(Object.keys(payload).sort(),wireKeys);
+ assert.equal(payload.version,'Ver8.0-feedback-thanks-20261113');
+};
 const app=setup();app.open();
 const visibleText=node=>[node.textContent,...node.children.map(visibleText)].join(' ');
 const attachmentCopy=visibleText(app.find('.attach'));
@@ -25,19 +30,23 @@ assert.match(attachmentCopy,/端末.*Android.*直前の画面.*進み具合.*プ
 assert.equal(app.find('#fb-send').disabled,true);assert.equal(app.find('#fb-screen').value,'battleChoices');assert.equal(app.newTag.hidden,true);
 app.find('#fb-body').value='x';app.find('#fb-body').oninput();app.find('.kinds').children[0].onclick();assert.equal(app.find('#fb-send').disabled,true);
 app.find('#fb-body').value='x'.repeat(1001);app.find('#fb-body').oninput();assert.equal(app.find('#fb-send').disabled,true);assert(app.find('#fb-count').classList.contains('over'));
-await app.submit('<script>globalThis.pwned=1</script>');assert.equal(app.calls.length,1);assert.equal(app.calls[0].version,'Ver8.0-feedback-thanks-20261113');assert.equal(app.calls[0].build,'8.0.6');assert.equal(app.calls[0].screen,'battleChoices');assert.equal(app.calls[0].device.model,'SCG30');assert.equal(app.calls[0].progress,'序章 step42');assert.equal(app.read().history[0].state,'sent');assert.equal(app.read().queue.length,0);assert(!JSON.stringify(app.read()).includes('token-'));assert.equal(app.context.pwned,undefined);assert.equal(app.find('.hist-item').querySelector('p').textContent,'<script>globalThis.pwned=1</script>');
+await app.submit('<script>globalThis.pwned=1</script>');assert.equal(app.calls.length,1);assertLegacyWire(app.calls[0]);assert.equal(app.calls[0].screen,'battleChoices');assert.equal(app.calls[0].device.model,'SCG30');assert.equal(app.calls[0].progress,'序章 step42');assert.equal(app.read().history[0].state,'sent');assert.equal(app.read().queue.length,0);assert(!JSON.stringify(app.read()).includes('token-'));assert.equal(app.context.pwned,undefined);assert.equal(app.find('.hist-item').querySelector('p').textContent,'<script>globalThis.pwned=1</script>');
 for(let i=0;i<4;i++){app.open();await app.submit('追加'+i);}app.open();assert.equal(app.find('#fb-send').disabled,true);assert.equal(app.find('.quota').textContent,'今日あと0件送れます');await app.submit('六件目');assert.equal(app.calls.length,5);
 const offline=setup();offline.setMode('offline');offline.open();await offline.submit('送信を予約');assert.equal(offline.read().queue.length,1);assert.equal(offline.read().history[0].state,'wait');const id=offline.calls[0].id;
 const staged=offline.read().queue[0].payload;
-assert.equal(staged.build,'8.0.6');assert.equal(offline.read().history[0].build,'8.0.6');
-const reloaded=setup(offline.storage,0,'8.0.7');reloaded.api.start();await new Promise(r=>setImmediate(r));assert.equal(reloaded.calls[0].id,id);assert.equal(reloaded.calls[0].build,'8.0.6');assert.deepEqual(reloaded.calls[0],{...staged,token:'token-0'});assert.equal(reloaded.read().queue.length,0);assert.equal(reloaded.read().history[0].state,'sent');await reloaded.api.flush();assert.equal(reloaded.calls.length,1);
-reloaded.select(1);reloaded.open();assert.equal(reloaded.read(),null);await reloaded.submit('別枠');assert.equal(reloaded.calls.at(-1).profileId,'profile-1');assert.equal(reloaded.calls.at(-1).build,'8.0.7');assert.equal(reloaded.read().history.length,1);
+assert.equal(Object.hasOwn(staged,'build'),false);assert.equal(Object.hasOwn(offline.read().history[0],'build'),false);
+const reloaded=setup(offline.storage,0,'8.0.7');reloaded.api.start();await new Promise(r=>setImmediate(r));assert.equal(reloaded.calls[0].id,id);assertLegacyWire(reloaded.calls[0]);assert.deepEqual(reloaded.calls[0],{...staged,token:'token-0'});assert.equal(reloaded.read().queue.length,0);assert.equal(reloaded.read().history[0].state,'sent');await reloaded.api.flush();assert.equal(reloaded.calls.length,1);
+reloaded.select(1);reloaded.open();assert.equal(reloaded.read(),null);await reloaded.submit('別枠');assert.equal(reloaded.calls.at(-1).profileId,'profile-1');assertLegacyWire(reloaded.calls.at(-1));assert.equal(reloaded.read().history.length,1);
 const preBuild=setup(new Map(),0,null);preBuild.setMode('offline');preBuild.open();await preBuild.submit('旧版で予約');
 assert.equal(Object.hasOwn(preBuild.read().queue[0].payload,'build'),false);
-const preBuildRetry=setup(preBuild.storage,0,'8.0.7');await preBuildRetry.api.flush();
-assert.equal(preBuildRetry.calls[0].version,'Ver8.0-feedback-thanks-20261113');
-assert.equal(Object.hasOwn(preBuildRetry.calls[0],'build'),false,'must not invent a build on a queued old request');
-assert.equal(Object.hasOwn(preBuildRetry.read().history[0],'build'),false);
+const preview=preBuild.read();const previewBody=preview.queue[0].payload;
+preview.queue[0].payload={...previewBody,build:'8.0.6'}; // Simulate an outbox from the unreleased preview.
+preBuild.storage.set('mb_feedback_v1_profile-0',JSON.stringify(preview));
+const previewRetry=setup(preBuild.storage,0,'8.0.7');await previewRetry.api.flush();
+assertLegacyWire(previewRetry.calls[0]);
+assert.deepEqual(previewRetry.calls[0],{...previewBody,token:'token-0'});
+assert.equal(previewRetry.read().queue.length,0);
+assert.equal(previewRetry.read().history[0].state,'sent');
 const limited=setup();limited.open();limited.setMode(429);await limited.submit('上限');assert.equal(limited.read().queue.length,0);assert.equal(limited.read().history.length,0);assert.equal(limited.find('#fb-body').value,'上限');const calls=limited.calls.length;await limited.api.flush();assert.equal(limited.calls.length,calls);limited.open();assert.equal(limited.find('.quota').textContent,'今日あと0件送れます');
 const rejected=setup();rejected.open();rejected.setMode(401);await rejected.submit('認証拒否');assert.equal(rejected.read().queue.length,0);assert.equal(rejected.read().history.length,0);assert.equal(rejected.find('#fb-body').value,'認証拒否');
 const broken=setup();broken.context.localStorage.setItem=()=>{throw Error('満杯');};broken.open();await broken.submit('保存失敗');assert.equal(broken.calls.length,0,'never transmit without durable outbox');
