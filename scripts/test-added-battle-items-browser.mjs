@@ -37,7 +37,7 @@ try{
    if(mode==='multi'){for(const entry of multiBattle.enemies)entry.mon.moves=[['通常攻撃',24,'normal']];}
    else{enemy=structuredClone(enemy);enemy.moves=[['通常攻撃',24,'normal']];}
    show('battle');
-  },mode);await page.locator('#renewalParty .br-member').first().waitFor();
+  },mode);await page.locator('#battle.active #renewalHeader').first().waitFor();
  }
  async function pick(id,index){await page.locator('#battleItemButton').click();await page.locator(`[data-item="${id}"]`).click();if(index!==undefined)await page.locator(`[data-item-target="${index}"]`).click();}
  async function use(id,index){await pick(id,index);await page.locator('#renewalSheet .br-go').click();await page.waitForFunction(()=>!busy||battleFeedback.finished);}

@@ -155,7 +155,8 @@ try{
   assert.match(await page.locator('#renewalHeader').innerText(),/王都外・街道/);
   const originalLead=await page.evaluate(()=>player.name);
   for(const reserve of [1,0,1]){
-   await page.locator(`#renewalParty [data-reserve-index="${reserve}"]`).click();
+   await page.locator('#battleSwitchButton').click();
+   await page.locator(`#battleSwitchSheet [data-switch-index="${reserve}"]`).click();
    await page.waitForFunction(index=>!busy&&activePartyIdx===index,reserve);
   }
   for(let i=0;i<6&&await page.locator('#battle').isVisible();i++){
@@ -176,7 +177,7 @@ try{
  assert(await choice.getByRole('heading',{name:'契約候補：スライム'}).isVisible());
  assert(await choice.getByText(`契約書：${normalBefore.scroll+1}枚`,{exact:false}).isVisible());
  assert.match(await recap.innerText(),new RegExp(`^王都外・街道 · ${actual.turns}ターン\\s+決着時：${actual.name} · HP ${actual.hp} / ${actual.maxHp}$`));
- for(const oldBattleDisplay of ['#renewalHeader','.battle-arena','#renewalParty','#battleOutcome'])assert.equal(await page.locator(oldBattleDisplay).isVisible(),false);
+ for(const oldBattleDisplay of ['#renewalHeader','.battle-arena','#battleSwitchLayer','#battleOutcome'])assert.equal(await page.locator(oldBattleDisplay).isVisible(),false);
  await page.screenshot({path:`${out}/chapter7-contract-fresh.png`});
  // A reload retains the earned contract option but has no trustworthy transient turn/HP values.
  await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});

@@ -61,12 +61,12 @@ function gameAudioVolume(kind,value){GameAudio.setVolume(kind,Number(value)/100)
 function gameAudioMute(kind,value){GameAudio.setMuted(kind,value);renderGameAudioSettings();}
 function gameAudioUiKey(element){
   if(!element)return null;
-  if(element.disabled||element.getAttribute('aria-disabled')==='true')return element.matches('#battleSwitchButton,[data-item],[data-item-target],[data-reserve-index],[data-move-index]')?'error':null;
+  if(element.disabled||element.getAttribute('aria-disabled')==='true')return element.matches('#battleSwitchButton,[data-item],[data-item-target],[data-switch-index],[data-move-index]')?'error':null;
   if(element.dataset.sound)return element.dataset.sound==='none'?null:element.dataset.sound;
   const action=element.getAttribute('onclick')||'',text=(element.getAttribute('aria-label')||element.textContent||'').trim();
   if(element.matches('[role="tab"]')||/selectTab|openGachaTab/.test(action))return 'tab';
   if(/^(次へ|前へ|次のページ|前のページ|[◀▶])$/.test(text)||/(?:next|prev)Page/i.test(action))return 'page';
-  if(/showNotices\(|performManualPartySwitch\(|renewalSwitch\(/.test(action))return null; // Dedicated successful action hook.
+  if(/showNotices\(|performManualPartySwitch\(|selectBattleSwitchTarget\(|selectKokoroLinkFreeSwitch\(/.test(action))return null; // Dedicated successful action hook.
   if(/閉じる|close|Close/.test(text+' '+action))return 'menuClose';
   if(/戻る|やめる|キャンセル|あとで|‹|^×$/.test(text)||/Back\(|cancel|Cancel/.test(action))return 'cancel';
   if(/show\(['"]moreMenu|Open|open|Preview|showModal|toggle.*Panel|showTypeChart/.test(action)||/メニュー/.test(text))return 'menuOpen';

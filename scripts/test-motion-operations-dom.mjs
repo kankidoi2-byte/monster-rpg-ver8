@@ -103,7 +103,7 @@ run('turn(0);turn(0)');await wait();
 assert.equal(run('battleTurnCount'),1);
 assert(run('battleFeedback.history.some(h=>h.kind==="hp"&&h.text.includes("敵B：ボルモーグ"))'));
 // Manual swap consumes one action; repeated submission while busy is ignored.
-setup();run('openBattleSwitchPicker();selectBattleSwitchTarget(1);selectBattleSwitchTarget(2)');await wait();assert.equal(run('activePartyIdx'),1);assert.equal(run('battleTurnCount'),1);assert(!d.querySelector('.battle-command-pad').hidden);
+setup();run('openBattleSwitchPicker()');assert(!by('battleSwitchLayer').classList.contains('hidden'));run('selectBattleSwitchTarget(1);selectBattleSwitchTarget(2)');assert(by('battleSwitchLayer').classList.contains('hidden'));await wait();assert.equal(run('activePartyIdx'),1);assert.equal(run('battleTurnCount'),1);assert(!d.querySelector('.battle-command-pad').hidden);
 // Finished and next battle clear old panels/locks.
 run('toggleBattleSkillPanel();runAway();renderBattleInputState()');assert(by('commands').classList.contains('hidden'));run('toggleBattleSkillPanel();openBattleItemSelect()');assert(by('commands').classList.contains('hidden'));assert(by('battle').classList.contains('active'));
 setup();assert(!run('busy'));assert(!d.querySelector('.battle-command-pad').hidden);checkIds();assert.equal(errors.length,0,errors.join('\n'));

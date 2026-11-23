@@ -54,7 +54,7 @@ try {
         beginChosenBattle(map.id,foe.id,'normal',request);
         return {target:save.party[0],source:save.party[1],targetName:by(target).name,sourceName:by(source).name};
       },{target,source,tall});
-      await page.locator('#battle.active #renewalParty .br-member').first().waitFor();
+      await page.locator('#battle.active #battle.active #renewalHeader').first().waitFor();
       const before=await page.evaluate(()=>({turns:battleTurnCount,profile:JSON.stringify(save),uid:activeInstance.uid}));
       assert.equal(before.uid,fixture.target);
       const linkButton=page.locator('#kokoroLinkButton');

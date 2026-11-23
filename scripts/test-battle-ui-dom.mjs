@@ -37,6 +37,15 @@ const before=snapshot(),p=by('pVis').querySelector('img');
 for(const expression of ['toggleBattleSkillPanel();battleUiBack()','openBattleSwitchPicker();battleUiBack()','toggleKokoroLinkPanel();battleUiBack()','openBattleItemSelect();renewalClose()']){
  run(expression);assert.equal(snapshot(),before,expression);assert.equal(run('window.qaRolls'),0);assert.equal(by('pVis').querySelector('img'),p);
 }
+run('openBattleSwitchPicker()');
+assert(!by('battleSwitchLayer').classList.contains('hidden'));
+assert.equal(d.activeElement.textContent,'戻る');
+assert.equal(by('battleSwitchCards').querySelectorAll('.br-switch-card').length,3);
+assert(by('battleSwitchCards').querySelector('[data-switch-index="0"]').disabled);
+assert(by('battleSwitchCards').querySelector('[data-switch-index="1"]').hasAttribute('data-tutorial-actor-select'));
+run('selectBattleSwitchTarget(0)');assert.equal(snapshot(),before);
+run('cancelBattleSwitchPicker()');assert.equal(d.activeElement.id,'battleSwitchButton');
+assert(by('battleSwitchLayer').classList.contains('hidden'));
 run('Math.random=window.qaRandom;toggleBattleSkillPanel()');
 assert(by('commands').querySelector('.br-effect'));
 assert(d.querySelector('.battle-command-pad').hidden);
