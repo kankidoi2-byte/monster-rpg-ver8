@@ -16,6 +16,13 @@ const ROADMAP = (function(){
     {id:'next',label:'その次', title:'その次に作ります'},
     {id:'later',label:'いずれ',title:'いずれ作ります', hint:'順番は前後するかも'}
   ],
+  goal:{
+    id:'app',title:'アプリ版の配信',label:'ゴール',summary:'この冒険を、スマートフォンのアプリで。',
+    detail:{
+      body:'ストーリーも、絵と音も、システムも、すべてはここへ向かっています。モンスターバトルを、スマートフォンのアプリとして届けることが、この開発のゴールです。',
+      points:['ストアからインストールして遊べるように','機種を変えても、データを引き継げるように','ここまでの予定が、ひとつのアプリにまとまって届く']
+    }
+  },
   items:[
     {id:'prologue',lane:'story',stage:'now',kind:'main',wip:true,title:'序章ストーリー',sub:'ブラッシュアップ',art:{bg:'images/maps/light_plain.webp',chr:'images/monsters/elna_beginner_20261004.webp'},
       lead:'序章（第1話〜終幕）を、より遊びやすく磨き直します。',

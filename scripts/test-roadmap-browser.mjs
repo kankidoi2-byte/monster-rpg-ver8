@@ -3,13 +3,13 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4262'],{stdio:['ignore','pipe','inherit']});
-const out=process.env.ROADMAP_EVIDENCE||'/tmp/roadmap-qa';fs.mkdirSync(out,{recursive:true});
+const out=process.env.ROADMAP_EVIDENCE||'artifacts/skill-card-layout/roadmap';fs.mkdirSync(out,{recursive:true});
 let browser;const errors=[];
 try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
  browser=await chromium.launch({headless:true});
  for(const width of [360,412,430]){
-  const context=await browser.newContext({viewport:{width,height:800},reducedMotion:'reduce',timezoneId:'Asia/Tokyo'});
+  const context=await browser.newContext({viewport:{width,height:800},hasTouch:true,reducedMotion:'reduce',timezoneId:'Asia/Tokyo'});
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
@@ -21,7 +21,42 @@ try{
   assert.equal(await page.locator('#feedbackMenuButton + #roadmapMenuButton').count(),1);
   await page.locator('#roadmapMenuButton').click();assert(await page.locator('#roadmap.active').isVisible());
   assert.equal(await page.locator('#roadmap .lh').count(),3);assert.equal(await page.locator('#roadmap .band').count(),3);assert.equal(await page.locator('#roadmap .cell').count(),9);
-  assert(await page.locator('#roadmap .rail').evaluateAll(rails=>rails.every(r=>{const b=r.parentElement.getBoundingClientRect(),x=r.getBoundingClientRect();return Math.abs(x.top-b.top)<2&&Math.abs(x.bottom-(b.bottom-20))<2;})));
+  assert(await page.locator('#roadmap .rail').evaluateAll(rails=>rails.every(r=>{const b=r.parentElement.getBoundingClientRect(),x=r.getBoundingClientRect();const last=[...r.parentElement.querySelectorAll('.cell')].slice(-3).find(c=>c.style.gridColumn===r.style.gridColumn).getBoundingClientRect();return Math.abs(x.top-b.top)<2&&Math.abs(x.bottom-last.bottom)<2;})));
+  const goal=page.locator('#roadmap button[data-roadmap-goal="app"]');
+  assert.equal(await goal.count(),1);
+  assert.equal(await goal.locator('.roadmap-goal-label').innerText(),'ゴール');
+  assert.equal(await goal.locator('strong').innerText(),'アプリ版の配信');
+  assert.equal(await goal.locator('.roadmap-goal-summary').innerText(),'この冒険を、スマートフォンのアプリで。');
+  assert.equal(await goal.locator('img,svg,.wipb,.mystery').count(),0);
+  await goal.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+  assert(await goal.evaluate(el=>{
+   const board=el.parentElement, lanes=[...board.querySelectorAll('.cell')].slice(-3);
+   const connectors=[...board.querySelectorAll('.roadmap-goal-connector')];
+   const rect=el.getBoundingClientRect(), rows=lanes.map(c=>c.getBoundingClientRect());
+   const recent=document.querySelector('#roadmapDoneHeading').getBoundingClientRect();
+   const nav=document.querySelector('.app-bottom-nav').getBoundingClientRect();
+   const text=[...el.children].map(c=>c.getBoundingClientRect());
+   return Math.abs(rect.left-rows[0].left)<=2&&Math.abs(rect.right-rows[2].right)<=2&&
+    connectors.length===3&&connectors.every((connector,i)=>{
+     const line=connector.getBoundingClientRect(),lane=rows[i], style=getComputedStyle(connector,'::before');
+     return Math.abs(line.top-lane.bottom)<=2&&Math.abs(line.bottom-rect.top)<=2&&
+      Math.abs((line.left+line.right-lane.left-lane.right)/2)<=2&&line.height>0&&
+      parseFloat(style.width)>0&&parseFloat(style.height)>0;
+    })&&rect.bottom<=recent.top&&rect.bottom<=nav.top&&rect.left>=0&&rect.right<=innerWidth&&
+    text.every((b,i)=>b.top>=rect.top&&b.bottom<=rect.bottom&&b.left>=rect.left&&b.right<=rect.right&&
+      el.children[i].scrollWidth<=el.children[i].clientWidth+1&&(!i||text[i-1].bottom<=b.top));
+  }),`${width}px: three visible lane connectors, board-wide goal, no overlap or navigation clipping`);
+  if(width===360)await page.screenshot({path:`${out}/app-goal-360.png`});
+  await goal.tap();
+  const sheet=page.locator('#sheet.open');
+  assert(await sheet.isVisible());
+  assert.equal(await sheet.locator('#roadmapSheetTitle').innerText(),'アプリ版の配信');
+  assert.equal(await sheet.locator('.lead').innerText(),'ストーリーも、絵と音も、システムも、すべてはここへ向かっています。モンスターバトルを、スマートフォンのアプリとして届けることが、この開発のゴールです。');
+  assert.deepEqual(await sheet.locator('li').allTextContents(),['ストアからインストールして遊べるように','機種を変えても、データを引き継げるように','ここまでの予定が、ひとつのアプリにまとまって届く']);
+  assert.equal(await sheet.locator('img,svg,.chip').count(),0);
+  if(width===360)await page.screenshot({path:`${out}/app-goal-detail-360.png`});
+  await page.keyboard.press('Escape');assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
+  await goal.tap();await page.locator('#close').tap();assert.equal(await page.locator('#sheet').getAttribute('aria-hidden'),'true');
   const expectedWip=await page.evaluate(()=>ROADMAP.items.filter(item=>item.wip).map(item=>item.id).sort());
   const displayedWip=await page.locator('#roadmap .wipb').evaluateAll(badges=>badges.map(b=>b.closest('.card').dataset.id).sort());
   assert.deepEqual(displayedWip,expectedWip);
@@ -50,9 +85,15 @@ try{
  }
  // Change only the data file response: stage and completed-list updates need no renderer edit.
  const page=await browser.newPage();
- await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace("id:'material',lane:'sys',stage:'now'","id:'material',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
+ await page.route('**/js/roadmap-data.js?*',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync('js/roadmap-data.js','utf8').replace(/  goal:\{[\s\S]*?(?=  items:\[)/,'').replace("id:'material',lane:'sys',stage:'now'","id:'material',lane:'sys',stage:'later'").replace('  done:[',"  done:[{title:'追加テスト',lane:'sys',note:'追加'},")}));
  await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
  assert.equal(await page.locator('[data-id="material"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
  assert.equal(await page.locator('#doneList>div').first().locator('span').nth(1).innerText(),'追加テスト');
+ await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.evaluate(()=>{clearTutorialUi();show('moreMenu');});await page.locator('#roadmapMenuButton').click();
+ assert(await page.locator('#roadmap.active').isVisible());
+ assert.equal(await page.locator('#roadmap [data-roadmap-goal],#roadmap .roadmap-goal-connector').count(),0);
+ assert(await page.locator('#roadmapDoneHeading').isVisible());
+ assert(await page.locator('#roadmap .rail').evaluateAll(rails=>rails.every(r=>{const b=r.parentElement.getBoundingClientRect(),x=r.getBoundingClientRect();return Math.abs(x.top-b.top)<2&&Math.abs(x.bottom-(b.bottom-20))<2;})));
  assert.deepEqual(errors,[]);console.log('PASS roadmap acceptance 1–9: navigation, grid/rails, WIP, main/side, focus, all sheets/synopsis, data-only updates, 360/412/430px, loaded save and zero game-save writes.');
 }finally{await browser?.close();server.kill();}

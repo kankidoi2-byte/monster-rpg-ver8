@@ -34,14 +34,34 @@ function render(){
     row++;
   });
   ROADMAP.lanes.forEach((l,li)=>{h+=`<div class="rail ${l.id} ${l.id!=='story'?'end':''}" style="grid-column:${li+1};grid-row:1 / ${row};--c:${l.color}"></div>`});
+  const goal=ROADMAP.goal;
+  if(goal){
+    ROADMAP.lanes.forEach((lane,li)=>{h+=`<div class="roadmap-goal-connector" aria-hidden="true" style="grid-row:${row};grid-column:${li+1}"></div>`});
+    h+=`<button type="button" class="roadmap-goal" style="grid-row:${row+1}" data-roadmap-goal="${goal.id}" aria-haspopup="dialog">
+      <span class="roadmap-goal-label">${goal.label}</span><strong>${goal.title}</strong><span class="roadmap-goal-summary">${goal.summary}</span>
+    </button>`;
+  }
   $('#board').innerHTML=h;
   const d=showAllDone?ROADMAP.done:ROADMAP.done.slice(0,4);
   $('#doneList').innerHTML=d.map(x=>`<div><span class="ck">${typeof gameLineIcon==='function'?gameLineIcon('check'):'済'}</span><span>${x.title}</span><em>${x.note}</em><i class="lt" style="background:${laneOf(x.lane).color}"></i></div>`).join('');
   $('#more').textContent=showAllDone?ROADMAP.ui.less:ROADMAP.ui.more;
 }
 let opener=null, previousOverflow='';
-function open(id){
+function openSheet(html,color){
+  const sheet=$('#sheet');
   opener=document.activeElement;previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
+  if(color)sheet.style.setProperty('--c',color);else sheet.style.removeProperty('--c');
+  sheet.innerHTML=html;
+  $('#mask').classList.add('open');sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');$('#close').focus({preventScroll:true});
+}
+function openGoal(id){
+  const goal=ROADMAP.goal;
+  if(!goal||goal.id!==id)return;
+  openSheet(`<div class="body roadmap-goal-sheet">
+    <h3 id="roadmapSheetTitle">${goal.title}</h3><p class="lead">${goal.detail.body}</p><ul>${goal.detail.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+    <button class="close" id="close">${ROADMAP.ui.close}</button></div>`);
+}
+function open(id){
   const it=ROADMAP.items.find(i=>i.id===id); if(!it) return;
   const l=laneOf(it.lane), st=ROADMAP.stages.find(s=>s.id===it.stage);
   let art;
@@ -50,18 +70,17 @@ function open(id){
   else if(it.iconImg) art=`<img class="bg" src="${ROADMAP.ui.sheetImage}" alt=""><img class="chr" src="${it.iconImg}" alt="">`;
   else art=`<img class="bg" src="${ROADMAP.ui.sheetEmojiImage}" alt="" style="opacity:.45">`;
   const kind=it.kind==='main'?`<span class="chip">${ROADMAP.ui.main}</span>`:it.kind==='side'?`<span class="chip om">${ROADMAP.ui.side}</span>`:'';
-  $('#sheet').style.setProperty('--c',l.color);
-  $('#sheet').innerHTML=`<div class="art">${art}</div><div class="body">
+  openSheet(`<div class="art">${art}</div><div class="body">
     <div class="chips"><span class="chip">${l.label}</span>${kind}<span class="chip st">${it.wip?ROADMAP.ui.wip:st.label}</span></div>
     <h3 id="roadmapSheetTitle">${it.title}</h3><p class="lead">${it.lead}</p>${it.synopsis?`<div class="syn"><b>${it.synopsis.title}</b><p>${it.synopsis.text}</p></div>`:''}<ul>${it.points.map(p=>`<li>${p}</li>`).join('')}</ul>
-    <button class="close" id="close">${ROADMAP.ui.close}</button></div>`;
-  $('#mask').classList.add('open');$('#sheet').classList.add('open');$('#sheet').setAttribute('aria-hidden','false');$('#close').focus({preventScroll:true});
+    <button class="close" id="close">${ROADMAP.ui.close}</button></div>`,l.color);
 }
 function close(){if(!$('#sheet').classList.contains('open'))return;$('#mask').classList.remove('open');$('#sheet').classList.remove('open');$('#sheet').setAttribute('aria-hidden','true');document.body.style.overflow=previousOverflow;if(opener?.isConnected)opener.focus({preventScroll:true});}
 document.addEventListener('click',e=>{
   if(!e.target.closest('#roadmap,#roadmapDialogRoot'))return;
   const l=e.target.closest('[data-lane]'); if(l){focus=focus===l.dataset.lane?null:l.dataset.lane;document.querySelectorAll('#roadmap [data-lane],#roadmap .cell').forEach(n=>{const lane=n.dataset.lane||ROADMAP.lanes.find(x=>n.classList.contains(x.id))?.id;n.classList.toggle('dim',!!focus&&lane!==focus);if(n.dataset.lane)n.setAttribute('aria-pressed',String(lane===focus));});return}
   if(e.target.closest('#more')){showAllDone=!showAllDone;render();return}
+  const g=e.target.closest('[data-roadmap-goal]'); if(g){openGoal(g.dataset.roadmapGoal);return}
   const c=e.target.closest('[data-id]'); if(c){open(c.dataset.id);return}
   if(e.target.closest('#close')||e.target===$('#mask')) close();
 });

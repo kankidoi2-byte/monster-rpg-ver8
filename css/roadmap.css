@@ -132,3 +132,12 @@
 
 #roadmap#roadmap#roadmap .main .card{background:var(--night)!important;color:#fff!important}
 #roadmap#roadmap#roadmap .mystery .card{background:repeating-linear-gradient(135deg,#232838 0 10px,#1c2130 10px 20px)!important}
+
+/* A shared destination for the three existing roadmap lanes. */
+#roadmap .roadmap-goal-connector{position:relative;min-height:20px;pointer-events:none}
+#roadmap .roadmap-goal-connector::before{content:"";position:absolute;inset:0 auto 0 50%;width:1px;background:var(--line)}
+#roadmap button.roadmap-goal{grid-column:1/-1;align-self:start;justify-self:stretch;display:grid;gap:3px;min-width:0;min-height:0;padding:14px 10px;text-align:center;line-height:1.35;background:var(--pearl);color:var(--ink);border:2px solid var(--gold);border-radius:15px;box-shadow:0 4px 14px var(--line);cursor:pointer}
+#roadmap .roadmap-goal-label{color:var(--sub);font-size:11px;font-weight:800}
+#roadmap .roadmap-goal strong{font-family:"Shippori Mincho B1",serif;font-size:clamp(18px,5vw,23px);font-weight:800}
+#roadmap .roadmap-goal-summary{color:var(--sub);font-size:12px}
+#roadmapDialogRoot .sheet .roadmap-goal-sheet{--c:var(--gold);padding-top:16px}
