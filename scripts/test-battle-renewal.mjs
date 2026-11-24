@@ -12,6 +12,14 @@ function setup(){
 let cases=0;
 const r=setup();
 const before=r.run('JSON.stringify(save)');
+assert.equal(r.run("unitImageSrc(by('character_vera_4'))"),r.run("IMG[by('character_vera_4').imgKey]"));
+assert.equal(r.run("unitImageSrc(by('hikari'))"),r.run("IMG[by('hikari').imgKey]"));
+assert.equal(r.run("unitImageSrc({id:'freigal'})"),'','never fall back to unit id');
+assert.equal(r.run("unitImageSrc({imgKey:'missing-art'})"),'');
+assert.equal(r.run("unitImageSrc({imgKey:'constructor'})"),'','registry prototype is not artwork');
+assert.equal(r.run('unitImageSrc(null)'),'');
+assert.equal(r.run("renewalUnitImageHtml({imgKey:'missing-art'})"),'','no broken img element');
+
 for(const target of ['grassbeat','aquaron','volteck','elysia','nemes']){
  r.context.id=target;r.run('enemy=by(id)');
  for(const mon of r.run('M.map(m=>m.id)')){

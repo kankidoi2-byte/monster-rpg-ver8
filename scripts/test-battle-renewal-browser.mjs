@@ -12,16 +12,16 @@ try{
  const page=await browser.newPage({viewport:{width:360,height:640},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  await page.goto('http://127.0.0.1:4327/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
- async function start(mode='single',unitIds=['freigal','aquaron','volteck']){
-  await page.evaluate(({mode,unitIds})=>{
+ async function start(mode='single',unitIds=['freigal','aquaron','volteck'],enemyId=null){
+  await page.evaluate(({mode,unitIds,enemyId})=>{
    clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
    save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
    save.instances=[];save.party=[];for(const id of unitIds){const ins=addInstance(id,12);save.party.push(ins.uid);}
-   save.items.potion=5;save.items.contract_scroll=5;saveGame();endPartyRecovery();prepareBattleParty();selectedMap=MAPS[0];enemy=by(mode==='multi'?'icegolem':'grassbeat');
+   save.items.potion=5;save.items.contract_scroll=5;saveGame();endPartyRecovery();prepareBattleParty();selectedMap=MAPS[0];enemy=by(enemyId||(mode==='multi'?'icegolem':'grassbeat'));
    activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle(selectedMap.id,enemy.id,'normal',activeHuntRequest);
    if(mode==='multi'){activeHuntRequest.secondEnemyId='aquaron';activeHuntRequest.battleMode='three_way';beginThreeWayBattle();}
    show('battle');
-  },{mode,unitIds});
+  },{mode,unitIds,enemyId});
   await page.locator('#battle.active #renewalHeader').first().waitFor();
  }
  // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
@@ -158,6 +158,43 @@ try{
  await page.waitForFunction(()=>!!kokoroLinkEffectForInstance(activeInstance));assert.equal(await page.evaluate(()=>battleTurnCount),turn);
  assert((await page.locator('#pBattleStatus').innerText()).includes('リンク中'));
  await page.screenshot({path:`${output}/linked.png`});
+ // The same mismatched source must decode in all four ally/Link views.
+ await start('single',['freigal','character_vera_4','aquaron'],'hikari');
+ const artwork=await page.evaluate(()=>{
+  const vera=partyBattle[1],opponent=enemy;
+  return {uid:vera.inst.uid,veraId:vera.mon.id,veraKey:vera.mon.imgKey,veraSrc:IMG[vera.mon.imgKey],
+    enemyId:opponent.id,enemyKey:opponent.imgKey,enemySrc:IMG[opponent.imgKey]};
+ });
+ assert.equal(artwork.veraId,'character_vera_4');assert.notEqual(artwork.veraId,artwork.veraKey);assert(artwork.veraSrc);
+ assert.equal(artwork.enemyId,'hikari');assert.notEqual(artwork.enemyId,artwork.enemyKey);assert(artwork.enemySrc);
+ async function assertArtwork(locator,src,label){
+  await locator.waitFor({state:'visible'});
+  assert.equal(await locator.getAttribute('src'),src,label);
+  assert(await locator.evaluate(async img=>{await img.decode();return img.naturalWidth>0;}),label);
+ }
+ const enemyInfo=page.locator('#singleEnemyBox .br-info');
+ const renewalSheet=page.locator('#renewalSheet');
+ const sheetPortrait=renewalSheet.locator('.br-enemy-head img');
+ const closePanel=()=>renewalSheet.locator('header button').click();
+ await enemyInfo.click();
+ await assertArtwork(sheetPortrait,artwork.enemySrc,'1: Light Goddess Elysia enemy detail');
+ await closePanel();
+ await page.evaluate(()=>{enemy.imgKey='test-missing-unit-art';});
+ await enemyInfo.click();assert.equal(await sheetPortrait.count(),0,'unregistered artwork creates no img element');
+ await closePanel();await page.evaluate(key=>{enemy.imgKey=key;},artwork.enemyKey);
+ await page.locator('#battleItemButton').click();await renewalSheet.locator('[data-item="potion"]').click();
+ await assertArtwork(renewalSheet.locator('[data-item-target="1"] img'),artwork.veraSrc,'2: Vera item target');
+ await closePanel();
+ await page.locator('#kokoroLinkButton').click();
+ const source=page.locator(`#kokoroLinkPanel .kokoro-link-source[data-uid="${artwork.uid}"]`);
+ await assertArtwork(source.locator('img'),artwork.veraSrc,'3: Vera link reserve list');
+ await source.click();await assertArtwork(sheetPortrait,artwork.veraSrc,'4: Vera link preview');
+ await Promise.all([
+  assertArtwork(page.locator('#renewalLinkFx img'),artwork.veraSrc,'5: Vera link activation animation'),
+  renewalSheet.locator('.br-go').click()
+ ]);
+ await page.waitForFunction(()=>!!kokoroLinkEffectForInstance(activeInstance));
+ console.log('PASS mismatched imgKey loads in five battle views and missing keys omit the broken image.');
  await start();await page.evaluate(()=>{eHp=0;win();});await page.locator('#battleOutcome:not(.hidden)').waitFor();
  assert((await page.locator('#renewalResultMeta').innerText()).includes('討伐済み'));
  assert.equal(await page.locator('#renewalResultExp .br-exp-row').count(),3);
