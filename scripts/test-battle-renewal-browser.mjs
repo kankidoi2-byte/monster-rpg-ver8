@@ -29,7 +29,7 @@ try{
  // The original renderer is restored before all following UI acceptance cases.
  const fieldRequests=[];
  const recordFieldRequest=req=>{if(req.resourceType()==='image')fieldRequests.push(new URL(req.url()).pathname.slice(1));};
- const checkedUnits=['stella_sorcerer','elixion','grassbeat','icegolem','aquaron'];
+ const checkedUnits=['stella_sorcerer','stella_wizard','elixion','grassbeat','icegolem','aquaron'];
  const media=await page.evaluate(ids=>Object.fromEntries([...ids,'character_vera_4'].map(id=>{
   const mon=by(id),poster=(BATTLE_STATIC_MEDIA[id]||BATTLE_IDLE_MEDIA[id])?.poster;
   return [id,{poster,card:IMG[mon.imgKey]}];
@@ -80,13 +80,24 @@ try{
   await start('multi',['stella_sorcerer','elixion','character_vera_4']);
   await checkFieldImage('#pVis',media.stella_sorcerer.poster);
   await checkFieldImage('#enemy_aVis',media.icegolem.poster);await checkFieldImage('#enemy_bVis',media.aquaron.poster);noCardRequests();
-  const failUrl='**/'+media.stella_sorcerer.poster;
-  const failStandee=route=>route.abort();
+  // Use an unused poster: reusing a decoded img can bypass interception in the same document.
+  const failPoster=media.stella_wizard.poster;
+  assert(!fieldRequests.includes(failPoster),'failed-image fixture must not be warm');
+  const failUrl=url=>url.hostname==='127.0.0.1'&&url.pathname==='/'+failPoster;
+  let aborts=0;
+  const failStandee=route=>{aborts++;return route.abort();};
   await page.route(failUrl,failStandee);
   try{
-   await start('single',['stella_sorcerer','elixion','character_vera_4']);
-   await page.locator('#pVis .battle-static-fallback').waitFor({state:'visible'});
-   assert.match(await page.locator('#pVis .battle-static-fallback').innerText(),/^味方：.+ステラ/);
+   const [failed]=await Promise.all([
+    page.waitForEvent('requestfailed',{predicate:req=>req.resourceType()==='image'&&failUrl(new URL(req.url())),timeout:10000}),
+    start('single',['stella_wizard','elixion','character_vera_4'])
+   ]);
+   assert.match(failed.failure().errorText,/ERR_FAILED/);
+   assert(aborts>0,'the named fallback needs a real failed image request');
+   const fallback=page.locator('#pVis .battle-static-fallback');
+   await fallback.waitFor({state:'visible'});
+   assert.equal(await fallback.innerText(),await page.evaluate(()=>`味方：${by('stella_wizard').name}`));
+   assert(await page.locator('#pVis .battle-static-media img').evaluate(img=>img.hidden&&img.naturalWidth===0));
    noCardRequests();
   }finally{await page.unroute(failUrl,failStandee);}
  }finally{
