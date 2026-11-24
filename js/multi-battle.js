@@ -162,7 +162,7 @@ function updateMultiBattleView() {
     const cardLabel=linkTargeting&&entry.alive?`${entry.mon.name}へリンク能力を発動する`:targetable?`${entry.mon.name}を攻撃対象にする`:`${entry.mon.name}の詳細を開く`;
     return `<article id="${entry.id}Card" class="box multi-enemy-card ${targetable?'is-targetable':''} ${entry.alive?'':'is-defeated'}" role="button" tabindex="0" aria-label="${cardLabel}" aria-expanded="${entry.detailsOpen?'true':'false'}" onclick="handleMultiEnemyCard('${entry.id}')" onkeydown="handleMultiEnemyCardKey(event,'${entry.id}')">`+
       `<div class="multi-enemy-label">${enemyLabel}</div>`+
-      `<div class="multi-enemy-visual" id="${entry.id}Vis">${vis(entry.mon)}</div>`+
+      `<div class="multi-enemy-visual" id="${entry.id}Vis">${battleFieldVisual(entry.mon)}</div>`+
       `<div class="multi-enemy-copy"><div class="multi-enemy-heading"><div><span class="battle-side-label">${enemyLabel} MONSTER</span><h2>${entry.mon.name}</h2></div>${targetable?`<span class="multi-target-cue">${linkTargeting?'リンク対象':'照準中'}</span>`:''}</div>`+
       `<div id="${entry.id}Status" class="battle-status" aria-label="${enemyLabel}の有効状態"></div>`+
       `<div class="multi-enemy-hp"><div class="battle-hp-line"><strong>HP</strong><span>${Math.max(0,entry.hp)} / ${entry.maxHp}</span></div><div class="bar"><div class="hp-trail" style="width:${pct}%" aria-hidden="true"></div><div class="hp${pct<25?' hp-danger':pct<50?' hp-warn':''}" style="width:${pct}%"></div></div></div>`+

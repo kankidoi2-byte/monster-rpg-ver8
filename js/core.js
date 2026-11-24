@@ -5,6 +5,16 @@ function unitImageSrc(unit){
   const key=unit?.imgKey;
   return key&&Object.hasOwn(IMG,key)?IMG[key]||'':'';
 }
+function battleFieldImageSrc(unit){
+  const media=typeof battleDisplayMedia==='function'?battleDisplayMedia(unit?.id):null;
+  return media?.poster||unitImageSrc(unit);
+}
+function battleFieldVisual(unit){
+  const src=battleFieldImageSrc(unit);
+  if(src)return `<img src="${escapeGameHtml(src)}" alt="${escapeGameHtml(unit.name)}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
+  if(unit.artworkPending&&isCharacterUnit(unit))return `<div class="character-artwork-pending" role="img" aria-label="${unit.name}"><div class="emoji" aria-hidden="true">画像準備中</div><small>${unit.name}</small></div>`;
+  return `<div class="unit-artwork-placeholder" role="img" aria-label="${escapeGameHtml(unit.name)}">画像準備中</div>`;
+}
 function normalizeMoveTypes(value){
   const arr = Array.isArray(value) ? value : [value || 'normal'];
   return [...new Set(arr.filter(Boolean))];

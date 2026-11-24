@@ -24,6 +24,87 @@ try{
   },{mode,unitIds,enemyId});
   await page.locator('#battle.active #renewalHeader').first().waitFor();
  }
+ // Field request acceptance. Disable only the hidden Link thumbnail renderer for this
+ // isolated test, because it otherwise reads legitimate card art for off-field reserves.
+ // The original renderer is restored before all following UI acceptance cases.
+ const fieldRequests=[];
+ const recordFieldRequest=req=>{if(req.resourceType()==='image')fieldRequests.push(new URL(req.url()).pathname.slice(1));};
+ const checkedUnits=['stella_sorcerer','stella_wizard','elixion','grassbeat','icegolem','aquaron'];
+ const media=await page.evaluate(ids=>Object.fromEntries([...ids,'character_vera_4'].map(id=>{
+  const mon=by(id),poster=(BATTLE_STATIC_MEDIA[id]||BATTLE_IDLE_MEDIA[id])?.poster;
+  return [id,{poster,card:IMG[mon.imgKey]}];
+ })),checkedUnits);
+ assert(checkedUnits.every(id=>media[id].poster&&media[id].poster!==media[id].card));
+ assert.equal(media.character_vera_4.poster,undefined);assert(media.character_vera_4.card);
+ const checkFieldImage=async (slot,src)=>{
+  const art=page.locator(slot+' .battle-static-media img');
+  assert.equal(await art.getAttribute('src'),src);
+  assert(await art.evaluate(async img=>{await img.decode();return img.naturalWidth>0;}),slot);
+ };
+ const noCardRequests=()=>{
+  const originals=new Set(checkedUnits.map(id=>media[id].card));
+  assert.deepEqual(fieldRequests.filter(url=>originals.has(url)),[],'standee/motion units must not request a card on the field');
+ };
+ await page.evaluate(()=>{window.qaFieldLinkPanel=renderKokoroLinkPanel;renderKokoroLinkPanel=()=>{};});
+ page.on('request',recordFieldRequest);
+ try{
+  await start('single',['stella_sorcerer','elixion','character_vera_4']);
+  await checkFieldImage('#pVis',media.stella_sorcerer.poster);await checkFieldImage('#eVis',media.grassbeat.poster);
+  assert(fieldRequests.includes(media.stella_sorcerer.poster));assert(fieldRequests.includes(media.grassbeat.poster));noCardRequests();
+  await page.evaluate(()=>{if(!changeActivePartyMember(1))throw Error('manual swap fixture failed');});
+  await checkFieldImage('#pVis',media.elixion.poster);noCardRequests();
+  async function pageTransition(type){
+   await page.evaluate(type=>window.dispatchEvent(new PageTransitionEvent(type,{persisted:true})),type);
+  }
+  async function visibility(hidden){
+   await page.evaluate(hidden=>{
+    if(hidden)Object.defineProperty(document,'hidden',{configurable:true,value:true});else delete document.hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+   },hidden);
+  }
+  async function checkBoth(){
+   await checkFieldImage('#pVis',media.elixion.poster);await checkFieldImage('#eVis',media.grassbeat.poster);noCardRequests();
+  }
+  await pageTransition('pagehide');assert.equal(await page.locator('#battle video.battle-idle-video').count(),0);await checkBoth();
+  await pageTransition('pageshow');assert.equal(await page.locator('#battle video.battle-idle-video').count(),2);await checkBoth();
+  await visibility(true);await checkBoth();await visibility(false);await checkBoth();
+  await visibility(true);await pageTransition('pagehide');await checkBoth();
+  await visibility(false);assert.equal(await page.locator('#battle video.battle-idle-video').count(),2);
+  assert.equal(await page.evaluate(()=>battleIdlePageHidden),false);await checkBoth();
+  await page.evaluate(()=>{pHp=0;if(!switchPartyMember())throw Error('KO swap fixture failed');});
+  // Rejoin the currently living first reserve, then remove that reserve to
+  // assert the explicit no-standee fallback via the same KO switch path.
+  await checkFieldImage('#pVis',media.stella_sorcerer.poster);noCardRequests();
+  await page.evaluate(()=>{pHp=0;if(!switchPartyMember())throw Error('fallback swap fixture failed');});
+  await checkFieldImage('#pVis',media.character_vera_4.card);noCardRequests();
+  await start('multi',['stella_sorcerer','elixion','character_vera_4']);
+  await checkFieldImage('#pVis',media.stella_sorcerer.poster);
+  await checkFieldImage('#enemy_aVis',media.icegolem.poster);await checkFieldImage('#enemy_bVis',media.aquaron.poster);noCardRequests();
+  // Use an unused poster: reusing a decoded img can bypass interception in the same document.
+  const failPoster=media.stella_wizard.poster;
+  assert(!fieldRequests.includes(failPoster),'failed-image fixture must not be warm');
+  const failUrl=url=>url.hostname==='127.0.0.1'&&url.pathname==='/'+failPoster;
+  let aborts=0;
+  const failStandee=route=>{aborts++;return route.abort();};
+  await page.route(failUrl,failStandee);
+  try{
+   const [failed]=await Promise.all([
+    page.waitForEvent('requestfailed',{predicate:req=>req.resourceType()==='image'&&failUrl(new URL(req.url())),timeout:10000}),
+    start('single',['stella_wizard','elixion','character_vera_4'])
+   ]);
+   assert.match(failed.failure().errorText,/ERR_FAILED/);
+   assert(aborts>0,'the named fallback needs a real failed image request');
+   const fallback=page.locator('#pVis .battle-static-fallback');
+   await fallback.waitFor({state:'visible'});
+   assert.equal(await fallback.innerText(),await page.evaluate(()=>`味方：${by('stella_wizard').name}`));
+   assert(await page.locator('#pVis .battle-static-media img').evaluate(img=>img.hidden&&img.naturalWidth===0));
+   noCardRequests();
+  }finally{await page.unroute(failUrl,failStandee);}
+ }finally{
+  page.off('request',recordFieldRequest);
+  await page.evaluate(()=>{renderKokoroLinkPanel=window.qaFieldLinkPanel;delete window.qaFieldLinkPanel;});
+ }
+ console.log('PASS field artwork requests: initial/switch/KO, both lifecycle returns, 3-way, Vera card fallback and named failed-request fallback.');
  // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{

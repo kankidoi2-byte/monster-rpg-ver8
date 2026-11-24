@@ -271,7 +271,7 @@ function changeActivePartyMember(nextIndex, {faintCurrent=false, message=''}={})
   if (message && log) log.innerHTML += `${log.innerHTML?'<br>':''}${message}`;if(typeof captureBattleLog==='function')captureBattleLog();
   document.getElementById('pName').textContent = player.name;
   if(typeof clearBattleVisuals==='function')clearBattleVisuals();
-  document.getElementById('pVis').innerHTML = vis(player);
+  document.getElementById('pVis').innerHTML = battleFieldVisual(player);
   renderSkillButtons();
   if (typeof renderKokoroLinkPanel === 'function') renderKokoroLinkPanel();
   if (typeof renderBattleSwitchButton === 'function') renderBattleSwitchButton();

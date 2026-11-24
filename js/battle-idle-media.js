@@ -566,7 +566,7 @@ function clearBattleIdleSizes(){
     r.layoutObserver?.disconnect();
     clearBattleIdleBoundsFit(r);r.media.classList.remove('has-idle-size');
     r.media.style.removeProperty('--idle-position');r.media.style.removeProperty('--idle-scale');
-    r.img.setAttribute('src',r.originalSrc);r.facing.style.removeProperty('transform');
+    r.facing.style.removeProperty('transform');
   }
   battleIdleSizeDisplays.clear();
   const arena=document.querySelector('#battle .battle-arena');
@@ -595,7 +595,7 @@ function syncBattleIdleSizes(candidates){
     if(!candidates.some(u=>u.key===key&&document.getElementById(u.vis)?.querySelector('.battle-static-media')===r.media)){
       r.layoutObserver?.disconnect();
       clearBattleIdleBoundsFit(r);r.media.classList.remove('has-idle-size');r.facing.style.removeProperty('transform');
-      r.img.setAttribute('src',r.originalSrc);battleIdleSizeDisplays.delete(key);
+      battleIdleSizeDisplays.delete(key);
     }
   }
   for(const u of candidates){
@@ -603,14 +603,14 @@ function syncBattleIdleSizes(candidates){
     if(!img)continue;
     let r=battleIdleSizeDisplays.get(u.key);
     if(!r){
-      r={key:u.key,media,img,config:battleDisplayMedia(u.mon.id),facing:media.parentElement,originalSrc:img.getAttribute('src')||''};
+      r={key:u.key,media,img,config:battleDisplayMedia(u.mon.id),facing:media.parentElement};
       battleIdleSizeDisplays.set(u.key,r);
       if(!r.config.src&&typeof ResizeObserver==='function'){
         r.layoutObserver=new ResizeObserver(()=>{if(battleIdleSizeDisplays.get(r.key)===r)applyBattleIdleLayout(r);});
         r.layoutObserver.observe(media);
       }
     }
-    media.classList.add('has-idle-size');img.src=r.config.poster;
+    media.classList.add('has-idle-size');
     r.facing.style.transform=(u.vis==='pVis'?r.config.allyFlip:r.config.enemyFlip)?'scaleX(-1)':'';
     applyBattleIdleLayout(r);
   }
@@ -649,7 +649,7 @@ function syncBattleIdleCandidate(chosen){
     const r={key:chosen.key,config,media,img,details,label,button,facing:media.parentElement,
       disposed:false,failed:false,pending:false,retried:false,state:'loading',reasons:[],
       attempt:0,playToken:0,clockToken:0,timer:null,remaining:BATTLE_IDLE_WAIT_MS,waitStarted:0};
-    battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');img.src=config.poster;
+    battleIdleRecords.set(r.key,r);refreshBattleIdlePrimary();media.classList.add('has-idle-media');
     if(chosen.vis==='pVis'?config.allyFlip:config.enemyFlip)r.facing.style.transform='scaleX(-1)';
     applyBattleIdleLayout(r);watchBattleIdleLayout(r);watchBattleIdleViewport(r);createBattleIdleVideo(r);
     button.onclick=()=>{
@@ -675,7 +675,10 @@ function syncBattleIdleCandidate(chosen){
 }
 // Fixed global listeners and bounded, disposable viewport observers. No polling,
 // object URLs or per-combatant global listeners.
-document.addEventListener('visibilitychange',syncBattleIdleMedia);
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden&&document.visibilityState==='visible')battleIdlePageHidden=false;
+  syncBattleIdleMedia();
+});
 window.addEventListener('pagehide',()=>{battleIdlePageHidden=true;disposeBattleIdleMedia();});
 window.addEventListener('pageshow',()=>{battleIdlePageHidden=false;syncBattleIdleMedia();});
 battleIdleReduced?.addEventListener?.('change',syncBattleIdleMedia);

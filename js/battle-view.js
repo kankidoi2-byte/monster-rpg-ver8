@@ -34,12 +34,12 @@ function setupBattle() {
         <details class="battle-hunt-conditions"><summary>条件</summary>${huntConditionsHtml(request, true)}</details></div>`;
   }
   document.getElementById('pName').textContent = player.name;
-  document.getElementById('pVis').innerHTML = vis(player);
+  document.getElementById('pVis').innerHTML = battleFieldVisual(player);
   document.getElementById('singleEnemyBox')?.classList.remove('hidden');
   document.getElementById('multiEnemyGrid')?.classList.add('hidden');
   document.getElementById('eName').textContent = (battleOvertierLabel()?`【${battleOvertierLabel()}】`:'')+enemy.name;
   document.getElementById('eVis').innerHTML =
-    `<div class="visual-wrap">${vis(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
+    `<div class="visual-wrap">${battleFieldVisual(enemy)}<div id="enemyDefeatOverlay" class="defeat-overlay">倒した！</div></div>`;
   // 技ボタン
   renderSkillButtons();
   closeBattleSkillPanel();

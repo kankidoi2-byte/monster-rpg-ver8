@@ -74,6 +74,14 @@ for(const stageWidth of [320,430,760])for(const a of configs)for(const b of conf
 }
 console.log('PASS shared size policy: '+sharedCases+' species-pair/viewport cases; equal ally/enemy geometry and contained enemy tracks');
 assert.equal(layoutCases.length,50);
+const fieldArt=run('M.map(unit=>({id:unit.id,poster:battleDisplayMedia(unit.id)?.poster||null,card:unitImageSrc(unit),actual:battleFieldImageSrc(unit)}))');
+assert.equal(fieldArt.filter(unit=>!unit.poster).length,12,'only the twelve known card fallback units remain');
+for(const unit of fieldArt)assert.equal(unit.actual,unit.poster||unit.card,unit.id);
+for(const id of ['stella_sorcerer','elixion','character_vera_4']){
+ const artwork=fieldArt.find(unit=>unit.id===id);
+ if(id==='character_vera_4')assert.equal(artwork.actual,artwork.card);
+ else assert.notEqual(artwork.actual,artwork.card);
+}
 assert.equal(run('battleIdleBoundsFit(null,100,100)'),null);
 assert.equal(run('battleIdleBoundsFit({width:960,height:960,x:0,y:0,right:961,bottom:960},100,100)'),null);
 setup();await new Promise(r=>setTimeout(r,0));
