@@ -7,12 +7,12 @@ const publicUrl=process.env.GAME_TEST_URL;
 const server=publicUrl?null:spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4190'],{stdio:['ignore','pipe','inherit']});
 const out='artifacts/skill-card-layout/normal-healing';
 fs.mkdirSync(out,{recursive:true});
-let browser;
+let browser,activeCase='startup';
 try{
  if(server)await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
  browser=await chromium.launch({headless:true});
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'no-preference'}),errors=[],results=[];
- page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
+ page.on('pageerror',e=>{errors.push(e.message);console.error(`Healing browser page error (${activeCase}):`,e.stack||e.message);});page.on('dialog',d=>d.dismiss());
  // Public media/telemetry can keep connections active after the app is ready.
  if(publicUrl)page.setDefaultNavigationTimeout(60000);
  await page.goto(publicUrl||'http://127.0.0.1:4190/?legacy=1',{waitUntil:'domcontentloaded'});
@@ -30,7 +30,11 @@ try{
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  for(const skillId of ['skill_luxseed_03','s110_062'])for(const mode of ['single','multi','invasion'])for(const side of mode==='single'?['player','enemyA']:['player','enemyA','enemyB']){
   for(const level of [1,10,50,100])for(const shortage of [800,5,0]){
-   const result=await page.evaluate(async({mode,side,level,shortage,skillId})=>{
+   activeCase=`${skillId}/${mode}/${side}/Lv${level}/shortage${shortage}`;
+   // Initiate once in the page. Do not ask CDP to await the transient action promise.
+   const probe=await page.evaluateHandle(({mode,side,level,shortage,skillId})=>{
+    const probe={status:'pending',phase:'setup'};
+    probe.action=(async()=>{
     clearTutorialUi();save.instances[0].level=side==='player'?level:99;prepareBattleParty();
     const request=createHuntRequest(MAPS[0],by('slime'),'normal',[],{allowOvertier:false});
     request.battleMode=mode==='multi'?'three_way':'single';request.secondEnemyId='goblin';request.conditions=[];
@@ -56,12 +60,27 @@ try{
     const move=skillToMove(skillId);
     if(move[3]!=='heal'&&!(move[3]==='tactical'&&move[9]?.heal))throw Error('real healing skill missing');
     try{
+     probe.phase='action';
      if(multi)await performMultiAttack(isPlayer?{kind:'player'}:entries[index],isPlayer?entries[1]:{kind:'player'},move);
      else await doAttack(isPlayer?player:enemy,isPlayer?enemy:player,move,isPlayer);
      const after=isPlayer?pHp:multi?entries[index].hp:eHp;
      return {before,after,maximum,legacyMaximum,missing,feedback,log:document.getElementById('log').textContent};
     }finally{battleHpResult=original;}
+    })();
+    probe.action.then(result=>{probe.result=result;probe.status='done';},error=>{probe.error=error?.stack||String(error);probe.status='error';});
+    return probe;
    },{mode,side,level,shortage,skillId});
+   let result;
+   try{
+    const ready=await page.waitForFunction(p=>p.status!=='pending',probe,{polling:50,timeout:15000});
+    await ready.dispose();
+    const outcome=await probe.evaluate(p=>({status:p.status,result:p.result,error:p.error}));
+    if(outcome.status==='error')throw Error(outcome.error);
+    result=outcome.result;
+   }catch(error){
+    const phase=await probe.evaluate(p=>({phase:p.phase,status:p.status,visibility:document.visibilityState,visuals:battleVisuals.size,tails:battleMotionTails.size})).catch(()=>null);
+    throw Error(`${activeCase}: healing action did not produce a result: ${JSON.stringify(phase)}`,{cause:error});
+   }finally{await probe.dispose();}
    const rate=skillId==='s110_062'?(24+level*3)/result.legacyMaximum:.22;
    const expected=Math.min(result.missing,Math.floor(result.maximum*rate));
    assert.equal(result.after-result.before,expected,`${mode}/${side}/${level}/${shortage}`);
@@ -71,6 +90,7 @@ try{
    results.push({skillId,mode,side,level,shortage,...result});
   }
  }
+ activeCase='save/reload';
  const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof normalBattleHealing==='function'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'));
