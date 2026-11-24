@@ -116,8 +116,19 @@ const APPROVED_ITEM_REWARD_TAILS=['🎁 ',''].map(prefix=>[
   '  if(itemRewards.length)msg+=`<br>'+prefix+'${huntVictoryItemsLine(itemRewards)}を入手！`;',
   '  '
 ].join('\n'));
+// God Core is also additive: only the exact event eligibility and reward tail
+// are excluded here, and the real IV/V threshold, receipt and no-reroll checks
+// remain in test-hunt-victory-save.mjs.
+const APPROVED_GOD_CORE_REWARD_TAILS=['🎁 ',''].map(prefix=>[
+  '  // The event is resolved before rewards are staged; capture eligibility first.',
+  '  const godCoreEligible=canDropGodCoreFromVictory(activeHuntRequest,enemy);',
+  "  if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();",
+  '  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest,Math.random,godCoreEligible);',
+  '  if(itemRewards.length)msg+=`<br>'+prefix+'${huntVictoryItemsLine(itemRewards)}を入手！`;',
+  '  '
+].join('\n'));
 function withoutApprovedItemRewardTail(rewardBlock){
-  const tail=APPROVED_ITEM_REWARD_TAILS.find(value=>rewardBlock.endsWith(value));
+  const tail=[...APPROVED_GOD_CORE_REWARD_TAILS,...APPROVED_ITEM_REWARD_TAILS].find(value=>rewardBlock.endsWith(value));
   return tail ? rewardBlock.slice(0,-tail.length)+'  ' : rewardBlock;
 }
 // The old and new victory copy differs by these exact leading pictographs.

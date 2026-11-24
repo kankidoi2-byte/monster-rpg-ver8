@@ -21,6 +21,11 @@ try{
  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];if(contractorRankUpTimer)clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;closeContractorRankUp();saveGame();show('home');});
  await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('#rosterActions [data-roster-party]').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();
+ // Notifications intentionally destined for the shop are not dropped by navigation.
+ await page.evaluate(()=>{showUiNotice('ショップ向けの通知');show('shop');});
+ assert.equal(await page.locator('#shop').isVisible(),true);
+ assert.equal(await page.locator('#uiNotice.is-visible').textContent(),'ショップ向けの通知');
+ await page.evaluate(()=>{dismissUiNotice();show('home');});
  // Home story catalog uses the existing map-story gate and progress without save writes.
  await page.locator('#homeAdventureButton').click();
  await page.locator('#storyCategory-map').click();
@@ -68,6 +73,26 @@ try{
  const previousPage=async()=>{await page.locator('#mapStoryLogButton').click();await previous().click();};
  const previous=()=>page.locator('#mapStory button[onclick="previousMapStoryNode()"]');
  const skip=()=>page.locator('#mapStory button[onclick="skipMapStoryDialogue()"]');
+ const seedCompletionNotice=async number=>{
+  await page.evaluate(number=>showStoryEpisodeCompletion(null,`第${number-1}話`,{coins:123}),number);
+  assert.match(await page.locator('#uiNotice.is-visible').textContent(),/話 完了/);
+ };
+ const captureCleanBattle=async name=>{
+  assert.equal(await page.locator('#uiNotice.is-visible').count(),0,'battle entrance removes the previous episode notice');
+  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.screenshot({path:`${out}/${name}.png`});
+  await page.evaluate(()=>showUiNotice('戦闘中の通知','warning'));
+  const notice=page.locator('#uiNotice.is-visible');
+  assert(await notice.evaluate(n=>Number(getComputedStyle(n).opacity)>.9));
+  const bounds=await notice.boundingBox(),opponents=page.locator('#battle :is(#singleEnemyBox,.multi-enemy-copy):visible');
+  assert(await opponents.count()>0,'opponent HUD visible');
+  for(const opponent of await opponents.all()){
+   const box=await opponent.boundingBox();
+   assert(bounds.y>=box.y+box.height||bounds.y+bounds.height<=box.y||bounds.x>=box.x+box.width||bounds.x+bounds.width<=box.x,
+    'fresh battle notification and enemy HUD do not intersect');
+  }
+  await page.evaluate(()=>dismissUiNotice());
+ };
  const checkCompletedEpisode=async(number,total,returnedFromParty)=>{
   const list=page.locator('#mapStory .map-story-list');
   if(number===total){
@@ -116,10 +141,11 @@ try{
  for(let number=1;number<=11;number++){
   const id='gl_'+String(number).padStart(2,'0');if(number!==1)await page.locator(`#mapStory button[onclick="startMapStoryEpisode('${id}')"]`).click();
   while(await page.evaluate(()=>mapStoryState().resume.nodeId!==null))await nextPage();
+  if(number===3||number===11)await seedCompletionNotice(number);
   await page.locator(`#mapStory button[onclick="launchMapStoryBattle('${id}')"]`).click();assert(await page.locator('#battle').isVisible());
   if(number===1){await page.evaluate(()=>{eHp=1;});await page.evaluate(()=>turn(-1));}
   else{
-   if(number===3||number===11)await page.screenshot({path:`${out}/battle-${number}.png`,fullPage:true});
+   if(number===3||number===11)await captureCleanBattle(`battle-${number}`);
    await page.evaluate(()=>{if(multiBattle?.active){multiBattle.enemies.forEach(e=>{e.hp=0;e.alive=false;});winMultiBattle();}else{eHp=0;win();}});
   }
   assert(await page.locator('#battleOutcome.is-victory').isVisible());assert.equal(await page.locator('#battleOutcomeActions button').count(),1);
@@ -174,10 +200,11 @@ try{
    await page.locator('#mapStoryPartyReturn').click();
    await page.getByRole('button',{name:'つづきから',exact:true}).click();
   }
+  if(number===9)await seedCompletionNotice(number);
   await page.getByRole('button',{name:'戦闘開始',exact:true}).click();
   assert((await page.locator('#battleMapBanner').innerText()).includes(`火山ストーリー／第${number}話`));
   assert.equal(await page.evaluate(()=>Boolean(multiBattle?.active)),number===3||number===7);
-  if(number===9)await page.screenshot({path:`${out}/volcano-battle-9.png`,fullPage:true});
+  if(number===9)await captureCleanBattle('volcano-battle-9');
   if(number===1)await page.evaluate(()=>{eHp=1;return turn(-1);});
   else await page.evaluate(()=>{if(multiBattle?.active){multiBattle.enemies.forEach(e=>{e.hp=0;e.alive=false;});winMultiBattle();}else{eHp=0;win();}});
   assert.equal(await page.locator('#battleOutcomeActions button').count(),1);

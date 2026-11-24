@@ -85,6 +85,51 @@ for(const slot of [1,2]){
  const r=harness();r.run(`localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return actualSet(k,v)};win();localStorage.setItem=actualSet;MonsterProfiles.current=()=>({id:'changed-profile'});retryNormalVictorySave();`);
  assert(!r.run('battleRewardGranted'));assert.equal(r.run('actualGet(key)'),r.run('disk'));cases++;
 }
+// The live Elysia event carries a single fixed-chance drop in the victory receipt.
+function prepareElysiaTest(r,settings={}){
+ r.run(`enemy={...by('hikari')};selectedMap=MAPS.find(m=>m.id==='light_plain');
+  save.worldMap=normalizeWorldMapState({active:{elysia:{mapId:'light_plain',monsterId:'hikari',remainingBattles:3}}});
+  activeHuntRequest={mapId:'light_plain',enemyId:'hikari',worldMapExploration:true,worldMapEventKey:'elysia',
+    worldMapEventMonsterId:'hikari',difficultyId:'d4',conditions:[],...${JSON.stringify(settings)}};
+  save.items.god_core=0;saveGame();writes=0;before=JSON.stringify(save);disk=actualGet(key);`);
+}
+for(const difficultyId of ['d4','d5'])for(const [input,expected] of [[.299999,1],[.30,0],[.999,0]]){
+ const r=harness();prepareElysiaTest(r,{difficultyId});r.run(`Math.random=()=>${input};win();`);
+ assert(r.run('battleRewardGranted'));
+ assert.equal(r.run('save.items.god_core'),expected);
+ assert.equal(r.run(`Boolean(auditOutcome.itemRewards?.includes('神核'))`),Boolean(expected));
+ assert.equal(r.run('JSON.parse(actualGet(key)).items.god_core'),expected);
+ assert.equal(r.run('save.worldMap.active.elysia'),null);
+}
+for(const facts of [{difficultyId:'d3'},{difficultyId:'extreme'},{worldMapEventKey:null},
+ {worldMapEventMonsterId:'slime'},{mapId:'grassland'},{worldMapExploration:false},{source:'map_story'}]){
+ const r=harness();prepareElysiaTest(r,facts);r.run('Math.random=()=>0;win();');
+ assert.equal(r.run('save.items.god_core'),0,JSON.stringify(facts));
+ assert.equal(r.run(`Boolean(auditOutcome?.itemRewards?.includes('神核'))`),false);
+}
+for(const change of ["enemy=by('slime')","save.worldMap.active.elysia=null"]){
+ const r=harness();prepareElysiaTest(r);r.run(`${change};Math.random=()=>0;win();`);
+ assert.equal(r.run('save.items.god_core'),0);
+}
+for(const end of ['runAway()','losePartyBattle()']){
+ const r=harness();prepareElysiaTest(r);r.run(`Math.random=()=>0;${end};`);
+ assert.equal(r.run('save.items.god_core'),0);
+ assert.equal(r.run('JSON.parse(actualGet(key)).items.god_core'),0);
+}
+{
+ const r=harness();prepareElysiaTest(r,{difficultyId:'d5'});
+ r.run(`Math.random=()=>.1;localStorage.setItem=(k,v)=>{if(k===key)throw Error('quota');return actualSet(k,v)};win();`);
+ assert.equal(r.run('actualGet(key)'),r.run('disk'));
+ assert.equal(r.run('JSON.stringify(save)'),r.run('before'));
+ assert.equal(r.run('JSON.parse(normalVictoryReceipt.candidate.after).items.god_core'),1);
+ assert.equal(r.run('auditOutcome'),null);
+ r.run(`localStorage.setItem=actualSet;Math.random=()=>{throw Error('reroll')};retryNormalVictorySave();retryNormalVictorySave();win();`);
+ assert.equal(r.run('save.items.god_core'),1);
+ assert.equal(r.run('JSON.parse(actualGet(key)).items.god_core'),1);
+ assert.equal(r.run(`auditOutcome.itemRewards.filter(x=>x==='神核').length`),1);
+}
+console.log('God Core world event: threshold 30%, only live IV/V, victory receipt and retry without reroll/duplication, defeat and retreat excluded.');
+
 // Compare seeded successful outcomes with the actual pre-fix settlement functions.
 // All save fields except nondeterministic timestamps/hash must remain identical.
 const baseline='2ef87b73d82c9d3afae68852f6ebcaeb78b07a89';

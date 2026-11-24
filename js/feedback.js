@@ -80,7 +80,8 @@
  }
  async function transmit(p,item){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
-  try{const response=await fetch(ENDPOINT,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({...item.payload,token:p.token}),signal:controller.signal});
+  try{const {build:_deferredBuild,...payload}=item.payload; // Older preview outboxes may still contain build.
+   const response=await fetch(ENDPOINT,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,token:p.token}),signal:controller.signal});
    if(response.ok){let result;try{result=await response.json();}catch(_){return {state:'wait'};}return result.accepted===1?{state:'sent',day:result.day,remaining:result.remaining,gift:result.gift}:{state:'wait'};}
    if(response.status===429){let result={};try{result=await response.json();}catch(_){}return {state:'wait',limited:true,notBefore:typeof result.retryAt==='string'&&Number.isFinite(Date.parse(result.retryAt))?result.retryAt:nextDay()};}
    if([401,403].includes(response.status))return {state:'auth',error:'プロフィールの認証を確認できませんでした。'};
@@ -134,10 +135,8 @@
   const p=profile();if(!p)return;let staged=false;sending=true;error='';refresh();
   try{await scopedLock(p.id,async()=>{
    const s=read(p.id);if(!remaining(s))throw Error('今日はもう送れません');if(s.queue.length>=20)throw Error('送信待ちがいっぱいです。通信を確認してから、もう一度お試しください。');
-   // Freeze this build with the original outbox entry; retries keep its provenance.
-   const build=typeof UpdateReleases!=='undefined'?UpdateReleases.current:null;
    const at=Date.now(),payload={id:crypto.randomUUID(),profileId:p.id,...context(),
-    ...(typeof build==='string'&&build?{build}:{}),kind:draft.kind,screen:draft.screen,body:draft.body.trim(),createdAt:new Date(at).toISOString()};
+    kind:draft.kind,screen:draft.screen,body:draft.body.trim(),createdAt:new Date(at).toISOString()};
    const item={payload,reservedAt:at};s.queue.push(item);s.history.unshift({...payload,state:'wait'});s.history=s.history.slice(0,20);s.quota={day:day(),count:(s.quota.day===day()?s.quota.count:0)+1};write(p.id,s);staged=true;
    const result=await transmit(p,item);
    if(result.limited||result.state==='auth'){
