@@ -5,6 +5,17 @@ const source=fs.readFileSync('js/roadmap-data.js','utf8');
 const data=vm.runInNewContext(source+';ROADMAP');
 const frozen=x=>{if(x&&typeof x==='object'){assert(Object.isFrozen(x));Object.values(x).forEach(frozen);}};
 frozen(data);
+assert.equal(Object.keys(data).filter(key=>key==='goal').length,1);
+assert.deepEqual(Object.keys(data.goal).sort(),['detail','id','label','summary','title']);
+assert.deepEqual(JSON.parse(JSON.stringify(data.goal)),{
+ id:'app',title:'アプリ版の配信',label:'ゴール',summary:'この冒険を、スマートフォンのアプリで。',
+ detail:{
+  body:'ストーリーも、絵と音も、システムも、すべてはここへ向かっています。モンスターバトルを、スマートフォンのアプリとして届けることが、この開発のゴールです。',
+  points:['ストアからインストールして遊べるように','機種を変えても、データを引き継げるように','ここまでの予定が、ひとつのアプリにまとまって届く']
+ }
+});
+assert(![...data.items,...data.done].some(item=>item.id==='app'));
+assert(!data.goal.wip&&!data.goal.mystery);
 assert.equal(new Set(data.items.map(i=>i.id)).size,data.items.length);
 for(const item of [...data.items,...data.done]){
  assert(data.lanes.some(l=>l.id===item.lane),item.title);
