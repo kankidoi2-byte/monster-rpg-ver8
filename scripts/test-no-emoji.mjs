@@ -131,6 +131,11 @@ assert.deepEqual(glyphs("const SHOP_ITEMS = [\n{id:'a', icon:'📦', name:'✧'}
 
 assert.deepEqual(glyphs("const art=item.icon||'✦'; const label='✦';",'js/gacha-ui.js'),['✦']);
 
+// Rank-up notification decorations can also come from CSS pseudo-elements.
+const rankUpStyles=read('css/ui-redesign.css').replace(/\/\*[\s\S]*?\*\//g,'');
+assert.doesNotMatch(rankUpStyles,/\.contractor-rank-up-card\s*::?(?:before|after)\b/i,
+  'Rank-up notification must not generate decorative pseudo-elements');
+
 const paths=['index.html',...readdirSync(new URL('../js/',import.meta.url)).filter(path=>path.endsWith('.js')).sort().map(path=>'js/'+path)];
 const violations=paths.flatMap(path=>scan(path,read(path)));
 if(violations.length){

@@ -278,6 +278,12 @@ try{
           assert.deepEqual(resumed.ui,before.ui,`${slot}/${kind}: interrupted failure reload UI`);
           before=resumed;
         }
+        if(kind==='rank-up-close'){
+          const card=page.locator('#contractorRankUpOverlay .contractor-rank-up-card');
+          assert(await card.isVisible(),`${slot}/${kind}: rank-up notice visible`);
+          assert.deepEqual(await card.evaluate(el=>['::before','::after'].map(pseudo=>getComputedStyle(el,pseudo).content)),
+            ['none','none'],`${slot}/${kind}: no generated rank-up decorations`);
+        }
         const dialogStart=dialogs.length;
         await page.evaluate(()=>{saveFailureUi.fail=true;saveFailureUi.notices=[];});
         const button=page.locator(surface.selector);
