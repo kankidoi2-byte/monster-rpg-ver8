@@ -539,8 +539,9 @@ function renderKokoroLinkPanel(){
     if(!preview)return '';
     const effects=preview.effects;
     const disabled=source.used||!!current||!targetEligible;
+    const src=unitImageSrc(source.entry.mon);
     return `<button class="kokoro-link-source${source.used?' is-used':''}" data-uid="${escapeGameHtml(source.uid)}" onclick="typeof renewalLinkPreview==='function'?renewalLinkPreview(this.dataset.uid):activateKokoroLinkFromBattle(this.dataset.uid)" ${disabled?'disabled':''}>`+
-      `<img src="${IMG[source.entry.mon.id]}" alt=""><span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
+      (src?`<img src="${escapeGameHtml(src)}" alt="">`:'')+`<span>${source.entry.mon.rarity} ${source.entry.mon.name}</span>`+
       `<small>レアリティ補正 ×${source.profile.multiplier}（適用済み）</small>`+
       `<strong class="battle-effect-chips">最終効果：${kokoroLinkStatChips(effects.barrier,Math.round(effects.attackBonus*100),effects.speedBonus)}</strong>`+
       `${preview.powerAbility?`<small>★1リンク能力：${preview.powerAbility.label}（${preview.powerAbility.summary}）</small>`:''}`+

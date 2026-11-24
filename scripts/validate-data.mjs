@@ -46,7 +46,13 @@ function checkAsset(label, relativePath) {
 for (const file of fs.readdirSync(path.join(root, 'js')).filter(file => file.endsWith('.js'))) {
   const relativePath = `js/${file}`;
   try {
-    new vm.Script(read(relativePath), { filename: relativePath });
+    const source=read(relativePath);
+    new vm.Script(source, { filename: relativePath });
+    // IMG maps artwork keys; ITEM_IMG, MAPIMG and other registries have different contracts.
+    for (const match of source.matchAll(/(?<![\w$])IMG\s*\[[^\[\]]*\.\s*id\s*\]/g)) {
+      const line=source.slice(0,match.index).split('\n').length;
+      fail(`${relativePath}:${line} looks up unit artwork by id: ${match[0]}`);
+    }
   } catch (error) {
     fail(`${relativePath} has invalid JavaScript syntax: ${error.message}`);
   }
@@ -114,9 +120,7 @@ if (data) {
     if (monster.entityKind === 'monster' && !Number.isInteger(monster.dexNo ?? monster.no)) {
       fail(`Monster ${monster.id} requires an integer encyclopedia number`);
     }
-    if (monster.entityKind === 'character' && monster.artworkPending === true && !monster.imgKey && typeof monster.icon === 'string' && monster.icon) {
-      notes.push(`Character ${monster.id}: artwork pending, named icon fallback`);
-    } else if (!monster.imgKey || !data.IMG[monster.imgKey]) {
+    if (!monster.imgKey || !Object.hasOwn(data.IMG,monster.imgKey)) {
       fail(`Monster ${monster.id} has an unknown imgKey: ${monster.imgKey}`);
     } else {
       checkAsset(`Monster ${monster.id}`, data.IMG[monster.imgKey]);

@@ -1,6 +1,10 @@
 function escapeGameHtml(value){
   return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function unitImageSrc(unit){
+  const key=unit?.imgKey;
+  return key&&Object.hasOwn(IMG,key)?IMG[key]||'':'';
+}
 function normalizeMoveTypes(value){
   const arr = Array.isArray(value) ? value : [value || 'normal'];
   return [...new Set(arr.filter(Boolean))];
