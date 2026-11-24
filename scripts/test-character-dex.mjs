@@ -135,7 +135,10 @@ for(const slot of retired){
 }
 assert.equal(vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS.length',context),0);
 const oldUnits=vm.runInContext('M',oldContext);
-assert.equal(JSON.stringify(records.map((unit,i)=>legacyUnitProjection(unit,oldUnits[i]))),JSON.stringify(oldUnits),'all historical unit data preserved; live110 loadouts tested separately');
+const retiredIcons=new Set(['🛡️','📮','⚒️','💧','🔱','🍲','🃏','🗡️','⚙️','🔧','🎭']);
+const expectedUnits=oldUnits.map(unit=>retiredIcons.has(unit.icon)?{...unit,icon:''}:unit);
+assert(records.every(unit=>!retiredIcons.has(unit.icon)),'historical unit emoji are no longer shown');
+assert.equal(JSON.stringify(records.map((unit,i)=>legacyUnitProjection(unit,expectedUnits[i]))),JSON.stringify(expectedUnits),'all historical unit data except retired emoji preserved; live110 loadouts tested separately');
 assert(!elements.dexHubGrid.innerHTML.includes('登場予定'),'no stale coming-soon label');
 // Keep genuine future plans visible, read-only and out of the battle roster.
 const future=vm.createContext({...context});

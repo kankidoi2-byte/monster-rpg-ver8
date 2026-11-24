@@ -8,13 +8,13 @@
 #soulContractPresentation .soul-skip{min-height:44px;min-width:88px;background:#05121ecc;color:#fff;border:1px solid #d4bd83;border-radius:6px;font:600 14px/1.4 sans-serif;box-shadow:none;padding:10px 16px;}
 #soulContractPresentation .soul-skip:focus-visible{outline:3px solid #fff;outline-offset:3px;}
 #soulContractPresentation .soul-progress{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));left:12px;right:12px;display:flex;justify-content:center;gap:clamp(7px,2.2vw,15px);font-size:14px;}
-#soulContractPresentation .soul-progress span{color:#455264;transition:color .2s,text-shadow .2s;}
-#soulContractPresentation .soul-progress .is-lit{color:#fff3cf;text-shadow:0 0 7px #ffe0a9,0 0 18px #a2ccff;}
+#soulContractPresentation .soul-progress span{width:8px;height:8px;border-radius:50%;background:#455264;transition:background .2s,box-shadow .2s;}
+#soulContractPresentation .soul-progress .is-lit{background:#fff3cf;box-shadow:0 0 7px #ffe0a9,0 0 18px #a2ccff;}
 #soulContractPresentation .soul-orbit{position:absolute;left:50%;top:29%;width:0;height:0;opacity:0;transform:scale(.5);transition:opacity .7s,transform 1.1s;}
 #soulContractPresentation .soul-star{position:absolute;width:12px;height:34px;border-radius:50%;background:#edf7ff;box-shadow:0 0 12px 4px #d4eeff88,0 0 34px 8px #a8d8ee35;transform:rotate(calc(var(--i)*360deg/var(--count))) translateY(-95px) rotate(calc(var(--i)*-360deg/var(--count)));}
 #soulContractPresentation .soul-star::after{content:"";position:absolute;left:-9px;top:11px;width:30px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 10px #edf7ff;}
 #soulContractPresentation[data-stage=souls] .soul-orbit{opacity:1;transform:scale(1);}
-#soulContractPresentation .soul-response{position:absolute;left:50%;top:27%;transform:translate(-50%,-50%) scale(.6);font-size:66px;color:#fff1ed;text-shadow:0 0 12px #fff,0 0 35px #fbafab,0 0 60px #ed998677;opacity:0;}
+#soulContractPresentation .soul-response{position:absolute;left:50%;top:27%;transform:translate(-50%,-50%) scale(.6);width:20px;height:20px;border-radius:50%;background:#fff1ed;box-shadow:0 0 12px #fff,0 0 35px #fbafab,0 0 60px #ed998677;opacity:0;}
 #soulContractPresentation[data-stage=response] .soul-response{opacity:1;animation:soul-response .65s ease-out both;}
 #soulContractPresentation .soul-document{position:absolute;top:50%;left:50%;width:min(54vw,240px);aspect-ratio:270/330;transform:translate(-50%,-50%) scale(.9);background:linear-gradient(115deg,#a7a18b,#e5dfbd 27%,#fbf3d7 49%,#bbb59e 90%);box-shadow:0 0 24px #e9e5c522;opacity:0;overflow:hidden;color:#5c5137;border:1px solid #d7caa4;}
 #soulContractPresentation .soul-document svg{width:100%;height:100%;}
@@ -63,8 +63,8 @@
 #soulContractPresentation .soul-next{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);display:none;z-index:5}
 #soulContractPresentation.is-waiting-next[data-stage=portrait] .soul-next{display:block}
 #soulContractPresentation .soul-star.is-gold-star{background:#ffe5a0;box-shadow:0 0 18px 7px #ffd16d88}#soulContractPresentation .soul-star.is-gold-star::after{background:#ffdf8a}
-#soulContractPresentation .soul-response{color:#dcf2ff;text-shadow:0 0 12px #fff,0 0 35px #abdfff,0 0 60px #84bbf077}
-#soulContractPresentation.is-gold .soul-response{color:#ffdf8a;text-shadow:0 0 12px #fff,0 0 35px #ffd377}
+#soulContractPresentation .soul-response{background:#dcf2ff;box-shadow:0 0 12px #fff,0 0 35px #abdfff,0 0 60px #84bbf077}
+#soulContractPresentation.is-gold .soul-response{background:#ffdf8a;box-shadow:0 0 12px #fff,0 0 35px #ffd377}
 #soulContractPresentation[data-stage=promotion] .soul-document,#soulContractPresentation.is-gold[data-stage=charge] .soul-document{opacity:1;transform:translate(-50%,-50%);background:linear-gradient(115deg,#886315,#e9bd53 18%,#fff1a8 37%,#c98e23 62%,#fff3b4 79%,#a5751d);color:#674009;box-shadow:0 0 24px #ffd875,0 0 60px #e7bd6466}
 #soulContractPresentation[data-stage=promotion] .soul-glyph{stroke-dashoffset:0}
 #soulContractPresentation[data-stage=promotion] .soul-paper-sheen{animation:soul-sheen calc(1.1s / var(--soul-speed,1)) ease-out both}

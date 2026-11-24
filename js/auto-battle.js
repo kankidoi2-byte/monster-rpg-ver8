@@ -37,7 +37,7 @@ function autoRecordVictory(multi){
 function autoDifficultyLabel(map,d,event){
   if(!autoField(map,event))return '';
   const p=autoProgress(map,d);
-  return '<small class="'+(p.open?'ab-clear':'')+'">討伐 '+p.count+'/'+p.targets.length+(p.open?' ✓':'')+'</small>';
+  return '<small class="'+(p.open?'ab-clear':'')+'">討伐 '+p.count+'/'+p.targets.length+(p.open?' 達成':'')+'</small>';
 }
 function autoDepartureLabel(map,d,event){
   return d&&autoField(map,event)&&autoSheetKey===map.id+':'+d.id?'オートで出発 / '+d.label+' × '+save.autoBattle.settings.times+'回':'出発';
@@ -69,10 +69,10 @@ function autoSheet(map,d,event){
   if(!p.open){
     const roster=p.targets.map(m=>{
       const known=p.known.has(m.id);
-      const art=IMG[m.imgKey]?`<img src="${IMG[m.imgKey]}" alt="">`:`<i>${m.icon||'◆'}</i>`;
-      return `<span class="${known?'':'ab-shadow'}">${art}<small>${known?'✓ '+m.name:'？'}</small></span>`;
+      const art=IMG[m.imgKey]?`<img src="${IMG[m.imgKey]}" alt="">`:'<i>画像なし</i>';
+      return `<span class="${known?'':'ab-shadow'}">${art}<small>${known?'討伐済み：'+m.name:'？'}</small></span>`;
     }).join('');
-    body=`<p>🔒 ${d.label}に出てくる相手をすべて倒すと使えます（あと${p.targets.length-p.count}体）</p><div class="ab-roster">${roster}</div>`;
+    body=`<p>未解放：${d.label}に出てくる相手をすべて倒すと使えます（あと${p.targets.length-p.count}体）</p><div class="ab-roster">${roster}</div>`;
   }else if(on){
     body=`<div class="ab-options"><p>画面を離れても、戻ったときに経過時間ぶん周回します。</p><b>回数</b>
       <div>${[1,5,10,20].map(n=>option('times',n,n+'回')).join('')}</div>
@@ -81,7 +81,7 @@ function autoSheet(map,d,event){
       ${toggle('stopOnBlessEmpty','G-BLESSがなくなったら')}${toggle('stopOnNewDex','図鑑にいないモンスターに会ったら')}</div>`;
   }
   return `<section class="ab-sheet"><button role="switch" aria-checked="${on}" onclick="autoToggleSheet()" ${p.open?'':'disabled'}>
-    ⏩ オートで周回　${on?'ON':'OFF'}</button>${body}</section>`;
+    オートで周回　${on?'ON':'OFF'}</button>${body}</section>`;
 }
 function autoNewRun(map,d,times,persistent=false){
   return {map,d,times,settings:{...save.autoBattle.settings},identity:saveTransactionIdentity(),phase:'depart',manual:false,persistent,
@@ -289,13 +289,13 @@ function autoSyncBattle(){
   if(!visible||!participating)oldBadge?.remove();
   if(!visible)return;
   const button=(action,label)=>'<button onclick="autoControl(\''+action+'\')">'+label+'</button>';
-  let html=button('manual','⏩ オート');
+  let html=button('manual','オート');
   if(participating){
     let badge=oldBadge;
     if(panel&&!badge){badge=document.createElement('strong');badge.id='autoBadge';panel.prepend(badge);}
     if(badge){badge.textContent=(r.manual?'手動中（オート一時停止）':'AUTO ×'+r.settings.speed)+'　'+(r.battles.length+1)+' / '+r.times+'戦目';badge.classList.toggle('paused',r.manual);}
     const bars=autoBars(r);
-    html='<div class="ab-bars">'+bars+'</div>'+button('manual',r.manual?'⏩ オートに戻す':'✋ 手動にする')+button('speed','速度 ×'+r.settings.speed)+button('end',r.stop?'終了を取り消す':'この戦闘で周回を終える');
+    html='<div class="ab-bars">'+bars+'</div>'+button('manual',r.manual?'オートに戻す':'手動にする')+button('speed','速度 ×'+r.settings.speed)+button('end',r.stop?'終了を取り消す':'この戦闘で周回を終える');
     if(!r.manual&&!busy&&autoTask===null)autoLater(r,480/autoSpeed(),autoAct);
   }
   if(controls.innerHTML!==html)controls.innerHTML=html;

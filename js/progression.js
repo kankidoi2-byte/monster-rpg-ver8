@@ -14,9 +14,9 @@ function renderFusion() {
       ${vis(to)}<h3>${from.name} + ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName}</h3>
       <p>進化先：<b>${to.name}</b></p>
       <div class="fusion-recipe">
-        <p>${hasM?'✅':'❌'} ${from.name}${!hasM&&caughtHas(r.from)?'（遠征中）':''}</p>
-        <p>${hasI?'✅':'❌'} ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${r.count}</p>
-        <p style="color:${can?'#4ade80':'#f87171'}">${(!r.repeatable && done)?'✨合成済み':can?'タップで合成':'条件不足'}</p>
+        <p>${from.name}（${hasM?'対象あり':'対象なし'}）${!hasM&&caughtHas(r.from)?'（遠征中）':''}</p>
+        <p>${hasI?'所持：':'不足：'}${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${r.count}</p>
+        <p style="color:${can?'#4ade80':'#f87171'}">${(!r.repeatable && done)?'合成済み':can?'タップで合成':'条件不足'}</p>
       </div></div>`;
   }).join('');
 }
@@ -71,7 +71,7 @@ async function tryFusion(idx) {
   renderParty();
   renderDex();
   if (typeof renderPartySetup === 'function') renderPartySetup();
-  log.innerHTML = `✨ 合成成功！${from.name}は${to.name}に進化した！`;
+  log.innerHTML = `合成成功！${from.name}は${to.name}に進化した！`;
   if(typeof replayUiMotion==='function')replayUiMotion(log,'ui-reward-pop',850);
   if(typeof showUiNotice==='function')showUiNotice(`${to.name}への合成成功！`);
   });
@@ -82,14 +82,14 @@ function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
   const targets = battleParty.length?battleParty.filter(ins=>!ins.guest):getPartyInstances();
   const msgs = [];
   targets.forEach(ins => {
-    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; checkEvolution(ins); msgs.push(`🏆 ${by(ins.id).name} は Lv.MAX！`); return; }
+    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; checkEvolution(ins); msgs.push(`${by(ins.id).name} は Lv.MAX！`); return; }
     const earned=typeof traitExperienceReward==='function'?traitExperienceReward(ins,baseExp,battleParty):baseExp;
     ins.exp = (ins.exp||0) + earned;
-    msgs.push(`✨ ${by(ins.id).name} EXP +${earned}`);
+    msgs.push(`${by(ins.id).name} EXP +${earned}`);
     while (!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)) {
       ins.exp -= needExp(ins.level);
       ins.level++;
-      msgs.push(`⬆️ ${by(ins.id).name} は Lv.${ins.level} に上がった！`);
+      msgs.push(`${by(ins.id).name} は Lv.${ins.level} に上がった！`);
       // LVUPアニメ
       const pv = document.getElementById('pVis');
       if (animate && pv) { pv.classList.remove('levelup-anim'); void pv.offsetWidth; pv.classList.add('levelup-anim'); }

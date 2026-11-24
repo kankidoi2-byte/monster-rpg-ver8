@@ -17,7 +17,7 @@ for(const [id,name] of Object.entries(expected)){
   assert.equal(bytes.readUIntLE(24,3)+1,768);assert.equal(bytes.readUIntLE(27,3)+1,768);
  }
  for(const html of [result.dex,result.inline]){assert(html.includes(`src="${result.src}"`));assert(html.includes(`alt="${name}"`));}
- assert(!result.locked.includes('<img'));assert(result.locked.includes('❔'));
+ assert(!result.locked.includes('<img'));assert.match(result.locked,/aria-label="未登録">未<\/div>/);
 }
 assert.equal(vm.runInContext("itemInlineVisual({id:'unknown',icon:'📦'})",context),'📦');
 console.log('Item artwork: seven exact mappings, WebP budgets, shared visuals, locked entries and fallback passed.');

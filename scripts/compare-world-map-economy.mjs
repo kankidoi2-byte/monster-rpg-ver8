@@ -111,25 +111,51 @@ function functionSource(source,name){
 // The adopted 2026-11-13 item rewards are additive and covered separately by
 // test-hunt-victory-save.mjs (rates, quantities, receipt and result row).
 // Exempt only the exact tail call/display pair, not arbitrary new statements.
-const APPROVED_ITEM_REWARD_TAIL=[
+const APPROVED_ITEM_REWARD_TAILS=['🎁 ',''].map(prefix=>[
   '  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest);',
-  '  if(itemRewards.length)msg+=`<br>🎁 ${huntVictoryItemsLine(itemRewards)}を入手！`;',
+  '  if(itemRewards.length)msg+=`<br>'+prefix+'${huntVictoryItemsLine(itemRewards)}を入手！`;',
   '  '
-].join('\n');
+].join('\n'));
 // God Core is also additive: only the exact event eligibility and reward tail
 // are excluded here, and the real IV/V threshold, receipt and no-reroll checks
 // remain in test-hunt-victory-save.mjs.
-const APPROVED_GOD_CORE_REWARD_TAIL=[
+const APPROVED_GOD_CORE_REWARD_TAILS=['🎁 ',''].map(prefix=>[
   '  // The event is resolved before rewards are staged; capture eligibility first.',
   '  const godCoreEligible=canDropGodCoreFromVictory(activeHuntRequest,enemy);',
   "  if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();",
   '  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest,Math.random,godCoreEligible);',
-  '  if(itemRewards.length)msg+=`<br>🎁 ${huntVictoryItemsLine(itemRewards)}を入手！`;',
+  '  if(itemRewards.length)msg+=`<br>'+prefix+'${huntVictoryItemsLine(itemRewards)}を入手！`;',
   '  '
-].join('\n');
+].join('\n'));
 function withoutApprovedItemRewardTail(rewardBlock){
-  for(const tail of [APPROVED_GOD_CORE_REWARD_TAIL,APPROVED_ITEM_REWARD_TAIL]){
-    if(rewardBlock.endsWith(tail))return rewardBlock.slice(0,-tail.length)+'  ';
+  const tail=[...APPROVED_GOD_CORE_REWARD_TAILS,...APPROVED_ITEM_REWARD_TAILS].find(value=>rewardBlock.endsWith(value));
+  return tail ? rewardBlock.slice(0,-tail.length)+'  ' : rewardBlock;
+}
+// The old and new victory copy differs by these exact leading pictographs.
+// Keep the quote, entire text, placeholders, conditions and adjacent statements.
+const VICTORY_MESSAGE_DECORATIONS={
+  win:[
+    ['🏆 ','`${enemy.name}を倒した！<br>`'],
+    ['⏱️ ','`${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`'],
+    ['⌛ ','`${battleTurnCount}ターンで撃破。迅速討伐失敗（8ターン以内）<br>`'],
+    ['🪙 ','`<br>コイン${coinGain}枚獲得！`'],
+    ['💰 ','`<br>黄金郷ボーナス：コイン${bonus}枚獲得！`'],
+    ['🗺️ ',"'<br>黄金郷への地図を入手！'"],
+    ['🎁 ','`<br>${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`'],
+    ['⚗️ ','`<br>${itemInlineVisual(alchemyMaterial)} ${alchemyMaterial.name}を入手！`']
+  ],
+  winMultiBattle:[
+    ['🏆 ',"`${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`"],
+    ['⏱️ ','`<br>${battleTurnCount}ターンで迅速討伐達成！`'],
+    ['⌛ ','`<br>迅速討伐失敗（8ターン以内）`'],
+    ['🗺️ ',"'<br>黄金郷への地図を入手！'"]
+  ]
+};
+function normalizedVictoryMessageDecoration(rewardBlock,name){
+  for(const [prefix,plainText] of VICTORY_MESSAGE_DECORATIONS[name]||[]){
+    const start=plainText.startsWith('<br>',1)?5:1;
+    const decorated=plainText.slice(0,start)+prefix+plainText.slice(start);
+    rewardBlock=rewardBlock.replace(decorated,plainText);
   }
   return rewardBlock;
 }
@@ -143,7 +169,7 @@ function economicFunctionSource(source,name){
     const start=body.indexOf(name==='win'?'const turnBonusActive':'const turnBonus=');
     const end=body.indexOf(extracted?'return {message:msg,outcome:':"document.getElementById('log')",start);
     assert(start>=0&&end>start,'reward block boundaries must be explicit');
-    return withoutApprovedItemRewardTail(body.slice(start,end))
+    return normalizedVictoryMessageDecoration(withoutApprovedItemRewardTail(body.slice(start,end)),name)
       .replace('grantPartyExp(expGain,{saveNow:false,animate:false})','grantPartyExp(expGain)')
       .replace('grantPartyExp(totalExp,{saveNow:false,animate:false})','grantPartyExp(totalExp)')
       .replace('progressActiveExpeditions(Math.random,{saveNow:false})','progressActiveExpeditions()')
@@ -391,9 +417,24 @@ assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless);s
 assert.notEqual(traitsOffRuleSource("const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId)+1;const bonus=typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;"),"const bonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);");
 assert.notEqual(traitsOffRuleSource("save.coins++;"),"");
 const oldRewardFixture='existingReward();\n';
-assert.equal(withoutApprovedItemRewardTail(oldRewardFixture+APPROVED_ITEM_REWARD_TAIL),oldRewardFixture+'  ');
-assert.notEqual(withoutApprovedItemRewardTail(oldRewardFixture+APPROVED_ITEM_REWARD_TAIL.replace('const itemRewards','save.coins++;const itemRewards')),oldRewardFixture+'  ');
-assert.notEqual(withoutApprovedItemRewardTail(oldRewardFixture+APPROVED_ITEM_REWARD_TAIL+'save.coins++;'),oldRewardFixture+'  ');
+for(const tail of APPROVED_ITEM_REWARD_TAILS){
+  assert.equal(withoutApprovedItemRewardTail(oldRewardFixture+tail),oldRewardFixture+'  ');
+  for(const altered of [
+    tail.replace('const itemRewards','save.coins++;const itemRewards'),
+    tail.replace('activeHuntRequest','otherRequest'),
+    tail.replace('itemRewards.length','itemRewards.length>1'),
+    tail+'save.coins++;'
+  ])assert.equal(withoutApprovedItemRewardTail(oldRewardFixture+altered),oldRewardFixture+altered);
+}
+const oldVictory='save.coins+=coinGain;msg+=`<br>🪙 コイン${coinGain}枚獲得！`;';
+const newVictory='save.coins+=coinGain;msg+=`<br>コイン${coinGain}枚獲得！`;';
+assert.equal(normalizedVictoryMessageDecoration(oldVictory,'win'),newVictory);
+assert.equal(normalizedVictoryMessageDecoration(oldVictory,'winMultiBattle'),oldVictory);
+for(const altered of [
+  oldVictory.replace('save.coins+=coinGain','save.coins+=coinGain+1'),
+  oldVictory.replace('${coinGain}','${coinGain+1}'),
+  oldVictory.replace('🪙','🎁')
+])assert.notEqual(normalizedVictoryMessageDecoration(altered,'win'),newVictory);
 
 const baselineSnapshot=canonicalSnapshot(baseline);
 const currentSnapshot=canonicalSnapshot(current);

@@ -19,7 +19,7 @@ function playSoulContractPresentation(result,onFinish){
   const overlay=document.createElement('div');overlay.id='soulContractPresentation';overlay.className='soul-contract';
   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','キャラクター契約演出');
   const count=result.entries.length;
-  overlay.innerHTML=`<canvas class="soul-sky" aria-hidden="true"></canvas><div class="soul-cinematic"><div class="soul-orbit" aria-hidden="true">${result.entries.map((_,i)=>`<i class="soul-star" style="--i:${i};--count:${count}"></i>`).join('')}</div><div class="soul-response" aria-hidden="true">✦</div><div class="soul-document" aria-hidden="true">${soulContractGlyphs()}<i class="soul-paper-sheen"></i></div><div class="soul-release" aria-hidden="true"></div><div class="soul-portrait"></div><div class="soul-caption"><div class="soul-name"></div><div class="soul-rarity"></div><div class="soul-seal" aria-hidden="true">⌁ ⋔ ⟐ ⋮ ⌁</div></div></div><div class="soul-controls"><span class="soul-counter" aria-live="polite"></span><button type="button" class="soul-speed">×1</button><button type="button" class="soul-skip">スキップ</button></div><div class="soul-progress" aria-label="契約済みの数">${result.entries.map((_,i)=>`<span data-soul-progress="${i}" aria-hidden="true">✦</span>`).join('')}</div>`;
+  overlay.innerHTML=`<canvas class="soul-sky" aria-hidden="true"></canvas><div class="soul-cinematic"><div class="soul-orbit" aria-hidden="true">${result.entries.map((_,i)=>`<i class="soul-star" style="--i:${i};--count:${count}"></i>`).join('')}</div><div class="soul-response" aria-hidden="true"></div><div class="soul-document" aria-hidden="true">${soulContractGlyphs()}<i class="soul-paper-sheen"></i></div><div class="soul-release" aria-hidden="true"></div><div class="soul-portrait"></div><div class="soul-caption"><div class="soul-name"></div><div class="soul-rarity"></div><div class="soul-seal" aria-hidden="true"></div></div></div><div class="soul-controls"><span class="soul-counter" aria-live="polite"></span><button type="button" class="soul-speed">×1</button><button type="button" class="soul-skip">スキップ</button></div><div class="soul-progress" aria-label="契約済みの数">${result.entries.map((_,i)=>`<span data-soul-progress="${i}" aria-hidden="true"></span>`).join('')}</div>`;
   document.body.append(overlay);document.body.style.overflow='hidden';
   // Prevent background keyboard activation without changing game navigation.
   const backgrounds=[...document.body.children].filter(el=>el!==overlay&&el.tagName!=='SCRIPT');
@@ -82,10 +82,9 @@ function playSoulContractPresentation(result,onFinish){
       const portrait=overlay.querySelector('.soul-portrait');portrait.replaceChildren();
       const src=typeof IMG!=='undefined'&&entry.unit.imgKey?IMG[entry.unit.imgKey]:null;
       if(src){const img=new Image();img.src=src;img.alt=entry.unit.name;img.decoding='async';portrait.append(img);}
-      else {const fallback=document.createElement('span');fallback.textContent=entry.unit.icon||'✦';fallback.setAttribute('role','img');fallback.setAttribute('aria-label',entry.unit.name);portrait.append(fallback);}
+      else {const fallback=document.createElement('span');fallback.textContent=entry.unit.name;fallback.setAttribute('role','img');fallback.setAttribute('aria-label',entry.unit.name);portrait.append(fallback);}
       overlay.querySelector('.soul-name').textContent=entry.unit.name;
       overlay.querySelector('.soul-rarity').textContent=`${'★'.repeat(rarity)} / Lv.${entry.instance?.level||1}`;
-      overlay.querySelector('.soul-seal').textContent='⌁ ⋔ ⟐ ⋮ ⌁';
       stage('response',i);await delay(i===0||gold?800:320);if(stopped)return;
       stage('paper',i);await delay(i===0||gold?1350:430);if(stopped)return;
       if(gold){overlay.classList.add('is-gold');stage(promotions[i]?'promotion':'gold',i);await delay(promotions[i]?1100:700);if(stopped)return;}

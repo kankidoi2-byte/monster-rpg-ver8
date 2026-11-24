@@ -28,7 +28,7 @@ function updateHomeMissionBadge(){
 }
 function renderHomeMissions(){
   const list=document.getElementById('homeMissionsList');
-  if(list)list.innerHTML=homeMissionRows().map(row=>`<div class="home-mission-row" data-state="${row.state}"><div class="home-mission-copy"><h3>${row.name}</h3><div class="home-mission-reward">🪙 ${row.reward} コイン</div>${row.state==='locked'?`<small class="home-mission-progress">${row.progress}</small>`:''}</div>${row.state==='ready'?`<button type="button" class="home-mission-claim" onclick="claimHomeMission('${row.id}')">受け取る</button>`:`<span class="home-mission-status">${row.state==='claimed'?'受け取り済み':'未達成'}</span>`}</div>`).join('');
+  if(list)list.innerHTML=homeMissionRows().map(row=>`<div class="home-mission-row" data-state="${row.state}"><div class="home-mission-copy"><h3>${row.name}</h3><div class="home-mission-reward">コイン ${row.reward}枚</div>${row.state==='locked'?`<small class="home-mission-progress">${row.progress}</small>`:''}</div>${row.state==='ready'?`<button type="button" class="home-mission-claim" onclick="claimHomeMission('${row.id}')">受け取る</button>`:`<span class="home-mission-status">${row.state==='claimed'?'受け取り済み':'未達成'}</span>`}</div>`).join('');
   updateHomeMissionBadge();
 }
 function showHomeMissions(){

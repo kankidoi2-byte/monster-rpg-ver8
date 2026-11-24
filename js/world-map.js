@@ -1,19 +1,19 @@
 // Geographic navigation is presentation-only: persistent entrances/events use the worldMap state API.
 const WORLD_MAP_PLACES = Object.freeze([
-  {id:'snow_mountain',x:49,y:7,icon:'❄',route:'北の山脈。雪解け水は湖へ流れる。'},
-  {id:'highland_ruins',x:21,y:15,icon:'⌘',route:'北西の高地。中央平原から山道でつながる。'},
-  {id:'starry_plain',x:72,y:13,icon:'✦',route:'北東の高原。星海へ通じる気配を観測する。'},
-  {id:'forest',x:17,y:35,icon:'♣',route:'草原の西。南へ進むと光の平原と廃村に道が分かれる。'},
-  {id:'grassland',x:44,y:26,icon:'✿',route:'世界の中央。王都・西の森・東の湖への分岐点。'},
-  {id:'lake',x:72,y:31,icon:'≈',route:'雪山の水を受け、南東の流出口から海へ注ぐ湖。'},
-  {id:'water_secret',x:67,y:43,icon:'◇',route:'湖の南東、海へ下る流れから分かれた上流支谷。入口が現れた時に探索できる。'},
-  {id:'seikai_irie',x:82.5,y:50,icon:'≈',route:'湖の南東流出口から続く川の河口。水辺の遺構が外海への目印。'},
-  {id:'ruined_village',x:14,y:55,icon:'⌂',route:'森の南西。月影の洞窟がある周辺地方へ続く。'},
-  {id:'light_plain',x:31.5,y:48,icon:'☀',route:'森の南東。陽だまりの森の縁に広がる光の平原。'},
-  {id:'kaen_village',x:52,y:69,icon:'❀',route:'火山の南側。溶岩流から離れた山あいに里がある。'},
-  {id:'volcano',x:52,y:57,icon:'▲',route:'南部火山帯。華炎の里から北へ山道を登る。'},
-  {id:'kaiyu_kaiiki',x:90,y:62,icon:'≈',route:'入り江の沖に循環する海流が広がる外海。東にはまだ見ぬ航路がある。'},
-  {id:'deep_sea_end',x:88,y:83,icon:'▽',route:'回遊海域の南東。連続する海面の下へ、水に満ちた海溝が深く沈む。'}
+  {id:'snow_mountain',x:49,y:7,route:'北の山脈。雪解け水は湖へ流れる。'},
+  {id:'highland_ruins',x:21,y:15,route:'北西の高地。中央平原から山道でつながる。'},
+  {id:'starry_plain',x:72,y:13,route:'北東の高原。星海へ通じる気配を観測する。'},
+  {id:'forest',x:17,y:35,route:'草原の西。南へ進むと光の平原と廃村に道が分かれる。'},
+  {id:'grassland',x:44,y:26,route:'世界の中央。王都・西の森・東の湖への分岐点。'},
+  {id:'lake',x:72,y:31,route:'雪山の水を受け、南東の流出口から海へ注ぐ湖。'},
+  {id:'water_secret',x:67,y:43,route:'湖の南東、海へ下る流れから分かれた上流支谷。入口が現れた時に探索できる。'},
+  {id:'seikai_irie',x:82.5,y:50,route:'湖の南東流出口から続く川の河口。水辺の遺構が外海への目印。'},
+  {id:'ruined_village',x:14,y:55,route:'森の南西。月影の洞窟がある周辺地方へ続く。'},
+  {id:'light_plain',x:31.5,y:48,route:'森の南東。陽だまりの森の縁に広がる光の平原。'},
+  {id:'kaen_village',x:52,y:69,route:'火山の南側。溶岩流から離れた山あいに里がある。'},
+  {id:'volcano',x:52,y:57,route:'南部火山帯。華炎の里から北へ山道を登る。'},
+  {id:'kaiyu_kaiiki',x:90,y:62,route:'入り江の沖に循環する海流が広がる外海。東にはまだ見ぬ航路がある。'},
+  {id:'deep_sea_end',x:88,y:83,route:'回遊海域の南東。連続する海面の下へ、水に満ちた海溝が深く沈む。'}
 ]);
 let worldMapSelectedId = null;
 let worldMapSelectedEvent = null;
@@ -116,7 +116,7 @@ function worldMapPlaceButton(map,{className='',eventKey=null,subtitle=''}={}) {
   const selectedEvent=eventKey||worldMapDefaultEvent(map);
   const event=worldMapEventsForUI().find(entry=>entry.mapId===map.id);
   const pending=worldMapPendingIds().includes(map.id);
-  return `<button type="button" class="wm-place ${className}" data-wm-place="${worldMapEscape(map.id)}"${selectedEvent?` data-wm-event="${worldMapEscape(selectedEvent)}"`:''}${map.goldenLand?' data-tutorial-golden-land':''}><span>${worldMapEscape(map.name)}</span>${event?`<span class="wm-event-badge" aria-label="${worldMapEscape(event.title)}">${event.key==='crisis'?'!':'✧'}</span>`:''}${pending?'<i class="wm-new-dot" aria-label="新しい場所"></i>':''}${subtitle?`<small>${worldMapEscape(subtitle)}</small>`:''}</button>`;
+  return `<button type="button" class="wm-place ${className}" data-wm-place="${worldMapEscape(map.id)}"${selectedEvent?` data-wm-event="${worldMapEscape(selectedEvent)}"`:''}${map.goldenLand?' data-tutorial-golden-land':''}><span>${worldMapEscape(map.name)}</span>${event?`<span class="wm-event-badge" aria-label="${worldMapEscape(event.title)}">${event.key==='crisis'?'!':''}</span>`:''}${pending?'<i class="wm-new-dot" aria-label="新しい場所"></i>':''}${subtitle?`<small>${worldMapEscape(subtitle)}</small>`:''}</button>`;
 }
 function worldMapTerrainHTML() {
   return '<img class="wm-terrain" src="images/maps/world_map_prologue_v2.webp" alt="" aria-hidden="true" draggable="false">';
@@ -134,15 +134,15 @@ function worldMapOverviewHTML() {
     const map=MAPS.find(map=>map.id===place.id);
     if(!worldMapVisible(map))return '';
     const event=events.find(entry=>entry.mapId===map.id);
-    return `<div class="wm-pin${event?' has-event':''}${worldMapSelectedId===map.id?' is-selected':''}${event?.key==='crisis'?' is-crisis':''}" data-wm-point="${place.id}" style="--wm-x:${place.x}%;--wm-y:${place.y}%">${worldMapPlaceButton(map,{className:'wm-pin-button'})}<span class="wm-pin-icon" aria-hidden="true">${place.icon}</span></div>`;
+    return `<div class="wm-pin${event?' has-event':''}${worldMapSelectedId===map.id?' is-selected':''}${event?.key==='crisis'?' is-crisis':''}" data-wm-point="${place.id}" style="--wm-x:${place.x}%;--wm-y:${place.y}%">${worldMapPlaceButton(map,{className:'wm-pin-button'})}<span class="wm-pin-icon" aria-hidden="true"></span></div>`;
   }).join('');
   const beyond=MAPS.filter(map=>WORLD_MAP_BEYOND_IDS.includes(map.id)&&worldMapVisible(map));
   const beyondPending=beyond.some(map=>worldMapPendingIds().includes(map.id));
   const hasCrisis=beyond.some(map=>events.some(event=>event.mapId===map.id&&event.key==='crisis'));
   const city=MAPS.some(map=>['arena','magic_academy'].includes(map.id)&&worldMapVisible(map));
-  return `<div class="wm-viewport" tabindex="0" role="region" aria-label="序章の世界地図"><div class="wm-map">${worldMapTerrainHTML()}${worldMapTerrainEffectsHTML(events)}</div><div class="wm-pins">${geography}${city?'<div class="wm-pin wm-city-pin" data-wm-point="royal_capital" style="--wm-x:49%;--wm-y:38%"><button type="button" data-wm-city aria-label="王都"><span class="wm-pin-icon" aria-hidden="true">♜</span><span class="wm-pin-name">王都</span></button></div>':''}</div></div>
+  return `<div class="wm-viewport" tabindex="0" role="region" aria-label="序章の世界地図"><div class="wm-map">${worldMapTerrainHTML()}${worldMapTerrainEffectsHTML(events)}</div><div class="wm-pins">${geography}${city?'<div class="wm-pin wm-city-pin" data-wm-point="royal_capital" style="--wm-x:49%;--wm-y:38%"><button type="button" data-wm-city aria-label="王都"><span class="wm-pin-icon" aria-hidden="true"></span><span class="wm-pin-name">王都</span></button></div>':''}</div></div>
     <button type="button" class="wm-list-toggle" data-wm-list aria-label="行き先の一覧">一覧${worldMapPendingIds().some(id=>MAPS.some(map=>map.id===id&&worldMapVisible(map)))?'<i class="wm-new-dot" aria-label="新しい場所"></i>':''}</button>
-    ${beyond.length?`<button type="button" class="wm-beyond-toggle${hasCrisis?' is-crisis':''}" data-wm-beyond${beyond.some(map=>map.goldenLand)?' data-tutorial-golden-land':''}>${hasCrisis?'!':'✧'} 世界の外側${beyondPending?'<i class="wm-new-dot" aria-label="新しい場所"></i>':''}</button>`:''}`;
+    ${beyond.length?`<button type="button" class="wm-beyond-toggle${hasCrisis?' is-crisis':''}" data-wm-beyond${beyond.some(map=>map.goldenLand)?' data-tutorial-golden-land':''}>${hasCrisis?'! ':''}世界の外側${beyondPending?'<i class="wm-new-dot" aria-label="新しい場所"></i>':''}</button>`:''}`;
 }
 function worldMapListHTML(beyondOnly=false) {
   const maps=MAPS.filter(map=>worldMapVisible(map)&&!['arena','magic_academy'].includes(map.id)&&(!beyondOnly||WORLD_MAP_BEYOND_IDS.includes(map.id)));

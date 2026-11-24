@@ -36,7 +36,7 @@ const ProloguePart2Events=(()=>{
   }
   function synthesisMarkup(eventId='pb_11_synthesis'){
     const model=trainingModel();
-    return `<section class="panel prologue-synthesis" aria-label="技合成の実習"><p>実習用の3枚を選んで合成します。手持ちのカードやコインは使いません。</p><div role="group" aria-label="実習用の技カード">${model.materials.map(card=>`<button type="button" data-prologue-loan="${card.id}" aria-pressed="${card.selected}" onclick="ProloguePart2Events.toggleSynthesisMaterial('${card.id}')">${escape(card.name)} ×1${card.selected?' ✓':''}</button>`).join('')}</div><p data-prologue-selection-count>${model.selected.length} / 3枚</p><button type="button" data-prologue-synthesize onclick="ProloguePart2Events.synthesize('${escape(eventId)}')" ${model.ready?'':'disabled'}>選んだ3枚で合成する</button></section>`;
+    return `<section class="panel prologue-synthesis" aria-label="技合成の実習"><p>実習用の3枚を選んで合成します。手持ちのカードやコインは使いません。</p><div role="group" aria-label="実習用の技カード">${model.materials.map(card=>`<button type="button" data-prologue-loan="${card.id}" aria-pressed="${card.selected}" onclick="ProloguePart2Events.toggleSynthesisMaterial('${card.id}')">${escape(card.name)} ×1${card.selected?'（選択済み）':''}</button>`).join('')}</div><p data-prologue-selection-count>${model.selected.length} / 3枚</p><button type="button" data-prologue-synthesize onclick="ProloguePart2Events.synthesize('${escape(eventId)}')" ${model.ready?'':'disabled'}>選んだ3枚で合成する</button></section>`;
   }
   function toggleSynthesisMaterial(id){
     if(operationBusy||!LOANS.includes(id))return false;
@@ -44,7 +44,7 @@ const ProloguePart2Events=(()=>{
     if(typeof document!=='undefined'){
       for(const button of document.querySelectorAll('[data-prologue-loan]')){
         const selected=selection.has(button.dataset.prologueLoan);button.setAttribute('aria-pressed',String(selected));
-        button.textContent=`${SKILL_BY_ID[button.dataset.prologueLoan]?.name||button.dataset.prologueLoan} ×1${selected?' ✓':''}`;
+        button.textContent=`${SKILL_BY_ID[button.dataset.prologueLoan]?.name||button.dataset.prologueLoan} ×1${selected?'（選択済み）':''}`;
       }
       const count=document.querySelector('[data-prologue-selection-count]');if(count)count.textContent=`${selection.size} / 3枚`;
       const submit=document.querySelector('[data-prologue-synthesize]');if(submit)submit.disabled=selection.size!==3;

@@ -61,7 +61,7 @@ try{
  });
  assert(result[0]>0&&result[0]===result[1]&&result[2]);
  await page.evaluate(()=>{showBattleChoices();showWorldMapLocation('grassland');worldMapSelectedDifficulty='d2';renderWorldMap(document.getElementById('battleChoiceList'));});
- assert(await sw.isEnabled());assert.match(await page.locator('[data-wm-difficulty="d2"]').innerText(),/討伐 \d+\/\d+ ✓/);
+ assert(await sw.isEnabled());assert.match(await page.locator('[data-wm-difficulty="d2"]').innerText(),/討伐 \d+\/\d+ 達成/);
  await sw.click();await assertMobileLayout('.ab-sheet');
  await page.getByRole('button',{name:'10回',exact:true}).click();
  assert.equal(await page.evaluate(()=>save.autoBattle.settings.times),10);

@@ -55,7 +55,7 @@ try{
   await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
   await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
   await page.evaluate(()=>{save.gBless={...normalizeGBless(null),on:true,week:2,reserve:17};enemy.expBonus=41;enemy.coinBonus=13;eHp=0;win()});
-  assert.equal(await page.evaluate(()=>save.gBless.week),1);assert.match(await page.locator('#battleRewardExp').innerText(),/×1.5/);assert.match(await page.locator('#battleRewardCoins').innerText(),/×2/);assert.equal(await page.locator('.gb-result-tag').innerText(),'✦ G-BLESS');
+  assert.equal(await page.evaluate(()=>save.gBless.week),1);assert.match(await page.locator('#battleRewardExp').innerText(),/×1.5/);assert.match(await page.locator('#battleRewardCoins').innerText(),/×2/);assert.equal(await page.locator('.gb-result-tag').innerText(),'G-BLESS');
   await page.waitForFunction(()=>!document.getElementById('battleOutcome').classList.contains('is-revealing'));assert(await page.locator('#battleOutcomeRewards').evaluate(e=>[...e.children].every(c=>c.scrollWidth<=c.clientWidth+1)),'victory rows fit');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${evidence}/victory-${width}.png`});
   await page.evaluate(()=>{battleRewardGranted=false;normalVictoryReceipt=null;endPartyRecovery();show('home')});

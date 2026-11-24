@@ -45,7 +45,7 @@ for(const old of baseline.units){
 const added=current.filter(u=>u.characterNo>=15);
 assert.equal(added.length,36);
 for(const u of added){
- assert(u.icon);
+ assert.equal(u.icon,'',`${u.id}: no emoji icon fallback`);
  if(u.artworkPending) assert(!u.imgKey,`${u.id}: pending artwork has no active image`);
  else{
   r.context.artworkKey=u.imgKey;
@@ -65,6 +65,7 @@ vm.runInContext(fs.readFileSync('js/ui.js','utf8').split('function replayUiMotio
 for(const u of added){
  r.context.testId=u.id;
  assert(run('vis(by(testId)).includes(by(testId).name)'));
+ if(u.artworkPending)assert.match(run('vis(by(testId))'),/画像準備中/);
  if(u.id.startsWith('character_remnes_') || u.id.startsWith('character_bordo_') || u.id.startsWith('character_safira_') || u.id.startsWith('character_brigitte_') || u.id.startsWith('character_tobia_') || u.id.startsWith('character_roden_') || u.id.startsWith('character_selene_') || u.id.startsWith('character_lize_') || u.id.startsWith('character_regus_') || u.id.startsWith('character_mireille_') || u.id.startsWith('character_nico_') || u.id.startsWith('character_vera_')){
   const html=run('vis(by(testId))');
   assert.equal(u.artworkPending,false);

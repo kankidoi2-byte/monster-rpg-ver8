@@ -31,7 +31,7 @@ try{
       clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
       showTypeChart();return golem.uid;
     });
-    assert.match(await page.locator('#typeBasicChart h2').innerText(),/❄️.*基本6属性/);
+    assert.match(await page.locator('#typeBasicChart h2').innerText(),/基本6属性/);
     const rows=await page.locator('#typeBasicChart .tw-item').evaluateAll(items=>items.map(row=>[...row.querySelectorAll('.tw-type')].map(el=>el.textContent)));
     assert.deepEqual(rows,[['火','氷','水'],['氷','森','火'],['森','風','氷'],['風','雷','森'],['雷','水','風'],['水','火','雷']]);
     assert(await page.locator('#typeBasicChart').evaluate(el=>{

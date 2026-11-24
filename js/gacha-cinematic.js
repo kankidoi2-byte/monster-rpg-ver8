@@ -35,7 +35,7 @@ function playGachaCinema(kind,result,entries,onFinish){
  const cell=entries.length===10?duration/10:duration,slot=Math.min(entries.length-1,Math.floor(t/cell)),entry=entries[slot],local=t%cell,p=local/cell;
  const tier=entry.card.cost>10?'super':entry.card.cost>5?'upper':'lower',color=palette[tier==='super'?'gold':tier==='upper'?'silver':'normal'];
  drawGachaRing(ctx,w/2,h*.2,Math.min(w,h)*.6,t,'#d5b875',.3);
- if(!cards.innerHTML){cards.classList.toggle('is-ten',entries.length===10);cards.innerHTML=entries.map((e,i)=>`<div class="cinema-skill-back" data-cinema-card="${i}"><span>✦</span></div>`).join('');}
+ if(!cards.innerHTML){cards.classList.toggle('is-ten',entries.length===10);cards.innerHTML=entries.map((e,i)=>`<div class="cinema-skill-back" data-cinema-card="${i}"><span aria-hidden="true"></span></div>`).join('');}
  entries.forEach((e,i)=>{const node=cards.children[i];if(i>slot){node.style.setProperty('--preview-color',e.card.cost>10&&!promotions[i]?'#f5d27d':e.card.cost>5&&e.card.cost<=10?'#74b6ee':'#d6e3ef');return;}if(i<slot||p>.8){if(!node.dataset.revealed){node.innerHTML=tcgSkillCardMarkup(e.card,{compact:entries.length===10});node.dataset.revealed='true';node.classList.add('is-revealed');}}else{node.style.setProperty('--preview-color',tier==='super'&&promotions[i]&&p<.52?'#d6e3ef':tier==='upper'?'#74b6ee':color);node.classList.toggle('is-promoting',!!promotions[i]&&p>.45&&p<.65);}});
  cue(p<.35?'stamp':p<.65&&promotions[slot]?'promotion':'reveal');
  if(!reduced&&p>.55&&p<.9)drawGachaBurst(ctx,w,h,(p-.55)/.35,color);

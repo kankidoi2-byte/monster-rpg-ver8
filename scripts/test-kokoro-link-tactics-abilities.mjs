@@ -68,7 +68,7 @@ const activate=type=>{
 {
   const {instance,link}=activate('star'),move=['星弾',40,'star'];
   assert.equal(api.setKokoroLinkForesight(link,'enemy-a',move),true);
-  assert.equal(api.kokoroLinkForesightTextForTarget('enemy-a'),'🔮予知：星弾');
+  assert.equal(api.kokoroLinkForesightTextForTarget('enemy-a'),'予知：星弾');
   assert.deepEqual(plain(api.consumeKokoroLinkForesightMove('enemy-a')),move);
   assert.equal(api.consumeKokoroLinkForesightMove('enemy-a'),null);
   assert.match(api.kokoroLinkTacticsAbilityStatus(instance),/使用済み/);
@@ -84,5 +84,5 @@ const defenseMessage=vm.runInContext('kokoroLinkDefenseMessage',battleContext);
 assert.equal(penetratedMultiplier(.5,.2),.7,'penetration must remove 20 percentage points of resistance');
 assert.equal(penetratedMultiplier(.9,.2),1,'penetration must not exceed neutral effectiveness');
 assert.equal(penetratedMultiplier(1.5,.2),1.5,'penetration must not alter weakness multipliers');
-assert.equal(defenseMessage({reduced:30,reductionLabel:'水鏡の護り',absorbed:0,evaded:false}),'✨ 水鏡の護りが30ダメージを軽減！');
+assert.equal(defenseMessage({reduced:30,reductionLabel:'水鏡の護り',absorbed:0,evaded:false}),'水鏡の護りが30ダメージを軽減！');
 console.log('Kokoro Link tactics abilities validated (11 attributes, choice, water guard, one-shot charges, foresight, and penetration).');

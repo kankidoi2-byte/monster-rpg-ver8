@@ -92,7 +92,7 @@ function renderWaterHomeFavorite(stage,mon){
   const plate=document.getElementById('homeNamePlate');
   if(plate){
     const name=document.createElement('span');name.textContent=mon?`${mon.name} ${mon.rarity||''}`:'最初の仲間を迎えよう';
-    const heart=document.createElement('span');heart.className='home-favorite-heart';heart.setAttribute('aria-hidden','true');heart.textContent='♥';plate.replaceChildren(name,heart);
+    const heart=document.createElement('span');heart.className='home-favorite-heart';heart.setAttribute('aria-hidden','true');heart.textContent='お気に入り';plate.replaceChildren(name,heart);
   }
   const config=mon&&typeof battleDisplayMedia==='function'?battleDisplayMedia(mon.id):null;
   const r={stage,config,art:null,poster:null,video:null,timer:null,observer:null,failed:false};waterHomeRecord=r;

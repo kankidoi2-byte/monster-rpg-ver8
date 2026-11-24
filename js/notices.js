@@ -59,7 +59,7 @@ function renderNotices() {
     const meta = noticeCategoryMeta(notice.category);
     return `<article class="notice-entry notice-${escapeNoticeHtml(notice.category)}">
       <div class="notice-entry-meta">
-        <span>${meta.icon} ${escapeNoticeHtml(meta.label)}</span>
+        <span>${escapeNoticeHtml(meta.label)}</span>
         <time datetime="${escapeNoticeHtml(notice.date)}">${escapeNoticeHtml(noticeDateLabel(notice.date))}</time>
         ${index === 0 ? '<b>最新</b>' : ''}
       </div>

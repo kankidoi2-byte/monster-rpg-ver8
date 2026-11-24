@@ -2033,14 +2033,14 @@ function renderTutorialContractCheckpoint(){
   const actions=document.getElementById('battleOutcomeActions');
   if(!battle||!outcome||!actions)return false;
   battle.classList.add('is-finished');outcome.className='battle-outcome is-victory';
-  document.getElementById('battleOutcomeIcon').textContent='📜';
+  document.getElementById('battleOutcomeIcon').textContent='';
   document.getElementById('battleOutcomeEyebrow').textContent='CONTRACT CHANCE';
   document.getElementById('battleOutcomeTitle').textContent='草原のスライムと契約';
   document.getElementById('battleOutcomeRewards').innerHTML='<span><small>対象</small><strong>スライム</strong></span><span><small>契約書</small><strong>通常 ×1</strong></span>';
   document.getElementById('battleOutcomeNote').textContent=mode==='replay'?'再閲覧では契約書の支給と成功保証は行いません。':'確認すると通常契約書を1枚支給し、そのまま1枚消費します。';
   actions.innerHTML=mode==='required'
-    ? '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>🤝 最初の契約</h3><p class="small">このスライムへの最初の契約だけ、必ず成功します。</p><button data-tutorial-contract-start onclick="askUseContractScroll(\'contract_scroll\')">通常契約書で契約する</button></div>'
-    : '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>🤝 契約の再閲覧</h3><p class="small">実際の契約や報酬なしで、加入後の案内を見直します。</p><button data-tutorial-contract-start>加入後の案内へ</button></div>';
+    ? '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>最初の契約</h3><p class="small">このスライムへの最初の契約だけ、必ず成功します。</p><button data-tutorial-contract-start onclick="askUseContractScroll(\'contract_scroll\')">通常契約書で契約する</button></div>'
+    : '<div class="multi-contract-panel" id="tutorialContractPanel"><h3>契約の再閲覧</h3><p class="small">実際の契約や報酬なしで、加入後の案内を見直します。</p><button data-tutorial-contract-start>加入後の案内へ</button></div>';
   document.getElementById('next')?.classList.add('hidden');
   return true;
 }

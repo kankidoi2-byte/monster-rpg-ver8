@@ -5,9 +5,9 @@
  const VERSION='Ver8.0-feedback-thanks-20261113';
  const THANKS_MIN_LENGTH=10;
  const KINDS={
-  bug:{ic:'🐞',nm:'不具合',ds:'動かない・表示がおかしい',ph:'例：バトルで技を選んだあと画面が止まった。\n・何をしていた時に\n・どうなったか\n・何回起きたか'},
-  idea:{ic:'💡',nm:'改善要望',ds:'使いにくい・こうしてほしい',ph:'例：世界地図で行きたい場所を探しにくいので、最後に行った場所を覚えておいてほしい。'},
-  praise:{ic:'✉',nm:'感想',ds:'楽しかった・好きなところ',ph:'例：ナイトレイヴに進化した時の演出が格好よかった。'}
+  bug:{nm:'不具合',ds:'動かない・表示がおかしい',ph:'例：バトルで技を選んだあと画面が止まった。\n・何をしていた時に\n・どうなったか\n・何回起きたか'},
+  idea:{nm:'改善要望',ds:'使いにくい・こうしてほしい',ph:'例：世界地図で行きたい場所を探しにくいので、最後に行った場所を覚えておいてほしい。'},
+  praise:{nm:'感想',ds:'楽しかった・好きなところ',ph:'例：ナイトレイヴに進化した時の演出が格好よかった。'}
  };
  const SCREENS={home:'ホーム',battle:'バトル',battleChoices:'世界地図(行き先選択)',gachaHub:'ガチャ',contractConfirm:'魂の契約',party:'モンスター一覧',growthHub:'育成・錬成',skillEdit:'技の編集',dexHub:'図鑑',shop:'ショップ',expedition:'遠征',storyMode:'ストーリー',tutorial:'チュートリアル',other:'その他・特定の画面ではない'};
  const profile=()=>global.MonsterProfiles?.current();
@@ -40,7 +40,7 @@
  const stamp=at=>new Date(at).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
  function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
  function button(label,fn,cls='ghost'){const b=el('button',cls,label);b.type='button';b.onclick=fn;return b;}
- function chip(kind){return el('span','chip '+kind,`${KINDS[kind]?.ic||''} ${KINDS[kind]?.nm||kind}`);}
+ function chip(kind){return el('span','chip '+kind,KINDS[kind]?.nm||kind);}
  function badge(){try{const seen=localStorage.getItem('mb_feedback_seen_v1')==='1';const b=document.getElementById('feedbackMenuButton');b?.classList.toggle('feedback-new',!seen);const tag=document.getElementById('feedbackNew');if(tag)tag.hidden=seen;}catch(_){}}
  function refresh(){
   const host=root();if(!host)return;const len=draft.body.length,count=host.querySelector('#fb-count'),send=host.querySelector('#fb-send');
@@ -60,7 +60,7 @@
    const form=el('form','panel');form.id='fbform';form.noValidate=true;
    form.append(el('div','lbl','種類'));
    const kinds=el('div','kinds');kinds.setAttribute('role','group');kinds.setAttribute('aria-label','意見の種類');
-   for(const [k,v] of Object.entries(KINDS)){const b=button('',()=>{draft.kind=k;for(const x of kinds.children)x.setAttribute('aria-pressed',x===b?'true':'false');form.querySelector('textarea').placeholder=v.ph;refresh();},'kind');b.dataset.k=k;b.setAttribute('aria-pressed',String(draft.kind===k));b.append(el('span','ki',v.ic),el('b','',v.nm),el('small','',v.ds));kinds.append(b);}form.append(kinds);
+   for(const [k,v] of Object.entries(KINDS)){const b=button('',()=>{draft.kind=k;for(const x of kinds.children)x.setAttribute('aria-pressed',x===b?'true':'false');form.querySelector('textarea').placeholder=v.ph;refresh();},'kind');b.dataset.k=k;b.setAttribute('aria-pressed',String(draft.kind===k));b.append(el('b','',v.nm),el('small','',v.ds));kinds.append(b);}form.append(kinds);
    const label=el('label','lbl','どの画面のこと？');label.htmlFor='fb-screen';const select=el('select');select.id='fb-screen';for(const [id,name] of Object.entries(SCREENS)){const option=el('option','',name);option.value=id;select.append(option);}select.value=draft.screen;select.onchange=()=>{draft.screen=select.value;};form.append(label,select);
    const bodyLabel=el('label','lbl','内容');bodyLabel.htmlFor='fb-body';const count=el('small','count');count.id='fb-count';const thanks=el('small','hint',`お礼は${THANKS_MIN_LENGTH}文字から`);thanks.id='fb-thanks-min';bodyLabel.append(count,thanks);const body=el('textarea');body.id='fb-body';body.maxLength=1200;body.placeholder=KINDS[draft.kind]?.ph||'先に種類を選んでください';body.value=draft.body;body.oninput=()=>{draft.body=body.value;refresh();};form.append(bodyLabel,body,el('p','hint','名前・連絡先・SNSのIDなど、個人が分かることは書かないでください。'));
    const c=context(),attach=el('details','attach'),info=el('dl','info');attach.append(el('summary','','一緒に送られる情報'));

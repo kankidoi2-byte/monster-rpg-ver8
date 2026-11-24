@@ -134,11 +134,11 @@ function expeditionRewardPlan(map,distance,suitability,randomFn=Math.random,comp
 function ensureExpeditionDom(){
   if(!document.getElementById('expeditionNav')){
     const shopButton=[...document.querySelectorAll('.menu button')].find(button=>button.textContent.includes('ショップ'));
-    const button=document.createElement('button');button.id='expeditionNav';button.textContent='🧭遠征';button.onclick=showExpedition;
+    const button=document.createElement('button');button.id='expeditionNav';button.textContent='遠征';button.onclick=showExpedition;
     (shopButton?.parentElement||document.querySelector('.menu'))?.insertBefore(button,shopButton||null);
   }
   if(!document.getElementById('expedition')){
-    const section=document.createElement('section');section.id='expedition';section.className='screen';section.innerHTML='<h1>🧭 遠征</h1><div id="expeditionContent"></div>';
+    const section=document.createElement('section');section.id='expedition';section.className='screen';section.innerHTML='<h1>遠征</h1><div id="expeditionContent"></div>';
     document.querySelector('main')?.appendChild(section)||document.body.appendChild(section);
   }
 }
@@ -263,7 +263,7 @@ async function recallExpedition(id){
   });
   }finally{expeditionRecallBusy=false;}
 }
-function expeditionRewardText(reward){if(!reward)return '完了時に確定';const items=Object.entries(reward.items||{}).map(([id,n])=>`${ITEM_BY_ID[id]?.icon||'📦'}${escapeGameHtml(ITEM_BY_ID[id]?.name||id)}×${escapeGameHtml(n)}`).join(' / ')||'アイテムなし';return `${reward.great?'🌟 大成功！ ':''}コイン${escapeGameHtml(reward.coins)}・各個体EXP ${escapeGameHtml(reward.exp)}・${items}`;}
+function expeditionRewardText(reward){if(!reward)return '完了時に確定';const items=Object.entries(reward.items||{}).map(([id,n])=>`${ITEM_BY_ID[id]?.icon||'📦'}${escapeGameHtml(ITEM_BY_ID[id]?.name||id)}×${escapeGameHtml(n)}`).join(' / ')||'アイテムなし';return `${reward.great?'大成功！ ':''}コイン${escapeGameHtml(reward.coins)}・各個体EXP ${escapeGameHtml(reward.exp)}・${items}`;}
 function expeditionEmptyMemberGuide(){
   const members=(save.instances||[]).filter(ins=>by(ins.id));
   if(!members.length)return '<p>派遣する仲間がいません。ストーリーや戦闘後の契約で仲間を増やしましょう。</p>';
