@@ -534,7 +534,8 @@ try{
  ];
  await page.evaluate(()=>showShop());
  for(const [id,name] of kinds){
-  const image=page.locator(`#shopList img[src$="/${id}_art_v1.webp"]`);
+  const version=id==='silver_contract_scroll'?'v2':'v1';
+    const image=page.locator(`#shopList img[src="images/items/${id}_art_${version}.webp"]`);
   assert(await image.isVisible());
   assert.equal(await image.getAttribute('alt'),name);
   await image.evaluate(el=>el.decode());

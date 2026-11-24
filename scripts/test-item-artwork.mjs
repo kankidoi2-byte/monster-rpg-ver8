@@ -21,3 +21,31 @@ for(const [id,name] of Object.entries(expected)){
 }
 assert.equal(vm.runInContext("itemInlineVisual({id:'unknown',icon:'📦'})",context),'📦');
 console.log('Item artwork: seven exact mappings, WebP budgets, shared visuals, locked entries and fallback passed.');
+
+const replacements={magic_crystal:[768,768],giga_data:[960,960],water_mirror:[720,720],attack_potion:[768,768],unstable_alchemy_matter:[768,768],fine_magic_crystal:[768,768],monster_bone:[512,768],potion:[768,768],upper_potion:[768,768],silver_contract_scroll:[768,768]};
+
+for(const [id,size] of Object.entries(replacements)){
+ const path=`images/items/${id}_art_v2.webp`;
+ const old=`images/items/${id}${id==='water_mirror'?'':'_art_v1'}.webp`;
+ const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url));
+ assert(read(old).length>0,old);
+ const actual=vm.runInContext(`(()=>{const it=[...SHOP_ITEMS,...ITEM_DEX_EXTRA].find(x=>x.id==='${id}');return {src:ITEM_IMG[it.id],dex:itemDexVisual(it),inline:itemInlineVisual(it)};})()`,context);
+ assert.equal(actual.src,path);
+ for(const html of [actual.dex,actual.inline])assert(html.includes(`src="${path}"`),id);
+ const b=read(path);
+ assert(b.length<=300*1024,id);
+ assert.equal(b.toString('ascii',0,4),'RIFF');
+ assert.equal(b.toString('ascii',8,12),'WEBP');
+ const type=b.toString('ascii',12,16);
+ if(type==='VP8L'){
+  assert.equal(b[20],0x2f,id);
+  const bits=b.readUInt32LE(21);
+  assert.equal((bits>>>28)&1,1,id);
+  assert.deepEqual([(bits&0x3fff)+1,((bits>>>14)&0x3fff)+1],size,id);
+ }else{
+  assert.equal(type,'VP8X',id);
+  assert.equal(b[20]&0x10,0x10,id);
+  assert.deepEqual([b.readUIntLE(24,3)+1,b.readUIntLE(27,3)+1],size,id);
+ }
+}
+console.log('Ten replacement mappings, original URLs, alpha WebP dimensions and size budget passed.');
