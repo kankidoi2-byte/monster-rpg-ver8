@@ -1,5 +1,5 @@
 function typesHtml(ts) {
-  return ts.map(t => `<span class="${t}">${TN[t]}</span>`).join(' / ');
+  return skillTypeChips(ts);
 }
 function vis(m, imageAttributes = '') {
   if (m.imgKey && IMG[m.imgKey]) {

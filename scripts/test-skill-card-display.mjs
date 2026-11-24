@@ -28,7 +28,7 @@ for(const sk of cards){
  const header=r.run(`skillCardHeader(SKILL_BY_ID[${arg}])`);
  assert.equal(strip(header),sk.name+'COST '+sk.cost);
  const stats=strip(r.run(`skillCardStats(SKILL_BY_ID[${arg}])`));
- assert.equal(stats,r.run(`skillTypeLabel(skillTypes(SKILL_BY_ID[${arg}]))`)+(sk.power===0?' / 補助技':' / 威力 '+sk.power));
+ assert.equal(stats,r.run(`skillTypeLabel(skillTypes(SKILL_BY_ID[${arg}])).replaceAll(' / ',' ')`)+(sk.power===0?' / 補助技':' / 威力 '+sk.power));
  const effect=r.run(`moveEffectText(skillToMove(${arg}),{includeBase:false})`);
  assert(!/^[/。]|[/。]$/.test(effect.replace(/。$/,'')),'no leading/trailing separator: '+sk.id);
  assert(!effect.includes('属性 /')&&!effect.includes(' / 威力 '));

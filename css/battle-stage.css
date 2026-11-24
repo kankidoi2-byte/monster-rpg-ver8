@@ -19,7 +19,7 @@ body:has(#battle.active.is-battle-stage) .app-topbar{position:relative}
 #battle.is-battle-stage .battle-hp-line,#battle.is-battle-stage .battle-hp-line strong{color:#f8f3de;font-size:.875rem;gap:4px;flex-wrap:wrap}
 #battle.is-battle-stage .battle-status{display:flex;max-height:none;overflow:visible;font-size:.875rem;gap:4px}
 #battle.is-battle-stage .battle-status.is-normal{display:none}
-#battle.is-battle-stage .battle-status>span{background:#25496d;color:#f8f3de;border-color:#637e99;overflow-wrap:anywhere}
+#battle.is-battle-stage .battle-status>span:not(.status-chip){background:#25496d;color:#f8f3de;border-color:#637e99;overflow-wrap:anywhere}
 #battle.is-battle-stage .battle-detail{display:block;margin:8px 0 0}
 #battle.is-battle-stage .battle-detail summary{display:flex;align-items:center;min-height:48px;font-size:.875rem;color:#f8f3de;cursor:pointer}
 #battle.is-battle-stage .battle-detail summary::before{content:'▸';margin-right:4px}

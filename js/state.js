@@ -174,7 +174,7 @@ function createHuntCondition(map, conditionId) {
       id:conditionId,
       name:'マップ属性強化',
       type,
-      effectText:`${TYPE_ICONS[type]||'⚪'}${TN[type]||type}属性の攻撃技威力1.2倍（敵味方）`
+      effectText:`${TN[type]||'無'}属性の攻撃技威力1.2倍（敵味方）`
     };
   }
   if (conditionId === 'healing_half') {

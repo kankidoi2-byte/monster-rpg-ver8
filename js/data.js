@@ -439,7 +439,6 @@ const TN = {
   light:'光', dark:'闇', star:'星', dragon:'竜', normal:'無'
 };
 
-const TYPE_ICONS={fire:'🔥',water:'💧',ice:'❄️',thunder:'⚡',wind:'🌪️',grass:'🌳',light:'✨',dark:'🌑',star:'⭐',dragon:'🐉',normal:'⚪'};
 
 // Future character encyclopedia reservations; these are not battle units in M.
 // All 36 former reservations are implemented in M. History: docs/prologue-character-dex-slots.md.

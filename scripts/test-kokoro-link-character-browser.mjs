@@ -86,7 +86,7 @@ try {
         return [link.sourceName,link.targetName,battleTurnCount,JSON.stringify(save),kokoroLinkBattleState.usedSourceUids.size];
       }),[fixture.sourceName,fixture.targetName,before.turns,before.profile,1]);
       await animation.waitFor({state:'detached'});
-      assert.match(await linkButton.innerText(),/発動中/);
+      assert.equal(await linkButton.locator('.status-chip--link').innerText(),'リンク中');
       await linkButton.tap(); // The button remains usable to inspect the active link.
       assert(await donor.isDisabled(),'the used reserve cannot be selected again');
       assert.match(await page.locator('#kokoroLinkPanel .kokoro-link-empty').innerText(),/リンクは発動済み/);

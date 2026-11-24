@@ -164,8 +164,11 @@ function refreshBattleFeedback(message=''){
     if(prior!==undefined&&prior!==state){battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');if(typeof renewalStatusFeedback==='function')renewalStatusFeedback(labels,prior);}
     battleFeedback.states.set(u.key,state);
     const el=document.getElementById(u.statusId);
-    if(el&&typeof renderBattleStateSummary==='function'){el.classList.toggle('is-normal',labels.length===0);renderBattleStateSummary(el,labels,u);}
-    else if(el){el.classList.toggle('is-normal',labels.length===0);el.replaceChildren();for(const label of labels.length?labels:['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.appendChild(chip);}}
+    if(el){
+      const chips=battleStateChips(u);
+      el.classList.toggle('is-normal',!chips);
+      if(el.innerHTML!==chips)el.innerHTML=chips;
+    }
     const queue=battleFeedback.results.get(u.key);if(queue)renderBattleHpResults(u,queue);
   }
   renderBattleInputState();

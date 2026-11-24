@@ -45,7 +45,7 @@ function skillDexCardMarkup(sk){
   return `<button class="move-box skill-dex-card ${skillCardClass(types)}" style="--dex-fill-a:${colors[0][0]};--dex-fill-b:${(colors[1]||colors[0])[0]};--dex-edge:${colors[0][1]}" data-skill-dex-id="${sk.id}" onclick="showSkillDexDetail('${sk.id}')">
     <span class="skill-card-title">${sk.name}</span>
     <span class="skill-cost-badge">COST ${sk.cost}</span>
-    <span class="skill-type-line">${skillTypeLabel(types)}</span>
+    <span class="skill-type-line">${skillTypeChips(types)}</span>
     <span class="skill-dex-performance">${sk.power===0?'補助技':`威力 <strong>${sk.power}</strong>`}</span>
     <span class="skill-dex-description">${skillDexTier(sk.cost)} · ${sk.customDesc||sk.description||''}</span>
     <span class="skill-dex-cta">詳細を見る ›</span>
