@@ -74,6 +74,13 @@ pass('HP/status/panel and temporary screen keep video and position');
 w.dispatchEvent(new w.PageTransitionEvent('pagehide',{persisted:true}));assert.equal(rec(),null);assert(!v.isConnected);run('update()');assert(!d.querySelector('video'));
 w.dispatchEvent(new w.PageTransitionEvent('pageshow',{persisted:true}));await flush();assert(rec()&&rec().video!==v);assert.equal(d.querySelectorAll('video').length,1);
 pass('simulated persisted pagehide disposes; pageshow reconciles current state once (not real BFCache)');
+const retained=d.querySelector('#pVis img'),poster=retained.getAttribute('src'),beforeVisibility=rec().video;
+hidden(true);w.dispatchEvent(new w.PageTransitionEvent('pagehide',{persisted:true}));
+assert.equal(rec(),null);assert(!beforeVisibility.isConnected);assert.equal(retained.getAttribute('src'),poster);
+hidden(true);assert.equal(rec(),null,'hidden visibilitychange cannot re-arm a disposed decoder');
+hidden(false);await flush();assert(rec()&&rec().video!==beforeVisibility);
+assert.equal(d.querySelector('#pVis img'),retained);assert.equal(retained.getAttribute('src'),poster);
+pass('visible-only return restarts video without rewriting the poster');
 run('eHp=0;win()');w.dispatchEvent(new w.PageTransitionEvent('pageshow'));assert(!d.querySelector('video'));
 for(let i=0;i<5;i++){setup();await flush();const q=rec(),el=q.video;run('toggleBattleSkillPanel();battleUiBack();openBattleItemSelect()');run("show('battle');show('home')");assert(!d.querySelector('video'));assert(q.disposed&&q.timer===null&&q.button.onclick===null);assert(el.paused&&!el.hasAttribute('src')&&el.onplaying===null&&el.onerror===null);}
 pass('five battle-operation-exit-next cycles release owned resources');
