@@ -3,6 +3,9 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
 const ids=['raptor_feather','fine_raptor_feather','venom_carapace','fine_venom_carapace','golden_land_map','g_ichor','god_core'];
+const replacements={magic_crystal:[768,768],giga_data:[960,960],water_mirror:[720,720],attack_potion:[768,768],unstable_alchemy_matter:[768,768],fine_magic_crystal:[768,768],monster_bone:[512,768],potion:[768,768],upper_potion:[768,768],silver_contract_scroll:[768,768]};
+const sizes=replacements; const art=id=>`images/items/${id}_art_v2.webp`;
+const artIn=(page,selector,id)=>page.locator(`${selector} img[src="${art(id)}"]`);
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4389'],{stdio:['ignore','pipe','inherit']});
 const out=process.env.ITEM_ARTWORK_EVIDENCE||'/tmp/item-artwork-qa';fs.mkdirSync(out,{recursive:true});
 let browser;const errors=[];
@@ -42,12 +45,68 @@ try{
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.deepEqual(await page.evaluate(ids=>ids.map(id=>save.items[id]),ids),ids.map(()=>2));
   assert(await page.evaluate(ids=>ids.every(id=>save.itemDex.includes(id)),ids));
-  await page.evaluate(()=>{clearTutorialUi();show('shop');});
+  await page.evaluate(()=>{
+   clearTutorialUi();
+   // These fixtures test artwork, not the Shop's first-visit tutorial navigation.
+   const {guides}=currentTutorialState();
+   for(const id of Object.keys(guides))guides[id]=true;
+   show('shop');
+  });
   for(const id of ids.slice(0,4)){
    const imgs=page.locator(`#shop img[src="images/items/${id}_art_v1.webp"]`);assert(await imgs.count()>0);await imgs.first().evaluate(i=>i.decode());
   }
   assert.equal(await page.locator('#shop img[src="images/items/god_core_art_v1.webp"]').count(),0);
-  await page.screenshot({path:`${out}/shop-${width}.png`});await ctx.close();
+  await page.screenshot({path:`${out}/shop-${width}.png`});
+  const newIds=Object.keys(sizes);
+  async function checkImage(locator,id,checkAlpha=false){
+   assert.equal(await locator.count(),1,id);await locator.waitFor({state:'visible'});
+   const data=await locator.evaluate(async (img,alpha)=>{
+    await img.decode();const size=[img.naturalWidth,img.naturalHeight];if(!alpha)return {size};
+    const c=document.createElement('canvas');[c.width,c.height]=size;
+    const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);
+    const rgba=ctx.getImageData(0,0,c.width,c.height).data;
+    let edgeMax=0,opaque=0;
+    for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){
+     const a=rgba[(y*c.width+x)*4+3];if(a>=245)opaque++;
+     if(y===0||x===0||y===c.height-1||x===c.width-1)edgeMax=Math.max(edgeMax,a);
+    }
+    ctx.globalCompositeOperation='destination-over';ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+    const whiteEdge=[[0,0],[c.width-1,0],[0,c.height-1],[c.width-1,c.height-1]].map(([x,y])=>Math.min(...ctx.getImageData(x,y,1,1).data));
+    return {size,edgeMax,opaque,whiteEdge};
+   },checkAlpha);
+   assert.deepEqual(data.size,sizes[id],id);
+   if(checkAlpha){assert(data.edgeMax<=10,id+' clean transparent perimeter');assert(data.whiteEdge.every(c=>c>=245),id+' clean white composite');assert(data.opaque>data.size[0]*data.size[1]*.1,id+' non-erased subject');}
+  }
+  for(const id of newIds.filter(id=>!['giga_data','water_mirror'].includes(id)))await checkImage(artIn(page,'#shopList',id),id);
+  await page.evaluate(ids=>{for(const id of ids){save.items[id]=2;if(!save.itemDex.includes(id))save.itemDex.push(id);}show('itemDex');renderItemDex();},newIds);
+  await page.locator('#itemDex.active').waitFor({state:'visible'});
+  for(const id of newIds){
+   await page.locator(`.item-dex-card[onclick="showItemDexDetail('${id}')"]`).click();
+   await checkImage(artIn(page,'#itemDexDetail .item-dex-detail-image',id),id,true);
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  }
+  await page.evaluate(()=>{show('itemGacha');showGachaResult('item',{},['attack_potion','giga_data'].map(id=>({item:ITEM_DEX_BY_ID[id]})));});
+  for(const id of ['attack_potion','giga_data'])await checkImage(artIn(page,'#gachaResultCards',id),id);
+  await page.locator('#gachaResultCards [data-result-index="0"]').click();
+  await checkImage(artIn(page,'#gachaResultDetail','attack_potion'),'attack_potion');
+  await page.evaluate(()=>{dismissGachaResult(false);DEV_GIFTS.push({id:'item-artwork-fixture',title:'Fixture item artwork',letter:'',startAt:'2000-01-01',until:null,rewards:[{kind:'item',id:'silver_contract_scroll',count:1}]});showGiftBox();});
+  const gift=page.locator('[data-gift-detail="developer:item-artwork-fixture"]');
+  await checkImage(gift.locator(`img[src="${art('silver_contract_scroll')}"]`),'silver_contract_scroll');
+  await gift.click();await checkImage(artIn(page,'#giftDialogBody','silver_contract_scroll'),'silver_contract_scroll');
+  await page.locator('#giftDialogClose').click();
+  await page.evaluate(()=>{
+   clearTutorialUi();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
+   save.worldMap.guides.map_intro=true;save.instances=[];save.party=[];
+   for(const id of ['freigal','aquaron','volteck'])save.party.push(addInstance(id,30).uid);
+   save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);
+   endPartyRecovery();prepareBattleParty();selectedMap=MAPS[0];enemy=by('grassbeat');
+   activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='single';
+   beginChosenBattle(selectedMap.id,enemy.id,'normal',activeHuntRequest);show('battle');
+  });
+  await page.locator('#battleItemButton').click();
+  for(const id of ['attack_potion','potion','upper_potion'])await checkImage(artIn(page,`#renewalSheet [data-item="${id}"]`,id),id);
+  console.log(`PASS ${width}px replacement item artwork: all ten decode and alpha; shop, dex, battle, gacha, gift.`);
+  await ctx.close();
  }
  assert.deepEqual(errors,[]);console.log('Item artwork browser: locked/unlocked dex, all seven details, shop, navigation, save/reload at 360 and 1280px passed.');
 }finally{await browser?.close();server.kill();}
