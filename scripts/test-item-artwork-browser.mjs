@@ -45,7 +45,13 @@ try{
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.deepEqual(await page.evaluate(ids=>ids.map(id=>save.items[id]),ids),ids.map(()=>2));
   assert(await page.evaluate(ids=>ids.every(id=>save.itemDex.includes(id)),ids));
-  await page.evaluate(()=>{clearTutorialUi();show('shop');});
+  await page.evaluate(()=>{
+   clearTutorialUi();
+   // These fixtures test artwork, not the Shop's first-visit tutorial navigation.
+   const {guides}=currentTutorialState();
+   for(const id of Object.keys(guides))guides[id]=true;
+   show('shop');
+  });
   for(const id of ids.slice(0,4)){
    const imgs=page.locator(`#shop img[src="images/items/${id}_art_v1.webp"]`);assert(await imgs.count()>0);await imgs.first().evaluate(i=>i.decode());
   }
@@ -73,12 +79,13 @@ try{
   }
   for(const id of newIds.filter(id=>!['giga_data','water_mirror'].includes(id)))await checkImage(artIn(page,'#shopList',id),id);
   await page.evaluate(ids=>{for(const id of ids){save.items[id]=2;if(!save.itemDex.includes(id))save.itemDex.push(id);}show('itemDex');renderItemDex();},newIds);
+  await page.locator('#itemDex.active').waitFor({state:'visible'});
   for(const id of newIds){
    await page.locator(`.item-dex-card[onclick="showItemDexDetail('${id}')"]`).click();
-   await checkImage(artIn(page,'#itemDexDetail',id),id,true);
+   await checkImage(artIn(page,'#itemDexDetail .item-dex-detail-image',id),id,true);
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
-  await page.evaluate(()=>{openGachaTab('item');showGachaResult('item',{},['attack_potion','giga_data'].map(id=>({item:ITEM_DEX_BY_ID[id]})));});
+  await page.evaluate(()=>{show('itemGacha');showGachaResult('item',{},['attack_potion','giga_data'].map(id=>({item:ITEM_DEX_BY_ID[id]})));});
   for(const id of ['attack_potion','giga_data'])await checkImage(artIn(page,'#gachaResultCards',id),id);
   await page.locator('#gachaResultCards [data-result-index="0"]').click();
   await checkImage(artIn(page,'#gachaResultDetail','attack_potion'),'attack_potion');
