@@ -33,6 +33,11 @@ const errors = [];
 const expect = (condition, message) => { if (!condition) errors.push(message); };
 
 expect(Array.isArray(notices) && notices.length > 0, 'at least one player-facing notice is required');
+const playerNotices = vm.runInContext('PLAYER_NOTICES', context);
+for (let i = 1; i < playerNotices.length; i++) {
+  expect(playerNotices[i].date <= playerNotices[i - 1].date,
+    `js/notices-data.js: ${playerNotices[i].id} must precede ${playerNotices[i - 1].id} (newest first)`);
+}
 const ids = new Set();
 let previousDate = '9999-12-31';
 

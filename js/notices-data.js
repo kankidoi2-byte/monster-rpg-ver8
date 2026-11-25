@@ -5,12 +5,16 @@ const NOTICE_CATEGORIES = Object.freeze({
   important: Object.freeze({ label: '重要' })
 });
 
-const GAME_NOTICES = Object.freeze([
-  ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+const PLAYER_NOTICES = Object.freeze([
+  {id:'20261125-battle-field-portraits',date:'2026-11-25',category:'fix',title:'バトル開始時から全身立ち絵を表示するようにしました',body:'全身立ち絵がある仲間や敵は、登場時からフィールドに立ち絵で表示されます。交代やバトル画面への復帰時に、札の絵が一瞬映る現象も修正しました。'},
+  {id:'20261124-roadmap-app-release',date:'2026-11-24',category:'update',title:'開発ロードマップに「アプリ版の配信」を追加しました',body:'ロードマップの「アプリ版の配信」をタップすると、配信に向けた今後の目標を確認できます。'},
+  {id:'20261124-item-illustrations',date:'2026-11-24',category:'update',title:'アイテム10種のイラストを更新しました',body:'銀の契約書など10種のイラストの背景を透明にしました。ショップや道具図鑑では、画面の背景にアイテムの形がそのまま映ります。'},
+  {id:'20261124-menu-log-icons',date:'2026-11-24',category:'update',title:'メニューや戦闘ログの装飾用絵文字を整理しました',body:'メニューや世界地図、戦闘ログから飾りの絵文字を減らしました。選択・ロック・編集の操作は、文字や線画のアイコンで示します。'},
+  {id:'20261122-type-status-chips',date:'2026-11-24',category:'update',title:'属性と状態異常の表示を、色の札で見やすくしました。',body:'札には属性や状態異常の名前を表示します。'},
+  {id:'20261122-bulk-items-dialogs',date:'2026-11-24',category:'update',title:'経験値データをまとめて使えるように、ショップでまとめて買えるようにしました。',body:'使った後のレベルや、購入後に残るコインを確定前に確認できます。'},
   {id:'20261123-battle-switch-sheet',date:'2026-11-23',category:'update',title:'バトルの交代パネルを変更しました',body:'「交代」を押すと仲間の札が開きます。札で名前やHPを確認でき、パネルを閉じればフィールドが広く見えます。'},
   {id:'20261123-god-core-elixion',date:'2026-11-23',category:'update',title:'「神核」を追加しました',body:'光の平原の「女神の降臨」で、光の女神エリシアに勝つとまれに手に入ります。エリクシオンの錬成には、毒虫の甲殻の代わりに神核が必要です。'},
-  {id:'20261122-type-status-chips',date:'2026-11-22',category:'update',title:'属性と状態異常の表示を、色の札で見やすくしました。',body:'札には属性や状態異常の名前を表示します。'},
-  {id:'20261122-bulk-items-dialogs',date:'2026-11-22',category:'update',title:'経験値データをまとめて使えるように、ショップでまとめて買えるようにしました。',body:'使った後のレベルや、購入後に残るコインを確定前に確認できます。'},
+  {id:'20261123-wording-notifications',date:'2026-11-23',category:'fix',title:'画面の表記をそろえ、バトル中の通知の重なりを修正しました',body:'薬の説明やプレゼントBOXの受け取り日などの表記をそろえました。戦闘や進化の開始時に前の通知が消え、戦闘中の通知が相手の情報に重ならなくなりました。'},
   {id:'20261122-character-kokoro-link',date:'2026-11-22',category:'update',title:'キャラクターもココロリンクできるようになりました。',body:'控えのキャラクターから力を借りたり、戦闘中のキャラクターへ仲間の力をつないだりできます。'},
   {id:'20261122-party-rework',date:'2026-11-22',category:'update',title:'パーティー編成を改良しました',body:'並び替え・プリセット・絞り込みに対応し、世界地図からも編成できます。'},
   {id:'20261122-sound-pack-02',date:'2026-11-22',category:'update',title:'戦闘BGMと効果音を追加しました',body:'火山・湖の戦闘と、格上・ヌシとの遭遇に専用BGMが流れます。会話やタブの切り替え、敵との遭遇などにも効果音を追加しました。音量はサウンド設定で調整できます。'},
@@ -793,4 +797,9 @@ const GAME_NOTICES = Object.freeze([
     title: 'キメラグナ・アペクスを★4へ調整しました',
     body: 'キメラグナ・アペクスのレアリティを★5から★4へ変更し、装備できる技コスト上限も調整しました。'
   })
+]);
+
+const GAME_NOTICES = Object.freeze([
+  ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+  ...PLAYER_NOTICES
 ].sort((a,b)=>b.date.localeCompare(a.date)));
