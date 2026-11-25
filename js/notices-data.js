@@ -7,6 +7,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 
 const GAME_NOTICES = Object.freeze([
   ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
+  {id:'20261125-battle-display-size',date:'2026-11-25',category:'fix',title:'バトル中の味方と敵の表示サイズを修正しました',body:'大型の仲間に交代しても、目の前の敵は同じ大きさで表示されます。大型の敵と戦うときも、味方の大きさを保ちます。'},
   {id:'20261123-battle-switch-sheet',date:'2026-11-23',category:'update',title:'バトルの交代パネルを変更しました',body:'「交代」を押すと仲間の札が開きます。札で名前やHPを確認でき、パネルを閉じればフィールドが広く見えます。'},
   {id:'20261123-god-core-elixion',date:'2026-11-23',category:'update',title:'「神核」を追加しました',body:'光の平原の「女神の降臨」で、光の女神エリシアに勝つとまれに手に入ります。エリクシオンの錬成には、毒虫の甲殻の代わりに神核が必要です。'},
   {id:'20261122-type-status-chips',date:'2026-11-22',category:'update',title:'属性と状態異常の表示を、色の札で見やすくしました。',body:'札には属性や状態異常の名前を表示します。'},

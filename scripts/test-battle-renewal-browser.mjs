@@ -105,6 +105,25 @@ try{
   await page.evaluate(()=>{renderKokoroLinkPanel=window.qaFieldLinkPanel;delete window.qaFieldLinkPanel;});
  }
  console.log('PASS field artwork requests: initial/switch/KO, both lifecycle returns, 3-way, Vera card fallback and named failed-request fallback.');
+ // Read the rendered artwork after a real switch, including its CSS bounds fit.
+ async function artHeight(slot){
+  return page.locator(slot+' .battle-static-media img').evaluate(img=>{
+   updateBattleViewport();
+   return img.getBoundingClientRect().height;
+  });
+ }
+ for(const viewport of [{width:360,height:640},{width:412,height:915}]){
+  await page.setViewportSize(viewport);
+  const party=['elna_advanced','elixion'];
+  await start('single',party,'elna_advanced');
+  const allyHeight=await artHeight('#pVis'),enemyHeight=await artHeight('#eVis');
+  assert(allyHeight>0&&enemyHeight>0);
+  assert(await page.evaluate(()=>changeActivePartyMember(1)));
+  assert.equal(await artHeight('#eVis'),enemyHeight,'Elna keeps her height when the ally switches to Elixion');
+  await start('single',party,'elixion');
+  assert.equal(await artHeight('#pVis'),allyHeight,'Elna keeps her height when facing Elixion');
+ }
+ console.log('PASS rendered size independence for both sides at 360×640 and 412×915.');
  // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{
