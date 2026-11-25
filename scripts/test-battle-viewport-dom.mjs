@@ -87,15 +87,20 @@ const normal=run('battleViewportBudget(736,0,240,64)');assert.equal(normal.scrol
 const enlarged=run('battleViewportBudget(500,80,300,220)');assert.equal(enlarged.scroll,true);assert(enlarged.artwork>=64);
 let count=0;
 const configs=run('Object.values(BATTLE_IDLE_MEDIA)');
+const standard=run("battleDisplayMedia('elna_advanced')");
+const sizePlan=run('battleCompactSizePlan');
 for(const width of [320,393,430,760])for(const height of [300,440,600])for(const ally of configs)for(const enemy of configs){
- const enemies=[enemy,configs[0]], plan=run(`battleCompactSizePlan(${JSON.stringify(enemies)},${JSON.stringify(ally)},${width},${height})`);
- assert(plan.unit>0);const total=plan.weights.reduce((a,b)=>a+b,0),group=width*.84-8;
- for(const [c,space,depth,vertical] of [[ally,width*.8-16,1,plan.allyHeight-16],...enemies.map((c,i)=>[c,group*plan.weights[i]/total-16,.85,plan.enemyHeight-16])]){
-  const b=c.sourceBounds,bw=b.right-b.x,bh=b.bottom-b.y,unit=plan.unit*c.layout.scale*depth;
-  assert(bw/Math.max(bw,bh)*unit<=space+1e-7);assert(bh/Math.max(bw,bh)*unit<=vertical+1e-7);
+ const enemies=[enemy,configs[0]], plan=sizePlan(enemies,ally,width,height);
+ assert(plan.allyUnit>0&&plan.enemyUnit>0);
+ assert.equal(plan.unit,plan.enemyUnit);
+ assert.equal(plan.allyUnit,sizePlan([standard],ally,width,height).allyUnit);
+ assert.equal(plan.enemyUnit,sizePlan(enemies,standard,width,height).enemyUnit);
+ assert.deepEqual(Array.from(plan.weights),[1,1]);
+ const group=width*.84-8;
+ for(const [c,space,unit,vertical] of [[ally,width*.8-16,plan.allyUnit,plan.allyHeight-16],...enemies.map(c=>[c,group/2-16,.85*plan.enemyUnit,plan.enemyHeight-16])]){
+  const b=c.sourceBounds,bw=b.right-b.x,bh=b.bottom-b.y,scale=unit*c.layout.scale/Math.max(bw,bh);
+  assert(bw*scale<=space+1e-7);assert(bh*scale<=vertical+1e-7);
  }
- const enemyBottom=64+20+plan.enemyHeight-8,allyTop=height-8-plan.allyHeight+8;
- assert(allyTop-enemyBottom>=16-1e-7,'full-loop actor bands do not overlap');
  count++;
 }
 // Exercise the actual budget application with explicit measured DOM rectangles.
@@ -106,7 +111,7 @@ const chromeSizes={battleMapBanner:48,battleActionStatus:44,battleCompactTools:4
 for(const el of screen.children){const h=el.classList.contains('battle-command-dock')?184:chromeSizes[el.id]||0;el.getClientRects=()=>h?[{}]:[];el.getBoundingClientRect=()=>({height:h,top:0});}
 for(const id of ['singlePlayerBox','singleEnemyBox']){by(id).getClientRects=()=>[{}];by(id).getBoundingClientRect=()=>({height:64,top:0});}
 Object.defineProperty(w,'innerHeight',{configurable:true,value:736});
-run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),346);assert(Number(arena.dataset.sizeUnit)>0);assert.equal(arena.dataset.enemyDepth,'.85');
+run('updateBattleViewport()');assert(screen.classList.contains('is-viewport-battle'));assert.equal(screen.dataset.viewportOverflow,'false');assert.equal(Number(arena.dataset.compactHeight),346);assert(Number(arena.dataset.sizeUnit)>0);assert.equal(arena.dataset.enemyDepth,'.85');assert.equal(arena.dataset.sizeUnit,arena.dataset.enemyUnit);assert(Number(arena.dataset.allyUnit)>0);
 // Opening a inline chooser keeps field height, unit and focus on-screen.
 let panelScrolls=0;w.HTMLElement.prototype.scrollIntoView=function(){if(this.closest('.battle-inline-panel'))panelScrolls++;};
 const restingHeight=arena.dataset.compactHeight,restingUnit=arena.dataset.sizeUnit;
@@ -141,9 +146,10 @@ run('renewalClose();pStatus="poison";pPoisonTurns=2;pGuard=true;update()');
 assert.match(by('pBattleStatus').textContent,/毒/);
 assert.match(by('pBattleStatus').textContent,/次の被弾/);
 const projected=run(`battleCompactSizePlan([BATTLE_IDLE_MEDIA.goblin,BATTLE_IDLE_MEDIA.slime],BATTLE_IDLE_MEDIA.elixion,393,488)`);
-assert(projected.unit*1.2>260,'foreground dragon remains prominent');
-assert(projected.unit*.3*.85>45,'background slime remains legible');
+assert.equal(projected.allyHeight-16,(488-64-60)/(1.2+.85*.75)*1.2,'dragon uses the space budget for a standard opponent');
+assert(projected.enemyUnit*.3*.85>45,'background slime remains legible');
 
 run("show('home')");const before=by('pVis').querySelector('img');run('updateBattleViewport()');assert.equal(by('pVis').querySelector('img'),before);
+for(const key of ['allyUnit','enemyUnit','sizeUnit'])assert.equal(arena.dataset[key],undefined);
 assert.equal(errors.length,0,errors.join('\n'));dom.window.close();
-console.log('PASS viewport budget, info retention/visibility, '+count+' non-overlapping full-loop ally/two-enemy cases; no browser pixel-layout assertion');
+console.log('PASS viewport budget, info retention/visibility, '+count+' independently sized full-loop ally/two-enemy cases; no browser pixel-layout assertion');

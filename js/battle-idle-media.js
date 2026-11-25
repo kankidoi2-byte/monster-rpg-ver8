@@ -397,7 +397,7 @@ function battleIdleBoundsFit(bounds,width,height,layout={},referenceSize=null){
   const adjustment=Number.isFinite(layout.scale)?Math.max(0.1,Math.min(1.2,layout.scale)):1;
   const bodyWidth=bounds.right-bounds.x,bodyHeight=bounds.bottom-bounds.y;
   const capacity=Math.min(width/bodyWidth,height/bodyHeight);
-  // A shared stage unit replaces per-slot normalization. Zero-layout fallback
+  // The stage supplies the reference size for this side. Zero-layout fallback
   // reserves 120% headroom; the final cap protects against transient resize.
   const unit=Number.isFinite(referenceSize)&&referenceSize>0
     ?referenceSize/Math.max(bodyWidth,bodyHeight):capacity/1.2;
@@ -419,8 +419,10 @@ function applyBattleIdleLayout(r){
   r.media.style.setProperty('--idle-position',`${x*100}% ${y*100}%`);
   r.media.style.setProperty('--idle-scale',String(scale));
   const arena=r.media.closest(".battle-arena");
-  const perspective=r.media.closest('#pVis')?1:(Number(arena?.dataset.enemyDepth)||1);
-  const unit=Number(arena?.dataset.sizeUnit)*perspective;
+  const sizes=arena?.dataset;
+  const unit=r.media.closest('#pVis')
+    ?Number(sizes?.allyUnit??sizes?.sizeUnit)
+    :Number(sizes?.enemyUnit??sizes?.sizeUnit)*(Number(sizes?.enemyDepth)||1);
   const fit=battleIdleBoundsFit(r.config.sourceBounds,r.media.clientWidth,r.media.clientHeight,v,unit);
   if(!fit){clearBattleIdleBoundsFit(r);return;}
   for(const [name,value] of [['width',fit.width],['height',fit.height],['left',fit.left],['top',fit.top]])
@@ -570,7 +572,10 @@ function clearBattleIdleSizes(){
   }
   battleIdleSizeDisplays.clear();
   const arena=document.querySelector('#battle .battle-arena');
-  if(arena){delete arena.dataset.sizeUnit;arena.style.removeProperty('--battle-size-row');}
+  if(arena){
+    delete arena.dataset.allyUnit;delete arena.dataset.enemyUnit;delete arena.dataset.sizeUnit;
+    arena.style.removeProperty('--battle-size-row');
+  }
   document.getElementById('multiEnemyGrid')?.style.removeProperty('grid-template-columns');
 }
 function syncBattleIdleSizes(candidates){
@@ -582,7 +587,11 @@ function syncBattleIdleSizes(candidates){
   const plan=compactHeight>0&&typeof battleCompactSizePlan==='function'
     ?battleCompactSizePlan(enemyConfigs,ally&&battleDisplayMedia(ally.mon.id),arena?.clientWidth,compactHeight,Number(arena?.dataset.enemyHud)||64,multiBattle?.active?2:1)
     :battleIdleStageSizePlan(enemyConfigs,arena?.clientWidth);
-  if(plan){arena.dataset.sizeUnit=String(plan.unit);arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
+  if(plan){
+    arena.dataset.allyUnit=String(plan.allyUnit??plan.unit);
+    arena.dataset.enemyUnit=String(plan.enemyUnit??plan.unit);
+    arena.dataset.sizeUnit=arena.dataset.enemyUnit;
+    arena.style.setProperty('--battle-size-row',plan.rowHeight+'px');
     if(plan.allyHeight&&plan.enemyHeight){
       arena.style.setProperty('--battle-ally-height',plan.allyHeight+'px');
       arena.style.setProperty('--battle-enemy-height',plan.enemyHeight+'px');

@@ -55,21 +55,19 @@ function battleCompactSizePlan(enemies,ally,width,height,enemyHud=64,tracks=enem
   // Equal enemy tracks keep the two HP plates aligned. The far plane is 85%
   // of the near plane; registry rarity/body scales remain unchanged.
   const depth=.85,weights=enemies.map(()=>1);
-  const allyBody=ally?bodyHeight(ally):.75;
-  const enemyBody=depth*Math.max(...enemies.map(bodyHeight),enemies.length?0:.75);
-  const caps=[width*.85];
-  // Separate full-loop body bands. Their combined height and a 16px gap
-  // must fit below the measured enemy HP plates, even for wide-winged allies.
-  caps.push(Math.max(1,height-enemyHud-60)/(allyBody+enemyBody));
-  if(ally)caps.push(Math.max(1,width*.8-16)/bodyWidth(ally));
-  if(weights.length){
-    const count=Math.max(1,tracks),group=Math.max(1,width*(count===1?.4:.84)-8*(count-1));
-    enemies.forEach(config=>{
-      caps.push(Math.max(1,group/count-16)/(bodyWidth(config)*depth));
-    });
-  }
-  const unit=Math.min(...caps);
-  return {unit,weights,rowHeight:height,allyHeight:allyBody*unit+16,enemyHeight:enemyBody*unit+16};
+  // Budget for a standard opponent so a swap only resizes its own side.
+  const standardBody=.75;
+  const allyBody=ally?bodyHeight(ally):standardBody;
+  const enemyBody=depth*Math.max(...enemies.map(bodyHeight),enemies.length?0:standardBody);
+  const maxWidth=width*.85,availableHeight=Math.max(1,height-enemyHud-60);
+  const allyUnit=Math.min(maxWidth,availableHeight/(allyBody+depth*standardBody),
+    ally?Math.max(1,width*.8-16)/bodyWidth(ally):Infinity);
+  const count=Math.max(1,tracks),group=Math.max(1,width*(count===1?.4:.84)-8*(count-1));
+  const enemyWidth=Math.max(1,group/count-16);
+  const enemyUnit=Math.min(maxWidth,availableHeight/(standardBody+enemyBody),
+    ...enemies.map(config=>enemyWidth/(bodyWidth(config)*depth)));
+  return {allyUnit,enemyUnit,unit:enemyUnit,weights,rowHeight:height,
+    allyHeight:allyBody*allyUnit+16,enemyHeight:enemyBody*enemyUnit+16};
 }
 function syncBattleViewportInfo(){
   const screen=document.getElementById('battle');if(!screen)return;

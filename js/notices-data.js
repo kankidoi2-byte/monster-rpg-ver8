@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const PLAYER_NOTICES = Object.freeze([
+  {id:'20261125-battle-display-size',date:'2026-11-25',category:'fix',title:'バトル中の味方と敵の表示サイズを修正しました',body:'大型の仲間に交代しても、目の前の敵は同じ大きさで表示されます。大型の敵と戦うときも、味方の大きさを保ちます。'},
   {id:'20261125-battle-field-portraits',date:'2026-11-25',category:'fix',title:'バトル開始時から全身立ち絵を表示するようにしました',body:'全身立ち絵がある仲間や敵は、登場時からフィールドに立ち絵で表示されます。交代やバトル画面への復帰時に、札の絵が一瞬映る現象も修正しました。'},
   {id:'20261124-roadmap-app-release',date:'2026-11-24',category:'update',title:'開発ロードマップに「アプリ版の配信」を追加しました',body:'ロードマップの「アプリ版の配信」をタップすると、配信に向けた今後の目標を確認できます。'},
   {id:'20261124-item-illustrations',date:'2026-11-24',category:'update',title:'アイテム10種のイラストを更新しました',body:'銀の契約書など10種のイラストの背景を透明にしました。ショップや道具図鑑では、画面の背景にアイテムの形がそのまま映ります。'},
