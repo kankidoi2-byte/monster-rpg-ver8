@@ -66,6 +66,8 @@
 ## Player-facing notices
 
 - Player-facing notices live in `js/notices-data.js` and must remain newest first.
+- Set the notice `date` to the release date (merge into `main`) in Japan Standard Time (Asia/Tokyo), regardless of when work started.
+- When releasing a player-visible change, append a release row to `js/update-releases.js` and update its cache version in `index.html` as described in `docs/update-rewards.md`.
 - Every feature, balance change, content addition, player-visible performance improvement, or bug fix must add or update a concise notice in the same branch.
 - Do not announce refactors, test-only changes, future unused assets, documentation-only work, or other changes players cannot observe.
 - Use a new stable notice `id`; never rename or reuse a published notice ID.
