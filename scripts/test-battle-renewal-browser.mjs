@@ -105,14 +105,24 @@ try{
   await page.evaluate(()=>{renderKokoroLinkPanel=window.qaFieldLinkPanel;delete window.qaFieldLinkPanel;});
  }
  console.log('PASS field artwork requests: initial/switch/KO, both lifecycle returns, 3-way, Vera card fallback and named failed-request fallback.');
- // Read the rendered artwork after a real switch, including its CSS bounds fit.
+ // Compare opponents at the same field and HP-panel heights, even when text wraps.
+ const sizeFixture=await page.addStyleTag({content:`
+  #battle .battle-arena {height:465px!important}
+  #battle #singleEnemyBox {height:69px!important;box-sizing:border-box}
+ `});
  async function artHeight(slot){
-  return page.locator(slot+' .battle-static-media img').evaluate(img=>{
-   updateBattleViewport();
+  return page.locator(slot+' .battle-static-media img').evaluate(async img=>{
+   await img.decode();
+   const arena=img.closest('.battle-arena'),hud=document.getElementById('singleEnemyBox');
+   const fieldHeight=arena.clientHeight,hudHeight=hud.getBoundingClientRect().height;
+   if(fieldHeight!==465||hudHeight!==69)throw Error('Unexpected field/HUD dimensions: '+fieldHeight+'/'+hudHeight);
+   arena.dataset.compactHeight=String(fieldHeight);
+   arena.dataset.enemyHud=String(hudHeight);
+   syncBattleIdleSizes(battleIdleCandidates());
    return img.getBoundingClientRect().height;
   });
  }
- for(const viewport of [{width:360,height:640},{width:412,height:915}]){
+ for(const viewport of [{width:360,height:640},{width:411,height:780},{width:412,height:915}]){
   await page.setViewportSize(viewport);
   const party=['elna_advanced','elixion'];
   await start('single',party,'elna_advanced');
@@ -123,7 +133,8 @@ try{
   await start('single',party,'elixion');
   assert.equal(await artHeight('#pVis'),allyHeight,'Elna keeps her height when facing Elixion');
  }
- console.log('PASS rendered size independence for both sides at 360×640 and 412×915.');
+ await sizeFixture.evaluate(style=>style.remove());
+ console.log('PASS rendered size independence at three mobile widths, 465px field and 69px enemy HUD.');
  // MOB-01: exercise the rendered sheet using locator clicks (not hidden DOM clicks).
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{
