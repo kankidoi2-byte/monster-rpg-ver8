@@ -138,6 +138,7 @@ async function journey(page, log) {
     await tap('#renewalSheet .br-go');
   }
   const wins=new Set(), startedBattles=new Set(), drawn=new Set(), retries=new Map();
+  let ownedBeforeDraw;
   let trained=false, draws=0, active=0, last='', changed=Date.now();
   const startTime=Date.now();
   await page.locator('#titleScreen').waitFor();
@@ -185,11 +186,15 @@ async function journey(page, log) {
       for(const id of ['elna_rescue_complete','stella_mock_victory']) assert(wins.has(id),id);
       assert.equal(draws,1);
       assert.equal(drawn.size,1);
-      const receipt=await page.evaluate(()=>{
-        const r=ProloguePart2Events.characterReceipt();
-        return {count:r?.count,cost:r?.cost,owned:save.instances.filter(i=>i.uid===r?.instanceUid && i.id===r.unitId).length};
+      const {receipt, unitName, owned}=await page.evaluate(()=>{
+        const receipt=ProloguePart2Events.characterReceipt();
+        return {receipt, unitName:by(receipt?.unitId)?.name, owned:save.instances.map(({uid,id})=>({uid,id}))};
       });
-      assert.deepEqual(receipt,{count:1,cost:0,owned:1});
+      assert.equal(receipt?.count,1,'終幕の抽選回数');
+      assert.equal(receipt.cost,0,'終幕の抽選コスト');
+      assert.deepEqual([...drawn],[unitName],'結果画面の名前と獲得記録が一致');
+      const acquired={uid:receipt.instanceUid,id:receipt.unitId};
+      assert.deepEqual(owned.filter(i=>!ownedBeforeDraw.has(i.uid)),[acquired],'抽選で追加された個体と獲得記録が一致');
       await page.getByRole('button',{name:'拠点へ',exact:true}).tap();
       await page.locator('#home.active').waitFor();
       await log.shot('home-after-epilogue');
@@ -201,7 +206,9 @@ async function journey(page, log) {
       await log.shot('authority-after-epilogue');
       const snapshot=()=>page.evaluate(()=>({
         coins:save.coins,items:save.items,party:save.party,
-        owned:save.instances.map(i=>i.uid),receipt:ProloguePart2Events.characterReceipt(),
+        owned:save.instances.map(({uid,id})=>({uid,id})),receipt:ProloguePart2Events.characterReceipt(),
+        tutorialStatus:save.progress.tutorial.status,
+        completedEpisodes:Object.keys(save.prologuePart2.episodes).filter(id=>save.prologuePart2.episodes[id].completed).sort(),
         complete:save.prologuePart2.completed,authority:authorityUnlocked()
       }));
       const saved=await snapshot();
@@ -210,7 +217,10 @@ async function journey(page, log) {
       await tap('#titleScreen');
       await page.locator('#titleScreen').waitFor({state:'detached'});
       await page.locator('#home.active').waitFor();
-      assert.deepEqual(await snapshot(),saved,'終幕後の再読み込みで報酬・仲間・解放を保持');
+      const reloaded=await snapshot();
+      assert.deepEqual(reloaded,saved,'終幕後の再読み込みで進行・報酬・仲間・解放を保持');
+      assert.deepEqual(reloaded.owned.filter(i=>i.uid===acquired.uid),[acquired],'再読込後も抽選で増えた個体が1体存在');
+      console.log('PASS 無料ガチャ・再読込',unitName,JSON.stringify(acquired));
       await log.shot('home-reloaded');
       console.log('PASS epilogue -> home -> roster -> authority -> reload');
 
@@ -278,7 +288,12 @@ async function journey(page, log) {
       continue;
     }
     const free=actions+' button:text-is("無料で1回引く")';
-    if(await visible(free)){assert.equal(draws++,0);await tap(free);continue;}
+    if(await visible(free)){
+      assert.equal(draws++,0);
+      ownedBeforeDraw=new Set(await page.evaluate(()=>save.instances.map(i=>i.uid)));
+      await tap(free);
+      continue;
+    }
     const options=['[data-prologue-loan][aria-pressed="false"]','[data-prologue-synthesize]:enabled',
       actions+' button:text-is("物語を続ける")',actions+' button:text-is("後で見る")',actions+' button:visible:enabled'];
     for(const selector of options){
