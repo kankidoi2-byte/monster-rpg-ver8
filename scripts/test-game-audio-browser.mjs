@@ -34,12 +34,26 @@ try {
   await page.addInitScript(() => {
     // Observe, do not fake, the native nodes that actually decode/play the files.
     window.soundTestStarts = [];
+    const assets = new WeakMap();
+    const readBytes = Response.prototype.arrayBuffer;
+    Response.prototype.arrayBuffer = async function () {
+      const bytes = await readBytes.call(this);
+      assets.set(bytes, new URL(this.url).pathname);
+      return bytes;
+    };
+    const decode = AudioContext.prototype.decodeAudioData;
+    AudioContext.prototype.decodeAudioData = function (bytes, onSuccess, onError) {
+      return decode.call(this, bytes, buffer => {
+        assets.set(buffer, assets.get(bytes));
+        onSuccess(buffer);
+      }, onError);
+    };
     const original = AudioContext.prototype.createBufferSource;
     AudioContext.prototype.createBufferSource = function () {
       const node = original.call(this);
       const start = node.start;
       node.start = function (at, offset) {
-        window.soundTestStarts.push({ at, offset, duration: node.buffer.duration, loop: node.loop, loopStart: node.loopStart, loopEnd: node.loopEnd });
+        window.soundTestStarts.push({ file: assets.get(node.buffer), at, offset, duration: node.buffer.duration, loop: node.loop, loopStart: node.loopStart, loopEnd: node.loopEnd });
         return start.apply(this, arguments);
       };
       return node;
@@ -119,59 +133,44 @@ try {
   await page.waitForFunction(() => GameAudio.debugState().currentTrack === 'home', null, { timeout: 60000 });
   assert.equal(await page.evaluate(() => soundTestStarts.filter(node => node.loop && node.loopStart === 85.075).length), 2, 'returning from battle creates a fresh home source');
 
-  // Exercise actual moves and the real rescue-wave continuation, observing native
-  // Web Audio starts. Use buffer identity so duration collisions cannot pass.
-  const battleChecks=await page.evaluate(async()=>{
-    const names=new Map(),events=[];
-    const create=AudioContext.prototype.createBufferSource;
-    // The observer installed at page startup wraps each node's start method.
-    AudioContext.prototype.createBufferSource=function(){
-      const node=create.call(this),original=node.start;
-      node.start=function(...args){
-        events.push(node.buffer);
-        return original.apply(node,args);
-      };
-      return node;
-    };
-    try{
-      for(const key of ['hit','weakHit','heal','swing','victory']){
-        await GameAudio.playSe(key);
-        names.set(events.at(-1),key);
-      }
-      const cues=()=>events.map(buffer=>names.get(buffer)).filter(Boolean);
-      const outcomes={};
-      save.instances=[];save.party=[addInstance('aquaron',10).uid];
-      show('partySet');startBattleFromParty();
-      function prepare(target){
-        const request=createHuntRequest(MAPS[0],by(target),'normal',[],{enemyLevel:10,allowOvertier:false});
-        request.battleMode='single';
-        prepareBattleParty();beginChosenBattle('grassland',target,'normal',request);
-      }
-      for(const [name,skill,target] of [
-        ['normal','skill_aquaron_01','slime'],['weak','s110_051','freigal'],
-        ['tail','skill_aquaron_02','slime'],['heal','skill_luxseed_03','slime'],
-        ['full','skill_luxseed_03','slime']
-      ]){
-        prepare(target);
-        if(name==='heal'){pHp=Math.floor(playerMaxHp()/2);update();}
-        events.length=0;
-        const before=name==='heal'||name==='full'?pHp:eHp;
-        await performAction(player,enemy,skillToMove(skill),true);
-        const after=name==='heal'||name==='full'?pHp:eHp;
-        outcomes[name]={cues:cues(),delta:Math.sign(after-before)};
-      }
-      prepare('slime');events.length=0;
-      Object.assign(tutorialBattleSession,{active:true,kind:'elna_rescue',enemyQueue:['slime']});
-      eHp=0;win();
-      await Promise.resolve();
-      outcomes.wave={continued:eHp>0&&tutorialBattleSession.enemyQueue.length===0,win:cues().includes('victory')};
-      tutorialBattleSession.active=false;eHp=0;win();
-      renderBattleOutcome({kind:'victory',title:'再表示'});
-      await new Promise(resolve=>setTimeout(resolve,0));
-      outcomes.final=cues().filter(key=>key==='victory').length;
-      return outcomes;
-    }finally{AudioContext.prototype.createBufferSource=create;}
-  });
+  // Identify every started native buffer by its original response, including when
+  // throttling discards another request or another scene has a pending sound.
+  const resultFiles=Object.fromEntries(['hit','weakHit','heal','swing','victory'].map(key=>['/'+manifest.se[key].file,key]));
+  const battleChecks=await page.evaluate(async files=>{
+    const events=window.soundTestStarts;
+    const cues=()=>events.map(event=>files[event.file]).filter(Boolean);
+    const outcomes={};
+    save.instances=[];save.party=[addInstance('aquaron',10).uid];
+    show('partySet');startBattleFromParty();
+    function prepare(target){
+      const request=createHuntRequest(MAPS[0],by(target),'normal',[],{enemyLevel:10,allowOvertier:false});
+      request.battleMode='single';
+      prepareBattleParty();beginChosenBattle('grassland',target,'normal',request);
+    }
+    for(const [name,skill,target] of [
+      ['normal','skill_aquaron_01','slime'],['weak','s110_051','freigal'],
+      ['tail','skill_aquaron_02','slime'],['heal','skill_luxseed_03','slime'],
+      ['full','skill_luxseed_03','slime']
+    ]){
+      prepare(target);
+      if(name==='heal'){pHp=Math.floor(playerMaxHp()/2);update();}
+      events.length=0;
+      const before=name==='heal'||name==='full'?pHp:eHp;
+      await performAction(player,enemy,skillToMove(skill),true);
+      const after=name==='heal'||name==='full'?pHp:eHp;
+      outcomes[name]={cues:cues(),delta:Math.sign(after-before)};
+    }
+    prepare('slime');events.length=0;
+    Object.assign(tutorialBattleSession,{active:true,kind:'elna_rescue',enemyQueue:['slime']});
+    eHp=0;win();
+    await Promise.resolve();
+    outcomes.wave={continued:eHp>0&&tutorialBattleSession.enemyQueue.length===0,win:cues().includes('victory')};
+    tutorialBattleSession.active=false;eHp=0;win();
+    renderBattleOutcome({kind:'victory',title:'再表示'});
+    await new Promise(resolve=>setTimeout(resolve,0));
+    outcomes.final=cues().filter(key=>key==='victory').length;
+    return outcomes;
+  },resultFiles);
   assert.deepEqual(battleChecks,{
     normal:{cues:['hit'],delta:-1},weak:{cues:['weakHit'],delta:-1},tail:{cues:['swing'],delta:-1},
     heal:{cues:['heal'],delta:1},full:{cues:[],delta:0},wave:{continued:true,win:false},final:1
