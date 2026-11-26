@@ -38,7 +38,7 @@ async function verify(page,width){
   page.on('response',r=>{
     if(r.status()===404 && /\/images\/maps\//.test(new URL(r.url()).pathname))responseErrors.push(r.url());
   });
-  const rank=page.locator('#contractorRankUpOverlay:not(.hidden)');
+  const rank=page.locator('body:not(:has(dialog:modal)) #contractorRankUpOverlay:not(.hidden)');
   await page.addLocatorHandler(rank,()=>rank.getByRole('button',{name:'冒険を続ける',exact:true}).tap());
   const title=page.locator('#titleScreen');
   await title.tap();
