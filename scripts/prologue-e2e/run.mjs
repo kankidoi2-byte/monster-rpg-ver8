@@ -47,7 +47,7 @@ async function journey(page, log) {
     if(point) await page.touchscreen.tap(point.x,point.y);
   }
   // A late Rank notice can appear between locating a button and the tap.
-  await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{
+  await page.addLocatorHandler(page.locator('body:not(:has(dialog:modal)) #contractorRankUpOverlay:not(.hidden)'),async()=>{
     await page.locator('#contractorRankUpOverlay button').first().tap();
   });
   async function advanceGuide(s){
