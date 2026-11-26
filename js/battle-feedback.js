@@ -112,6 +112,7 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const effectsRate=typeof activeBattleSkillEffect!=='undefined'&&activeBattleSkillEffect?.rate||(typeof autoSpeed==='function'?autoSpeed():1);
   if(effectsStage)setBattleSkillHpTrailTiming(effectsStage,effectsRate,battleVisuals,{healed:loss<0});
   renderBattleHpAtImpact(u,after);
+  if(loss<0&&typeof gameAudioPlay==='function')gameAudioPlay('heal');
   battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
   let rendered=impact&&typeof playBattleImpact==='function'&&playBattleImpact(vis,amount,effectiveness,types,power);
   const suppress=typeof battleSkillEffectsSuppressed==='function'&&battleSkillEffectsSuppressed();

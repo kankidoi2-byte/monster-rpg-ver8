@@ -119,7 +119,7 @@ function makeHarness(options = {}) {
   assert.equal(await unlocking, true);
   assert.equal(h.fetches.filter(path => path === 'sound-manifest.json').length, 1);
   await flush();
-  assert.equal(h.fetches.filter(path => path.startsWith('audio/se/')).length, 21);
+  assert.equal(h.fetches.filter(path => path.startsWith('audio/se/')).length, 24);
   assert.deepEqual(h.fetches.filter(path => path.startsWith('audio/bgm/')), [manifest.bgm.title.file]);
   assert.deepEqual(clone(h.api.debugState().seBuffers).sort(), Object.keys(manifest.se).sort());
   assert.equal(h.music()[0].loop, false);
@@ -379,6 +379,30 @@ function makeHarness(options = {}) {
   assert.equal(await unsupported.api.unlock(), false);
   assert.equal(await unsupported.api.setScene('home'), false);
   assert.equal(await unsupported.api.playSe('tap'), false);
+}
+
+{
+  const h=makeHarness();
+  await h.api.unlock();
+  await flush();
+  const burst=await Promise.all(Array.from({length:10},()=>h.api.playImpactGroup(['hit'])));
+  assert.equal(burst.filter(Boolean).length,1);
+  assert.equal(await h.api.playImpactGroup(['weakHit'],true),true);
+  assert.equal(h.se('hit')[0].stopAt,h.se('weakHit')[0].startAt);
+  assert.equal(await h.api.playImpactGroup(['hit']),false);
+  h.ctx.advance(.1);
+  assert.equal(await h.api.playImpactGroup(['slashLight','fire']),true);
+  near(h.se('fire')[0].startAt-h.se('slashLight')[0].startAt,.1,'preserve the original paired slash and flame');
+  h.ctx.advance(.08);
+  await h.api.playImpactGroup(['hit']);
+  assert.ok(h.se('fire')[0].stopAt<h.se('fire')[0].startAt,'next hit cancels a queued layer');
+  h.api.setMuted('se',true);
+  h.ctx.advance(1);
+  assert.equal(await h.api.playImpactGroup(['weakHit'],true),false);
+  assert.equal(await h.api.playSe('heal'),false);
+  h.api.setMuted('se',false);
+  h.api.setVolume('se',0);
+  assert.equal(await h.api.playSe('heal'),false);
 }
 
 assert.ok(!/createOscillator|new\s+Audio\s*\(/.test(source), 'audio engine uses neither synthetic oscillators nor HTML audio');

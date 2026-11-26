@@ -38,10 +38,14 @@ function gameAudioMoveKeys(move){
   if(types.includes('fire'))keys.push('fire');
   return keys;
 }
-function gameAudioMoveImpact(move){
-  if(typeof GameAudio==='undefined')return;
+function gameAudioMoveImpact(move,actualLoss,effectiveness){
+  if(typeof GameAudio==='undefined'||!(actualLoss>0))return;
+  if(effectiveness>1){
+    GameAudio.playImpactGroup(['weakHit'],true);
+    return;
+  }
   const keys=gameAudioMoveKeys(move);
-  keys.forEach((key,index)=>GameAudio.playSe(key,index*.1));
+  GameAudio.playImpactGroup(keys.length?keys:['hit']);
 }
 function gameAudioEnable(button){
   button.textContent='音を準備しています';

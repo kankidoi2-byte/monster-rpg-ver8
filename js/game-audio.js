@@ -220,6 +220,7 @@
     scene = value;
     battleEnded = false;
     generation++;
+    lastImpactAt = -Infinity;
     cancelPendingCombat();
     if (context) retireMusic(0.8);
     desiredTrack = nextTrack;
@@ -230,22 +231,36 @@
   function beginBattle(value) {
     return typeof value === 'string' && isBattle(value) ? setScene(value, { restart: true }) : Promise.resolve(false);
   }
-  function playEffect(key, delaySec, token) {
-    if (!unlocked || !context || typeof key !== 'string' || hidden()) return Promise.resolve(false);
+  // One impact group can contain the existing slash + flame pair. Subsequent
+  // hits replace the entire group, including pending decodes / delayed layers.
+  let impactGroup = 0, lastImpactAt = -Infinity, lastImpactWeak = false;
+  function playImpactGroup(keys, weak = false) {
+    if (!context || !unlocked || hidden() || settings.seMuted || settings.seVolume === 0) return Promise.resolve(false);
+    const now = context.currentTime;
+    if (now - lastImpactAt < 0.075 && (!weak || lastImpactWeak)) return Promise.resolve(false);
+    lastImpactAt = now;
+    lastImpactWeak = weak;
+    const group = ++impactGroup;
+    for (const effect of effects) if (effect.group) stop(effect.source, now);
+    return Promise.all(keys.map((key, index) => playEffect(key, index * 0.1, generation, group))).then(results => results.some(Boolean));
+  }
+  function playEffect(key, delaySec, token, group = 0) {
+    if (!unlocked || !context || settings.seMuted || settings.seVolume === 0 || typeof key !== 'string' || hidden()) return Promise.resolve(false);
     const delay = Number(delaySec);
     const at = context.currentTime + (Number.isFinite(delay) ? Math.max(0, delay) : 0);
     const lastRequest = requestedEffects.get(key);
     if (lastRequest !== undefined && Math.abs(at - lastRequest) < 0.025) return Promise.resolve(false);
     requestedEffects.set(key, at);
-    return loadSe(key).then(sound => {
-      if (hidden() || (token !== null && token !== generation) || sound.offset >= sound.buffer.duration) return false;
+    function startSound(sound) {
+      if (settings.seMuted || settings.seVolume === 0 || hidden() || (token !== null && token !== generation) || sound.offset >= sound.buffer.duration) return false;
+      if (group && (group !== impactGroup || context.currentTime - at > 0.075)) return false;
       const startAt = Math.max(context.currentTime, at);
       const lastStart = startedEffects.get(key);
       if (lastStart !== undefined && Math.abs(startAt - lastStart) < 0.025) return false;
       const source = context.createBufferSource();
       source.buffer = sound.buffer;
       source.connect(seGain);
-      const effect = { key, source, startAt };
+      const effect = { key, source, startAt, group };
       effects.add(effect);
       source.onended = () => { effects.delete(effect); disconnect(source); };
       try { source.start(startAt, sound.offset); } catch (error) {
@@ -255,10 +270,18 @@
       }
       startedEffects.set(key, startAt);
       return true;
-    }).catch(error => {
+    }
+    function failed(error) {
       if (requestedEffects.get(key) === at) requestedEffects.delete(key);
       return rememberError(error);
-    });
+    }
+    // Combat can spend a frame rendering HP panels. Start an already decoded
+    // impact on this stack, before UI work delays the microtask queue.
+    if (group && seBuffers.has(key)) {
+      try { return Promise.resolve(startSound(seBuffers.get(key))); }
+      catch (error) { return Promise.resolve(failed(error)); }
+    }
+    return loadSe(key).then(startSound).catch(failed);
   }
   function playSe(key, delaySec = 0) {
     return playEffect(key, delaySec, UI_EFFECTS.has(key) ? null : generation);
@@ -267,6 +290,7 @@
     if (battleEnded || !isBattle(scene)) return Promise.resolve(false);
     battleEnded = true;
     generation++;
+    lastImpactAt = -Infinity;
     cancelPendingCombat();
     desiredTrack = null;
     pruneMusic();
@@ -321,5 +345,5 @@
       seBuffers: Array.from(seBuffers.keys()), retiring: retiring.size, activeEffects: effects.size, lastError };
   }
   if (root.document && root.document.addEventListener) root.document.addEventListener('visibilitychange', syncVisibility);
-  root.GameAudio = Object.freeze({ unlock, setScene, beginBattle, endBattle, playSe, setVolume, setMuted, getSettings, debugState });
+  root.GameAudio = Object.freeze({ unlock, setScene, beginBattle, endBattle, playSe, playImpactGroup, setVolume, setMuted, getSettings, debugState });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 const manifest=JSON.parse(fs.readFileSync('sound-manifest.json','utf8'));
-assert.equal(Object.keys(manifest.bgm).length,7);assert.equal(Object.keys(manifest.se).length,21);
+assert.equal(Object.keys(manifest.bgm).length,7);assert.equal(Object.keys(manifest.se).length,24);
 const assets=JSON.parse(fs.readFileSync('scripts/sound-pack-01-assets.json','utf8'));
 for(const item of assets){const entry=manifest.bgm[item.key]||manifest.se[item.key];assert.equal(entry.source.driveId,item.driveId);assert.equal(entry.file,item.file);const bytes=fs.readFileSync(item.file);assert.equal(bytes.length,item.bytes);assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),item.sha256);}
 // BGM is an explicitly recorded AAC derivative, while all ten SE remain original bytes.
@@ -51,7 +51,7 @@ assert.equal(manifest.bgm.home.loopStartSec, 85.075);
 assert.equal(manifest.bgm.home.loopEndSec, 159.405);
 assert.equal(manifest.bgm.battle_grassland.loopStartSec, 14.420);
 assert.equal(manifest.bgm.battle_grassland.loopEndSec, 41.425);
-const calls=[];const ctx=vm.createContext({GameAudio:{beginBattle:s=>calls.push(['battle',s]),setScene:s=>calls.push(['scene',s]),playSe:(k,d)=>calls.push([k,d])},activeHuntRequest:{source:'hunt'},selectedMap:{id:'grassland'},battleFeedback:{finished:false},tutorialBattleSession:{active:false},skillBattleMotionForMove:move=>({form:move[2],types:[move[3]]})});
+const calls=[];const ctx=vm.createContext({GameAudio:{beginBattle:s=>calls.push(['battle',s]),setScene:s=>calls.push(['scene',s]),playSe:(k,d)=>calls.push([k,d]),playImpactGroup:(keys,weak=false)=>calls.push([Array.from(keys),weak])},activeHuntRequest:{source:'hunt'},selectedMap:{id:'grassland'},battleFeedback:{finished:false},tutorialBattleSession:{active:false},skillBattleMotionForMove:move=>({form:move[2],types:[move[3]]})});
 vm.runInContext(fs.readFileSync('js/game-audio-ui.js','utf8'),ctx);
 vm.runInContext("gameAudioScreenChanged('home');gameAudioScreenChanged('battleChoices');gameAudioScreenChanged('battle');gameAudioScreenChanged('battle');",ctx);
 assert.deepEqual(calls,[['scene','home'],['scene','mapSelect'],['battle','battle:grassland'],['encounter',undefined]]);
@@ -66,8 +66,16 @@ for(const [map,tier,scene,effect] of [['volcano','','battle:volcano','encounter'
 }
 calls.length=0;vm.runInContext("gameAudioBattleInput(false,false);gameAudioBattleInput(false,false);gameAudioBattleInput(true,false);gameAudioBattleInput(false,false);gameAudioBattleInput(true,true);gameAudioBattleInput(false,true);",ctx);
 assert.deepEqual(calls,[['turn',undefined],['turn',undefined]]);
-calls.length=0;vm.runInContext("gameAudioMoveImpact(['フレイムクロー',30,'claw','fire']);gameAudioMoveImpact(['しっぽ打ち',20,'tail','normal']);gameAudioMoveImpact(['水流',30,'magic','water']);gameAudioMoveImpact(['回復',0,'magic','fire']);gameAudioMoveImpact(['渾身斬り',30,'sword','normal']);",ctx);
-assert.deepEqual(calls,[['slashLight',0],['fire',.1],['swing',0],['slashHeavy',0]]);
+calls.length=0;
+for(const [name,form,type,loss,ratio] of [
+  ['フレイムクロー','claw','fire',5,1],['しっぽ打ち','tail','normal',5,1],
+  ['水流','magic','water',5,1],['渾身斬り','sword','normal',5,1],
+  ['ストリームテイル','tail','water',5,2],['水流','magic','water',0,2]
+]){
+  Object.assign(ctx,{move:[name,30,form,type],loss,ratio});
+  vm.runInContext('gameAudioMoveImpact(move,loss,ratio)',ctx);
+}
+assert.deepEqual(calls,[[['slashLight','fire'],false],[['swing'],false],[['hit'],false],[['slashHeavy'],false],[['weakHit'],true]]);
 for(const [text,expected] of [['戻る','cancel'],['閉じる','menuClose'],['メニュー','menuOpen'],['決定','confirm']]){ctx.el={disabled:false,dataset:{},textContent:text,getAttribute:()=>'',matches:()=>false};assert.equal(vm.runInContext('gameAudioUiKey(el)',ctx),expected);}
 const html=fs.readFileSync('index.html','utf8');assert.ok(html.indexOf('js/game-audio.js')<html.indexOf('js/game-audio-ui.js'));assert.ok(html.indexOf('js/game-audio-ui.js')<html.indexOf('js/init.js'));assert.ok(!/<audio[^>]*loop/i.test(html));assert.ok(!/src=["'][^"']*sound\.js/.test(html));
-console.log('Sound integration: 7 recorded AAC-LC derivatives and 21 exact original SE; scene latching, adopted effects, fire layering, UI keys and script order PASS');
+console.log('Sound integration: 7 recorded AAC-LC derivatives and 21 original SE and 3 battle result SE; scene latching, adopted effects, fire layering, UI keys and script order PASS');

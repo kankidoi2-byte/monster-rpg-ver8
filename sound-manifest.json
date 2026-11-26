@@ -1,6 +1,6 @@
 {
-  "version": "sound-pack-02",
-  "date": "2026-11-22",
+  "version": "battle-result-se-1",
+  "date": "2026-11-27",
   "note": "source は Googleドライブにある元ファイル（名前とファイルID）。file はゲーム内に置くときの名前",
   "defaults": { "bgmVolume": 0.5, "seVolume": 0.8 },
   "bgm": {
@@ -62,6 +62,9 @@
     "text": {"label": "会話の文字送り", "file": "audio/se/se_ui_text.mp3", "source": {"name": "Tiny_soft_blip_for_d_#4-1794398463556.mp3", "driveId": "1r35LiwK8rfMMtkCaqYanqQCvZkMSo4fQ"}},
     "encounter": {"label": "モンスターと遭遇", "file": "audio/se/se_battle_encounter.mp3", "source": {"name": "Monster_encounter_st_#1-1794471341129.mp3", "driveId": "1AZZLsQOn0k9FiANnbC4MQeVocmtxwMEy"}},
     "encounterStrong": {"label": "格上・ヌシと遭遇", "file": "audio/se/se_battle_encounter_strong.mp3", "source": {"name": "Ominous_boss_encount_#2-1794471397817.mp3", "driveId": "1OHpL4mnV13jFDF7Rmgj5qu4EJHJTbFWS"}},
+    "hit": {"label":"通常命中","file":"audio/se/hit_v1.wav"},
+    "weakHit": {"label":"弱点命中","file":"audio/se/weak_v1.wav"},
+    "heal": {"label":"HP回復","file":"audio/se/heal_v1.wav"},
     "swing": {"label": "攻撃（振り）", "file": "audio/se/se_battle_swing.mp3", "source": {"name": "Fast_attack_swing_wh_#1-1794471497319.mp3", "driveId": "18UWPQ5cDaT42kwbfWbo6JsmU6QgSjCrc"}},
     "turn": {"label": "ターン開始", "file": "audio/se/se_battle_turn.mp3", "source": {"name": "Short_turn_start_chi_#4-1794471453685.mp3", "driveId": "1EEJZ9diNqrvkCpctNoQ-KSk2y5LBEHQb"}}
   }
