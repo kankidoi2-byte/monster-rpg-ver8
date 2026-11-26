@@ -40,7 +40,7 @@ if(window.parent!==window){
     qaSetup();pStatus='poison';pPoisonTurns=1;pHp=2;update();applyPoisonEndTurn();
     assert(pHp===0&&pStatus===null&&battleFeedback.history.some(e=>/毒 −2/.test(e.text)),'毒・実損失・解除');
     qaSetup();pHp=playerMaxHp()-50;update();await qaAction('drain');assert(battleFeedback.history.some(e=>/吸収 \+/.test(e.text)),'吸収');
-    qaSetup();await qaAction('recoil');assert(battleFeedback.history.some(e=>/反動 −8/.test(e.text)),'反動');
+    qaSetup();await qaAction('recoil');assert(battleFeedback.history.some(e=>e.text.includes(`反動 −${Math.floor(playerMaxHp()*.04)}`)),'反動');
     qaSetup();pSleepTurns=1;busy=true;await performAction(player,enemy,['通常攻撃',24,'normal'],true);assert(pSleepTurns===0&&battleFeedback.history.some(e=>/動けない/.test(e.text)),'行動不能・解除');busy=false;
     qaSetup(true);const visual=document.getElementById('enemy_aVis'),bar=document.querySelector('#enemy_aCard .hp');
     multiBattle.enemies[0].hp-=1;updateMultiBattleView();assert(document.getElementById('enemy_aVis')===visual&&document.querySelector('#enemy_aCard .hp')===bar,'複数陣営の画像・HPバー保持');

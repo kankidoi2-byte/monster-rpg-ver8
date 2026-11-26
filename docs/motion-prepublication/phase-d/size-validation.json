@@ -1,0 +1,47 @@
+{
+  "dateJST": "2026-10-01",
+  "baseCommit": "1c6dd8d5d09a502d3db629dc766e67ed7aa0a609",
+  "status": "provisional sizes implemented; automated tests and owner-only deployment passed; new smartphone appearance pending",
+  "scaleByStars": {
+    "1": 0.5,
+    "2": 0.65,
+    "3": 0.8,
+    "4": 0.9,
+    "5": 1
+  },
+  "registeredSpecies": 50,
+  "fullCheck": {
+    "exitCode": 0,
+    "postcheck": true,
+    "log": "size-full-check.log"
+  },
+  "relatedChecks": {
+    "passed": 6,
+    "boundsCases": 400,
+    "linearScaleRatio": true,
+    "bottomAlignment": true,
+    "mapBindings": 19,
+    "log": "size-related-checks.log"
+  },
+  "site": {
+    "sourceCommit": "3efad1e301b866d5412e8a8a85e7c3972209669c",
+    "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_809984b30f0c8191a00da1e1ed35f957",
+    "deploymentId": "appgdep_6abde9ae238c819181942dad4fd3131b",
+    "status": "succeeded",
+    "audience": "owner only",
+    "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+    "archiveRuntimeAndGeneratedReviewMatch": true
+  },
+  "priorUserAcceptance": "motion and clipping passed before size change; appearance issue reported; do not reuse as new size acceptance",
+  "realGalaxySizeAcceptance": "pending",
+  "mainMerge": false,
+  "generalPublication": false,
+  "unchanged": [
+    "js/data.js",
+    "js/save.js",
+    "js/battle-rules.js",
+    "js/battle-flow.js",
+    "js/multi-battle.js",
+    "all original video/poster assets"
+  ]
+}

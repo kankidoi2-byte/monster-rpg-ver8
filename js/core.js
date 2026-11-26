@@ -1,11 +1,36 @@
+function escapeGameHtml(value){
+  return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function unitImageSrc(unit){
+  const key=unit?.imgKey;
+  return key&&Object.hasOwn(IMG,key)?IMG[key]||'':'';
+}
+function battleFieldImageSrc(unit){
+  const media=typeof battleDisplayMedia==='function'?battleDisplayMedia(unit?.id):null;
+  return media?.poster||unitImageSrc(unit);
+}
+function battleFieldVisual(unit){
+  const src=battleFieldImageSrc(unit);
+  if(src)return `<img src="${escapeGameHtml(src)}" alt="${escapeGameHtml(unit.name)}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
+  if(unit.artworkPending&&isCharacterUnit(unit))return `<div class="character-artwork-pending" role="img" aria-label="${unit.name}"><div class="emoji" aria-hidden="true">画像準備中</div><small>${unit.name}</small></div>`;
+  return `<div class="unit-artwork-placeholder" role="img" aria-label="${escapeGameHtml(unit.name)}">画像準備中</div>`;
+}
 function normalizeMoveTypes(value){
   const arr = Array.isArray(value) ? value : [value || 'normal'];
   return [...new Set(arr.filter(Boolean))];
 }
 function moveTypes(mv){ return normalizeMoveTypes(mv?.[2]); }
 function skillTypes(sk){ return normalizeMoveTypes(sk?.types?.length ? sk.types : sk?.type); }
-function skillTypeIcon(type){return TYPE_ICONS[type]||'🃏';}
-function skillTypeLabel(types){return normalizeMoveTypes(types).map(t=>`${skillTypeIcon(t)}${TN[t]||t}`).join(' / ');}
+function displayType(type){return typeof type==='string'&&Object.hasOwn(TN,type)?type:'normal';}
+function typeChip(type){
+  const key=displayType(type);
+  return `<span class="type-chip type-chip--${key}">${TN[key]}</span>`;
+}
+function skillTypeLabel(types){return normalizeMoveTypes(types).map(t=>TN[displayType(t)]).join(' / ');}
+function skillTypeChips(types){
+  const keys=[...new Set(normalizeMoveTypes(types).map(displayType))];
+  return `<span class="type-chip-group">${(keys.length?keys:['normal']).map(typeChip).join(' ')}</span>`;
+}
 function skillCardClass(typeOrTypes){
   const types=normalizeMoveTypes(typeOrTypes);
   return types.length>1 ? `skill-card skill-dual-${types.join('-')}` : `skill-card skill-${types[0]||'normal'}`;
@@ -14,7 +39,15 @@ function skillButtonClass(typeOrTypes){
   const types=normalizeMoveTypes(typeOrTypes);
   return types.length>1 ? `dual-${types.join('-')}` : (types[0]||'normal');
 }
-function skillCardHeader(sk){const types=skillTypes(sk);return `<div class="skill-card-head"><h3 class="skill-card-title">${skillTypeLabel(types)} ${sk.name}</h3><span class="skill-cost-badge">COST ${sk.cost}</span></div>`;}
+function skillCardHeader(sk){return `<div class="skill-card-head"><h3 class="skill-card-title">${sk.name}</h3><span class="skill-cost-badge">COST ${sk.cost}</span></div>`;}
+function skillCardStats(sk){return `<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeChips(skillTypes(sk))} / ${sk.power === 0 ? '補助技' : `威力 ${sk.power}`}</p>`;}
+function skillCardEffect(mv){
+  const text=moveEffectText(mv,{includeBase:false});
+  const short=text ? `<p class="small skill-effect-text">${text}</p>` : '';
+  const card=String(mv?.[8]||'').startsWith('s110_')?SKILL_BY_ID[mv[8]]:null;
+  if(!card?.detailedDesc)return short;
+  return `${short}<details class="skill-numeric-detail" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()"><summary style="min-height:44px;cursor:pointer">数値・詳しい効果</summary><p class="small skill-numeric-text">${card.detailedDesc}</p></details>`;
+}
 
 /* ===== 属性相性 ===== */
 /* ===== 技カード定義・技装備システム ===== */
@@ -24,7 +57,7 @@ function legacySkillIdFromMove(mv){
   return `sk_${code}_${moveTypes(mv).join('-')}_${mv[1] || 0}_${mv[3] || 'none'}`;
 }
 function skillCostFromMove(mv){
-  if (Number.isFinite(mv[5])) return Math.max(1, Math.min(6, Number(mv[5])));
+  if (Number.isFinite(mv[5])) return Math.max(1, Math.min(String(mv[8] || '').startsWith('s110_') ? 25 : 6, Number(mv[5])));
   const power = Number(mv[1] || 0);
   const effect = mv[3] || '';
   let cost = power <= 0 ? 1 : power <= 30 ? 1 : power <= 45 ? 2 : power <= 60 ? 3 : power <= 80 ? 4 : 5;
@@ -35,6 +68,37 @@ const MOVE_CARDS = [];
 const _skillSeen = new Set();
 const _skillIdByMove = new WeakMap();
 const LEGACY_SKILL_ID_ALIASES = Object.create(null);
+// Persistent fixed-ID aliases. Name-derived sk_ aliases below target these new IDs.
+const RENAMED_SKILL_ID_ALIASES = Object.freeze({
+  skill_false_dragon_beta_01:'skill_ashleia_01',
+  skill_false_dragon_beta_02:'skill_ashleia_02',
+  skill_false_dragon_beta_03:'skill_ashleia_03',
+  skill_false_dragon_gamma_01:'skill_morglum_01',
+  skill_false_dragon_gamma_02:'skill_morglum_02',
+  skill_false_dragon_gamma_03:'skill_morglum_03',
+});
+Object.assign(LEGACY_SKILL_ID_ALIASES,RENAMED_SKILL_ID_ALIASES);
+// Preserve ownership and equipment from the pre-drain, name-derived skill ID.
+LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(["セラフィックリーフ",68,"grass"])] = "skill_seralphia_03";
+if (typeof CHARACTER_SKILL_LEGACY_MOVES !== 'undefined') {
+  Object.entries(CHARACTER_SKILL_LEGACY_MOVES).forEach(([id,move]) => {
+    LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(move)] = id;
+  });
+}
+
+// User-approved replacement skills. Fixed IDs retain ownership; legacy names/types
+// remain readable. Presentation and anatomy are keyed by ID, not mutable names.
+const REPLACEMENT_SKILL_COMPAT = Object.freeze({
+  skill_ashleia_01: Object.freeze({legacyMove:['断界光',76,'light'],form:'beam',requiredAll:[]}),
+  skill_ashleia_02: Object.freeze({legacyMove:['偽竜の翼撃',62,'normal'],form:'wing',requiredAll:['anatomy:wing']}),
+  skill_ashleia_03: Object.freeze({legacyMove:['コード・ベータ',94,'light'],form:'beam',requiredAll:[]}),
+  skill_morglum_01: Object.freeze({legacyMove:['虚無光翼',82,'light'],form:'projectile',requiredAll:[]}),
+  skill_morglum_02: Object.freeze({legacyMove:['偽竜の咆哮',66,'normal'],form:'roar',requiredAll:['capability:roar']}),
+  skill_morglum_03: Object.freeze({legacyMove:['コード・ガンマ',100,'light'],form:'wave',requiredAll:[]})
+});
+Object.entries(REPLACEMENT_SKILL_COMPAT).forEach(([id,profile])=>{
+  LEGACY_SKILL_ID_ALIASES[legacySkillIdFromMove(profile.legacyMove)]=id;
+});
 
 const SKILL_FORM_RULES = Object.freeze([
   Object.freeze({tag:'anatomy:fang', form:'fang', pattern:/牙/}),
@@ -51,7 +115,9 @@ const SKILL_FORM_RULES = Object.freeze([
   Object.freeze({tag:'weapon:club', form:'club', pattern:/棍棒/}),
   Object.freeze({tag:'weapon:dagger', form:'dagger', pattern:/短剣/}),
   Object.freeze({tag:null, form:'strike', pattern:/(クラッシュ|崩し|崩砕|砕き|一撃)/}),
-  Object.freeze({tag:'capability:charge', form:'charge', pattern:/(突進|急降下|ダイブ|ラッシュ|ランページ|チャージ)/}),
+  // 「クラッシュ」内の「ラッシュ」は突進能力の根拠にしない。
+  // 他の突進語や、同じ名前に別途含まれる「ラッシュ」は判定を維持する。
+  Object.freeze({tag:'capability:charge', form:'charge', pattern:/(突進|急降下|ダイブ|(?<!ク)ラッシュ|ランページ|チャージ)/}),
   Object.freeze({tag:'anatomy:body', form:'body', pattern:/(たいあたり|アタック)/}),
   Object.freeze({tag:null, form:'blade', pattern:/(水刃|風刃)/}),
   Object.freeze({tag:'capability:beam', form:'beam', pattern:/(光砲|断界光|コード・)/}),
@@ -59,6 +125,8 @@ const SKILL_FORM_RULES = Object.freeze([
 ]);
 
 function skillFormFor(sourceUnit,mv){
+  const replacement=REPLACEMENT_SKILL_COMPAT[mv?.[8]];
+  if(replacement)return replacement.form;
   if (sourceUnit?.entityKind === 'character') {
     if ((sourceUnit.tags || []).includes('class:swordsman')) return 'sword';
     if ((sourceUnit.tags || []).includes('class:mage')) return 'magic';
@@ -67,6 +135,8 @@ function skillFormFor(sourceUnit,mv){
   return SKILL_FORM_RULES.find(rule => rule.pattern.test(name))?.form || 'generic';
 }
 function skillRequirementsFor(sourceUnit,mv,form){
+  const replacement=REPLACEMENT_SKILL_COMPAT[mv?.[8]];
+  if(replacement)return Object.freeze({entityKinds:Object.freeze(['monster']),requiredAll:Object.freeze([...replacement.requiredAll])});
   const requiredAll=[];
   if (sourceUnit?.entityKind === 'character') {
     if ((sourceUnit.tags || []).includes('class:swordsman')) requiredAll.push('class:swordsman','weapon:sword');
@@ -94,7 +164,11 @@ function skillTagsFor(sourceUnit,mv,form){
   ])]);
 }
 
-M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
+const skillSources = [...M];
+if (typeof CHARACTER_COMMON_MOVES !== 'undefined') {
+  skillSources.push({id:'character_common',entityKind:'character',tags:[],moves:CHARACTER_COMMON_MOVES});
+}
+skillSources.forEach(mon => (mon.moves || []).forEach((mv,index) => {
   const id = mv?.[8];
   if (typeof id !== 'string' || !id) throw new Error(`固定skillIdがありません: ${mon.id} moves[${index}]`);
   _skillIdByMove.set(mv,id);
@@ -109,6 +183,7 @@ M.forEach(mon => (mon.moves || []).forEach((mv,index) => {
     chance:Number.isFinite(mv[4]) ? Number(mv[4]) : null, cost:skillCostFromMove(mv), customDesc:mv[6] || '',
     exclusiveMonsterId:mv[7] || null, desc:moveEffectText ? moveEffectText(mv) : '',
     sourceUnitId:mon.id, sourceEntityKind:mon.entityKind, form,
+    tactical:mv[9] || null, commonCharacterSkill:mon.id === 'character_common',
     tags:skillTagsFor(mon,mv,form), requirements:skillRequirementsFor(mon,mv,form)
   });
 }));
@@ -123,6 +198,7 @@ function skillPowerBand(power){
   return 'signature';
 }
 function skillConsolidationKey(sk){
+  if (sk.tactical || sk.commonCharacterSkill) return `keep:${sk.id}`;
   const source=by(sk.sourceUnitId);
   const consolidatableEffect=!sk.effect || ['guard','heal','buff','debuff'].includes(sk.effect);
   if (!consolidatableEffect || sk.exclusiveMonsterId || source?.bossClass || source?.alchemyExclusive || sk.types.length !== 1 || sk.power > 80) return `keep:${sk.id}`;
@@ -135,38 +211,22 @@ function skillConsolidationKey(sk){
 function preferredPowerForBand(band){
   return {basic:28,standard:42,advanced:60,master:78,support:0}[band] ?? 0;
 }
-const _skillConsolidationGroups = new Map();
-MOVE_CARDS.forEach(sk => {
-  const key=skillConsolidationKey(sk);
-  if (!_skillConsolidationGroups.has(key)) _skillConsolidationGroups.set(key,[]);
-  _skillConsolidationGroups.get(key).push(sk);
-});
-const SKILL_CANONICAL_BY_ID = Object.create(null);
-const SKILL_CANONICAL_PRIORITY = Object.freeze([
-  'skill_icegolem_02','skill_suiren_02','skill_thornbeat_02','skill_rikasheef_02',
-  'skill_tsubaki_03','skill_zephyray_02','skill_luxiard_03','skill_slime_01',
-  'skill_aquaron_03','skill_highaquaron_03','skill_orca_abyss_02',
-  'skill_rikasheef_03','skill_elna_middle_01','skill_elna_beginner_02','skill_elna_middle_03',
-  'skill_stella_apprentice_01','skill_stella_apprentice_02','skill_stella_apprentice_03',
-  'skill_stella_wizard_01','skill_stella_wizard_02','skill_stella_wizard_03','skill_stella_sorcerer_01'
-]);
-function canonicalPriority(skillId){
-  const index=SKILL_CANONICAL_PRIORITY.indexOf(skillId);
-  return index < 0 ? Number.MAX_SAFE_INTEGER : index;
-}
-_skillConsolidationGroups.forEach(cards => {
-  const target=preferredPowerForBand(skillPowerBand(cards[0]?.power));
-  const canonical=[...cards].sort((a,b) => canonicalPriority(a.id)-canonicalPriority(b.id) || Math.abs(a.power-target)-Math.abs(b.power-target) || a.id.localeCompare(b.id))[0];
-  cards.forEach(card => { SKILL_CANONICAL_BY_ID[card.id]=canonical.id; });
-});
+// All legacy cards remain addressable for old-save inspection; only the approved
+// catalog is offered for acquisition/equipment. Mapping is explicit and versioned.
+const SKILL_CANONICAL_BY_ID = Object.freeze({...SKILL110_MIGRATION_MAP,
+  ...Object.fromEntries(SKILL110_CATALOG.map(card => [card.id,card.id]))});
 MOVE_CARDS.forEach(card => {
-  card.canonicalId=SKILL_CANONICAL_BY_ID[card.id] || card.id;
-  card.deprecated=card.canonicalId !== card.id;
+  card.canonicalId=SKILL110_MIGRATION_MAP[card.id];
+  card.deprecated=true;
 });
-Object.freeze(SKILL_CANONICAL_BY_ID);
-const EQUIPPABLE_MOVE_CARDS = Object.freeze(MOVE_CARDS.filter(card => !card.deprecated));
-const MONSTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'monster'));
-const CHARACTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.sourceEntityKind === 'character'));
+SKILL110_CATALOG.forEach(card => {
+  card.canonicalId=card.id;
+  card.deprecated=false;
+  MOVE_CARDS.push(card);
+});
+const EQUIPPABLE_MOVE_CARDS = Object.freeze([...SKILL110_CATALOG]);
+const MONSTER_MOVE_CARDS = Object.freeze(EQUIPPABLE_MOVE_CARDS.filter(card => card.acquisition !== 'synthesis'));
+const CHARACTER_MOVE_CARDS = MONSTER_MOVE_CARDS;
 const SKILL_BY_ID = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id, sk]));
 function skillIdFromMove(mv){
   return (typeof mv?.[8] === 'string' && mv[8]) || _skillIdByMove.get(mv) || legacySkillIdFromMove(mv);
@@ -175,6 +235,7 @@ function normalizeSkillId(skillId){
   return SKILL_BY_ID[skillId] ? skillId : (LEGACY_SKILL_ID_ALIASES[skillId] || skillId);
 }
 function canonicalSkillId(skillId){
+  if (SKILL110_MIGRATION_MAP[skillId]) return SKILL110_MIGRATION_MAP[skillId];
   const normalized=normalizeSkillId(skillId);
   return SKILL_CANONICAL_BY_ID[normalized] || normalized;
 }
@@ -190,7 +251,8 @@ const GENERIC_BATTLE_MOTION_RULES=Object.freeze([
 ]);
 function genericBattleMotionForm(skill,mv){
   const name=String(skill?.name || mv?.[0] || '');
-  return GENERIC_BATTLE_MOTION_RULES.find(rule => rule.pattern.test(name))?.form || 'generic';
+  // Uncatalogued normal/legacy attacks intentionally use a short shared strike.
+  return GENERIC_BATTLE_MOTION_RULES.find(rule => rule.pattern.test(name))?.form || 'strike';
 }
 function skillBattleMotionForMove(mv){
   const skillId=normalizeSkillId(skillIdFromMove(mv));
@@ -203,7 +265,10 @@ function skillBattleMotionForMove(mv){
   const damageForm=catalogForm === 'generic' ? genericBattleMotionForm(skill,mv) : catalogForm;
   const role=roleTag?.slice(5) || ((Number(mv?.[1]) || 0) > 0 ? 'damage' : 'support');
   const effect=skill?.effect || mv?.[3] || null;
-  const supportForm={guard:'guard',heal:'heal',buff:'buff',aqua_shield:'shield',sleep:'sleep'}[effect] || null;
+  const tactical=skill?.tactical || mv?.[9];
+  const tacticalSupport=tactical?.debuff||tactical?.dispel?'debuff':tactical?.heal?'heal':
+    tactical?.guard?'guard':tactical?.buff||tactical?.charge?'buff':tactical?.cleanse?.length?'heal':null;
+  const supportForm={guard:'guard',heal:'heal',buff:'buff',debuff:'debuff',aqua_shield:'shield',sleep:'sleep'}[effect] || (effect==='tactical'?tacticalSupport:null);
   const form=role === 'support' && supportForm ? supportForm : damageForm;
   return Object.freeze({
     skillId:skill?.id || null,
@@ -211,26 +276,55 @@ function skillBattleMotionForMove(mv){
     role,
     types:Object.freeze(elementTags.length ? elementTags : moveTypes(mv)),
     effect,
-    animated:(role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body','tail','horn','fist','wing','fin','leg','beak','club','dagger','roar','wave','projectile','lightning','field','mystic'].includes(form)) || (role === 'support' && ['guard','heal','buff','shield','sleep'].includes(form))
+    animated:(role === 'damage' && ['breath','beam','sword','claw','fang','magic','blade','charge','strike','body','tail','horn','fist','wing','fin','leg','beak','club','dagger','roar','wave','projectile','lightning','field','mystic'].includes(form)) || (role === 'support' && ['guard','heal','buff','debuff','shield','sleep'].includes(form))
   });
 }
 function skillToMove(skillId){
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return ['通常攻撃',24,'normal'];
-  return [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId, sk.id];
+  const move = [sk.name, sk.power, sk.types?.length>1 ? [...sk.types] : sk.type, sk.effect, sk.chance, sk.cost, sk.customDesc, sk.exclusiveMonsterId, sk.id];
+  if (sk.tactical) move.push(sk.tactical);
+  return move;
 }
+function tacticalSkillProfile(move){ return move?.[9] || SKILL_BY_ID[move?.[8]]?.tactical || null; }
 function rarityCount(m){ return (m?.rarity || '★').length || 1; }
 function skillCostLimitFor(mon, ins){
   const base = {1:4,2:5,3:6,4:8,5:10}[rarityCount(mon)] || 4;
   const lvBonus = Math.max(0, Math.floor(((ins?.level || 1) - 1) / 3));
   return base + lvBonus;
 }
+function isLaterCharacterForm(sourceId, targetId){
+  const source = by(sourceId), target = by(targetId);
+  if (source?.entityKind !== 'character' || target?.entityKind !== 'character') return false;
+  const visited = new Set([sourceId]), pending = [source];
+  while (pending.length) {
+    const form = pending.pop();
+    const nextIds = [form.evolution, ...(form.evolutions || []).map(evolution => evolution.to)];
+    for (const id of nextIds) {
+      const next = by(id);
+      if (!next || next.entityKind !== 'character' || visited.has(id)) continue;
+      if (id === targetId) return true;
+      visited.add(id);
+      pending.push(next);
+    }
+  }
+  return false;
+}
 function isSkillAllowedForMonster(skillId, mon, options={}){
   const sk = SKILL_BY_ID[skillId];
   if (!sk || !mon) return false;
   if (sk.deprecated && !options.allowDeprecated) return false;
+  if (sk.id.startsWith('s110_')) {
+    const tags=new Set(mon.tags || []);
+    if ((sk.requirements.requiredAll || []).some(tag => !tags.has(tag))) return false;
+    if (sk.universal) return true;
+    // Normal mixed with an element never opens that mixed skill to everybody.
+    const elements=skillTypes(sk).filter(type => type !== 'normal');
+    return elements.length === 0 || elements.some(type => (mon.types || []).includes(type));
+  }
   if (sk.sourceEntityKind && sk.sourceEntityKind !== mon.entityKind) return false;
-  if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id) return false;
+  if (sk.exclusiveMonsterId && sk.exclusiveMonsterId !== mon.id &&
+      !isLaterCharacterForm(sk.exclusiveMonsterId, mon.id)) return false;
   const unitTags=new Set(mon.tags || []);
   if ((sk.requirements?.entityKinds || []).length && !sk.requirements.entityKinds.includes(mon.entityKind)) return false;
   if ((sk.requirements?.requiredAll || []).some(tag => !unitTags.has(tag))) return false;
@@ -241,19 +335,42 @@ function isEquippedSkillUsableForMonster(skillId,mon){
   return isSkillAllowedForMonster(skillId,mon,{allowDeprecated:true});
 }
 function defaultSkillIdsForMonster(mon, ins){
-  const ids = [...new Set((mon?.moves || []).map(skillIdFromMove).map(canonicalSkillId).filter(id => SKILL_BY_ID[id]))];
-  const limit = skillCostLimitFor(mon, ins);
-  const chosen = [];
-  let cost = 0;
-  ids.forEach(id => {
-    const sk = SKILL_BY_ID[id];
-    if (chosen.length < 3 && isSkillAllowedForMonster(id, mon) && cost + sk.cost <= limit) {
-      chosen.push(id); cost += sk.cost;
+  if (!mon) return [];
+  const limit=skillCostLimitFor(mon,ins), chosen=[];
+  const legacy=mon.legacyMoves || mon.moves || [];
+  const preferred=[...new Set(legacy.map(skillIdFromMove).map(canonicalSkillId))]
+    .filter(id => SKILL_BY_ID[id] && SKILL_BY_ID[id].acquisition !== 'synthesis' && isSkillAllowedForMonster(id,mon));
+  // Reserve a real, usable attack before support. Favor the unit's weapon/body,
+  // then its primary element; never grant an unequippable signature as inventory.
+  const basic=EQUIPPABLE_MOVE_CARDS.filter(sk => sk.power>0 && sk.cost<=2 && isSkillAllowedForMonster(sk.id,mon));
+  basic.sort((a,b) =>
+    Number(!a.requirements.requiredAll.length)-Number(!b.requirements.requiredAll.length) ||
+    Number(!a.types.includes(mon.types?.[0]))-Number(!b.types.includes(mon.types?.[0])) || a.cost-b.cost || a.id.localeCompare(b.id));
+  const primary=preferred.find(id => SKILL_BY_ID[id].power>0 && SKILL_BY_ID[id].cost<=Math.max(1,limit-2)) || basic[0]?.id || 's110_001';
+  let used=0;
+  for (const id of [primary,...preferred,'s110_003','s110_010']) {
+    const sk=SKILL_BY_ID[id];
+    if (sk && !chosen.includes(id) && chosen.length<3 && used+sk.cost<=limit && isSkillAllowedForMonster(id,mon)) {
+      chosen.push(id); used+=sk.cost;
     }
-  });
-  if (!chosen.length) chosen.push(skillIdFromMove(['通常攻撃',24,'normal']));
-  return chosen.slice(0,3);
+  }
+  return chosen;
 }
+// Snapshot immutable legacy source loadouts before replacing runtime defaults.
+// All species, including evolved/boss forms, are legal even when created at Lv1.
+M.forEach(mon => {
+  mon.legacyMoves=mon.moves.map(move => [...move]);
+  mon.legacyTags=mon.tags;
+  // Luxiard's established ルクスホーン demonstrates its horn; do not infer
+  // this anatomy for unrelated dragons or for every character.
+  if (mon.id==='luxiard') mon.tags=Object.freeze([...new Set([...mon.tags,'anatomy:horn'])]);
+  if (mon.entityKind === 'character') {
+    const extra=['anatomy:fist','capability:charge'];
+    if (/^character_(brigitte|regus)_/.test(mon.id) || mon.id==='character_remnes_4') extra.push('weapon:sword');
+    mon.tags=Object.freeze([...new Set([...mon.tags,...extra])]);
+  }
+});
+M.forEach(mon => { mon.moves=defaultSkillIdsForMonster(mon,{level:1}).map(skillToMove); });
 const ITEM_BY_ID = Object.fromEntries(SHOP_ITEMS.map(it => [it.id, it]));
 
 /* ===== Ver7.8 アイテム図鑑マスター ===== */
@@ -275,11 +392,11 @@ function itemDexObtain(it){
   if(it.id === 'fire_orb') return '炎の精霊ツバキからドロップ';
   return '特殊報酬・イベントで入手';
 }
-function itemDexVisual(it, locked=false){
-  if(locked) return '<div class="item-dex-placeholder">❔</div>';
+function itemDexVisual(it, locked=false, lazy=false){
+  if(locked) return '<div class="item-dex-placeholder" role="img" aria-label="未登録">未</div>';
   const src = ITEM_IMG[it.id];
   return src
-    ? `<img src="${src}" alt="${it.name}">`
+    ? `<img${lazy?' loading="lazy" decoding="async"':''} src="${src}" alt="${it.name}">`
     : `<div class="item-dex-placeholder">${it.icon || '📦'}</div>`;
 }
 function itemInlineVisual(it, className='item-inline-image'){
@@ -308,27 +425,43 @@ function clampLevel(value) {
 }
 function needExp(lv) { return clampLevel(lv) * 60; }
 function isMaxLevel(lv) { return clampLevel(lv) >= MAX_LEVEL; }
+function battleStatGrowth(level) {
+  return 1 + 0.06 * (clampLevel(level) - 1);
+}
 function maxHp(m, level) {
-  // Ver5.1 Claude修正: 種族IDだけで検索するinsLevel()に頼ると、
-  // 「同種族の別個体」や「野生の敵」が別のプレイヤー所持個体のレベルと
-  // 混同されてしまうバグがあったため、呼び出し側で明示的にlevelを渡す方式に変更。
-  // level省略時は野生の敵など「基礎(Lv1)」相当として扱う。
-  const lv = (typeof level === 'number' && level > 0) ? level : 1;
-  return m.hp + (lv - 1) * 12;
+  return Math.round(m.hp * battleStatGrowth(level));
+}
+function battleBaseAttack(mon, level) { return (mon.atk ?? 60) * battleStatGrowth(level); }
+function battleBaseDefense(mon, level) { return (mon.def ?? 60) * battleStatGrowth(level); }
+function battleStatDamageMultiplier(attacker, attackerLevel, defender, defenderLevel, defenseMultiplier=1) {
+  const growth = battleStatGrowth(attackerLevel);
+  const attack = battleBaseAttack(attacker, attackerLevel);
+  const defense = battleBaseDefense(defender, defenderLevel) * (defender.itemDefense || 1) * defenseMultiplier;
+  return 0.8 * (attack / defense) * growth;
+}
+function healingAtNewMaxHp(amount, mon, level, currentMaxHp, legacyHpModifier=1) {
+  const legacyMaxHp = ((mon.legacyBaseHp ?? mon.hp) + (clampLevel(level) - 1) * 12) * legacyHpModifier;
+  return Math.floor(amount * currentMaxHp / Math.max(1, Math.round(legacyMaxHp)));
 }
 function instanceStatModifier(ins, stat){
   const value = Number(ins?.alchemy?.statModifiers?.[stat]);
-  return Number.isFinite(value) && value > 0 ? value : 1;
+  const modifier = Number.isFinite(value) && value > 0 ? value : 1;
+  const amplification=typeof traitValue==='function'?traitValue(ins,'alchemy_core',1):1;
+  return Math.max(.01,1+(modifier-1)*amplification);
 }
-function instanceMaxHp(ins){
+function instanceMaxHp(ins,authorityContextOverride=undefined){
   const mon = by(ins?.id);
   if(!mon) return 1;
-  return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp')));
+  return Math.max(1, Math.round(maxHp(mon, ins?.level || 1) * instanceStatModifier(ins, 'hp') * (typeof authorityNumericMultiplier==='function'?authorityNumericMultiplier('maxHp',authorityContextOverride):1)));
 }
-function monSpd(m, ins=null) {
-  const base = Math.round(Number(m?.spd ?? 50) * instanceStatModifier(ins, 'speed'));
+function baseBattleSpeed(m, ins, level) {
+  const growth = 1 + 0.005 * (clampLevel(level) - 1);
+  return Math.max(1, Math.round((m?.spd ?? 50) * growth * instanceStatModifier(ins, 'speed')));
+}
+function monSpd(m, ins=null, level=ins?.level) {
+  const base = baseBattleSpeed(m, ins, level);
   const linkBonus = typeof kokoroLinkSpeedBonusFor === 'function' ? kokoroLinkSpeedBonusFor(ins) : 0;
-  return Math.max(1, base + linkBonus);
+  return Math.max(1, Math.round(base * (m?.itemSpeed || 1)) + linkBonus);
 }
 function playerAttackInstanceMultiplier(){
   const linkMultiplier = typeof kokoroLinkAttackMultiplierFor === 'function'
@@ -336,24 +469,42 @@ function playerAttackInstanceMultiplier(){
     : 1;
   return instanceStatModifier(activeInstance, 'attack') * linkMultiplier;
 }
-function moveEffectText(mv) {
+function moveEffectText(mv, {includeBase=true}={}) {
   const [,power,type,effect,chance,,customDesc] = mv;
   const typeText = moveTypes(mv).map(t=>TN[t]||t).join(' / ');
-  let txt = power === 0 ? `${typeText}属性 / 補助技` : `${typeText}属性 / 威力 ${power}`;
+  let txt = includeBase ? (power === 0 ? `${typeText}属性 / 補助技` : `${typeText}属性 / 威力 ${power}`) : '';
   const percent = Number.isFinite(chance) ? Math.round(chance * 100) : null;
   const fx = {
-    heal:'自分のHPを回復', drain:'与えたダメージの半分を吸収', recoil:'強力だが反動ダメージあり',
+    heal:'自分の最大HPの22%を回復', drain:'与えたダメージの半分を吸収', recoil:'攻撃後、自分の最大HPの4%の反動ダメージを受ける',
     alchemy_recoil:'攻撃後、実際に与えたダメージの25％を反動として受ける',
     guard:'次のダメージを軽減', buff:'自分の攻撃力を上げる', debuff:'相手の攻撃力を下げる',
-    poison:`${percent ?? 50}%で相手を毒状態にする`,
-    paralysis:`${percent ?? 30}%で相手を麻痺状態にする`,
-    confusion:`${percent ?? 60}%で相手をこんらん状態にする`,
-    sleep:`${percent ?? 70}%で相手をねむり状態にする`,
+    poison:'相手を毒状態にすることがある',
+    paralysis:'相手を麻痺させることがある',
+    confusion:'相手をこんらんさせることがある',
+    sleep:'相手をねむり状態にする',
     flare_charge:'次の攻撃の攻撃力が20%アップする',
     aqua_shield:'次に受ける攻撃ダメージを半減する',
     repeat_attack:`${percent ?? 30}%でもう一度攻撃する`
   };
-  if (fx[effect]) txt += ' / ' + fx[effect];
-  if (customDesc) txt += '。' + customDesc;
+  const poweredModifierText={
+    skill_shenhairon_02:'攻撃後、自分の攻撃力を基本値の25%分上げる（上限160%）。',
+    skill_nightmare_02:'攻撃後、相手の攻撃力を基本値の20%分下げる（下限65%）。',
+    skill_noxvelg_02:'攻撃後、相手の攻撃力を基本値の20%分下げる（下限65%）。'
+  };
+  if(poweredModifierText[mv[8]])fx[effect]=poweredModifierText[mv[8]];
+  // Legacy status skills use short flavor-first copy; tactical skills keep their own descriptions.
+  if (['poison','paralysis','confusion','sleep'].includes(effect)) {
+    return txt + (txt ? ' / ' : '') + (customDesc || '') + fx[effect] + '。';
+  }
+  if (fx[effect]) txt += (txt ? ' / ' : '') + fx[effect];
+  let description=customDesc;
+  if (!includeBase && description) {
+    // Omit only known base-only copy; conditions and numeric effects stay intact.
+    if (!fx[effect] && description === '追加効果のない攻撃。') description='';
+    const types=moveTypes(mv);
+    const dualIntro=types.map(t=>TN[t]||t).join('と')+'の複合攻撃。';
+    if (types.length > 1 && description.startsWith(dualIntro)) description=description.slice(dualIntro.length);
+  }
+  if (description) txt += (txt ? '。' : '') + description;
   return txt;
 }

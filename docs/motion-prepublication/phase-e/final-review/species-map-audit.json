@@ -1,0 +1,1645 @@
+{
+  "dateJST": "2026-10-02",
+  "runtimeCommit": "08d131fba02f4d584cf1df40e3d7812403128f93",
+  "speciesCount": 50,
+  "mapCount": 19,
+  "maps": [
+    {
+      "id": "grassland",
+      "name": "草原"
+    },
+    {
+      "id": "volcano",
+      "name": "火山"
+    },
+    {
+      "id": "lake",
+      "name": "湖"
+    },
+    {
+      "id": "seikai_irie",
+      "name": "蒼海の入り江"
+    },
+    {
+      "id": "kaiyu_kaiiki",
+      "name": "回遊海域"
+    },
+    {
+      "id": "deep_sea_end",
+      "name": "深き海の果て"
+    },
+    {
+      "id": "snow_mountain",
+      "name": "雪山"
+    },
+    {
+      "id": "forest",
+      "name": "森林"
+    },
+    {
+      "id": "light_plain",
+      "name": "光の平原"
+    },
+    {
+      "id": "starry_plain",
+      "name": "星空の平原"
+    },
+    {
+      "id": "highland_ruins",
+      "name": "高原遺跡"
+    },
+    {
+      "id": "arena",
+      "name": "闘技場"
+    },
+    {
+      "id": "magic_academy",
+      "name": "魔導学園"
+    },
+    {
+      "id": "ruined_village",
+      "name": "廃村跡"
+    },
+    {
+      "id": "starsea",
+      "name": "遥かなる星の海"
+    },
+    {
+      "id": "water_secret",
+      "name": "流水の秘境"
+    },
+    {
+      "id": "world_between",
+      "name": "世界の狭間"
+    },
+    {
+      "id": "kaen_village",
+      "name": "華炎の里"
+    },
+    {
+      "id": "golden_land",
+      "name": "黄金郷"
+    }
+  ],
+  "registryIdsMatchExpected": true,
+  "totalVideoBytes": 388067721,
+  "missingDeclaredAlpha": [],
+  "withoutMatchedAlpha": [],
+  "withoutMatchedProvenance": [],
+  "species": [
+    {
+      "id": "freigal",
+      "name": "フレイガル",
+      "scale": 0.4,
+      "video": "images/monsters/motion/freigal_v2_alpha.webm",
+      "videoBytes": 7900012,
+      "sha256": "91583d6dc1ca1bde2cffa02694393235e7bfbb1d239d6ed68379fbd619630bd6",
+      "poster": "images/monsters/motion/freigal_v2_static.webp",
+      "posterSha256": "63223b15d17d30112112dd81c9c29d41b1aa56229d63241b738ede62cab0d3fe",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 181,
+        "y": 82,
+        "right": 873,
+        "bottom": 839
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch6/freigal-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch6/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch6/freigal-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "freiwolf",
+      "name": "フレイウルフ",
+      "scale": 0.5,
+      "video": "images/monsters/motion/freiwolf_v2_alpha.webm",
+      "videoBytes": 10758146,
+      "sha256": "9d592cbebcd29a4a3f6dc9e041a5dc8e64b2b99c8247a973841328102a2a8da9",
+      "poster": "images/monsters/motion/freiwolf_v2_static.webp",
+      "posterSha256": "979a5c26b80c8f1b1e56d770828c3d4b5ef70f8089188f0eada6cd37e6acd0c1",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 105,
+        "y": 104,
+        "right": 878,
+        "bottom": 850
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch6/freiwolf-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch6/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch6/freiwolf-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "aquaron",
+      "name": "アクアロン",
+      "scale": 0.45,
+      "video": "images/monsters/motion/aquaron_v3_alpha.webm",
+      "videoBytes": 5534277,
+      "sha256": "725a195a7c2d88b760590ebcbd324a4e6a7d89ca81573aeaa81656240b4e5cc1",
+      "poster": "images/monsters/motion/aquaron_v3_static.webp",
+      "posterSha256": "4dcae2a61facb32ec5a9364228647357bae29f83632409f1977a03c29852acb2",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 36,
+        "y": 6,
+        "right": 941,
+        "bottom": 949
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch6/aquaron-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch6/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch6/aquaron-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "highaquaron",
+      "name": "ハイアクアロン",
+      "scale": 0.5,
+      "video": "images/monsters/motion/highaquaron_v3_alpha.webm",
+      "videoBytes": 1938893,
+      "sha256": "2518acf8a6caf7ffa82bdd1e826feeb890eeda5390dcc615a33c7b230973fb71",
+      "poster": "images/monsters/motion/highaquaron_v3_static.webp",
+      "posterSha256": "56e85b33853501775ffb7ff36b3ac0e320939600486318bf08266de0a0b5c33b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 8,
+        "y": 8,
+        "right": 941,
+        "bottom": 946
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch6/highaquaron-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch6/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch6/highaquaron-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "shenhairon",
+      "name": "シェンハイロン",
+      "scale": 0.75,
+      "video": "images/monsters/motion/shenhairon_v5_alpha.webm",
+      "videoBytes": 5075081,
+      "sha256": "9cf6f7fc8e6748e6c324bdceb26b379c06223dcd1facf96656babcba0b5df659",
+      "poster": "images/monsters/motion/shenhairon_v5_static.webp",
+      "posterSha256": "afdef5ad9a0900cfa9ad48776b9a2bcd47d01ff862a06d2d0592b7b16e60f44b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 0,
+        "y": 3,
+        "right": 960,
+        "bottom": 960
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/shenhairon-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/shenhairon-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "tienhairon",
+      "name": "ティエンハイロン",
+      "scale": 0.75,
+      "video": "images/monsters/motion/tienhairon_v5_alpha.webm",
+      "videoBytes": 5418360,
+      "sha256": "4e046fcc3d7c67c77ab0ff1fb5477cc09ceef696b56eaf2c6713729d1b5eb747",
+      "poster": "images/monsters/motion/tienhairon_v5_static.webp",
+      "posterSha256": "551ef339f168c3ffbcbff9f56bfebe71cb67752bfa157038a6adf4e91ca1a31a",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 0,
+        "y": 16,
+        "right": 960,
+        "bottom": 945
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/tienhairon-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/tienhairon-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "grassbeat",
+      "name": "グラスビート",
+      "scale": 0.35,
+      "video": "images/monsters/motion/grassbeat_v1_alpha.webm",
+      "videoBytes": 6160557,
+      "sha256": "a8c3dba7dfc06d5ee125216235ba8710891e7797347d6796730cabb8430b9f65",
+      "poster": "images/monsters/motion/grassbeat_v1_static.webp",
+      "posterSha256": "ef565278d19dc27725da601a348bcb959d1e4f04dcb5aa46ed31eb599b23e18f",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 103,
+        "y": 176,
+        "right": 867,
+        "bottom": 795
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch7/grassbeat-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch7/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch7/grassbeat-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "thornbeat",
+      "name": "ソーンビート",
+      "scale": 0.5,
+      "video": "images/monsters/motion/thornbeat_v1_alpha.webm",
+      "videoBytes": 9926082,
+      "sha256": "ed0cb884446118b9586211901c8fd0e00d0479c2017b8aaf12da3adc7bc5564b",
+      "poster": "images/monsters/motion/thornbeat_v1_static.webp",
+      "posterSha256": "2a1c802561bc32d38f3164795b782392ace2fc4bac84ca7bd951dd012a34a5eb",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 87,
+        "y": 126,
+        "right": 877,
+        "bottom": 829
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch7/thornbeat-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch7/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch7/thornbeat-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "granbeat",
+      "name": "グランビート",
+      "scale": 0.75,
+      "video": "images/monsters/motion/granbeat_v4_alpha.webm",
+      "videoBytes": 9216589,
+      "sha256": "406cf595bdb62e801b487419294d1fb32b4076846355a9b876a17a4618f7357c",
+      "poster": "images/monsters/motion/granbeat_v4_static.webp",
+      "posterSha256": "93000891ad889bbc1239fda8d852ffcfcd31247640d66cf0cafd05fd18f0df20",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 121,
+        "y": 46,
+        "right": 877,
+        "bottom": 906
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch7/granbeat-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch7/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch7/granbeat-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "rikasheef",
+      "name": "リカシーフ",
+      "scale": 0.4,
+      "video": "images/monsters/motion/rikasheef_v1_alpha.webm",
+      "videoBytes": 12314300,
+      "sha256": "9c5ec7e212d963d61cb99ef14c4ab97a187010dac13298dbccc6a4f3206f98ff",
+      "poster": "images/monsters/motion/rikasheef_v1_static.webp",
+      "posterSha256": "6012205afd57c05bd3e431478ebfff799ce20cf980bddb6c9caa42f7a724cd3f",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 202,
+        "y": 91,
+        "right": 780,
+        "bottom": 852
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch7/rikasheef-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch7/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch7/rikasheef-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "seralphia",
+      "name": "セラルフィア",
+      "scale": 0.75,
+      "video": "images/monsters/motion/seralphia_v1_alpha.webm",
+      "videoBytes": 16976960,
+      "sha256": "9e24a9e97ed546d71b9ce5d41ba0f17075acaf1a20ad84a0902b3619a706036d",
+      "poster": "images/monsters/motion/seralphia_v1_static.webp",
+      "posterSha256": "9839abed071a0e4c2a233a46f41ad44020e6edf3c0ddde390c5a48b1085d977b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 171,
+        "y": 110,
+        "right": 805,
+        "bottom": 824
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch8/seralphia-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch8/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch8/seralphia-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "volteck",
+      "name": "ボルテック",
+      "scale": 0.35,
+      "video": "images/monsters/motion/volteck_v4_alpha.webm",
+      "videoBytes": 5061379,
+      "sha256": "98dc1240a4d1f8d8d8b4d873e878b2fb67162cebbbfa2a6fce174f3bed505c30",
+      "poster": "images/monsters/motion/volteck_v4_static.webp",
+      "posterSha256": "e392f82ff3f73740b1475e9ea5e11d11b4e263a639024a4d22f34490a4e91ec9",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 62,
+        "y": 149,
+        "right": 901,
+        "bottom": 835
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch5/volteck-alpha.json",
+        "docs/motion-prepublication/volteck-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch5/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch5/volteck-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "spaquinn",
+      "name": "スパクイン",
+      "scale": 0.5,
+      "video": "images/monsters/motion/spaquinn_v4_alpha.webm",
+      "videoBytes": 9571582,
+      "sha256": "df12b064a6b925cdf803ba452dcd6b33b92bea5f304abacdb3a8025a55bddf3e",
+      "poster": "images/monsters/motion/spaquinn_v4_static.webp",
+      "posterSha256": "1fb594a09397c044d4d7dbd7d474f78c1b8227785f7cd5b9ec4200b2c6ff04c4",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 56,
+        "y": 49,
+        "right": 908,
+        "bottom": 887
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch5/spaquinn-alpha.json",
+        "docs/motion-prepublication/spaquinn-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch5/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch5/spaquinn-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "voltax",
+      "name": "ボルタックス",
+      "scale": 0.75,
+      "video": "images/monsters/motion/voltax_v5_alpha.webm",
+      "videoBytes": 11189835,
+      "sha256": "f21ca7748a80a337dd5dd166036998d6d3f0703cfaef8a3fc3c921d8fbcf5a0e",
+      "poster": "images/monsters/motion/voltax_v5_static.webp",
+      "posterSha256": "aa7d5dae67ce687e66b9c79428ee26da22bc0bbbb4c82d2d93822d05e9cf4d2c",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 64,
+        "y": 69,
+        "right": 900,
+        "bottom": 828
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch5/voltax-alpha.json",
+        "docs/motion-prepublication/voltax-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch5/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch5/voltax-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "sylphin",
+      "name": "シルフィン",
+      "scale": 0.45,
+      "video": "images/monsters/motion/sylphin_v1_alpha.webm",
+      "videoBytes": 5060728,
+      "sha256": "2308ee7d740114d7b7582c5969ead7288497a9ee172b39580ccfc63e73d3be9b",
+      "poster": "images/monsters/motion/sylphin_v1_static.webp",
+      "posterSha256": "b36845a01db39c9a8c920af858ccf5beb501a7cd58f420dd711bdc6dd5a8ff48",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 145,
+        "y": 161,
+        "right": 831,
+        "bottom": 808
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch8/sylphin-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch8/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch8/sylphin-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "zephyray",
+      "name": "ゼファーレイ",
+      "scale": 0.5,
+      "video": "images/monsters/motion/zephyray_v1_alpha.webm",
+      "videoBytes": 5564023,
+      "sha256": "9d18ccf012f4e6bd654fde38a349cebb3d7886390e883a015802d08ff0174059",
+      "poster": "images/monsters/motion/zephyray_v1_static.webp",
+      "posterSha256": "d3cc2fc751ce6ac78f48dd827b2d347a8fc245d39c027201d2874431cf5de375",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 136,
+        "y": 176,
+        "right": 836,
+        "bottom": 803
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch8/zephyray-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch8/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch8/zephyray-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "tempestray",
+      "name": "テンペストレイ",
+      "scale": 0.75,
+      "video": "images/monsters/motion/tempestray_v1_alpha.webm",
+      "videoBytes": 6338962,
+      "sha256": "a62a0c0141e4a4ca10e78b8ddfad7a5f5ee8dab44cd76aec70a4f41c3eb596cb",
+      "poster": "images/monsters/motion/tempestray_v1_static.webp",
+      "posterSha256": "02fa46a93abe5b0df61db0e030505817bc9ff8ed74413baabd567685f7aca32b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 149,
+        "y": 108,
+        "right": 822,
+        "bottom": 840
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch8/tempestray-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch8/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch8/tempestray-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "luxseed",
+      "name": "ルクシード",
+      "scale": 0.45,
+      "video": "images/monsters/motion/luxseed_v1_alpha.webm",
+      "videoBytes": 6813586,
+      "sha256": "d4b959149f01dfe3b83db0852168b725ba036648b536d742f57315a52e9409ca",
+      "poster": "images/monsters/motion/luxseed_v1_static.webp",
+      "posterSha256": "b7de8cf13b420a39a26abcd26d6e73689ac4874457c96f90759f978ff46450de",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 112,
+        "y": 125,
+        "right": 845,
+        "bottom": 847
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch9/luxseed-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch9/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch9/luxseed-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "luxiard",
+      "name": "ルクシアード",
+      "scale": 0.5,
+      "video": "images/monsters/motion/luxiard_v1_alpha.webm",
+      "videoBytes": 8513164,
+      "sha256": "8f7b167f18a8ee9d878f97d3bd1bafef2f7d6cd0c99d4efbef2a4abc5833ce2a",
+      "poster": "images/monsters/motion/luxiard_v1_static.webp",
+      "posterSha256": "fcaa43a312088768298bd9a040482caca4834ba0170b9d1b42fdff3da2450905",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 159,
+        "y": 115,
+        "right": 784,
+        "bottom": 837
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch9/luxiard-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch9/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch9/luxiard-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "lux_galdion",
+      "name": "ルクスガルディオン",
+      "scale": 0.75,
+      "video": "images/monsters/motion/lux_galdion_v1_alpha.webm",
+      "videoBytes": 11763591,
+      "sha256": "89823e521b756c05d10120741e605197ad4bf2e705958839b4196e9cdc66b1c5",
+      "poster": "images/monsters/motion/lux_galdion_v1_static.webp",
+      "posterSha256": "61c96c87a62e58a0c543af81c1e100fad33db74062f79fb9dd8b7805e74d0083",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 129,
+        "y": 152,
+        "right": 839,
+        "bottom": 812
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch9/lux_galdion-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch9/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch9/lux_galdion-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "nocle",
+      "name": "ノクル",
+      "scale": 0.45,
+      "video": "images/monsters/motion/nocle_v1_alpha.webm",
+      "videoBytes": 6019741,
+      "sha256": "ed2abae9c7c957bff474ca451cadd8aa88c1da708720bd35fcb49eeae6233743",
+      "poster": "images/monsters/motion/nocle_v1_static.webp",
+      "posterSha256": "6369356513d4df66528bb83f0edb0069944f842d80179b3b9cf909df54e40bdd",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 143,
+        "y": 119,
+        "right": 867,
+        "bottom": 863
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch10/nocle-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch10/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch10/nocle-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "noclaid",
+      "name": "ノクレイド",
+      "scale": 0.5,
+      "video": "images/monsters/motion/noclaid_v1_alpha.webm",
+      "videoBytes": 9749430,
+      "sha256": "54d454b31353f3a00c27a9e2e4e3365471e3eed134f50c914f2b854550d98f73",
+      "poster": "images/monsters/motion/noclaid_v1_static.webp",
+      "posterSha256": "d0d43b9b7fb8ea2ec7986d274521986d3aafce1f3c779491dd93510f82afeebf",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 56,
+        "y": 56,
+        "right": 905,
+        "bottom": 894
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch10/noclaid-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch10/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch10/noclaid-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "noxvelg",
+      "name": "ノクスヴェルグ",
+      "scale": 0.75,
+      "video": "images/monsters/motion/noxvelg_v1_alpha.webm",
+      "videoBytes": 12915868,
+      "sha256": "9ce2219c632d49fe7258f25e503f7fd5bc71b5a258fed8bd73400974358be9ed",
+      "poster": "images/monsters/motion/noxvelg_v1_static.webp",
+      "posterSha256": "b7c17ddee6ec4042dce9d10118a9339ab5a6111b4dc0f6036aa5fa916277c87b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 66,
+        "y": 102,
+        "right": 888,
+        "bottom": 860
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch10/noxvelg-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch10/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch10/noxvelg-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "orcana",
+      "name": "オルカーナ",
+      "scale": 0.5,
+      "video": "images/monsters/motion/orcana_v3_alpha.webm",
+      "videoBytes": 5213336,
+      "sha256": "6bb1df5ea0704413e8c7147742f02db1ece2b29efba5b1fb3cbb21f35e9afd4f",
+      "poster": "images/monsters/motion/orcana_v3_static.webp",
+      "posterSha256": "67b60831dcffa25b9a96cae40a21f4e648d3b18666c36d9bba4f64e674640796",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 190,
+        "y": 238,
+        "right": 807,
+        "bottom": 750
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch11/orcana-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch11/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch11/orcana-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "orca_stream",
+      "name": "オルカストリーム",
+      "scale": 0.75,
+      "video": "images/monsters/motion/orca_stream_v3_alpha.webm",
+      "videoBytes": 7938935,
+      "sha256": "750811efb1d6b5f587b887e616b0f0d729d047a031e22834466d190be3b24f0e",
+      "poster": "images/monsters/motion/orca_stream_v3_static.webp",
+      "posterSha256": "6021aa5982b21480b475f48bb851dba6e9f67240cc3fbd58370a94f1cce0073e",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 134,
+        "y": 120,
+        "right": 844,
+        "bottom": 820
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch11/orca_stream-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch11/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch11/orca_stream-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "orca_abyss",
+      "name": "オルカアビス",
+      "scale": 1,
+      "video": "images/monsters/motion/orca_abyss_v3_alpha.webm",
+      "videoBytes": 11085718,
+      "sha256": "49997b352ad528f7dd929fa756c4b0c975cc5ccc639137a623a821b3c776d663",
+      "poster": "images/monsters/motion/orca_abyss_v3_static.webp",
+      "posterSha256": "8b3dacccc70bab82eb366f09516fa20c5b49d99ca11df475d45018fa5764601b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 232,
+        "y": 116,
+        "right": 766,
+        "bottom": 837
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch11/orca_abyss-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch11/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch11/orca_abyss-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "volmoog",
+      "name": "ボルモーグ",
+      "scale": 0.5,
+      "video": "images/monsters/motion/volmoog_v18_alpha.webm",
+      "videoBytes": 1169237,
+      "sha256": "d41b78045234b0b499aec61e644b4b44a269d30c71227e066fd57453993ffb4f",
+      "poster": "images/monsters/motion/volmoog_v18_static.webp",
+      "posterSha256": "dce04ab535aab0364d438c7dc4dbc9c99c2f96380a8839165f65c1dfbf08daf0",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 16,
+        "y": 12,
+        "right": 958,
+        "bottom": 952
+      },
+      "alphaRecords": [
+        "docs/phase4a-single-motion.md"
+      ],
+      "provenanceRecords": [
+        "docs/phase4a-single-motion.md"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": null,
+      "declaredAlphaExists": null,
+      "registration": "PASS",
+      "fullAssetAcceptance": "inherited Phase4A",
+      "deviceAcceptance": "user report: instructed 1/3 scenarios without problems; browser/model unspecified",
+      "alphaEvidenceFormat": "historical Phase4A prose: 240 frames, libvpx alpha audit, union bbox and exact adopted hash"
+    },
+    {
+      "id": "gran_volmoog",
+      "name": "グランボルモーグ",
+      "scale": 0.75,
+      "video": "images/monsters/motion/gran_volmoog_v18_alpha.webm",
+      "videoBytes": 1758952,
+      "sha256": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
+      "poster": "images/monsters/motion/gran_volmoog_v18_static.webp",
+      "posterSha256": "e455ce1a238b8348866ea88a8ec919234cebf11a55c35b0967d12ab6e55012cb",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 8,
+        "y": 8,
+        "right": 960,
+        "bottom": 945
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/gran-volmoog-alpha.json"
+      ],
+      "provenanceRecords": [],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": null,
+      "declaredAlphaExists": null,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending final anchor/facing, remaining specified widths/action occupancy and shared gates; reported portrait, landscape and text200 grassland placement accepted",
+      "deviceAcceptance": "Galaxy instructed ally/enemy/multi reported without problems. Measured grassland portrait384x621, landscape751x224 and text200384x621 pass HUD8px/control12px conditions; short playback samples only."
+    },
+    {
+      "id": "slime",
+      "name": "スライム",
+      "scale": 0.3,
+      "video": "images/monsters/motion/slime_adopted_alpha.webm",
+      "videoBytes": 1488747,
+      "sha256": "6a8119f48c432aa5c875e48a2ac7fedd4a58a78182e3c5bdc578f96f9165737c",
+      "poster": "images/monsters/motion/slime_adopted_static.webp",
+      "posterSha256": "0cf709bc307508e0fd162dc77ef70d99b140b128ebce9b016779f1964bf91c9e",
+      "sourceBounds": {
+        "width": 720,
+        "height": 640,
+        "x": 45,
+        "y": 50,
+        "right": 669,
+        "bottom": 563
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch14/slime-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch14/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch14/slime-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "slime_gold",
+      "name": "スライムゴールド",
+      "scale": 0.5,
+      "video": "images/monsters/motion/slime_gold_v1_alpha.webm",
+      "videoBytes": 2194184,
+      "sha256": "4d0c1b79281f690010190a1c4ffb7ab89b280e75d62a10ce513c658604024850",
+      "poster": "images/monsters/motion/slime_gold_v1_static.webp",
+      "posterSha256": "82dbec609ac670eacd5330ccf45d5ebafaec0079f6921af45cf5c1954ab5db4b",
+      "sourceBounds": {
+        "width": 720,
+        "height": 640,
+        "x": 47,
+        "y": 65,
+        "right": 664,
+        "bottom": 559
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch2/slime_gold-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch2/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch2/slime_gold-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "goblin",
+      "name": "ゴブリン",
+      "scale": 0.4,
+      "video": "images/monsters/motion/goblin_v1_alpha.webm",
+      "videoBytes": 5886783,
+      "sha256": "d1925050de300d2f5c677a853fb7b6e6fb40f8827052c18eb9cd6fc7d7b9914b",
+      "poster": "images/monsters/motion/goblin_v1_static.webp",
+      "posterSha256": "c1f46d6a17d3358edb02406c5c611e19045716355469f6095459e0d5db2b79da",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 71,
+        "y": 125,
+        "right": 887,
+        "bottom": 828
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch3/goblin-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch3/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": null,
+      "declaredAlphaExists": null,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "ignaros",
+      "name": "イグナロス",
+      "scale": 0.5,
+      "video": "images/monsters/motion/ignaros_v1_alpha.webm",
+      "videoBytes": 4441515,
+      "sha256": "ccc7143795cd2be79e4359b4bed2bbfcc5cc8b31e206829c2114d00df8466694",
+      "poster": "images/monsters/motion/ignaros_v1_static.webp",
+      "posterSha256": "60f4388fb42562d589aadeff1513d9eb4bdcf320e32897b49e9d03c81fa475f4",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 99,
+        "y": 152,
+        "right": 862,
+        "bottom": 803
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch12/ignaros-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch12/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch12/ignaros-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "tsubaki",
+      "name": "炎の精霊ツバキ",
+      "scale": 0.5,
+      "video": "images/monsters/motion/tsubaki_v1_alpha.webm",
+      "videoBytes": 12362645,
+      "sha256": "2c2a648ddccca3dc4e7e31493cf5474f4660329791d063c8e4e1c16a8671ea8d",
+      "poster": "images/monsters/motion/tsubaki_v1_static.webp",
+      "posterSha256": "853af17adfa43287bb415b8c1608029dbd8a27d11c36dcd76f014499ec42ffe1",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 174,
+        "y": 100,
+        "right": 787,
+        "bottom": 783
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch12/tsubaki-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch12/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch12/tsubaki-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "suiren",
+      "name": "水の精霊スイレン",
+      "scale": 0.5,
+      "video": "images/monsters/motion/suiren_v2_alpha.webm",
+      "videoBytes": 12586441,
+      "sha256": "7c80cc3a5c2b31ef02599baec18b54d68e0da9e2e3054c5dace5d79f1cb4b879",
+      "poster": "images/monsters/motion/suiren_v2_static.webp",
+      "posterSha256": "6490463310d9c7e4a099ea020f11515b7b24f3308f0dd32fddb7e02e5d425685",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 160,
+        "y": 108,
+        "right": 818,
+        "bottom": 831
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch12/suiren-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch12/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch12/suiren-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "proto_icegolem",
+      "name": "ゴーレム",
+      "scale": 0.5,
+      "video": "images/monsters/motion/proto_icegolem_v3_alpha.webm",
+      "videoBytes": 3810159,
+      "sha256": "bc3f5f50c97a65b59734170e884a77d1696dece76a9a9c68ea19d6738fae5043",
+      "poster": "images/monsters/motion/proto_icegolem_v3_static.webp",
+      "posterSha256": "11f803421dfca9f0bf8f972661d058db444c23d3e2fe0936374baa89bd1abea8",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 59,
+        "y": 29,
+        "right": 931,
+        "bottom": 923
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch13/proto_icegolem-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch13/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch13/proto_icegolem-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "icegolem",
+      "name": "アイスゴーレム",
+      "scale": 0.5,
+      "video": "images/monsters/motion/icegolem_v3_alpha.webm",
+      "videoBytes": 4194872,
+      "sha256": "da3d6a9ebc20ddf6e919a4324000ae0e54e0da8e75449c7864dc61739991f00d",
+      "poster": "images/monsters/motion/icegolem_v3_static.webp",
+      "posterSha256": "c04ac2a212d11f8ca35d0339a38d6cab6aadfa15ea627a229ac377c5f7070130",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 66,
+        "y": 57,
+        "right": 875,
+        "bottom": 905
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch13/icegolem-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch13/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch13/icegolem-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "nightmare",
+      "name": "ナイトメア",
+      "scale": 0.5,
+      "video": "images/monsters/motion/nightmare_v1_alpha.webm",
+      "videoBytes": 10500596,
+      "sha256": "3297b2c39e3500a7a6d181282ec1050af47708e64a3aa9db95fafb5838f554b5",
+      "poster": "images/monsters/motion/nightmare_v1_static.webp",
+      "posterSha256": "bd35dceafde1920c7845d17a0d967a6e894962407f52e38bf4a12f46d9b8f003",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 102,
+        "y": 83,
+        "right": 840,
+        "bottom": 870
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch3/nightmare-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch3/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": null,
+      "declaredAlphaExists": null,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "astralepis",
+      "name": "アストラレピス",
+      "scale": 0.5,
+      "video": "images/monsters/motion/astralepis_v1_alpha.webm",
+      "videoBytes": 4328698,
+      "sha256": "4dff4652961eaaad89f2b8dc67d8d20800d465c8dfc6cf621222b53fa7fdd277",
+      "poster": "images/monsters/motion/astralepis_v1_static.webp",
+      "posterSha256": "500006ae99188b8bae924b5bf32f2f936285d3abb04b0b545b017880725bb20d",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 122,
+        "y": 61,
+        "right": 871,
+        "bottom": 894
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch3/astralepis-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch3/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": null,
+      "declaredAlphaExists": null,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "false_dragon_beta",
+      "name": "アシュレイア",
+      "scale": 1,
+      "video": "images/monsters/motion/false_dragon_beta_v2_alpha.webm",
+      "videoBytes": 5893596,
+      "sha256": "e83837f58d9f70ec058d16d5f5286923c617362802e8e3b895e1fc660519c797",
+      "poster": "images/monsters/motion/false_dragon_beta_v2_static.webp",
+      "posterSha256": "53f57d09efcc304e3ee90b80adedf78d000e1592868d163eb54fa275b9802050",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 65,
+        "y": 137,
+        "right": 898,
+        "bottom": 845
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch2/false_dragon_beta-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch2/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch2/false_dragon_beta-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "false_dragon_gamma",
+      "name": "モルグラム",
+      "scale": 1,
+      "video": "images/monsters/motion/false_dragon_gamma_v1_alpha.webm",
+      "videoBytes": 2333820,
+      "sha256": "d07509725eac02f79bddfe90e011b427415896ddbb4f0d8a0ebaec466e842a27",
+      "poster": "images/monsters/motion/false_dragon_gamma_v1_static.webp",
+      "posterSha256": "d28eef453564c9f835a3476d7db3b0f9c7334e2402296bdd82a8767d966abd5b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 90,
+        "y": 85,
+        "right": 886,
+        "bottom": 885
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch2/false_dragon_gamma-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch2/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch2/false_dragon_gamma-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "nemes",
+      "name": "ネメス",
+      "scale": 0.5,
+      "video": "images/monsters/motion/nemes_v1_alpha.webm",
+      "videoBytes": 4470339,
+      "sha256": "7050c475e20d17ebc944a31657fe5fc04e0aaf418aec8d18ab6beb2889977307",
+      "poster": "images/monsters/motion/nemes_v1_static.webp",
+      "posterSha256": "449baaadc73a752d90743d41ddbafe9b63ff7b6afd9219fe701af554a30c4009",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 107,
+        "y": 81,
+        "right": 855,
+        "bottom": 863
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch4/nemes-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch4/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch4/nemes-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "nemesia",
+      "name": "ネメシア",
+      "scale": 0.75,
+      "video": "images/monsters/motion/nemesia_v1_alpha.webm",
+      "videoBytes": 4683643,
+      "sha256": "1b634bb27a61d5d9df6f9a03a3c6a1b5b521400fbb958588b3e1a22f2017d7c6",
+      "poster": "images/monsters/motion/nemesia_v1_static.webp",
+      "posterSha256": "ac10602c32f98cc8d113d931cf8413faac1ec8fe8bd4d37dcb444eb69e829c7a",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 86,
+        "y": 122,
+        "right": 873,
+        "bottom": 830
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch4/nemesia-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch4/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch4/nemesia-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "nemesion",
+      "name": "ネメシオン",
+      "scale": 1,
+      "video": "images/monsters/motion/nemesion_v1_alpha.webm",
+      "videoBytes": 8624763,
+      "sha256": "0d548b4bbcf695976e6607b9d840f29e0062e1b592336625751a3704b5a4538b",
+      "poster": "images/monsters/motion/nemesion_v1_static.webp",
+      "posterSha256": "bdc1ec52c3a884994d122aecd13d3add852d35c799c16fe635342b165ce55a3b",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 57,
+        "y": 64,
+        "right": 906,
+        "bottom": 895
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch4/nemesion-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch4/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch4/nemesion-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "doom_nemesion",
+      "name": "滅亡の星 ネメシオン",
+      "scale": 1.2,
+      "video": "images/monsters/motion/doom_nemesion_v5_alpha.webm",
+      "videoBytes": 9985287,
+      "sha256": "1b6d0a23d67efa6ff8a62d308b66ab73f8dcb6a10dfd589ba97eb10bc10079c3",
+      "poster": "images/monsters/motion/doom_nemesion_v5_static.webp",
+      "posterSha256": "47958b9f8a833dd2d2b61d2342cdd0f9fb6d429a44034c44b6435b70a034171c",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 55,
+        "y": 122,
+        "right": 944,
+        "bottom": 822
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch5/doom_nemesion-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch5/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch5/doom_nemesion-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "false_dragon_alfa",
+      "name": "偽竜 code:alfa",
+      "scale": 1.2,
+      "video": "images/monsters/motion/false_dragon_alfa_v1_alpha.webm",
+      "videoBytes": 7071949,
+      "sha256": "bc0381141c46dba6312ea6503792170711d61065cac8d7d455857549788e9a8b",
+      "poster": "images/monsters/motion/false_dragon_alfa_v1_static.webp",
+      "posterSha256": "cf5b2d827749a9f4e96eba1aad86df4719e36ec2b78672ad1f1aeb7dce2b25ea",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 56,
+        "y": 58,
+        "right": 897,
+        "bottom": 882
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch5/false_dragon_alfa-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch5/provenance.json"
+      ],
+      "posterProvenanceMatches": false,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch5/false_dragon_alfa-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "galdra",
+      "name": "ガルドラ",
+      "scale": 0.5,
+      "video": "images/monsters/motion/galdra_v1_alpha.webm",
+      "videoBytes": 6588052,
+      "sha256": "1f22d3a83e6455754da40db0e377ba45349013b7925c58f4dffb1fb17dba3bea",
+      "poster": "images/monsters/motion/galdra_v1_static.webp",
+      "posterSha256": "1d3826c1f6b58d062c52b35fdbd1b951af3162c8c470e95fab952e441c786d88",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 133,
+        "y": 65,
+        "right": 800,
+        "bottom": 900
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch13/galdra-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch13/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch13/galdra-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "alchemion",
+      "name": "錬核獣アルケミオン",
+      "scale": 0.75,
+      "video": "images/monsters/motion/alchemion_v1_alpha.webm",
+      "videoBytes": 9307211,
+      "sha256": "d099dfc61f291a15277a5e271b7534b79b8403f9d5e3ee83dcfb2e97aca024bf",
+      "poster": "images/monsters/motion/alchemion_v1_static.webp",
+      "posterSha256": "e533691ab274043c2e84846cad06e78055db74e8afe1c2a31a1bcd61c5ccd0e6",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 112,
+        "y": 101,
+        "right": 859,
+        "bottom": 845
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch14/alchemion-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch14/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch14/alchemion-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "kimeragna",
+      "name": "混成翼竜キメラグナ",
+      "scale": 0.75,
+      "video": "images/monsters/motion/kimeragna_v7_alpha.webm",
+      "videoBytes": 20264000,
+      "sha256": "558b9cf251f8adfc0299401680972679a5e804ad8836ab3c8483d1e4d0861015",
+      "poster": "images/monsters/motion/kimeragna_v7_static.webp",
+      "posterSha256": "867c6bba2732cc2fe1400a8f8388702411d266689fd98b7bb83f77c46ecd7c82",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 85,
+        "y": 78,
+        "right": 877,
+        "bottom": 863
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch14/kimeragna-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch14/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch14/kimeragna-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "kimeragna_apex",
+      "name": "キメラグナ・アペクス",
+      "scale": 1,
+      "video": "images/monsters/motion/kimeragna_apex_v2_alpha.webm",
+      "videoBytes": 18407566,
+      "sha256": "aad4ca52fbfe862f56a4b862ae3f2f1e63595f9f3fc2844dce440e9cea678311",
+      "poster": "images/monsters/motion/kimeragna_apex_v2_static.webp",
+      "posterSha256": "49f99742aaeeaee7ffc668b3841c6d3777badcb7082e62fa02281c2bf1929db5",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 121,
+        "y": 88,
+        "right": 869,
+        "bottom": 850
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch14/kimeragna_apex-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch14/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch14/kimeragna_apex-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    },
+    {
+      "id": "elixion",
+      "name": "賢金神竜エリクシオン",
+      "scale": 1.2,
+      "video": "images/monsters/motion/elixion_arm_fixed_alpha.webm",
+      "videoBytes": 11695531,
+      "sha256": "b504abbf99916a6c7aa9499815a71a9ce519be2a1b51d6e480776fe4fbabf5dc",
+      "poster": "images/monsters/motion/elixion_arm_fixed_static.webp",
+      "posterSha256": "0cd89bfb36fe420825d22cf839957f38649152a7231ad26ffbd014dd8bd532ff",
+      "sourceBounds": {
+        "width": 960,
+        "height": 960,
+        "x": 110,
+        "y": 96,
+        "right": 876,
+        "bottom": 873
+      },
+      "alphaRecords": [
+        "docs/motion-prepublication/phase-c/batch14/elixion-alpha.json"
+      ],
+      "provenanceRecords": [
+        "docs/motion-prepublication/phase-c/batch14/provenance.json"
+      ],
+      "posterProvenanceMatches": true,
+      "inheritedMainAsset": false,
+      "declaredAlphaEvidence": "docs/motion-prepublication/phase-c/batch14/elixion-alpha.json",
+      "declaredAlphaExists": true,
+      "registration": "PASS",
+      "fullAssetAcceptance": "pending",
+      "deviceAcceptance": "pending"
+    }
+  ],
+  "scope": "Current file SHA256 compared with stored source/alpha evidence; no new frame decoding, anatomical-anchor or all-species physical-device visual proof.",
+  "posterHashInterpretation": "posterProvenanceMatches is true only where the old manifest recorded an identical poster SHA256; false means no matched historical hash was found, not confirmed corruption. All 50 current poster files exist and current hashes are recorded."
+}

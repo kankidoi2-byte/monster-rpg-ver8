@@ -1,5 +1,16 @@
 # Tutorial revision: execution handoff
 
+## 現在の状態（2026-09-21同期）
+
+- **公開済み**：[PR #178](https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/178)、統合commit `4f3d5d5c488d4dd44da9b2bab30a56ab45663323`。序章改修は統合・公開済み。PR本文の第12段階にユーザー実機確認と公開承認が記録されている。下記Phase 10時点の停止記録を現在の停止指示として扱わない。
+- 判定基準：main `6cd3d7b`、同SHAのvalidate／Pages成功。PR本文に古いDraft表記があっても現在のmerged状態を優先する。
+- **凍結・未公開**：効果音PR #182。勝手に追従・統合・クローズしない。
+- **将来案**：未実装ストーリー・第1章・バトル再設計・数値調整案は、関連機能の公開と混同しない。
+- **履歴**：以下の旧基準main、Draft、未公開、公開待ち、当時の未確認項目を含む既存本文は過去時点の開発記録として保持する。現在状態は本節を優先する。
+- 偽竜置換・保存互換の境界・中間画像・凍結PRの詳細は[現行仕様と残課題](false-dragon-replacement-spec.md)。
+
+## 過去の開発記録（原文保持）
+
 Updated: 2026-09-10
 
 ## Status

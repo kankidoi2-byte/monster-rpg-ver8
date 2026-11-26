@@ -1,17 +1,17 @@
 /* World-map/battle adapter. Existing map IDs and battle rewards stay canonical. */
 const WORLD_EVENT_LABELS = Object.freeze({
-  elysia:['女神の降臨','光の平原に女神が降臨しています。女神との試練は契約の対象外です。通常の探索も続けられます。'],
-  crisis:['滅亡の星の接近','世界に異変が広がっています。挑戦するか、今回は見送るかを選べます。'],
+  elysia:['女神の降臨','光の平原に女神が降臨している。'],
+  crisis:['滅亡の星の接近','世界に異変が広がっている。'],
   rift:['偽竜の痕跡','危機への介入が世界の狭間への道を残しました。'],
   water_secret:['流水の秘境への道','水辺に秘境への道が開いています。'],
   starsea:['星の海への道','星空の平原から、遥かなる星の海へ向かえます。'],
   golden_land:['黄金郷への道','幻の黄金郷への入口を発見しました。']
 });
 const WORLD_EVENT_FIRST_GUIDES = Object.freeze({
-  elysia:['はじめての降臨','光の平原に、★4「光の女神エリシア」がまれに降臨します。女神との試練は契約できず、通常の探索はそのまま続けられます。'],
-  crisis:['はじめての世界危機','★5「滅亡の星ネメシオン」が世界へ影響を及ぼしています。自分で挑むか、今回は偽竜へ対処を任せるかを選べます。どちらを選んでも、偽竜の痕跡は残ります。'],
-  rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜たちの痕跡です。世界の狭間で3体へ順に挑めます。ほかで3戦すると痕跡は消えます。1体倒すたびに猶予は3戦に戻ります。'],
-  special_entrance:['はじめての特殊入口','探索で見つけた特殊な入口は、ほかで2戦すると閉じます。閉じても再び見つかることがあります。ゲームを閉じている間は進みません。']
+  elysia:['はじめての降臨','光の平原に、★4「光の女神エリシア」が降臨した。'],
+  crisis:['はじめての世界危機','★5「滅亡の星ネメシオン」が世界へ影響を及ぼしている。'],
+  rift:['はじめての偽竜の痕跡','世界の危機へ介入した偽竜の痕跡です。世界の狭間で1体へ挑めます。ほかで3戦すると痕跡は消えます。'],
+  special_entrance:['はじめての特殊入口','特殊な入口を見つけた。いつまでも開いているとは限らない。']
 });
 function clearResolvedWorldMapNavigation(state,eventKey){
   const next=typeof normalizeWorldMapSaveState==='function'
@@ -71,23 +71,29 @@ function worldMapCandidates(map,difficultyId,eventKey=null){
     const mon=by(event.monsterId);
     return isHuntMonsterEligible(mon,difficultyId)?[mon]:[];
   }
-  const eventOnly=new Set(['hikari','doom_nemesion','false_dragon_alfa','false_dragon_beta','false_dragon_gamma']);
+  const eventOnly=new Set(['hikari','doom_nemesion','false_dragon_alfa']);
   return huntCandidatesFor(map,difficultyId).filter(mon=>!eventOnly.has(mon.id)&&!mon.alchemyExclusive);
 }
 function worldMapAvailableDifficulties(map,eventKey=null){
   return Object.values(HUNT_DIFFICULTIES).filter(d=>
-    (!(map?.bossOnly||map?.rareOnly||map?.goldenLand)||['hard','extreme'].includes(d.id))&&
+    (!(map?.bossOnly||map?.rareOnly||map?.goldenLand)||['d4','d5','extreme'].includes(d.id))&&
     worldMapCandidates(map,d.id,eventKey).length
   );
 }
-function worldMapSkipCrisis(){
-  if(!normalizeWorldMapState(save.worldMap).active.crisis)return false;
-  if(!confirm('今回は危機への挑戦を見送りますか？ 偽竜が対処し、世界の狭間へ向かう痕跡が残ります。'))return false;
+let worldMapCrisisSkipBusy=false;
+async function worldMapSkipCrisis(){
+  if(worldMapCrisisSkipBusy||!normalizeWorldMapState(save.worldMap).active.crisis)return false;
+  const owner=save, crisis=save.worldMap.active.crisis, quote=JSON.stringify(crisis);
+  worldMapCrisisSkipBusy=true;
+  try{
+  if(!await gameConfirm({title:'危機への挑戦',body:'今回は危機への挑戦を見送りますか？ 偽竜が対処し、世界の狭間へ向かう痕跡が残ります。',okLabel:'見送る'}))return false;
+  if(save!==owner||save.worldMap.active?.crisis!==crisis||JSON.stringify(crisis)!==quote)return false;
   const previous=save.worldMap;
   save.worldMap=clearResolvedWorldMapNavigation(resolveWorldEvent(save.worldMap,'crisis','skip'),'crisis');
-  if(saveGame()===false){save.worldMap=previous;alert('記録を保存できませんでした。もう一度お試しください。');return false;}
+  if(saveGame()===false){save.worldMap=previous;showUiNotice('記録を保存できませんでした。もう一度お試しください。','error');return false;}
   clearWorldMapRuntimeEventSelection('crisis');
   return true;
+  }finally{worldMapCrisisSkipBusy=false;}
 }
 function recordWorldMapVictory(){
   const request=activeHuntRequest;
@@ -113,15 +119,27 @@ function recordWorldMapVictory(){
   });
 }
 
-function recordWorldMapBattleResult({saveNow=false}={}){
+function recordWorldMapBattleResult({saveNow=false,autoEnd=null}={}){
   const request=activeHuntRequest;
   if(!request?.worldMapExploration||request.worldMapExpiryRecorded)return [];
-  request.worldMapExpiryRecorded=true;
   const tutorial=save.progress?.tutorial;
   if(tutorial&&!['completed','skipped'].includes(tutorial.status))return [];
   const result=advanceWorldEventsAfterBattle(save.worldMap,request.worldMapEventKey);
-  save.worldMap=result.state;
+  if(saveNow){
+    // Keep the remaining battles, navigation and receipt in sync on failure.
+    if(!commitSaveMutation(()=>{
+      save.worldMap=result.state;
+      if(autoEnd&&typeof autoPrepareLossCheckpoint==='function')autoPrepareLossCheckpoint(autoEnd);
+    },{requireReadable:true})){
+      request.worldMapExpiryPending=true;
+      return null;
+    }
+  }else{
+    // Normal victories already commit this candidate with all battle rewards.
+    save.worldMap=result.state;
+  }
+  delete request.worldMapExpiryPending;
+  request.worldMapExpiryRecorded=true;
   for(const key of result.expiredKeys)clearWorldMapRuntimeEventSelection(key);
-  if(saveNow)saveGame();
   return result.expiredKeys;
 }

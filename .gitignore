@@ -4,3 +4,9 @@
 /docs/balance-audit/comparison-trials.json.gz
 /docs/balance-audit/battles.csv
 /docs/balance-audit/validation.log
+
+review-baseline/
+
+# Local validation dependencies and generated save-failure evidence.
+node_modules/
+/artifacts/save-failure-ui/

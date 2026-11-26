@@ -13,7 +13,7 @@ const api=vm.runInContext(`({
 })`,context);
 const plain=value=>JSON.parse(JSON.stringify(value));
 const monster=type=>({id:type,name:type,entityKind:'monster',rarity:'★★',types:[type],moves:[['技',40,type]]});
-const types=['normal','fire','water','grass','thunder','wind','light','dark','star','dragon'];
+const types=['normal','fire','water','ice','grass','thunder','wind','light','dark','star','dragon'];
 const link=type=>api.resolveKokoroLink(monster(type),{uid:`source-${type}`,level:99},{maxHp:200,speed:100});
 
 for(const type of types){const resolved=link(type);assert(resolved.statusAbility,`${type} must have a two-star status ability`);assert.equal(resolved.powerAbility,null);}
@@ -59,4 +59,4 @@ for(const [type,status] of [['thunder','paralysis'],['dark','confusion'],['star'
   const result=api.attemptKokoroLinkStatusAbility(link(type),{targetKey:type},()=>0);assert.equal(result.controlStatus,status);assert.equal(result.durationTurns,1);
 }
 
-console.log('Kokoro Link Phase 4-2 status abilities validated (10 attributes, target binding, 70/35% rates, immunity, stacking, duration, and consumption).');
+console.log('Kokoro Link Phase 4-2 status abilities validated (11 attributes, target binding, 70/35% rates, immunity, stacking, duration, and consumption).');

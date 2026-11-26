@@ -1,0 +1,29 @@
+{
+  "sourceBase": "43c5cb5dc78b96580d1cc6b6f567e35861502af6",
+  "runtimeRegistered": [
+    "volmoog",
+    "gran_volmoog"
+  ],
+  "defaultLimit": 1,
+  "fullCheck": {
+    "command": "npm run check (including postcheck)",
+    "exitCode": 0,
+    "logSha256": "6bf3283753eb47e8044f3f645caa94a3a8d35a356946b6a3e64dfbf1c7dd26dd",
+    "initialAttempt": "failed because shallow clone omitted historical d31cfccd; fetched repository history and reran successfully"
+  },
+  "domChecks": {
+    "viewport": 4,
+    "lifecycle": 11,
+    "multi": 8,
+    "impact": 5,
+    "operations": "PASS",
+    "granReview": "PASS all three modes, 19 maps",
+    "resources": "PASS 44 local resources, 9 stylesheets, storage isolation/load guards preserved"
+  },
+  "newDeviceTest": false,
+  "newBrowserDecodeTest": false,
+  "assetSha256": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
+  "acceptance": "Bounded Phase B implementation and two instructed device checks accepted; Phase C may proceed with default1. Shared load, actual BFCache and final anchor conditions remain.",
+  "publication": "main merge/public release forbidden",
+  "deviceFollowup": "device-report.json: instructed offscreen/app-return user PASS; not agent-run device test"
+}

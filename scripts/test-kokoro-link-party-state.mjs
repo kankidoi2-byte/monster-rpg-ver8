@@ -52,13 +52,13 @@ party[2].fainted=false;party[2].hp=100;
 assert.deepEqual(contract.listKokoroLinkSources(party,0).map(source=>source.uid),['reserve-a','reserve-b'],'battle reset must restore both reserves');
 
 const withCharacter=[entry('active','freigal'),entry('character','elna_beginner'),entry('reserve','aquaron')];
-assert.deepEqual(contract.listKokoroLinkSources(withCharacter,0).map(source=>source.uid),['reserve'],'character units must not enter monster-only link sources');
+assert.deepEqual(contract.listKokoroLinkSources(withCharacter,0).map(source=>source.uid),['character','reserve'],'owned characters enter the same reserve source list as monsters');
 
 const duplicate=[entry('active','freigal'),entry('same','aquaron'),entry('same','grassbeat')];
 assert.equal(contract.listKokoroLinkSources(duplicate,0).length,1,'duplicate UIDs must not create duplicate link uses');
 assert.equal(contract.listKokoroLinkSources(party,-1).length,0,'invalid active indexes must fail closed');
 
-assert(battleFlowSource.includes("function prepareBattleParty() {\n  if (typeof resetKokoroLinkBattleState === 'function') resetKokoroLinkBattleState();"),'battle preparation must reset link usage');
+assert(/function prepareBattleParty\([^)]*\) \{\n  if \(typeof resetKokoroLinkBattleState === 'function'\) resetKokoroLinkBattleState\(\);/.test(battleFlowSource),'battle preparation must reset link usage');
 assert(battleFlowSource.includes("function endPartyRecovery()")&&battleFlowSource.includes("function runAway()")&&battleFlowSource.includes("function win()"));
 assert((battleFlowSource.match(/resetKokoroLinkBattleState/g)||[]).length>=4,'normal battle lifecycle must reset link usage at preparation and every outcome');
 assert(multiBattleSource.includes("function winMultiBattle()")&&multiBattleSource.includes("function runAwayFromMultiBattle()"));

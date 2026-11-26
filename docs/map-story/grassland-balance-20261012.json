@@ -1,0 +1,255 @@
+{
+  "seed": 20261012,
+  "trialsPerEpisodeAndBaseline": 100,
+  "totalBattles": 2200,
+  "party": [
+    "galdra",
+    "freigal",
+    "aquaron"
+  ],
+  "policy": "Episodes 1–3: basic attack. Later: choose strongest equipped attack or healing when low, switch for a stronger matchup or low HP. Fixed initial equipped cards; no items, links, evolution or extra training. A receives the preceding first rewards; B is reset to level 8 before each episode.",
+  "results": [
+    {
+      "episode": 1,
+      "baseline": "A",
+      "startLevel": 1,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 2,
+      "hpLostMedian": 19,
+      "switchesMedian": 0
+    },
+    {
+      "episode": 1,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 2,
+      "hpLostMedian": 19,
+      "switchesMedian": 0
+    },
+    {
+      "episode": 2,
+      "baseline": "A",
+      "startLevel": 2,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 5,
+      "hpLostMedian": 90,
+      "switchesMedian": 0
+    },
+    {
+      "episode": 2,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 5,
+      "hpLostMedian": 90,
+      "switchesMedian": 0
+    },
+    {
+      "episode": 3,
+      "baseline": "A",
+      "startLevel": 3,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 10,
+      "hpLostMedian": 102,
+      "switchesMedian": 0
+    },
+    {
+      "episode": 3,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 10,
+      "hpLostMedian": 102,
+      "switchesMedian": 0
+    },
+    {
+      "episode": 4,
+      "baseline": "A",
+      "startLevel": 4,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 4,
+      "hpLostMedian": 85,
+      "switchesMedian": 1
+    },
+    {
+      "episode": 4,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 4,
+      "hpLostMedian": 85,
+      "switchesMedian": 1
+    },
+    {
+      "episode": 5,
+      "baseline": "A",
+      "startLevel": 5,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 6,
+      "hpLostMedian": 265,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 5,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 6,
+      "hpLostMedian": 270,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 6,
+      "baseline": "A",
+      "startLevel": 5,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 9,
+      "hpLostMedian": 284,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 6,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 8,
+      "hpLostMedian": 282,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 7,
+      "baseline": "A",
+      "startLevel": 6,
+      "trials": 100,
+      "wins": 96,
+      "capped": 0,
+      "turnsMedian": 10,
+      "hpLostMedian": 370,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 7,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 10,
+      "hpLostMedian": 365,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 8,
+      "baseline": "A",
+      "startLevel": 7,
+      "trials": 100,
+      "wins": 99,
+      "capped": 0,
+      "turnsMedian": 11,
+      "hpLostMedian": 470,
+      "switchesMedian": 3
+    },
+    {
+      "episode": 8,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 100,
+      "capped": 0,
+      "turnsMedian": 11,
+      "hpLostMedian": 467,
+      "switchesMedian": 3
+    },
+    {
+      "episode": 9,
+      "baseline": "A",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 90,
+      "capped": 0,
+      "turnsMedian": 10,
+      "hpLostMedian": 414,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 9,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 90,
+      "capped": 0,
+      "turnsMedian": 10,
+      "hpLostMedian": 414,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 10,
+      "baseline": "A",
+      "startLevel": 9,
+      "trials": 100,
+      "wins": 79,
+      "capped": 0,
+      "turnsMedian": 13,
+      "hpLostMedian": 423,
+      "switchesMedian": 2
+    },
+    {
+      "episode": 10,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 71,
+      "capped": 0,
+      "turnsMedian": 14,
+      "hpLostMedian": 468,
+      "switchesMedian": 3
+    },
+    {
+      "episode": 11,
+      "baseline": "A",
+      "startLevel": 10,
+      "trials": 100,
+      "wins": 85,
+      "capped": 0,
+      "turnsMedian": 15,
+      "hpLostMedian": 619,
+      "switchesMedian": 3
+    },
+    {
+      "episode": 11,
+      "baseline": "B",
+      "startLevel": 8,
+      "trials": 100,
+      "wins": 49,
+      "capped": 0,
+      "turnsMedian": 15,
+      "hpLostMedian": 627,
+      "switchesMedian": 3
+    }
+  ]
+}

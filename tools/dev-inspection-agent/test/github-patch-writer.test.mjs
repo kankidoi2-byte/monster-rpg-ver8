@@ -13,6 +13,7 @@ import {
 const repository = 'kankidoi2-byte/monster-rpg-ver8';
 const baseSha = 'a'.repeat(40);
 const treeSha = 'b'.repeat(40);
+const subtreeSha = 'd'.repeat(40);
 const commitSha = 'c'.repeat(40);
 const source = 'export const retryLimit = 1;\n';
 const changed = 'export const retryLimit = 2;\n';
@@ -92,6 +93,8 @@ function successfulFetch(log) {
     log.push({ path, method, body, authorization: options.headers.Authorization });
     if (method === 'GET' && path === '/branches/main') return jsonResponse({ name: 'main', commit: { sha: baseSha } });
     if (method === 'GET' && path === `/git/commits/${baseSha}`) return jsonResponse({ sha: baseSha, tree: { sha: treeSha } });
+    if (method === 'GET' && path === `/git/trees/${treeSha}`) return jsonResponse({ sha: treeSha, tree: [{ path: 'js', type: 'tree', sha: subtreeSha }] });
+    if (path === `/git/trees/${subtreeSha}`) return jsonResponse({ sha: subtreeSha, tree: [{ path: 'diagnostics.js', type: 'blob', sha: blobSha(source) }] });
     if (method === 'GET' && path === '/pulls') return jsonResponse([]);
     if (method === 'GET' && path === `/git/blobs/${blobSha(source)}`) {
       return jsonResponse({ sha: blobSha(source), encoding: 'base64', content: Buffer.from(source).toString('base64') });
@@ -133,25 +136,25 @@ assert.equal(output.pull_request.html_url, 'https://github.com/kankidoi2-byte/mo
 assert.equal(output.merge_authorized, false);
 assert.equal(JSON.stringify(output).includes(token), false);
 assert.deepEqual(log.map((item) => `${item.method} ${item.path}`), [
-  'GET /branches/main', `GET /git/commits/${baseSha}`, 'GET /pulls', `GET /git/blobs/${blobSha(source)}`,
+  'GET /branches/main', `GET /git/commits/${baseSha}`, 'GET /pulls', `GET /git/trees/${treeSha}`, `GET /git/trees/${subtreeSha}`, `GET /git/blobs/${blobSha(source)}`,
   'POST /git/blobs', 'POST /git/trees', 'POST /git/commits', 'POST /git/refs', 'POST /pulls'
 ]);
-assert.deepEqual(log[4].body, { content: changed, encoding: 'utf-8' });
-assert.deepEqual(log[5].body, {
+assert.deepEqual(log[6].body, { content: changed, encoding: 'utf-8' });
+assert.deepEqual(log[7].body, {
   base_tree: treeSha,
   tree: [{ path: 'js/diagnostics.js', mode: '100644', type: 'blob', sha: blobSha(changed) }]
 });
-assert.deepEqual(log[6].body, { message: plan.commit_message, tree: treeSha, parents: [baseSha] });
-assert.deepEqual(log[7].body, { ref: `refs/heads/${plan.branch_name}`, sha: commitSha });
-assert.equal(log[8].body.head, plan.branch_name);
-assert.equal(log[8].body.base, 'main');
-assert.equal(log[8].body.draft, false);
-assert.equal(log[8].body.maintainer_can_modify, false);
+assert.deepEqual(log[8].body, { message: plan.commit_message, tree: treeSha, parents: [baseSha] });
+assert.deepEqual(log[9].body, { ref: `refs/heads/${plan.branch_name}`, sha: commitSha });
+assert.equal(log[10].body.head, plan.branch_name);
+assert.equal(log[10].body.base, 'main');
+assert.equal(log[10].body.draft, false);
+assert.equal(log[10].body.maintainer_can_modify, false);
 assert.ok(log.every((item) => item.authorization === `Bearer ${token}`));
 
 await assert.rejects(() => writer.materialize(generated, plan, authorization), (error) =>
   error instanceof GitHubPatchWriteError && error.code === 'authorization_already_used');
-assert.equal(log.length, 9);
+assert.equal(log.length, 11);
 
 for (const mutation of [
   (value) => { value.plan_fingerprint = 'f'.repeat(64); },
@@ -219,6 +222,8 @@ const mismatch = createGitHubPatchWriter({
     mismatchCalls.push(options.method);
     if (path === '/branches/main') return jsonResponse({ name: 'main', commit: { sha: baseSha } });
     if (path === `/git/commits/${baseSha}`) return jsonResponse({ sha: baseSha, tree: { sha: treeSha } });
+    if (path === `/git/trees/${treeSha}`) return jsonResponse({ sha: treeSha, tree: [{ path: 'js', type: 'tree', sha: subtreeSha }] });
+    if (path === `/git/trees/${subtreeSha}`) return jsonResponse({ sha: subtreeSha, tree: [{ path: 'diagnostics.js', type: 'blob', sha: blobSha(source) }] });
     if (path === '/pulls') return jsonResponse([]);
     return jsonResponse({ sha: blobSha(source), encoding: 'base64', content: Buffer.from('changed').toString('base64') });
   },
@@ -226,7 +231,7 @@ const mismatch = createGitHubPatchWriter({
 });
 await assert.rejects(() => mismatch.materialize(generated, plan, authorization), (error) =>
   error.code === 'source_blob_mismatch');
-assert.deepEqual(mismatchCalls, ['GET', 'GET', 'GET', 'GET']);
+assert.deepEqual(mismatchCalls, ['GET', 'GET', 'GET', 'GET', 'GET', 'GET']);
 
 const envWriter = createGitHubPatchWriterFromEnv({
   DEV_INSPECTION_AGENT_GITHUB_OWNER: 'kankidoi2-byte',
@@ -247,3 +252,104 @@ assert.equal(contract.authorization.fresh_confirmation_per_materialization, true
 assert.equal(contract.limits.maximum_files, 3);
 
 console.log('Development inspection agent GitHub patch writer validation passed.');
+
+// TOOL-01: a valid old blob must also belong to this path in the base tree.
+function testWriter(fetchImpl, extra = {}) {
+  return createGitHubPatchWriter({ owner: 'kankidoi2-byte', repository: 'monster-rpg-ver8', token,
+    fetchImpl, now: () => new Date(materializedAt), ...extra });
+}
+const wrongTreeLog = [];
+const wrongTreeBase = successfulFetch(wrongTreeLog);
+let treeReads = 0;
+await assert.rejects(() => testWriter(async (url, options) => {
+  if (new URL(url).pathname.endsWith(`/git/trees/${treeSha}`)) {
+    treeReads += 1;
+    return jsonResponse({ sha: treeSha, tree: [{ path: 'js/diagnostics.js', type: 'blob', sha: 'f'.repeat(40) }] });
+  }
+  return wrongTreeBase(url, options);
+}).materialize(generated, plan, authorization), { code: 'base_tree_blob_mismatch' });
+assert.equal(treeReads, 1);
+assert.ok(wrongTreeLog.every((entry) => entry.method === 'GET'));
+
+// TOOL-04: find a duplicate beyond the first 100 results, and fail closed at the cap.
+for (const cap of [false, true]) {
+  const calls = [];
+  const base = successfulFetch(calls);
+  let pages = 0;
+  await assert.rejects(() => testWriter(async (url, options) => {
+    if (new URL(url).pathname.endsWith('/pulls')) {
+      pages += 1;
+      const page = Number(new URL(url).searchParams.get('page'));
+      return jsonResponse(Array.from({ length: cap || page === 1 ? 100 : 50 }, (_, i) => ({
+        body: !cap && page === 2 && i === 19 ? `<!-- phase29-proposal:${generated.proposal.proposal_id} -->` : ''
+      })));
+    }
+    return base(url, options);
+  }).materialize(generated, plan, authorization), { code: cap ? 'open_pull_request_page_limit' : 'matching_open_pull_request_exists' });
+  assert.equal(pages, cap ? 10 : 2);
+  assert.ok(calls.every((entry) => entry.method === 'GET'));
+}
+
+// TOOL-03: fetch and body are both covered by the same deadline and signal.
+for (const stalledBody of [false, true]) {
+  let signal;
+  await assert.rejects(() => testWriter(async (_url, options) => {
+    signal = options.signal;
+    return stalledBody ? { ok: true, status: 200, text: () => new Promise(() => {}) } : new Promise(() => {});
+  }, { readTimeoutMs: 5 }).materialize(generated, plan, authorization), { code: 'github_timeout' });
+  assert.equal(signal.aborted, true);
+}
+const timeoutLog = [];
+const timeoutBase = successfulFetch(timeoutLog);
+let writes = 0;
+let lookedUp = false;
+let postSignal;
+const recovered = await testWriter(async (url, options) => {
+  const parsed = new URL(url);
+  if (parsed.pathname.endsWith('/pulls') && options.method === 'POST') {
+    writes += 1;
+    postSignal = options.signal;
+    return new Promise(() => {});
+  }
+  if (parsed.pathname.endsWith('/pulls') && parsed.searchParams.has('head')) {
+    lookedUp = true;
+    assert.equal(parsed.searchParams.get('state'), 'all');
+    return jsonResponse([{ number: 117, html_url: 'https://github.com/kankidoi2-byte/monster-rpg-ver8/pull/117',
+      state: 'closed', body: `<!-- phase29-proposal:${generated.proposal.proposal_id} -->`, head: { sha: commitSha }, base: { ref: 'main' } }]);
+  }
+  return timeoutBase(url, options);
+}, { writeTimeoutMs: 5 }).materialize(generated, plan, authorization);
+assert.equal(recovered.pull_request.number, 117);
+assert.equal(writes, 1);
+assert.equal(lookedUp, true);
+assert.equal(postSignal.aborted, true);
+console.log('TOOL-01, TOOL-03 and TOOL-04 regression checks passed.');
+
+for (const outcome of ['absent', 'lookup_failed', 'tree_unknown']) {
+  const calls = [];
+  const base = successfulFetch(calls);
+  let attempts = 0;
+  let lookups = 0;
+  const candidate = testWriter(async (url, options) => {
+    const parsed = new URL(url);
+    const target = outcome === 'tree_unknown' ? '/git/trees' : '/pulls';
+    if (parsed.pathname.endsWith(target) && options.method === 'POST') {
+      attempts += 1;
+      if (attempts === 1) return new Promise(() => {});
+    }
+    if (parsed.pathname.endsWith('/pulls') && parsed.searchParams.has('head')) {
+      lookups += 1;
+      return outcome === 'absent' ? jsonResponse([]) : jsonResponse({}, 503);
+    }
+    return base(url, options);
+  }, { writeTimeoutMs: 5 });
+  if (outcome === 'absent') {
+    assert.equal((await candidate.materialize(generated, plan, authorization)).status, 'materialized');
+    assert.equal(attempts, 2);
+  } else {
+    await assert.rejects(() => candidate.materialize(generated, plan, authorization), { code: 'write_outcome_unknown' });
+    assert.equal(attempts, 1);
+  }
+  assert.equal(lookups, outcome === 'tree_unknown' ? 0 : 1);
+}
+console.log('Write reconciliation: confirmed absence retries once; unavailable/unknown outcomes stop.');

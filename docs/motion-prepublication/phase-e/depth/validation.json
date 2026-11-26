@@ -1,0 +1,26 @@
+{
+  "baseCommit": "00cb809c32d38776f7ae948f4048771acc08f1ac",
+  "siteCommit": "9707fa88344c333b44260e92a7c6ff8db2495dbb",
+  "sourceSHA256": {
+    "index.html": "52b812646f8aecc484dd7e798390f462be13f3052c44ac6fde680341b8bcd121",
+    "js/battle-idle-media.js": "56830ad0d5fed6a1707cf09a8e92c31adb14968541902b53e68ff79afad2f91d",
+    "js/battle-viewport.js": "c788af98dd4681d55c0e03caf7eb712f9c3cf3d876efc9fe10ff0fd4e3521a39",
+    "css/battle-viewport.css": "29bc81978fe110838f3c2c06db83eb20a83f201d39eda2becc1cbaa07e51b248",
+    "js/notices-data.js": "b72fce41baed6d246aac1bb7b03c3e14fc62e91e3e429c7e96cd51f6277bcf7f",
+    "scripts/test-battle-viewport-dom.mjs": "c26d59701ad55a6ef0b5eee39c50d095d43586d11c9e30a2b737341894432b5a"
+  },
+  "protectedFilesUnchanged": true,
+  "all50BodyScalesAndBoundsUnchanged": true,
+  "checks": {
+    "fullCheckExit": 0,
+    "relatedDomChecks": 8,
+    "geometryCombinations": 30000
+  },
+  "limits": [
+    "DOM media APIs mocked; no real browser pixel layout",
+    "Galaxy reference-composition acceptance pending",
+    "Landscape and 200 percent text physical-device checks pending"
+  ],
+  "mergeOrGeneralPublication": false,
+  "nearFarRatio": 0.85
+}

@@ -1,0 +1,45 @@
+{
+  "dateJST": "2026-09-30",
+  "npmCheckExitCode": 0,
+  "catalog": {
+    "total": 50,
+    "registered": 22,
+    "noPrefetch": true,
+    "sourceRelease": true,
+    "saveUntouched": true
+  },
+  "battleDom": {
+    "newSpecies": [
+      "freigal",
+      "freiwolf",
+      "aquaron",
+      "highaquaron"
+    ],
+    "sides": [
+      "ally",
+      "enemy",
+      "multi"
+    ],
+    "maps": 19,
+    "stopResume": true,
+    "errorFallback": true
+  },
+  "viewportDom": {
+    "checksPassed": 4,
+    "defaultLimit": 1
+  },
+  "resourceResolution": {
+    "loads": 44,
+    "missing": [],
+    "scriptErrors": []
+  },
+  "scope": "DOM/media mocked; alpha sequential decode separate; browser rendering and Galaxy acceptance pending",
+  "export": {
+    "sourceArtworkRigMotionRendererUnmodified": true,
+    "adoptedMp4ZipMatch": true,
+    "all240FramesComparedToAdoptedMp4": true,
+    "loopExactInSourceRenderer": true,
+    "lossyVp9Derivative": true,
+    "realDeviceAcceptance": "pending"
+  }
+}

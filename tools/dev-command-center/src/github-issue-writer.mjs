@@ -1,3 +1,4 @@
+import { fetchGitHubText } from './github-request.mjs';
 import { createHash } from 'node:crypto';
 
 const API_BASE = 'https://api.github.com';
@@ -99,28 +100,53 @@ export function createGitHubIssueWriter(options = {}) {
     consumedApprovalIds.add(approvalId);
     if (!token) throw new GitHubIssueWriteError('write_token_unavailable');
 
-    let response;
-    try {
-      response = await fetchImpl(`${API_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/issues`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/vnd.github+json',
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json',
-          'X-GitHub-Api-Version': '2022-11-28'
-        },
-        body: JSON.stringify({ title: draft.title, body: draft.body }),
-        redirect: 'error'
-      });
-    } catch { throw new GitHubIssueWriteError('github_unavailable'); }
-    if (!response?.ok) throw new GitHubIssueWriteError(errorCode(response), response?.status);
-    const text = await response.text();
-    if (text.length > MAX_RESPONSE_CHARS) throw new GitHubIssueWriteError('github_response_too_large', response.status);
+    const endpoint = `${API_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/issues`;
+    const headers = {
+      Accept: 'application/vnd.github+json',
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    async function request(url, method, body) {
+      const { response, text } = await fetchGitHubText(fetchImpl, url, {
+        method, headers, ...(body ? { body: JSON.stringify(body) } : {}), redirect: 'error'
+      }, { timeoutMs: method === 'GET' ? options.readTimeoutMs : options.writeTimeoutMs });
+      if (!response?.ok) throw new GitHubIssueWriteError(errorCode(response), response?.status);
+      if (text.length > MAX_RESPONSE_CHARS) throw new GitHubIssueWriteError('github_response_too_large', response.status);
+      try { return JSON.parse(text); } catch { throw new GitHubIssueWriteError('invalid_github_response', response.status); }
+    }
+    async function reconcile() {
+      try {
+        // Inspect both open and closed Issues; never repeat an ambiguous write blindly.
+        for (let page = 1; page <= 10; page += 1) {
+          const values = await request(`${endpoint}?state=all&sort=created&direction=desc&per_page=100&page=${page}`, 'GET');
+          if (!Array.isArray(values)) break;
+          const match = values.find(issue => !issue.pull_request && issue.title === draft.title && issue.body === draft.body
+            && Date.parse(issue.created_at) >= Math.floor(Date.parse(current) / 1000) * 1000);
+          if (match) return match;
+          if (values.length < 100) return null;
+        }
+      } catch { /* An unavailable or incomplete lookup cannot establish absence. */ }
+      throw new GitHubIssueWriteError('github_write_outcome_unknown');
+    }
     let value;
-    try { value = JSON.parse(text); } catch { throw new GitHubIssueWriteError('invalid_github_response', response.status); }
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        value = await request(endpoint, 'POST', { title: draft.title, body: draft.body });
+        break;
+      } catch (error) {
+        if (error?.code !== 'github_timeout') {
+          if (error instanceof GitHubIssueWriteError) throw error;
+          throw new GitHubIssueWriteError('github_unavailable');
+        }
+        value = await reconcile();
+        if (value) break;
+        if (attempt === 1) throw new GitHubIssueWriteError('github_write_outcome_unknown');
+      }
+    }
     const number = Number(value?.number);
     const htmlUrl = Number.isSafeInteger(number) && number > 0 ? safeGitHubIssueUrl(value?.html_url, owner, repository, number) : '';
-    if (!htmlUrl) throw new GitHubIssueWriteError('invalid_github_response', response.status);
+    if (!htmlUrl) throw new GitHubIssueWriteError('invalid_github_response');
     return Object.freeze({
       schema_version: 1,
       status: 'published',

@@ -1,0 +1,38 @@
+[
+  {
+    "test": "test-battle-idle-media-dom.mjs",
+    "exitCode": 0,
+    "stdout": "PASS shared size policy: 7500 species-pair/viewport cases; equal ally/enemy geometry and contained enemy tracks\nPASS Phase4A DOM: node/time retention; temporary pause/resume; switch disposal and stale callback; five exits; simulated rejection/no retry loop/user retry; victory/next. Media API mocked, real decode is browser evidence.\nPASS Phase D bounds: 400 numeric containment/aspect cases for 50 species; resize, zero-size fallback, observer disposal/stale callback. No physical foot or real browser/Galaxy layout acceptance.\n",
+    "stderr": ""
+  },
+  {
+    "test": "test-battle-idle-multi-dom.mjs",
+    "exitCode": 0,
+    "stdout": "{\n  \"kind\": \"Media API mocked; not Android/decoder performance\",\n  \"checks\": [\n    \"three independent same-species records; HP/HUD updates retain all nodes and clocks\",\n    \"one enemy failure and manual retry leave other lifetimes intact; stale event ignored\",\n    \"stable budget 3→1→3, invalid upper bound rejected; dropped resources released\",\n    \"three independent videos obey overlapping screen/hidden/reduced reasons\",\n    \"one enemy knockout and ally switch dispose only affected lifetimes\",\n    \"50 three-video battle/exit cycles release all owned resources\",\n    \"actual invasion keeps HP/status/attack/guard, removes old video, and does not start an extra turn\",\n    \"media knockout disposal preserves game object and contract/reward eligibility\"\n  ],\n  \"pass\": 8\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "test-battle-idle-lifecycle-dom.mjs",
+    "exitCode": 0,
+    "stdout": "{\n  \"kind\": \"Media API and lifecycle events mocked; not real playback/BFCache\",\n  \"checks\": [\n    \"foreground budget excludes 60 seconds offscreen; overlapping reasons; obsolete timer ignored\",\n    \"timeout keeps commands usable; 20 retry clicks create one attempt; stale media events ignored\",\n    \"switch during retry disposes source, handlers, timer and ignores delayed Promise\",\n    \"HP/status/panel and temporary screen keep video and position\",\n    \"simulated persisted pagehide disposes; pageshow reconciles current state once (not real BFCache)\",\n    \"five battle-operation-exit-next cycles release owned resources\",\n    \"play refusal static fallback, no auto retry, one successful manual retry\",\n    \"simulated media error keeps battle commands usable\",\n    \"initial reduced setting avoids fetching; change restores playback\",\n    \"same-species candidates keep selected instance even after candidate order changes\",\n    \"leave during loading ignores delayed error and play rejection\"\n  ],\n  \"pass\": 11\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "test-battle-idle-viewport-dom.mjs",
+    "exitCode": 0,
+    "stdout": "{\n  \"kind\": \"DOM + mocked media/IntersectionObserver; not real viewport or decoder\",\n  \"checks\": [\n    \"initial offscreen avoids source; hysteresis cancels stale timeout; same video resumes\",\n    \"intersection cannot override hidden or reduced-motion reasons\",\n    \"exit disconnects observer and rejects queued timer/observer callbacks\",\n    \"ordinary gran registration, shared layout, mixed species independently stop and retain HP nodes\"\n  ],\n  \"pass\": 4,\n  \"normalRegistered\": 50,\n  \"defaultLimit\": 1\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "test-motion-map-review-dom.mjs",
+    "exitCode": 0,
+    "stdout": "{\n  \"scope\": \"19 background bindings in batches of at most3; DOM/media mocks only; horizon/body/HUD visual acceptance pending\",\n  \"results\": [\n    {\n      \"batch\": 1,\n      \"maps\": [\n        \"grassland\",\n        \"volcano\",\n        \"lake\"\n      ],\n      \"pass\": true\n    },\n    {\n      \"batch\": 2,\n      \"maps\": [\n        \"seikai_irie\",\n        \"kaiyu_kaiiki\",\n        \"deep_sea_end\"\n      ],\n      \"pass\": true\n    },\n    {\n      \"batch\": 3,\n      \"maps\": [\n        \"snow_mountain\",\n        \"forest\",\n        \"light_plain\"\n      ],\n      \"pass\": true\n    },\n    {\n      \"batch\": 4,\n      \"maps\": [\n        \"starry_plain\",\n        \"highland_ruins\",\n        \"arena\"\n      ],\n      \"pass\": true\n    },\n    {\n      \"batch\": 5,\n      \"maps\": [\n        \"magic_academy\",\n        \"ruined_village\",\n        \"starsea\"\n      ],\n      \"pass\": true\n    },\n    {\n      \"batch\": 6,\n      \"maps\": [\n        \"water_secret\",\n        \"world_between\",\n        \"kaen_village\"\n      ],\n      \"pass\": true\n    },\n    {\n      \"batch\": 7,\n      \"maps\": [\n        \"golden_land\"\n      ],\n      \"pass\": true\n    }\n  ],\n  \"passed\": 19,\n  \"mixedSpeciesMaps\": 19,\n  \"sizeReview\": {\n    \"speciesCycle\": 50,\n    \"galleryCards\": 50,\n    \"modeAndBackgroundPreserved\": true,\n    \"galleryAddsDecoders\": false\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "test": "test-motion-catalog-dom.mjs",
+    "exitCode": 0,
+    "stdout": "{\n  \"total\": 50,\n  \"registered\": 50,\n  \"noVideoPrefetch\": true,\n  \"singlePlayer\": true,\n  \"sourceRelease\": true,\n  \"hiddenPause\": true,\n  \"errorFallback\": true,\n  \"reviewPersistence\": true,\n  \"assetVersionInvalidatesMark\": true,\n  \"unregisteredNotAccepted\": true,\n  \"saveUntouched\": true,\n  \"scope\": \"DOM and mocked media; real device appearance/decoder not tested\"\n}\n",
+    "stderr": ""
+  }
+]

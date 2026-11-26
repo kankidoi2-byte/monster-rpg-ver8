@@ -108,6 +108,7 @@ function showAlchemy(){
   }
   show('alchemy');
   renderAlchemy();
+  if(!alchemyBusy&&isTutorialAlchemyLessonActive()&&typeof handleTutorialAlchemyReturnedToWorkbench==='function')handleTutorialAlchemyReturnedToWorkbench();
 }
 function selectAlchemyRecipe(recipeId){
   selectedAlchemyRecipeId = ALCHEMY_RECIPE_BY_ID[recipeId] ? recipeId : DEFAULT_ALCHEMY_RECIPE_ID;
@@ -122,7 +123,7 @@ function toggleAlchemyGuide(force){
   if(hint) hint.textContent = alchemyGuideOpen ? '説明を閉じる' : 'タップで詳しく';
 }
 function alchemyBaseMaterialId(itemId){
-  const item = ITEM_BY_ID[itemId];
+  const item = ITEM_DEX_BY_ID[itemId];
   if(item?.quality !== 'fine') return itemId;
   const normal = SHOP_ITEMS.find(entry => entry.alchemyMaterial && entry.quality === 'normal' && `fine_${entry.id}` === itemId);
   return normal?.id || itemId;
@@ -145,14 +146,16 @@ function ensureAlchemyWorkbenchSelection(){
   if(selectedAlchemyMaterialCounts.length !== 4) selectedAlchemyMaterialCounts = [1, 1, 1, 1];
 }
 function selectAlchemyWorkbenchMaterial(index, itemId){
-  if(!ITEM_BY_ID[itemId]?.alchemyMaterial) return;
+  if(!ITEM_DEX_BY_ID[itemId]?.alchemyMaterial) return;
   ensureAlchemyWorkbenchSelection();
   selectedAlchemyMaterialIds[index] = itemId;
+  if(itemId==='god_core') selectedAlchemyMaterialCounts[index]=1;
   selectedAlchemyRecipeId = inferAlchemyRecipe(selectedAlchemyMaterialIds).recipeId;
   renderAlchemy();
 }
 function changeAlchemyMaterialCount(index, delta){
   ensureAlchemyWorkbenchSelection();
+  if(selectedAlchemyMaterialIds[index]==='god_core') return;
   selectedAlchemyMaterialCounts[index] = Math.max(0, Math.min(99, selectedAlchemyMaterialCounts[index] + delta));
   renderAlchemy();
 }
@@ -166,7 +169,7 @@ function selectAlchemyCoin(optionId){
 }
 function alchemyEligibleInstances(){
   return (save.instances || []).filter(ins =>
-    !ins.locked && !(save.party || []).includes(ins.uid) && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(ins.uid)) && save.instances.length > 1 && isAlchemyCatalystUnit(by(ins.id))
+    !instanceConsumeBlockReason(ins) && !(save.party || []).includes(ins.uid) && isAlchemyCatalystUnit(by(ins.id))
   );
 }
 function alchemyInstanceLabel(ins){
@@ -324,9 +327,9 @@ function alchemyPlan(selection=collectAlchemySelection()){
   const coinOption = selectedCoinOption
     || recipe.coinOptions.find(option => option.id === recipe.defaultCoinOptionId)
     || recipe.coinOptions[0];
-  const fineCount = selection.materialIds.filter(id => ITEM_BY_ID[id]?.quality === 'fine').length;
+  const fineCount = selection.materialIds.filter(id => ITEM_DEX_BY_ID[id]?.quality === 'fine').length;
   const monsterBonus = alchemyMonsterBonus(instance);
-  const quantityBonus = Math.min(8, (selection.materialCounts || []).reduce((sum, count) => sum + Math.max(0, count - 1), 0));
+  const quantityBonus = Math.min(8, (selection.materialCounts || []).reduce((sum, count, index) => sum + (selection.materialIds[index]==='god_core'?0:Math.max(0, count - 1)), 0));
   const recipeMatchScore = alchemyRecipeMatchScore(recipe, selection.materialIds);
   const recipeMatchBonus = recipeMatchScore === 4 ? 0 : -(4 - recipeMatchScore) * 5;
   const unclampedRate = recipe.baseSuccessRate + fineCount * recipe.fineMaterialBonus + monsterBonus.total + quantityBonus + recipeMatchBonus + coinOption.bonus;
@@ -346,22 +349,32 @@ function validateAlchemyPlan(plan){
   if(!plan.modeSelectionValid) errors.push('錬成方法が正しく選択されていません。再選択してください。');
   if(!plan.tutorialLesson){
     if(!ins) errors.push('触媒契約体を1体選択してください。');
-    if(ins && (save.instances || []).length <= 1) errors.push('最後の所持モンスターは投入できません。');
+    if(ins){
+      const reason=instanceConsumeBlockReason(ins);
+      if(reason)errors.push(reason==='最後の所持契約体は変換できません。'?'最後の所持モンスターは投入できません。':
+        ['ロック中です。','遠征中です。'].includes(reason)?`${by(ins.id)?.name || ins.id}は${reason}`:reason);
+    }
     if(ins && !isAlchemyCatalystUnit(by(ins.id))) errors.push(`${by(ins.id)?.name || ins.id}は触媒に使用できません。`);
     if(ins && (save.party || []).includes(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}はパーティー編成中です。`);
-    if(ins && typeof isInstanceOnExpedition==='function' && isInstanceOnExpedition(ins.uid)) errors.push(`${by(ins.id)?.name || ins.id}は遠征中です。`);
-    if(ins?.locked) errors.push(`${by(ins.id)?.name || ins.id}はロック中です。`);
   }else{
     if(plan.recipe.recipeId!==tutorialAlchemyLessonConfig.recipeId)errors.push('入門錬成のレシピが一致しません。');
     if(plan.selection.materialIds.join('|')!==tutorialAlchemyLessonConfig.materials.join('|')||plan.selection.materialCounts.some(count=>Number(count)!==1))errors.push('入門錬成の素材が一致しません。');
     if(plan.coinOption.id!==tutorialAlchemyLessonConfig.coinOptionId||plan.coinCost!==Number(tutorialAlchemyLessonConfig.coins))errors.push('入門錬成の投入コインが一致しません。');
   }
   if(!plan.coinOptionSelectionValid) errors.push('投入コイン帯が正しく選択されていません。再選択してください。');
+  // Partial matches still incur their usual penalty, but cannot substitute the core.
+  if(plan.recipe.recipeId==='elixion_standard'&&!plan.selection.materialIds.includes('god_core')){
+    errors.push('神核が1個不足しています。');
+  }
   plan.selection.materialIds.forEach((itemId, index) => {
     const count = Number(plan.selection.materialCounts?.[index] || 0);
-    const item = ITEM_BY_ID[itemId];
+    const item = ITEM_DEX_BY_ID[itemId];
     if(!item?.alchemyMaterial){
       errors.push(`素材${index + 1}が正しく選択されていません。`);
+      return;
+    }
+    if(itemId==='god_core'&&count!==1){
+      errors.push('神核の投入数は1個です。');
       return;
     }
     if(count < 1){
@@ -384,12 +397,12 @@ function validateAlchemyPlan(plan){
   return [...new Set(errors)];
 }
 function alchemyMaterialOption(itemId){
-  const item = ITEM_BY_ID[itemId];
+  const item = ITEM_DEX_BY_ID[itemId];
   const count = Number(save.items?.[itemId] || 0);
   return `<option value="${itemId}">${item?.icon || '📦'} ${item?.name || itemId}（所持${count}）</option>`;
 }
 function alchemyWorkbenchMaterialOptions(selectedId){
-  return SHOP_ITEMS.filter(item => item.alchemyMaterial).map(item => {
+  return ITEM_DEX_ITEMS.filter(item => item.alchemyMaterial).map(item => {
     const count = Number(save.items?.[item.id] || 0);
     return `<option value="${item.id}" ${item.id===selectedId?'selected':''}>${item.icon || '📦'} ${item.name}（${count}）</option>`;
   }).join('');
@@ -407,7 +420,7 @@ function alchemyTendency(plan){
 function alchemyLuminaAdvice(plan, errors=[]){
   const bases = plan.selection.materialIds.map(alchemyBaseMaterialId);
   let short = 'まだ反応が定まっていないみたい。素材を変えると別の気配が見えるかも。';
-  let detail = '素材の種類と投入量によって、錬成結果の傾向と成功率が変化します。完成するモンスターそのものは錬成後まで分かりません。';
+  let detail = '何が生まれるかは、錬成するまで分からない。';
   if(plan.recipe?.recipeId === 'elixion_standard'){
     short = '賢金から生まれた無垢な錬成力と、神竜の気配が重なっているよ。';
     detail = '魔晶石と金属鉱石が核を形づくり、猛禽の羽と毒虫の甲殻が生命の輪郭を与えています。最高位の無属性竜へ届く可能性があります。';
@@ -428,22 +441,21 @@ function renderTutorialAlchemyLesson(root){
   const errors=validateAlchemyPlan(plan);
   const result=by(tutorialAlchemyLessonConfig.resultId);
   root.innerHTML=`<div class="alchemy-workbench tutorial-alchemy-lesson">
-    <header class="alchemy-workbench-header"><div><span class="ui-eyebrow">LUMINA'S LESSON</span><h1>入門錬成</h1></div><div class="alchemy-resources"><span>🪙 <b>${Number(save.coins||0).toLocaleString('ja-JP')}</b></span></div></header>
+    <header class="alchemy-workbench-header"><div><span class="ui-eyebrow">LUMINA'S LESSON</span><h1>入門錬成</h1></div><div class="alchemy-resources"><span>コイン <b>${Number(save.coins||0).toLocaleString('ja-JP')}</b></span></div></header>
     <section id="tutorialAlchemyRecipeCard" class="tutorial-alchemy-recipe">
       <div><small>序章専用レシピ</small><h2>${tutorialAlchemyLessonConfig.displayName}</h2><p>練習用錬成核を使用。仲間は消費しません。</p></div>
       <span class="tutorial-alchemy-result-hint">完成候補 ${result?.name||'？？？'}</span>
     </section>
     <section id="tutorialAlchemyMaterials" class="alchemy-material-board"><div class="alchemy-section-title"><h2>投入素材</h2><small>各1個</small></div><div class="alchemy-workbench-materials">${tutorialAlchemyLessonConfig.materials.map(itemId=>{
-      const item=ITEM_BY_ID[itemId];const owned=Number(save.items?.[itemId]||0);
+      const item=ITEM_DEX_BY_ID[itemId];const owned=Number(save.items?.[itemId]||0);
       return `<div class="alchemy-material-row ${owned<1?'is-short':''}"><span class="alchemy-material-icon" aria-hidden="true">${itemInlineVisual(item, 'alchemy-material-image')}</span><div><b>${item?.name||itemId}</b><small>所持 ${owned} / 必要 1</small></div></div>`;
     }).join('')}</div></section>
     <div class="tutorial-alchemy-summary">
-      <div id="tutorialAlchemyCoin"><small>投入コイン</small><strong>🪙 ${plan.coinCost}枚</strong></div>
+      <div id="tutorialAlchemyCoin"><small>投入コイン</small><strong>${plan.coinCost}枚</strong></div>
       <div id="tutorialAlchemyRate"><small>初回成功保証</small><strong>成功率 ${plan.rate}%</strong></div>
     </div>
-    <section class="tutorial-alchemy-lumina"><img src="images/tutorial/characters/lumina_apprentice.png" alt="見習い錬金術師ルミナ"><p><b>ルミナ</b><span>素材とコインを確認できたら、錬成を始めよう！</span></p></section>
-    ${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div>`:''}
-    <button id="tutorialAlchemyStartButton" class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length||alchemyBusy?'disabled':''}>✦ 入門錬成を始める</button>
+    ${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>${error}</p>`).join('')}</div>`:''}
+    <button id="tutorialAlchemyStartButton" class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length||alchemyBusy?'disabled':''}>入門錬成を始める</button>
   </div>`;
 }
 function renderAlchemy(){
@@ -467,27 +479,27 @@ function renderAlchemy(){
     <div class="alchemy-workbench">
       <header class="alchemy-workbench-header">
         <div><span class="ui-eyebrow">ALCHEMY</span><h1>錬成</h1></div>
-        <div class="alchemy-resources"><span>🪙 <b>${Number(save.coins || 0).toLocaleString('ja-JP')}</b></span></div>
+        <div class="alchemy-resources"><span>コイン <b>${Number(save.coins || 0).toLocaleString('ja-JP')}</b></span></div>
       </header>
       <p class="alchemy-outcome-note">完成するモンスターは錬成後に判明</p>
       <section class="alchemy-material-board">
         <div class="alchemy-section-title"><h2>投入素材</h2><small>種類と個数を選択</small></div>
         <div class="alchemy-workbench-materials">${selectedAlchemyMaterialIds.map((itemId,index) => {
-          const item = ITEM_BY_ID[itemId];
+          const item = ITEM_DEX_BY_ID[itemId];
           const owned = Number(save.items?.[itemId] || 0);
           const count = selectedAlchemyMaterialCounts[index];
           return `<div class="alchemy-material-row ${owned<count?'is-short':''}">
             <span class="alchemy-material-icon" aria-hidden="true">${itemInlineVisual(item, 'alchemy-material-image')}</span>
             <label><select onchange="selectAlchemyWorkbenchMaterial(${index},this.value)" aria-label="素材${index+1}">${alchemyWorkbenchMaterialOptions(itemId)}</select><small>所持 ${owned}${owned<count?'・不足':''}</small></label>
-            <div class="alchemy-quantity"><button type="button" onclick="changeAlchemyMaterialCount(${index},-1)" aria-label="${item?.name || '素材'}を減らす">−</button><strong>${count}</strong><button type="button" onclick="changeAlchemyMaterialCount(${index},1)" aria-label="${item?.name || '素材'}を増やす">＋</button></div>
+            <div class="alchemy-quantity">${itemId==='god_core'?'<strong>1</strong>':`<button type="button" onclick="changeAlchemyMaterialCount(${index},-1)" aria-label="${item?.name || '素材'}を減らす">−</button><strong>${count}</strong><button type="button" onclick="changeAlchemyMaterialCount(${index},1)" aria-label="${item?.name || '素材'}を増やす">＋</button>`}</div>
           </div>`;
         }).join('')}</div>
       </section>
       <div class="alchemy-input-strip">
-        <label class="alchemy-catalyst"><span>触媒契約体 <small>必須・1体消費</small></span><select id="alchemyMonsterSelect" onchange="selectAlchemyCatalyst(this.value)"><option value="">選択してください</option>${eligible.map(ins => `<option value="${ins.uid}" ${ins.uid===selectedAlchemyCatalystUid?'selected':''}>${by(ins.id)?.name || ins.id} Lv.${ins.level || 1}</option>`).join('')}</select></label>
+        <label class="alchemy-catalyst"><span>触媒契約体 <small>必須・1体消費</small></span><select id="alchemyMonsterSelect" onchange="selectAlchemyCatalyst(this.value)"><option value="">選択してください</option>${eligible.map(ins => `<option value="${escapeGameHtml(ins.uid)}" ${ins.uid===selectedAlchemyCatalystUid?'selected':''}>${by(ins.id)?.name || ins.id} Lv.${ins.level || 1}</option>`).join('')}</select></label>
         <fieldset class="alchemy-coin-compact"><legend>投入コイン</legend>${recipe.coinOptions.map(option => {
           const failureCount = eligibleAlchemyCandidates(recipe, false, option).length;
-          return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="selectAlchemyCoin(this.value)" ${option.id===selectedAlchemyCoinOptionId?'checked':''} ${failureCount?'':'disabled'}><span>🪙 ${option.amount}</span></label>`;
+          return `<label><input type="radio" name="alchemyCoin" value="${option.id}" onchange="selectAlchemyCoin(this.value)" ${option.id===selectedAlchemyCoinOptionId?'checked':''} ${failureCount?'':'disabled'}><span>コイン ${option.amount}</span></label>`;
         }).join('')}</fieldset>
       </div>
       <div id="alchemyPreview"></div>
@@ -507,8 +519,8 @@ function updateAlchemyPreview(){
       <span class="alchemy-lumina-bubble"><b>ルミナの見立て</b><span>${advice.short}</span><small>${alchemyGuideOpen?'説明を閉じる':'タップで詳しく'}</small></span>
     </button>
     <div class="alchemy-lumina-detail ${alchemyGuideOpen?'is-open':''}"><p>${advice.detail}</p></div>
-    <details class="alchemy-judgement-details"><summary>判定の詳細</summary><p>素材一致 ${plan.recipeMatchScore}/4・品質補正 +${plan.fineCount*plan.recipe.fineMaterialBonus}%・数量補正 +${plan.quantityBonus}%・触媒補正 +${plan.monsterBonus.total}%・${alchemyFailureGuaranteeText(plan.coinOption)}</p>${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div>`:''}</details>
-    <button class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length || alchemyBusy?'disabled':''}>✦ 錬成開始</button>
+    <details class="alchemy-judgement-details"><summary>判定の詳細</summary><p>素材一致 ${plan.recipeMatchScore}/4・品質補正 +${plan.fineCount*plan.recipe.fineMaterialBonus}%・数量補正 +${plan.quantityBonus}%・触媒補正 +${plan.monsterBonus.total}%・${alchemyFailureGuaranteeText(plan.coinOption)}</p>${errors.length?`<div class="alchemy-errors">${errors.map(error=>`<p>${error}</p>`).join('')}</div>`:''}</details>
+    <button class="alchemy-start-button" onclick="openAlchemyConfirmation()" ${errors.length || alchemyBusy?'disabled':''}>錬成開始</button>
   </section>`;
 }
 function openAlchemyConfirmation(){
@@ -520,46 +532,76 @@ function openAlchemyConfirmation(){
   alchemyDiagnosticsStage='confirming';
   alchemyDiagnosticsResultKind='none';
   target.innerHTML = `<div class="alchemy-confirm-card">
-    ${plan.instance ? vis(by(plan.instance.id)) : '<div class="alchemy-core">⚗</div>'}
+    ${plan.instance ? vis(by(plan.instance.id)) : '<div class="alchemy-core">錬成</div>'}
     <h2>錬成の最終確認</h2>
-    <p><b>${plan.tutorialLesson?'錬成核':'触媒'}：</b>${plan.tutorialLesson?'ルミナの練習用錬成核（仲間の消費なし）':alchemyInstanceLabel(plan.instance)}</p>
-    <p>${plan.selection.materialIds.map((id,index)=>`${ITEM_BY_ID[id].name} ×${plan.selection.materialCounts[index]}`).join(' / ')}</p>
+    <p><b>${plan.tutorialLesson?'錬成核':'触媒'}：</b>${plan.tutorialLesson?'ルミナの練習用錬成核（仲間の消費なし）':escapeGameHtml(alchemyInstanceLabel(plan.instance))}</p>
+    <p>${plan.selection.materialIds.map((id,index)=>`${ITEM_DEX_BY_ID[id].name} ×${plan.selection.materialCounts[index]}`).join(' / ')}</p>
     <p><b>投入コイン：</b>${plan.coinCost}枚</p><p><b>成功率：</b>${plan.rate}%</p><p><b>錬成傾向：</b>${alchemyTendency(plan)}</p><p class="alchemy-guarantee"><b>${plan.tutorialLesson?'入門錬成は初回100％成功します。':'結果は錬成完了まで不明です。'}</b></p>
     <p class="alchemy-warning">この操作を確定すると、素材・コイン${plan.tutorialLesson?'':'・触媒契約体1体'}を消費します。元には戻せません。</p>
+    ${plan.tutorialLesson?'<div class="tutorial-alchemy-confirm-actions">':''}
     <button id="alchemyExecuteButton" onclick="executeAlchemyConfirmed()">消費して錬成を実行</button>
-    <button onclick="showAlchemy()" class="secondary-button">内容を修正する</button>
+    <button onclick="showAlchemy()" class="secondary-button">${plan.tutorialLesson?'消費せずに戻る':'内容を修正する'}</button>
+    ${plan.tutorialLesson?'</div>':''}
   </div>`;
   show('alchemyConfirm');
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyConfirmationOpened==='function')handleTutorialAlchemyConfirmationOpened();
 }
-function executeAlchemyConfirmed(){
-  if(alchemyBusy) return;
+let alchemyTransactionRetry=null;
+const committedAlchemyPlans=new WeakSet();
+let alchemyLastCharacterConfirmBusy=false;
+function alchemyLastCharacterQuote(plan){
+  return JSON.stringify([plan.selection,plan.instance?.id,plan.coinCost,plan.rate,plan.tutorialLesson]);
+}
+async function executeAlchemyConfirmed(){
+  if(alchemyBusy||alchemyLastCharacterConfirmBusy) return;
   const plan = alchemyPlan();
   const errors = validateAlchemyPlan(plan);
   if(errors.length){
-    document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>❌ ${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
+    document.getElementById('alchemyConfirmContent').innerHTML = `<div class="alchemy-errors">${errors.map(error=>`<p>${error}</p>`).join('')}</div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
     return;
   }
-  if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1 && !confirm('この形態のキャラクターは最後の1体です。錬成で消費してもよろしいですか？'))return;
+  if(!plan.tutorialLesson && isCharacterUnit(by(plan.instance?.id)) && save.instances.filter(ins=>ins.id===plan.instance.id).length===1){
+    const owner=save, identity=saveTransactionIdentity(), quote=alchemyLastCharacterQuote(plan);
+    alchemyLastCharacterConfirmBusy=true;
+    try{
+      if(!await gameConfirm({title:'最後のキャラクターを消費',body:'この形態のキャラクターは最後の1体です。錬成で消費してもよろしいですか？',okLabel:'消費して錬成する',danger:true}))return;
+      if(save!==owner||saveTransactionIdentity()!==identity)return;
+      const current=alchemyPlan();
+      if(current.instance!==plan.instance||alchemyLastCharacterQuote(current)!==quote||validateAlchemyPlan(current).length||
+          save.instances.filter(ins=>ins.id===current.instance.id).length!==1)return;
+      plan.lastCharacterQuote=quote;
+    }finally{alchemyLastCharacterConfirmBusy=false;}
+  }
   try{alchemyDiagnosticsSelection=alchemyDiagnosticsSelectionSummary(plan,errors,plan.tutorialLesson===true);}
   catch(_error){alchemyDiagnosticsSelection=null;}
+  plan.transactionIdentity=saveTransactionIdentity();
   alchemyBusy = true;
   alchemyDiagnosticsStage='processing';
   alchemyDiagnosticsResultKind='none';
   alchemyDiagnosticsTutorialLesson=plan.tutorialLesson===true;
   const button = document.getElementById('alchemyExecuteButton');
   if(button) button.disabled = true;
+  try{
   if(plan.tutorialLesson&&typeof handleTutorialAlchemyExecutionStarted==='function')handleTutorialAlchemyExecutionStarted();
   show('alchemyResult');
   document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-animation alchemy-lumina-wait" role="status"><picture><source media="(prefers-reduced-motion: reduce)" srcset="images/ui/lumina_alchemy_still_v1.webp"><img class="alchemy-wait-art" src="images/ui/lumina_alchemy_wait_v1.webp" width="440" height="440" alt="ルミナが大きな釜を一生懸命かき混ぜています" onerror="this.hidden=true"></picture><h2>錬成核を構築中……</h2><p>素材と魔力を結合しています</p></div>`;
   setTimeout(() => finalizeAlchemy(plan), 900);
+  }catch(error){alchemyBusy=false;saveTransactionNotice('錬成の表示を開始できませんでした。素材は消費していません。');console.error(error);}
+
 }
 function finalizeAlchemy(originalPlan){
-  const snapshot = JSON.stringify(save);
+  if(committedAlchemyPlans.has(originalPlan))return;
+  if(originalPlan.transactionIdentity&&originalPlan.transactionIdentity!==saveTransactionIdentity()){
+    alchemyBusy=false;saveTransactionNotice('アカウントが変わったため錬成を中止しました。');return;
+  }
+  const snapshot = captureSaveTransaction();
+  let committed=false;
   try{
     const plan = alchemyPlan(originalPlan.selection);
     const errors = validateAlchemyPlan(plan);
     if(errors.length) throw new Error(errors.join('\n'));
+    if(originalPlan.lastCharacterQuote&&alchemyLastCharacterQuote(plan)!==originalPlan.lastCharacterQuote)
+      throw new Error('確認した錬成内容が変わっています。');
 
     plan.selection.materialIds.forEach((id,index) => { save.items[id] -= plan.selection.materialCounts[index]; });
     save.coins -= plan.coinCost;
@@ -568,24 +610,31 @@ function finalizeAlchemy(originalPlan){
       if(save.equippedSkills) delete save.equippedSkills[plan.instance.uid];
     }
 
-    const success = plan.tutorialLesson||rollAlchemySuccess(plan);
-    const candidate = plan.tutorialLesson
-      ?eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).find(entry=>entry.monsterId===tutorialAlchemyLessonConfig.resultId)
-      :rollAlchemyResultCandidate(plan.recipe, success, plan.coinOption);
+    const retryKey=JSON.stringify([saveTransactionIdentity(),plan.selection,plan.tutorialLesson]);
+    if(alchemyTransactionRetry?.key!==retryKey){
+      const success=plan.tutorialLesson||rollAlchemySuccess(plan);
+      const candidate=plan.tutorialLesson
+        ?eligibleAlchemyCandidates(plan.recipe,true,plan.coinOption).find(entry=>entry.monsterId===tutorialAlchemyLessonConfig.resultId)
+        :rollAlchemyResultCandidate(plan.recipe,success,plan.coinOption);
+      alchemyTransactionRetry={key:retryKey,success,candidate,archetypeRoll:Math.random()};
+    }
+    const {success,candidate,archetypeRoll}=alchemyTransactionRetry;
     if(plan.tutorialLesson&&!candidate)throw new Error('入門錬成の完成候補が見つかりません。');
-    const {resultMonster, resultInstance, archetype} = createAlchemyResultInstance(candidate);
+    const {resultMonster,resultInstance,archetype}=createAlchemyResultInstance(candidate,()=>archetypeRoll);
     if(success&&typeof grantContractorAlchemySuccess==='function')grantContractorAlchemySuccess();
     if(plan.tutorialLesson&&typeof commitTutorialLuminaAlchemySuccess==='function'&&!commitTutorialLuminaAlchemySuccess())throw new Error('入門錬成の完了状態を保存できません。');
+    recordHomeMissionAlchemyExecution();
     if(!saveGame())throw new Error('錬成結果を保存できません。');
+    committed=true;committedAlchemyPlans.add(originalPlan);alchemyTransactionRetry=null;
 
     const content = document.getElementById('alchemyResultContent');
     const modifierHtml = archetype ? instanceAlchemySummary(resultInstance) : '<p class="small">通常モンスターとして完成しました。</p>';
     content.innerHTML = `<div ${plan.tutorialLesson?'id="tutorialAlchemyResult" ':''}class="alchemy-result-card ${success?'success':'fallback'}">
-      <p class="alchemy-result-label">${success?'✨ 錬成成功！':'🔹 通常個体が完成'}</p>
+      <p class="alchemy-result-label">${success?'錬成成功！':'通常個体が完成'}</p>
       ${vis(resultMonster)}<h1>${resultMonster.name}</h1>
-      <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${String(resultInstance.uid).slice(-8)}</p>
+      <p>Lv.1 / ${typesHtml(resultMonster.types)} / 個体ID ${escapeGameHtml(String(resultInstance.uid).slice(-8))}</p>
       ${modifierHtml}
-      ${candidate?.alchemyInstance?`<p><b>専用技：</b>${resultMonster.moves.filter((_,index)=>(ALCHEMY_MONSTER_CONFIGS[resultMonster.id]?.exclusiveMoveIndexes||[]).includes(index)).map(move=>`${skillTypeLabel(moveTypes(move))} ${move[0]}（威力${move[1]}・${moveEffectText(move)}）`).join('')}</p>`:''}
+      ${candidate?.alchemyInstance?`<p><b>初期技：</b>${resultMonster.moves.filter((_,index)=>(ALCHEMY_MONSTER_CONFIGS[resultMonster.id]?.exclusiveMoveIndexes||[]).includes(index)).map(move=>`${skillTypeLabel(moveTypes(move))} ${move[0]}（威力${move[1]}・${moveEffectText(move)}）`).join('')}</p>`:''}
       <button onclick="show('party')">完成個体を手持ちで確認</button>
       <button onclick="showAlchemy()" class="secondary-button">もう一度錬成する</button>
     </div>`;
@@ -601,12 +650,14 @@ function finalizeAlchemy(originalPlan){
       if(typeof handleTutorialLuminaAlchemyCompleted==='function')handleTutorialLuminaAlchemyCompleted();
     }
   }catch(error){
-    alchemyDiagnosticsStage='rolled_back';
-    alchemyDiagnosticsResultKind='error';
-    save = JSON.parse(snapshot);
-    try{ localStorage.setItem('mb_v95c', snapshot); }catch(restoreError){ console.error('alchemy rollback save failed:', restoreError); }
-    document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-errors"><h2>錬成を中止しました</h2><p>消費前の状態へ戻しました。</p><p>${String(error?.message || error).replaceAll('\n','<br>')}</p></div><button onclick="showAlchemy()">錬成画面へ戻る</button>`;
-    console.error('alchemy failed and rolled back:', error);
+    alchemyDiagnosticsStage=committed?'completed':'rolled_back';
+    alchemyDiagnosticsResultKind=committed?'saved_display_error':'error';
+    if(!committed)rollbackSaveTransaction(snapshot);
+    const message=committed?'錬成結果は保存済みです。手持ちから完成個体を確認してください。':'錬成を保存できませんでした。消費は確定していません。';
+    try{document.getElementById('alchemyResultContent').innerHTML = `<div class="alchemy-errors"><h2>${message}</h2></div><button onclick="show('party')">手持ちを確認</button><button onclick="showAlchemy()">錬成画面へ戻る</button>`;}
+    catch(displayError){console.error('alchemy fallback display failed:',displayError);}
+    saveTransactionNotice(message);
+    console.error('alchemy transaction/display failed:', error);
   }finally{
     alchemyBusy = false;
   }

@@ -1,0 +1,7579 @@
+[
+  {
+    "oldId": "sk_9je_mtl_9ke_i6n_o75_9jh_normal_24_tactical",
+    "oldName": "お玉の小突き",
+    "oldTypes": "normal",
+    "oldPower": 24,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9jh_9lf_9j8_9l9_9ng_9mv_9lv_normal_0_guard",
+    "oldName": "きんいろボディ",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9jr_9k3_9kt_jf7_9k1_normal_20_none",
+    "oldName": "しっぽ打ち",
+    "oldTypes": "normal",
+    "oldPower": 20,
+    "newId": "s110_049",
+    "newName": "しっぽ打ち",
+    "reason": "同名採用技。旧威力20・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9jr_9kj_9l8_st9_normal_20_tactical",
+    "oldName": "しびれ針",
+    "oldTypes": "normal",
+    "oldPower": 20,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9jx_9l4_u5k_9ke_9ki_9l8_wind_26_none",
+    "oldName": "そよ風のひれ",
+    "oldTypes": "wind",
+    "oldPower": 26,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9jz_9j8_9j6_9jz_9l6_normal_14_none",
+    "oldName": "たいあたり",
+    "oldTypes": "normal",
+    "oldPower": 14,
+    "newId": "s110_058",
+    "newName": "たいあたり",
+    "reason": "同名採用技。旧威力14・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9jz_9j8_9j6_9jz_9l6_normal_16_none",
+    "oldName": "たいあたり",
+    "oldTypes": "normal",
+    "oldPower": 16,
+    "newId": "s110_058",
+    "newName": "たいあたり",
+    "reason": "同名採用技。旧威力16・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9kn_9l7_9kn_9l7_normal_0_guard",
+    "oldName": "ぷるぷる",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9lu_9m7_9lu_9mf_9oc_9nv_9mx_water_0_aqua_shield",
+    "oldName": "アクアシールド",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9lu_9m7_9lu_9mu_9lw_9nv_water_34_none",
+    "oldName": "アクアテイル",
+    "oldTypes": "water",
+    "oldPower": 34,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9lu_9mh_9mw_9nt_9nv_9m0_9o3_9mx_star_82_none",
+    "oldName": "アストラルエンド",
+    "oldTypes": "star",
+    "oldPower": 82,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9lu_9mh_9mw_9nt_9nv_9mh_9mu_9mr_9nb_star_0_buff",
+    "oldName": "アストラルステップ",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9lu_9mh_9mw_9nt_9nv_9n9_9nw_9lu_star_64_none",
+    "oldName": "アストラルフレア",
+    "oldTypes": "star",
+    "oldPower": 64,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同名採用技。旧威力64・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9lu_9n7_9mh_9mu_9lw_9nv_water_56_none",
+    "oldName": "アビステイル",
+    "oldTypes": "water",
+    "oldPower": 56,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9lu_9ne_9m7_9mh_9mh_9mw_9oc_9nk_wind-dragon_108_recoil",
+    "oldName": "アペクスストーム",
+    "oldTypes": [
+      "wind",
+      "dragon"
+    ],
+    "oldPower": 108,
+    "newId": "s110_095",
+    "newName": "アペクスストーム",
+    "reason": "同名採用技。旧威力108・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9lu_9nh_9m3_9nu_9nb_9mh_9n2_9o4_9lt_star_100_recoil",
+    "oldName": "アポカリプスノヴァ",
+    "oldTypes": "star",
+    "oldPower": 100,
+    "newId": "s110_105",
+    "newName": "アポカリプスノヴァ",
+    "reason": "同名採用技。旧威力100・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9lw_9nu_9np_9oc_9mg_9nr_9o3_star_15_confusion",
+    "oldName": "イリュージョン",
+    "oldTypes": "star",
+    "oldPower": 15,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同名採用技。旧威力15・旧効果confusionから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9m0_9lu_9mh_9nt_9lw_9mx_wind_22_none",
+    "oldName": "エアスライド",
+    "oldTypes": "wind",
+    "oldPower": 22,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9m0_9nu_9m7_9mf_9m2_9o3_9ob_9n2_9o4_9lt_light-dragon_112_none",
+    "oldName": "エリクシオン・ノヴァ",
+    "oldTypes": [
+      "light",
+      "dragon"
+    ],
+    "oldPower": 112,
+    "newId": "s110_103",
+    "newName": "エリクシオン・ノヴァ",
+    "reason": "同名採用技。旧威力112・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9m0_9nu_9m7_9mf_9m2_9o3_9ob_9n2_9o4_9lt_normal-dragon_112_none",
+    "oldName": "エリクシオン・ノヴァ",
+    "oldTypes": [
+      "normal",
+      "dragon"
+    ],
+    "oldPower": 112,
+    "newId": "s110_103",
+    "newName": "エリクシオン・ノヴァ",
+    "reason": "同名採用技。旧威力112・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9m2_9nv_9m3_9lu_9n7_9mh_water_92_none",
+    "oldName": "オルカアビス",
+    "oldTypes": "water",
+    "oldPower": 92,
+    "newId": "s110_092",
+    "newName": "オルカアビス",
+    "reason": "同名採用技。旧威力92・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9m2_9nv_9m3_9ly_9lz_9oc_9na_water_72_none",
+    "oldName": "オルカウェーブ",
+    "oldTypes": "water",
+    "oldPower": 72,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9m4_9lw_9lu_9mh_9nt_9mr_9mf_9np_grass_72_none",
+    "oldName": "ガイアスラッシュ",
+    "oldTypes": "grass",
+    "oldPower": 72,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同名採用技。旧威力72・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9m4_9nv_9mv_9lv_9m2_9o3_9nw_9lw_light-dragon_78_none",
+    "oldName": "ガルディオンレイ",
+    "oldTypes": [
+      "light",
+      "dragon"
+    ],
+    "oldPower": 78,
+    "newId": "s110_088",
+    "newName": "竜の尾撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_9m7_9nu_9mh_9mn_9nv_9ly_9lz_9oc_9na_water_56_none",
+    "oldName": "クリスタルウェーブ",
+    "oldTypes": "water",
+    "oldPower": 56,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9m8_9nt_9o3_9mx_9ni_9mg_9mr_9m7_normal_44_none",
+    "oldName": "グランドマジック",
+    "oldTypes": "normal",
+    "oldPower": 44,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9m8_9nt_9o3_9nf_9oc_9o3_grass_50_none",
+    "oldName": "グランホーン",
+    "oldTypes": "grass",
+    "oldPower": 50,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9m8_9nt_9o3_9ng_9nv_9mw_9m7_9nx_9oc_thunder_78_none",
+    "oldName": "グランボルトクロー",
+    "oldTypes": "thunder",
+    "oldPower": 78,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mb_9mh_9nm_9mh_9lu_9oc_9m7_star_86_none",
+    "oldName": "コスモスアーク",
+    "oldTypes": "star",
+    "oldPower": 86,
+    "newId": "s110_098",
+    "newName": "コスモスアーク",
+    "reason": "同名採用技。旧威力86・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mb_9mh_9nm_9na_9nw_9mh_star_44_none",
+    "oldName": "コスモブレス",
+    "oldTypes": "star",
+    "oldPower": 44,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mb_9mi_9nj_9mr_9m7_9n2_9o4_9lt_star_68_none",
+    "oldName": "コズミックノヴァ",
+    "oldTypes": "star",
+    "oldPower": 68,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mb_9oc_9mx_9ob_9lu_9nv_9n9_9lt_light_88_none",
+    "oldName": "コード・アルファ",
+    "oldTypes": "light",
+    "oldPower": 88,
+    "newId": "s110_096",
+    "newName": "コード・アルファ",
+    "reason": "同名採用技。旧威力88・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mb_9oc_9mx_9ob_9m4_9o3_9ni_light_100_none",
+    "oldName": "コード・ガンマ",
+    "oldTypes": "light",
+    "oldPower": 100,
+    "newId": "s110_096",
+    "newName": "コード・アルファ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mb_9oc_9mx_9ob_9nd_9oc_9mn_light_94_none",
+    "oldName": "コード・ベータ",
+    "oldTypes": "light",
+    "oldPower": 94,
+    "newId": "s110_096",
+    "newName": "コード・アルファ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mc_9oc_9nv_9mx_9lu_9mn_9mr_9m7_normal_25_none",
+    "oldName": "ゴールドアタック",
+    "oldTypes": "normal",
+    "oldPower": 25,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9md_9o3_9mo_9oc_9mh_9mw_9oc_9nk_thunder_45_paralysis",
+    "oldName": "サンダーストーム",
+    "oldTypes": "thunder",
+    "oldPower": 45,
+    "newId": "s110_074",
+    "newName": "サンダーストーム",
+    "reason": "同名採用技。旧威力45・旧効果paralysisから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9md_9o3_9mo_9oc_9ng_9nv_9mw_thunder_30_paralysis",
+    "oldName": "サンダーボルト",
+    "oldTypes": "thunder",
+    "oldPower": 30,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同名採用技。旧威力30・旧効果paralysisから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mg_9nn_9mr_9mg_9nl_9o3_9mw_light_58_none",
+    "oldName": "ジャッジメント",
+    "oldTypes": "light",
+    "oldPower": 58,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同名採用技。旧威力58・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mh_9m3_9lw_9nt_9o3_9ne_9oc_9mg_wind_56_none",
+    "oldName": "スカイランページ",
+    "oldTypes": "wind",
+    "oldPower": 56,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mh_9mn_9oc_9na_9oc_9mh_9mw_star_0_buff",
+    "oldName": "スターブースト",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9mh_9mn_9oc_9nt_9lw_9mw_9nw_9lw_star_42_none",
+    "oldName": "スターライトレイ",
+    "oldTypes": "star",
+    "oldPower": 42,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mh_9mw_9nu_9oc_9nk_9mu_9lw_9nv_water_44_none",
+    "oldName": "ストリームテイル",
+    "oldTypes": "water",
+    "oldPower": 44,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mh_9n5_9lw_9m7_9nt_9mr_9mf_9np_grass_54_none",
+    "oldName": "スパイクラッシュ",
+    "oldTypes": "grass",
+    "oldPower": 54,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mh_9n5_9oc_9m7_9mo_9lw_9na_thunder_42_none",
+    "oldName": "スパークダイブ",
+    "oldTypes": "thunder",
+    "oldPower": 42,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mh_9nt_9lw_9nk_9lu_9mn_9mr_9m7_normal_22_none",
+    "oldName": "スライムアタック",
+    "oldTypes": "normal",
+    "oldPower": 22,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mh_9nu_9oc_9nb_9n5_9ly_9mo_9oc_grass_0_sleep",
+    "oldName": "スリープパウダー",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技。睡眠は採用一覧にないため行動阻害の混乱へ置換"
+  },
+  {
+    "oldId": "sk_9mj_9nt_9n9_9lv_9mr_9m7_9nu_9oc_9n9_grass_68_none",
+    "oldName": "セラフィックリーフ",
+    "oldTypes": "grass",
+    "oldPower": 68,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mj_9nt_9n9_9lv_9mr_9m7_9nu_9oc_9n9_grass_68_tactical",
+    "oldName": "セラフィックリーフ",
+    "oldTypes": "grass",
+    "oldPower": 68,
+    "newId": "s110_070",
+    "newName": "命流採水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9mj_9nw_9mh_9mu_9lv_9lu_9nv_9nw_9lw_star_84_none",
+    "oldName": "セレスティアルレイ",
+    "oldTypes": "star",
+    "oldPower": 84,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mk_9n9_9lt_9oc_9m3_9mr_9mn_9oc_wind_38_none",
+    "oldName": "ゼファーカッター",
+    "oldTypes": "wind",
+    "oldPower": 38,
+    "newId": "s110_026",
+    "newName": "ゼファーカッター",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9ml_9oc_9o3_9nf_9oc_9o3_grass_36_none",
+    "oldName": "ソーンホーン",
+    "oldTypes": "grass",
+    "oldPower": 36,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同名採用技。旧威力36・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9mu_9o3_9ne_9mh_9mw_9n9_9lv_9o3_wind_50_none",
+    "oldName": "テンペストフィン",
+    "oldTypes": "wind",
+    "oldPower": 50,
+    "newId": "s110_026",
+    "newName": "ゼファーカッター",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9mw_9m5_9mf_9mr_9m7_9m4_9oc_9mv_9o3_grass_40_poison",
+    "oldName": "トキシックガーデン",
+    "oldTypes": "grass",
+    "oldPower": 40,
+    "newId": "s110_072",
+    "newName": "トキシックガーデン",
+    "reason": "同名採用技。旧威力40・旧効果poisonから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9n2_9m7_9mh_9m0_9m7_9nu_9nb_9mh_dark-dragon_78_none",
+    "oldName": "ノクスエクリプス",
+    "oldTypes": [
+      "dark",
+      "dragon"
+    ],
+    "oldPower": 78,
+    "newId": "s110_079",
+    "newName": "ノクスエクリプス",
+    "reason": "同名採用技。旧威力78・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9n3_9lw_9mx_9nx_9mh_9n5_9lw_9nt_9nv_water_52_none",
+    "oldName": "ハイドロスパイラル",
+    "oldTypes": "water",
+    "oldPower": 52,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同名採用技。旧威力52・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9n5_9nt_9nt_9lw_9mi_9mf_9nr_9mr_9m7_thunder_15_paralysis",
+    "oldName": "パラライズショック",
+    "oldTypes": "thunder",
+    "oldPower": 15,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9n6_9oc_9nv_9m2_9oc_9nt_light_0_heal",
+    "oldName": "ヒールオーラ",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9n9_9nw_9lu_9mp_9nn_9oc_9mg_fire_35_flare_charge",
+    "oldName": "フレアチャージ",
+    "oldTypes": "fire",
+    "oldPower": 35,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9n9_9nw_9lu_9nt_9mr_9mf_9np_fire_45_recoil",
+    "oldName": "フレアラッシュ",
+    "oldTypes": "fire",
+    "oldPower": 45,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9n9_9nw_9lw_9nk_9m7_9nx_9oc_fire_24_none",
+    "oldName": "フレイムクロー",
+    "oldTypes": "fire",
+    "oldPower": 24,
+    "newId": "s110_043",
+    "newName": "フレイムクロー",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9nd_9n2_9nk_9na_9nw_9mh_dragon_30_poison",
+    "oldName": "ベノムブレス",
+    "oldTypes": "dragon",
+    "oldPower": 30,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9ng_9nv_9mu_9mr_9m7_9m7_9nx_9oc_thunder_56_none",
+    "oldName": "ボルテッククロー",
+    "oldTypes": "thunder",
+    "oldPower": 56,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "同名採用技。旧威力56・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9ng_9nv_9mu_9mr_9m7_9mh_9mw_9oc_9nk_thunder_62_none",
+    "oldName": "ボルテックストーム",
+    "oldTypes": "thunder",
+    "oldPower": 62,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "同名採用技。旧威力62・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9nh_9lw_9mi_9o3_9mz_9oc_9mx_9nv_grass_18_poison",
+    "oldName": "ポイズンニードル",
+    "oldTypes": "grass",
+    "oldPower": 18,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同名採用技。旧威力18・旧効果poisonから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9ni_9mg_9mr_9m7_9mf_9nr_9mr_9mw_normal_24_none",
+    "oldName": "マジックショット",
+    "oldTypes": "normal",
+    "oldPower": 24,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9ni_9mg_9mr_9m7_9n2_9oc_9mw_normal_24_none",
+    "oldName": "マジックノート",
+    "oldTypes": "normal",
+    "oldPower": 24,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9ni_9mg_9mr_9m7_9n4_9oc_9mh_9mw_normal_36_none",
+    "oldName": "マジックバースト",
+    "oldTypes": "normal",
+    "oldPower": 36,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9ni_9mg_9mr_9m7_9na_9nv_9oc_9nk_normal_34_none",
+    "oldName": "マジックブルーム",
+    "oldTypes": "normal",
+    "oldPower": 34,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9nk_9oc_9o3_9mf_9nn_9mx_9ly_dark_38_none",
+    "oldName": "ムーンシャドウ",
+    "oldTypes": "dark",
+    "oldPower": 38,
+    "newId": "s110_047",
+    "newName": "影牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9nt_9lw_9mw_9mz_9o3_9m8_9mp_9lz_9lw_9o3_thunder_28_repeat_attack",
+    "oldName": "ライトニングチェイン",
+    "oldTypes": "thunder",
+    "oldPower": 28,
+    "newId": "s110_041",
+    "newName": "連続斬り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9nu_9oc_9n9_9m3_9mr_9mn_9oc_grass_27_none",
+    "oldName": "リーフカッター",
+    "oldTypes": "grass",
+    "oldPower": 27,
+    "newId": "s110_019",
+    "newName": "リーフカッター",
+    "reason": "同名採用技。旧威力27・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9nu_9oc_9n9_9mh_9n5_9oc_9m7_grass_36_none",
+    "oldName": "リーフスパーク",
+    "oldTypes": "grass",
+    "oldPower": 36,
+    "newId": "s110_059",
+    "newName": "若葉の突進",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9nv_9m7_9mh_9nf_9oc_9o3_light_38_none",
+    "oldName": "ルクスホーン",
+    "oldTypes": "light",
+    "oldPower": 38,
+    "newId": "s110_054",
+    "newName": "ルクスホーン",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_9nv_9nj_9my_9mh_9mp_9nn_9oc_9mg_star_0_buff",
+    "oldName": "ルミナスチャージ",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_9nv_9nj_9my_9mh_9ni_9mg_9mr_9m7_normal_46_none",
+    "oldName": "ルミナスマジック",
+    "oldTypes": "normal",
+    "oldPower": 46,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9nv_9nj_9my_9mh_9nw_9lw_star_62_none",
+    "oldName": "ルミナスレイ",
+    "oldTypes": "star",
+    "oldPower": 62,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_9nw_9nk_9my_9o3_9mw_9ke_k67_g9v_star_76_tactical",
+    "oldName": "レムナントの星剣",
+    "oldTypes": "star",
+    "oldPower": 76,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_fev_i3m_9ke_9lu_9o3_9mb_9oc_9nv_star_54_tactical",
+    "oldName": "万客のアンコール",
+    "oldTypes": "star",
+    "oldPower": 54,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ff1_sg0_9ke_hce_hge_normal_0_tactical",
+    "oldName": "不退の城塞",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_101",
+    "newName": "不退の構え",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_fi8_r0i_9le_joi_9l7_kfh_normal_34_tactical",
+    "oldName": "亀裂を探る杭",
+    "oldTypes": "normal",
+    "oldPower": 34,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_fig_fx5_ttn_leo_9ke_g1x_hgr_thunder_0_tactical",
+    "oldName": "予備電池の充填",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_fkl_se4_9kv_ged_fep_grass_52_tactical",
+    "oldName": "仕込み包丁",
+    "oldTypes": "grass",
+    "oldPower": 52,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ftw_g7b_9l6_9ke_kdp_dark_0_tactical",
+    "oldName": "値切りの札",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_fwd_nz2_9ke_mju_normal_58_none",
+    "oldName": "偽神の爪",
+    "oldTypes": "normal",
+    "oldPower": 58,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_fwd_o9o_9ke_gp2_gry_normal_66_none",
+    "oldName": "偽竜の咆哮",
+    "oldTypes": "normal",
+    "oldPower": 66,
+    "newId": "s110_042",
+    "newName": "渾身斬り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_fwd_o9o_9ke_pa4_jur_normal_62_none",
+    "oldName": "偽竜の翼撃",
+    "oldTypes": "normal",
+    "oldPower": 62,
+    "newId": "s110_042",
+    "newName": "渾身斬り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_g21_nyg_or4_n64_light_0_guard",
+    "oldName": "光祈結界",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_g21_o9o_mju_dragon_36_none",
+    "oldName": "光竜爪",
+    "oldTypes": "dragon",
+    "oldPower": 36,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_g21_phk_o73_9k1_light_58_tactical",
+    "oldName": "光脈穿ち",
+    "oldTypes": "light",
+    "oldPower": 58,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_g21_ptp_ita_light_28_none",
+    "oldName": "光芽弾",
+    "oldTypes": "light",
+    "oldPower": 28,
+    "newId": "s110_028",
+    "newName": "光雫弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_g21_tt7_ita_light_30_none",
+    "oldName": "光雫弾",
+    "oldTypes": "light",
+    "oldPower": 30,
+    "newId": "s110_028",
+    "newName": "光雫弾",
+    "reason": "同名採用技。旧威力30・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_g5p_or4_9m7_9nt_9mr_9mf_9np_water_40_none",
+    "oldName": "凍結クラッシュ",
+    "oldTypes": "water",
+    "oldPower": 40,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_g9v_hkb_9ke_ts6_ffx_normal_0_buff",
+    "oldName": "剣士の集中",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gcn_lcn_9ke_feo_jur_normal_36_none",
+    "oldName": "勇気の一撃",
+    "oldTypes": "normal",
+    "oldPower": 36,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gg3_hn5_9ke_opl_gmx_tt6_dark_50_tactical",
+    "oldName": "千契の紙吹雪",
+    "oldTypes": "dark",
+    "oldPower": 50,
+    "newId": "s110_082",
+    "newName": "星幕の迷路",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_gg3_hn5_kdp_jur_9ob_1e_dark_40_none",
+    "oldName": "千契札撃・2",
+    "oldTypes": "dark",
+    "oldPower": 40,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gg3_hn5_kdp_jur_9ob_1f_dark_58_none",
+    "oldName": "千契札撃・3",
+    "oldTypes": "dark",
+    "oldPower": 58,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gg3_hn5_kdp_jur_9ob_1g_dark_76_none",
+    "oldName": "千契札撃・4",
+    "oldTypes": "dark",
+    "oldPower": 76,
+    "newId": "s110_087",
+    "newName": "夜天竜牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gjx_i6c_k67_jur_9ob_1e_star_40_none",
+    "oldName": "反射星撃・2",
+    "oldTypes": "star",
+    "oldPower": 40,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gjx_i6c_k67_jur_9ob_1f_star_58_none",
+    "oldName": "反射星撃・3",
+    "oldTypes": "star",
+    "oldPower": 58,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gjx_i6c_k67_jur_9ob_1g_star_76_none",
+    "oldName": "反射星撃・4",
+    "oldTypes": "star",
+    "oldPower": 76,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gk7_9jl_lkx_9jr_normal_0_guard",
+    "oldName": "受け流し",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gkk_kq6_9ke_gp2_gry_normal_66_none",
+    "oldName": "古森の咆哮",
+    "oldTypes": "normal",
+    "oldPower": 66,
+    "newId": "s110_042",
+    "newName": "渾身斬り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_gkk_kq6_9ke_lia_gd1_grass_100_none",
+    "oldName": "古森の波動",
+    "oldTypes": "grass",
+    "oldPower": 100,
+    "newId": "s110_093",
+    "newName": "古森の波動",
+    "reason": "同名採用技。旧威力100・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_glp_9le_or4_9km_rdf_9j8_star_0_tactical",
+    "oldName": "名を結ぶ誓い",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_gmw_gjy_grass_18_drain",
+    "oldName": "吸収",
+    "oldTypes": "grass",
+    "oldPower": 18,
+    "newId": "s110_018",
+    "newName": "吸水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_goa_9j8_9ke_r6e_ouy_dark_18_debuff",
+    "oldName": "呪いの視線",
+    "oldTypes": "dark",
+    "oldPower": 18,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同名採用技。旧威力18・旧効果debuffから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_goa_op7_9le_k31_9k4_g77_dark_54_tactical",
+    "oldName": "呪紋を断つ刃",
+    "oldTypes": "dark",
+    "oldPower": 54,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_goa_sw4_k30_9ob_1e_dark_40_recoil",
+    "oldName": "呪鉄斬・2",
+    "oldTypes": "dark",
+    "oldPower": 40,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_goa_sw4_k30_9ob_1f_dark_58_recoil",
+    "oldName": "呪鉄斬・3",
+    "oldTypes": "dark",
+    "oldPower": 58,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_goa_sw4_k30_9ob_1g_dark_76_none",
+    "oldName": "呪鉄斬・4",
+    "oldTypes": "dark",
+    "oldPower": 76,
+    "newId": "s110_087",
+    "newName": "夜天竜牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_goa_t5i_k31_9k1_dark_66_tactical",
+    "oldName": "呪鎖断ち",
+    "oldTypes": "dark",
+    "oldPower": 66,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_got_lhl_9ke_g6e_k3d_water_0_tactical",
+    "oldName": "命泉の処方",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_got_lkx_joh_ldg_water_48_tactical",
+    "oldName": "命流採水",
+    "oldTypes": "water",
+    "oldPower": 48,
+    "newId": "s110_070",
+    "newName": "命流採水",
+    "reason": "同名採用技。旧威力48・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_gue_s1b_9ke_to2_tpf_wind_0_tactical",
+    "oldName": "商路の防陣",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_101",
+    "newName": "不退の構え",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_h80_inn_9le_r0i_9jj_kwd_fire_78_tactical",
+    "oldName": "地平を裂く槍",
+    "oldTypes": "fire",
+    "oldPower": 78,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_h80_phk_9ke_ttz_gd1_normal_54_tactical",
+    "oldName": "地脈の震動",
+    "oldTypes": "normal",
+    "oldPower": 54,
+    "newId": "s110_080",
+    "newName": "衰弱の呪印",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_h8x_sib_9ke_i2x_g2w_nui_rd9_normal_0_tactical",
+    "oldName": "坑道の安全確認",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hce_tj4_nqs_9l6_normal_58_tactical",
+    "oldName": "城門破り",
+    "oldTypes": "normal",
+    "oldPower": 58,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hlo_9le_r0i_9jj_rdk_i6m_ita_dark_70_tactical",
+    "oldName": "夜を裂く誘導弾",
+    "oldTypes": "dark",
+    "oldPower": 70,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hlo_hm1_o9o_ml5_dark_50_none",
+    "oldName": "夜天竜牙",
+    "oldTypes": "dark",
+    "oldPower": 50,
+    "newId": "s110_087",
+    "newName": "夜天竜牙",
+    "reason": "同名採用技。旧威力50・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_hlo_lw1_9l6_dragon_24_none",
+    "oldName": "夜滑り",
+    "oldTypes": "dragon",
+    "oldPower": 24,
+    "newId": "s110_037",
+    "newName": "夜滑り",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_hlo_o9o_mju_dragon_36_none",
+    "oldName": "夜竜爪",
+    "oldTypes": "dragon",
+    "oldPower": 36,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hlu_ip3_9ke_imt_is5_9jh_star_0_tactical",
+    "oldName": "夢座の幕引き",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "複合効果の主役割 debuff を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_hlz_h5v_g3q_9ke_k67_q27_star_72_tactical",
+    "oldName": "大団円の星華",
+    "oldTypes": "star",
+    "oldPower": 72,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hlz_ldj_lgz_9m7_9nt_9mr_9mf_9np_water_70_none",
+    "oldName": "大氷河クラッシュ",
+    "oldTypes": "water",
+    "oldPower": 70,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hlz_lia_gks_gwq_water_38_none",
+    "oldName": "大波召喚",
+    "oldTypes": "water",
+    "oldPower": 38,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_hlz_t3f_jur_9ob_1e_grass_40_none",
+    "oldName": "大鍋撃・2",
+    "oldTypes": "grass",
+    "oldPower": 40,
+    "newId": "s110_020",
+    "newName": "森の一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hlz_t3f_jur_9ob_1f_grass_58_none",
+    "oldName": "大鍋撃・3",
+    "oldTypes": "grass",
+    "oldPower": 58,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hlz_t3f_jur_9ob_1g_grass_76_none",
+    "oldName": "大鍋撃・4",
+    "oldTypes": "grass",
+    "oldPower": 76,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hm1_ifk_hlz_k3v_h5q_wind_76_none",
+    "oldName": "天嵐大旋回",
+    "oldTypes": "wind",
+    "oldPower": 76,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hm1_lmf_9ke_ppa_water_0_heal",
+    "oldName": "天海の舞",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hm1_s1b_9ke_izp_sg1_wind_54_tactical",
+    "oldName": "天路の急送",
+    "oldTypes": "wind",
+    "oldPower": 54,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hm1_ttj_sem_jur_thunder_74_tactical",
+    "oldName": "天雷迎撃",
+    "oldTypes": "thunder",
+    "oldPower": 74,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hn5_op0_9ke_jh8_9jl_sib_dark_36_tactical",
+    "oldName": "契約の抜け道",
+    "oldTypes": "dark",
+    "oldPower": 36,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_hn5_op0_kdp_jur_9ob_1e_dark_28_none",
+    "oldName": "契約札撃・2",
+    "oldTypes": "dark",
+    "oldPower": 28,
+    "newId": "s110_031",
+    "newName": "影打ち",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hn5_op0_kdp_jur_9ob_1f_dark_42_none",
+    "oldName": "契約札撃・3",
+    "oldTypes": "dark",
+    "oldPower": 42,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hn5_op0_kdp_jur_9ob_1g_dark_56_none",
+    "oldName": "契約札撃・4",
+    "oldTypes": "dark",
+    "oldPower": 56,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hs1_h3b_normal_0_guard",
+    "oldName": "威嚇",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_hs1_h7r_normal_0_tactical",
+    "oldName": "威圧",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同名採用技。旧威力0・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_i2w_9l6_9le_h6i_9kx_9l7_normal_0_guard",
+    "oldName": "守りを固める",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i2w_fx5_tqi_9ke_gl3_fl0_normal_0_tactical",
+    "oldName": "守備隊の号令",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i2w_g21_o9o_ml5_light_50_none",
+    "oldName": "守光竜牙",
+    "oldTypes": "light",
+    "oldPower": 50,
+    "newId": "s110_054",
+    "newName": "ルクスホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i69_goa_9ke_ged_ilr_dark_0_tactical",
+    "oldName": "封呪の包帯",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_i69_goa_to2_iw1_9ob_1e_dark_0_guard",
+    "oldName": "封呪防御・2",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_i69_goa_to2_iw1_9ob_1f_dark_0_guard",
+    "oldName": "封呪防御・3",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_i69_goa_to2_iw1_9ob_1g_dark_0_guard",
+    "oldName": "封呪防御・4",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_i6m_kyh_9ke_m7j_m7f_normal_0_tactical",
+    "oldName": "導標の灯火",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "複合効果の主役割 charge を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_i6m_kyh_jur_9ob_1e_normal_40_none",
+    "oldName": "導標撃・2",
+    "oldTypes": "normal",
+    "oldPower": 40,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_kyh_jur_9ob_1f_normal_58_none",
+    "oldName": "導標撃・3",
+    "oldTypes": "normal",
+    "oldPower": 58,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_kyh_jur_9ob_1g_normal_76_none",
+    "oldName": "導標撃・4",
+    "oldTypes": "normal",
+    "oldPower": 76,
+    "newId": "s110_085",
+    "newName": "白銀連斬",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_ldg_jur_9ob_1e_water_40_none",
+    "oldName": "導水撃・2",
+    "oldTypes": "water",
+    "oldPower": 40,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_ldg_jur_9ob_1f_water_58_none",
+    "oldName": "導水撃・3",
+    "oldTypes": "water",
+    "oldPower": 58,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_ldg_jur_9ob_1g_water_76_none",
+    "oldName": "導水撃・4",
+    "oldTypes": "water",
+    "oldPower": 76,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_ttj_kwd_9ob_1e_thunder_28_none",
+    "oldName": "導雷槍・2",
+    "oldTypes": "thunder",
+    "oldPower": 28,
+    "newId": "s110_022",
+    "newName": "雷撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_ttj_kwd_9ob_1f_thunder_42_none",
+    "oldName": "導雷槍・3",
+    "oldTypes": "thunder",
+    "oldPower": 42,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_i6m_ttj_kwd_9ob_1g_thunder_56_none",
+    "oldName": "導雷槍・4",
+    "oldTypes": "thunder",
+    "oldPower": 56,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ich_rp3_9ke_u5k_fr3_wind_36_tactical",
+    "oldName": "峡谷の風便",
+    "oldTypes": "wind",
+    "oldPower": 36,
+    "newId": "s110_076",
+    "newName": "峡谷の風便",
+    "reason": "同名採用技。旧威力36・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_ifk_pa4_9ke_i2w_9l6_wind_0_guard",
+    "oldName": "嵐翼の守り",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ijs_iax_9m7_9nt_9mr_9mf_9np_normal_70_none",
+    "oldName": "巨岩クラッシュ",
+    "oldTypes": "normal",
+    "oldPower": 70,
+    "newId": "s110_090",
+    "newName": "巨岩クラッシュ",
+    "reason": "同名採用技。旧威力70・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_iks_kd7_9ke_g21_light_0_buff",
+    "oldName": "希望の光",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ilr_ttn_gp2_gry_thunder_0_guard",
+    "oldName": "帯電咆哮",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ilr_ttn_or4_k8m_t5z_thunder_0_guard",
+    "oldName": "帯電結晶鎧",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ils_s1b_9ke_u5k_kyh_wind_0_tactical",
+    "oldName": "帰路の風標",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ils_sjo_9ke_i6m_kyh_normal_0_tactical",
+    "oldName": "帰還の導標",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_imt_tjn_9ke_gos_gmw_star_0_tactical",
+    "oldName": "幕間の呼吸",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_inv_m7j_9ke_jil_jez_star_36_tactical",
+    "oldName": "幻灯の拍手",
+    "oldTypes": "star",
+    "oldPower": 36,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_inw_o9o_9ke_i7y_dragon_24_none",
+    "oldName": "幼竜の尾",
+    "oldTypes": "dragon",
+    "oldPower": 24,
+    "newId": "s110_050",
+    "newName": "幼竜の尾",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_inw_o9o_pa4_jur_dragon_32_none",
+    "oldName": "幼竜翼撃",
+    "oldTypes": "dragon",
+    "oldPower": 32,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_is5_9jh_kwd_thunder_26_tactical",
+    "oldName": "引き槍",
+    "oldTypes": "thunder",
+    "oldPower": 26,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_isx_m9l_kyh_ny2_9ob_1e_normal_0_debuff",
+    "oldName": "弱点標示・2",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_isx_m9l_kyh_ny2_9ob_1f_normal_0_debuff",
+    "oldName": "弱点標示・3",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_isx_m9l_kyh_ny2_9ob_1g_normal_0_debuff",
+    "oldName": "弱点標示・4",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_iup_ita_jnn_i6c_dark_48_tactical",
+    "oldName": "影弾掃射",
+    "oldTypes": "dark",
+    "oldPower": 48,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_iup_jf7_9k1_dark_25_none",
+    "oldName": "影打ち",
+    "oldTypes": "dark",
+    "oldPower": 25,
+    "newId": "s110_031",
+    "newName": "影打ち",
+    "reason": "同名採用技。旧威力25・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_iup_kdp_9ke_gk6_9l6_o97_9k6_dark_30_tactical",
+    "oldName": "影札の取り立て",
+    "oldTypes": "dark",
+    "oldPower": 30,
+    "newId": "s110_018",
+    "newName": "吸水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_iup_kdp_9ke_gkj_fey_dark_0_tactical",
+    "oldName": "影札の口上",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_iup_kdp_9ke_isx_fo3_9ob_1e_dark_0_debuff",
+    "oldName": "影札の弱体・2",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_iup_kdp_9ke_isx_fo3_9ob_1f_dark_0_debuff",
+    "oldName": "影札の弱体・3",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_iup_kdp_9ke_isx_fo3_9ob_1g_dark_0_debuff",
+    "oldName": "影札の弱体・4",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_iup_ml5_dark_28_none",
+    "oldName": "影牙",
+    "oldTypes": "dark",
+    "oldPower": 28,
+    "newId": "s110_047",
+    "newName": "影牙",
+    "reason": "同名採用技。旧威力28・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_iup_r0i_9jh_9nj_9md_9lw_9nv_dark_54_tactical",
+    "oldName": "影裂きミサイル",
+    "oldTypes": "dark",
+    "oldPower": 54,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ixk_9l8_9js_9ke_feo_jf7_normal_32_tactical",
+    "oldName": "忘れじの一打",
+    "oldTypes": "normal",
+    "oldPower": 32,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ixo_izp_9mp_9np_9oc_9mz_9o3_9m8_thunder_0_tactical",
+    "oldName": "応急チューニング",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_izp_tot_fez_wind_24_none",
+    "oldName": "急降下",
+    "oldTypes": "wind",
+    "oldPower": 24,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jdy_m89_9ke_sw4_kwc_fire_56_tactical",
+    "oldName": "戦炉の鉄槌",
+    "oldTypes": "fire",
+    "oldPower": 56,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jdy_m89_it3_geu_9ob_1e_fire_0_buff",
+    "oldName": "戦炉強化・2",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jdy_m89_it3_geu_9ob_1f_fire_0_buff",
+    "oldName": "戦炉強化・3",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jdy_m89_it3_geu_9ob_1g_fire_0_buff",
+    "oldName": "戦炉強化・4",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jf7_ray_9ke_i6n_kwc_normal_26_tactical",
+    "oldName": "打診の小槌",
+    "oldTypes": "normal",
+    "oldPower": 26,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jf7_ray_kwc_jur_9ob_1e_normal_28_none",
+    "oldName": "打診槌撃・2",
+    "oldTypes": "normal",
+    "oldPower": 28,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jf7_ray_kwc_jur_9ob_1f_normal_42_none",
+    "oldName": "打診槌撃・3",
+    "oldTypes": "normal",
+    "oldPower": 42,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jf7_ray_kwc_jur_9ob_1g_normal_56_none",
+    "oldName": "打診槌撃・4",
+    "oldTypes": "normal",
+    "oldPower": 56,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jh1_g71_jur_9ob_1e_wind_28_none",
+    "oldName": "投函撃・2",
+    "oldTypes": "wind",
+    "oldPower": 28,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jh1_g71_jur_9ob_1f_wind_42_none",
+    "oldName": "投函撃・3",
+    "oldTypes": "wind",
+    "oldPower": 42,
+    "newId": "s110_026",
+    "newName": "ゼファーカッター",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jh1_g71_jur_9ob_1g_wind_56_none",
+    "oldName": "投函撃・4",
+    "oldTypes": "wind",
+    "oldPower": 56,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_jmw_9k6_s6j_jf7_9k1_normal_56_tactical",
+    "oldName": "捨て身打ち",
+    "oldTypes": "normal",
+    "oldPower": 56,
+    "newId": "s110_061",
+    "newName": "捨て身打ち",
+    "reason": "同名採用技。旧威力56・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_jol_h80_9ke_kwb_9jc_thunder_0_tactical",
+    "oldName": "接地の構え",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jol_h80_to2_iw1_9ob_1e_thunder_0_guard",
+    "oldName": "接地防御・2",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jol_h80_to2_iw1_9ob_1f_thunder_0_guard",
+    "oldName": "接地防御・3",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jol_h80_to2_iw1_9ob_1g_thunder_0_guard",
+    "oldName": "接地防御・4",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_jzy_ttn_9ke_ktr_thunder_34_tactical",
+    "oldName": "放電の楯",
+    "oldTypes": "thunder",
+    "oldPower": 34,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k2h_mx2_sib_g3b_jur_9ob_1e_grass_28_none",
+    "oldName": "料理道具撃・2",
+    "oldTypes": "grass",
+    "oldPower": 28,
+    "newId": "s110_019",
+    "newName": "リーフカッター",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k2h_mx2_sib_g3b_jur_9ob_1f_grass_42_none",
+    "oldName": "料理道具撃・3",
+    "oldTypes": "grass",
+    "oldPower": 42,
+    "newId": "s110_020",
+    "newName": "森の一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k2h_mx2_sib_g3b_jur_9ob_1g_grass_56_none",
+    "oldName": "料理道具撃・4",
+    "oldTypes": "grass",
+    "oldPower": 56,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k2h_mx2_tiv_9ke_9jo_ucz_rxs_grass_0_tactical",
+    "oldName": "料理長のご馳走",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k30_9l6_9k4_9jl_normal_24_none",
+    "oldName": "斬りつけ",
+    "oldTypes": "normal",
+    "oldPower": 24,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_k31_i90_o73_9k1_normal_56_tactical",
+    "oldName": "断層穿ち",
+    "oldTypes": "normal",
+    "oldPower": 56,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k31_n64_g21_light_76_none",
+    "oldName": "断界光",
+    "oldTypes": "light",
+    "oldPower": 76,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k3v_u5k_h5q_sjj_wind_0_guard",
+    "oldName": "旋風回避",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k5q_k4l_9le_jir_9jj_vde_g77_dark_72_tactical",
+    "oldName": "明日を拓く黒刃",
+    "oldTypes": "dark",
+    "oldPower": 72,
+    "newId": "s110_070",
+    "newName": "命流採水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k67_g21_ita_star_28_none",
+    "oldName": "星光弾",
+    "oldTypes": "star",
+    "oldPower": 28,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_g26_s1f_star_38_none",
+    "oldName": "星兎跳",
+    "oldTypes": "star",
+    "oldPower": 38,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_hm1_9ke_r0h_9jh_star_56_none",
+    "oldName": "星天の裁き",
+    "oldTypes": "star",
+    "oldPower": 56,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_i8h_9ke_ml5_star_32_none",
+    "oldName": "星屑の牙",
+    "oldTypes": "star",
+    "oldPower": 32,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_i8h_ita_star_30_none",
+    "oldName": "星屑弾",
+    "oldTypes": "star",
+    "oldPower": 30,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同名採用技。旧威力30・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_k67_imt_9ke_isx_fo3_9ob_1e_star_0_debuff",
+    "oldName": "星幕の弱体・2",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k67_imt_9ke_isx_fo3_9ob_1f_star_0_debuff",
+    "oldName": "星幕の弱体・3",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k67_imt_9ke_isx_fo3_9ob_1g_star_0_debuff",
+    "oldName": "星幕の弱体・4",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_k67_imt_9ke_sfr_s1b_star_46_tactical",
+    "oldName": "星幕の迷路",
+    "oldTypes": "star",
+    "oldPower": 46,
+    "newId": "s110_082",
+    "newName": "星幕の迷路",
+    "reason": "同名採用技。旧威力46・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_k67_k8m_9ke_r0h_9jh_star_54_none",
+    "oldName": "星晶の裁き",
+    "oldTypes": "star",
+    "oldPower": 54,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_kco_9ke_g21_ita_star_40_none",
+    "oldName": "星月の光弾",
+    "oldTypes": "star",
+    "oldPower": 40,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_n64_9ke_mju_star_56_none",
+    "oldName": "星界の爪",
+    "oldTypes": "star",
+    "oldPower": 56,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_t5z_9ke_sst_l7t_normal_52_tactical",
+    "oldName": "星鎧の重歩",
+    "oldTypes": "normal",
+    "oldPower": 52,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技"
+  },
+  {
+    "oldId": "sk_k67_t5z_jur_9ob_1e_normal_40_none",
+    "oldName": "星鎧撃・2",
+    "oldTypes": "normal",
+    "oldPower": 40,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_t5z_jur_9ob_1f_normal_58_none",
+    "oldName": "星鎧撃・3",
+    "oldTypes": "normal",
+    "oldPower": 58,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_t5z_jur_9ob_1g_star_76_none",
+    "oldName": "星鎧撃・4",
+    "oldTypes": "star",
+    "oldPower": 76,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_k67_tte_9ke_mju_star_42_none",
+    "oldName": "星雲の爪",
+    "oldTypes": "star",
+    "oldPower": 42,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_k9j_kco_tr0_hj5_dark_0_guard",
+    "oldName": "暗月障壁",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_kac_u5k_g77_wind_42_none",
+    "oldName": "暴風刃",
+    "oldTypes": "wind",
+    "oldPower": 42,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_kcg_oqq_fr3_9ke_lw1_o6y_wind_82_tactical",
+    "oldName": "最終便の滑空",
+    "oldTypes": "wind",
+    "oldPower": 82,
+    "newId": "s110_095",
+    "newName": "アペクスストーム",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_kco_q27_ldg_g77_water_48_none",
+    "oldName": "月華水刃",
+    "oldTypes": "water",
+    "oldPower": 48,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_kco_qqd_9ke_lcn_sp9_dark_0_buff",
+    "oldName": "月蝕の気配",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_kd9_g21_9ke_j1r_gmx_light_0_heal",
+    "oldName": "朝光の息吹",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_kp9_kpe_jzv_jur_normal_18_none",
+    "oldName": "棍棒攻撃",
+    "oldTypes": "normal",
+    "oldPower": 18,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_kq6_9ke_feo_jur_grass_40_none",
+    "oldName": "森の一撃",
+    "oldTypes": "grass",
+    "oldPower": 40,
+    "newId": "s110_020",
+    "newName": "森の一撃",
+    "reason": "同名採用技。旧威力40・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_kq6_9ke_n5e_la3_grass_0_guard",
+    "oldName": "森の甲殻",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_kq6_mtn_9ke_r0l_n5e_grass_0_guard",
+    "oldName": "森王の装甲",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_kq6_on2_9ke_nz1_o0f_grass_0_heal",
+    "oldName": "森精の祝福",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_l9u_lvp_9ke_vde_m8e_nqq_fire_68_tactical",
+    "oldName": "殲滅の黒炎砲",
+    "oldTypes": "fire",
+    "oldPower": 68,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_laq_9ke_not_g9v_normal_22_poison",
+    "oldName": "毒の短剣",
+    "oldTypes": "normal",
+    "oldPower": 22,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_laq_st9_normal_18_tactical",
+    "oldName": "毒針",
+    "oldTypes": "normal",
+    "oldPower": 18,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_lcn_glk_luk_9kx_normal_0_tactical",
+    "oldName": "気合溜め",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同名採用技。旧威力0・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_ldg_h7r_ray_k31_water_24_tactical",
+    "oldName": "水圧診断",
+    "oldTypes": "water",
+    "oldPower": 24,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ldg_lkx_ita_water_26_none",
+    "oldName": "水流弾",
+    "oldTypes": "water",
+    "oldPower": 26,
+    "newId": "s110_016",
+    "newName": "水流弾",
+    "reason": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_ldg_o9o_ita_water_36_none",
+    "oldName": "水竜弾",
+    "oldTypes": "water",
+    "oldPower": 36,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ldg_phk_ox7_glk_water_0_tactical",
+    "oldName": "水脈縫合",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ldg_t7l_9ke_kwb_9jc_water_0_guard",
+    "oldName": "水鏡の構え",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ldg_t7l_9ke_lia_op7_water_46_none",
+    "oldName": "水鏡の波紋",
+    "oldTypes": "water",
+    "oldPower": 46,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ldg_tu2_ita_water_32_none",
+    "oldName": "水霊弾",
+    "oldTypes": "water",
+    "oldPower": 32,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ldj_9ke_jjn_water_26_none",
+    "oldName": "氷の拳",
+    "oldTypes": "water",
+    "oldPower": 26,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_ldj_hfu_jjn_water_44_none",
+    "oldName": "氷塊拳",
+    "oldTypes": "water",
+    "oldPower": 44,
+    "newId": "s110_057",
+    "newName": "氷塊拳",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_lig_ldg_jur_9ob_1e_water_28_none",
+    "oldName": "注水撃・2",
+    "oldTypes": "water",
+    "oldPower": 28,
+    "newId": "s110_016",
+    "newName": "水流弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lig_ldg_jur_9ob_1f_water_42_none",
+    "oldName": "注水撃・3",
+    "oldTypes": "water",
+    "oldPower": 42,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lig_ldg_jur_9ob_1g_water_56_none",
+    "oldName": "注水撃・4",
+    "oldTypes": "water",
+    "oldPower": 56,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lkr_gbf_9ke_mem_se4_9kv_grass_0_tactical",
+    "oldName": "活力の煮込み",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "複合効果の主役割 heal を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_lkx_k67_s50_9l6_star_60_none",
+    "oldName": "流星蹴り",
+    "oldTypes": "star",
+    "oldPower": 60,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lkx_ldg_k30_9l6_water_54_none",
+    "oldName": "流水斬り",
+    "oldTypes": "water",
+    "oldPower": 54,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ll0_g21_9ke_9nl_9mh_light_36_tactical",
+    "oldName": "浄光のメス",
+    "oldTypes": "light",
+    "oldPower": 36,
+    "newId": "s110_078",
+    "newName": "浄光のメス",
+    "reason": "同名採用技。旧威力36・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_lmf_mtn_m4x_lkx_water_68_none",
+    "oldName": "海王瀑流",
+    "oldTypes": "water",
+    "oldPower": 68,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lpt_i90_9ke_gjx_u0v_dark_38_tactical",
+    "oldName": "深層の反響",
+    "oldTypes": "dark",
+    "oldPower": 38,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lpt_lmf_9ke_hn8_lkx_water_68_none",
+    "oldName": "深海の奔流",
+    "oldTypes": "water",
+    "oldPower": 68,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lpz_jdc_o9o_ttj_thunder-dragon_72_none",
+    "oldName": "混成竜雷",
+    "oldTypes": [
+      "thunder",
+      "dragon"
+    ],
+    "oldPower": 72,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_lqd_ldg_lh7_ncy_9ob_1e_water_0_heal",
+    "oldName": "清水治療・2",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_lqd_ldg_lh7_ncy_9ob_1f_water_0_heal",
+    "oldName": "清水治療・3",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_lqd_ldg_lh7_ncy_9ob_1g_water_0_heal",
+    "oldName": "清水治療・4",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_lva_iax_r82_fire_40_none",
+    "oldName": "溶岩角",
+    "oldTypes": "fire",
+    "oldPower": 40,
+    "newId": "s110_053",
+    "newName": "溶岩角",
+    "reason": "同名採用技。旧威力40・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_lvp_k67_mju_star_70_none",
+    "oldName": "滅星爪",
+    "oldTypes": "star",
+    "oldPower": 70,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lw1_o6y_jh1_g71_9ob_1e_wind_40_none",
+    "oldName": "滑空投函・2",
+    "oldTypes": "wind",
+    "oldPower": 40,
+    "newId": "s110_026",
+    "newName": "ゼファーカッター",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lw1_o6y_jh1_g71_9ob_1f_wind_58_none",
+    "oldName": "滑空投函・3",
+    "oldTypes": "wind",
+    "oldPower": 58,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_lw1_o6y_jh1_g71_9ob_1g_wind_76_none",
+    "oldName": "滑空投函・4",
+    "oldTypes": "wind",
+    "oldPower": 76,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m7f_gkj_ieh_9jr_fire_62_recoil",
+    "oldName": "火口崩し",
+    "oldTypes": "fire",
+    "oldPower": 62,
+    "newId": "s110_089",
+    "newName": "火口崩し",
+    "reason": "同名採用技。旧威力62・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_m7f_jf7_9k1_kwc_fire_30_none",
+    "oldName": "火打ち槌",
+    "oldTypes": "fire",
+    "oldPower": 30,
+    "newId": "s110_043",
+    "newName": "フレイムクロー",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m7f_m8e_ml5_fire_28_none",
+    "oldName": "火炎牙",
+    "oldTypes": "fire",
+    "oldPower": 28,
+    "newId": "s110_046",
+    "newName": "火炎牙",
+    "reason": "同名採用技。旧威力28・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_m7f_pa4_jur_fire_62_none",
+    "oldName": "火翼撃",
+    "oldTypes": "fire",
+    "oldPower": 62,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m7f_ptd_9ke_ppa_fire_36_none",
+    "oldName": "火花の舞",
+    "oldTypes": "fire",
+    "oldPower": 36,
+    "newId": "s110_013",
+    "newName": "火花の舞",
+    "reason": "同名採用技。旧威力36・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_m7w_mgh_g21_nqq_fire_76_none",
+    "oldName": "灼熱光砲",
+    "oldTypes": "fire",
+    "oldPower": 76,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同名採用技。旧威力76・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_m7w_mgh_ptd_irl_fire_48_none",
+    "oldName": "灼熱花弁",
+    "oldTypes": "fire",
+    "oldPower": 48,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m7w_mgh_r0l_n5e_fire_0_guard",
+    "oldName": "灼熱装甲",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_m89_m7f_9ke_jez_g2t_9l8_fire_0_tactical",
+    "oldName": "炉火の手入れ",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_m8e_m89_jur_9ob_1e_fire_40_none",
+    "oldName": "炎炉撃・2",
+    "oldTypes": "fire",
+    "oldPower": 40,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m8e_m89_jur_9ob_1f_fire_58_none",
+    "oldName": "炎炉撃・3",
+    "oldTypes": "fire",
+    "oldPower": 58,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m8e_m89_jur_9ob_1g_fire_76_none",
+    "oldName": "炎炉撃・4",
+    "oldTypes": "fire",
+    "oldPower": 76,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_m8e_mpo_ml5_fire_36_none",
+    "oldName": "炎狼牙",
+    "oldTypes": "fire",
+    "oldPower": 36,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同名採用技。旧威力36・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_m8e_ptd_9ke_kwb_9jc_fire_0_guard",
+    "oldName": "炎花の構え",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_m8e_q27_or4_n64_fire_0_guard",
+    "oldName": "炎華結界",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_mc4_9ke_md8_g2t_9l8_fire_0_tactical",
+    "oldName": "焔の焼入れ",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_mch_q18_ljr_ll0_water_0_tactical",
+    "oldName": "無菌洗浄",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_mcm_npe_9ke_qe1_9ji_jf9_9j8_fire_42_tactical",
+    "oldName": "焦砂の薙ぎ払い",
+    "oldTypes": "fire",
+    "oldPower": 42,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_md8_9jh_nhw_9jr_fire_34_tactical",
+    "oldName": "焼き直し",
+    "oldTypes": "fire",
+    "oldPower": 34,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同名採用技。旧威力34・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_mem_o97_9k4_hlz_t3f_grass_42_tactical",
+    "oldName": "煮立つ大鍋",
+    "oldTypes": "grass",
+    "oldPower": 42,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_mfo_sw4_q4d_9k8_9jr_fire_84_tactical",
+    "oldName": "熔鉄落とし",
+    "oldTypes": "fire",
+    "oldPower": 84,
+    "newId": "s110_089",
+    "newName": "火口崩し",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_mgh_u5k_9ke_o73_kwd_wind_54_tactical",
+    "oldName": "熱風の穿槍",
+    "oldTypes": "wind",
+    "oldPower": 54,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_miu_m8e_9mp_9nn_9oc_9mg_fire_42_recoil",
+    "oldName": "爆炎チャージ",
+    "oldTypes": "fire",
+    "oldPower": 42,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同名採用技。旧威力42・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_mkn_g77_9ke_mm5_g8m_dark_26_tactical",
+    "oldName": "片刃の牽制",
+    "oldTypes": "dark",
+    "oldPower": 26,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_mkn_g77_k30_9ob_1e_dark_28_none",
+    "oldName": "片刃斬・2",
+    "oldTypes": "dark",
+    "oldPower": 28,
+    "newId": "s110_031",
+    "newName": "影打ち",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_mkn_g77_k30_9ob_1f_dark_42_none",
+    "oldName": "片刃斬・3",
+    "oldTypes": "dark",
+    "oldPower": 42,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_mkn_g77_k30_9ob_1g_dark_56_none",
+    "oldName": "片刃斬・4",
+    "oldTypes": "dark",
+    "oldPower": 56,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_mqj_laq_hm1_p90_nqs_wind_82_poison",
+    "oldName": "猛毒天翔破",
+    "oldTypes": "wind",
+    "oldPower": 82,
+    "newId": "s110_072",
+    "newName": "トキシックガーデン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_mqj_laq_p90_nqs_wind_110_poison",
+    "oldName": "猛毒翔破",
+    "oldTypes": "wind",
+    "oldPower": 110,
+    "newId": "s110_072",
+    "newName": "トキシックガーデン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_mqj_m7f_9ke_gp2_gry_fire_0_buff",
+    "oldName": "猛火の咆哮",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_n98_9jj_goa_sw4_dark_48_tactical",
+    "oldName": "疼く呪鉄",
+    "oldTypes": "dark",
+    "oldPower": 48,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_n9a_u5k_sed_ttj_thunder-wind_58_none",
+    "oldName": "疾風迅雷",
+    "oldTypes": [
+      "thunder",
+      "wind"
+    ],
+    "oldPower": 58,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "sk_nde_9jr_9ke_ldg_water_0_heal",
+    "oldName": "癒しの水",
+    "oldTypes": "water",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_nde_9jr_9ke_ptp_gmx_9jh_grass_0_heal",
+    "oldName": "癒しの芽吹き",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_nel_g77_feo_tj7_normal_50_none",
+    "oldName": "白刃一閃",
+    "oldTypes": "normal",
+    "oldPower": 50,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_nel_sxs_sgz_k30_normal_64_none",
+    "oldName": "白銀連斬",
+    "oldTypes": "normal",
+    "oldPower": 64,
+    "newId": "s110_085",
+    "newName": "白銀連斬",
+    "reason": "同名採用技。旧威力64・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_nem_t2k_9ke_t3v_9jc_nhw_9jr_fire_0_tactical",
+    "oldName": "百錬の鍛え直し",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "複合効果の主役割 heal を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_noz_sgw_jjn_normal_44_none",
+    "oldName": "石造拳",
+    "oldTypes": "normal",
+    "oldPower": 44,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_npe_9l4_9jl_9ke_hli_hnb_wind_0_tactical",
+    "oldName": "砂よけの外套",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_npe_hh1_o75_9jh_wind_30_tactical",
+    "oldName": "砂塵突き",
+    "oldTypes": "wind",
+    "oldPower": 30,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_nup_owr_9nz_9lw_9no_9oc_thunder_30_tactical",
+    "oldName": "磁縛ワイヤー",
+    "oldTypes": "thunder",
+    "oldPower": 30,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_nyg_9l6_9ke_nde_9jr_light_0_heal",
+    "oldName": "祈りの癒し",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_nyg_g21_ita_light_42_none",
+    "oldName": "祈光弾",
+    "oldTypes": "light",
+    "oldPower": 42,
+    "newId": "s110_029",
+    "newName": "祈光弾",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_nz2_lmf_9ke_mju_water_46_none",
+    "oldName": "神海の爪",
+    "oldTypes": "water",
+    "oldPower": 46,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_nz2_o9o_t2k_hj5_dragon_0_guard",
+    "oldName": "神竜錬壁",
+    "oldTypes": "dragon",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_o6y_ljy_9ke_l8r_u0v_normal_0_tactical",
+    "oldName": "空洞の残響",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_o6y_t5z_9ke_pjp_jur_normal_28_none",
+    "oldName": "空鎧の腕撃",
+    "oldTypes": "normal",
+    "oldPower": 28,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_o75_u5k_wind_28_none",
+    "oldName": "突風",
+    "oldTypes": "wind",
+    "oldPower": 28,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同名採用技。旧威力28・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_o9o_9ke_9ki_9k3_9jf_9jh_dragon_26_none",
+    "oldName": "竜のひっかき",
+    "oldTypes": "dragon",
+    "oldPower": 26,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_o9o_9ke_i7y_jur_dragon_32_none",
+    "oldName": "竜の尾撃",
+    "oldTypes": "dragon",
+    "oldPower": 32,
+    "newId": "s110_088",
+    "newName": "竜の尾撃",
+    "reason": "同名採用技。旧威力32・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_o9o_k67_9na_9nw_9mh_dragon_50_none",
+    "oldName": "竜星ブレス",
+    "oldTypes": "dragon",
+    "oldPower": 50,
+    "newId": "s110_038",
+    "newName": "竜気弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_op1_npe_9ke_nqs_k47_fire_52_tactical",
+    "oldName": "紅砂の破旗",
+    "oldTypes": "fire",
+    "oldPower": 52,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_op1_npe_kwd_jur_9ob_1e_fire_40_none",
+    "oldName": "紅砂槍撃・2",
+    "oldTypes": "fire",
+    "oldPower": 40,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_op1_npe_kwd_jur_9ob_1f_fire_58_none",
+    "oldName": "紅砂槍撃・3",
+    "oldTypes": "fire",
+    "oldPower": 58,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_op1_npe_kwd_jur_9ob_1g_fire_76_none",
+    "oldName": "紅砂槍撃・4",
+    "oldTypes": "fire",
+    "oldPower": 76,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_op1_q9a_g21_nqq_fire_94_none",
+    "oldName": "紅蓮光砲",
+    "oldTypes": "fire",
+    "oldPower": 94,
+    "newId": "s110_091",
+    "newName": "紅蓮光砲",
+    "reason": "同名採用技。旧威力94・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_op1_q9a_sgz_tj7_fire_80_none",
+    "oldName": "紅蓮連閃",
+    "oldTypes": "fire",
+    "oldPower": 80,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_opl_gmx_tt6_9ke_ppa_star_32_tactical",
+    "oldName": "紙吹雪の舞",
+    "oldTypes": "star",
+    "oldPower": 32,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_oqq_m9l_9ke_o73_iax_jur_dark_76_tactical",
+    "oldName": "終点の穿岩撃",
+    "oldTypes": "dark",
+    "oldPower": 76,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_oqq_mbt_9ke_feo_k21_i6c_jur_fire-dark_108_tactical",
+    "oldName": "終焉の一斉射撃",
+    "oldTypes": [
+      "fire",
+      "dark"
+    ],
+    "oldPower": 108,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "同名採用技。旧威力108・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_oqq_mbt_o9o_lia_dragon_78_none",
+    "oldName": "終焉竜波",
+    "oldTypes": "dragon",
+    "oldPower": 78,
+    "newId": "s110_099",
+    "newName": "終焉竜波",
+    "reason": "同名採用技。旧威力78・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_or0_orl_9ke_ldg_st9_water_30_tactical",
+    "oldName": "経絡の水針",
+    "oldTypes": "water",
+    "oldPower": 30,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ot5_9ji_jol_9ji_9ke_ra0_jau_normal_0_tactical",
+    "oldName": "継ぎ接ぎの記憶",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_oui_izp_os6_ow1_r0l_p66_thunder_0_tactical",
+    "oldName": "緊急絶縁装置",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_oun_lfe_oev_9ke_iup_kdp_dark_76_tactical",
+    "oldName": "総決算の影札",
+    "oldTypes": "dark",
+    "oldPower": 76,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同名採用技。旧威力76・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_p9c_pa4_9ke_o75_u5k_grass_42_none",
+    "oldName": "翠翼の突風",
+    "oldTypes": "grass",
+    "oldPower": 42,
+    "newId": "s110_020",
+    "newName": "森の一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_pcm_g21_9ke_kwd_light_38_none",
+    "oldName": "聖光の槍",
+    "oldTypes": "light",
+    "oldPower": 38,
+    "newId": "s110_029",
+    "newName": "祈光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_pcm_nyg_9ke_nde_9jr_light_0_heal",
+    "oldName": "聖祈の癒し",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_pcm_o9o_9ke_io7_rjr_light_0_guard",
+    "oldName": "聖竜の庇護",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_pge_i1c_ita_grass_82_none",
+    "oldName": "胞子弾",
+    "oldTypes": "grass",
+    "oldPower": 82,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_pjp_r0l_m7f_nqq_fire_42_none",
+    "oldName": "腕装火砲",
+    "oldTypes": "fire",
+    "oldPower": 42,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_put_q4p_9ke_o75_she_grass_24_none",
+    "oldName": "若葉の突進",
+    "oldTypes": "grass",
+    "oldPower": 24,
+    "newId": "s110_059",
+    "newName": "若葉の突進",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_q27_m8e_k30_9l6_fire_58_none",
+    "oldName": "華炎斬り",
+    "oldTypes": "fire",
+    "oldPower": 58,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q7w_hm1_vil_lia_dragon_66_none",
+    "oldName": "蒼天龍波",
+    "oldTypes": "dragon",
+    "oldPower": 66,
+    "newId": "s110_083",
+    "newName": "蒼天龍波",
+    "reason": "同名採用技。旧威力66・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_q7w_kl4_9na_9nw_9mh_normal-dragon_52_none",
+    "oldName": "蒼核ブレス",
+    "oldTypes": [
+      "normal",
+      "dragon"
+    ],
+    "oldPower": 52,
+    "newId": "s110_103",
+    "newName": "エリクシオン・ノヴァ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q7w_lkx_9ke_o75_jur_water_52_none",
+    "oldName": "蒼流の突撃",
+    "oldTypes": "water",
+    "oldPower": 52,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q7w_lkx_sgz_tj7_water_76_none",
+    "oldName": "蒼流連閃",
+    "oldTypes": "water",
+    "oldPower": 76,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q7w_lmf_9ke_o75_she_water_38_none",
+    "oldName": "蒼海の突進",
+    "oldTypes": "water",
+    "oldPower": 38,
+    "newId": "s110_060",
+    "newName": "蒼海の突進",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_q7w_o9o_9ke_gp2_gry_dragon_42_buff",
+    "oldName": "蒼竜の咆哮",
+    "oldTypes": "dragon",
+    "oldPower": 42,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同名採用技。旧威力42・旧効果buffから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_q7w_ttn_9ke_jh1_i6c_h2g_thunder_56_tactical",
+    "oldName": "蒼電の投射器",
+    "oldTypes": "thunder",
+    "oldPower": 56,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_q7w_ttn_jh1_i6c_9ob_1e_thunder_40_none",
+    "oldName": "蒼電投射・2",
+    "oldTypes": "thunder",
+    "oldPower": 40,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q7w_ttn_jh1_i6c_9ob_1f_thunder_58_none",
+    "oldName": "蒼電投射・3",
+    "oldTypes": "thunder",
+    "oldPower": 58,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q7w_ttn_jh1_i6c_9ob_1g_thunder_76_none",
+    "oldName": "蒼電投射・4",
+    "oldTypes": "thunder",
+    "oldPower": 76,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q84_ttj_o75_9jh_thunder_36_tactical",
+    "oldName": "蓄雷突き",
+    "oldTypes": "thunder",
+    "oldPower": 36,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_q84_ttn_sem_jur_9ob_1e_thunder_40_none",
+    "oldName": "蓄電迎撃・2",
+    "oldTypes": "thunder",
+    "oldPower": 40,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q84_ttn_sem_jur_9ob_1f_thunder_58_none",
+    "oldName": "蓄電迎撃・3",
+    "oldTypes": "thunder",
+    "oldPower": 58,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_q84_ttn_sem_jur_9ob_1g_thunder_76_none",
+    "oldName": "蓄電迎撃・4",
+    "oldTypes": "thunder",
+    "oldPower": 76,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_qje_g21_nqq_light_70_none",
+    "oldName": "虚光砲",
+    "oldTypes": "light",
+    "oldPower": 70,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_qje_mch_g21_pa4_light_82_none",
+    "oldName": "虚無光翼",
+    "oldTypes": "light",
+    "oldPower": 82,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_qqd_kco_gp2_gry_dragon_46_debuff",
+    "oldName": "蝕月咆哮",
+    "oldTypes": "dragon",
+    "oldPower": 46,
+    "newId": "s110_084",
+    "newName": "蝕月咆哮",
+    "reason": "同名採用技。旧威力46・旧効果debuffから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_qww_s1b_9ke_ses_9jr_g77_dark_42_tactical",
+    "oldName": "血路の返し刃",
+    "oldTypes": "dark",
+    "oldPower": 42,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_r0l_n5e_i8l_tjf_fire_0_tactical",
+    "oldName": "装甲展開",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "複合効果の主役割 guard を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_r63_p8y_9j8_9ke_kwb_9jc_normal_0_guard",
+    "oldName": "見習いの構え",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ra0_jau_to2_iw1_9ob_1e_normal_0_guard",
+    "oldName": "記憶防御・2",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ra0_jau_to2_iw1_9ob_1f_normal_0_guard",
+    "oldName": "記憶防御・3",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ra0_jau_to2_iw1_9ob_1g_star_0_guard",
+    "oldName": "記憶防御・4",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_rjr_gue_9ke_rdf_9j8_normal_0_tactical",
+    "oldName": "護商の誓い",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_rjr_gue_to2_iw1_9ob_1e_fire_0_guard",
+    "oldName": "護商防御・2",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_rjr_gue_to2_iw1_9ob_1f_fire_0_guard",
+    "oldName": "護商防御・3",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_rjr_gue_to2_iw1_9ob_1g_fire_0_guard",
+    "oldName": "護商防御・4",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_rqi_iy3_9ka_hlz_t3f_ses_9jr_normal_74_tactical",
+    "oldName": "豪快な大鍋返し",
+    "oldTypes": "normal",
+    "oldPower": 74,
+    "newId": "s110_061",
+    "newName": "捨て身打ち",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_rtu_ssx_g21_sa2_light_76_none",
+    "oldName": "賢金光輪",
+    "oldTypes": "light",
+    "oldPower": 76,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_rtu_ssx_t2k_sa2_normal_76_none",
+    "oldName": "賢金錬輪",
+    "oldTypes": "normal",
+    "oldPower": 76,
+    "newId": "s110_085",
+    "newName": "白銀連斬",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_rxg_mgh_9ke_t3v_jol_fire_50_tactical",
+    "oldName": "赤熱の鍛接",
+    "oldTypes": "fire",
+    "oldPower": 50,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_s1f_ttj_9ke_g3q_nhg_thunder_24_tactical",
+    "oldName": "跳雷の円盤",
+    "oldTypes": "thunder",
+    "oldPower": 24,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_s1f_ttj_9mw_9nt_9mr_9nb_thunder_46_tactical",
+    "oldName": "跳雷トラップ",
+    "oldTypes": "thunder",
+    "oldPower": 46,
+    "newId": "s110_074",
+    "newName": "サンダーストーム",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_s1f_ttj_g3q_nhg_9ob_1e_thunder_28_none",
+    "oldName": "跳雷円盤・2",
+    "oldTypes": "thunder",
+    "oldPower": 28,
+    "newId": "s110_022",
+    "newName": "雷撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_s1f_ttj_g3q_nhg_9ob_1f_thunder_42_none",
+    "oldName": "跳雷円盤・3",
+    "oldTypes": "thunder",
+    "oldPower": 42,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_s1f_ttj_g3q_nhg_9ob_1g_thunder_56_none",
+    "oldName": "跳雷円盤・4",
+    "oldTypes": "thunder",
+    "oldPower": 56,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_s1f_ttj_p5s_9ke_isx_fo3_9ob_1e_thunder_0_debuff",
+    "oldName": "跳雷罠の弱体・2",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_s1f_ttj_p5s_9ke_isx_fo3_9ob_1f_thunder_0_debuff",
+    "oldName": "跳雷罠の弱体・3",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_s1f_ttj_p5s_9ke_isx_fo3_9ob_1g_thunder_0_debuff",
+    "oldName": "跳雷罠の弱体・4",
+    "oldTypes": "thunder",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_s6j_kwb_9jc_9l7_normal_0_tactical",
+    "oldName": "身構える",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同名採用技。旧威力0・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_sem_jur_r0l_n5e_fire_0_tactical",
+    "oldName": "迎撃装甲",
+    "oldTypes": "fire",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "複合効果の主役割 debuff を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_sfx_9j8_u5k_9ke_i69_kc8_wind_24_tactical",
+    "oldName": "追い風の封書",
+    "oldTypes": "wind",
+    "oldPower": 24,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同名採用技。旧威力24・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_sfx_iwk_9ke_i69_ghc_kdp_dark_46_tactical",
+    "oldName": "追徴の封印札",
+    "oldTypes": "dark",
+    "oldPower": 46,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_sfx_s0x_i69_ghc_fr3_wind_52_tactical",
+    "oldName": "追跡封印便",
+    "oldTypes": "wind",
+    "oldPower": 52,
+    "newId": "s110_080",
+    "newName": "衰弱の呪印",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sg6_lkx_9mb_9lw_9nv_thunder_36_tactical",
+    "oldName": "逆流コイル",
+    "oldTypes": "thunder",
+    "oldPower": 36,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sgv_sic_jh1_g71_wind_38_tactical",
+    "oldName": "速達投函",
+    "oldTypes": "wind",
+    "oldPower": 38,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sgz_ot6_k30_9l6_normal_34_none",
+    "oldName": "連続斬り",
+    "oldTypes": "normal",
+    "oldPower": 34,
+    "newId": "s110_041",
+    "newName": "連続斬り",
+    "reason": "同名採用技。旧威力34・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_si6_rs0_pyv_9ke_q7w_ttj_thunder_82_tactical",
+    "oldName": "過負荷の蒼雷",
+    "oldTypes": "thunder",
+    "oldPower": 82,
+    "newId": "s110_094",
+    "newName": "過負荷の蒼雷",
+    "reason": "同名採用技。旧威力82・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_smt_qyz_9ke_jez_itv_9k6_normal_0_tactical",
+    "oldName": "郵袋の手当て",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_sp9_sg1_lue_fx5_9ob_1e_wind_0_buff",
+    "oldName": "配送準備・2",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sp9_sg1_lue_fx5_9ob_1f_wind_0_buff",
+    "oldName": "配送準備・3",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sp9_sg1_lue_fx5_9ob_1g_wind_0_buff",
+    "oldName": "配送準備・4",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sp9_sic_fju_9ke_lpt_gos_gmw_wind_0_tactical",
+    "oldName": "配達人の深呼吸",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sst_r0l_to2_iw1_normal_0_guard",
+    "oldName": "重装防御",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ssu_gxi_9ke_qek_pmb_grass_0_tactical",
+    "oldName": "野営の薬膳",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ssu_gxi_9ke_u73_fij_9ob_1e_grass_0_heal",
+    "oldName": "野営の食事・2",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ssu_gxi_9ke_u73_fij_9ob_1f_grass_0_heal",
+    "oldName": "野営の食事・3",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_ssu_gxi_9ke_u73_fij_9ob_1g_grass_0_heal",
+    "oldName": "野営の食事・4",
+    "oldTypes": "grass",
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sw4_ioa_gaa_9l6_normal_44_tactical",
+    "oldName": "鉄床割り",
+    "oldTypes": "normal",
+    "oldPower": 44,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_sxs_lgz_o9o_lia_dragon_62_none",
+    "oldName": "銀河竜波",
+    "oldTypes": "dragon",
+    "oldPower": 62,
+    "newId": "s110_083",
+    "newName": "蒼天龍波",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_sxx_rs8_9ke_nhq_9jj_9l5_9ku_9jr_normal_20_tactical",
+    "oldName": "銅貨の目くらまし",
+    "oldTypes": "normal",
+    "oldPower": 20,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_t2k_kl4_ieh_npx_normal_140_alchemy_recoil",
+    "oldName": "錬核崩砕",
+    "oldTypes": "normal",
+    "oldPower": 140,
+    "newId": "s110_104",
+    "newName": "錬核崩砕",
+    "reason": "同名採用技。旧威力140・旧効果alchemy_recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_t3f_q8b_9ke_ji4_9jr_ses_9jr_normal_36_tactical",
+    "oldName": "鍋蓋の押し返し",
+    "oldTypes": "normal",
+    "oldPower": 36,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技"
+  },
+  {
+    "oldId": "sk_t3v_g52_kwc_jur_9ob_1e_fire_28_none",
+    "oldName": "鍛冶槌撃・2",
+    "oldTypes": "fire",
+    "oldPower": 28,
+    "newId": "s110_013",
+    "newName": "火花の舞",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t3v_g52_kwc_jur_9ob_1f_fire_42_none",
+    "oldName": "鍛冶槌撃・3",
+    "oldTypes": "fire",
+    "oldPower": 42,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t3v_g52_kwc_jur_9ob_1g_fire_56_none",
+    "oldName": "鍛冶槌撃・4",
+    "oldTypes": "fire",
+    "oldPower": 56,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t5z_jur_9ob_1e_normal_28_none",
+    "oldName": "鎧撃・2",
+    "oldTypes": "normal",
+    "oldPower": 28,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t5z_jur_9ob_1f_normal_42_none",
+    "oldName": "鎧撃・3",
+    "oldTypes": "normal",
+    "oldPower": 42,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t5z_jur_9ob_1g_star_56_none",
+    "oldName": "鎧撃・4",
+    "oldTypes": "star",
+    "oldPower": 56,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t5z_v04_9l6_9ke_k67_u0v_star_46_tactical",
+    "oldName": "鎧鳴りの星響",
+    "oldTypes": "star",
+    "oldPower": 46,
+    "newId": "s110_074",
+    "newName": "サンダーストーム",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_t66_na3_9ke_ldg_n1s_water_38_tactical",
+    "oldName": "鎮痛の水環",
+    "oldTypes": "water",
+    "oldPower": 38,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_t7l_mwz_9ke_9jh_9l5_9kx_9jh_star_22_tactical",
+    "oldName": "鏡球のきらめき",
+    "oldTypes": "star",
+    "oldPower": 22,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t7l_mwz_jur_9ob_1e_star_28_none",
+    "oldName": "鏡球撃・2",
+    "oldTypes": "star",
+    "oldPower": 28,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t7l_mwz_jur_9ob_1f_star_42_none",
+    "oldName": "鏡球撃・3",
+    "oldTypes": "star",
+    "oldPower": 42,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_t7l_mwz_jur_9ob_1g_star_56_none",
+    "oldName": "鏡球撃・4",
+    "oldTypes": "star",
+    "oldPower": 56,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_tj7_g21_k30_9l6_normal_46_none",
+    "oldName": "閃光斬り",
+    "oldTypes": "normal",
+    "oldPower": 46,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_tl3_9ke_lia_gd1_dark_44_none",
+    "oldName": "闇の波動",
+    "oldTypes": "dark",
+    "oldPower": 44,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_tqi_gue_9ke_g20_kwd_fire_28_none",
+    "oldName": "隊商の先槍",
+    "oldTypes": "fire",
+    "oldPower": 28,
+    "newId": "s110_013",
+    "newName": "火花の舞",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_tqi_gue_kwd_jur_9ob_1e_fire_28_none",
+    "oldName": "隊商槍撃・2",
+    "oldTypes": "fire",
+    "oldPower": 28,
+    "newId": "s110_013",
+    "newName": "火花の舞",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_tqi_gue_kwd_jur_9ob_1f_fire_42_none",
+    "oldName": "隊商槍撃・3",
+    "oldTypes": "fire",
+    "oldPower": 42,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_tqi_gue_kwd_jur_9ob_1g_fire_56_none",
+    "oldName": "隊商槍撃・4",
+    "oldTypes": "fire",
+    "oldPower": 56,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ttj_9k4_9k4_9jh_thunder_30_none",
+    "oldName": "雷つつき",
+    "oldTypes": "thunder",
+    "oldPower": 30,
+    "newId": "s110_022",
+    "newName": "雷撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ttj_hj5_9ke_kwd_tpf_thunder_48_tactical",
+    "oldName": "雷壁の槍陣",
+    "oldTypes": "thunder",
+    "oldPower": 48,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技"
+  },
+  {
+    "oldId": "sk_ttj_iax_npx_9jh_thunder_48_none",
+    "oldName": "雷岩砕き",
+    "oldTypes": "thunder",
+    "oldPower": 48,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ttj_ifk_thunder_48_none",
+    "oldName": "雷嵐",
+    "oldTypes": "thunder",
+    "oldPower": 48,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ttj_jur_thunder_34_none",
+    "oldName": "雷撃",
+    "oldTypes": "thunder",
+    "oldPower": 34,
+    "newId": "s110_022",
+    "newName": "雷撃",
+    "reason": "同名採用技。旧威力34・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "sk_ttj_mju_thunder_34_none",
+    "oldName": "雷爪",
+    "oldTypes": "thunder",
+    "oldPower": 34,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ttj_v04_ita_thunder_46_none",
+    "oldName": "雷鳴弾",
+    "oldTypes": "thunder",
+    "oldPower": 46,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_tw9_imt_9ke_glk_h6b_star_0_tactical",
+    "oldName": "静幕の合図",
+    "oldTypes": "star",
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_tw9_o5r_9ke_g9v_iwz_dark_0_tactical",
+    "oldName": "静穏の剣心",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_u5k_9ku_9k8_9ja_wind_0_buff",
+    "oldName": "風まとう",
+    "oldTypes": "wind",
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_uc9_pxl_9ke_jh1_9jm_ngf_grass_34_tactical",
+    "oldName": "香草の投げ皿",
+    "oldTypes": "grass",
+    "oldPower": 34,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_ufi_r0l_9ke_sfx_jau_normal_38_tactical",
+    "oldName": "騎装の追憶",
+    "oldTypes": "normal",
+    "oldPower": 38,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_vda_k5q_tr0_hj5_light_0_guard",
+    "oldName": "黎明障壁",
+    "oldTypes": "light",
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_vde_9lw_9o3_9m7_9ke_laq_kdp_dark_28_tactical",
+    "oldName": "黒インクの毒札",
+    "oldTypes": "dark",
+    "oldPower": 28,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_vde_m8e_9ke_nqq_jur_fire_46_tactical",
+    "oldName": "黒炎の砲撃",
+    "oldTypes": "fire",
+    "oldPower": 46,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "sk_vde_sw4_9ke_gos_gmw_dark_0_tactical",
+    "oldName": "黒鉄の呼吸",
+    "oldTypes": "dark",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "複合効果の主役割 charge を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "sk_vde_t2k_ml5_normal_36_none",
+    "oldName": "黒錬牙",
+    "oldTypes": "normal",
+    "oldPower": 36,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_alchemion_01",
+    "oldName": "錬核崩砕",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 140,
+    "newId": "s110_104",
+    "newName": "錬核崩砕",
+    "reason": "同名採用技。旧威力140・旧効果alchemy_recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_aquaron_01",
+    "oldName": "水流弾",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 26,
+    "newId": "s110_016",
+    "newName": "水流弾",
+    "reason": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_aquaron_02",
+    "oldName": "しっぽ打ち",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 20,
+    "newId": "s110_049",
+    "newName": "しっぽ打ち",
+    "reason": "同名採用技。旧威力20・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_aquaron_03",
+    "oldName": "大波召喚",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 38,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_aquaron_04",
+    "oldName": "アクアシールド",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_astralepis_01",
+    "oldName": "星兎跳",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 38,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_astralepis_02",
+    "oldName": "アストラルステップ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_astralepis_03",
+    "oldName": "流星蹴り",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 60,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_bordo_2_01",
+    "oldName": "お玉の小突き",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 24,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_bordo_2_02",
+    "oldName": "野営の薬膳",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_bordo_2_03",
+    "oldName": "香草の投げ皿",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 34,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_bordo_3_01",
+    "oldName": "煮立つ大鍋",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 42,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_bordo_3_02",
+    "oldName": "活力の煮込み",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "複合効果の主役割 heal を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_bordo_3_03",
+    "oldName": "鍋蓋の押し返し",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 36,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技"
+  },
+  {
+    "oldId": "skill_character_bordo_4_01",
+    "oldName": "仕込み包丁",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 52,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_bordo_4_02",
+    "oldName": "料理長のご馳走",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_bordo_4_03",
+    "oldName": "豪快な大鍋返し",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 74,
+    "newId": "s110_061",
+    "newName": "捨て身打ち",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_brigitte_2_01",
+    "oldName": "引き槍",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 26,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_brigitte_2_02",
+    "oldName": "接地の構え",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_brigitte_2_03",
+    "oldName": "蓄雷突き",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 36,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_brigitte_3_01",
+    "oldName": "放電の楯",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 34,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_brigitte_3_02",
+    "oldName": "守備隊の号令",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_brigitte_3_03",
+    "oldName": "雷壁の槍陣",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 48,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技"
+  },
+  {
+    "oldId": "skill_character_brigitte_4_01",
+    "oldName": "城門破り",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 58,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_brigitte_4_02",
+    "oldName": "不退の城塞",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_101",
+    "newName": "不退の構え",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_brigitte_4_03",
+    "oldName": "天雷迎撃",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 74,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_common_buff",
+    "oldName": "気合溜め",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同名採用技。旧威力0・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_common_debuff",
+    "oldName": "威圧",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同名採用技。旧威力0・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_common_guard",
+    "oldName": "身構える",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同名採用技。旧威力0・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_common_paralysis",
+    "oldName": "しびれ針",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 20,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_common_poison",
+    "oldName": "毒針",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 18,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_common_recoil",
+    "oldName": "捨て身打ち",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 56,
+    "newId": "s110_061",
+    "newName": "捨て身打ち",
+    "reason": "同名採用技。旧威力56・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_lize_2_01",
+    "oldName": "銅貨の目くらまし",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 20,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_2_02",
+    "oldName": "値切りの札",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_2_03",
+    "oldName": "黒インクの毒札",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 28,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_3_01",
+    "oldName": "契約の抜け道",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 36,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_3_02",
+    "oldName": "影札の取り立て",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 30,
+    "newId": "s110_018",
+    "newName": "吸水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_3_03",
+    "oldName": "追徴の封印札",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 46,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_lize_4_01",
+    "oldName": "千契の紙吹雪",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 50,
+    "newId": "s110_082",
+    "newName": "星幕の迷路",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_4_02",
+    "oldName": "影札の口上",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_lize_4_03",
+    "oldName": "総決算の影札",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 76,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同名採用技。旧威力76・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_mireille_2_01",
+    "oldName": "鏡球のきらめき",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 22,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_mireille_2_02",
+    "oldName": "静幕の合図",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_mireille_2_03",
+    "oldName": "紙吹雪の舞",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 32,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_mireille_3_01",
+    "oldName": "幻灯の拍手",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 36,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_mireille_3_02",
+    "oldName": "幕間の呼吸",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_mireille_3_03",
+    "oldName": "星幕の迷路",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 46,
+    "newId": "s110_082",
+    "newName": "星幕の迷路",
+    "reason": "同名採用技。旧威力46・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_mireille_4_01",
+    "oldName": "万客のアンコール",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 54,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_mireille_4_02",
+    "oldName": "夢座の幕引き",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "複合効果の主役割 debuff を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_mireille_4_03",
+    "oldName": "大団円の星華",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 72,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_2_01",
+    "oldName": "跳雷の円盤",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 24,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_nico_2_02",
+    "oldName": "応急チューニング",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_2_03",
+    "oldName": "磁縛ワイヤー",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 30,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_3_01",
+    "oldName": "逆流コイル",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 36,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_3_02",
+    "oldName": "予備電池の充填",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_3_03",
+    "oldName": "跳雷トラップ",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 46,
+    "newId": "s110_074",
+    "newName": "サンダーストーム",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_nico_4_01",
+    "oldName": "蒼電の投射器",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 56,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_4_02",
+    "oldName": "緊急絶縁装置",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_nico_4_03",
+    "oldName": "過負荷の蒼雷",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 82,
+    "newId": "s110_094",
+    "newName": "過負荷の蒼雷",
+    "reason": "同名採用技。旧威力82・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_noam_2_01",
+    "oldName": "打診の小槌",
+    "oldTypes": "normal",
+    "oldPower": 26,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_noam_2_02",
+    "oldName": "坑道の安全確認",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_noam_2_03",
+    "oldName": "亀裂を探る杭",
+    "oldTypes": "normal",
+    "oldPower": 34,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_noam_3_01",
+    "oldName": "深層の反響",
+    "oldTypes": "dark",
+    "oldPower": 38,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_noam_3_02",
+    "oldName": "導標の灯火",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "複合効果の主役割 charge を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_noam_3_03",
+    "oldName": "断層穿ち",
+    "oldTypes": "normal",
+    "oldPower": 56,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_noam_4_01",
+    "oldName": "地脈の震動",
+    "oldTypes": "normal",
+    "oldPower": 54,
+    "newId": "s110_080",
+    "newName": "衰弱の呪印",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_noam_4_02",
+    "oldName": "帰還の導標",
+    "oldTypes": "normal",
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_noam_4_03",
+    "oldName": "終点の穿岩撃",
+    "oldTypes": "dark",
+    "oldPower": 76,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_regus_2_01",
+    "oldName": "片刃の牽制",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 26,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_regus_2_02",
+    "oldName": "封呪の包帯",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_regus_2_03",
+    "oldName": "疼く呪鉄",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 48,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "skill_character_regus_3_01",
+    "oldName": "血路の返し刃",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 42,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_regus_3_02",
+    "oldName": "黒鉄の呼吸",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "複合効果の主役割 charge を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_regus_3_03",
+    "oldName": "呪鎖断ち",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 66,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "skill_character_regus_4_01",
+    "oldName": "呪紋を断つ刃",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 54,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_regus_4_02",
+    "oldName": "静穏の剣心",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_regus_4_03",
+    "oldName": "明日を拓く黒刃",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 72,
+    "newId": "s110_070",
+    "newName": "命流採水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_remnes_2_01",
+    "oldName": "空鎧の腕撃",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 28,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_remnes_2_02",
+    "oldName": "空洞の残響",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_remnes_2_03",
+    "oldName": "忘れじの一打",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 32,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_remnes_3_01",
+    "oldName": "騎装の追憶",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 38,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_remnes_3_02",
+    "oldName": "継ぎ接ぎの記憶",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_remnes_3_03",
+    "oldName": "鎧鳴りの星響",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 46,
+    "newId": "s110_074",
+    "newName": "サンダーストーム",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_remnes_4_01",
+    "oldName": "星鎧の重歩",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 52,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技"
+  },
+  {
+    "oldId": "skill_character_remnes_4_02",
+    "oldName": "名を結ぶ誓い",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_remnes_4_03",
+    "oldName": "レムナントの星剣",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 76,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_roden_2_01",
+    "oldName": "火打ち槌",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 30,
+    "newId": "s110_043",
+    "newName": "フレイムクロー",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_roden_2_02",
+    "oldName": "炉火の手入れ",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_roden_2_03",
+    "oldName": "焼き直し",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 34,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同名採用技。旧威力34・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_roden_3_01",
+    "oldName": "鉄床割り",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 44,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_roden_3_02",
+    "oldName": "焔の焼入れ",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_roden_3_03",
+    "oldName": "戦炉の鉄槌",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 56,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_roden_4_01",
+    "oldName": "赤熱の鍛接",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 50,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_roden_4_02",
+    "oldName": "百錬の鍛え直し",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "複合効果の主役割 heal を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_roden_4_03",
+    "oldName": "熔鉄落とし",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 84,
+    "newId": "s110_089",
+    "newName": "火口崩し",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_safira_2_01",
+    "oldName": "隊商の先槍",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 28,
+    "newId": "s110_013",
+    "newName": "火花の舞",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_safira_2_02",
+    "oldName": "砂よけの外套",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_safira_2_03",
+    "oldName": "砂塵突き",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 30,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_safira_3_01",
+    "oldName": "焦砂の薙ぎ払い",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 42,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_safira_3_02",
+    "oldName": "護商の誓い",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_safira_3_03",
+    "oldName": "熱風の穿槍",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 54,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_safira_4_01",
+    "oldName": "紅砂の破旗",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 52,
+    "newId": "s110_068",
+    "newName": "焼き直し",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_safira_4_02",
+    "oldName": "商路の防陣",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_101",
+    "newName": "不退の構え",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_safira_4_03",
+    "oldName": "地平を裂く槍",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 78,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_2_01",
+    "oldName": "水圧診断",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 24,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_2_02",
+    "oldName": "無菌洗浄",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_2_03",
+    "oldName": "経絡の水針",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 30,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_3_01",
+    "oldName": "浄光のメス",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 36,
+    "newId": "s110_078",
+    "newName": "浄光のメス",
+    "reason": "同名採用技。旧威力36・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_selene_3_02",
+    "oldName": "水脈縫合",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_3_03",
+    "oldName": "鎮痛の水環",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 38,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_4_01",
+    "oldName": "命流採水",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 48,
+    "newId": "s110_070",
+    "newName": "命流採水",
+    "reason": "同名採用技。旧威力48・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_selene_4_02",
+    "oldName": "命泉の処方",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_066",
+    "newName": "再起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_selene_4_03",
+    "oldName": "光脈穿ち",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 58,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_tobia_2_01",
+    "oldName": "追い風の封書",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 24,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同名採用技。旧威力24・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_tobia_2_02",
+    "oldName": "配達人の深呼吸",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_064",
+    "newName": "奮起",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_tobia_2_03",
+    "oldName": "速達投函",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 38,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_tobia_3_01",
+    "oldName": "峡谷の風便",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 36,
+    "newId": "s110_076",
+    "newName": "峡谷の風便",
+    "reason": "同名採用技。旧威力36・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_character_tobia_3_02",
+    "oldName": "郵袋の手当て",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_tobia_3_03",
+    "oldName": "追跡封印便",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 52,
+    "newId": "s110_080",
+    "newName": "衰弱の呪印",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_tobia_4_01",
+    "oldName": "天路の急送",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 54,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_tobia_4_02",
+    "oldName": "帰路の風標",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_102",
+    "newName": "清浄の守り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_tobia_4_03",
+    "oldName": "最終便の滑空",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 82,
+    "newId": "s110_095",
+    "newName": "アペクスストーム",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "skill_character_vera_3_01",
+    "oldName": "腕装火砲",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 42,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_vera_3_02",
+    "oldName": "影弾掃射",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 48,
+    "newId": "s110_097",
+    "newName": "総決算の影札",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_vera_3_03",
+    "oldName": "装甲展開",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "複合効果の主役割 guard を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_vera_4_01",
+    "oldName": "黒炎の砲撃",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 46,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_vera_4_02",
+    "oldName": "影裂きミサイル",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 54,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_vera_4_03",
+    "oldName": "迎撃装甲",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_009",
+    "newName": "威圧",
+    "reason": "複合効果の主役割 debuff を保持（旧副効果は廃止）"
+  },
+  {
+    "oldId": "skill_character_vera_5_01",
+    "oldName": "殲滅の黒炎砲",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 68,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_character_vera_5_02",
+    "oldName": "夜を裂く誘導弾",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 70,
+    "newId": "s110_065",
+    "newName": "崩しの一撃",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_character_vera_5_03",
+    "oldName": "終焉の一斉射撃",
+    "oldTypes": [
+      "fire",
+      "dark"
+    ],
+    "oldPower": 108,
+    "newId": "s110_106",
+    "newName": "終焉の一斉射撃",
+    "reason": "同名採用技。旧威力108・旧効果tacticalから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_doom_nemesion_01",
+    "oldName": "滅星爪",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 70,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_doom_nemesion_02",
+    "oldName": "終焉竜波",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 78,
+    "newId": "s110_099",
+    "newName": "終焉竜波",
+    "reason": "同名採用技。旧威力78・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_doom_nemesion_03",
+    "oldName": "アポカリプスノヴァ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 100,
+    "newId": "s110_105",
+    "newName": "アポカリプスノヴァ",
+    "reason": "同名採用技。旧威力100・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elixion_01",
+    "oldName": "賢金錬輪",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 76,
+    "newId": "s110_085",
+    "newName": "白銀連斬",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elixion_02",
+    "oldName": "神竜錬壁",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_elixion_03",
+    "oldName": "エリクシオン・ノヴァ",
+    "oldTypes": [
+      "normal",
+      "dragon"
+    ],
+    "oldPower": 112,
+    "newId": "s110_103",
+    "newName": "エリクシオン・ノヴァ",
+    "reason": "同名採用技。旧威力112・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elna_advanced_01",
+    "oldName": "閃光斬り",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 46,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_advanced_02",
+    "oldName": "剣士の集中",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_advanced_03",
+    "oldName": "白銀連斬",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 64,
+    "newId": "s110_085",
+    "newName": "白銀連斬",
+    "reason": "同名採用技。旧威力64・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elna_beginner_01",
+    "oldName": "斬りつけ",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 24,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elna_beginner_02",
+    "oldName": "見習いの構え",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_beginner_03",
+    "oldName": "勇気の一撃",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 36,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_kaen_01",
+    "oldName": "華炎斬り",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 58,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_kaen_02",
+    "oldName": "炎花の構え",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_elna_kaen_03",
+    "oldName": "紅蓮連閃",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 80,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_middle_01",
+    "oldName": "連続斬り",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 34,
+    "newId": "s110_041",
+    "newName": "連続斬り",
+    "reason": "同名採用技。旧威力34・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elna_middle_02",
+    "oldName": "受け流し",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_middle_03",
+    "oldName": "白刃一閃",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 50,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_water_01",
+    "oldName": "流水斬り",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 54,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elna_water_02",
+    "oldName": "水鏡の構え",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_elna_water_03",
+    "oldName": "蒼流連閃",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 76,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_elysia_01",
+    "oldName": "光雫弾",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 30,
+    "newId": "s110_028",
+    "newName": "光雫弾",
+    "reason": "同名採用技。旧威力30・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elysia_02",
+    "oldName": "祈りの癒し",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_elysia_03",
+    "oldName": "希望の光",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_elysia_prayer_01",
+    "oldName": "祈光弾",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 42,
+    "newId": "s110_029",
+    "newName": "祈光弾",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_elysia_prayer_02",
+    "oldName": "聖祈の癒し",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_elysia_prayer_03",
+    "oldName": "光祈結界",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_false_dragon_alfa_01",
+    "oldName": "虚光砲",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 70,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_false_dragon_alfa_02",
+    "oldName": "偽神の爪",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 58,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_false_dragon_alfa_03",
+    "oldName": "コード・アルファ",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 88,
+    "newId": "s110_096",
+    "newName": "コード・アルファ",
+    "reason": "同名採用技。旧威力88・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_false_dragon_beta_01",
+    "oldName": "灼熱光砲",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 76,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同名採用技。旧威力76・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_false_dragon_beta_02",
+    "oldName": "火翼撃",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 62,
+    "newId": "s110_067",
+    "newName": "灼熱光砲",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_false_dragon_beta_03",
+    "oldName": "紅蓮光砲",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 94,
+    "newId": "s110_091",
+    "newName": "紅蓮光砲",
+    "reason": "同名採用技。旧威力94・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_false_dragon_gamma_01",
+    "oldName": "胞子弾",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 82,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_false_dragon_gamma_02",
+    "oldName": "古森の咆哮",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 66,
+    "newId": "s110_042",
+    "newName": "渾身斬り",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_false_dragon_gamma_03",
+    "oldName": "古森の波動",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 100,
+    "newId": "s110_093",
+    "newName": "古森の波動",
+    "reason": "同名採用技。旧威力100・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_freigal_01",
+    "oldName": "火炎牙",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 28,
+    "newId": "s110_046",
+    "newName": "火炎牙",
+    "reason": "同名採用技。旧威力28・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_freigal_02",
+    "oldName": "フレイムクロー",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 24,
+    "newId": "s110_043",
+    "newName": "フレイムクロー",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_freigal_03",
+    "oldName": "爆炎チャージ",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 42,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同名採用技。旧威力42・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_freigal_04",
+    "oldName": "フレアチャージ",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 35,
+    "newId": "s110_027",
+    "newName": "追い風の封書",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_freiwolf_01",
+    "oldName": "炎狼牙",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 36,
+    "newId": "s110_048",
+    "newName": "炎狼牙",
+    "reason": "同名採用技。旧威力36・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_freiwolf_02",
+    "oldName": "フレアラッシュ",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 45,
+    "newId": "s110_015",
+    "newName": "爆炎チャージ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_freiwolf_03",
+    "oldName": "猛火の咆哮",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_galdra_01",
+    "oldName": "黒錬牙",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 36,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_galdra_02",
+    "oldName": "幼竜翼撃",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 32,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_galdra_03",
+    "oldName": "蒼核ブレス",
+    "oldTypes": [
+      "normal",
+      "dragon"
+    ],
+    "oldPower": 52,
+    "newId": "s110_103",
+    "newName": "エリクシオン・ノヴァ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_goblin_01",
+    "oldName": "棍棒攻撃",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 18,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_goblin_02",
+    "oldName": "威嚇",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_goblin_03",
+    "oldName": "毒の短剣",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 22,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_gran_volmoog_01",
+    "oldName": "雷岩砕き",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 48,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_gran_volmoog_02",
+    "oldName": "帯電結晶鎧",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_gran_volmoog_03",
+    "oldName": "グランボルトクロー",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 78,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_granbeat_01",
+    "oldName": "グランホーン",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 50,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_granbeat_02",
+    "oldName": "森王の装甲",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_granbeat_03",
+    "oldName": "ガイアスラッシュ",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 72,
+    "newId": "s110_071",
+    "newName": "ガイアスラッシュ",
+    "reason": "同名採用技。旧威力72・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_grassbeat_01",
+    "oldName": "リーフカッター",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 27,
+    "newId": "s110_019",
+    "newName": "リーフカッター",
+    "reason": "同名採用技。旧威力27・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_grassbeat_02",
+    "oldName": "吸収",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 18,
+    "newId": "s110_018",
+    "newName": "吸水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_grassbeat_03",
+    "oldName": "森の一撃",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 40,
+    "newId": "s110_020",
+    "newName": "森の一撃",
+    "reason": "同名採用技。旧威力40・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_grassbeat_04",
+    "oldName": "ポイズンニードル",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 18,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同名採用技。旧威力18・旧効果poisonから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_grassbeat_05",
+    "oldName": "スリープパウダー",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_010",
+    "newName": "集中",
+    "reason": "対応する属性／効果が廃止されたため同じ攻撃／補助役の共通技。睡眠は採用一覧にないため行動阻害の混乱へ置換"
+  },
+  {
+    "oldId": "skill_grassbeat_06",
+    "oldName": "トキシックガーデン",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 40,
+    "newId": "s110_072",
+    "newName": "トキシックガーデン",
+    "reason": "同名採用技。旧威力40・旧効果poisonから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_highaquaron_01",
+    "oldName": "水竜弾",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 36,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_highaquaron_02",
+    "oldName": "竜の尾撃",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 32,
+    "newId": "s110_088",
+    "newName": "竜の尾撃",
+    "reason": "同名採用技。旧威力32・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_highaquaron_03",
+    "oldName": "ハイドロスパイラル",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 52,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同名採用技。旧威力52・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_hikari_01",
+    "oldName": "聖光の槍",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 38,
+    "newId": "s110_029",
+    "newName": "祈光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_hikari_02",
+    "oldName": "ヒールオーラ",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_hikari_03",
+    "oldName": "ジャッジメント",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 58,
+    "newId": "s110_077",
+    "newName": "ジャッジメント",
+    "reason": "同名採用技。旧威力58・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_icegolem_01",
+    "oldName": "氷の拳",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 26,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_icegolem_02",
+    "oldName": "守りを固める",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_icegolem_03",
+    "oldName": "凍結クラッシュ",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 40,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_ignaros_01",
+    "oldName": "溶岩角",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 40,
+    "newId": "s110_053",
+    "newName": "溶岩角",
+    "reason": "同名採用技。旧威力40・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_ignaros_02",
+    "oldName": "灼熱装甲",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_ignaros_03",
+    "oldName": "火口崩し",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 62,
+    "newId": "s110_089",
+    "newName": "火口崩し",
+    "reason": "同名採用技。旧威力62・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_kimeragna_01",
+    "oldName": "猛毒翔破",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 110,
+    "newId": "s110_072",
+    "newName": "トキシックガーデン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_kimeragna_apex_01",
+    "oldName": "猛毒天翔破",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 82,
+    "newId": "s110_072",
+    "newName": "トキシックガーデン",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_kimeragna_apex_02",
+    "oldName": "混成竜雷",
+    "oldTypes": [
+      "thunder",
+      "dragon"
+    ],
+    "oldPower": 72,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "skill_kimeragna_apex_03",
+    "oldName": "アペクスストーム",
+    "oldTypes": [
+      "wind",
+      "dragon"
+    ],
+    "oldPower": 108,
+    "newId": "s110_095",
+    "newName": "アペクスストーム",
+    "reason": "同名採用技。旧威力108・旧効果recoilから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_lumina_apprentice_01",
+    "oldName": "星光弾",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 28,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_apprentice_02",
+    "oldName": "マジックノート",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 24,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_apprentice_03",
+    "oldName": "ルミナスチャージ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_lumina_sorcerer_01",
+    "oldName": "星晶の裁き",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 54,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_sorcerer_02",
+    "oldName": "ルミナスマジック",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 46,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_sorcerer_03",
+    "oldName": "セレスティアルレイ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 84,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_wizard_01",
+    "oldName": "星月の光弾",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 40,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_wizard_02",
+    "oldName": "マジックブルーム",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 34,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lumina_wizard_03",
+    "oldName": "ルミナスレイ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 62,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lux_galdion_01",
+    "oldName": "守光竜牙",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 50,
+    "newId": "s110_054",
+    "newName": "ルクスホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_lux_galdion_02",
+    "oldName": "聖竜の庇護",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_lux_galdion_03",
+    "oldName": "ガルディオンレイ",
+    "oldTypes": [
+      "light",
+      "dragon"
+    ],
+    "oldPower": 78,
+    "newId": "s110_088",
+    "newName": "竜の尾撃",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "skill_luxiard_01",
+    "oldName": "ルクスホーン",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 38,
+    "newId": "s110_054",
+    "newName": "ルクスホーン",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_luxiard_02",
+    "oldName": "光竜爪",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 36,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_luxiard_03",
+    "oldName": "黎明障壁",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_luxseed_01",
+    "oldName": "光芽弾",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 28,
+    "newId": "s110_028",
+    "newName": "光雫弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_luxseed_02",
+    "oldName": "幼竜の尾",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 24,
+    "newId": "s110_050",
+    "newName": "幼竜の尾",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_luxseed_03",
+    "oldName": "朝光の息吹",
+    "oldTypes": [
+      "light"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_nemes_01",
+    "oldName": "星屑の牙",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 32,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nemes_02",
+    "oldName": "竜のひっかき",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 26,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同名採用技。旧威力26・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nemes_03",
+    "oldName": "コスモブレス",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 44,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nemes_04",
+    "oldName": "イリュージョン",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 15,
+    "newId": "s110_036",
+    "newName": "イリュージョン",
+    "reason": "同名採用技。旧威力15・旧効果confusionから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nemes_05",
+    "oldName": "ベノムブレス",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 30,
+    "newId": "s110_021",
+    "newName": "ポイズンニードル",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_nemesia_01",
+    "oldName": "星雲の爪",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 42,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nemesia_02",
+    "oldName": "竜星ブレス",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 50,
+    "newId": "s110_038",
+    "newName": "竜気弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nemesia_03",
+    "oldName": "コズミックノヴァ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 68,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nemesion_01",
+    "oldName": "星界の爪",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 56,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nemesion_02",
+    "oldName": "銀河竜波",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 62,
+    "newId": "s110_083",
+    "newName": "蒼天龍波",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nemesion_03",
+    "oldName": "アストラルエンド",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 82,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_nightmare_01",
+    "oldName": "影打ち",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 25,
+    "newId": "s110_031",
+    "newName": "影打ち",
+    "reason": "同名採用技。旧威力25・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nightmare_02",
+    "oldName": "呪いの視線",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 18,
+    "newId": "s110_033",
+    "newName": "呪いの視線",
+    "reason": "同名採用技。旧威力18・旧効果debuffから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nightmare_03",
+    "oldName": "闇の波動",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 44,
+    "newId": "s110_032",
+    "newName": "闇の波動",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_noclaid_01",
+    "oldName": "ムーンシャドウ",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 38,
+    "newId": "s110_047",
+    "newName": "影牙",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_noclaid_02",
+    "oldName": "夜竜爪",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 36,
+    "newId": "s110_044",
+    "newName": "竜のひっかき",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_noclaid_03",
+    "oldName": "暗月障壁",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_nocle_01",
+    "oldName": "影牙",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 28,
+    "newId": "s110_047",
+    "newName": "影牙",
+    "reason": "同名採用技。旧威力28・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nocle_02",
+    "oldName": "夜滑り",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 24,
+    "newId": "s110_037",
+    "newName": "夜滑り",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_nocle_03",
+    "oldName": "月蝕の気配",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_noxvelg_01",
+    "oldName": "夜天竜牙",
+    "oldTypes": [
+      "dark"
+    ],
+    "oldPower": 50,
+    "newId": "s110_087",
+    "newName": "夜天竜牙",
+    "reason": "同名採用技。旧威力50・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_noxvelg_02",
+    "oldName": "蝕月咆哮",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 46,
+    "newId": "s110_084",
+    "newName": "蝕月咆哮",
+    "reason": "同名採用技。旧威力46・旧効果debuffから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_noxvelg_03",
+    "oldName": "ノクスエクリプス",
+    "oldTypes": [
+      "dark",
+      "dragon"
+    ],
+    "oldPower": 78,
+    "newId": "s110_079",
+    "newName": "ノクスエクリプス",
+    "reason": "同名採用技。旧威力78・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_orca_abyss_01",
+    "oldName": "アビステイル",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 56,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_orca_abyss_02",
+    "oldName": "深海の奔流",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 68,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_orca_abyss_03",
+    "oldName": "オルカアビス",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 92,
+    "newId": "s110_092",
+    "newName": "オルカアビス",
+    "reason": "同名採用技。旧威力92・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_orca_stream_01",
+    "oldName": "ストリームテイル",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 44,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_orca_stream_02",
+    "oldName": "蒼流の突撃",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 52,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_orca_stream_03",
+    "oldName": "オルカウェーブ",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 72,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_orcana_01",
+    "oldName": "アクアテイル",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 34,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_orcana_02",
+    "oldName": "蒼海の突進",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 38,
+    "newId": "s110_060",
+    "newName": "蒼海の突進",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_orcana_03",
+    "oldName": "クリスタルウェーブ",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 56,
+    "newId": "s110_051",
+    "newName": "ストリームテイル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_proto_icegolem_01",
+    "oldName": "氷塊拳",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 44,
+    "newId": "s110_057",
+    "newName": "氷塊拳",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_proto_icegolem_02",
+    "oldName": "重装防御",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_proto_icegolem_03",
+    "oldName": "大氷河クラッシュ",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 70,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_proto_icegolem_04",
+    "oldName": "石造拳",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 44,
+    "newId": "s110_056",
+    "newName": "石造拳",
+    "reason": "同名採用技。旧威力44・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_proto_icegolem_05",
+    "oldName": "巨岩クラッシュ",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 70,
+    "newId": "s110_090",
+    "newName": "巨岩クラッシュ",
+    "reason": "同名採用技。旧威力70・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_rikasheef_01",
+    "oldName": "若葉の突進",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 24,
+    "newId": "s110_059",
+    "newName": "若葉の突進",
+    "reason": "同名採用技。旧威力24・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_rikasheef_02",
+    "oldName": "癒しの芽吹き",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_rikasheef_03",
+    "oldName": "リーフスパーク",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 36,
+    "newId": "s110_059",
+    "newName": "若葉の突進",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_seralphia_01",
+    "oldName": "翠翼の突風",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 42,
+    "newId": "s110_020",
+    "newName": "森の一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_seralphia_02",
+    "oldName": "森精の祝福",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_seralphia_03",
+    "oldName": "セラフィックリーフ",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 68,
+    "newId": "s110_070",
+    "newName": "命流採水",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_shenhairon_01",
+    "oldName": "神海の爪",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 46,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_shenhairon_02",
+    "oldName": "蒼竜の咆哮",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 42,
+    "newId": "s110_039",
+    "newName": "蒼竜の咆哮",
+    "reason": "同名採用技。旧威力42・旧効果buffから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_shenhairon_03",
+    "oldName": "海王瀑流",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 68,
+    "newId": "s110_069",
+    "newName": "ハイドロスパイラル",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_slime_01",
+    "oldName": "たいあたり",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 14,
+    "newId": "s110_058",
+    "newName": "たいあたり",
+    "reason": "同名採用技。旧威力14・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_slime_02",
+    "oldName": "ぷるぷる",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_slime_03",
+    "oldName": "スライムアタック",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 22,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_slime_gold_01",
+    "oldName": "たいあたり",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 16,
+    "newId": "s110_058",
+    "newName": "たいあたり",
+    "reason": "同名採用技。旧威力16・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_slime_gold_02",
+    "oldName": "きんいろボディ",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_slime_gold_03",
+    "oldName": "ゴールドアタック",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 25,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_spaquinn_01",
+    "oldName": "雷撃",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 34,
+    "newId": "s110_022",
+    "newName": "雷撃",
+    "reason": "同名採用技。旧威力34・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_spaquinn_02",
+    "oldName": "突風",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 28,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同名採用技。旧威力28・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_spaquinn_03",
+    "oldName": "スパークダイブ",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 42,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_stella_apprentice_01",
+    "oldName": "星屑弾",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 30,
+    "newId": "s110_034",
+    "newName": "星屑弾",
+    "reason": "同名採用技。旧威力30・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_stella_apprentice_02",
+    "oldName": "マジックショット",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 24,
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_stella_apprentice_03",
+    "oldName": "スターブースト",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_stella_sorcerer_01",
+    "oldName": "星天の裁き",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 56,
+    "newId": "s110_045",
+    "newName": "星雲の爪",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_stella_sorcerer_02",
+    "oldName": "グランドマジック",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 44,
+    "newId": "s110_002",
+    "newName": "強打",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_stella_sorcerer_03",
+    "oldName": "コスモスアーク",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 86,
+    "newId": "s110_098",
+    "newName": "コスモスアーク",
+    "reason": "同名採用技。旧威力86・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_stella_wizard_01",
+    "oldName": "スターライトレイ",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 42,
+    "newId": "s110_035",
+    "newName": "スターライトレイ",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_stella_wizard_02",
+    "oldName": "マジックバースト",
+    "oldTypes": [
+      "normal"
+    ],
+    "oldPower": 36,
+    "newId": "s110_040",
+    "newName": "斬りつけ",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_stella_wizard_03",
+    "oldName": "アストラルフレア",
+    "oldTypes": [
+      "star"
+    ],
+    "oldPower": 64,
+    "newId": "s110_081",
+    "newName": "アストラルフレア",
+    "reason": "同名採用技。旧威力64・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_suiren_01",
+    "oldName": "水霊弾",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 32,
+    "newId": "s110_055",
+    "newName": "氷の拳",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_suiren_02",
+    "oldName": "癒しの水",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_suiren_03",
+    "oldName": "水鏡の波紋",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 46,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_sylphin_01",
+    "oldName": "そよ風のひれ",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 26,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_sylphin_02",
+    "oldName": "エアスライド",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 22,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_sylphin_03",
+    "oldName": "風まとう",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_008",
+    "newName": "気合溜め",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_tempestray_01",
+    "oldName": "テンペストフィン",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 50,
+    "newId": "s110_026",
+    "newName": "ゼファーカッター",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_tempestray_02",
+    "oldName": "嵐翼の守り",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_tempestray_03",
+    "oldName": "天嵐大旋回",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 76,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_thornbeat_01",
+    "oldName": "ソーンホーン",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 36,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同名採用技。旧威力36・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_thornbeat_02",
+    "oldName": "森の甲殻",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_thornbeat_03",
+    "oldName": "スパイクラッシュ",
+    "oldTypes": [
+      "grass"
+    ],
+    "oldPower": 54,
+    "newId": "s110_052",
+    "newName": "ソーンホーン",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_tienhairon_01",
+    "oldName": "天海の舞",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 0,
+    "newId": "s110_004",
+    "newName": "小回復",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_tienhairon_02",
+    "oldName": "月華水刃",
+    "oldTypes": [
+      "water"
+    ],
+    "oldPower": 48,
+    "newId": "s110_017",
+    "newName": "大波召喚",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_tienhairon_03",
+    "oldName": "蒼天龍波",
+    "oldTypes": [
+      "dragon"
+    ],
+    "oldPower": 66,
+    "newId": "s110_083",
+    "newName": "蒼天龍波",
+    "reason": "同名採用技。旧威力66・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_tsubaki_01",
+    "oldName": "火花の舞",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 36,
+    "newId": "s110_013",
+    "newName": "火花の舞",
+    "reason": "同名採用技。旧威力36・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_tsubaki_02",
+    "oldName": "灼熱花弁",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 48,
+    "newId": "s110_014",
+    "newName": "火炎弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_tsubaki_03",
+    "oldName": "炎華結界",
+    "oldTypes": [
+      "fire"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_volmoog_01",
+    "oldName": "雷爪",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 34,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_volmoog_02",
+    "oldName": "帯電咆哮",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_volmoog_03",
+    "oldName": "ボルテッククロー",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 56,
+    "newId": "s110_086",
+    "newName": "ボルテッククロー",
+    "reason": "同名採用技。旧威力56・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_voltax_01",
+    "oldName": "雷嵐",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 48,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_voltax_02",
+    "oldName": "暴風刃",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 42,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同名採用技。旧威力42・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_voltax_03",
+    "oldName": "ボルテックストーム",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 62,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "同名採用技。旧威力62・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_voltax_04",
+    "oldName": "疾風迅雷",
+    "oldTypes": [
+      "thunder",
+      "wind"
+    ],
+    "oldPower": 58,
+    "newId": "s110_073",
+    "newName": "ボルテックストーム",
+    "reason": "共通する属性・同効果"
+  },
+  {
+    "oldId": "skill_volteck_01",
+    "oldName": "雷つつき",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 30,
+    "newId": "s110_022",
+    "newName": "雷撃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_volteck_02",
+    "oldName": "急降下",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 24,
+    "newId": "s110_025",
+    "newName": "突風",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_volteck_03",
+    "oldName": "雷鳴弾",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 46,
+    "newId": "s110_023",
+    "newName": "雷光弾",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_volteck_04",
+    "oldName": "サンダーボルト",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 30,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同名採用技。旧威力30・旧効果paralysisから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_volteck_05",
+    "oldName": "パラライズショック",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 15,
+    "newId": "s110_024",
+    "newName": "サンダーボルト",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "skill_volteck_06",
+    "oldName": "サンダーストーム",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 45,
+    "newId": "s110_074",
+    "newName": "サンダーストーム",
+    "reason": "同名採用技。旧威力45・旧効果paralysisから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_volteck_07",
+    "oldName": "ライトニングチェイン",
+    "oldTypes": [
+      "thunder"
+    ],
+    "oldPower": 28,
+    "newId": "s110_041",
+    "newName": "連続斬り",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_zephyray_01",
+    "oldName": "ゼファーカッター",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 38,
+    "newId": "s110_026",
+    "newName": "ゼファーカッター",
+    "reason": "同名採用技。旧威力38・旧効果Noneから採用仕様へ移行"
+  },
+  {
+    "oldId": "skill_zephyray_02",
+    "oldName": "旋風回避",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 0,
+    "newId": "s110_003",
+    "newName": "身構える",
+    "reason": "同じ戦闘上の役割（属性／身体条件は新技に従う）"
+  },
+  {
+    "oldId": "skill_zephyray_03",
+    "oldName": "スカイランページ",
+    "oldTypes": [
+      "wind"
+    ],
+    "oldPower": 56,
+    "newId": "s110_075",
+    "newName": "暴風刃",
+    "reason": "同属性・同効果"
+  },
+  {
+    "oldId": "sk_sgq_im0_jzv_jur_normal_24_none",
+    "oldName": "通常攻撃",
+    "newId": "s110_001",
+    "newName": "一撃",
+    "reason": "旧初期装備不足時の通常攻撃を共通基本攻撃へ移行"
+  }
+]

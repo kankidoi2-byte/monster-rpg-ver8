@@ -28,16 +28,20 @@ for(const screen of ['party','partySet','growthHub','fusion','alchemy','evolutio
 const bottomNav=index.match(/<nav class="app-bottom-nav"[\s\S]*?<\/nav>/)?.[0]||'';
 expect([...bottomNav.matchAll(/data-nav="([^"]+)"/g)].map(match=>match[1]).join(',')==='home,monsters,battle,gacha,more','bottom navigation must keep five ordered destinations');
 expect((index.match(/data-nav="growth"/g)||[]).length===1,'the tutorial growth target must uniquely identify the roster tab');
-expect((index.match(/‹ ガチャ一覧/g)||[]).length===3,'each draw screen must return to the draw hub');
+expect(!index.includes('‹ ガチャ一覧'),'the adopted view must not return through a removed list');
+for(const tab of ['character','skill','item'])expect(index.includes(`data-gacha-tab="${tab}"`),tab+' tab is reachable');
 
 const saveKey = 'mb_v95c';
-expect(index.includes('<title>モンスターバトル Ver8.0</title>'), 'browser title must use the public game name');
-expect(index.includes('<div class="title-version">Ver8.0</div>'), 'title screen version must match the public game name');
+expect(index.includes('<title>モンスターバトル</title>'), 'browser title must use the public game name without a version');
+const titleMarkup=(index.match(/<div id="titleScreen"[^>]*>[\s\S]*?<\/div>\s*<header class="app-topbar"/)?.[0]||'').replace(/<!--[\s\S]*?-->/g,'');
+expect(titleMarkup.includes('class="title-logo"'), 'title screen markup must be inspected');
+expect(!index.includes('class="title-version"') && !/Ver\s*\d/i.test(titleMarkup), 'title screen must not expose a version badge');
+expect(!/document\.title\s*=/.test(read('js/init.js')), 'title initialization must not restore the version');
 expect(!index.includes('Ver8.0 Claude'), 'obsolete development attribution must not remain player-visible');
 expect(save.includes(`const SAVE_KEY = '${saveKey}'`), `primary save key must keep ${saveKey}`);
 expect(save.includes('safeStorageGet(SAVE_KEY)'), `save loader must use protected ${saveKey} access`);
 expect(save.includes('safeStorageSet(SAVE_KEY,raw)'), `save writer must use protected ${saveKey} access`);
-expect(save.includes('safeStorageRemove(SAVE_KEY)'), `save reset must use protected ${saveKey} access`);
+expect(save.includes('replaceSaveExplicitly(initSave(),[])'), `save reset must use the protected explicit replacement path for ${saveKey}`);
 
 const starterIds = ['elna_beginner', 'freigal', 'aquaron', 'grassbeat', 'volteck'];
 starterIds.forEach(id => expect(data.includes(`id:'${id}'`) || data.includes(`id: '${id}'`), `starter id is missing: ${id}`));
@@ -49,7 +53,7 @@ expect(save.includes('INITIAL_PARTY_IDS.forEach(id => addInstance(id, 1, 0))'), 
 const screenIds = [
   'home', 'gachaHub', 'growthHub', 'moreMenu', 'contractorRank', 'contractorRankRewards', 'contractorTitles', 'notices', 'diagnosticsScreen', 'expedition', 'evolution', 'partySet', 'battleChoices',
   'battleItemSelect', 'contractConfirm', 'battle', 'fusion', 'alchemy',
-  'alchemyConfirm', 'alchemyResult', 'shop', 'itemGacha', 'skillGacha', 'party',
+  'alchemyConfirm', 'alchemyResult', 'shop', 'party',
   'skillEdit', 'typeChart', 'dexHub', 'dex', 'characterDex', 'mapDex', 'itemDex'
 ];
 screenIds.forEach(id => {
@@ -76,8 +80,9 @@ expect(index.includes('id="contractorRankContent"') && read('js/ui.js').includes
 expect(index.includes('id="contractorRankUpOverlay"') && read('js/ui.js').includes('function closeContractorRankUp'), 'contractor Rank-up presentation is missing');
 expect(index.includes('id="contractorTitleContent"') && index.includes('onclick="showContractorTitles()"'), 'contractor title menu entry or screen is missing');
 expect(read('js/ui.js').includes('function renderContractorTitles') && read('js/ui.js').includes('function setContractorTitle'), 'contractor title equip UI is missing');
-expect(read('js/ui.js').includes('equipContractorTitle(titleId||null)') && read('js/ui.js').includes("if(typeof saveGame==='function')saveGame()"), 'contractor title selection must persist through the shared save path');
-expect(index.includes('称号による能力補正はありません。') && read('js/ui.js').includes('装備しても戦闘能力や利用できる機能は変わりません。'), 'contractor titles must clearly remain cosmetic only');
+const titleAction=uiSource.slice(uiSource.indexOf('function setContractorTitle('),uiSource.indexOf('function contractorRankUpCanPresent('));
+expect(/commitSaveMutation\(\(\)=>\{[^}]*equipContractorTitle\(titleId\|\|null\)/.test(titleAction) && titleAction.includes('showCommittedSaveResult('), 'contractor title selection must commit through the shared rollback path before success presentation');
+expect(index.includes('称号を1つ選んで飾る(能力は変わらない)') && read('js/ui.js').includes('Rankで能力や機能は変わらない'), 'contractor titles must clearly remain cosmetic only');
 expect(index.includes('id="contractorRewardContent"') && read('js/ui.js').includes('function renderContractorRankRewards'), 'contractor Rank reward screen is missing');
 expect(read('js/ui.js').includes('function claimContractorRewardUi') && read('js/ui.js').includes('function claimAllContractorRewardsUi'), 'individual and bulk contractor Rank reward actions are missing');
 expect(read('js/ui.js').includes('claimContractorRankReward(rank)') && read('js/ui.js').includes('claimAllContractorRankRewards()'), 'contractor Rank reward UI is not wired to the reward engine');
@@ -85,7 +90,7 @@ expect(index.includes('class="screen battle-screen"'), 'portrait-first battle sc
 expect(index.includes('class="cmd battle-command-dock"'), 'fixed battle command dock is missing');
 expect(index.includes('class="battle-command-pad"'), 'five-way battle command pad is missing');
 expect(!index.includes('onclick="askUseContractScroll()">🤝 契約</button>'), 'contract must not remain as an independent battle command');
-expect(index.includes('契約書は勝利後に使用できます。'), 'battle item guidance must explain post-battle contracting');
+expect(index.includes('契約書は勝利後に使う'), 'battle item guidance must explain post-battle contracting');
 expect(read('js/battle-view.js').includes('function toggleBattleSkillPanel'), 'collapsible battle skill panel is missing');
 expect(!read('js/battle-view.js').includes('契約可'), 'battle command must not advertise contracting before victory');
 expect(read('js/battle-view.js').includes('function playBattleImpact'), 'battle impact feedback is missing');
@@ -103,13 +108,13 @@ expect(read('js/multi-battle.js').includes('function handleMultiEnemyCard'), 'th
 expect(read('css/ui-redesign.css').includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'side-by-side three-way enemy layout is missing');
 expect(read('js/battle-flow.js').includes('function huntRecommendationScore'), 'quest recommendation scoring is missing');
 expect(read('js/battle-flow.js').includes('hunt-card-details'), 'progressive quest details are missing');
-expect(read('js/party.js').includes('monster-roster-card'), 'monster-first roster cards are missing');
+expect(read('js/party.js').includes('roster-icon'), 'five-column roster icons are missing');
 expect(dex.includes('monster-dex-card'), 'monster-first dex cards are missing');
 expect(dex.includes('function monsterObtainEntries'), 'monster dex acquisition-source renderer is missing');
 expect(dex.includes('INITIAL_PARTY_IDS.includes(m.id)'), 'monster dex must derive initial acquisition from the shared initial-party definition');
-expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection)"), 'monster dex must show acquisition sources instead of skills');
+expect(dex.includes("renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m))"), 'monster dex must preserve acquisition sources alongside skill links');
 expect(dex.includes('detailSection=renderUnitSkillList'), 'character dex must retain its skill list');
-expect(index.includes('カードをタップすると出現マップと入手方法を確認できます。'), 'monster dex guidance still describes the removed skill list');
+expect(index.includes('タップで出現マップと入手方法'), 'monster dex guidance still describes the removed skill list');
 expect(index.includes('onclick="show(\'dexHub\')"') && index.includes('<strong>図鑑</strong>'), 'unified dex hub menu entry is missing');
 expect(index.includes('id="dexHubGrid"') && dex.includes('function renderDexHub'), 'dex hub renderer is missing');
 expect(index.includes('id="mapDexList"') && dex.includes('function renderMapDex'), 'map dex screen or renderer is missing');
@@ -127,7 +132,7 @@ expect(read('js/multi-battle.js').includes('isContractableUnit(entry.mon)'), 'mu
 expect(index.includes('class="panel ui-feature-panel skill-edit-panel"'), 'shared skill-edit feature panel is missing');
 expect(read('js/expedition.js').includes('expedition-progress'), 'expedition progress feedback is missing');
 expect(read('js/items.js').includes('shop-item-card'), 'shared shop item cards are missing');
-expect(index.includes('onclick="showSkillGacha()"'), 'skill-gacha menu entry is missing');
+expect(index.includes('data-gacha-tab="skill"') && read('js/gacha-ui.js').includes("skillGacha:'skill'"), 'skill-gacha direct tab and legacy route are required');
 expect(read('js/skill-gacha.js').includes('function performSkillGacha'), 'skill-gacha draw logic is missing');
 expect(read('js/ui.js').includes('function showUiNotice'), 'shared reward notice is missing');
 expect(read('js/ui.js').includes('function replayUiMotion'), 'shared UI motion helper is missing');

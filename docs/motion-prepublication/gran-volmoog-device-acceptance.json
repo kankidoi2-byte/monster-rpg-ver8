@@ -1,0 +1,42 @@
+{
+  "recordedDateJST": "2026-09-29",
+  "candidate": "gran_volmoog v18",
+  "evidenceType": "user report plus separate media-mocked DOM test",
+  "device": "Galaxy Android; exact model/browser/version not confirmed",
+  "userReport": {
+    "at0711JST": "戦闘画面が表示され、一連のバトルができた",
+    "at0717JST": "問題なく動き、途中停止や表示との重なりはなかった",
+    "scope": "instructed single-monster, enemy-only and three-monster review scenarios on Galaxy; reported pass, not independent video/viewport/timing measurement",
+    "status": "pass for all three instructed device scenarios",
+    "at0725JST": "指示した敵1体・同種3体の確認について、どちらも問題なしと本人が報告"
+  },
+  "pending": [
+    "Explicit anatomical foot/floating anchor and full-body placement metadata for final spec; current canvas bottom alignment is retained from measured QA, not a measured foot point",
+    "Remaining widths/action/background occupancy and final reflection/footing acceptance where unverified",
+    "Shared long-duration/load/actual-BFCache gates before normal multi-video expansion; instructed offscreen and app-return checks user-reported PASS on 2026-09-29"
+  ],
+  "next": "Phase C bounded source acceptance and registrations may proceed with default1. Final anchor/body placement and shared multi-video load gates remain.",
+  "normalRuntimeRegistration": "registered on evaluation branch; new offscreen/app-return checks user-reported PASS",
+  "mainPublication": "forbidden",
+  "automatedEvidence": {
+    "script": "scripts/test-gran-volmoog-review-dom.mjs",
+    "exitCode": 0,
+    "enemyVideoCount": 1,
+    "sameSpeciesVideoCount": 3,
+    "checks": [
+      "HP updates retain nodes and playback position",
+      "item-screen pause/resume",
+      "exit cleanup and stale callbacks",
+      "error fallback and retry",
+      "party-switch disposal",
+      "19 map setup",
+      "original WebM hash",
+      "persistent storage unchanged"
+    ],
+    "limitation": "media mocked; no real decoder, layout or performance verification",
+    "executedDateJST": "2026-09-29 before 07:25 user report; reused unchanged, not rerun"
+  },
+  "measurementEvidence": "gran-volmoog-galaxy-metrics-20260929.json",
+  "responsiveMeasurementEvidence": "gran-volmoog-galaxy-responsive-20260929.json",
+  "phaseBDeviceEvidence": "phase-b/device-report.json"
+}

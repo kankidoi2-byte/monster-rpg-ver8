@@ -1,0 +1,354 @@
+// Isolated CI browser only. Never connect to a player's browser or saved profile.
+// Before images use runtime from ae5e064; isolation checks also disable only the new CSS.
+import {chromium} from 'playwright';
+import {runMonochromeFlows} from './test-monochrome-flows.mjs';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {spawn,execFileSync} from 'node:child_process';
+const out='artifacts/nonbattle-theme';fs.mkdirSync(out,{recursive:true});
+const manifest={status:'running',baseline:'git ae5e064 runtime, identical isolated fixtures; theme-disabled comparisons additionally test exclusions',screenshotFormat:'JPEG quality 75; full matrix retained',zoomMethod:'CSS zoom 2 plus half-width reflow viewport (not native browser zoom)',cases:[],preservation:[],detailTargets:[],failures:[],flows:[],zoomReachability:[]};
+const origin='http://127.0.0.1:4177';
+let browser,server;
+const baselines=new WeakMap();
+const baselineRef='ae5e064';
+const baselineFiles=new Set(execFileSync('git',['ls-tree','-r','--name-only',baselineRef],{encoding:'utf8'}).trim().split('\n'));
+const baselineCache=new Map();
+async function both(page,fn,arg){const baseline=baselines.get(page);if(baseline)await baseline.evaluate(fn,arg);return page.evaluate(fn,arg);}
+async function viewport(page,size){await baselines.get(page)?.setViewportSize(size);await page.setViewportSize(size);}
+
+const write=()=>fs.writeFileSync(`${out}/manifest.json`,JSON.stringify(manifest,null,2));
+function verify(condition,message){if(!condition){console.error(`QA FAILURE: ${message}`);manifest.failures.push(message);write();}}
+async function theme(page,enabled){
+ await page.locator('link[href*="css/nonbattle-theme.css"]').evaluate((link,enabled)=>{link.disabled=!enabled;},enabled);
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+}
+async function fixture(page,variant='normal'){
+ await both(page,variant=>{
+  clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  save.progress.tutorial.status='completed';
+  Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);
+  save.instances=[];save.party=[];
+  if(variant!=='empty'){
+   for(let index=0;index<(variant==='many'?40:4);index++)addInstance(['freigal','aquaron','grassbeat','volteck'][index%4],100);
+   save.party=save.instances.slice(0,3).map(ins=>ins.uid);
+  }
+  save.caught=variant==='empty'?[]:M.map(mon=>mon.id);save.mapDex=MAPS.map(map=>map.id);save.itemDex=ITEM_DEX_ITEMS.map(item=>item.id);
+  save.items=Object.fromEntries(ITEM_DEX_ITEMS.map(item=>[item.id,variant==='empty'?0:99]));
+  save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(card=>[card.id,variant==='empty'?0:9]));
+  if(variant==='long'){
+   by('freigal').name='天空を巡る白金の守護者・とても長い名前のモンスター';
+   MONSTER_MOVE_CARDS[0].name='天空を巡る白金の守護者・超長名称の複合属性専用技';
+  }
+  ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);
+  document.querySelector('#contractorRankUpOverlay')?.classList.add('hidden');
+  show('home');
+ },variant);
+}
+async function route(page,id){
+ await both(page,id=>{
+  clearTutorialUi();
+  if(id==='expedition')return showExpedition();
+  if(id==='alchemy')return showAlchemy();
+  if(id==='fusion')return showFusion();
+  if(id==='typeChart')return showTypeChart();
+  if(id==='tutorialRequestReport'){show(id);renderTutorialSupplyReward();return;}
+  if(id==='tutorialStellaCard'){show(id);renderTutorialStellaSkillCard();return;}
+  if(id==='diagnosticsScreen')return showDiagnosticsScreen();
+  if(id==='evolution'){pendingEvolutions=[];checkEvolution(save.instances[0]);processNextEvolution();return;}
+  if(id==='battleChoices')return startBattleFromParty();
+  if(id==='skillEdit'&&save.instances.length)return openSkillEdit(save.instances[0].uid);
+  show(id);
+ },id);
+ await page.waitForTimeout(350);
+ if(['itemGacha','skillGacha','characterGacha'].includes(id)){assert(await page.locator('#gachaHub').isVisible());assert.equal(await page.evaluate(()=>gachaTab),{itemGacha:'item',skillGacha:'skill',characterGacha:'character'}[id]);}
+ else assert(await page.locator(`#${id}`).isVisible(),`${id} route is visible`);
+}
+async function capture(page,name,{validate=true}={}){
+ // Route changes intentionally preserve gameplay scroll. Normalize the two QA
+ // documents so paired evidence is not affected by the previous case's position.
+ await both(page,()=>{
+  window.scrollTo({top:0,left:0,behavior:'instant'});
+  const screen=document.querySelector('.screen.active');if(screen)screen.scrollTop=0;
+ });
+ const entry={name,viewport:page.viewportSize()};
+ for(const [enabled,label] of [[false,'before'],[true,'after']]){
+  const target=enabled?page:baselines.get(page);
+  if(enabled)await theme(page,true);entry[label]=`${name}-${label}.jpg`;
+  await target.screenshot({path:`${out}/${entry[label]}`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
+ }
+ entry.layout=await page.evaluate(()=>{
+  const screen=document.querySelector('.screen.active');
+  const candidates=[...screen.querySelectorAll('button,select,input,summary,h1,h2,h3,.skill-card-title'),...document.querySelectorAll('.app-topbar,.app-bottom-nav,.app-topbar button,.app-bottom-nav button,.app-topbar input,.app-topbar select')];
+  const overflow=candidates.filter(el=>{
+   if(el.closest('.wm-map-scroll,.wm-viewport,.roster-chips'))return false; // Each clipped navigation surface is tested for bounds and reachability below.
+   const r=el.getBoundingClientRect();return r.width&&r.height&&(r.left < -1||r.right>innerWidth+1);
+  }).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,text:el.textContent.slice(0,80),left:r.left,right:r.right,width:r.width};});
+  return {screen:screen.id,family:screen.dataset.themeFamily,bodyFamily:document.body.dataset.nonbattleTheme,
+   horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow,
+   geometry:{viewport:innerWidth,documentScrollWidth:document.documentElement.scrollWidth,documentClientWidth:document.documentElement.clientWidth,bodyScrollWidth:document.body.scrollWidth,zoom:getComputedStyle(document.documentElement).zoom},
+   overflowingElements:[...document.querySelectorAll('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&(r.right>innerWidth+1||r.left < -1)&&!el.closest('.wm-map-scroll,.wm-viewport,.roster-chips');}).slice(0,16).map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,id:el.id,className:el.className,left:r.left,right:r.right,width:r.width};})};
+ });
+ entry.mapScrollers=[];
+ for(const scroller of await page.locator('.screen.active .wm-map-scroll:visible,.screen.active .roster-chips:visible').all()){
+  const geometry=await scroller.evaluate(el=>{
+   const r=el.getBoundingClientRect();return {left:r.left,right:r.right,viewport:innerWidth,overflowX:getComputedStyle(el).overflowX,clientWidth:el.clientWidth,scrollWidth:el.scrollWidth};
+  });
+  verify(geometry.left>=-1&&geometry.right<=geometry.viewport+1,`${name}: map scrolling container fits viewport`);
+  verify(['auto','scroll'].includes(geometry.overflowX),`${name}: map provides horizontal scrolling`);
+  if(geometry.scrollWidth>geometry.clientWidth+1){
+   verify(await scroller.evaluate(el=>{const old=el.scrollLeft;el.scrollLeft=el.scrollWidth;const moved=el.scrollLeft>0;el.scrollLeft=old;return moved;}),`${name}: map horizontal scrolling works`);
+  }
+  const nodes=[];
+  for(const node of await scroller.locator('button:visible').all()){
+   await node.evaluate(el=>el.scrollIntoView({block:'center',inline:'center',behavior:'instant'}));
+   const measurement=await node.evaluate(async el=>{
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const r=el.getBoundingClientRect(),clip=el.closest('.wm-map-scroll,.roster-chips').getBoundingClientRect();
+    const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+    return {text:el.textContent.slice(0,80),insideClip:r.left>=clip.left-1&&r.right<=clip.right+1,
+     insideViewport:r.left>=-1&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight,uncovered:hit===el||el.contains(hit)};
+   });
+   nodes.push(measurement);
+   verify(measurement.insideClip&&measurement.insideViewport&&measurement.uncovered,`${name}: map node is reachable ${JSON.stringify(measurement)}`);
+  }
+  entry.mapScrollers.push({geometry,nodes});
+ }
+ entry.chromeControls=await page.locator('.app-topbar button:visible:not([disabled]),.app-bottom-nav button:visible:not([disabled])').evaluateAll(elements=>elements.map(el=>{
+  const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+  return {text:el.textContent.slice(0,80),id:el.id,rect:{left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height},
+   inViewport:r.width>0&&r.height>0&&r.left>=-1&&r.right<=innerWidth+1&&r.top>=-1&&r.bottom<=innerHeight+1,
+   uncovered:hit===el||el.contains(hit),hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
+ }));
+ for(const control of entry.chromeControls)verify(control.inViewport&&control.uncovered,`${name}: global navigation control reachable ${JSON.stringify(control)}`);
+ await verifyAdoptedMap(page,entry,name);
+ const control=page.locator('.screen.active.world-map-root button:visible:not([disabled]),.screen.active button:visible:not([disabled]):not(.wm-viewport button)').first();
+ if(await control.count()){
+  // 'IfNeeded' accepts a control hidden under a sticky header as in-view.
+  // Center it as a user scroll would, then sample after layout settles.
+  await control.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+  entry.firstControl=await control.evaluate(async el=>{
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+   return {text:el.textContent.slice(0,80),width:r.width,height:r.height,rect:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},scrollY,hit:hit?{id:hit.id,tag:hit.tagName,className:hit.className}:null,uncovered:hit===el||el.contains(hit)};
+  });
+ }
+ manifest.cases.push(entry);write();
+ if(validate){
+  if(entry.firstControl)verify(entry.firstControl.uncovered,`${name}: first enabled control is covered`);
+  verify(!entry.layout.horizontalOverflow,`${name}: document horizontal overflow ${JSON.stringify({geometry:entry.layout.geometry,elements:entry.layout.overflowingElements})}`);
+  verify(entry.layout.overflow.length===0,`${name}: controls/headings overflow ${JSON.stringify(entry.layout.overflow)}`);
+  verify(entry.layout.family&&entry.layout.family===entry.layout.bodyFamily,`${name}: active family matches body`);
+ }
+}
+
+async function verifyAdoptedMap(page,entry,name){
+ if(!await page.locator('.screen.active .wm-viewport').count())return;
+ const view=page.locator('.screen.active .wm-viewport');
+ const inspect=()=>page.evaluate(()=>{
+  const vp=document.querySelector('.screen.active .wm-viewport'),r=vp.getBoundingClientRect();
+  const terrain=vp.querySelector('.wm-map').getBoundingClientRect(),s=getComputedStyle(vp);
+  const pin=vp.querySelector('[data-wm-point]'),visiblePin=vp.querySelector('[data-wm-point]:not([hidden])');
+  return {camera:{...worldMapCamera},view:{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height},terrain:{left:terrain.left,top:terrain.top,right:terrain.right,bottom:terrain.bottom},overflow:s.overflow,touch:s.touchAction,pinWidth:pin?Number.parseFloat(getComputedStyle(pin).width):null,pinParentTransform:getComputedStyle(vp.querySelector('.wm-pins')).transform,visiblePinWidth:visiblePin?.getBoundingClientRect().width};
+ });
+ const checkBounds=geometry=>verify(geometry.terrain.left<=geometry.view.left+1&&geometry.terrain.top<=geometry.view.top+1&&geometry.terrain.right>=geometry.view.right-1&&geometry.terrain.bottom>=geometry.view.bottom-1,`${name}: camera covers all four viewport edges`);
+ const before=await inspect();checkBounds(before);
+ verify(before.overflow==='hidden'&&before.touch==='none',`${name}: map is a clipped pointer surface`);
+ const x=before.view.left+before.view.width/2,y=before.view.top+before.view.height*.55;
+ const canPanX=before.camera.size>before.view.width+1;
+ await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-(canPanX?80:0),y-(canPanX?0:80),{steps:8});await page.mouse.up();
+ const dragged=await inspect();checkBounds(dragged);
+ verify(canPanX?dragged.camera.x!==before.camera.x:dragged.camera.y!==before.camera.y,`${name}: dragging pans along the available axis`);
+ verify(await page.locator('.wm-sheet').count()===0,`${name}: ending a drag does not select a place`);
+ await page.mouse.move(x,y);await page.mouse.wheel(0,-400);
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const zoomed=await inspect();checkBounds(zoomed);
+ verify(zoomed.camera.scale>before.camera.scale&&zoomed.camera.scale<=2.4,`${name}: wheel zoom is bounded`);
+ verify(before.pinWidth===44&&zoomed.pinWidth===before.pinWidth&&zoomed.pinParentTransform==='none'&&(!zoomed.visiblePinWidth||zoomed.visiblePinWidth===44),`${name}: camera zoom does not scale pin targets ${JSON.stringify({before:before.pinWidth,after:zoomed.pinWidth,visible:zoomed.visiblePinWidth,transform:zoomed.pinParentTransform})}`);
+ // Check all current destinations via actual controls. Closed locations must
+ // not acquire a list row; offscreen pins retain this alternate entry route.
+ await page.locator('[data-wm-list]').click();
+ const actual=await page.locator('.wm-sheet [data-wm-place]').evaluateAll(nodes=>nodes.map(node=>node.dataset.wmPlace).sort());
+ const expected=await page.evaluate(()=>MAPS.filter(map=>worldMapVisible(map)&&!['arena','magic_academy'].includes(map.id)).map(map=>map.id).sort());
+ verify(JSON.stringify(actual)===JSON.stringify(expected),`${name}: list contains exactly the open destinations`);
+ const nodes=[];
+ for(const id of actual){
+  await page.locator('[data-wm-list]').click();
+  await page.locator(`.wm-sheet [data-wm-place="${id}"]`).click();
+  const depart=page.locator('.wm-sheet [data-wm-depart]');
+  await depart.scrollIntoViewIfNeeded();
+  const target=await depart.evaluate(el=>{
+   const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+   return {uncovered:hit===el||el.contains(hit),visible:r.top>=0&&r.bottom<=innerHeight};
+  });
+  verify(target.uncovered&&target.visible,`${name}: ${id} departure is reachable in its panel`);
+  verify(await page.locator('.wm-sheet .wm-enemies').count()===0,`${name}: ${id} reveals no encounter list`);
+  nodes.push({id,...target});
+ }
+ // Capital facilities are nested behind the capital rather than duplicated in the list.
+ for(const id of ['arena','magic_academy']){
+  await page.locator('[data-wm-list]').click();await page.locator('.wm-sheet [data-wm-city]').click();
+  await page.locator(`.wm-sheet [data-wm-place="${id}"]`).click();
+  verify(await page.locator('.wm-sheet [data-wm-depart]').count()===1,`${name}: capital facility ${id} is reachable`);
+ }
+ entry.mapViewport={before,dragged,zoomed,nodes};
+ await page.evaluate(()=>{cleanupWorldMapViewport({reset:true});showWorldMapOverview();});
+}
+async function styles(page,selector,{rootOnly=false}={}){
+ return page.locator(selector).evaluateAll((nodes,rootOnly)=>nodes.flatMap(root=>rootOnly?[root]:[root,...root.querySelectorAll('*')]).map(el=>{
+  // Flush geometry before reading auto margins; width reads later in the
+  // property list must not be the first operation that resolves centering.
+  const rect=el.getBoundingClientRect();
+  const s=getComputedStyle(el);const keys=['color','backgroundColor','backgroundImage','borderColor','borderRadius','boxShadow','fontFamily','fontSize','fontWeight','lineHeight','display','position','padding','margin','width','height','filter','opacity'];
+  return {tag:el.tagName,id:el.id,geometry:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},css:Object.fromEntries(keys.map(key=>[key,s[key]]))};
+ }),rootOnly);
+}
+async function settledStyles(page,selector,options){
+ // Finish only finite animations before sampling, matching screenshot behavior
+ // symmetrically. Infinite ambient animations are never advanced to infinity.
+ await page.locator(selector).evaluateAll((roots,rootOnly)=>{
+  for(const root of roots)for(const animation of root.getAnimations({subtree:!rootOnly})){
+   if(Number.isFinite(animation.effect?.getComputedTiming().endTime)&&animation.playState==='running')animation.finish();
+  }
+ },options.rootOnly);
+ let previous='',consecutive=0,last;
+ for(let frame=0;frame<60;frame++){
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+  last=await styles(page,selector,options);
+  const signature=JSON.stringify(last.map(entry=>entry.css));
+  if(signature===previous)consecutive++;else consecutive=0;
+  if(consecutive>=2)return last;
+  previous=signature;
+ }
+ verify(false,`${selector}: computed styles failed to settle for isolation comparison`);
+ return last;
+}
+function styleDifferences(before,after){
+ const differences=[];
+ for(let index=0;index<Math.max(before.length,after.length);index++){
+  const a=before[index],b=after[index];
+  if(!a||!b){differences.push({index,before:a?.id||a?.tag||null,after:b?.id||b?.tag||null});continue;}
+  for(const key of Object.keys(a.css))if(a.css[key]!==b.css[key])differences.push({index,id:a.id,tag:a.tag,key,before:a.css[key],after:b.css[key]});
+ }
+ return differences;
+}
+async function preservation(page,selector,label,{rootOnly=false}={}){
+ const name=`${page.viewportSize().width}x${page.viewportSize().height}-${label.replaceAll(' ','-')}`;
+ // Measure both states before screenshots: fullPage capture may resize the
+ // viewport transiently and 'animations:disabled' advances finite animations.
+ // Neither screenshot side effect should sit between compared style samples.
+ await theme(page,false);const before=await settledStyles(page,selector,{rootOnly});
+ await theme(page,true);const after=await settledStyles(page,selector,{rootOnly});
+ const differences=styleDifferences(before,after);
+ await theme(page,false);const restored=await settledStyles(page,selector,{rootOnly});
+ const roundTripDifferences=styleDifferences(before,restored);
+ verify(roundTripDifferences.length===0,`${name}: disabled/on/disabled round trip changed ${JSON.stringify(roundTripDifferences.slice(0,16))}`);
+ const isolated=differences.length===0;
+ await theme(page,false);await page.screenshot({path:`${out}/${name}-disabled.jpg`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
+ await theme(page,true);await page.screenshot({path:`${out}/${name}-enabled.jpg`,type:'jpeg',quality:75,fullPage:true,animations:'disabled'});
+ verify(before.length>0,`${label} preservation has actual nodes`);
+ verify(isolated,`${name}: ${differences.length} computed-style differences ${JSON.stringify(differences.slice(0,16))}`);
+ manifest.preservation.push({label,selector,rootOnly,nodes:before.length,geometryBefore:before[0]?.geometry,geometryAfter:after[0]?.geometry,geometryRestored:restored[0]?.geometry,roundTripDifferences,differences,result:isolated&&roundTripDifferences.length===0?'PASS':'FAIL',...(!isolated?{stylesBefore:before,stylesAfter:after}:{}),before:`${name}-disabled.jpg`,after:`${name}-enabled.jpg`});write();
+}
+try{
+ server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4177'],{stdio:['ignore','pipe','inherit']});
+ await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('preview server startup timeout')),15000);server.stdout.once('data',()=>{clearTimeout(timer);resolve();});server.once('error',reject);server.once('exit',code=>reject(Error(`preview server exited ${code}`)));});
+ browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
+ for(const [width,height] of [[320,568],[360,640],[390,844],[430,932],[844,390]]){
+  const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
+  // All external requests are blocked before navigation, including analytics and profiles.
+  await context.route('**/*',request=>new URL(request.request().url()).origin===origin?request.continue():request.fulfill({status:204,body:''}));
+  const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.dismiss());
+  await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});
+  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  const baselineContext=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
+  await baselineContext.route('**/*',async request=>{
+   const url=new URL(request.request().url());
+   if(url.origin!==origin)return request.fulfill({status:204,body:''});
+   const path=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));
+   if(/\.(?:html|js|css)$/.test(path)&&baselineFiles.has(path)){
+    if(!baselineCache.has(path))baselineCache.set(path,execFileSync('git',['show',`${baselineRef}:${path}`],{maxBuffer:20*1024*1024}));
+    return request.fulfill({status:200,contentType:path.endsWith('.css')?'text/css':path.endsWith('.js')?'application/javascript':'text/html',body:baselineCache.get(path)});
+   }
+   return request.continue();
+  });
+  const baseline=await baselineContext.newPage();baseline.on('pageerror',error=>errors.push(`baseline: ${error.message}`));baseline.on('dialog',dialog=>dialog.dismiss());
+  await baseline.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});
+  await baseline.locator('#titleScreen').click();await baseline.locator('#titleScreen').waitFor({state:'detached'});
+  baselines.set(page,baseline);
+  await fixture(page);
+  // Water home has its own geometry/playback suite in the same CI job.
+  // All remaining monochrome routes retain the full layout/isolation matrix.
+  const ids=await page.evaluate(()=>Object.keys(NONBATTLE_SCREEN_THEMES).filter(id=>id!=='home'));
+  for(const id of ids){await route(page,id);await capture(page,`${width}x${height}-${id}`);}
+  for(const [id,detail] of [['dex','dexDetail'],['characterDex','characterDexDetail'],['mapDex','mapDexDetail'],['itemDex','itemDexDetail'],['skillDex','skillDexDetail']]){
+   await route(page,id);
+   await both(page,id=>{
+    if(id==='dex')showDexDetail('freigal');
+    if(id==='characterDex')showCharacterDexDetail('elna_beginner');
+    if(id==='mapDex')showMapDexDetail('grassland');
+    if(id==='itemDex')showItemDexDetail(ITEM_DEX_ITEMS[0].id);
+    if(id==='skillDex')showSkillDexDetail(EQUIPPABLE_MOVE_CARDS[0].id);
+   },id);
+   assert((await page.locator(`#${detail}`).textContent()).trim(),`${detail} rendered`);
+   // Check the renderer's own scroll destination before capture resets scroll.
+   await page.waitForTimeout(350);
+   const target=await page.locator(`#${detail}`).evaluate(el=>{
+    const r=el.getBoundingClientRect(),heading=el.querySelector('h1,h2,h3,.skill-card-title');
+    const header=document.querySelector('.app-topbar')?.getBoundingClientRect();
+    return {top:r.top,headingTop:heading?.getBoundingClientRect().top,headerBottom:header?.bottom||0,viewportHeight:innerHeight};
+   });
+   manifest.detailTargets.push({width,height,detail,...target});write();
+   verify(target.top>=target.headerBottom-1&&target.top<target.viewportHeight,`${detail}: scroll anchor visible below sticky header ${JSON.stringify(target)}`);
+   if(target.headingTop!==undefined)verify(target.headingTop>=target.headerBottom-1,`${detail}: heading is not hidden by sticky header`);
+   await capture(page,`${width}x${height}-${detail}`);
+  }
+  assert.equal(await page.evaluate(()=>{show('home');return document.querySelector('#homeAdventureKicker').textContent;}),'序章 第7話');
+  assert.equal(await page.locator('#homeSideLinks button').count(),2,'organized water home side links');
+  for(const variant of ['empty','many','long']){
+   await fixture(page,variant);
+   for(const id of ['party','partySet','skillDex',...(variant==='empty'?[]:['skillEdit'])]){
+    await route(page,id);await capture(page,`${width}x${height}-${variant}-${id}`);
+   }
+  }
+  await fixture(page);
+  // CSS zoom exercises enlarged controls; separate half-width viewport exercises reflow.
+  await both(page,()=>document.documentElement.style.zoom='2');
+  for(const id of ['partySet','skillDex','shop']){await route(page,id);await capture(page,`${width}x${height}-zoom200-${id}`);}
+  await both(page,()=>document.documentElement.style.zoom='');
+  await viewport(page,{width:Math.max(160,Math.floor(width/2)),height:Math.floor(height/2)});
+  await route(page,'party');await capture(page,`${width}x${height}-zoom-reflow-party`);
+  await viewport(page,{width,height});
+  if(width===390)await runMonochromeFlows(page,out,result=>{manifest.flows.push(result);write();});
+  await both(page,()=>{startBattleFromParty();startChosenBattle('grassland','slime','easy');});
+  assert(await page.locator('#battle').isVisible());
+  assert.equal(await page.locator('body').getAttribute('data-nonbattle-theme'),null,'battle disables body theme');
+  await preservation(page,'#battle','battle');
+  // Exclude hidden nonbattle descendants of body, but include global chrome
+  // subtrees to detect inherited or overly broad palette/layout regressions.
+  await preservation(page,'body','battle body',{rootOnly:true});
+  await preservation(page,'.app-topbar','battle topbar');
+  await preservation(page,'.app-bottom-nav','battle bottom navigation');
+  await page.screenshot({path:`${out}/${width}x${height}-battle-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
+  await route(page,'battleItemSelect');await preservation(page,'#battleItemSelect','battle item picker');
+  await route(page,'contractConfirm');await preservation(page,'#contractConfirm','contract confirmation');
+  // Compare cinematic subtree in a fixed stage to avoid timer-dependent false differences.
+  await page.evaluate(()=>{show('home');document.querySelector('#contractAnimation').classList.remove('hidden');document.querySelector('#contractPaper').className='contract-paper';});
+  await preservation(page,'#contractAnimation','contract cinematic');
+  await page.screenshot({path:`${out}/${width}x${height}-contract-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
+  await page.evaluate(()=>document.querySelector('#contractAnimation').classList.add('hidden'));
+  await route(page,'skillGacha');
+  await page.evaluate(()=>{const card=SKILL110_CATALOG.find(s=>s.cost>10&&s.cost<=20);showGachaResult('skill',{count:1,kind:'monster'},[{card,isNew:true}]);});
+  await preservation(page,'#gachaResultOverlay','adopted skill result overlay');
+  await page.screenshot({path:`${out}/${width}x${height}-skill-gacha-preserved.jpg`,type:'jpeg',quality:75,fullPage:true});
+  assert.equal(errors.length,0,errors.join('\n'));
+  await baselineContext.close();await context.close();
+ }
+ assert.equal(manifest.failures.length,0,`Layout/isolation failures (${manifest.failures.length}):\n${manifest.failures.join('\n')}`);
+ manifest.status='PASS';write();console.log(`PASS ${manifest.cases.length} nonbattle screenshot pairs; ${manifest.preservation.length} isolation comparisons`);
+}catch(error){
+ manifest.status='FAIL';manifest.error=error.stack||String(error);
+ for(const [index,page] of (browser?.contexts().flatMap(context=>context.pages())||[]).entries()){
+  try{await page.screenshot({path:`${out}/failure-${index}.jpg`,type:'jpeg',quality:75,fullPage:true,timeout:10000});}catch{}
+ }
+ write();throw error;
+}finally{await browser?.close();server?.kill();}

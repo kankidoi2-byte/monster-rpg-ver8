@@ -1,21 +1,40 @@
+const GAME_LINE_ICONS=Object.freeze({
+  lock:'<rect x="6" y="10" width="12" height="10" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
+  unlock:'<rect x="6" y="10" width="12" height="10" rx="2"/><path d="M9 10V7a3 3 0 0 1 5.7-1.3"/>',
+  edit:'<path d="m5 15-1 5 5-1L20 8l-4-4ZM14 6l4 4"/>',
+  check:'<path d="m5 12 4 4L19 6"/>'
+});
+function gameLineIcon(name){
+  const paths=Object.hasOwn(GAME_LINE_ICONS,name)?GAME_LINE_ICONS[name]:'';
+  return paths?`<svg class="game-line-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`:'';
+}
 function typesHtml(ts) {
-  return ts.map(t => `<span class="${t}">${TN[t]}</span>`).join(' / ');
+  return skillTypeChips(ts);
 }
 function vis(m, imageAttributes = '') {
   if (m.imgKey && IMG[m.imgKey]) {
     const attributes = imageAttributes ? ` ${imageAttributes}` : '';
     return `<img${attributes} src="${IMG[m.imgKey]}" alt="${m.name}" style="width:120px;height:120px;object-fit:contain;border-radius:12px;display:block;margin:0 auto;">`;
   }
-  return `<div class="emoji">${m.icon || '❓'}</div>`;
+  if (m.artworkPending && isCharacterUnit(m)) return `<div class="character-artwork-pending" role="img" aria-label="${m.name}"><div class="emoji" aria-hidden="true">画像準備中</div><small>${m.name}</small></div>`;
+  return `<div class="unit-artwork-placeholder" role="img" aria-label="${escapeGameHtml(m.name)}">画像準備中</div>`;
 }
+const uiMotionTimers = new WeakMap();
 function replayUiMotion(element, className, duration=700) {
   if (!element) return;
+  let timers = uiMotionTimers.get(element);
+  if (!timers) uiMotionTimers.set(element, timers = new Map());
+  clearTimeout(timers.get(className));
   element.classList.remove(className);
   void element.offsetWidth;
   element.classList.add(className);
-  setTimeout(() => element.classList.remove(className), duration);
+  timers.set(className, setTimeout(() => {
+    element.classList.remove(className);
+    timers.delete(className);
+  }, duration));
 }
 function showUiNotice(message, kind='success') {
+  if(kind==='error'&&typeof gameAudioPlay==='function')gameAudioPlay('error');
   let notice = document.getElementById('uiNotice');
   if (!notice) {
     notice = document.createElement('div');
@@ -29,21 +48,121 @@ function showUiNotice(message, kind='success') {
   notice.textContent = message;
   replayUiMotion(notice, 'is-visible', 2200);
 }
-function show(id) {
-  if(typeof BattleAudio!=='undefined')BattleAudio.navigate(id);
+function dismissUiNotice() {
+  const notice = document.getElementById('uiNotice');
+  if (!notice) return;
+  const timers = uiMotionTimers.get(notice);
+  clearTimeout(timers?.get('is-visible'));
+  timers?.delete('is-visible');
+  notice.classList.remove('is-visible');
+  notice.textContent = '';
+}
+let gameConfirmSession=null;
+function closeGameConfirmForNavigation(){
+  gameConfirmSession?.finish(false,{restoreFocus:false});
+}
+function gameConfirm({title='確認',body='',okLabel='OK',cancelLabel='キャンセル',danger=false}={}){
+  // Reject overlapping confirmations rather than replacing an approved action.
+  if(gameConfirmSession||document.getElementById('itemQuantityDialog')?.open)return Promise.resolve(false);
+  const dialog=document.createElement('dialog');
+  if(typeof dialog.showModal!=='function')return Promise.resolve(false);
+  dialog.id='gameConfirmDialog';
+  dialog.className='game-confirm-dialog';
+  dialog.setAttribute('aria-labelledby','gameConfirmTitle');
+  if(body)dialog.setAttribute('aria-describedby','gameConfirmBody');
+  const sheet=document.createElement('section');
+  sheet.className='game-confirm-sheet roster-sheet';
+  const heading=document.createElement('h2');heading.id='gameConfirmTitle';heading.textContent=title;
+  const copy=document.createElement('p');copy.id='gameConfirmBody';copy.className='game-confirm-body';copy.textContent=body;
+  const actions=document.createElement('div');actions.className='roster-sheet-buttons';
+  const cancel=document.createElement('button');cancel.type='button';cancel.dataset.gameConfirmAction='cancel';cancel.textContent=cancelLabel;cancel.autofocus=true;
+  const ok=document.createElement('button');ok.type='button';ok.dataset.gameConfirmAction='ok';ok.textContent=okLabel;
+  if(danger)ok.className='roster-danger';
+  actions.append(cancel,ok);sheet.append(heading);if(body)sheet.append(copy);sheet.append(actions);dialog.append(sheet);
+  const previousFocus=document.activeElement;
+  return new Promise(resolve=>{
+    const session={finish};
+    function onNavigation(){finish(false,{restoreFocus:false});}
+    function finish(accepted,{restoreFocus=true}={}){
+      if(gameConfirmSession!==session)return;
+      gameConfirmSession=null;
+      ok.disabled=true;cancel.disabled=true;
+      window.removeEventListener('pagehide',onNavigation);
+      window.removeEventListener('popstate',onNavigation);
+      if(dialog.open)dialog.close();
+      dialog.remove();
+      if(restoreFocus&&previousFocus?.isConnected)previousFocus.focus?.({preventScroll:true});
+      resolve(accepted===true);
+    }
+    gameConfirmSession=session;
+    cancel.addEventListener('click',()=>finish(false));
+    ok.addEventListener('click',()=>finish(true));
+    dialog.addEventListener('click',event=>{if(event.target===dialog)finish(false);});
+    dialog.addEventListener('cancel',event=>{event.preventDefault();event.stopPropagation();finish(false);});
+    dialog.addEventListener('close',()=>finish(false));
+    dialog.addEventListener('keydown',event=>{if(event.key==='Escape')event.stopPropagation();});
+    try{
+      document.body.append(dialog);
+      dialog.showModal();
+      window.addEventListener('pagehide',onNavigation);
+      window.addEventListener('popstate',onNavigation);
+    }catch(_error){finish(false);}
+  });
+}
+function show(id,{readOnlyStoryReplay=false}={}) {
+  if(document.querySelector('.screen.active')?.id!==id){
+    closeGameConfirmForNavigation();
+    if(typeof closeItemQuantity==='function')closeItemQuantity();
+  }
+  const replayNavigation=readOnlyStoryReplay&&(id==='prologuePart2'||id==='storyMode');
+  if(typeof prologuePart2ScreenChanged==='function')prologuePart2ScreenChanged(id);
+  if(typeof renewalScreenChanged==='function')renewalScreenChanged(id);
+  if(typeof autoScreenChange==='function')autoScreenChange(id);
+  if(typeof closeRoadmapSheet==='function')closeRoadmapSheet();
+  if(id!=='giftBox'&&typeof closeGiftDialog==='function')closeGiftDialog();
+  if(id!=='home'&&typeof closeHomeMissions==='function')closeHomeMissions();
+  const feedbackPreviousScreen=document.querySelector('.screen.active')?.id;
+  if(typeof rosterScreenChanged==='function')rosterScreenChanged(id);
+  if(typeof worldMapPartyScreenChanged==='function')worldMapPartyScreenChanged(id);
+  if(typeof gachaResultSession!=='undefined'&&gachaResultSession&&typeof dismissGachaResult==='function')dismissGachaResult(false);
+  if(typeof gachaCinema!=='undefined'&&gachaCinema)gachaCinema.finish();
+  if(typeof closeGachaRates==='function')closeGachaRates();
+  if(id==='gachaHub'&&document.querySelector('.screen.active')?.id!=='gachaHub'&&typeof gachaTab!=='undefined')gachaTab='character';
+  const gachaLogicalId=id;
+  const gachaTarget=typeof gachaRoute==='function'&&gachaRoute(id);
+  if(gachaTarget)id='gachaHub';
+  if(id!=='battleChoices'&&typeof cleanupWorldMapViewport==='function')cleanupWorldMapViewport({reset:true});
+  if(gachaLogicalId!=='characterGacha'&&typeof cancelPendingCharacterGacha==='function')cancelPendingCharacterGacha();
+  if(typeof cancelSoulContractPresentation==='function')cancelSoulContractPresentation();
+  if(typeof gachaResultSession!=='undefined'&&gachaResultSession)dismissGachaResult(false);
  if(id==='contractConfirm')setTimeout(refreshContractScrollDisplay,0);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
   if (!target) return;
+  if (id !== feedbackPreviousScreen && (id === 'battle' || id === 'evolution')) dismissUiNotice();
   target.classList.add('active');
+  if(typeof syncHomeBannerTimer==='function')syncHomeBannerTimer(id);
+  if(id==='expedition'&&typeof markExpeditionReturnsSeen==='function')markExpeditionReturnsSeen();
+  if(typeof gameAudioScreenChanged==='function')gameAudioScreenChanged(id);
+  if(typeof MonsterFeedback!=='undefined')MonsterFeedback.screenChanged(id,feedbackPreviousScreen);
+  if(typeof PersonalGifts!=='undefined')PersonalGifts.screenChanged(id);
   replayUiMotion(target, 'ui-screen-enter', 320);
   updateAppNavigation(id);
-  updateAppResourceBar();
-  updateContractorRankHeader();
+  // Replay switches between two story screens without refreshing lazy save state
+  // (including G-BLESS's weekly reset) or presenting a pending rank reward.
+  if(!replayNavigation){
+    updateAppResourceBar();
+    updateContractorRankHeader();
+  }
   if (id === 'home') renderHome();
   if (id === 'homeFavoriteSelect') renderHomeFavoriteOptions();
+  if (id === 'giftBox' && typeof renderGiftBox === 'function') renderGiftBox();
+  if (id === 'roadmap' && typeof renderRoadmap === 'function') renderRoadmap();
   if (id === 'notices' && typeof renderNotices === 'function') renderNotices();
+  if (id === 'growthHub' && typeof renderAuthority==='function') renderAuthority();
   if (id === 'party')    renderParty();
+  if (id === 'skillDex') renderSkillDex();
+  if (id === 'skillSynthesis') renderSkillSynthesis();
   if (id === 'dexHub')   renderDexHub();
   if (id === 'dex')      renderDex();
   if (id === 'characterDex') renderCharacterDex();
@@ -54,6 +173,10 @@ function show(id) {
   if (id === 'contractorTitles') renderContractorTitles();
   if (id === 'storyMode' && typeof renderStoryMode === 'function') renderStoryMode();
   if (id === 'partySet') renderPartySetup();
+  if (id === 'partySet' && typeof renderProloguePart2PartyReturn==='function') renderProloguePart2PartyReturn();
+  if (id === 'battleChoices' && typeof renderProloguePart2ReturnRoute==='function') renderProloguePart2ReturnRoute();
+  if (id === 'partySet' && typeof renderMapStoryPartyReturn==='function') renderMapStoryPartyReturn();
+  if (id === 'partySet' && typeof renderWorldMapPartyReturn==='function') renderWorldMapPartyReturn();
   if (id === 'shop')     renderShop();
   if (id === 'itemGacha') renderItemGacha();
   if (id === 'characterGacha') renderCharacterGacha();
@@ -61,8 +184,16 @@ function show(id) {
   if (id === 'battleItemSelect') renderBattleItemSelect();
   if (id === 'skillEdit') renderSkillEdit();
   if (id === 'moreMenu' && typeof updateTutorialMenuSummary === 'function') updateTutorialMenuSummary();
-  if (typeof handleTutorialScreenChange === 'function') handleTutorialScreenChange(id);
-  scheduleContractorRankUpPresentation();
+  if(gachaTarget)openGachaTab(typeof gachaTarget==='string'?gachaTarget:gachaTab,{guide:false});
+  if(!replayNavigation){
+    if(typeof handleTutorialScreenChange==='function')handleTutorialScreenChange(gachaTarget&&gachaTab==='skill'?'skillGacha':id);
+    scheduleContractorRankUpPresentation();
+  }else clearTimeout(contractorRankUpTimer);
+  if(typeof prologuePart2RenderOptionalEntry==='function')prologuePart2RenderOptionalEntry(id);
+  if(typeof battleUiScreenChanged==='function')battleUiScreenChanged(id);
+  if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
+  if(typeof syncWaterHomeMedia==='function')syncWaterHomeMedia();
+  if(typeof applyNonbattleTheme==='function')applyNonbattleTheme(document.querySelector('.screen.active')?.id || id);
 }
 function openBattleHub(){
   const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
@@ -79,18 +210,38 @@ function openHomeAdventure(){
   }
   if(typeof openStoryMode==='function')openStoryMode();
 }
-function updateAppResourceBar(){
+function compactHomeCoinText(coins){
+  for(const [unit,label] of [[1e16,'京'],[1e12,'兆'],[1e8,'億'],[1e4,'万']]){
+    if(coins>=unit)return Math.floor(coins/unit).toLocaleString('ja-JP')+label;
+  }
+  return coins.toLocaleString('ja-JP');
+}
+function updateAppCoinBalance(coins=Number(save?.coins||0)){
   const coinView = document.getElementById('appCoinView');
-  if(coinView) coinView.textContent = Number(save?.coins || 0).toLocaleString('ja-JP');
+  if(coinView){
+    const full=coins.toLocaleString('ja-JP');
+    const compact=document.getElementById('home')?.classList.contains('active')&&coins>=1000000;
+    coinView.textContent=compact?compactHomeCoinText(coins):full;
+    // The full balance remains available to assistive technology and on other screens.
+    const resource=coinView.closest?.('.app-resource');
+    resource?.setAttribute('aria-label',`所持コイン ${full}`);
+    if(compact)coinView.title=full;else coinView.removeAttribute?.('title');
+  }
+}
+function updateAppResourceBar(){
+  if(typeof renderGBless==='function')renderGBless();
+  updateAppCoinBalance();
+  if(typeof updateExpeditionReturnBadges==='function')updateExpeditionReturnBadges();
 }
 const CONTRACTOR_EXP_SOURCE_LABELS=Object.freeze({
-  battle_easy:'Easy討伐勝利',battle_normal:'Normal討伐勝利',battle_hard:'Hard討伐勝利',battle_extreme:'Extreme討伐勝利',multi_battle_bonus:'三つ巴・乱入戦勝利',
+  battle_easy:'難易度Ⅰ討伐勝利',battle_normal:'難易度Ⅱ討伐勝利',battle_hard:'難易度Ⅳ討伐勝利',battle_d1:'難易度Ⅰ討伐勝利',battle_d2:'難易度Ⅱ討伐勝利',battle_d3:'難易度Ⅲ討伐勝利',battle_d4:'難易度Ⅳ討伐勝利',battle_d5:'難易度Ⅴ討伐勝利',battle_extreme:'Extreme討伐勝利',multi_battle_bonus:'三つ巴・乱入戦勝利',
   contract_success:'契約成功',first_species_contract:'初めての種族と契約',dex_registration:'モンスター図鑑登録',item_dex_registration:'アイテム図鑑登録',map_dex_registration:'マップ図鑑登録',dex_milestone:'図鑑登録数達成',
   evolution:'進化',special_evolution:'特殊進化・合成',alchemy_success:'錬成成功',expedition_short:'短距離遠征',expedition_medium:'中距離遠征',expedition_long:'長距離遠征',boss_first_win:'ボス初回撃破',
   legacy_activity:'これまでの冒険記録',legacy_dex_milestone:'これまでの図鑑達成'
 });
 let contractorRankUpTimer=null;
 let contractorRankUpPreviousFocus=null;
+let contractorRewardSavePending=false;
 function contractorExpSourceLabel(source){return CONTRACTOR_EXP_SOURCE_LABELS[source]||'冒険の記録';}
 function updateContractorRankHeader(){
   if(typeof contractorRankProgress!=='function')return;
@@ -101,6 +252,7 @@ function updateContractorRankHeader(){
   const titleSummary=document.getElementById('contractorTitleMenuSummary');
   const unlockedTitleCount=Array.isArray(save?.contractor?.unlockedTitleIds)?CONTRACTOR_TITLE_CATALOG.filter(entry=>save.contractor.unlockedTitleIds.includes(entry.id)).length:0;
   if(view)view.textContent=`Rank ${progress.rank}`;
+  if(typeof syncWaterHomeRank==='function')syncWaterHomeRank();
   if(summary)summary.textContent=`Rank ${progress.rank}・${title?.name||'称号未設定'}`;
   if(titleSummary)titleSummary.textContent=title?`装備中：${title.name}`:`${unlockedTitleCount}個獲得・称号未設定`;
 }
@@ -128,7 +280,7 @@ function renderContractorRank(){
   content.innerHTML=`
     <section class="contractor-rank-hero">
       <span>CONTRACTOR STATUS</span><strong>Rank ${progress.rank}</strong><p>${equipped?.name||'称号未設定'}</p><button type="button" class="contractor-title-link" onclick="showContractorTitles()">称号を変更 ›</button>
-      <div class="contractor-rank-progress" role="progressbar" aria-label="次の契約者Rankまで" aria-valuemin="0" aria-valuemax="${progress.requiredExp||1}" aria-valuenow="${progress.isMax?1:progress.currentExp}"><i style="width:${Math.round(progress.ratio*100)}%"></i></div>
+      <div class="contractor-rank-progress" role="progressbar" aria-label="次の契約者ランクまで" aria-valuemin="0" aria-valuemax="${progress.requiredExp||1}" aria-valuenow="${progress.isMax?1:progress.currentExp}"><i style="width:${Math.round(progress.ratio*100)}%"></i></div>
       <div class="contractor-rank-progress-copy"><span>${progressText}</span><span>${progress.isMax?'最高Rank到達':`あと ${progress.remainingExp.toLocaleString('ja-JP')} EXP`}</span></div>
       <small>累計 ${progress.totalExp.toLocaleString('ja-JP')} EXP</small>
     </section>
@@ -148,18 +300,18 @@ function renderContractorRank(){
     </section>
     <section class="contractor-rank-card contractor-exp-guide">
       <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">HOW TO GROW</span><h2>Rankを上げる方法</h2></div></div>
-      <div><span>⚔️<strong>討伐・ボス撃破</strong></span><span>🤝<strong>契約・図鑑登録</strong></span><span>✦<strong>進化・錬成</strong></span><span>🧭<strong>遠征完了</strong></span></div>
-      <p>Rankによる機能制限やモンスターの能力補正はありません。</p>
+      <div><span><strong>討伐・ボス撃破</strong></span><span><strong>契約・図鑑登録</strong></span><span><strong>進化・錬成</strong></span><span><strong>遠征完了</strong></span></div>
+      <p>Rankで能力や機能は変わらない</p>
     </section>`;
 }
 function contractorRewardItemMeta(itemId){return (typeof ITEM_BY_ID!=='undefined'&&ITEM_BY_ID[itemId])||{id:itemId,name:itemId,icon:'🎁'};}
 function contractorRewardParts(reward){
   if(!reward)return [];
   const parts=[];
-  if(reward.coins>0)parts.push(`🪙 コイン ${reward.coins.toLocaleString('ja-JP')}枚`);
+  if(reward.coins>0)parts.push(`コイン ${reward.coins.toLocaleString('ja-JP')}枚`);
   Object.entries(reward.items).forEach(([itemId,count])=>{const item=contractorRewardItemMeta(itemId);parts.push(`${item.icon||'🎁'} ${item.name} ×${count}`);});
   const title=reward.titleId?contractorTitleById(reward.titleId):null;
-  if(title)parts.push(`🎖️ 称号「${title.name}」（到達時獲得）`);
+  if(title)parts.push(`称号「${title.name}」（到達時獲得）`);
   return parts;
 }
 function contractorRewardCard(reward,{compact=false}={}){
@@ -199,19 +351,32 @@ function contractorClaimNotice(result){
   if(itemCount)parts.push(`アイテム${itemCount}個`);
   return `Rank報酬${count>1?`${count}件`:''}を受け取りました${parts.length?`（${parts.join('・')}）`:''}。`;
 }
-function finishContractorRewardClaim(result){
+function finishContractorRewardClaim(claimReward){
+  let result,committed=false;
+  // Item registration can grant EXP and request a Rank redraw inside the claim.
+  // Keep that display unchanged until the whole reward has been saved.
+  contractorRewardSavePending=true;
+  try{committed=commitSaveMutation(()=>{result=claimReward();});}
+  finally{contractorRewardSavePending=false;}
+  if(!committed)return false;
   if(!result?.claimed)return false;
-  if(typeof saveGame==='function')saveGame();
-  if(typeof updateItems==='function')updateItems();
-  updateAppResourceBar();
-  updateContractorRankHeader();
-  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
-  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
-  if(typeof showUiNotice==='function')showUiNotice(contractorClaimNotice(result));
+  showCommittedSaveResult(()=>{
+    if(typeof updateItems==='function')updateItems();
+    updateAppResourceBar();
+    refreshContractorRankUi();
+    if(typeof showUiNotice==='function')showUiNotice(contractorClaimNotice(result));
+  });
   return true;
 }
-function claimContractorRewardUi(rank){return finishContractorRewardClaim(claimContractorRankReward(rank));}
-function claimAllContractorRewardsUi(){return finishContractorRewardClaim(claimAllContractorRankRewards());}
+function claimContractorRewardUi(rank){
+  const reward=contractorRankReward(rank);
+  if(!reward||!unclaimedContractorRankRewardRanks().includes(reward.rank))return false;
+  return finishContractorRewardClaim(()=>claimContractorRankReward(rank));
+}
+function claimAllContractorRewardsUi(){
+  if(!unclaimedContractorRankRewardRanks().length)return false;
+  return finishContractorRewardClaim(()=>claimAllContractorRankRewards());
+}
 function renderContractorTitles(){
   const content=document.getElementById('contractorTitleContent');
   if(!content||typeof contractorTitleById!=='function')return;
@@ -226,34 +391,41 @@ function renderContractorTitles(){
       ?`<button type="button" aria-pressed="${isEquipped}" onclick="setContractorTitle('${isEquipped?'':title.id}')">${isEquipped?'称号を外す':'この称号を装備'}</button>`
       :`<button type="button" disabled>Rank ${title.rank}で獲得</button>`;
     return `<article class="contractor-title-card${isUnlocked?' is-unlocked':' is-locked'}${isEquipped?' is-equipped':''}">
-      <div class="contractor-title-medal" aria-hidden="true">${isUnlocked?'✦':'?'}</div>
-      <div class="contractor-title-copy"><span>RANK ${title.rank}${isEquipped?'・装備中':''}</span><h2>${title.name}</h2><p>${title.description}</p><small>${isUnlocked?'獲得済み':`契約者Rank ${title.rank}で獲得`}</small></div>${action}
+      <div class="contractor-title-medal" aria-hidden="true">${isUnlocked?gameLineIcon('check'):gameLineIcon('lock')}</div>
+      <div class="contractor-title-copy"><span>RANK ${title.rank}${isEquipped?'・装備中':''}</span><h2>${title.name}</h2><p>${title.description}</p><small>${isUnlocked?'獲得済み':`契約者ランク ${title.rank}で獲得`}</small></div>${action}
     </article>`;
   }).join('');
   content.innerHTML=`<section class="contractor-title-current">
-      <span class="ui-eyebrow">EQUIPPED TITLE</span><div><i aria-hidden="true">🎖️</i><p><small>現在の称号</small><strong>${equipped?.name||'称号未設定'}</strong></p></div>
+      <span class="ui-eyebrow">EQUIPPED TITLE</span><div><p><small>現在の称号</small><strong>${equipped?.name||'称号未設定'}</strong></p></div>
       <small>獲得済み ${unlockedCount} / ${CONTRACTOR_TITLE_CATALOG.length}</small>
     </section>
     <section class="contractor-title-list" aria-label="称号一覧">${cards}</section>
-    <p class="contractor-title-note">称号は冒険の達成記録です。装備しても戦闘能力や利用できる機能は変わりません。</p>`;
+    `;
 }
 function setContractorTitle(titleId){
-  const previous=equippedContractorTitle();
-  if(!equipContractorTitle(titleId||null)){
+  if(titleId&&(!contractorTitleById(titleId)||!ensureContractorState().unlockedTitleIds.includes(titleId))){
     if(typeof showUiNotice==='function')showUiNotice('未獲得の称号は装備できません。','warning');
     return false;
   }
-  if(typeof saveGame==='function')saveGame();
-  const current=equippedContractorTitle();
-  updateContractorRankHeader();
-  renderContractorTitles();
-  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
-  if(typeof showUiNotice==='function')showUiNotice(current?`称号「${current.name}」を装備しました。`:previous?'称号を外しました。':'称号未設定です。');
+  const previous=equippedContractorTitle();
+  let equipped=false;
+  if(!commitSaveMutation(()=>{equipped=equipContractorTitle(titleId||null);}))return false;
+  if(!equipped){
+    if(typeof showUiNotice==='function')showUiNotice('未獲得の称号は装備できません。','warning');
+    return false;
+  }
+  showCommittedSaveResult(()=>{
+    const current=equippedContractorTitle();
+    updateContractorRankHeader();
+    renderContractorTitles();
+    if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+    if(typeof showUiNotice==='function')showUiNotice(current?`称号「${current.name}」を装備しました。`:previous?'称号を外しました。':'称号未設定です。');
+  });
   return true;
 }
 function contractorRankUpCanPresent(){
   const active=document.querySelector('.screen.active')?.id;
-  return !document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
+  return !(typeof monsterStatusUi!=='undefined'&&monsterStatusUi)&&!(typeof tutorialDefersRankUpPresentation==='function'&&tutorialDefersRankUpPresentation())&&!(typeof rosterUi!=='undefined'&&(rosterUi.selecting||rosterUi.detailUid||rosterUi.confirmation))&&!(typeof gachaResultBlocksRank==='function'&&gachaResultBlocksRank())&&!(typeof isCharacterGachaPresenting==='function'&&isCharacterGachaPresenting())&&!document.body.classList.contains('title-mode')&&!['battle','battleItemSelect','contractConfirm'].includes(active||'')&&document.getElementById('contractorRankUpOverlay')?.classList.contains('hidden');
 }
 function scheduleContractorRankUpPresentation(){
   clearTimeout(contractorRankUpTimer);
@@ -276,18 +448,21 @@ function presentNextContractorRankUp(){
 function closeContractorRankUp(){
   const overlay=document.getElementById('contractorRankUpOverlay');
   if(!overlay||overlay.classList.contains('hidden'))return;
-  ensureContractorState().pendingRankUps.shift();
-  overlay.classList.add('hidden');
-  if(typeof saveGame==='function')saveGame();
-  updateContractorRankHeader();
-  if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
-  if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
-  if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
-  contractorRankUpPreviousFocus?.focus?.();
-  contractorRankUpPreviousFocus=null;
-  scheduleContractorRankUpPresentation();
+  if(!commitSaveMutation(()=>{ensureContractorState().pendingRankUps.shift();}))return false;
+  showCommittedSaveResult(()=>{
+    overlay.classList.add('hidden');
+    updateContractorRankHeader();
+    if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
+    if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
+    if(document.getElementById('contractorRankRewards')?.classList.contains('active'))renderContractorRankRewards();
+    contractorRankUpPreviousFocus?.focus?.();
+    contractorRankUpPreviousFocus=null;
+    scheduleContractorRankUpPresentation();
+  });
+  return true;
 }
 function refreshContractorRankUi(){
+  if(contractorRewardSavePending)return;
   updateContractorRankHeader();
   if(document.getElementById('contractorRank')?.classList.contains('active'))renderContractorRank();
   if(document.getElementById('contractorTitles')?.classList.contains('active'))renderContractorTitles();
@@ -299,8 +474,8 @@ function appNavigationSection(screenId){
   if(['gachaHub','itemGacha','skillGacha','characterGacha'].includes(screenId)) return 'gacha';
   if(['party','partySet','skillEdit'].includes(screenId)) return 'monsters';
   if(['battleChoices','battleItemSelect','contractConfirm','battle'].includes(screenId)) return 'battle';
-  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution'].includes(screenId)) return 'monsters';
-  if(['moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex'].includes(screenId)) return 'more';
+  if(['growthHub','fusion','alchemy','alchemyConfirm','alchemyResult','evolution','skillSynthesis'].includes(screenId)) return 'monsters';
+  if(['roadmap','feedbackBox','moreMenu','contractorRank','contractorRankRewards','contractorTitles','notices','expedition','shop','typeChart','dexHub','dex','characterDex','mapDex','itemDex','skillDex'].includes(screenId)) return 'more';
   return 'home';
 }
 function updateAppNavigation(screenId){
@@ -322,8 +497,7 @@ function renderHomeFavorite(){
   const stage=document.getElementById('homeFavoriteStage');
   if(!stage)return;
   const mon=homeFavoriteMonster();
-  const caption=`<div class="home-favorite-caption"><div><strong>${mon?mon.name:'あなたの冒険が始まる'}</strong></div></div>`;
-  stage.innerHTML=`<button type="button" class="home-favorite-change" onclick="show('homeFavoriteSelect')">お気に入り変更</button><div class="home-favorite-art">${mon?`<div class="home-portrait-frame">${vis(mon, `onload="this.parentElement.style.setProperty('--portrait-ratio',this.naturalWidth/this.naturalHeight)"`)}${caption}</div>`:`<div class="home-favorite-empty">最初の仲間を迎えよう${caption}</div>`}</div>`;
+  if(typeof renderWaterHomeFavorite==='function')renderWaterHomeFavorite(stage,mon);
 }
 function renderHomeFavoriteOptions(){
   const list=document.getElementById('homeFavoriteOptions');
@@ -351,46 +525,25 @@ function selectHomeFavorite(id){
   return true;
 }
 function renderHome(){
+  if(typeof refreshGiftUi==='function')refreshGiftUi();
+  if(typeof renderNonbattleHomeContext==='function')renderNonbattleHomeContext();
+  if(typeof renderHomeBanners==='function')renderHomeBanners();
+  if(typeof updateHomeMissionBadge==='function')updateHomeMissionBadge();
   renderHomeFavorite();
-  const partyPreview = document.getElementById('homePartyPreview');
-  const growthPreview = document.getElementById('homeGrowthPreview');
-  const expeditionPreview = document.getElementById('homeExpeditionPreview');
-  if (typeof renderNoticePreview === 'function') renderNoticePreview();
+  if (typeof updateNoticeIndicators === 'function') updateNoticeIndicators();
   if (typeof renderHomeStoryCard === 'function') renderHomeStoryCard();
-  const party = typeof getPartyInstances === 'function' ? getPartyInstances() : [];
-  if(partyPreview){
-    partyPreview.innerHTML = party.length ? party.map((ins,index)=>{
-      const mon=by(ins.id);
-      if(!mon) return '';
-      return `<button class="home-party-member ${index===0?'is-leader':''}" onclick="show('partySet')">${index===0?'<span>LEADER</span>':''}${vis(mon)}<strong>${mon.name}</strong><small>Lv.${ins.level||1}</small></button>`;
-    }).join('') : `<button class="home-empty-party" onclick="show('partySet')"><strong>パーティーを編成する</strong><small>最初の仲間を選びましょう</small></button>`;
-  }
-  if(growthPreview){
-    const lead=party[0];
-    const mon=lead ? by(lead.id) : null;
-    const atMax=lead ? isMaxLevel(lead.level) : false;
-    const needed=lead&&!atMax ? needExp(lead.level||1) : 0;
-    const current=Number(lead?.exp||0);
-    const rate=needed ? Math.max(0,Math.min(100,current/needed*100)) : 0;
-    growthPreview.innerHTML = mon ? `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>${atMax?`${mon.name}は Lv.MAX`:`${mon.name}のレベルアップまで`}</strong><div class="home-progress"><span style="width:${atMax?100:rate}%"></span></div><small>${atMax?'最大レベル到達':`あと${Math.max(0,needed-current)} EXP`}</small></div><button onclick="show('party')">確認</button>` : `<div class="home-goal-icon">★</div><div><span class="ui-eyebrow">NEXT GROWTH</span><strong>仲間を選ぶと成長目標が表示されます</strong></div>`;
-  }
-  if(expeditionPreview){
-    const active=Array.isArray(save?.expeditions?.active) ? save.expeditions.active : [];
-    const completed=active.filter(entry=>entry?.status==='complete').length;
-    expeditionPreview.innerHTML = `<button type="button" onclick="showExpedition()"><small>${completed?'報酬あり':active.length?'派遣中':'控えの仲間と冒険'}</small><strong>遠征</strong><span>${completed?`${completed}件 受け取る ›`:active.length?'状況を見る ›':'派遣する ›'}</span></button>`;
-  }
 }
 function showTypeChart() {
   show('typeChart');
   const el = document.getElementById('typeChartList');
-  const basic5 = [['fire','grass','water'],['water','fire','thunder'],['thunder','water','wind'],['wind','thunder','grass'],['grass','wind','fire']];
+  const basic6 = [['fire','ice','water'],['ice','grass','fire'],['grass','wind','ice'],['wind','thunder','grass'],['thunder','water','wind'],['water','fire','thunder']];
   const special3 = [['light','dark','star'],['dark','star','light'],['star','light','dark']];
   const row = ([atk,adv,bad]) =>
     `<div class="tw-item"><span class="tw-type ${atk}">${TN[atk]}</span>
      <span class="tw-adv">→×1.5 </span><span class="tw-type ${adv}">${TN[adv]}</span>
      <span class="tw-bad"> →×0.7 </span><span class="tw-type ${bad}">${TN[bad]}</span></div>`;
   el.innerHTML =
-    `<div id="typeBasicChart" class="chart-group"><h2>🔥💧⚡🌬️🌿 基本5属性</h2><div class="type-wheel">${basic5.map(row).join('')}</div></div>` +
-    `<div id="typeSpecialChart" class="chart-group"><h2>✨🌙🌌 特殊3属性</h2><div class="type-wheel">${special3.map(row).join('')}</div></div>` +
+    `<div id="typeBasicChart" class="chart-group"><h2>基本6属性</h2><div class="type-wheel">${basic6.map(row).join('')}</div></div>` +
+    `<div id="typeSpecialChart" class="chart-group"><h2>特殊3属性</h2><div class="type-wheel">${special3.map(row).join('')}</div></div>` +
     `<div id="typeDragonChart" class="chart-group"><h2><span class="dragon">竜</span>属性</h2><p style="text-align:left">竜は独立属性。竜同士の攻撃で少し有利（×1.2）。</p></div>`;
 }

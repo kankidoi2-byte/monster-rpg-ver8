@@ -1,0 +1,11 @@
+{
+  "scope": "Automated checks; not real device visual/decode/performance acceptance",
+  "npmCheck": "pass",
+  "catalogDom": "pass: 50 total, 7 registered; lazy media, disposal, notes, export, unchanged game save",
+  "viewportDom": "4 passed; mocked observer/media",
+  "battleDom": "ally/enemy/multi for all new species; lifecycle pass",
+  "resourceDom": "44 resources, 9 stylesheets, no missing or script errors",
+  "fullAlpha": "3 sources x 240 frames; see per-source JSON",
+  "realDeviceNewBatch": "pending",
+  "publicMain": "unchanged"
+}

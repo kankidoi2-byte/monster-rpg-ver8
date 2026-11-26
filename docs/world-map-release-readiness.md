@@ -1,5 +1,7 @@
 # 世界地図 公開結果・確認範囲・復旧資料
 
+> 履歴区分（2026-09-21）：以下の開発／公開前計画は当時の記録。世界地図は公開済み。偽竜3体queueは旧仕様で、現行はCode Alfaのみ。現在の状態は[進捗正本](world-map-progress.md)と[互換仕様](false-dragon-replacement-spec.md)を参照。
+
 ## 現在状態（2026-09-08 JST同期）
 
 **PR #164はmainへ統合・GitHub Pages公開済み。現在は公開承認待ちではない。**

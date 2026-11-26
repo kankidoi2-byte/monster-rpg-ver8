@@ -39,6 +39,9 @@ const document={
   body:element('body'),documentElement:{clientWidth:390,clientHeight:844},activeElement:null,
   getElementById:id=>element(id),
   querySelector:selector=>selector==='.screen.active'?{id:activeScreen}:element(`selector:${selector}`),
+  querySelectorAll:selector=>selector==='#partySelectList [data-party-uid]'?context.saveView.instances.map(instance=>{
+    const button=element(`party:${instance.uid}`);button.dataset.partyUid=instance.uid;return button;
+  }):[],
   addEventListener(){},createElement:tag=>element(`created:${tag}`)
 };
 document.body.appendChild=()=>{};
@@ -90,10 +93,10 @@ const context=vm.createContext({
   registerHuntRequest:request=>(huntRequests.set(request.requestId,request),request),
   enemyMaxHp:()=>10,setupBattle(){},showBattleOutcome(){},endPartyRecovery(){},
   playContractAnimation:async()=>{},
-  SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01',name:'連続斬り',cost:2,power:34,types:['normal']}},
+  SKILL_BY_ID:{s110_041:{id:'s110_041',name:'連続斬り',cost:3,power:44,types:['normal']}},
   isSkillAllowedForMonster:()=>true,equippedSkillCost:instance=>(context.saveView?.equippedSkills?.[instance.uid]||[]).length,
   skillCostLimitFor:()=>5,availableSkillCount:id=>Math.max(0,Number(context.saveView?.skillCards?.[id]||0)),
-  skillTypes:skill=>skill.types,skillCardClass:()=>'',skillCardHeader:()=>'',skillTypeLabel:()=>'',skillToMove:()=>['連続斬り',34,'normal'],moveEffectText:()=>'',
+  skillTypes:skill=>skill.types,skillCardClass:()=>'',skillCardHeader:()=>'',skillCardStats:()=>'',skillCardEffect:()=>'',skillTypeLabel:()=>'',skillToMove:()=>['連続斬り',44,'normal'],moveEffectText:()=>'',
   moveTypes:move=>Array.isArray(move?.[2])?move[2]:[move?.[2]],typeEff:(types,targetTypes)=>types.includes('fire')&&targetTypes.includes('grass')?2:1,
   openSkillEdit:uid=>{context.editingSkillUid=uid;activeScreen='skillEdit';},resetSkillFilters(){},renderSkillEdit(){},
   activateTutorialAlchemyLesson:config=>(context.activeAlchemyLesson=config,true),deactivateTutorialAlchemyLesson:()=>{context.activeAlchemyLesson=null;},showAlchemy:()=>{activeScreen='alchemy';},
@@ -157,7 +160,7 @@ while(state().status==='in_progress'){
       advanceQueued();
       break;
     case 'rescue_world_map_depart':
-      assert.equal(run("handleTutorialWorldMapDeparture('grassland','easy')"),true);
+      assert.equal(run("handleTutorialWorldMapDeparture('grassland','d1')"),true);
       break;
     case 'battle_actor_open': assert.equal(run("handleTutorialBattleAction('actor_picker_opened')"),true);flushTimers();break;
     case 'battle_actor_select': assert.equal(run("handleTutorialBattleAction('actor_selected')"),true);flushTimers();break;
@@ -198,9 +201,9 @@ while(state().status==='in_progress'){
     }
     case 'stella_skill_equip': {
       const uid=run('tutorialStellaSkillTargetInstance().uid');
-      context.saveView.equippedSkills[uid].push('skill_elna_middle_01');
-      context.saveView.skillCards.skill_elna_middle_01--;
-      assert.equal(run(`handleTutorialStellaSkillEquipped('skill_elna_middle_01','${uid}')`),true);
+      context.saveView.equippedSkills[uid].push('s110_041');
+      context.saveView.skillCards.s110_041--;
+      assert.equal(run(`handleTutorialStellaSkillEquipped('s110_041','${uid}')`),true);
       break;
     }
     case 'stella_mock_skill_open': assert.equal(run("handleTutorialBattleAction('skill_panel_opened')"),true);flushTimers();break;
@@ -278,7 +281,7 @@ assert.equal(finalSave.expeditions.active.length,1,'the prologue must dispatch o
 assert.equal(finalSave.expeditions.active[0].tutorialPrologue,true);
 assert.deepEqual(finalSave.expeditions.active[0].memberUids.map(uid=>finalSave.instances.find(instance=>instance.uid===uid)?.id),['freigal'],'only reserve Freigal must be sent on the tutorial expedition');
 assert.equal(run('resumeTutorialIfNeeded()'),false,'completed prologue must not reopen');
-assert.equal(run("handleTutorialWorldMapDeparture('grassland','easy')"),false,'free exploration must no longer be intercepted by tutorial routing');
+assert.equal(run("handleTutorialWorldMapDeparture('grassland','d1')"),false,'free exploration must no longer be intercepted by tutorial routing');
 assert.equal(activeScreen,'home','completion must return to free-play home');
 assert.equal(notices.length,0,`successful journey must not emit warnings: ${notices.join(' / ')}`);
 
@@ -287,7 +290,7 @@ const requiredJourneySteps=[
   'battle_enemy','battle_free','elna_contract_execute','home_party','request_reward_claim',
   'stella_road_response','stella_mock_battle','stella_mock_free',
   'lumina_world_map_open','lumina_world_map_visit','lumina_alchemy','lumina_wait',
-  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_dispatch','prologue_complete'
+  'expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_dispatch','prologue_epilogue'
 ];
 for(const id of requiredJourneySteps)assert.ok(visited.includes(id),`canonical new-save journey must visit ${id}`);
 

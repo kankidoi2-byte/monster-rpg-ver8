@@ -1,0 +1,103 @@
+{
+  "recordedAtJST": "2026-09-29T10:24:11+09:00",
+  "source": "User-supplied screenshot 1000011027.jpg at 10:21 JST; values transcribed from visible result, not raw JSON",
+  "candidate": "gran_volmoog v18",
+  "device": "Galaxy Android; browser/version not identified",
+  "viewport": [
+    384,
+    621
+  ],
+  "map": "grassland",
+  "delivery": {
+    "status": 206,
+    "mime": "video/webm",
+    "bytes": 1024,
+    "contentRange": "bytes 0-1023/1758952",
+    "result": "pass for this authenticated review route"
+  },
+  "samples": [
+    {
+      "mode": "ally",
+      "videos": [
+        {
+          "dropped": 9,
+          "total": 475
+        }
+      ],
+      "placement": [
+        {
+          "side": "pVis",
+          "hudGapPx": 22.9,
+          "commandGapPx": 286.7
+        }
+      ],
+      "maxFrameGapMs": 58.1,
+      "playing": 1
+    },
+    {
+      "mode": "enemy",
+      "videos": [
+        {
+          "dropped": 4,
+          "total": 482
+        }
+      ],
+      "placement": [
+        {
+          "side": "eVis",
+          "hudGapPx": 20.9,
+          "commandGapPx": 441.6
+        }
+      ],
+      "maxFrameGapMs": 67.2,
+      "playing": 1
+    },
+    {
+      "mode": "multi",
+      "videos": [
+        {
+          "dropped": 0,
+          "total": 472
+        },
+        {
+          "dropped": 4,
+          "total": 475
+        },
+        {
+          "dropped": 3,
+          "total": 474
+        }
+      ],
+      "placement": [
+        {
+          "side": "pVis",
+          "hudGapPx": 22.9,
+          "commandGapPx": 286.7
+        },
+        {
+          "side": "enemy_aVis",
+          "hudGapPx": 21.7,
+          "commandGapPx": 498.5
+        },
+        {
+          "side": "enemy_bVis",
+          "hudGapPx": 21.7,
+          "commandGapPx": 498.5
+        }
+      ],
+      "maxFrameGapMs": 66.9,
+      "playing": 3
+    }
+  ],
+  "assessment": {
+    "placement": "pass: all reported HUD gaps >=8px and command gaps >=12px at this viewport; derived from CSS rectangles and existing full-frame alpha bbox",
+    "performance": "Short samples observed, drops 0–1.9%; no predefined universal performance threshold applied. Max rAF interval is not average FPS or continuous jank.",
+    "pending": [
+      "other required viewport widths",
+      "long-duration thermal/load and shared lifecycle gates"
+    ],
+    "normalRuntimeRegistration": "pending",
+    "publication": "forbidden",
+    "followupEvidence": "gran-volmoog-galaxy-responsive-20260929.json"
+  }
+}

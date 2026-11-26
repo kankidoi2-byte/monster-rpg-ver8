@@ -1,10 +1,11 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
 const BASE_REV='d31cfccd37219549d25df9f85c62db559aa649f3';
-const RUN_DATE='2026-09-06';
+const RUN_DATE='2026-11-05';
 const BATTLE_SEED=0x5b202609;
 const ACCESS_SEED=0x5bacc355;
 const ACCESS_SAMPLES=100000;
@@ -27,7 +28,9 @@ function gitRevision(expression){
 
 function sourceAt(revision,file){
   if(revision==='working-tree')return fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
-  return execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
+  const source=execFileSync('git',['show',`${revision}:${file}`],{cwd:new URL('..',import.meta.url),encoding:'utf8'});
+  // Compare historical rules under current names without modifying the archive.
+  return applyRenamedMonsterIds(source);
 }
 
 function mulberry32(seed){
@@ -48,10 +51,17 @@ function loadRules(revision){
     querySelectorAll:()=>[],querySelector:()=>null,createElement:()=>({})
   };
   const context=vm.createContext({
-    console,structuredClone,Math,Date,save,document,
+    console,structuredClone,Math,Date,save,document,saveRecoveryReport:[],
     saveGame:()=>true,registerItemDex:()=>{},show:()=>{},alert:()=>{},
     getInstance:()=>null,checkEvolution:()=>{},setTimeout:()=>0,clearTimeout:()=>{}
   });
+  // Load actual shared validators for current rules; old revisions do not define them.
+  const saveSource=sourceAt(revision,'js/save.js');
+  if(saveSource.includes('function validateExpeditionEntry(')){
+    for(const name of ['isSaveObject','nonNegativeInteger','validateExpeditionEntry','quarantineExpeditionEntry']){
+      vm.runInContext(functionSource(saveSource,name),context,{filename:`${revision}:js/save.js:${name}`});
+    }
+  }
   for(const file of SOURCE_FILES)vm.runInContext(sourceAt(revision,file),context,{filename:`${revision}:${file}`});
   vm.runInContext(`
     globalThis.ensureContractScrollItem=function(){
@@ -98,13 +108,127 @@ function functionSource(source,name){
   assert.fail(`function ${name} is not balanced`);
 }
 
-function normalizedRuleSource(source){
-  return source
-    .replace(/if\(typeof recordWorldMapVictory==='function'\)\s*recordWorldMapVictory\(\);?/g,'')
-    .replace(/\s+/g,'');
+// The adopted 2026-11-13 item rewards are additive and covered separately by
+// test-hunt-victory-save.mjs (rates, quantities, receipt and result row).
+// Exempt only the exact tail call/display pair, not arbitrary new statements.
+const APPROVED_ITEM_REWARD_TAILS=['🎁 ',''].map(prefix=>[
+  '  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest);',
+  '  if(itemRewards.length)msg+=`<br>'+prefix+'${huntVictoryItemsLine(itemRewards)}を入手！`;',
+  '  '
+].join('\n'));
+// God Core is also additive: only the exact event eligibility and reward tail
+// are excluded here, and the real IV/V threshold, receipt and no-reroll checks
+// remain in test-hunt-victory-save.mjs.
+const APPROVED_GOD_CORE_REWARD_TAILS=['🎁 ',''].map(prefix=>[
+  '  // The event is resolved before rewards are staged; capture eligibility first.',
+  '  const godCoreEligible=canDropGodCoreFromVictory(activeHuntRequest,enemy);',
+  "  if(typeof recordWorldMapVictory==='function') recordWorldMapVictory();",
+  '  const itemRewards=grantWorldMapVictoryItems(activeHuntRequest,Math.random,godCoreEligible);',
+  '  if(itemRewards.length)msg+=`<br>'+prefix+'${huntVictoryItemsLine(itemRewards)}を入手！`;',
+  '  '
+].join('\n'));
+function withoutApprovedItemRewardTail(rewardBlock){
+  const tail=[...APPROVED_GOD_CORE_REWARD_TAILS,...APPROVED_ITEM_REWARD_TAILS].find(value=>rewardBlock.endsWith(value));
+  return tail ? rewardBlock.slice(0,-tail.length)+'  ' : rewardBlock;
+}
+// The old and new victory copy differs by these exact leading pictographs.
+// Keep the quote, entire text, placeholders, conditions and adjacent statements.
+const VICTORY_MESSAGE_DECORATIONS={
+  win:[
+    ['🏆 ','`${enemy.name}を倒した！<br>`'],
+    ['⏱️ ','`${battleTurnCount}ターンで撃破！ 迅速討伐達成（経験値・コイン50％追加）<br>`'],
+    ['⌛ ','`${battleTurnCount}ターンで撃破。迅速討伐失敗（8ターン以内）<br>`'],
+    ['🪙 ','`<br>コイン${coinGain}枚獲得！`'],
+    ['💰 ','`<br>黄金郷ボーナス：コイン${bonus}枚獲得！`'],
+    ['🗺️ ',"'<br>黄金郷への地図を入手！'"],
+    ['🎁 ','`<br>${dropVisual}${enemy.dropItemName||enemy.dropItem}を入手！`'],
+    ['⚗️ ','`<br>${itemInlineVisual(alchemyMaterial)} ${alchemyMaterial.name}を入手！`']
+  ],
+  winMultiBattle:[
+    ['🏆 ',"`${multiBattle.invasion?'乱入戦':'三つ巴バトル'}に勝利！<br>`"],
+    ['⏱️ ','`<br>${battleTurnCount}ターンで迅速討伐達成！`'],
+    ['⌛ ','`<br>迅速討伐失敗（8ターン以内）`'],
+    ['🗺️ ',"'<br>黄金郷への地図を入手！'"]
+  ]
+};
+function normalizedVictoryMessageDecoration(rewardBlock,name){
+  for(const [prefix,plainText] of VICTORY_MESSAGE_DECORATIONS[name]||[]){
+    const start=plainText.startsWith('<br>',1)?5:1;
+    const decorated=plainText.slice(0,start)+prefix+plainText.slice(start);
+    rewardBlock=rewardBlock.replace(decorated,plainText);
+  }
+  return rewardBlock;
+}
+// Compare the unchanged reward statements across the atomic-save extraction.
+// Storage/UI wrappers are covered by test-hunt-victory-save, not reward economics.
+function economicFunctionSource(source,name){
+  if(name==='win'||name==='winMultiBattle'){
+    const builder=name==='win'?'prepareSingleVictoryReward':'prepareMultiVictoryReward';
+    const extracted=source.includes(`function ${builder}(`);
+    let body=functionSource(source,extracted?builder:name);
+    const start=body.indexOf(name==='win'?'const turnBonusActive':'const turnBonus=');
+    const end=body.indexOf(extracted?'return {message:msg,outcome:':"document.getElementById('log')",start);
+    assert(start>=0&&end>start,'reward block boundaries must be explicit');
+    return normalizedVictoryMessageDecoration(withoutApprovedItemRewardTail(body.slice(start,end)),name)
+      .replace('grantPartyExp(expGain,{saveNow:false,animate:false})','grantPartyExp(expGain)')
+      .replace('grantPartyExp(totalExp,{saveNow:false,animate:false})','grantPartyExp(totalExp)')
+      .replace('progressActiveExpeditions(Math.random,{saveNow:false})','progressActiveExpeditions()')
+      .replace(/saveGame\(\);/g,'');
+  }
+  // This option changes only the write boundary; keep the entire progress body.
+  return functionSource(source.replace('randomFn=Math.random,{saveNow=true}={}','randomFn=Math.random'),name)
+    // The audited ignored-save marker is a comment, not a reward-rule change.
+    // Match only this exact write boundary rather than stripping arbitrary code.
+    .replace('if(changed&&saveNow)/* save-result-allow: expedition-progress */saveGame()','if(changed)saveGame()')
+    .replace('if(changed&&saveNow)saveGame()','if(changed)saveGame()');
 }
 
-function simulateTwentyWins(rules){
+// Compare the ordinary reward path with G-BLESS off. Keep every unrelated
+// economy statement intact; the live off helper is also compared below.
+function gBlessOffRuleSource(source){
+  return source
+    .replace(/gBlessHuntReward\((\w+),\s*(\w+),'(?:exp|coins)',bless(?:,entry\.rewardMultiplier)?\)/g,'huntRewardAmount($1,$2)')
+    .replace('function grantMultiEnemyReward(entry,turnBonus,bless=null)','function grantMultiEnemyReward(entry,turnBonus)')
+    .replace('grantMultiEnemyReward(entry,turnBonus,bless)','grantMultiEnemyReward(entry,turnBonus)')
+    .replace('if(bless){bless.baseCoins+=bonus;bless.fixedCoins=bonus;}','');
+}
+// The adopted species traits intentionally add reward bonuses. Historical parity
+// remains the NO-TRAIT path. Normalize only the exact opt-in wrappers; numerical
+// no-trait simulations below and check:traits cover neutral and bonus behavior.
+function traitsOffRuleSource(source){
+  return source
+    .replace("const rawCoins = huntRewardAmount(baseCoinGain,turnBonusSucceeded);\n  const coinGain = typeof traitCoinReward==='function'?traitCoinReward(rawCoins):rawCoins;","const coinGain = huntRewardAmount(baseCoinGain,turnBonusSucceeded);")
+    .replace("const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);\n    const bonus = typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;","const bonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);")
+    .replace("(typeof traitDropRate==='function'?traitDropRate(dropRate):dropRate)","dropRate")
+    .replace("rawCoins=huntRewardAmount(baseCoins,turnBonus),coins=typeof traitCoinReward==='function'?traitCoinReward(rawCoins):rawCoins","coins=huntRewardAmount(baseCoins,turnBonus)")
+    .replace("(typeof traitDropRate==='function'?traitDropRate(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1):(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1))","(Number.isFinite(entry.mon.dropRate)?entry.mon.dropRate:1)");
+}
+function normalizedRuleSource(source,name){
+  source=traitsOffRuleSource(gBlessOffRuleSource(source));
+  // Map-story rewards have an independent transaction path, covered by check:map-story.
+  // Strip only its exact early victory dispatch when comparing NORMAL exploration.
+  source=source.replace(/if\(typeof mapStoryOutcome==='function'&&mapStoryOutcome\('victory'\)\)return;/g,'');
+  // 110-skill end-of-battle cleanup is independently tested; it does not change reward rules.
+  source=source.replace(/resetBattleTransientEffects\(\);/g,'')
+    .replace(/(?:pStatus|eStatus|pPoisonTurns|ePoisonTurns|pParalysisTurns|eParalysisTurns|pConfusionTurns|eConfusionTurns|pSleepTurns|eSleepTurns|pFlareCharge|eFlareCharge|pAquaShield|eAquaShield)\s*=\s*(?:null|0|false);/g,'')
+    .replace(/(if\(typeof completeTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory\(\)\))\{\s*return;\s*\}/g,'$1return;');
+  // Presentation-only evolution scheduling moved from win to afterBattleNext.
+  // Exclude exactly that audited tail, preserving every reward/contract statement.
+  if(name==='win')source=source
+    .replace(/if\(!tutorialOutcomeHandled\)setTimeout\(processNextEvolution,\s*300\);/g,'')
+    .replace(/^[ \t]*\/\/ afterBattleNext opens queued evolution after the result\/contract actions\.[ \t]*$/gm,'');
+  if(name==='winMultiBattle')source=source
+    .replace(/setTimeout\(processNextEvolution,\s*300\);/g,'')
+    .replace(/\/\/ Queued evolution opens afterBattleNext\./g,'');
+  return source
+    .replace(/if\(typeof recordWorldMapVictory==='function'\)\s*recordWorldMapVictory\(\);?/g,'')
+    .replace(/\s+/g,'')
+    .replace("if(typeofcompleteTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory()){return;}","if(typeofcompleteTutorialStellaMockVictory==='function'&&completeTutorialStellaMockVictory())return;");
+}
+
+function simulateTwentyWins(rules,grasslandEnemyIds=null,encounterRules=rules){
+  const originalGrasslandEnemyIds=canonicalValue(rules,`[...MAPS.find(map=>map.id==='grassland').enemyIds]`);
+  if(grasslandEnemyIds)canonicalValue(rules,`MAPS.find(map=>map.id==='grassland').enemyIds=[...grasslandEnemyIds]`,{grasslandEnemyIds});
   const random=mulberry32(BATTLE_SEED);
   const battles=[];
   const expeditionTotals={completions:0,coins:0,exp:0,items:{}};
@@ -120,13 +244,13 @@ function simulateTwentyWins(rules){
 
   for(let index=0;index<20;index++){
     const difficultyId=index<10?'normal':'hard';
-    const candidateIds=canonicalValue(rules,`huntCandidatesFor(MAPS.find(map=>map.id==='grassland'),difficultyId).map(mon=>mon.id)`,{difficultyId});
+    const candidateIds=canonicalValue(encounterRules,`huntCandidatesFor(MAPS.find(map=>map.id==='grassland'),difficultyId).map(mon=>mon.id)`,{difficultyId});
     const enemyId=candidateIds[Math.floor(random()*candidateIds.length)];
-    const mode=canonicalValue(rules,'rollHuntBattleMode(difficultyId,randomFn)',{difficultyId,randomFn:random});
-    const secondEnemyId=mode==='single'?null:canonicalValue(rules,`chooseSecondHuntEnemy(MAPS.find(map=>map.id==='grassland'),enemyId,difficultyId,randomFn)?.id||null`,{difficultyId,enemyId,randomFn:random});
+    const mode=canonicalValue(encounterRules,'rollHuntBattleMode(difficultyId,randomFn)',{difficultyId,randomFn:random});
+    const secondEnemyId=mode==='single'?null:canonicalValue(encounterRules,`chooseSecondHuntEnemy(MAPS.find(map=>map.id==='grassland'),enemyId,difficultyId,randomFn)?.id||null`,{difficultyId,enemyId,randomFn:random});
     const resolvedMode=secondEnemyId?mode:'single';
-    if(resolvedMode==='invasion_pending')canonicalValue(rules,'rollInvasionTurn(randomFn)',{randomFn:random});
-    const conditionIds=canonicalValue(rules,'rollHuntConditionIds(difficultyId,randomFn)',{difficultyId,randomFn:random});
+    if(resolvedMode==='invasion_pending')canonicalValue(encounterRules,'rollInvasionTurn(randomFn)',{randomFn:random});
+    const conditionIds=canonicalValue(encounterRules,'rollHuntConditionIds(difficultyId,randomFn)',{difficultyId,randomFn:random});
     const swiftClear=conditionIds.includes('swift_clear');
     const rewardMultiplier=canonicalValue(rules,'huntDifficulty(difficultyId).rewardMultiplier',{difficultyId});
     canonicalValue(rules,'activeHuntRequest={difficultyId,rewardMultiplier,conditions:conditionIds.map(id=>({id}))}',{difficultyId,rewardMultiplier,conditionIds});
@@ -169,6 +293,7 @@ function simulateTwentyWins(rules){
       exp,coins,materials,virtualContractCheck,expeditionProgress
     });
   }
+  if(grasslandEnemyIds)canonicalValue(rules,`MAPS.find(map=>map.id==='grassland').enemyIds=[...originalGrasslandEnemyIds]`,{originalGrasslandEnemyIds});
   return {battles,totals:summarizeBattles(battles),expeditionTotals};
 }
 
@@ -256,34 +381,126 @@ function accessComparison(snapshot){
   };
 }
 
+// The new audit marker must not hide an actual reward/progress change.
+const expeditionFixture='function progressActiveExpeditions(randomFn=Math.random,{saveNow=true}={}){entry.progress+=1;if(changed&&saveNow)saveGame();return changed;}';
+const markedExpeditionFixture=expeditionFixture.replace('saveGame()','/* save-result-allow: expedition-progress */saveGame()');
+assert.equal(economicFunctionSource(markedExpeditionFixture,'progressActiveExpeditions'),economicFunctionSource(expeditionFixture,'progressActiveExpeditions'));
+assert.notEqual(economicFunctionSource(markedExpeditionFixture.replace('entry.progress+=1','entry.progress+=2'),'progressActiveExpeditions'),economicFunctionSource(expeditionFixture,'progressActiveExpeditions'));
+
 const baseline=loadRules(BASE_REV);
 const current=loadRules('working-tree');
+// A reward change hidden inside the new helper must still fail this audit.
+vm.runInContext(functionSource(fs.readFileSync(new URL('../js/save.js',import.meta.url),'utf8'),'gBlessHuntReward'),current.context);
+let gBlessOffParityChecks=0;
+for(const difficultyId of ['easy','normal','hard','extreme'])for(const swiftClear of [false,true])for(const base of [1,8,13,35,41,60,99,1000])for(const kind of ['coins','exp']){
+  const bindings={base,swiftClear,kind,difficultyId};
+  const expression=`activeHuntRequest={rewardMultiplier:huntDifficulty(difficultyId).rewardMultiplier};`;
+  canonicalValue(current,expression,bindings);canonicalValue(baseline,expression,bindings);
+  assert.equal(canonicalValue(current,'gBlessHuntReward(base,swiftClear,kind,null)',bindings),canonicalValue(baseline,'huntRewardAmount(base,swiftClear)',bindings),'G-BLESS off must preserve the actual historical reward');gBlessOffParityChecks++;
+}
+// The first enemy may carry a stronger/nushi bonus; the second enemy must use
+// its own ordinary multiplier. Check the newly explicit parameter numerically
+// before normalizing that exact call-site difference for historical source parity.
+let perEnemyMultiplierChecks=0;
+for(const multiplier of [.7,1,1.4,1.8,2.4,3,1.5,7.2])for(const swiftClear of [false,true])for(const base of [1,13,41,99])for(const kind of ['coins','exp']){
+  const bindings={base,swiftClear,kind,multiplier};
+  canonicalValue(current,'activeHuntRequest={rewardMultiplier:99}',bindings);
+  const expected=Math.max(1,Math.round(base*multiplier*(swiftClear?1.5:1)));
+  assert.equal(canonicalValue(current,'gBlessHuntReward(base,swiftClear,kind,null,multiplier)',bindings),expected,'per-enemy reward must not inherit first-enemy multiplier');
+  perEnemyMultiplierChecks++;
+}
+assert.match(current.source['js/multi-battle.js'],/gBlessHuntReward\(baseExp,turnBonus,'exp',bless,entry\.rewardMultiplier\)/);
+assert.match(current.source['js/multi-battle.js'],/gBlessHuntReward\(baseCoins,turnBonus,'coins',bless,entry\.rewardMultiplier\)/);
+assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base+1,turn,'coins',bless)"),'huntRewardAmount(base,turn)');
+assert.notEqual(gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless);save.coins++"),gBlessOffRuleSource("gBlessHuntReward(base,turn,'coins',bless)"));
+
+assert.notEqual(traitsOffRuleSource("const rawBonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId)+1;const bonus=typeof traitCoinReward==='function'?traitCoinReward(rawBonus):rawBonus;"),"const bonus=goldenLandCoinBonus(activeHuntRequest?.difficultyId);");
+assert.notEqual(traitsOffRuleSource("save.coins++;"),"");
+const oldRewardFixture='existingReward();\n';
+for(const tail of APPROVED_ITEM_REWARD_TAILS){
+  assert.equal(withoutApprovedItemRewardTail(oldRewardFixture+tail),oldRewardFixture+'  ');
+  for(const altered of [
+    tail.replace('const itemRewards','save.coins++;const itemRewards'),
+    tail.replace('activeHuntRequest','otherRequest'),
+    tail.replace('itemRewards.length','itemRewards.length>1'),
+    tail+'save.coins++;'
+  ])assert.equal(withoutApprovedItemRewardTail(oldRewardFixture+altered),oldRewardFixture+altered);
+}
+const oldVictory='save.coins+=coinGain;msg+=`<br>🪙 コイン${coinGain}枚獲得！`;';
+const newVictory='save.coins+=coinGain;msg+=`<br>コイン${coinGain}枚獲得！`;';
+assert.equal(normalizedVictoryMessageDecoration(oldVictory,'win'),newVictory);
+assert.equal(normalizedVictoryMessageDecoration(oldVictory,'winMultiBattle'),oldVictory);
+for(const altered of [
+  oldVictory.replace('save.coins+=coinGain','save.coins+=coinGain+1'),
+  oldVictory.replace('${coinGain}','${coinGain+1}'),
+  oldVictory.replace('🪙','🎁')
+])assert.notEqual(normalizedVictoryMessageDecoration(altered,'win'),newVictory);
+
 const baselineSnapshot=canonicalSnapshot(baseline);
 const currentSnapshot=canonicalSnapshot(current);
 
 // Descriptions changed for the world-map presentation, so compare only economy-bearing records.
-assert.deepEqual(currentSnapshot.difficulties,baselineSnapshot.difficulties,'difficulty/reward rules diverged');
-assert.deepEqual(currentSnapshot.rates,baselineSnapshot.rates,'three-way/invasion rates diverged');
+// The adopted five-tier balance intentionally changes encounter distribution.
+// Assert the new tuning explicitly, rather than relabeling it as historical parity.
+const expectedTiers=[
+ ['d1',[1,6],[1,2],.7,0,0,0,0],['d2',[6,18],[1,2,3],1,.05,.02,200,0],
+ ['d3',[18,32],[2,3],1.4,.10,.03,300,0],['d4',[32,46],[2,3,4],1.8,.15,.04,450,.01],
+ ['d5',[46,60],[3,4],2.4,.20,.05,600,.015],['extreme',[100,100],[5],3,.30,.08,1000,.03]
+];
+assert.deepEqual(Object.keys(currentSnapshot.difficulties),expectedTiers.map(t=>t[0]));
+for(const [id,levels,rarities,reward,modeRate,goldenRate,coins,mapRate] of expectedTiers){
+ const d=currentSnapshot.difficulties[id];
+ assert.deepEqual(d.levelRange,levels);assert.deepEqual(d.rarities,rarities);
+ assert.equal(d.rewardMultiplier,reward);assert.equal(d.hpMultiplier,id==='extreme'?1.3:1);assert.equal(d.attackMultiplier,id==='extreme'?1.3:1);
+ assert.equal(currentSnapshot.rates.threeWay[id],modeRate);assert.equal(currentSnapshot.rates.invasion[id],modeRate);
+ assert.equal(d.goldenLandRate,goldenRate);assert.equal(d.goldenLandCoins,coins);assert.equal(d.goldenLandMapRate,mapRate);
+}
 assert.deepEqual(currentSnapshot.materialDrops,baselineSnapshot.materialDrops,'material drop table diverged');
 assert.deepEqual(currentSnapshot.contractScroll,baselineSnapshot.contractScroll,'contract scroll rule diverged');
-assert.deepEqual(currentSnapshot.monsters,baselineSnapshot.monsters,'monster reward/contract/drop data diverged');
+const expectedMonsterEconomy=baselineSnapshot.monsters.map(mon=>
+  ['ashleia','morglum'].includes(mon.id)?{...mon,rarity:'★★★★'}:mon
+);
+// New prologue allies are deliberately additive and never enter map enemy pools.
+// Preserve parity for every legacy record and validate exactly the approved additions.
+const addedCharacterIds=['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`));
+addedCharacterIds.push(...[3,4,5].map(stage=>`character_vera_${stage}`));
+const addedIds=new Set(addedCharacterIds);
+assert.deepEqual(currentSnapshot.monsters.filter(mon=>!addedIds.has(mon.id)),expectedMonsterEconomy,'legacy reward/contract/drop data diverged');
+const addedEconomy=currentSnapshot.monsters.filter(mon=>addedIds.has(mon.id));
+assert.deepEqual(addedEconomy.map(mon=>mon.id).sort(),[...addedCharacterIds].sort());
+assert(addedEconomy.every(mon=>!mon.contractable && mon.catchRate===0 && !mon.expBonus && !mon.coinBonus && !mon.dropItem));
+assert(currentSnapshot.maps.every(map=>map.enemyIds.every(id=>!addedIds.has(id))),'new allies must not alter encounter/reward pools');
 assert.match(baseline.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'baseline contract formula not recognized');
-assert.match(current.source['js/items.js'],/Math\.min\(0\.95, baseRate \* \(it\.catchMultiplier \|\| 1\)\)/,'current contract formula diverged');
+// Transaction boundaries changed intentionally (SAVE02); validate the actual shared
+// rate/stage helper instead of requiring the old unsafe two-save function body.
+vm.runInContext("globalThis.saveTransactionIdentity=()=> 'economy-fixture';Math=Object.create(Math);",current.context);
+let contractParityChecks=0;
+for(const catchRate of [undefined,0,.01,.25,.5,1])for(const multiplier of [undefined,0,1,1.5,2,10])for(const roll of [0,.001,.1,.249,.25,.5,.949,.95,.999]){
+  const itemId='contract_scroll';
+  const expected=canonicalValue(baseline,'contractAnimationStage(roll,Math.min(.95,(catchRate??.25)*(multiplier||1)))',{roll,catchRate,multiplier});
+  const actual=canonicalValue(current,`(()=>{const original=ITEM_BY_ID[itemId].catchMultiplier;try{ITEM_BY_ID[itemId].catchMultiplier=multiplier;postBattleContractRetry=null;Math.random=()=>roll;return postBattleContractStage({catchRate},itemId,null,false);}finally{ITEM_BY_ID[itemId].catchMultiplier=original;}})()`,{roll,catchRate,multiplier,itemId});
+  assert.equal(actual,expected,'shared contract probability/stage parity');contractParityChecks++;
+}
+assert.equal(canonicalValue(current,"postBattleContractRetry=null;postBattleContractStage({catchRate:0},'contract_scroll',null,true)"),3,'tutorial guarantee remains success');
+assert.match(canonicalValue(current,'tryContractWithScroll.toString()'),/postBattleContractStage\(target,itemId,null,guaranteed\)/);
+assert.match(functionSource(current.source['js/multi-battle.js'],'useMultiBattleContractScroll'),/postBattleContractStage\(entry.mon,itemId,entry\)/);
 assert.match(current.source['js/world-map.js'],/if \(eventKey\) \{ request\.battleMode='single';request\.secondEnemyId=null;request\.invasionEnemyId=null;request\.invasionTurn=null; \}/,'special world-map event single-battle policy diverged');
 for(const [file,name] of [
   ['js/battle-flow.js','win'],['js/multi-battle.js','grantMultiEnemyReward'],['js/multi-battle.js','winMultiBattle'],
-  ['js/items.js','tryContractWithScroll'],['js/multi-battle.js','useMultiBattleContractScroll'],
   ['js/expedition.js','progressActiveExpeditions'],['js/expedition.js','expeditionRewardPlan']
 ]){
   assert.equal(
-    normalizedRuleSource(functionSource(current.source[file],name)),
-    normalizedRuleSource(functionSource(baseline.source[file],name)),
+    normalizedRuleSource(economicFunctionSource(current.source[file],name),name),
+    normalizedRuleSource(economicFunctionSource(baseline.source[file],name),name),
     `${file}:${name} reward rule diverged`
   );
 }
 
-const oldMode=simulateTwentyWins(baseline);
-const worldMapMode=simulateTwentyWins(current);
+// Keep the encounter roster fixed so this check isolates reward-rule parity from intentional habitat changes.
+const baselineGrasslandEnemyIds=baselineSnapshot.maps.find(map=>map.id==='grassland').enemyIds;
+const oldMode=simulateTwentyWins(baseline,baselineGrasslandEnemyIds);
+const worldMapMode=simulateTwentyWins(current,baselineGrasslandEnemyIds,baseline);
+const adoptedMode=simulateTwentyWins(current,baselineGrasslandEnemyIds);
 assert.equal(oldMode.battles.length,20);
 assert.equal(worldMapMode.battles.length,20);
 assert.equal(oldMode.totals.normalWins,10);
@@ -293,19 +510,21 @@ assert.deepEqual(worldMapMode.expeditionTotals,oldMode.expeditionTotals,'expedit
 
 const access=accessComparison(baselineSnapshot);
 const report={
-  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,
+  kind:'deterministic-rule-simulation-not-browser-play',runDate:RUN_DATE,contractParityChecks,gBlessOffParityChecks,perEnemyMultiplierChecks,
   baselineRevision:BASE_REV,currentHead:CURRENT_HEAD,currentHeadTree:CURRENT_HEAD_TREE,
   battleSeed:`0x${BATTLE_SEED.toString(16)}`,accessSeed:`0x${ACCESS_SEED.toString(16)}`,
   baselineRewardRules:{...oldMode.totals,expeditionRewards:oldMode.expeditionTotals},
-  currentRewardRules:{...worldMapMode.totals,expeditionRewards:worldMapMode.expeditionTotals},
+  currentRewardRulesWithHistoricalEncounterControls:{...worldMapMode.totals,expeditionRewards:worldMapMode.expeditionTotals},
+  adoptedTierEncounterSample:{scope:'10 difficulty II + 10 difficulty IV wins, no overtier, fixed legacy roster; not win-rate or full balance simulation',...adoptedMode.totals,expeditionRewards:adoptedMode.expeditionTotals},
+  adoptedTiers:expectedTiers.map(([id])=>currentSnapshot.difficulties[id]),
   virtualContractLimitations:['inventory-not-checked','ui-not-exercised','target-choice-not-exercised','defeatedByPlayer-not-exercised'],
   specialEventBattleMode:{includedInTwentyWinComparison:false,currentRule:'single-fixed',classification:'intentional-specification-difference'},
-  neutralPerWinExpectations:NEUTRAL_EXPECTATIONS,
-  grasslandCoinAccessRisk:GRASSLAND_COIN_RISK,
-  access,
-  balanceDecision:'user-review-required-before-publication',
+  historicalNeutralPerWinExpectations:NEUTRAL_EXPECTATIONS,
+  historicalGrasslandCoinAccessRisk:GRASSLAND_COIN_RISK,
+  historicalWorldMapAccessComparison:access,
+  balanceDecision:'adopted-tier-specification; this audit does not establish publication readiness',
   browserTwentyWinPlaythrough:'not-verified'
 };
 
-console.log('World-map reward-rule parity passed: 20 wins per rule set (10 Normal + 10 Hard).');
+console.log('World-map shared reward-formula parity passed under historical encounter controls; adopted tier distribution reported separately.');
 console.log(JSON.stringify(report,null,2));

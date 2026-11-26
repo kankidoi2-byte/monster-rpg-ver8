@@ -1,0 +1,23 @@
+{
+  "dateJST": "2026-09-30",
+  "batch": 8,
+  "registered": 30,
+  "remaining": 20,
+  "assetCommit": "57cadc5a8b7034835e2d1220d2522a910a8d37e1",
+  "remoteBinaryFilesByteVerified": 8,
+  "siteSourceCommit": "e2b9432b014fc90213353b43c0aad0c593551a16",
+  "projectId": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+  "deploymentId": "appgdep_6abc48eb5d208191a19ff05a591780d7",
+  "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_bc169d0f45548191a592772ae546940b",
+  "deploymentStatus": "succeeded",
+  "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+  "audience": "owner-private",
+  "archiveBytes": 258964006,
+  "nextBatchPreparation": "Address private Site archive capacity before adding further motion payloads",
+  "npmCheckExitCode": 0,
+  "allFourAlphaAuditPassed": true,
+  "android": "pending",
+  "fullAcceptance": "pending",
+  "mainMerged": false,
+  "generalGamePublication": false
+}

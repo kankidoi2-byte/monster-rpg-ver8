@@ -1,0 +1,192 @@
+{
+  "recordedDateJST": "2026-09-29",
+  "receivedAtJST": "2026-09-29T21:15:00+09:00",
+  "source": "User screenshots; manually transcribed, not raw metric JSON. Landscape/text enlargement are user-declared conditions.",
+  "candidate": "gran_volmoog v18",
+  "device": "Galaxy Android; exact browser/version unconfirmed",
+  "map": "grassland",
+  "delivery": {
+    "status": 206,
+    "mime": "video/webm",
+    "bytes": 1024,
+    "contentRange": "bytes 0-1023/1758952"
+  },
+  "conditions": [
+    {
+      "condition": "landscape",
+      "screenshots": [
+        "1000011033.jpg"
+      ],
+      "viewport": [
+        751,
+        224
+      ],
+      "samples": [
+        {
+          "mode": "ally",
+          "videos": [
+            {
+              "dropped": 7,
+              "total": 475
+            }
+          ],
+          "placement": [
+            {
+              "side": "pVis",
+              "hudGapPx": 22.9,
+              "commandGapPx": 204.6
+            }
+          ],
+          "maxFrameGapMs": 33.4,
+          "playing": 1
+        },
+        {
+          "mode": "enemy",
+          "videos": [
+            {
+              "dropped": 0,
+              "total": 480
+            }
+          ],
+          "placement": [
+            {
+              "side": "eVis",
+              "hudGapPx": 21,
+              "commandGapPx": 113.7
+            }
+          ],
+          "maxFrameGapMs": 41.6,
+          "playing": 1
+        },
+        {
+          "mode": "multi",
+          "videos": [
+            {
+              "dropped": 0,
+              "total": 462
+            },
+            {
+              "dropped": 0,
+              "total": 462
+            },
+            {
+              "dropped": 0,
+              "total": 463
+            }
+          ],
+          "placement": [
+            {
+              "side": "pVis",
+              "hudGapPx": 22.9,
+              "commandGapPx": 234.9
+            },
+            {
+              "side": "enemy_aVis",
+              "hudGapPx": 21.7,
+              "commandGapPx": 293.2
+            },
+            {
+              "side": "enemy_bVis",
+              "hudGapPx": 21.7,
+              "commandGapPx": 67.5
+            }
+          ],
+          "maxFrameGapMs": 20.5,
+          "playing": 3
+        }
+      ]
+    },
+    {
+      "condition": "text200",
+      "screenshots": [
+        "1000011035.jpg",
+        "1000011037.jpg"
+      ],
+      "viewport": [
+        384,
+        621
+      ],
+      "samples": [
+        {
+          "mode": "ally",
+          "videos": [
+            {
+              "dropped": 7,
+              "total": 473
+            }
+          ],
+          "placement": [
+            {
+              "side": "pVis",
+              "hudGapPx": 22.9,
+              "commandGapPx": 354.6
+            }
+          ],
+          "maxFrameGapMs": 33.6,
+          "playing": 1
+        },
+        {
+          "mode": "enemy",
+          "videos": [
+            {
+              "dropped": 0,
+              "total": 479
+            }
+          ],
+          "placement": [
+            {
+              "side": "eVis",
+              "hudGapPx": 21,
+              "commandGapPx": 509.5
+            }
+          ],
+          "maxFrameGapMs": 29.3,
+          "playing": 1
+        },
+        {
+          "mode": "multi",
+          "videos": [
+            {
+              "dropped": 0,
+              "total": 472
+            },
+            {
+              "dropped": 0,
+              "total": 480
+            },
+            {
+              "dropped": 0,
+              "total": 472
+            }
+          ],
+          "placement": [
+            {
+              "side": "pVis",
+              "hudGapPx": 22.9,
+              "commandGapPx": 354.6
+            },
+            {
+              "side": "enemy_aVis",
+              "hudGapPx": 21.7,
+              "commandGapPx": 566.4
+            },
+            {
+              "side": "enemy_bVis",
+              "hudGapPx": 21.7,
+              "commandGapPx": 566.4
+            }
+          ],
+          "maxFrameGapMs": 16.9,
+          "playing": 3
+        }
+      ]
+    }
+  ],
+  "assessment": {
+    "placement": "PASS within reported conditions: HUD >=8px, commands >=12px. Derived CSS rectangles plus existing full-loop alpha bbox; not direct pixel/foot-contact inspection.",
+    "performance": "Short observed samples only; no universal threshold, long-duration or thermal acceptance inferred. RAF max gap is not average FPS.",
+    "remaining": "Other specified widths, action displacement, individual anchors/facing and shared lifecycle/load gates remain where unverified.",
+    "normalRuntimeRegistration": "not registered",
+    "publication": "forbidden"
+  }
+}

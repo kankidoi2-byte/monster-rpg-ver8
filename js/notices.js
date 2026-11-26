@@ -45,6 +45,7 @@ function renderNoticePreview() {
   const preview = document.getElementById('homeNoticePreview');
   const notice = latestGameNotice();
   if (!preview || !notice) return;
+  if(preview.firstElementChild){updateNoticeIndicators();return;}
   preview.innerHTML = `<button type="button" class="home-notice-button" onclick="showNotices()" aria-label="お知らせを開く">
     <span>お知らせ</span><span class="notice-menu-dot" data-notice-unread aria-label="未読あり"></span>
   </button>`;
@@ -58,7 +59,7 @@ function renderNotices() {
     const meta = noticeCategoryMeta(notice.category);
     return `<article class="notice-entry notice-${escapeNoticeHtml(notice.category)}">
       <div class="notice-entry-meta">
-        <span>${meta.icon} ${escapeNoticeHtml(meta.label)}</span>
+        <span>${escapeNoticeHtml(meta.label)}</span>
         <time datetime="${escapeNoticeHtml(notice.date)}">${escapeNoticeHtml(noticeDateLabel(notice.date))}</time>
         ${index === 0 ? '<b>最新</b>' : ''}
       </div>
@@ -75,6 +76,7 @@ function markLatestGameNoticeRead() {
 }
 
 function showNotices() {
+  if(typeof gameAudioPlay==='function')gameAudioPlay('notify');
   show('notices');
   renderNotices();
   markLatestGameNoticeRead();

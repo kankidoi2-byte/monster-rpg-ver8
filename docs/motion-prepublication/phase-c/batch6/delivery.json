@@ -1,0 +1,44 @@
+{
+  "dateJST": "2026-09-30",
+  "phase": "C",
+  "batch": 6,
+  "registered": 22,
+  "remaining": 28,
+  "species": [
+    "freigal",
+    "freiwolf",
+    "aquaron",
+    "highaquaron"
+  ],
+  "github": {
+    "repository": "kankidoi2-byte/monster-rpg-ver8",
+    "branch": "feat/phase4c-prepublication",
+    "assetCommit": "23856aa9501547bcf033ab3992ce169e6ec6a036",
+    "assetCommits": [
+      "23856aa9501547bcf033ab3992ce169e6ec6a036",
+      "9ee8948f8c9dbb7a623f34b7258380368054274e"
+    ],
+    "remoteAssetBytesVerified": true,
+    "mainMerged": false
+  },
+  "site": {
+    "projectId": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+    "sourceCommit": "763389555f81a8b4c56d0067d47ba956499ce0ec",
+    "deploymentId": "appgdep_6abc3e03cf948191896beed50415bfdb",
+    "versionId": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_8b6159c7bae88191a5996182f2b52d39",
+    "status": "succeeded",
+    "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+    "audience": "owner-private",
+    "archiveIntegrityVerified": true
+  },
+  "checks": {
+    "npmCheck": "passed",
+    "alphaFramesPerSpecies": 240,
+    "adoptedMp4ZipMatch": true,
+    "exportIsDerivative": true,
+    "sourceArtworkRigMotionRendererUnmodified": true,
+    "realDeviceAcceptance": "pending",
+    "all50Acceptance": "pending"
+  },
+  "next": "Continue remaining Phase C registrations; Phase D battle placement/redesign and Phase E integrated device/load acceptance remain."
+}

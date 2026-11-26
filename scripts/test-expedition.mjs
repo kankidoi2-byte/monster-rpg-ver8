@@ -31,7 +31,8 @@ const context = vm.createContext({
   HUNT_MAP_BOOST_TYPES:{volcano:'fire', starsea:'star'},
   TYPE_ICONS:{fire:'🔥', star:'🌌'},
   TN:{fire:'火', star:'星'},
-  ITEM_BY_ID:{},
+  ITEM_BY_ID:{unstable_alchemy_matter:{},fine_unstable_alchemy_matter:{},fire_orb:{},golden_land_map:{}},
+  saveRecoveryReport:[],
   by:id=>monsters.get(id) || null,
   getInstance:uid=>save.instances.find(ins=>ins.uid===uid) || null,
   instanceStatModifier:()=>1,
@@ -55,6 +56,13 @@ const context = vm.createContext({
     createElement:()=>({})
   }
 });
+// Load the real shared save validators without running save startup in this isolated fixture.
+const saveSource=fs.readFileSync(new URL('../js/save.js',import.meta.url),'utf8');
+vm.runInContext([
+  saveSource.match(/^function isSaveObject\(.*$/m)[0],
+  saveSource.match(/^function nonNegativeInteger\(.*$/m)[0],
+  saveSource.slice(saveSource.indexOf('function validateExpeditionEntry('),saveSource.indexOf('function repairSave('))
+].join('\n'),context);
 vm.runInContext(fs.readFileSync(new URL('../js/expedition.js', import.meta.url), 'utf8'), context);
 
 assert.equal(typeof expeditionProvider, 'function', 'expedition diagnostics provider must register');

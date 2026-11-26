@@ -1,0 +1,91 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {spawn} from 'node:child_process';
+const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4184'],{stdio:['ignore','pipe','inherit']});let browser;
+const out='artifacts/skill-card-layout/skill-dex';fs.mkdirSync(out,{recursive:true});
+try{
+ await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
+ browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
+ for(const [width,height] of [[320,568],[390,844],[430,932],[844,390]]){
+  const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
+  await page.goto('http://127.0.0.1:4184/?legacy=1',{waitUntil:'networkidle'});
+  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);show('home');saveGame();});
+  assert(await page.locator('#home').isVisible());
+  await page.evaluate(()=>show('dexHub'));
+  const before=await page.evaluate(()=>JSON.stringify(save));
+  await page.locator('#dexHubGrid button').filter({hasText:'技図鑑'}).click();
+  assert(await page.locator('#skillDex').isVisible());assert.equal(await page.locator('[data-skill-dex-id]').count(),await page.evaluate(()=>skillDexEntries().length));
+  await page.locator('#skillDexSearch').fill('命流採水');assert.equal(await page.locator('[data-skill-dex-id]').count(),1);
+  await page.locator('[data-skill-dex-id]').click();assert.match(await page.locator('#skillDexDetail').textContent(),/30%/);
+  await page.locator('#skillDexDetail details').last().locator('summary').click();
+  await page.locator('#skillDexDetail .skill-dex-unit:visible').first().click();assert(await page.locator('#dex').isVisible());
+  await page.locator('#dexDetail .skill-dex-open').filter({hasText:'技図鑑'}).last().click();assert(await page.locator('#skillDex').isVisible());
+  await page.evaluate(()=>resetSkillDexFilters());
+  for(const type of await page.evaluate(()=>[...new Set(skillDexEntries().flatMap(skillTypes))])){
+   await page.locator('#skillDexType').selectOption(type);assert(await page.locator('[data-skill-dex-id]').count()>0);
+   assert(await page.evaluate(()=>[...document.querySelectorAll('[data-skill-dex-id]')].every(el=>skillTypes(SKILL_BY_ID[el.dataset.skillDexId]).includes(document.getElementById('skillDexType').value))));
+  }
+  await page.evaluate(()=>resetSkillDexFilters());await page.locator('#skillDexKind').selectOption('support');assert(!(await page.locator('#skillDexList').textContent()).includes('威力 0'));
+  await page.locator('#skillDexSearch').fill('存在しない技名');assert.match(await page.locator('#skillDexList').textContent(),/条件に合う技はありません/);
+  await page.evaluate(()=>resetSkillDexFilters());await page.locator('#skillDexSort').selectOption('power');
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');
+  const cards=await page.locator('#skillDexList .skill-card').evaluateAll(els=>els.map(el=>{const title=el.querySelector('.skill-card-title'),cost=el.querySelector('.skill-cost-badge');return {lines:el.querySelectorAll('.skill-type-line').length,overlap:(()=>{const a=title.getBoundingClientRect(),b=cost.getBoundingClientRect();return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1;})(),overflow:title.scrollWidth>title.clientWidth+1};}));assert(cards.every(c=>c.lines===1&&!c.overlap&&!c.overflow));
+  assert.equal(await page.evaluate(()=>JSON.stringify(save)),before,'browse is read-only');
+  await page.evaluate(()=>{show('characterDex');showCharacterDexDetail('elna_beginner');});await page.locator('#characterDexDetail .skill-dex-open').first().click();assert(await page.locator('#skillDex').isVisible());
+  await page.evaluate(()=>showSkillDexDetail('s110_107'));
+  assert.equal(await page.locator('#skillDex [onclick*="showSkillSynthesis"]').count(),0);
+  await page.evaluate(()=>show('skillGacha'));
+  assert.equal(await page.locator('#skillGacha [onclick*="showSkillSynthesis"]').count(),0);
+  await page.evaluate(()=>show('growthHub'));
+  assert.equal(await page.locator('[onclick="showSkillSynthesis()"]').count(),1);
+  await page.locator('#growthSkillSynthesisButton').click();
+  assert(await page.locator('#skillSynthesis').isVisible());
+  assert(await page.locator('.app-bottom-nav [data-nav="monsters"]').evaluate(el=>el.classList.contains('is-current')));
+  await page.locator('#skillSynthesis .ui-back-link').click();
+  assert(await page.locator('#growthHub').isVisible());
+  await page.locator('#growthSkillSynthesisButton').click();
+  assert.equal(await page.locator('[data-synthesis-id]').count(),4);
+  assert(await page.locator('#skillSynthesisSubmit').isDisabled());
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'synthesis horizontal overflow');
+  await page.evaluate(()=>{save.skillCards={s110_001:4,s110_002:2,s110_061:3,s110_091:3,s110_107:2};renderSkillSynthesis();});
+  const tap=async locator=>{await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));await locator.click();};
+  for(const [tier,material,needed] of [['low','s110_001',3],['high','s110_061',3],['super','s110_091',3],['ultimate','s110_107',2]]){
+   await tap(page.locator(`[data-synthesis-id="synth_tier_${tier}_v1"]`));
+   for(let n=0;n<needed;n++)await tap(page.locator(`#synthesis-add-${material}`));
+   assert(await page.locator('#skillSynthesisSubmit').isEnabled());
+   const beforeCancel=await page.evaluate(()=>JSON.stringify(save));
+   await tap(page.locator('#skillSynthesisSubmit'));
+   await tap(page.locator('#gameConfirmDialog [data-game-confirm-action="cancel"]'));
+   assert.equal(await page.evaluate(()=>JSON.stringify(save)),beforeCancel);
+   await page.screenshot({path:`${out}/synthesis-${tier}-${width}.png`,fullPage:true,animations:'disabled'});
+  }
+  const beforeCraft=await page.evaluate(()=>({...save.skillCards}));
+  await tap(page.locator('#skillSynthesisSubmit'));
+  await tap(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
+  const result=await page.evaluate(()=>({id:save.skillSynthesis.lastResultId,cards:save.skillCards}));
+  assert.equal(result.cards.s110_107,(beforeCraft.s110_107-2)+(result.id==='s110_107'?1:0));
+  assert.equal(Object.values(result.cards).reduce((n,v)=>n+v,0),Object.values(beforeCraft).reduce((n,v)=>n+v,0)-1);
+  assert(await page.locator('#skillSynthesisResult').isVisible());
+  // Mixed material choice through real controls, then a repeated copy, and a saved result.
+  await tap(page.locator('[data-synthesis-id="synth_tier_low_v1"]'));
+  await tap(page.locator('#synthesis-add-s110_001'));await tap(page.locator('#synthesis-add-s110_002'));await tap(page.locator('#synthesis-add-s110_001'));
+  assert.equal(await page.locator('[data-selected-count="s110_001"]').textContent(),'2');
+  await tap(page.locator('#skillSynthesisSubmit'));
+  await tap(page.locator('#gameConfirmDialog [data-game-confirm-action="ok"]'));
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'material/result overflow');
+  await page.screenshot({path:`${out}/synthesis-result-${width}.png`,fullPage:true,animations:'disabled'});
+  await page.evaluate(()=>show('skillDex'));
+  await page.locator('#skillDexCost').selectOption('25');assert.equal(await page.locator('[data-skill-dex-id]').count(),4);
+  await page.locator('[data-skill-dex-id]').first().click();assert.match(await page.locator('#skillDexDetail').textContent(),/合成限定/);
+  await page.evaluate(async()=>{window.scrollTo({top:0,behavior:'instant'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
+  await page.screenshot({path:`${out}/${width}.png`,fullPage:true,animations:'disabled'});
+  await page.evaluate(()=>{show('partySet');});assert(await page.locator('#partySet').isVisible());
+  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
+  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+  const saved=await page.evaluate(()=>{saveGame();return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills});});await page.reload({waitUntil:'networkidle'});assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})),saved);
+  assert.deepEqual(errors,[]);await page.close();
+ }
+ console.log('PASS skill dex browser: 320/390/430/landscape, filters, links, layout, read-only save/reload');
+}finally{await browser?.close();server.kill();}

@@ -1,0 +1,2 @@
+PASS: legacy parent gradient present in source; transparent override parses and selects both eligible enemy parents only. Unregistered card excluded.
+Limitation: initial computed-gradient assertion failed because jsdom did not provide that gradient; this is selector/declaration evidence only, not real rendering.

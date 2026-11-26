@@ -1,3 +1,4 @@
+import {applyNormalHealingSpec} from './normal-healing-baseline.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runtime,seeded} from '../tools/balance-audit/runtime.mjs';
@@ -11,7 +12,7 @@ r.context.document.getElementById=id=>{
 };
 run(fs.readFileSync(new URL('../js/battle-feedback.js',import.meta.url),'utf8'));
 run(`renderBattleInputState=()=>{};renderBattleHpResults=()=>{};`);
-const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);refreshBattleFeedback();`;
+const setup=`save=initSave();save.instances=[];save.party=[];const ins=addInstance('freigal',10);save.party=[ins.uid];prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{enemyLevel:6,allowOvertier:false});activeHuntRequest.battleMode='single';beginChosenBattle('grassland','slime','normal',activeHuntRequest);refreshBattleFeedback();`;
 run(`function setup(){${setup}};setup();`);
 const history=()=>JSON.parse(run('JSON.stringify(battleFeedback.history)'));
 run('pHp=playerMaxHp()-3;refreshBattleFeedback()');
@@ -28,7 +29,7 @@ assert(history().some(e=>/被弾 −1.*超過/.test(e.text)),'overkill separate 
 run('setup();pStatus="poison";pPoisonTurns=1;pHp=2;refreshBattleFeedback();applyPoisonEndTurn()');
 assert.equal(run('pHp'),0);assert.equal(run('pStatus'),null);assert(history().some(e=>/毒 −2/.test(e.text)));
 run('setup()');await run(`performAction(player,enemy,['反動技',12,'normal','recoil'],true)`);
-assert(history().some(e=>/反動 −8/.test(e.text)));
+assert(history().some(e=>new RegExp(`反動 −${Math.floor(run('playerMaxHp()')*.04)}`).test(e.text)));
 run('setup();pSleepTurns=1;refreshBattleFeedback()');await run(`performAction(player,enemy,['攻撃',12,'normal'],true)`);
 assert.equal(run('pSleepTurns'),0);assert(history().some(e=>/動けない/.test(e.text)));
 run('setup();pGuard=true;pAquaShield=true;pAtk=1.5;refreshBattleFeedback()');
@@ -36,15 +37,17 @@ assert.match(run('battleStateLabels(battleCombatants()[0]).join(" ")'),/防御.*
 // Identical messages across distinct actions are retained.
 run(`setup();beginBattleAction(player,['防御'],true);document.getElementById('log').innerHTML='身を守った';captureBattleLog();beginBattleAction(player,['防御'],true);document.getElementById('log').innerHTML='身を守った';captureBattleLog();`);
 assert.equal(history().filter(e=>e.text==='身を守った').length,2);
-// Compare actual rule outcomes and random draws with the production baseline.
+// Compare unchanged effects/RNG without defense; intentional defense rules are
+// covered by test-story-legacy-defense, including whole-attack consumption.
 const {execFileSync}=await import('node:child_process');
-const baseline=runtime(Object.fromEntries(['battle-rules','battle-flow','multi-battle','battle-view','items'].map(file=>[file,()=>execFileSync('git',['show',`4f3d5d5c488d4dd44da9b2bab30a56ab45663323:js/${file}.js`],{encoding:'utf8',maxBuffer:5e6})])));
+const baseline=runtime(Object.fromEntries(['battle-rules','battle-flow','multi-battle','battle-view','items'].map(file=>[file,()=>applyNormalHealingSpec(file,execFileSync('git',['show',`4f3d5d5c488d4dd44da9b2bab30a56ab45663323:js/${file}.js`],{encoding:'utf8',maxBuffer:5e6}))])));
+run('battleStatDamageMultiplier=()=>1;normalRecoilDamage=()=>8;');
 for(const effect of [null,'repeat_attack','drain','recoil','alchemy_recoil','poison','paralysis','confusion','guard','heal','buff','aqua_shield']){
  const seed=912;const a=seeded(seed),b=seeded(seed);let drawsA=0,drawsB=0;
- baseline.run(`function setup(){${setup.replace('refreshBattleFeedback();','')}};setup();pHp=70;eHp=60;pGuard=true;eGuard=true;pAquaShield=true;eAquaShield=true;`);
- run('setup();pHp=70;eHp=60;pGuard=true;eGuard=true;pAquaShield=true;eAquaShield=true;refreshBattleFeedback()');
+ baseline.run(`function setup(){${setup.replace('refreshBattleFeedback();','')}};setup();pHp=70;eHp=60;pGuard=false;eGuard=false;pAquaShield=false;eAquaShield=false;`);
+ run('setup();pHp=70;eHp=60;pGuard=false;eGuard=false;pAquaShield=false;eAquaShield=false;refreshBattleFeedback()');
  baseline.context.Math.random=()=>{drawsA++;return a()};r.context.Math.random=()=>{drawsB++;return b()};
- const move=JSON.stringify(['検証', ['guard','heal','buff','aqua_shield'].includes(effect)?0:24,'normal',effect,1]);
+ const move=JSON.stringify(['検証', ['guard','heal','buff','aqua_shield'].includes(effect)?0:24,'normal',effect,1,null,null,null,'skill_slime_01']);
  await baseline.run(`doAttack(player,enemy,${move},true)`);await run(`doAttack(player,enemy,${move},true)`);
  const state='JSON.stringify([pHp,eHp,pAtk,eAtk,pGuard,eGuard,pStatus,eStatus,pPoisonTurns,ePoisonTurns,eParalysisTurns,eConfusionTurns,pAquaShield,eAquaShield])';
  assert.equal(run(state),baseline.run(state),effect||'normal');assert.equal(drawsA,drawsB,'random draw count');

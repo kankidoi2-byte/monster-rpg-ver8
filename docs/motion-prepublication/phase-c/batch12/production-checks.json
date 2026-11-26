@@ -1,0 +1,451 @@
+{
+  "verifiedAt": "2026-09-30T02:50:32.864Z",
+  "sourceCommit": "b2987f22ce66c4bdd416e4b97ab9428c83b8329b",
+  "mode": "production",
+  "posterStatus": 200,
+  "posterType": "application/octet-stream",
+  "posterSha256": "dce04ab535aab0364d438c7dc4dbc9c99c2f96380a8839165f65c1dfbf08daf0",
+  "anonymousStatus": 401,
+  "rows": [
+    {
+      "filename": "volmoog_v18_alpha.webm",
+      "bytes": 1169237,
+      "sha256": "d41b78045234b0b499aec61e644b4b44a269d30c71227e066fd57453993ffb4f",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "gran_volmoog_v18_alpha.webm",
+      "bytes": 1758952,
+      "sha256": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "shenhairon_v5_alpha.webm",
+      "bytes": 5075081,
+      "sha256": "9cf6f7fc8e6748e6c324bdceb26b379c06223dcd1facf96656babcba0b5df659",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "tienhairon_v5_alpha.webm",
+      "bytes": 5418360,
+      "sha256": "4e046fcc3d7c67c77ab0ff1fb5477cc09ceef696b56eaf2c6713729d1b5eb747",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "slime_gold_v1_alpha.webm",
+      "bytes": 2194184,
+      "sha256": "4d0c1b79281f690010190a1c4ffb7ab89b280e75d62a10ce513c658604024850",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "false_dragon_beta_v2_alpha.webm",
+      "bytes": 5893596,
+      "sha256": "e83837f58d9f70ec058d16d5f5286923c617362802e8e3b895e1fc660519c797",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "false_dragon_gamma_v1_alpha.webm",
+      "bytes": 2333820,
+      "sha256": "d07509725eac02f79bddfe90e011b427415896ddbb4f0d8a0ebaec466e842a27",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "goblin_v1_alpha.webm",
+      "bytes": 5886783,
+      "sha256": "d1925050de300d2f5c677a853fb7b6e6fb40f8827052c18eb9cd6fc7d7b9914b",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "nightmare_v1_alpha.webm",
+      "bytes": 10500596,
+      "sha256": "3297b2c39e3500a7a6d181282ec1050af47708e64a3aa9db95fafb5838f554b5",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "astralepis_v1_alpha.webm",
+      "bytes": 4328698,
+      "sha256": "4dff4652961eaaad89f2b8dc67d8d20800d465c8dfc6cf621222b53fa7fdd277",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "nemes_v1_alpha.webm",
+      "bytes": 4470339,
+      "sha256": "7050c475e20d17ebc944a31657fe5fc04e0aaf418aec8d18ab6beb2889977307",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "nemesia_v1_alpha.webm",
+      "bytes": 4683643,
+      "sha256": "1b634bb27a61d5d9df6f9a03a3c6a1b5b521400fbb958588b3e1a22f2017d7c6",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "nemesion_v1_alpha.webm",
+      "bytes": 8624763,
+      "sha256": "0d548b4bbcf695976e6607b9d840f29e0062e1b592336625751a3704b5a4538b",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "doom_nemesion_v5_alpha.webm",
+      "bytes": 9985287,
+      "sha256": "1b6d0a23d67efa6ff8a62d308b66ab73f8dcb6a10dfd589ba97eb10bc10079c3",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "false_dragon_alfa_v1_alpha.webm",
+      "bytes": 7071949,
+      "sha256": "bc0381141c46dba6312ea6503792170711d61065cac8d7d455857549788e9a8b",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "volteck_v4_alpha.webm",
+      "bytes": 5061379,
+      "sha256": "98dc1240a4d1f8d8d8b4d873e878b2fb67162cebbbfa2a6fce174f3bed505c30",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "spaquinn_v4_alpha.webm",
+      "bytes": 9571582,
+      "sha256": "df12b064a6b925cdf803ba452dcd6b33b92bea5f304abacdb3a8025a55bddf3e",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "voltax_v5_alpha.webm",
+      "bytes": 11189835,
+      "sha256": "f21ca7748a80a337dd5dd166036998d6d3f0703cfaef8a3fc3c921d8fbcf5a0e",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "freigal_v2_alpha.webm",
+      "bytes": 7900012,
+      "sha256": "91583d6dc1ca1bde2cffa02694393235e7bfbb1d239d6ed68379fbd619630bd6",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "freiwolf_v2_alpha.webm",
+      "bytes": 10758146,
+      "sha256": "9d592cbebcd29a4a3f6dc9e041a5dc8e64b2b99c8247a973841328102a2a8da9",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "aquaron_v3_alpha.webm",
+      "bytes": 5534277,
+      "sha256": "725a195a7c2d88b760590ebcbd324a4e6a7d89ca81573aeaa81656240b4e5cc1",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "highaquaron_v3_alpha.webm",
+      "bytes": 1938893,
+      "sha256": "2518acf8a6caf7ffa82bdd1e826feeb890eeda5390dcc615a33c7b230973fb71",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "grassbeat_v1_alpha.webm",
+      "bytes": 6160557,
+      "sha256": "a8c3dba7dfc06d5ee125216235ba8710891e7797347d6796730cabb8430b9f65",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "thornbeat_v1_alpha.webm",
+      "bytes": 9926082,
+      "sha256": "ed0cb884446118b9586211901c8fd0e00d0479c2017b8aaf12da3adc7bc5564b",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "granbeat_v4_alpha.webm",
+      "bytes": 9216589,
+      "sha256": "406cf595bdb62e801b487419294d1fb32b4076846355a9b876a17a4618f7357c",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "rikasheef_v1_alpha.webm",
+      "bytes": 12314300,
+      "sha256": "9c5ec7e212d963d61cb99ef14c4ab97a187010dac13298dbccc6a4f3206f98ff",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "seralphia_v1_alpha.webm",
+      "bytes": 16976960,
+      "sha256": "9e24a9e97ed546d71b9ce5d41ba0f17075acaf1a20ad84a0902b3619a706036d",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "sylphin_v1_alpha.webm",
+      "bytes": 5060728,
+      "sha256": "2308ee7d740114d7b7582c5969ead7288497a9ee172b39580ccfc63e73d3be9b",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "zephyray_v1_alpha.webm",
+      "bytes": 5564023,
+      "sha256": "9d18ccf012f4e6bd654fde38a349cebb3d7886390e883a015802d08ff0174059",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "tempestray_v1_alpha.webm",
+      "bytes": 6338962,
+      "sha256": "a62a0c0141e4a4ca10e78b8ddfad7a5f5ee8dab44cd76aec70a4f41c3eb596cb",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "luxseed_v1_alpha.webm",
+      "bytes": 6813586,
+      "sha256": "d4b959149f01dfe3b83db0852168b725ba036648b536d742f57315a52e9409ca",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "luxiard_v1_alpha.webm",
+      "bytes": 8513164,
+      "sha256": "8f7b167f18a8ee9d878f97d3bd1bafef2f7d6cd0c99d4efbef2a4abc5833ce2a",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "lux_galdion_v1_alpha.webm",
+      "bytes": 11763591,
+      "sha256": "89823e521b756c05d10120741e605197ad4bf2e705958839b4196e9cdc66b1c5",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "nocle_v1_alpha.webm",
+      "bytes": 6019741,
+      "sha256": "ed2abae9c7c957bff474ca451cadd8aa88c1da708720bd35fcb49eeae6233743",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "noclaid_v1_alpha.webm",
+      "bytes": 9749430,
+      "sha256": "54d454b31353f3a00c27a9e2e4e3365471e3eed134f50c914f2b854550d98f73",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "noxvelg_v1_alpha.webm",
+      "bytes": 12915868,
+      "sha256": "9ce2219c632d49fe7258f25e503f7fd5bc71b5a258fed8bd73400974358be9ed",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "orcana_v3_alpha.webm",
+      "bytes": 5213336,
+      "sha256": "6bb1df5ea0704413e8c7147742f02db1ece2b29efba5b1fb3cbb21f35e9afd4f",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "orca_stream_v3_alpha.webm",
+      "bytes": 7938935,
+      "sha256": "750811efb1d6b5f587b887e616b0f0d729d047a031e22834466d190be3b24f0e",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "orca_abyss_v3_alpha.webm",
+      "bytes": 11085718,
+      "sha256": "49997b352ad528f7dd929fa756c4b0c975cc5ccc639137a623a821b3c776d663",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "stored",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "ignaros_v1_alpha.webm",
+      "bytes": 4441515,
+      "sha256": "ccc7143795cd2be79e4359b4bed2bbfcc5cc8b31e206829c2114d00df8466694",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "imported",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "tsubaki_v1_alpha.webm",
+      "bytes": 12362645,
+      "sha256": "2c2a648ddccca3dc4e7e31493cf5474f4660329791d063c8e4e1c16a8671ea8d",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "imported",
+      "secondStorage": "stored",
+      "headStatus": 200
+    },
+    {
+      "filename": "suiren_v2_alpha.webm",
+      "bytes": 12586441,
+      "sha256": "7c80cc3a5c2b31ef02599baec18b54d68e0da9e2e3054c5dace5d79f1cb4b879",
+      "rangeStatus": 206,
+      "rangeBytes": 1024,
+      "firstStorage": "imported",
+      "secondStorage": "stored",
+      "headStatus": 200
+    }
+  ],
+  "newPosters": [
+    {
+      "filename": "ignaros_v1_static.webp",
+      "status": 200,
+      "bytes": 139596,
+      "sha256": "60f4388fb42562d589aadeff1513d9eb4bdcf320e32897b49e9d03c81fa475f4"
+    },
+    {
+      "filename": "tsubaki_v1_static.webp",
+      "status": 200,
+      "bytes": 153500,
+      "sha256": "853af17adfa43287bb415b8c1608029dbd8a27d11c36dcd76f014499ec42ffe1"
+    },
+    {
+      "filename": "suiren_v2_static.webp",
+      "status": 200,
+      "bytes": 153884,
+      "sha256": "6490463310d9c7e4a099ea020f11515b7b24f3308f0dd32fddb7e02e5d425685"
+    }
+  ]
+}

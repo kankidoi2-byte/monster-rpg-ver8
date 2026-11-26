@@ -29,7 +29,16 @@ assert(profiles.every(profile => profile && Number.isFinite(profile.linkRate)));
 assert(profiles.filter(profile => profile.rarity <= 3).every(profile => profile.abilityEligible));
 assert(profiles.filter(profile => profile.rarity >= 4).every(profile => !profile.abilityEligible));
 assert(profiles.filter(profile => profile.rarity === 5).every(profile => profile.multiplier === 1 && profile.abilityBand === null));
-assert.equal(contract.buildKokoroLinkProfile(contract.characters[0],{level:1}),null,'characters must not enter monster-only Kokoro Link profiles');
+for(const char of contract.characters){
+  const profile=contract.buildKokoroLinkProfile(char,{uid:`char-${char.id}`,level:10});
+  assert.equal(profile?.monsterId,char.id);
+  assert.equal(profile?.monsterName,char.name);
+}
+assert(contract.characters.length>0);
+const legacy={...contract.characters[0],entityKind:undefined,unitType:'character'};
+assert.equal(contract.buildKokoroLinkProfile(legacy,{level:1})?.monsterId,legacy.id);
+assert.equal(contract.buildKokoroLinkProfile({...legacy,entityKind:'unknown'},{level:1}),null);
+assert.equal(contract.buildKokoroLinkProfile(legacy,{level:1,guest:true}),null);
 
 const sameBase=stars => ({id:`same-${stars}`,name:`same-${stars}`,entityKind:'monster',rarity:'★'.repeat(stars),types:['normal'],hp:100,spd:50,moves:[['test',40,'normal']]});
 const oneStar=contract.buildKokoroLinkProfile(sameBase(1),{uid:'one',level:1});
@@ -37,6 +46,22 @@ const fiveStar=contract.buildKokoroLinkProfile(sameBase(5),{uid:'five',level:1})
 assert.equal(oneStar.linkRate,0.35);
 assert.equal(fiveStar.linkRate,0.10);
 assert.equal(fiveStar.abilityEligible,false,'five-star profiles must never receive a link ability');
+const sampleStats={maxHp:160,speed:79};
+const sampleInst={level:15,resonance:1.2};
+context.traitValue=(instance,trait,fallback)=>trait==='resonance'?(instance.resonance??fallback):fallback;
+for(const stars of [1,2,3,4,5]){
+  const mon={...sameBase(stars),types:['water','fire']};
+  const char={...mon,entityKind:'character'};
+  const monster=contract.resolveKokoroLink(mon,sampleInst,sampleStats);
+  const character=contract.resolveKokoroLink(char,sampleInst,sampleStats);
+  assert.deepEqual(plain(character),plain(monster),`★${stars}: effect and ability parity, including resonance`);
+  assert.equal(character.profile.multiplier,contract.config.rarityMultipliers[stars]*sampleInst.resonance);
+  if(stars>=4)assert.deepEqual([character.abilityPlan,character.powerAbility,character.statusAbility,character.tacticsAbility],[null,null,null,null]);
+  else assert.equal(character.abilityPlan.primaryType,'water','secondary attribute does not pick the ability');
+}
+const unsupported={...sameBase(2),entityKind:'character',types:['unknown','fire']};
+assert.equal(contract.resolveKokoroLink(unsupported,sampleInst,sampleStats).abilityPlan.primaryType,'normal');
+
 
 const modified=contract.buildKokoroLinkProfile(sameBase(1),{
   uid:'modified',level:5,
@@ -83,4 +108,4 @@ assert(Number.isFinite(malformed.linkRate),'malformed source values must still p
 const malformedEffects=contract.convertKokoroLinkEffects({linkRate:Infinity},{maxHp:Infinity,speed:NaN});
 assert(Object.values(malformedEffects).filter(value => typeof value === 'number').every(Number.isFinite),'malformed effect inputs must remain finite');
 
-console.log('Kokoro Link engine validation passed (50 monsters, active-monster scaling, rarity-only strength, monster eligibility, five-star restriction, pure calculation, and bounded effects).');
+console.log('Kokoro Link engine validation passed (50 monsters, active-monster scaling, rarity-only strength, character parity and guest eligibility, five-star restriction, pure calculation, and bounded effects).');

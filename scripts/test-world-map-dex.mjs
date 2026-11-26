@@ -11,14 +11,14 @@ const value=source=>JSON.parse(JSON.stringify(run(source)));
 run('let save={mapDex:MAPS.map(map=>map.id),worldMap:{active:{}}};');
 const difficulties=value('Object.fromEntries(MAPS.map(map=>[map.id,mapDexDifficulties(map)]))');
 assert.equal(Object.keys(difficulties).length,19);
-for(const id of ['grassland','volcano','lake','seikai_irie','snow_mountain','forest','light_plain','starry_plain','highland_ruins','arena','ruined_village']){
-  assert.deepEqual(difficulties[id],['Easy','Normal','Hard'],id);
-}
-for(const id of ['kaiyu_kaiiki','deep_sea_end','magic_academy','kaen_village'])assert.deepEqual(difficulties[id],['Normal','Hard'],id);
-assert.deepEqual(difficulties.starsea,['Hard','Extreme']);
+const all=['難易度Ⅰ','難易度Ⅱ','難易度Ⅲ','難易度Ⅳ','難易度Ⅴ'];
+for(const id of ['grassland','volcano','seikai_irie','forest','light_plain','starry_plain','highland_ruins','arena','ruined_village','kaiyu_kaiiki','magic_academy','kaen_village'])assert.deepEqual(difficulties[id],all,id);
+for(const id of ['lake','snow_mountain'])assert.deepEqual(difficulties[id],all.slice(0,4),id);
+assert.deepEqual(difficulties.deep_sea_end,all.slice(1));
+assert.deepEqual(difficulties.starsea,['難易度Ⅳ','難易度Ⅴ','Extreme']);
 assert.deepEqual(difficulties.world_between,['Extreme']);
-assert.deepEqual(difficulties.water_secret,['Hard']);
-assert.deepEqual(difficulties.golden_land,['Hard']);
+assert.deepEqual(difficulties.water_secret,['難易度Ⅳ','難易度Ⅴ']);
+assert.deepEqual(difficulties.golden_land,['難易度Ⅳ']);
 
 const notes=()=>value(`Object.fromEntries(MAPS.map(map=>[map.id,{
   difficulties:mapDexDifficulties(map),events:mapDexEvents(map),
@@ -32,10 +32,14 @@ assert.match(encounter('light_plain','hikari').frequency,/降臨/);
 assert.doesNotMatch(encounter('light_plain','hikari').frequency,/よく出現/);
 assert.match(encounter('light_plain','hikari').note,/契約不可/);
 assert.match(encounter('starsea','doom_nemesion').frequency,/危機.*Extreme/);
-assert.match(encounter('starsea','nemesion').note,/入口.*Hard/);
-for(const id of ['false_dragon_alfa','false_dragon_beta','false_dragon_gamma']){
+assert.match(encounter('starsea','nemesion').note,/入口.*難易度Ⅳ/);
+for(const id of ['false_dragon_alfa']){
   assert.match(encounter('world_between',id).note,/討伐.*対処を任せる.*痕跡/);
 }
+assert.ok(encounter('volcano','ashleia'),'アシュレイアは火山に出現する');
+assert.equal(encounter('world_between','ashleia'),undefined,'アシュレイアは世界の狭間に出現しない');
+assert.ok(encounter('forest','morglum'),'モルグラムは森林に出現する');
+assert.equal(encounter('world_between','morglum'),undefined,'モルグラムは世界の狭間に出現しない');
 assert.doesNotMatch(JSON.stringify(initial),/出現率|[0-9]+[％%]/,'old map-refresh probabilities must not be displayed');
 assert.match(initial.golden_land.events.join(' '),/出発時に1枚消費/);
 assert(!initial.starsea.events.includes('三つ巴バトル'),'event-only entrance uses a single battle');
@@ -53,3 +57,6 @@ assert.doesNotMatch(run("MAPS.find(map=>map.id==='light_plain').ecosystem"),/ヒ
 assert.match(run("MAPS.find(map=>map.id==='light_plain').ecosystem"),/降臨/);
 assert.match(run("[...SHOP_ITEMS,...ITEM_DEX_EXTRA].find(item=>item.id==='golden_land_map').desc"),/世界地図.*出発.*1枚消費/);
 console.log('World map encyclopedia checks passed (19 difficulty sets, event-specific encounters, save-independent descriptions, contract/ID preservation).');
+
+assert.equal(run("monsterObtainEntries(by('tienhairon')).some(e=>e.mapId==='deep_sea_end')"),false);
+assert.equal(run("monsterObtainEntries(by('tienhairon')).some(e=>e.mapId==='water_secret')"),true);

@@ -1,0 +1,3433 @@
+{
+  "base": "282f774d00e240c599f8542843d7f27a65a49cec",
+  "rows": [
+    {
+      "id": "skill_freigal_01",
+      "name": "火炎牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "フレイガル"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_freigal_02",
+      "name": "フレイムクロー",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "フレイガル"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_freigal_03",
+      "name": "爆炎チャージ",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "フレイガル"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_freigal_04",
+      "name": "フレアチャージ",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "フレイガル"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_freiwolf_01",
+      "name": "炎狼牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "フレイウルフ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_freiwolf_02",
+      "name": "フレアラッシュ",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "フレイウルフ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_freiwolf_03",
+      "name": "猛火の咆哮",
+      "deprecated": false,
+      "form": "roar",
+      "role": "補助",
+      "users": [
+        "フレイウルフ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_aquaron_01",
+      "name": "水流弾",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "アクアロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_aquaron_02",
+      "name": "しっぽ打ち",
+      "deprecated": false,
+      "form": "tail",
+      "role": "攻撃",
+      "users": [
+        "アクアロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "tail",
+      "afterForm": "tail",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 143,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_aquaron_03",
+      "name": "大波召喚",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "アクアロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_aquaron_04",
+      "name": "アクアシールド",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "アクアロン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "shield",
+      "afterForm": "shield",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 260,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_highaquaron_01",
+      "name": "水竜弾",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ハイアクアロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_highaquaron_02",
+      "name": "竜の尾撃",
+      "deprecated": false,
+      "form": "tail",
+      "role": "攻撃",
+      "users": [
+        "ハイアクアロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "tail",
+      "afterForm": "tail",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 143,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_highaquaron_03",
+      "name": "ハイドロスパイラル",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ハイアクアロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_shenhairon_01",
+      "name": "神海の爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "シェンハイロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_shenhairon_02",
+      "name": "蒼竜の咆哮",
+      "deprecated": false,
+      "form": "roar",
+      "role": "攻撃",
+      "users": [
+        "シェンハイロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "roar",
+      "afterForm": "roar",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 374,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_shenhairon_03",
+      "name": "海王瀑流",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "シェンハイロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_tienhairon_01",
+      "name": "天海の舞",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ティエンハイロン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_tienhairon_02",
+      "name": "月華水刃",
+      "deprecated": false,
+      "form": "blade",
+      "role": "攻撃",
+      "users": [
+        "ティエンハイロン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "blade",
+      "afterForm": "blade",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_tienhairon_03",
+      "name": "蒼天龍波",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ティエンハイロン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "wave",
+      "afterForm": "wave",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 368,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_grassbeat_01",
+      "name": "リーフカッター",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "グラスビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "blade",
+      "afterForm": "blade",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_grassbeat_02",
+      "name": "吸収",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "グラスビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "mystic",
+      "afterForm": "mystic",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 264,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_grassbeat_03",
+      "name": "森の一撃",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "グラスビート"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_grassbeat_04",
+      "name": "ポイズンニードル",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "グラスビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "projectile",
+      "afterForm": "projectile",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_grassbeat_05",
+      "name": "スリープパウダー",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "グラスビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "sleep",
+      "afterForm": "sleep",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 218,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_grassbeat_06",
+      "name": "トキシックガーデン",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "グラスビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_thornbeat_01",
+      "name": "ソーンホーン",
+      "deprecated": false,
+      "form": "horn",
+      "role": "攻撃",
+      "users": [
+        "ソーンビート"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "horn",
+      "afterForm": "horn",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 144,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_thornbeat_02",
+      "name": "森の甲殻",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ソーンビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_thornbeat_03",
+      "name": "スパイクラッシュ",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "ソーンビート"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_granbeat_01",
+      "name": "グランホーン",
+      "deprecated": false,
+      "form": "horn",
+      "role": "攻撃",
+      "users": [
+        "グランビート"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "horn",
+      "afterForm": "horn",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 144,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_granbeat_02",
+      "name": "森王の装甲",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "グランビート"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_granbeat_03",
+      "name": "ガイアスラッシュ",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "グランビート"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_rikasheef_01",
+      "name": "若葉の突進",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "リカシーフ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_rikasheef_02",
+      "name": "癒しの芽吹き",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "リカシーフ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_rikasheef_03",
+      "name": "リーフスパーク",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "リカシーフ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "projectile",
+      "afterForm": "projectile",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_seralphia_01",
+      "name": "翠翼の突風",
+      "deprecated": true,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "セラルフィア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "wave",
+      "afterForm": "wave",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 368,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_seralphia_02",
+      "name": "森精の祝福",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "セラルフィア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_seralphia_03",
+      "name": "セラフィックリーフ",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "セラルフィア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "projectile",
+      "afterForm": "projectile",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_nightmare_01",
+      "name": "影打ち",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ナイトメア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_nightmare_02",
+      "name": "呪いの視線",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ナイトメア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "mystic",
+      "afterForm": "mystic",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 264,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_nightmare_03",
+      "name": "闇の波動",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ナイトメア"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_volteck_01",
+      "name": "雷つつき",
+      "deprecated": false,
+      "form": "beak",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "beak",
+      "afterForm": "beak",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 129,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_volteck_02",
+      "name": "急降下",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_volteck_03",
+      "name": "雷鳴弾",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_volteck_04",
+      "name": "サンダーボルト",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "lightning",
+      "afterForm": "lightning",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 194,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_volteck_05",
+      "name": "パラライズショック",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "lightning",
+      "afterForm": "lightning",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 194,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_volteck_06",
+      "name": "サンダーストーム",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_volteck_07",
+      "name": "ライトニングチェイン",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ボルテック"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "lightning",
+      "afterForm": "lightning",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 194,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_spaquinn_01",
+      "name": "雷撃",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "スパクイン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "lightning",
+      "afterForm": "lightning",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 194,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_spaquinn_02",
+      "name": "突風",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "スパクイン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "wave",
+      "afterForm": "wave",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 368,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_spaquinn_03",
+      "name": "スパークダイブ",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "スパクイン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_voltax_01",
+      "name": "雷嵐",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ボルタックス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_voltax_02",
+      "name": "暴風刃",
+      "deprecated": false,
+      "form": "blade",
+      "role": "攻撃",
+      "users": [
+        "ボルタックス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "blade",
+      "afterForm": "blade",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_voltax_03",
+      "name": "ボルテックストーム",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ボルタックス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_voltax_04",
+      "name": "疾風迅雷",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ボルタックス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_icegolem_01",
+      "name": "氷の拳",
+      "deprecated": false,
+      "form": "fist",
+      "role": "攻撃",
+      "users": [
+        "アイスゴーレム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fist",
+      "afterForm": "fist",
+      "after": true,
+      "beforeResultMs": 370,
+      "contactMs": 215,
+      "durationMs": 370
+    },
+    {
+      "id": "skill_icegolem_02",
+      "name": "守りを固める",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "アイスゴーレム"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_icegolem_03",
+      "name": "凍結クラッシュ",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "アイスゴーレム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_proto_icegolem_01",
+      "name": "氷塊拳",
+      "deprecated": false,
+      "form": "fist",
+      "role": "攻撃",
+      "users": [
+        "プロトアイスゴーレム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fist",
+      "afterForm": "fist",
+      "after": true,
+      "beforeResultMs": 370,
+      "contactMs": 215,
+      "durationMs": 370
+    },
+    {
+      "id": "skill_proto_icegolem_02",
+      "name": "重装防御",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "プロトアイスゴーレム"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_proto_icegolem_03",
+      "name": "大氷河クラッシュ",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "プロトアイスゴーレム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_elysia_01",
+      "name": "光雫弾",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "エリシア"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elysia_02",
+      "name": "祈りの癒し",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_elysia_03",
+      "name": "希望の光",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_elysia_prayer_01",
+      "name": "祈光弾",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "光祈の巫女エリシア"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elysia_prayer_02",
+      "name": "聖祈の癒し",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "光祈の巫女エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_elysia_prayer_03",
+      "name": "光祈結界",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "光祈の巫女エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_hikari_01",
+      "name": "聖光の槍",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "光の女神エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "projectile",
+      "afterForm": "projectile",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_hikari_02",
+      "name": "ヒールオーラ",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "光の女神エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_hikari_03",
+      "name": "ジャッジメント",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "光の女神エリシア"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_nemes_01",
+      "name": "星屑の牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "ネメス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_nemes_02",
+      "name": "竜のひっかき",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ネメス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_nemes_03",
+      "name": "コスモブレス",
+      "deprecated": false,
+      "form": "breath",
+      "role": "攻撃",
+      "users": [
+        "ネメス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "breath",
+      "afterForm": "breath",
+      "after": true,
+      "beforeResultMs": 430,
+      "contactMs": 138,
+      "durationMs": 430
+    },
+    {
+      "id": "skill_nemes_04",
+      "name": "イリュージョン",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ネメス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "mystic",
+      "afterForm": "mystic",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 264,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_nemes_05",
+      "name": "ベノムブレス",
+      "deprecated": false,
+      "form": "breath",
+      "role": "攻撃",
+      "users": [
+        "ネメス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "breath",
+      "afterForm": "breath",
+      "after": true,
+      "beforeResultMs": 430,
+      "contactMs": 138,
+      "durationMs": 430
+    },
+    {
+      "id": "skill_nemesia_01",
+      "name": "星雲の爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ネメシア"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_nemesia_02",
+      "name": "竜星ブレス",
+      "deprecated": false,
+      "form": "breath",
+      "role": "攻撃",
+      "users": [
+        "ネメシア"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "breath",
+      "afterForm": "breath",
+      "after": true,
+      "beforeResultMs": 430,
+      "contactMs": 138,
+      "durationMs": 430
+    },
+    {
+      "id": "skill_nemesia_03",
+      "name": "コズミックノヴァ",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ネメシア"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_nemesion_01",
+      "name": "星界の爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ネメシオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_nemesion_02",
+      "name": "銀河竜波",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ネメシオン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "wave",
+      "afterForm": "wave",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 368,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_nemesion_03",
+      "name": "アストラルエンド",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ネメシオン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_doom_nemesion_01",
+      "name": "滅星爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "滅亡の星 ネメシオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_doom_nemesion_02",
+      "name": "終焉竜波",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "滅亡の星 ネメシオン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "wave",
+      "afterForm": "wave",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 368,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_doom_nemesion_03",
+      "name": "アポカリプスノヴァ",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "滅亡の星 ネメシオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_beginner_01",
+      "name": "斬りつけ",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "初級剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_beginner_02",
+      "name": "見習いの構え",
+      "deprecated": false,
+      "form": "sword",
+      "role": "補助",
+      "users": [
+        "初級剣士エルナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_beginner_03",
+      "name": "勇気の一撃",
+      "deprecated": true,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "初級剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_middle_01",
+      "name": "連続斬り",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "中級剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_middle_02",
+      "name": "受け流し",
+      "deprecated": true,
+      "form": "sword",
+      "role": "補助",
+      "users": [
+        "中級剣士エルナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_middle_03",
+      "name": "白刃一閃",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "中級剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_advanced_01",
+      "name": "閃光斬り",
+      "deprecated": true,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "上級剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_advanced_02",
+      "name": "剣士の集中",
+      "deprecated": false,
+      "form": "sword",
+      "role": "補助",
+      "users": [
+        "上級剣士エルナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_elna_advanced_03",
+      "name": "白銀連斬",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "上級剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_suiren_01",
+      "name": "水霊弾",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "水の精霊スイレン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_suiren_02",
+      "name": "癒しの水",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "水の精霊スイレン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_suiren_03",
+      "name": "水鏡の波紋",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "水の精霊スイレン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_water_01",
+      "name": "流水斬り",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "流水の剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_water_02",
+      "name": "水鏡の構え",
+      "deprecated": false,
+      "form": "sword",
+      "role": "補助",
+      "users": [
+        "流水の剣士エルナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_water_03",
+      "name": "蒼流連閃",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "流水の剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_slime_01",
+      "name": "たいあたり",
+      "deprecated": false,
+      "form": "body",
+      "role": "攻撃",
+      "users": [
+        "スライム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "body",
+      "afterForm": "body",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 282,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_slime_02",
+      "name": "ぷるぷる",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "スライム"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_slime_03",
+      "name": "スライムアタック",
+      "deprecated": true,
+      "form": "body",
+      "role": "攻撃",
+      "users": [
+        "スライム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "body",
+      "afterForm": "body",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 282,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_slime_gold_01",
+      "name": "たいあたり",
+      "deprecated": true,
+      "form": "body",
+      "role": "攻撃",
+      "users": [
+        "スライムゴールド"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "body",
+      "afterForm": "body",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 282,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_slime_gold_02",
+      "name": "きんいろボディ",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "スライムゴールド"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_slime_gold_03",
+      "name": "ゴールドアタック",
+      "deprecated": true,
+      "form": "body",
+      "role": "攻撃",
+      "users": [
+        "スライムゴールド"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "body",
+      "afterForm": "body",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 282,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_goblin_01",
+      "name": "棍棒攻撃",
+      "deprecated": false,
+      "form": "club",
+      "role": "攻撃",
+      "users": [
+        "ゴブリン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "club",
+      "afterForm": "club",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 244,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_goblin_02",
+      "name": "威嚇",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ゴブリン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_goblin_03",
+      "name": "毒の短剣",
+      "deprecated": false,
+      "form": "dagger",
+      "role": "攻撃",
+      "users": [
+        "ゴブリン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "dagger",
+      "afterForm": "dagger",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 129,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_false_dragon_alfa_01",
+      "name": "虚光砲",
+      "deprecated": false,
+      "form": "beam",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:alfa"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "beam",
+      "afterForm": "beam",
+      "after": true,
+      "beforeResultMs": 350,
+      "contactMs": 84,
+      "durationMs": 350
+    },
+    {
+      "id": "skill_false_dragon_alfa_02",
+      "name": "偽神の爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:alfa"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_false_dragon_alfa_03",
+      "name": "コード・アルファ",
+      "deprecated": false,
+      "form": "beam",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:alfa"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "beam",
+      "afterForm": "beam",
+      "after": true,
+      "beforeResultMs": 350,
+      "contactMs": 84,
+      "durationMs": 350
+    },
+    {
+      "id": "skill_false_dragon_beta_01",
+      "name": "断界光",
+      "deprecated": false,
+      "form": "beam",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:beta"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "beam",
+      "afterForm": "beam",
+      "after": true,
+      "beforeResultMs": 350,
+      "contactMs": 84,
+      "durationMs": 350
+    },
+    {
+      "id": "skill_false_dragon_beta_02",
+      "name": "偽竜の翼撃",
+      "deprecated": false,
+      "form": "wing",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:beta"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "wing",
+      "afterForm": "wing",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 136,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_false_dragon_beta_03",
+      "name": "コード・ベータ",
+      "deprecated": false,
+      "form": "beam",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:beta"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "beam",
+      "afterForm": "beam",
+      "after": true,
+      "beforeResultMs": 350,
+      "contactMs": 84,
+      "durationMs": 350
+    },
+    {
+      "id": "skill_false_dragon_gamma_01",
+      "name": "虚無光翼",
+      "deprecated": false,
+      "form": "wing",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:gamma"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "wing",
+      "afterForm": "wing",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 136,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_false_dragon_gamma_02",
+      "name": "偽竜の咆哮",
+      "deprecated": false,
+      "form": "roar",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:gamma"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "roar",
+      "afterForm": "roar",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 374,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_false_dragon_gamma_03",
+      "name": "コード・ガンマ",
+      "deprecated": false,
+      "form": "beam",
+      "role": "攻撃",
+      "users": [
+        "偽竜 code:gamma"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "beam",
+      "afterForm": "beam",
+      "after": true,
+      "beforeResultMs": 350,
+      "contactMs": 84,
+      "durationMs": 350
+    },
+    {
+      "id": "skill_volmoog_01",
+      "name": "雷爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ボルモーグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_volmoog_02",
+      "name": "帯電咆哮",
+      "deprecated": false,
+      "form": "roar",
+      "role": "補助",
+      "users": [
+        "ボルモーグ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_volmoog_03",
+      "name": "ボルテッククロー",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ボルモーグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_gran_volmoog_01",
+      "name": "雷岩砕き",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "グランボルモーグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_gran_volmoog_02",
+      "name": "帯電結晶鎧",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "グランボルモーグ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_gran_volmoog_03",
+      "name": "グランボルトクロー",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "グランボルモーグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_stella_apprentice_01",
+      "name": "星屑弾",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "見習い魔法使いステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_apprentice_02",
+      "name": "マジックショット",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "見習い魔法使いステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_apprentice_03",
+      "name": "スターブースト",
+      "deprecated": false,
+      "form": "magic",
+      "role": "補助",
+      "users": [
+        "見習い魔法使いステラ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_stella_wizard_01",
+      "name": "スターライトレイ",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔法使いステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_wizard_02",
+      "name": "マジックバースト",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔法使いステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_wizard_03",
+      "name": "アストラルフレア",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔法使いステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_sorcerer_01",
+      "name": "星天の裁き",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔導師ステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_sorcerer_02",
+      "name": "グランドマジック",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔導師ステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_stella_sorcerer_03",
+      "name": "コスモスアーク",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔導師ステラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_apprentice_01",
+      "name": "星光弾",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "見習い魔法使いルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_apprentice_02",
+      "name": "マジックノート",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "見習い魔法使いルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_apprentice_03",
+      "name": "ルミナスチャージ",
+      "deprecated": true,
+      "form": "magic",
+      "role": "補助",
+      "users": [
+        "見習い魔法使いルミナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_lumina_wizard_01",
+      "name": "星月の光弾",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔法使いルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_wizard_02",
+      "name": "マジックブルーム",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔法使いルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_wizard_03",
+      "name": "ルミナスレイ",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔法使いルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_sorcerer_01",
+      "name": "星晶の裁き",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔導師ルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_sorcerer_02",
+      "name": "ルミナスマジック",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔導師ルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lumina_sorcerer_03",
+      "name": "セレスティアルレイ",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "魔導師ルミナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_orcana_01",
+      "name": "アクアテイル",
+      "deprecated": true,
+      "form": "tail",
+      "role": "攻撃",
+      "users": [
+        "オルカーナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "tail",
+      "afterForm": "tail",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 143,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_orcana_02",
+      "name": "蒼海の突進",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "オルカーナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_orcana_03",
+      "name": "クリスタルウェーブ",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "オルカーナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_orca_stream_01",
+      "name": "ストリームテイル",
+      "deprecated": false,
+      "form": "tail",
+      "role": "攻撃",
+      "users": [
+        "オルカストリーム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "tail",
+      "afterForm": "tail",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 143,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_orca_stream_02",
+      "name": "蒼流の突撃",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "オルカストリーム"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_orca_stream_03",
+      "name": "オルカウェーブ",
+      "deprecated": true,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "オルカストリーム"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_orca_abyss_01",
+      "name": "アビステイル",
+      "deprecated": false,
+      "form": "tail",
+      "role": "攻撃",
+      "users": [
+        "オルカアビス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "tail",
+      "afterForm": "tail",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 143,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_orca_abyss_02",
+      "name": "深海の奔流",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "オルカアビス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_orca_abyss_03",
+      "name": "オルカアビス",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "オルカアビス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_tsubaki_01",
+      "name": "火花の舞",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "炎の精霊ツバキ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_tsubaki_02",
+      "name": "灼熱花弁",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "炎の精霊ツバキ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "projectile",
+      "afterForm": "projectile",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_tsubaki_03",
+      "name": "炎華結界",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "炎の精霊ツバキ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_kaen_01",
+      "name": "華炎斬り",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "華炎の剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_elna_kaen_02",
+      "name": "炎花の構え",
+      "deprecated": false,
+      "form": "sword",
+      "role": "補助",
+      "users": [
+        "華炎の剣士エルナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elna_kaen_03",
+      "name": "紅蓮連閃",
+      "deprecated": false,
+      "form": "sword",
+      "role": "攻撃",
+      "users": [
+        "華炎の剣士エルナ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "sword",
+      "afterForm": "sword",
+      "after": true,
+      "beforeResultMs": 340,
+      "contactMs": 82,
+      "durationMs": 340
+    },
+    {
+      "id": "skill_alchemion_01",
+      "name": "錬核崩砕",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "錬核獣アルケミオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_kimeragna_01",
+      "name": "猛毒翔破",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "混成翼竜キメラグナ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_sylphin_01",
+      "name": "そよ風のひれ",
+      "deprecated": false,
+      "form": "fin",
+      "role": "攻撃",
+      "users": [
+        "シルフィン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fin",
+      "afterForm": "fin",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 136,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_sylphin_02",
+      "name": "エアスライド",
+      "deprecated": true,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "シルフィン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_sylphin_03",
+      "name": "風まとう",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "シルフィン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_zephyray_01",
+      "name": "ゼファーカッター",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ゼファーレイ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "blade",
+      "afterForm": "blade",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 344,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_zephyray_02",
+      "name": "旋風回避",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ゼファーレイ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_zephyray_03",
+      "name": "スカイランページ",
+      "deprecated": false,
+      "form": "charge",
+      "role": "攻撃",
+      "users": [
+        "ゼファーレイ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_tempestray_01",
+      "name": "テンペストフィン",
+      "deprecated": false,
+      "form": "fin",
+      "role": "攻撃",
+      "users": [
+        "テンペストレイ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fin",
+      "afterForm": "fin",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 136,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_tempestray_02",
+      "name": "嵐翼の守り",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "テンペストレイ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_tempestray_03",
+      "name": "天嵐大旋回",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "テンペストレイ"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "field",
+      "afterForm": "field",
+      "after": true,
+      "beforeResultMs": 520,
+      "contactMs": 250,
+      "durationMs": 520
+    },
+    {
+      "id": "skill_ignaros_01",
+      "name": "溶岩角",
+      "deprecated": false,
+      "form": "horn",
+      "role": "攻撃",
+      "users": [
+        "イグナロス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "horn",
+      "afterForm": "horn",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 144,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_ignaros_02",
+      "name": "灼熱装甲",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "イグナロス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_ignaros_03",
+      "name": "火口崩し",
+      "deprecated": false,
+      "form": "strike",
+      "role": "攻撃",
+      "users": [
+        "イグナロス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "strike",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 152,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_nocle_01",
+      "name": "影牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "ノクル"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_nocle_02",
+      "name": "夜滑り",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ノクル"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_nocle_03",
+      "name": "月蝕の気配",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ノクル"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_noclaid_01",
+      "name": "ムーンシャドウ",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "ノクレイド"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "mystic",
+      "afterForm": "mystic",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 264,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_noclaid_02",
+      "name": "夜竜爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ノクレイド"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_noclaid_03",
+      "name": "暗月障壁",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ノクレイド"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_noxvelg_01",
+      "name": "夜天竜牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "ノクスヴェルグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_noxvelg_02",
+      "name": "蝕月咆哮",
+      "deprecated": false,
+      "form": "roar",
+      "role": "攻撃",
+      "users": [
+        "ノクスヴェルグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "roar",
+      "afterForm": "roar",
+      "after": true,
+      "beforeResultMs": 480,
+      "contactMs": 374,
+      "durationMs": 480
+    },
+    {
+      "id": "skill_noxvelg_03",
+      "name": "ノクスエクリプス",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ノクスヴェルグ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_luxseed_01",
+      "name": "光芽弾",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ルクシード"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_luxseed_02",
+      "name": "幼竜の尾",
+      "deprecated": false,
+      "form": "tail",
+      "role": "攻撃",
+      "users": [
+        "ルクシード"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "tail",
+      "afterForm": "tail",
+      "after": true,
+      "beforeResultMs": 420,
+      "contactMs": 143,
+      "durationMs": 420
+    },
+    {
+      "id": "skill_luxseed_03",
+      "name": "朝光の息吹",
+      "deprecated": false,
+      "form": "breath",
+      "role": "補助",
+      "users": [
+        "ルクシード"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "heal",
+      "afterForm": "heal",
+      "after": true,
+      "beforeResultMs": 500,
+      "contactMs": 225,
+      "durationMs": 500
+    },
+    {
+      "id": "skill_luxiard_01",
+      "name": "ルクスホーン",
+      "deprecated": false,
+      "form": "horn",
+      "role": "攻撃",
+      "users": [
+        "ルクシアード"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "horn",
+      "afterForm": "horn",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 144,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_luxiard_02",
+      "name": "光竜爪",
+      "deprecated": false,
+      "form": "claw",
+      "role": "攻撃",
+      "users": [
+        "ルクシアード"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "claw",
+      "afterForm": "claw",
+      "after": true,
+      "beforeResultMs": 380,
+      "contactMs": 106,
+      "durationMs": 380
+    },
+    {
+      "id": "skill_luxiard_03",
+      "name": "黎明障壁",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ルクシアード"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lux_galdion_01",
+      "name": "守光竜牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "ルクスガルディオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_lux_galdion_02",
+      "name": "聖竜の庇護",
+      "deprecated": true,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "ルクスガルディオン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_lux_galdion_03",
+      "name": "ガルディオンレイ",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "ルクスガルディオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_astralepis_01",
+      "name": "星兎跳",
+      "deprecated": false,
+      "form": "leg",
+      "role": "攻撃",
+      "users": [
+        "アストラレピス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "leg",
+      "afterForm": "leg",
+      "after": true,
+      "beforeResultMs": 360,
+      "contactMs": 122,
+      "durationMs": 360
+    },
+    {
+      "id": "skill_astralepis_02",
+      "name": "アストラルステップ",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "アストラレピス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "buff",
+      "afterForm": "buff",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 221,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_astralepis_03",
+      "name": "流星蹴り",
+      "deprecated": false,
+      "form": "leg",
+      "role": "攻撃",
+      "users": [
+        "アストラレピス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "leg",
+      "afterForm": "leg",
+      "after": true,
+      "beforeResultMs": 360,
+      "contactMs": 122,
+      "durationMs": 360
+    },
+    {
+      "id": "skill_galdra_01",
+      "name": "黒錬牙",
+      "deprecated": false,
+      "form": "fang",
+      "role": "攻撃",
+      "users": [
+        "ガルドラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "fang",
+      "afterForm": "fang",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 168,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_galdra_02",
+      "name": "幼竜翼撃",
+      "deprecated": false,
+      "form": "wing",
+      "role": "攻撃",
+      "users": [
+        "ガルドラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "wing",
+      "afterForm": "wing",
+      "after": true,
+      "beforeResultMs": 400,
+      "contactMs": 136,
+      "durationMs": 400
+    },
+    {
+      "id": "skill_galdra_03",
+      "name": "蒼核ブレス",
+      "deprecated": false,
+      "form": "breath",
+      "role": "攻撃",
+      "users": [
+        "ガルドラ"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "breath",
+      "afterForm": "breath",
+      "after": true,
+      "beforeResultMs": 430,
+      "contactMs": 138,
+      "durationMs": 430
+    },
+    {
+      "id": "skill_kimeragna_apex_01",
+      "name": "猛毒天翔破",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "キメラグナ・アペクス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "charge",
+      "afterForm": "charge",
+      "after": true,
+      "beforeResultMs": 460,
+      "contactMs": 294,
+      "durationMs": 460
+    },
+    {
+      "id": "skill_kimeragna_apex_02",
+      "name": "混成竜雷",
+      "deprecated": false,
+      "form": "generic",
+      "role": "攻撃",
+      "users": [
+        "キメラグナ・アペクス"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "lightning",
+      "afterForm": "lightning",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 194,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_kimeragna_apex_03",
+      "name": "アペクスストーム",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "キメラグナ・アペクス"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elixion_01",
+      "name": "賢金錬輪",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "賢金神竜エリクシオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elixion_02",
+      "name": "神竜錬壁",
+      "deprecated": false,
+      "form": "generic",
+      "role": "補助",
+      "users": [
+        "賢金神竜エリクシオン"
+      ],
+      "before": "汎用演出",
+      "beforeForm": "guard",
+      "afterForm": "guard",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 211,
+      "durationMs": 440
+    },
+    {
+      "id": "skill_elixion_03",
+      "name": "エリクシオン・ノヴァ",
+      "deprecated": false,
+      "form": "magic",
+      "role": "攻撃",
+      "users": [
+        "賢金神竜エリクシオン"
+      ],
+      "before": "演出あり（技種別）",
+      "beforeForm": "magic",
+      "afterForm": "magic",
+      "after": true,
+      "beforeResultMs": 440,
+      "contactMs": 343,
+      "durationMs": 440
+    },
+    {
+      "id": "(通常攻撃)",
+      "name": "通常攻撃",
+      "role": "攻撃",
+      "users": [
+        "通常攻撃コマンド・技変換フォールバック"
+      ],
+      "before": "未対応（被弾表示のみ）",
+      "beforeForm": "generic",
+      "afterForm": "strike",
+      "after": true,
+      "beforeResultMs": 0,
+      "contactMs": 91,
+      "durationMs": 240
+    },
+    {
+      "id": "(debuff)",
+      "name": "弱体化（既存処理の互換経路）",
+      "role": "補助",
+      "users": [],
+      "before": "未対応（被弾表示のみ）",
+      "beforeForm": "generic",
+      "afterForm": "debuff",
+      "after": true,
+      "beforeResultMs": 0,
+      "contactMs": 173,
+      "durationMs": 360
+    }
+  ]
+}

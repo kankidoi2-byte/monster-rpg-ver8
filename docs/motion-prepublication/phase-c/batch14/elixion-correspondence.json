@@ -1,0 +1,48 @@
+{
+  "scope": "Recovered bytes vs adopted MP4, all 240 frames; optional six source samples; visual/device acceptance separate",
+  "videoSha256": "b504abbf99916a6c7aa9499815a71a9ce519be2a1b51d6e480776fe4fbabf5dc",
+  "adoptedMp4Sha256": "8b07eabb491ce8083317fe12e2aef7c8a8e6e980308bb514707b324134dd9401",
+  "frames": 240,
+  "width": 960,
+  "height": 960,
+  "background": [
+    10,
+    17,
+    31
+  ],
+  "meanRgbDifference": 1.4404836336771647,
+  "maxFrameMeanRgbDifference": 1.956036925315857,
+  "maxForegroundMeanRgbDifference": 6.110652446746826,
+  "sourceSamples": 6,
+  "sourceAlphaMeanDifferences": [
+    0.01897677951388889,
+    0.05137261284722222,
+    0.04915256076388889,
+    0.01873046875,
+    0.06858289930555556,
+    0.08794270833333333
+  ],
+  "sourcePremultipliedRgbMeanDifferences": [
+    1.8459833336339815,
+    1.9228302843905931,
+    1.9387807313267897,
+    1.8459483815285365,
+    2.0369269733770725,
+    2.0980368665700633
+  ],
+  "sourceRendererLoopExact": true,
+  "sourceInputHashes": {
+    "right-arm.png": "7070543039f2ca73bbacd77ce7e5c9be7fa788dda87d8dfc453f732fdd557e53",
+    "body-under-arm.png": "fd938a079279000ba69cde8a2fcfec3c0ad5bf09737f30a1403fa54877c39140",
+    "texture.png": "3834fed2abb429b55385d51265841d5c4c94da7bac2d9557b277f2ca0eb55016",
+    "render.py": "a63d4abb38125996f0d8add4d8d183a29449dce2e5b5bd1ca64db3436848b507",
+    "export.py": "8f997cec78868ba88ad59941786cda7ce0738f4cf0856199eb7c0b11a0468d2e",
+    "rig.json": "62e2490f16a2ec4a1e397ed0688119592bdec85ca349d54b36ef9635a55e6747",
+    "baseline.py": "c43d502017ffa0611b6bb2a595da2384f63fd39ebfcc7999659f232517c07d61",
+    "independence-check.json": "d494aa7be3b7e356106411d0337b7f0778ee076adfb36079d86dc92b76b6f99f",
+    "validation.json": "a82a197c584f96e5a1b958417b5555a3a509d97d014ecc4856f2eacf6917453d"
+  },
+  "sourceRendererModified": false,
+  "reencoded": false,
+  "numericCorrespondence": true
+}

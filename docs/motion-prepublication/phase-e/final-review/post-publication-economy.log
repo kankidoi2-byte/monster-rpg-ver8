@@ -1,0 +1,119 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> check:world-map-economy
+> node scripts/compare-world-map-economy.mjs
+
+World-map reward-rule parity passed: 20 wins per rule set (10 Normal + 10 Hard).
+{
+  "kind": "deterministic-rule-simulation-not-browser-play",
+  "runDate": "2026-09-06",
+  "baselineRevision": "d31cfccd37219549d25df9f85c62db559aa649f3",
+  "currentHead": "de0f1e324349d4f0abaacb772a92cf5b26da3ce3",
+  "currentHeadTree": "8aec35be01b150067c46390bf70f7d7a98af92b6",
+  "battleSeed": "0x5b202609",
+  "accessSeed": "0x5bacc355",
+  "baselineRewardRules": {
+    "wins": 20,
+    "normalWins": 10,
+    "hardWins": 10,
+    "exp": 2155,
+    "coins": 1988,
+    "materials": {
+      "monster_bone": 5,
+      "raptor_feather": 2,
+      "metal_ore": 2,
+      "venom_carapace": 2,
+      "fine_magic_crystal": 3,
+      "fine_venom_carapace": 1
+    },
+    "virtualContractEligible": 20,
+    "virtualContractSuccesses": 8,
+    "threeWay": 5,
+    "invasions": 5,
+    "expeditionProgress": 20,
+    "expeditionRewards": {
+      "completions": 4,
+      "coins": 288,
+      "exp": 216,
+      "items": {
+        "monster_bone": 9,
+        "fine_monster_bone": 3
+      }
+    }
+  },
+  "currentRewardRules": {
+    "wins": 20,
+    "normalWins": 10,
+    "hardWins": 10,
+    "exp": 2155,
+    "coins": 1988,
+    "materials": {
+      "monster_bone": 5,
+      "raptor_feather": 2,
+      "metal_ore": 2,
+      "venom_carapace": 2,
+      "fine_magic_crystal": 3,
+      "fine_venom_carapace": 1
+    },
+    "virtualContractEligible": 20,
+    "virtualContractSuccesses": 8,
+    "threeWay": 5,
+    "invasions": 5,
+    "expeditionProgress": 20,
+    "expeditionRewards": {
+      "completions": 4,
+      "coins": 288,
+      "exp": 216,
+      "items": {
+        "monster_bone": 9,
+        "fine_monster_bone": 3
+      }
+    }
+  },
+  "virtualContractLimitations": [
+    "inventory-not-checked",
+    "ui-not-exercised",
+    "target-choice-not-exercised",
+    "defeatedByPlayer-not-exercised"
+  ],
+  "specialEventBattleMode": {
+    "includedInTwentyWinComparison": false,
+    "currentRule": "single-fixed",
+    "classification": "intentional-specification-difference"
+  },
+  "neutralPerWinExpectations": {
+    "normal": {
+      "exp": 55.4371,
+      "coins": 15.5294,
+      "materials": 0.528,
+      "fineMaterials": 0.12
+    },
+    "hard": {
+      "exp": 118.44,
+      "coins": 37.354,
+      "materials": 0.616,
+      "fineMaterials": 0.14
+    }
+  },
+  "grasslandCoinAccessRisk": {
+    "normal": {
+      "coinsPerWin": 33.3,
+      "neutralMultiple": 2.14
+    },
+    "hard": {
+      "coinsPerWin": 126,
+      "neutralMultiple": 3.37
+    }
+  },
+  "access": {
+    "samples": 100000,
+    "target": "火山 / Hard / ツバキ",
+    "legacyCardsPerRefresh": 3,
+    "legacyMapAccessRate": 0.20396,
+    "legacyTargetEncounterRate": 0.02778,
+    "worldMapAccessRate": 1,
+    "worldMapTargetEncounterRate": 0.49664
+  },
+  "balanceDecision": "user-review-required-before-publication",
+  "browserTwentyWinPlaythrough": "not-verified"
+}

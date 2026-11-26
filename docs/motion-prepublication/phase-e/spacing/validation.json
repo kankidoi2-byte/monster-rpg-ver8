@@ -1,0 +1,37 @@
+{
+  "baseCommit": "e401a4c3b7edd60d3b136ba1cc18e56d124352ac",
+  "siteCommit": "62fb6420461ff7d7bacb88bd94f3e3f703d49314",
+  "deploymentId": "appgdep_6abe5361759881919fb92e607118ceb8",
+  "deploymentStatus": "succeeded",
+  "sourceSHA256": {
+    "index.html": "59e498f1de458de691de21b2ef5cc3f4d13d47a59d4e377ef9c916400138d2f0",
+    "css/battle-idle-media.css": "6954c786b33880aca7bd284ad16b9267a3fac44a1cda50017b02d1ffd8a39912",
+    "css/battle-viewport.css": "0c830e9dc124c013e74cf72991640da8d3f2f7e1d97243ba113f858f55c81e77",
+    "js/battle-idle-media.js": "2e6cad94e7167c7d5fd92ff0669c387e4aa7795ac7ae5ea9719fc6bef89d4e95",
+    "js/battle-viewport.js": "b1e52d940cbf4274f97802c68ed1c70abfcb99a800bc49a609a38d206d27795f",
+    "js/notices-data.js": "fc4da563e81248a442b2ebfe1afa04c70fbe68880cb42a6f7275f41003616ca6",
+    "scripts/test-battle-viewport-dom.mjs": "934e41693624a2fd8451756feee5300d73238e4a55e792163b0d4355f4c39dbd"
+  },
+  "protectedFilesUnchanged": true,
+  "all50BodyScalesAndBoundsUnchanged": true,
+  "slimeScale": 0.3,
+  "actorBodyGapPixels": 16,
+  "checks": {
+    "fullCheckExit": 0,
+    "relatedDomCheckExits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "nonOverlapCombinations": 30000,
+    "cssImportantCascade": "pass, posters/videos, single/multi, commands open/closed"
+  },
+  "limits": [
+    "Mocked DOM/media and numeric geometry, no real browser pixel layout",
+    "Galaxy visual acceptance pending"
+  ],
+  "mergeOrGeneralPublication": false
+}

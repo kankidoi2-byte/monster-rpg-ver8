@@ -27,7 +27,7 @@ assert.match(main,/id:'elna_contract_body'[^\n]+persistAs:'home_party'[^\n]+next
 assert.ok(!/waitForEvent:'(?:stella_intro|home_party)'/.test(main),
   'checkpoint names must never be treated as external events');
 
-assert.ok(tutorial.includes('function resumeTutorialMainFlowAfterEvent(stepId)'),
+assert.match(tutorial,/function resumeTutorialMainFlowAfterEvent\(stepId[,)]/,
   'external completions need one shared resume path');
 for(const target of ['lumina_alchemy_result','stella_mock_victory','stella_mock_retry','elna_rescue_complete','elna_rescue_retry','battle_retry','contract_success']){
   assert.ok(tutorial.includes(`resumeTutorialMainFlowAfterEvent(${target.includes('?')?'':`'${target}'`}`)||tutorial.includes(`resumeTutorialMainFlowAfterEvent(cleared?`),
@@ -38,7 +38,7 @@ assert.match(tutorial,/setTimeout\(resume,0\)/,
 
 assert.match(battleFlow,/const tutorialOutcomeHandled=[^\n]+handleTutorialBattleOutcome\('victory'/,
   'battle victory must report to the tutorial before post-battle UI');
-assert.ok(battleFlow.includes('if(!tutorialOutcomeHandled)setTimeout(processNextEvolution, 300);'),
+assert.ok(!battleFlow.slice(battleFlow.indexOf('function win(')).includes('setTimeout(processNextEvolution') && battleFlow.includes("if(typeof tutorialUiState!=='undefined'&&tutorialUiState.active)return;"),
   'automatic evolution must not replace the guide resumed after a tutorial battle');
 
 assert.ok(index.includes('prologue-continuity-1'),'changed runtime files must bypass stale mobile caches');

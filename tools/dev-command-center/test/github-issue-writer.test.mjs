@@ -1,3 +1,4 @@
+import { createFormClient } from './form-client.mjs';
 import assert from 'node:assert/strict';
 import { createCommandCenterServer } from '../src/server.mjs';
 import {
@@ -113,44 +114,45 @@ const app = createCommandCenterServer({
 try {
   const address = await app.listen();
   const base = `http://127.0.0.1:${address.port}`;
-  await fetch(base + '/issues/draft', { method: 'POST', redirect: 'manual' });
-  await fetch(base + '/issues/publication/prepare', { method: 'POST', redirect: 'manual' });
-  let page = await (await fetch(base + '/')).text();
+  const formFetch = await createFormClient(base);
+  await formFetch(base + '/issues/draft', { method: 'POST', redirect: 'manual' });
+  await formFetch(base + '/issues/publication/prepare', { method: 'POST', redirect: 'manual' });
+  let page = await (await formFetch(base + '/')).text();
   assert.equal(page.includes('投稿前の最終確認'), true);
   assert.equal(page.includes(ISSUE_PUBLICATION_CONFIRMATION), true);
   assert.equal(page.includes('DEV_COMMAND_CENTER_GITHUB_ISSUE_TOKEN'), false);
 
   const wrong = new URLSearchParams({ draft_fingerprint: '0'.repeat(64), confirmation_text: ISSUE_PUBLICATION_CONFIRMATION });
-  await fetch(base + '/issues/publication/confirm', {
+  await formFetch(base + '/issues/publication/confirm', {
     method: 'POST', redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: wrong
   });
   assert.equal(serverWrites, 0);
 
-  await fetch(base + '/issues/publication/prepare', { method: 'POST', redirect: 'manual' });
-  page = await (await fetch(base + '/')).text();
+  await formFetch(base + '/issues/publication/prepare', { method: 'POST', redirect: 'manual' });
+  page = await (await formFetch(base + '/')).text();
   const fingerprint = page.match(/name="draft_fingerprint" value="([0-9a-f]{64})"/)?.[1];
   assert.equal(fingerprint?.length, 64);
   const correct = new URLSearchParams({ draft_fingerprint: fingerprint, confirmation_text: ISSUE_PUBLICATION_CONFIRMATION });
-  await fetch(base + '/issues/publication/confirm', {
+  await formFetch(base + '/issues/publication/confirm', {
     method: 'POST', redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: correct
   });
   assert.equal(serverWrites, 1);
-  page = await (await fetch(base + '/')).text();
+  page = await (await formFetch(base + '/')).text();
   assert.equal(page.includes('GitHub Issueを作成しました'), true);
   assert.equal(page.includes('/issues/400'), true);
 
-  await fetch(base + '/issues/publication/confirm', {
+  await formFetch(base + '/issues/publication/confirm', {
     method: 'POST', redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: correct
   });
   assert.equal(serverWrites, 1);
 
-  const crossSite = await fetch(base + '/issues/publication/prepare', {
+  const crossSite = await formFetch(base + '/issues/publication/prepare', {
     method: 'POST', redirect: 'manual', headers: { 'sec-fetch-site': 'cross-site' }
   });
-  assert.equal(crossSite.status, 404);
+  assert.equal(crossSite.status, 403);
 } finally { await app.close(); }
 
 console.log('Development command center GitHub Issue writer validation passed.');

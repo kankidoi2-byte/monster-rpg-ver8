@@ -1,0 +1,19 @@
+{
+  "npmRunCheck": "PASS (including postcheck)",
+  "dom": "PASS; media mocked; new pair ally/enemy/multi and replacement disposal",
+  "viewport": "PASS; media and IntersectionObserver mocked",
+  "localSiteResources": {
+    "loads": 44,
+    "stylesheets": 9,
+    "controls": 7,
+    "missing": 0,
+    "scriptErrors": 0
+  },
+  "notPerformed": [
+    "Android decoder and placement for new pair",
+    "real browser layout",
+    "long-duration thermal/load",
+    "BFCache"
+  ],
+  "note": "An initial cache-key replacement failed an existing historical cache-token assertion; fixed by retaining the full old key and appending the Phase C suffix, then reran full check successfully."
+}

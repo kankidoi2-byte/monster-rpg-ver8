@@ -1,0 +1,201 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {runtime} from '../tools/balance-audit/runtime.mjs';
+const r=runtime({save:src=>src+'\nvar mapStoryRealSave=saveGame;'}),run=r.run;
+for(const file of ['map-story-data','map-story'])vm.runInContext(fs.readFileSync(new URL(`../js/${file}.js`,import.meta.url),'utf8'),r.context);
+run(`saveGame=mapStoryRealSave;renderBattleInputState=()=>{};showUiNotice=()=>{};save=initSave();save.progress.tutorial.status='completed';for(const id of ['galdra','freigal','aquaron']){const ins=addInstance(id,1);save.party.push(ins.uid);}saveGame();`);
+const json=code=>JSON.parse(run(`JSON.stringify(${code})`));
+// The controller's presentation contract is independent of the DOM implementation.
+run(`var mapStoryCompletionSignals=[], mapStoryProcessEvolution=processNextEvolution;
+  document.querySelector=selector=>selector==='#mapStoryContent [data-next-episode]'&&document.getElementById('mapStoryContent').innerHTML.includes('data-next-episode')?{dataset:{nextEpisode:''}}:null;
+  showStoryEpisodeCompletion=(card,label,reward)=>mapStoryCompletionSignals.push({type:'notice',hasNext:!!card,label,reward});
+  processNextEvolution=()=>{mapStoryCompletionSignals.push({type:'evolution'});return mapStoryProcessEvolution();};`);
+const signals=()=>json('mapStoryCompletionSignals.splice(0)');
+const storyHtml=()=>run('document.getElementById("mapStoryContent").innerHTML');
+const episodes=json('GRASSLAND_STORY.episodes');
+assert.equal(episodes.length,11);assert.equal(episodes.filter(e=>e.battleMode==='three_way').length,2);
+assert.equal(episodes.reduce((sum,e)=>sum+e.firstReward.exp,0),4070);
+assert.equal(episodes.reduce((sum,e)=>sum+e.firstReward.coins,0),1265);
+assert.equal(episodes.flatMap(e=>[...e.preNodes,...e.postNodes]).filter(n=>n.speaker==='contractor').length,15);
+for(const e of episodes){
+ for(const nodes of [e.preNodes,e.postNodes])nodes.forEach((n,i)=>assert.equal(Number(n.id.slice(-2)),i+1));
+ for(const spec of e.enemies){
+  r.context.spec=spec;
+  assert(run('spec.moveIds.every(id=>SKILL_BY_ID[id])'));
+  assert.equal(run('by(spec.speciesId).legacyBaseHp+(spec.level-1)*12'),spec.hp,'original HP remains recorded in the story spec');
+ }
+}
+run("save.progress.tutorial.status='in_progress'");assert.equal(run('startMapStoryEpisode("gl_01")'),false);
+run("save.progress.tutorial.status='skipped'");assert.equal(run('mapStoryAvailable()'),true);
+assert.equal(run('startMapStoryEpisode("gl_02")'),false);
+const initial=json('save');
+const initialInstanceIds=initial.instances.map(i=>i.uid);
+// Conversation controls persist only the existing cursor, never bypass battles.
+run('startMapStoryEpisode("gl_01")');
+const firstNode=run('mapStoryState().resume.nodeId');
+run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),firstNode);
+run('advanceMapStoryNode();previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),firstNode);
+run('skipMapStoryDialogue()');assert.equal(run('mapStoryState().resume.nodeId'),null);
+assert.equal(run('mapStoryState().resume.phase'),'pre');assert.equal(run('mapStoryProgress("gl_01").completed'),false);
+assert.deepEqual(json('save.instances'),initial.instances);assert.equal(run('save.coins'),initial.coins);
+run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id);
+run('closeMapStoryDialogue();save=loadSave();startMapStoryEpisode("gl_01")');
+assert.equal(run('mapStoryState().resume.nodeId'),episodes[0].preNodes.at(-1).id);
+const beforeNormal=json('createHuntRequest(MAPS.find(m=>m.id==="grassland"),by("slime"),"d1",[],{allowOvertier:false})');
+function pre(id){assert.equal(run(`startMapStoryEpisode('${id}')`),true);for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');}
+function victory(){run('if(multiBattle?.active){multiBattle.enemies.forEach(e=>{e.hp=0;e.alive=false;});winMultiBattle();}else{eHp=0;win();}');}
+function finish(testSaveFailure=false){
+ run('resumeMapStoryAfterBattle()');
+ for(let i=0;i<40&&run('mapStoryState().resume.nodeId!==null');i++)run('advanceMapStoryNode()');
+ if(!testSaveFailure){run('completeMapStoryEpisode()');return;}
+ const before=json('save'),originalSet=r.context.localStorage.setItem,originalConsole=r.context.console;
+ try{
+  r.context.localStorage.setItem=(key,value)=>{if(key==='mb_v95c')throw Error('quota');originalSet(key,value);};
+  r.context.console={...console,error(){}};
+  run('completeMapStoryEpisode()');
+  assert.deepEqual(json('save'),before);
+  assert.match(storyHtml(),/保存を再試行/);
+  assert.deepEqual(signals(),[],'completion notice waits for the committed save');
+ }finally{
+  r.context.localStorage.setItem=originalSet;r.context.console=originalConsole;
+ }
+ run('retryMapStorySave();retryMapStorySave()');
+}
+for(const e of episodes){
+ pre(e.id);const coins=run('save.coins');assert(run(`launchMapStoryBattle('${e.id}')`));
+ assert.equal(run(`launchMapStoryBattle('${e.id}')`),false,'double start rejected');
+ assert.equal(run('activeHuntRequest.source'),'map_story');assert.equal(run('activeHuntRequest.invasionEnemyId'),null);
+ assert.equal(run('activeHuntRequest.conditions.length'),0);
+ const expected=e.enemies.map(spec=>{
+  r.context.spec=spec;
+  const hp=Math.round(run('by(spec.speciesId).hp')*(1+.06*(spec.level-1)));
+  return {level:spec.level,hp,moves:spec.moveIds};
+ });
+ const actual=e.enemies.length===2
+  ?json('multiBattle.enemies.map(e=>({level:e.level,hp:e.hp,moves:e.mon.moves.map(m=>m[8])}))')
+  :[json('({level:activeHuntRequest.enemyLevel,hp:eHp,moves:enemy.moves.map(m=>m[8])})')];
+ assert.deepEqual(actual,expected,'story enemies keep their levels and moves and use the shared HP formula');
+ assert.equal(run('askUseContractScroll("contract_scroll")'),false);
+ victory();assert.equal(run('save.coins'),coins+e.firstReward.coins);
+ assert.equal(run(`mapStoryProgress('${e.id}').completed`),false,'victory alone cannot unlock next');
+ const awarded=json('save');run('win();winMultiBattle()');assert.deepEqual(json('save'),awarded,'duplicate outcome cannot grant rewards');
+ // Serialize/reload from real save, then continue post-dialogue without another battle.
+ run('save=loadSave();activeHuntRequest=null;mapStoryUi=null');
+ assert.equal(run(`startMapStoryEpisode('${e.id}')`),true);assert.equal(run('mapStoryUi.phase'),'post');
+ const first=run('mapStoryState().resume.nodeId');run('advanceMapStoryNode()');const cursor=run('mapStoryState().resume.nodeId');assert.notEqual(cursor,first);
+ run('closeMapStoryDialogue();save=loadSave()');run(`startMapStoryEpisode('${e.id}')`);assert.equal(run('mapStoryState().resume.nodeId'),cursor);
+ if(e.number===1){
+  const beforeSkip=json('save');run('skipMapStoryDialogue()');
+  assert.equal(run('mapStoryState().resume.phase'),'post');assert.equal(run('mapStoryProgress("gl_01").completed'),false);
+  assert.equal(run('save.coins'),beforeSkip.coins);assert.deepEqual(json('save.instances'),beforeSkip.instances);
+  run('previousMapStoryNode()');assert.equal(run('mapStoryState().resume.nodeId'),e.postNodes.at(-1).id);
+ }
+ finish(e.number===1);assert.equal(run(`mapStoryProgress('${e.id}').completed`),true);
+ if(e.number<episodes.length){
+  assert.match(storyHtml(),/class="map-story-list"/);
+  assert(storyHtml().includes(`data-next-episode><small>第${e.number+1}話 · NEXT · 解放済`));
+  assert.doesNotMatch(storyHtml(),/<h2>第\d+話 完了<\/h2>/);
+  assert.deepEqual(signals(),[{type:'notice',hasNext:true,label:`第${e.number}話`,reward:{...e.firstReward,base:true}},{type:'evolution'}]);
+ }else{
+  assert.match(storyHtml(),/全11話 完了/);
+  assert.doesNotMatch(storyHtml(),/class="map-story-list"/);
+  assert.deepEqual(signals(),[{type:'evolution'}]);
+ }
+}
+assert.equal(run('save.coins'),initial.coins+1265);
+assert(json('save.instances').every(i=>i.level===12&&i.exp===110));
+assert.deepEqual(json('save.instances.map(i=>i.uid)'),initialInstanceIds);
+for(const field of ['history','items','worldMap','expeditions','contractor'])assert.deepEqual(json(`save.${field}`),initial[field],`${field} untouched by story rewards`);
+const completed=json('save');run('readMapStoryEpisode("gl_01")');for(let i=0;i<25;i++)run('advanceMapStoryNode()');run('completeMapStoryEpisode()');assert.deepEqual(json('save'),completed,'re-reading never writes');
+run('readMapStoryEpisode("gl_01");advanceMapStoryNode();previousMapStoryNode()');assert.equal(run('mapStoryUi.cursor'),0);
+run('skipMapStoryDialogue()');assert.equal(run('mapStoryUi.phase'),'pre');assert.equal(run('mapStoryUi.cursor'),episodes[0].preNodes.length);
+run('advanceMapStoryNode();skipMapStoryDialogue();previousMapStoryNode()');assert.equal(run('mapStoryUi.cursor'),episodes[0].postNodes.length-1);
+run('skipMapStoryDialogue();completeMapStoryEpisode()');assert.deepEqual(json('save'),completed,'replay back/skip never writes progress or rewards');
+assert.deepEqual(signals(),[],'re-reading does not trigger completion or evolution');
+run('startMapStoryEpisode("gl_01",true)');assert.equal(run('mapStoryState().resume.nodeId'),null);run('launchMapStoryBattle("gl_01")');victory();assert.equal(run('save.coins'),completed.coins+10);assert.equal(run('mapStoryProgress("gl_01").victoryCount'),2);finish();
+assert.match(storyHtml(),/class="map-story-list"/);
+assert.doesNotMatch(storyHtml(),/data-next-episode/);
+assert.deepEqual(signals(),[{type:'notice',hasNext:false,label:'第1話',reward:{...episodes[0].repeatReward,base:true}},{type:'evolution'}]);
+// Save failure rolls back EXP/coins/flags together; retry commits exactly once.
+run('startMapStoryEpisode("gl_01",true);launchMapStoryBattle("gl_01")');
+const beforeFailure=json('save');const originalSet=r.context.localStorage.setItem;
+r.context.localStorage.setItem=(key,value)=>{if(key==='mb_v95c')throw Error('quota');originalSet(key,value);};
+const errorLog=r.context.console;r.context.console={...console,error(){}};
+victory();assert.deepEqual(json('save'),beforeFailure);assert(run('mapStorySaveRetry!==null'));
+assert.equal(run('mapStoryProgress("gl_01").victoryCount'),2);
+r.context.localStorage.setItem=originalSet;run('retryMapStorySave();retryMapStorySave()');assert.equal(run('save.coins'),beforeFailure.coins+10);assert.equal(run('mapStoryProgress("gl_01").victoryCount'),3);finish();r.context.console=errorLog;
+// Interrupted battle restarts at turn zero, preserving its party snapshot.
+run('startMapStoryEpisode("gl_03",true);launchMapStoryBattle("gl_03");var oldStoryRequest=activeHuntRequest;saveGame();save=loadSave();activeHuntRequest=null;mapStoryUi=null;partyBattle=[];battleTurnCount=9;');
+assert(run('startMapStoryEpisode("gl_03")'));assert.equal(run('battleTurnCount'),0);assert(json('multiBattle.enemies').every(e=>e.hp===e.maxHp));
+assert.equal(run('mapStoryTokenValid(oldStoryRequest)'),false);
+const beforeStale=json('save');run('mapStoryOutcome("victory",oldStoryRequest)');assert.deepEqual(json('save'),beforeStale);
+run('runAwayFromMultiBattle()');assert.equal(run('mapStoryState().resume.phase'),'pre');assert.equal(run('mapStoryProgress("gl_03").completed'),true,'repeat retreat preserves prior completion');assert.equal(run('mapStoryProgress("gl_03").victoryCount'),1);
+run('resumeMapStoryAfterBattle();launchMapStoryBattle("gl_03");losePartyBattle()');assert.equal(run('mapStoryState().resume.phase'),'pre');assert.equal(run('mapStoryProgress("gl_03").victoryCount'),1);
+// Additive old-save defaults preserve other maps and unrecognized version fields.
+run('var old=structuredClone(save);delete old.mapStories;repairSave(old)');assert.deepEqual(json('old.mapStories.grassland_whose'),{version:1,episodes:{},resume:null});
+run('old.mapStories.other_map={version:9,custom:"keep"};old.mapStories.grassland_whose.futureField="keep";repairSave(old)');assert.deepEqual(json('old.mapStories.other_map'),{version:9,custom:'keep'});assert.equal(run('old.mapStories.grassland_whose.futureField'),'keep');
+assert.equal(beforeNormal.source,undefined);assert.equal(beforeNormal.difficultyId,'d1');
+console.log('PASS grassland map story: 11 episodes, exact IDs/HP/moves, 15 contractor lines, gates, full rewards, replay, retreat/defeat, real save/reload, atomic failure/retry and stale attempts.');
+
+// The two stories can both have a saved conversation, even on an older grassland save.
+run('delete save.mapStories.volcano_breath;saveGame();save=loadSave()');
+assert.deepEqual(json('save.mapStories.volcano_breath'),{version:1,episodes:{},resume:null});
+const grassland=json('mapStoryState()');
+assert.equal(grassland.resume.episodeId,'gl_03');
+run("save.progress.tutorial.status='in_progress'");
+assert.equal(run('openMapStory("volcano_breath")'),false);
+run("save.progress.tutorial.status='skipped'");
+assert(run('openMapStory("volcano_breath")'));
+assert.equal(run('startMapStoryEpisode("vc_02")'),false);
+const volcano=json('VOLCANO_STORY.episodes');
+assert.equal(volcano.length,9);
+assert.deepEqual(volcano.map(e=>e.recommendedLevel),[12,12,12,12,13,14,14,15,16]);
+assert.deepEqual(volcano.filter(e=>e.battleMode==='three_way').map(e=>e.number),[3,7]);
+const volcanoNodes=volcano.flatMap(e=>[...e.preNodes,...e.postNodes]);
+assert.equal(volcanoNodes.length,149);
+assert.equal(new Set(volcanoNodes.map(n=>n.id)).size,149);
+assert.deepEqual(volcano.at(-1).enemies[0].moveIds,['s110_067','s110_014','s110_003']);
+const volcanoStart=json('save');
+for(const e of volcano){
+ pre(e.id);
+ const coins=run('save.coins');
+ assert(run(`launchMapStoryBattle('${e.id}')`));
+ assert.deepEqual(json('[activeHuntRequest.storyId,selectedMap.id,activeHuntRequest.invasionEnemyId,activeHuntRequest.conditions]'),['volcano_breath','volcano',null,[]]);
+ const actual=e.battleMode==='three_way'
+  ?json('multiBattle.enemies.map(e=>({speciesId:e.mon.id,level:e.level,hp:e.hp,speed:monSpd(e.mon,null,e.level),attackMultiplier:e.attackMultiplier,moveIds:e.mon.moves.map(m=>m[8])}))')
+  :[json('({speciesId:enemy.id,level:activeHuntRequest.enemyLevel,hp:eHp,speed:monSpd(enemy,null,activeHuntRequest.enemyLevel),attackMultiplier:enemyDifficultyAttackMultiplier(),moveIds:enemy.moves.map(m=>m[8])})')];
+ assert.deepEqual(actual,e.enemies);
+ if(e.number===3){
+  run('multiBattle.enemies[0].hp=0;multiBattle.enemies[0].alive=false;winMultiBattle()');
+  assert.equal(run('save.coins'),coins,'a single enemy KO does not grant the reward');
+  run('var volcanoRequest=activeHuntRequest;save=loadSave();activeHuntRequest=null;partyBattle=[];battleTurnCount=9;');
+  assert(run('startMapStoryEpisode("vc_03")'));assert.equal(run('battleTurnCount'),0);
+  assert.equal(run('mapStoryTokenValid(volcanoRequest)'),false);
+  assert(json('multiBattle.enemies').every(enemy=>enemy.hp===enemy.maxHp));
+ }
+ assert.equal(run('askUseContractScroll("contract_scroll")'),false);
+ victory();assert.equal(run('save.coins'),coins+e.firstReward.coins);
+ const awarded=json('save');run('win();winMultiBattle()');assert.deepEqual(json('save'),awarded);
+ if(e.number===1){
+  run('resumeMapStoryAfterBattle();advanceMapStoryNode()');
+  const resume=json('mapStoryState().resume');
+  run('openMapStory("grassland_whose")');assert.deepEqual(json('mapStoryState()'),grassland);
+  run('save=loadSave();openMapStory("volcano_breath")');
+  assert.deepEqual(json('mapStoryState().resume'),resume);
+ }
+ finish();assert(run(`mapStoryProgress('${e.id}').completed`));
+ assert.deepEqual(json('save.mapStories.grassland_whose'),grassland);
+}
+assert.equal(run('save.coins'),volcanoStart.coins+1260);
+assert.deepEqual(json('save.instances.map(({level,exp})=>({level,exp}))'),volcanoStart.instances.map(i=>({level:17,exp:i.exp+200})));
+for(const field of ['history','items','worldMap','expeditions','contractor','gBless','autoBattle'])assert.deepEqual(json(`save.${field}`),volcanoStart[field],`${field} untouched by volcano rewards`);
+const volcanoCompleted=json('save');
+run('readMapStoryEpisode("vc_09");skipMapStoryDialogue();advanceMapStoryNode();skipMapStoryDialogue();completeMapStoryEpisode()');
+assert.deepEqual(json('save'),volcanoCompleted);
+run('startMapStoryEpisode("vc_09",true);launchMapStoryBattle("vc_09")');
+victory();finish();
+assert.equal(run('save.coins'),volcanoCompleted.coins+10);
+assert.equal(run('mapStoryProgress("vc_09").victoryCount'),2);
+assert.deepEqual(json('save.mapStories.grassland_whose'),grassland);
+console.log('PASS volcano map story: 9 episodes, v2 battle settings, independent saves, resume, fixed rewards, replay and retry.');

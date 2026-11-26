@@ -14,13 +14,15 @@ function renderFusion() {
       ${vis(to)}<h3>${from.name} + ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName}</h3>
       <p>進化先：<b>${to.name}</b></p>
       <div class="fusion-recipe">
-        <p>${hasM?'✅':'❌'} ${from.name}${!hasM&&caughtHas(r.from)?'（遠征中）':''}</p>
-        <p>${hasI?'✅':'❌'} ${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${r.count}</p>
-        <p style="color:${can?'#4ade80':'#f87171'}">${(!r.repeatable && done)?'✨合成済み':can?'タップで合成':'条件不足'}</p>
+        <p>${from.name}（${hasM?'対象あり':'対象なし'}）${!hasM&&caughtHas(r.from)?'（遠征中）':''}</p>
+        <p>${hasI?'所持：':'不足：'}${r.item === 'fire_orb' ? `${itemInlineVisual(ITEM_DEX_BY_ID.fire_orb)} ` : ''}${r.itemName} × ${r.count}</p>
+        <p style="color:${can?'#4ade80':'#f87171'}">${(!r.repeatable && done)?'合成済み':can?'タップで合成':'条件不足'}</p>
       </div></div>`;
   }).join('');
 }
-function tryFusion(idx) {
+let fusionConfirmBusy=false;
+async function tryFusion(idx) {
+  if(fusionConfirmBusy||!FUSIONS[idx])return;
   const r = FUSIONS[idx], from = by(r.from), to = by(r.to);
   const log = document.getElementById('fusionLog');
   const candidates = save.instances.filter(x => x.id === r.from && !(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(x.uid)));
@@ -42,55 +44,64 @@ function tryFusion(idx) {
     ins = candidates[choice];
   }
 
-  if (!confirm(`${from.name}と${r.itemName} × ${r.count}を合成して${to.name}に進化させますか？`)) return;
+  const owner=save, sourceUid=ins.uid, sourceLevel=ins.level, sourceExp=ins.exp;
+  fusionConfirmBusy=true;
+  try{
+  if(!await gameConfirm({title:'素材で進化',body:`${from.name}と${r.itemName} × ${r.count}を合成して${to.name}に進化させますか？`,okLabel:'進化させる'}))return;
+  if(save!==owner||!save.instances.includes(ins)||ins.uid!==sourceUid||ins.id!==r.from||
+      ins.level!==sourceLevel||ins.exp!==sourceExp||(typeof isInstanceOnExpedition==='function'&&isInstanceOnExpedition(sourceUid))||
+      (save.items[r.item]||0)<r.count||(!r.repeatable&&caughtHas(r.to)))return;
 
+  if(!commitSaveMutation(()=>{
   const firstRegistration=!caughtHas(r.to);
   save.items[r.item] -= r.count;
   ins.id = r.to;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
-  if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
+  if (typeof grantEvolutionSkillCardsForInstance === 'function') grantEvolutionSkillCardsForInstance(ins);
   if (firstRegistration) {
     save.caught.push(r.to);
     if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(r.to);
   }
   if(typeof grantContractorEvolution==='function')grantContractorEvolution({special:true});
 
-  saveGame();
+
+  },{requireReadable:true}))return;
+  showCommittedSaveResult(()=>{
   renderFusion();
   renderParty();
   renderDex();
   if (typeof renderPartySetup === 'function') renderPartySetup();
-  log.innerHTML = `✨ 合成成功！${from.name}は${to.name}に進化した！`;
+  log.innerHTML = `合成成功！${from.name}は${to.name}に進化した！`;
   if(typeof replayUiMotion==='function')replayUiMotion(log,'ui-reward-pop',850);
   if(typeof showUiNotice==='function')showUiNotice(`${to.name}への合成成功！`);
+  });
+  }finally{fusionConfirmBusy=false;}
 }
-function grantPartyExp(baseExp) {
-  const targets = getPartyInstances();
+function grantPartyExp(baseExp,{saveNow=true,animate=true}={}) {
+  const battleParty=typeof traitRewardParty==='function'?traitRewardParty():[];
+  const targets = battleParty.length?battleParty.filter(ins=>!ins.guest):getPartyInstances();
   const msgs = [];
   targets.forEach(ins => {
-    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; msgs.push(`🏆 ${by(ins.id).name} は Lv.MAX！`); return; }
-    ins.exp = (ins.exp||0) + baseExp;
-    msgs.push(`✨ ${by(ins.id).name} EXP +${baseExp}`);
+    if (isMaxLevel(ins.level)) { ins.level=MAX_LEVEL; ins.exp=0; checkEvolution(ins); msgs.push(`${by(ins.id).name} は Lv.MAX！`); return; }
+    const earned=typeof traitExperienceReward==='function'?traitExperienceReward(ins,baseExp,battleParty):baseExp;
+    ins.exp = (ins.exp||0) + earned;
+    msgs.push(`${by(ins.id).name} EXP +${earned}`);
     while (!isMaxLevel(ins.level) && ins.exp >= needExp(ins.level)) {
       ins.exp -= needExp(ins.level);
       ins.level++;
-      msgs.push(`⬆️ ${by(ins.id).name} は Lv.${ins.level} に上がった！`);
+      msgs.push(`${by(ins.id).name} は Lv.${ins.level} に上がった！`);
       // LVUPアニメ
       const pv = document.getElementById('pVis');
-      if (pv) { pv.classList.remove('levelup-anim'); void pv.offsetWidth; pv.classList.add('levelup-anim'); }
+      if (animate && pv) { pv.classList.remove('levelup-anim'); void pv.offsetWidth; pv.classList.add('levelup-anim'); }
     }
     if (isMaxLevel(ins.level)) ins.exp=0;
     checkEvolution(ins);
   });
-  saveGame();
+  if(saveNow)/* save-result-allow: party-exp-helper */saveGame();else syncItemDexFromInventory();
   return msgs.join('<br>');
 }
 function getEvoCandidates(ins) {
-  const m = by(ins.id); if (!m) return [];
-  const lv = ins.level;
-  if (m.evolutions) return m.evolutions.filter(e => lv >= e.level).map(e => e.to).filter(id=>by(id));
-  if (m.evolution && lv >= m.evolutionLevel) return [m.evolution].filter(id=>by(id));
-  return [];
+  return instanceEvolutionRoutes(ins).filter(route=>ins.level>=route.level).map(route=>route.to);
 }
 function checkEvolution(ins) {
   const choices = getEvoCandidates(ins);
@@ -100,10 +111,17 @@ function checkEvolution(ins) {
   }
 }
 function processNextEvolution() {
-  if (!pendingEvolutions.length) return;
-  currentEvolution = pendingEvolutions.shift();
+  if(typeof normalVictoryPending==='function'&&normalVictoryPending())return;
+  // Never replace an unresolved battle result or its contract animation.
+  const outcome=document.getElementById('battleOutcome');
+  if(typeof battleFeedback!=='undefined'&&battleFeedback.finished&&outcome&&!outcome.classList.contains('hidden'))return;
+  if (!currentEvolution && !pendingEvolutions.length) return;
+  currentEvolution = currentEvolution || pendingEvolutions.shift();
   const ins = getInstance(currentEvolution.uid);
-  if (!ins) { processNextEvolution(); return; }
+  if (!ins) { currentEvolution=null; processNextEvolution(); return; }
+  if(ins.id!==currentEvolution.from){currentEvolution=null;processNextEvolution();return;}
+  currentEvolution.choices=getEvoCandidates(ins);
+  if(!currentEvolution.choices.length){currentEvolution=null;processNextEvolution();return;}
   const from = by(currentEvolution.from);
   document.getElementById('evoVisual').innerHTML =
     `<div class="card">${vis(from)}<h2>${from.name}</h2><p>Lv.${ins.level}</p></div>` +
@@ -114,25 +132,40 @@ function processNextEvolution() {
     `<button onclick="cancelEvolution()" style="background:linear-gradient(135deg,#374151,#4b5563)">進化しない</button>`;
   show('evolution');
 }
+let evolutionSaveBusy = false;
 function confirmEvolution(toId) {
-  if (!currentEvolution) return;
+  if (evolutionSaveBusy || !currentEvolution) return;
   const ins = getInstance(currentEvolution.uid);
   if (!ins) { currentEvolution=null; processNextEvolution(); return; }
+  // Ignore stale or invalid choices; only a currently eligible transition grants cards.
+  if (ins.id !== currentEvolution.from || !currentEvolution.choices.includes(toId) ||
+      !getEvoCandidates(ins).includes(toId)) return;
   const from = by(ins.id), to = by(toId), firstRegistration=!caughtHas(toId);
+  evolutionSaveBusy = true;
+  try {
+  if(!commitSaveMutation(()=>{
   ins.id = toId;
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
-  if (typeof grantDefaultSkillCardsForInstance === 'function') grantDefaultSkillCardsForInstance(ins);
+  if (typeof grantEvolutionSkillCardsForInstance === 'function') grantEvolutionSkillCardsForInstance(ins);
   if (firstRegistration) {
     save.caught.push(toId);
     if(typeof grantContractorDexRegistration==='function')grantContractorDexRegistration(toId);
   }
   if(typeof grantContractorEvolution==='function')grantContractorEvolution();
-  saveGame(); renderParty(); renderDex();
+  },{requireReadable:true}))return;
+  // Retire the committed choice before any fallible presentation.
   currentEvolution = null;
-  alert(`✨ ${from.name}は${to.name}に進化した！`);
-  pendingEvolutions.length ? processNextEvolution() : show('partySet');
+  showCommittedSaveResult(()=>{
+  renderParty(); renderDex();
+  showUiNotice(`${from.name}は${to.name}に進化した！`);
+  if(pendingEvolutions.length)processNextEvolution();
+  else if(typeof autoEvolutionFinished!=='function'||!autoEvolutionFinished())show('partySet');
+  });
+  } finally { evolutionSaveBusy = false; }
 }
 function cancelEvolution() {
+  if(evolutionSaveBusy)return;
   currentEvolution = null;
-  pendingEvolutions.length ? processNextEvolution() : show('partySet');
+  if(pendingEvolutions.length)processNextEvolution();
+  else if(typeof autoEvolutionFinished!=='function'||!autoEvolutionFinished())show('partySet');
 }

@@ -1,0 +1,53 @@
+{
+  "scope": "Recovered bytes vs adopted MP4, all 240 frames; optional six source samples; visual/device acceptance separate",
+  "videoSha256": "d099dfc61f291a15277a5e271b7534b79b8403f9d5e3ee83dcfb2e97aca024bf",
+  "adoptedMp4Sha256": "2e638393f9fe642c160f815c1c093f341ac4b5193dd458bb55d408bc2220f70f",
+  "frames": 240,
+  "width": 960,
+  "height": 960,
+  "background": [
+    11,
+    19,
+    37
+  ],
+  "meanRgbDifference": 1.1237161330878735,
+  "maxFrameMeanRgbDifference": 1.6056705713272095,
+  "maxForegroundMeanRgbDifference": 5.276695251464844,
+  "sourceSamples": 6,
+  "sourceAlphaMeanDifferences": [
+    0.019420572916666667,
+    0.036456163194444446,
+    0.025813802083333334,
+    0.019385850694444446,
+    0.04286458333333333,
+    0.052581380208333334
+  ],
+  "sourcePremultipliedRgbMeanDifferences": [
+    1.2170284240107907,
+    1.340007159898011,
+    1.252603908232961,
+    1.2170589591369345,
+    1.387441459970471,
+    1.4597543638153962
+  ],
+  "sourceRendererLoopExact": true,
+  "sourceInputHashes": {
+    "qa-3.png": "4cacbb180a52ba21f7a056b36969f1fef33d0271da43bb3ed9edc19dd2bccc71",
+    "qa-2.png": "30d53abac0463c6892e6893808bf2d4138e3d00c002fb6459b2a26dc63b1cd62",
+    "qa-0.png": "8f2523bbc89beda7cd98a502f5647a59a8fca110651304043abd9d98f9bd0b0a",
+    "shape-validation.json": "1de5f437522ba125bb8b446dba2a73b032e9f2d247f02227584c78001bf933db",
+    "qa-1.png": "444661f8030e1de6d02fdc4a8c093bc94e5cfe0be99d8e9f178dd4d4a492b917",
+    "texture.png": "dfcd64fc6a1485a692493221567c9e5b2163dfa91e255538467fe1a906848621",
+    "render.py": "518dfcbcfcc51d6361241b03e25140318fba7c70de90bba0d67b8e819cd30a26",
+    "check-points.json": "02d2a9e020d2137b2e603d2325cee9afc7421242a6b6b160d7730174ffe789c9",
+    "media-validation.json": "6673503d83fa28aafc057f247eb9d86c8d78ea8919e7cba097828cec939405e6",
+    "part-masks.png": "da5b53d9d057b2c99dd290503b5400e035640b1fd9a53f37ca71213e2ba4feaf",
+    "verify.py": "118bf660b48754a4fc0e003a1c3f99f32421f3580e3695e0eb5ff9c296426bd0",
+    "rig.json": "2862f9b167bc5267b066d7dd2c12b13bc28f262e5fc5236023259c5b6b266cf7",
+    "validation.json": "7ad573c69f13ea723044b40f4bd31384c034be4028a7a911ec421603ea565e5b",
+    "motion.json": "486af210197415730fb897318d7f0abb81da73fe00da2b5e32092eef652e8766"
+  },
+  "sourceRendererModified": false,
+  "reencoded": false,
+  "numericCorrespondence": true
+}

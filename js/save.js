@@ -6,11 +6,95 @@ const SAVE_SCHEMA_VERSION = 4;
 const CONTRACTOR_SAVE_EXP_CAP = 63700;
 let lastSaveError = null;
 let saveRecoveryReport = [];
+let protectedPrimaryRaw = null;
+let primaryReadFailed = false;
+let soulContractReplacementBlocked = false;
+let soulContractReplacementExported = null;
+const SOUL_REPLACEMENT_NOTICE='セーブの置き換え処理が途中で止まっています。セーブ管理で記録を書き出してから再開してください。';
+const SOUL_REPLACEMENT_UNSUPPORTED='このブラウザではセーブの置き換えを安全に実行できません。最新のブラウザで開き直してください。';
+const SOUL_RECOVERY_STORAGE_KEY=`${SAVE_KEY}_soulContractRecovery_v1`;
+const SOUL_ARCHIVE_STORAGE_KEY=`${SOUL_RECOVERY_STORAGE_KEY}_archived`;
+let rejectedPrimaryRaw = null;
+
+// Additive mission receipts; preserve unknown fields and receipts for forward compatibility.
+function normalizeHomeMissions(value,payload={}){
+  const source=isSaveObject(value)?value:{};
+  const priorAlchemy=Array.isArray(payload.contractor?.recentExp)&&payload.contractor.recentExp.some(entry=>entry?.source==='alchemy_success'&&Number(entry.amount)>0);
+  return {...source,version:1,claimedIds:Array.isArray(source.claimedIds)?[...new Set(source.claimedIds.filter(id=>typeof id==='string'))]:[],alchemyCount:Math.max(nonNegativeInteger(source.alchemyCount),priorAlchemy?1:0)};
+}
+function recordHomeMissionAlchemyExecution(){
+  save.homeMissions=normalizeHomeMissions(save.homeMissions);
+  save.homeMissions.alchemyCount++;
+}
+
+// Later prologue progress is independent of the published first-six-episode flags.
+function normalizeProloguePart2(value){
+  const s=isSaveObject(value)?value:{};
+  const episodes=isSaveObject(s.episodes)?{...s.episodes}:{};
+  const ids=[...Array.from({length:16},(_,i)=>`pb_${String(i+7).padStart(2,'0')}`),'pb_ep'];
+  const strings=value=>[...new Set((Array.isArray(value)?value:[]).filter(v=>typeof v==='string'&&v.length>0))];
+  for(const id of ids){
+    if(!isSaveObject(episodes[id])){if(Object.hasOwn(episodes,id))delete episodes[id];continue;}
+    const e=episodes[id];
+    episodes[id]={...e,phase:typeof e.phase==='string'?e.phase:'pre',
+      cursor:typeof e.cursor==='string'?e.cursor:(Number.isSafeInteger(e.cursor)&&e.cursor>=0?e.cursor:null),
+      wonBattleIds:strings(e.wonBattleIds),completed:e.completed===true,rewardClaimed:e.rewardClaimed===true,
+      ...(Object.hasOwn(e,'rewardTargetUids')?{rewardTargetUids:strings(e.rewardTargetUids)}:{})};
+  }
+  return {...s,version:1,episodes,completed:s.completed===true,hubArrived:s.hubArrived===true,
+    trainingSeen:isSaveObject(s.trainingSeen)?{...s.trainingSeen}:{},
+    evidence:isSaveObject(s.evidence)?{...s.evidence}:{},grants:isSaveObject(s.grants)?{...s.grants}:{}};
+}
+// Preserve existing chapter records, but old tutorial completion is not the new epilogue.
+function normalizeAuthoritySave(value,payload){
+  const s=isSaveObject(value)?value:{};
+  return {...s,v:1,unlocked:payload?.prologuePart2?.completed===true,
+    clearedChapters:[...new Set((Array.isArray(s.clearedChapters)?s.clearedChapters:[])
+      .filter(n=>Number.isInteger(n)&&n>=1&&n<=7))].sort((a,b)=>a-b)};
+}
+
+const G_BLESS_RULES=Object.freeze({week:100,coins:2,exp:1.5,cost:1});
+// Shift JST by four hours so every week starts at Monday 04:00 JST.
+function gBlessWeekKey(now=Date.now()){
+  const d=new Date(now+5*3600000);
+  d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);
+  return d.toISOString().slice(0,10);
+}
+function normalizeGBless(value,now=Date.now()){
+  const s=isSaveObject(value)?value:{},key=gBlessWeekKey(now);
+  const week=Number.isSafeInteger(s.week)&&s.week>=0&&s.week<=G_BLESS_RULES.week?s.week:G_BLESS_RULES.week;
+  const reserve=Number.isSafeInteger(s.reserve)&&s.reserve>=0?s.reserve:0;
+  const result={v:1,on:s.on===true,weekKey:key,week:s.weekKey===key?week:G_BLESS_RULES.week,reserve};
+  if(!result.week&&!result.reserve)result.on=false;
+  return result;
+}
+function ensureGBless(){return save.gBless=normalizeGBless(save.gBless);}
+function gBlessTotal(s=ensureGBless()){return Math.min(Number.MAX_SAFE_INTEGER,s.week+s.reserve);}
+// Format the combined count exactly even when week + reserve exceeds the safe-number range.
+function gBlessTotalText(s=ensureGBless()){return (BigInt(s.week)+BigInt(s.reserve)).toLocaleString('ja-JP');}
+function gBlessUnlocked(){
+  const t=save?.progress?.tutorial;
+  return Boolean(t&&!t.replaying&&(t.completed||t.skipped||t.status==='completed'||t.status==='skipped'));
+}
+function beginGBlessVictory(){
+  const s=ensureGBless();
+  const eligible=activeHuntRequest&&activeHuntRequest.source!=='map_story'&&gBlessUnlocked()
+    &&!(typeof tutorialBattleSession!=='undefined'&&tutorialBattleSession.active);
+  const used=Boolean(eligible&&s.on&&gBlessTotal(s)>0);
+  if(used){if(s.week>0)s.week-=G_BLESS_RULES.cost;else s.reserve-=G_BLESS_RULES.cost;if(!gBlessTotal(s))s.on=false;}
+  return used?{baseExp:0,baseCoins:0,remaining:gBlessTotalText(s)}:null;
+}
+function gBlessHuntReward(base,turnBonus,kind,bless,rewardMultiplier){
+  if(!bless)return huntRewardAmount(base,turnBonus,1,rewardMultiplier);
+  bless[kind==='coins'?'baseCoins':'baseExp']+=huntRewardAmount(base,turnBonus,1,rewardMultiplier);
+  return huntRewardAmount(base,turnBonus,G_BLESS_RULES[kind],rewardMultiplier);
+}
 
 const TUTORIAL_VERSION = 2;
 const TUTORIAL_GUIDE_IDS = Object.freeze([
   'threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion',
-  'skillCards','goldenLand','dex','shopItems','contractorRank'
+  'skillCards','goldenLand','dex','shopItems','contractorRank',
+  'evolution','skillGacha','battleItems','contractorTitles'
 ]);
 const TUTORIAL_ONCE_FLAG_IDS = Object.freeze([
   'starterContractsGranted','elnaContractGranted','stellaSkillCardGranted',
@@ -79,20 +163,32 @@ function normalizeTutorialSave(value,{legacy=false}={}){
   return normalized;
 }
 
-const WORLD_MAP_NAVIGATION_DIFFICULTY_IDS = Object.freeze(['easy','normal','hard','extreme']);
+// Keep migration independent of battle state: save repair also runs in recovery tools.
+const WORLD_MAP_NAVIGATION_DIFFICULTY_IDS = Object.freeze(['d1','d2','d3','d4','d5','extreme']);
+function normalizeSavedHuntDifficultyId(value){
+  const aliases={easy:'d1',normal:'d2',hard:'d4'};
+  const id=typeof value==='string'&&Object.hasOwn(aliases,value)?aliases[value]:value;
+  return WORLD_MAP_NAVIGATION_DIFFICULTY_IDS.includes(id)?id:null;
+}
 function normalizeWorldMapNavigationState(value){
   const source=isSaveObject(value)?value:{};
   const knownMapIds=new Set((typeof MAPS!=='undefined'&&Array.isArray(MAPS)?MAPS:[]).map(map=>map.id));
   const mapId=typeof source.mapId==='string'&&knownMapIds.has(source.mapId)?source.mapId:null;
   const eventKey=mapId&&typeof source.eventKey==='string'&&/^[a-z0-9_:-]{1,80}$/.test(source.eventKey)?source.eventKey:null;
-  const difficultyId=mapId&&WORLD_MAP_NAVIGATION_DIFFICULTY_IDS.includes(source.difficultyId)?source.difficultyId:null;
+  const difficultyId=mapId?normalizeSavedHuntDifficultyId(source.difficultyId):null;
   return {...source,mapId,eventKey,difficultyId,
     overviewScrollLeft:Math.min(100000,nonNegativeInteger(source.overviewScrollLeft))};
+}
+function normalizeWorldMapDiscoveryState(value){
+  const source=isSaveObject(value)?value:{};
+  const ids=new Set((typeof MAPS!=='undefined'?MAPS:[]).map(map=>map.id));
+  const clean=list=>Array.isArray(list)?[...new Set(list.filter(id=>ids.has(id)))]:[];
+  return {...source,initialized:source.initialized===true,known:clean(source.known),pending:clean(source.pending)};
 }
 function normalizeWorldMapSaveState(value){
   const base=typeof normalizeWorldMapState==='function'
     ?normalizeWorldMapState(value):(isSaveObject(value)?{...value}:{});
-  return {...base,navigation:normalizeWorldMapNavigationState(base.navigation)};
+  return {...base,navigation:normalizeWorldMapNavigationState(base.navigation),discovery:normalizeWorldMapDiscoveryState(base.discovery)};
 }
 
 function contractorSaveDefaults(){
@@ -110,25 +206,114 @@ function contractorSaveDefaults(){
   };
 }
 
+function normalizeMapStories(value){
+  const maps=isSaveObject(value)?{...value}:{};
+  maps.grassland_whose=normalizeMapStory(maps.grassland_whose,'gl',11);
+  maps.volcano_breath=normalizeMapStory(maps.volcano_breath,'vc',9);
+  return maps;
+}
+function normalizeMapStory(value,prefix,total){
+  const source=isSaveObject(value)?value:{};
+  const episodes=isSaveObject(source.episodes)?{...source.episodes}:{};
+  const ids=Array.from({length:total},(_,i)=>`${prefix}_${String(i+1).padStart(2,'0')}`);
+  for(const id of ids){
+    if(!isSaveObject(episodes[id]))continue;
+    const p=episodes[id];episodes[id]={...p,completed:p.completed===true,firstVictory:p.firstVictory===true,firstRewardClaimed:p.firstRewardClaimed===true,victoryCount:nonNegativeInteger(p.victoryCount)};
+  }
+  const r=source.resume;
+  const resume=isSaveObject(r)&&ids.includes(r.episodeId)&&['pre','battle','post'].includes(r.phase)?{...r,
+    nodeId:typeof r.nodeId==='string'?r.nodeId:null,attemptId:typeof r.attemptId==='string'?r.attemptId:null,
+    rewardCommitted:r.rewardCommitted===true,postPending:r.postPending===true,
+    participantUids:Array.isArray(r.participantUids)?[...new Set(r.participantUids.filter(x=>typeof x==='string'))]:[]}:null;
+  return {...source,version:1,episodes,resume};
+}
+function normalizeAutoBattle(raw){
+  const normalizeKey=key=>{
+    if(typeof key!=='string'||!/^[a-z0-9_]+:[a-z0-9_]+$/.test(key))return null;
+    const [mapId,rawDifficulty]=key.split(':');
+    const difficulty=normalizeSavedHuntDifficultyId(rawDifficulty);
+    return difficulty?`${mapId}:${difficulty}`:null;
+  };
+  const unique=(list,test)=>Array.isArray(list)?[...new Set(list.filter(test))]:[];
+  const defeated={};
+  for(const [key,list] of Object.entries(isSaveObject(raw?.defeated)?raw.defeated:{})){
+    const normalizedKey=normalizeKey(key);
+    if(normalizedKey)defeated[normalizedKey]=[...new Set([
+      ...(defeated[normalizedKey]||[]),
+      ...unique(list,id=>typeof id==='string'&&/^[a-z0-9_]+$/.test(id))
+    ])];
+  }
+  const run=normalizeAutoBattleRun(raw?.run);
+  return {v:1,defeated,unlocked:[...new Set((Array.isArray(raw?.unlocked)?raw.unlocked:[]).map(normalizeKey).filter(Boolean))],
+    settings:normalizeAutoBattleSettings(raw?.settings),...(run?{run}:{})};
+}
+function normalizeAutoBattleSettings(s){
+  return {
+    times:[1,5,10,20].includes(s?.times)?s.times:5,contract:s?.contract==='pause'?'pause':'skip',
+    stopOnBlessEmpty:s?.stopOnBlessEmpty!==false,stopOnNewDex:s?.stopOnNewDex===true,speed:s?.speed===1?1:2
+  };
+}
+function normalizeAutoBattleRun(r){
+  if(!isSaveObject(r)||r.v!==1||!['fight','next','offer','decision','summary'].includes(r.phase))return null;
+  const map=MAPS.find(m=>m.id===r.map),d=normalizeSavedHuntDifficultyId(r.d);
+  if(!map||!d||map.goldenLand||map.bossOnly||map.rareOnly||![1,5,10,20].includes(r.times))return null;
+  if(!Number.isSafeInteger(r.at)||r.at<0||!Number.isInteger(r.seed)||r.seed<0||r.seed>0xffffffff)return null;
+  const list=(value,limit)=>Array.isArray(value)?value.slice(0,limit):[];
+  const entries=(value,limit)=>isSaveObject(value)?Object.entries(value).slice(0,limit):[];
+  const count=value=>Number.isSafeInteger(value)&&value>=0?value:0;
+  const battles=list(r.battles,r.times).filter(v=>['win','defeat','retreat'].includes(v));
+  if((r.phase==='fight'||r.phase==='next')&&(battles.length>=r.times||battles.some(v=>v!=='win')))return null;
+  const contracts=list(r.contracts,r.times*2).filter(c=>isSaveObject(c)&&typeof c.monId==='string'&&by(c.monId)
+    &&(c.entry===null||['enemy_a','enemy_b'].includes(c.entry))&&['見送り','成功','失敗'].includes(c.result))
+    .map(({monId,entry,result})=>({monId,entry,result}));
+  const offerCount=Math.min(2,count(r.offerCount),contracts.length);
+  if(r.phase==='offer'&&!offerCount)return null;
+  return {v:1,map:map.id,d,times:r.times,settings:normalizeAutoBattleSettings(r.settings),phase:r.phase,at:r.at,seed:r.seed,
+    ...(r.phase==='fight'&&r.strongIncenseBoosted===true&&d!=='extreme'?{strongIncenseBoosted:true}:{}),
+    battles,coins:count(r.coins),bless:Math.min(count(r.bless),r.times),contracts,offerCount,
+    exp:Object.fromEntries(entries(r.exp,20).filter(([uid,row])=>uid&&isSaveObject(row)&&by(row.monId))
+      .map(([uid,row])=>[uid,{monId:row.monId,total:count(row.total)}])),
+    items:Object.fromEntries(entries(r.items,100).filter(([id])=>/^[a-z0-9_]+$/.test(id)&&!['constructor','prototype','__proto__'].includes(id))
+      .map(([id,n])=>[id,count(n)])),
+    levels:list(r.levels,60).filter(v=>typeof v==='string').map(v=>v.slice(0,120)),
+    stop:r.stop===true,reason:typeof r.reason==='string'?r.reason.slice(0,160):''
+  };
+}
+function normalizedPartyPresetName(name,index){
+  return (typeof name==='string'?Array.from(name.trim()).slice(0,10).join(''):'')||`編成${index+1}`;
+}
+function normalizePartyPresets(value,owned=new Set()){
+  return Array.from({length:3},(_,index)=>{
+    const entry=Array.isArray(value)?value[index]:null;
+    return {name:normalizedPartyPresetName(entry?.name,index),uids:[...new Set(Array.isArray(entry?.uids)?entry.uids:[])].filter(uid=>owned.has(uid)).slice(0,3)};
+  });
+}
 function initSave() {
   return {
+    prologuePart2:normalizeProloguePart2(null),
+    authority:normalizeAuthoritySave(null),
+    autoBattle:normalizeAutoBattle(null),
+    gBless:normalizeGBless(null),
+    ...(typeof UpdateReleases!=="undefined"?{updateRewards:{delivered:UpdateReleases.current,pending:[]}}:{}),
     schemaVersion:SAVE_SCHEMA_VERSION,
-    saveMeta:{migrations:['character_first_lock_v1'], lastSavedAt:null, integrityHash:null},
+    saveMeta:{migrations:['character_first_lock_v1',...(skill110MigrationAvailable() ? ['skill_system_110_v1','equipped_skill_cards_v1','evolution_native_cards_v1'] : [])], lastSavedAt:null, integrityHash:null},
     caught:[], instances:[], levels:{}, exp:{}, homeFavoriteId:null,
-    items:{potion:3, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0},
-    coins:0, alchemyResonance:0, party:[], history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
-    expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false,
+    items:{potion:3, antidote:0, paralysis_heal:0, confusion_heal:0, awakening:0, full_heal:0, defense_potion:0, speed_potion:0, max_potion:0, revive_drop:0, strong_incense:0, gold_dust:0, water_mirror:0, attack_potion:0, upper_potion:0, contract_scroll:0, silver_contract_scroll:0, gold_contract_scroll:0, rainbow_contract_scroll:0, kilo_data:0, mega_data:0, giga_data:0, doom_fragment:0, fire_orb:0, monster_bone:0, fine_monster_bone:0, magic_crystal:0, fine_magic_crystal:0, metal_ore:0, fine_metal_ore:0, unstable_alchemy_matter:0, fine_unstable_alchemy_matter:0, raptor_feather:0, fine_raptor_feather:0, venom_carapace:0, fine_venom_carapace:0, golden_land_map:0, g_ichor:0, god_core:0},
+    homeMissions:normalizeHomeMissions(null),
+    lifeQuestClaimedIds:[], giftReceiptVersion:1, giftClaimedIds:[], giftHistory:[], coins:0, alchemyResonance:0, party:[], partyPresets:normalizePartyPresets(null), history:{wins:0, logs:[]}, skillCards:{}, equippedSkills:{}, itemDex:[], mapDex:[],
+    expeditions:{completedCount:0, active:[]}, goldenLandMapReady:false, strongIncenseRemainingDepartures:0,
     contractor:contractorSaveDefaults(),
     worldMap:normalizeWorldMapSaveState(null),
+    mapStories:normalizeMapStories(null),
     progress:{chapterId:'prologue', storyFlags:{}, tutorial:tutorialSaveDefaults(), missions:{version:1, states:{}}},
     quarantine:{unknownInstances:[], unknownCaughtIds:[], invalidExpeditions:[]}
   };
 }
 function normalizeAlchemyResonance(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;}
 function isSaveObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
-function safeStorageGet(key){try{return localStorage.getItem(key);}catch(error){lastSaveError=error;return null;}}
-function safeStorageSet(key,value){try{localStorage.setItem(key,value);lastSaveError=null;return true;}catch(error){lastSaveError=error;return false;}}
-function safeStorageRemove(key){try{localStorage.removeItem(key);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageGet(key){try{return localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);}catch(error){lastSaveError=error;return null;}}
+function safeStorageSet(key,value){if((primaryReadFailed||soulContractReplacementBlocked)&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return false;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.setItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key,value);lastSaveError=null;if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(value);return true;}catch(error){lastSaveError=error;return false;}}
+function safeStorageRemove(key){if((primaryReadFailed||soulContractReplacementBlocked)&&(key===SAVE_KEY||key===SAVE_BACKUP_KEY))return false;try{if(key===SAVE_KEY&&typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;localStorage.removeItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key);return true;}catch(error){lastSaveError=error;return false;}}
 function saveHash(payload){
   const copy=JSON.parse(JSON.stringify(payload));
   if(copy.saveMeta)copy.saveMeta.integrityHash=null;
@@ -182,10 +367,179 @@ function isCharacterSaveId(id){
   const unit=typeof M!=='undefined'?M.find(entry=>entry.id===id):null;
   return unit?.entityKind==='character'||(!unit?.entityKind&&unit?.unitType==='character');
 }
+const SKILL110_SAVE_MIGRATION = 'skill_system_110_v1';
+function skill110MigrationAvailable(){
+  return typeof SKILL110_MIGRATION_MAP !== 'undefined' && typeof SKILL110_CATALOG !== 'undefined';
+}
+function isSkill110Save(payload){return payload?.saveMeta?.migrations?.includes(SKILL110_SAVE_MIGRATION) === true;}
+function skill110SaveTarget(id){
+  if (!skill110MigrationAvailable() || typeof id !== 'string') return null;
+  if (SKILL110_CATALOG.some(sk => sk.id === id)) return SKILL_BY_ID[id]?.cost === 25 ? null : id;
+  const normalized = repairSkillId(id);
+  const target = Object.hasOwn(SKILL110_MIGRATION_MAP,id) ? SKILL110_MIGRATION_MAP[id] :
+    (Object.hasOwn(SKILL110_MIGRATION_MAP,normalized) ? SKILL110_MIGRATION_MAP[normalized] : null);
+  // Imported legacy records must never create synthesis-only cards.
+  return typeof target === 'string' && SKILL110_CATALOG.some(sk => sk.id === target && sk.cost <= 20) ? target : null;
+}
+function captureSkill110Backup(payload){
+  if (!skill110MigrationAvailable() || isSkill110Save(payload) || payload.skill110MigrationBackup) return;
+  payload.skill110MigrationBackup = JSON.parse(JSON.stringify(payload));
+}
+function migrateSkill110Save(payload, report=[]){
+  if (!skill110MigrationAvailable() || isSkill110Save(payload)) return false;
+  captureSkill110Backup(payload);
+  const cards = Object.create(null), unmapped = Object.create(null);
+  Object.entries(payload.skillCards || {}).forEach(([id,count]) => {
+    const target = skill110SaveTarget(id), amount = nonNegativeInteger(count);
+    if (target) cards[target] = (cards[target] || 0) + amount;
+    else if (amount) unmapped[id] = amount;
+  });
+  payload.skillCards = cards;
+  payload.skill110UnmappedCards = unmapped; // Never discard a future/unknown imported ID.
+  payload.equippedSkills = isSaveObject(payload.equippedSkills) ? payload.equippedSkills : {};
+  const reserved = {};
+  let compensated = 0, adjusted = 0;
+  (payload.instances || []).forEach(ins => {
+    const mon = typeof by === 'function' ? by(ins.id) : M.find(entry => entry.id === ins.id);
+    if (!mon) return;
+    const previous = Array.isArray(payload.equippedSkills[ins.uid]) ? payload.equippedSkills[ins.uid] : [];
+    const limit = skillCostLimitFor(mon, ins), kept = [];
+    let used = 0;
+    previous.map(skill110SaveTarget).filter(Boolean).forEach(id => {
+      const sk = SKILL_BY_ID[id];
+      if (kept.length < 3 && sk && isSkillAllowedForMonster(id,mon) && used + sk.cost <= limit &&
+          (reserved[id] || 0) < (cards[id] || 0)) {
+        kept.push(id); used += sk.cost; reserved[id] = (reserved[id] || 0) + 1;
+      }
+    });
+    if (!kept.some(id => SKILL_BY_ID[id].power > 0)) {
+      // The universal COST 1 attack guarantees an actionable loadout without granting high-cost cards.
+      const basic = 's110_001', cost = SKILL_BY_ID[basic].cost;
+      while (kept.length >= 3 || used + cost > limit) {
+        const removed = kept.pop(); if (!removed) break;
+        used -= SKILL_BY_ID[removed].cost; reserved[removed]--;
+      }
+      if ((cards[basic] || 0) <= (reserved[basic] || 0)) {
+        cards[basic] = (cards[basic] || 0) + 1; compensated++;
+      }
+      kept.push(basic); reserved[basic] = (reserved[basic] || 0) + 1;
+    }
+    if (JSON.stringify(previous) !== JSON.stringify(kept)) adjusted++;
+    payload.equippedSkills[ins.uid] = kept;
+    if (Array.isArray(ins.alchemy?.exclusiveSkillIds)) {
+      ins.alchemy.exclusiveSkillIds = [...new Set(ins.alchemy.exclusiveSkillIds.map(skill110SaveTarget).filter(Boolean))];
+    }
+  });
+  // Present saves derive skill discovery from owned cards; preserve optional historical discovery fields too.
+  ['skillDex','discoveredSkills','knownSkills'].forEach(key => {
+    if (Array.isArray(payload[key])) payload[key] = [...new Set(payload[key].map(id => skill110SaveTarget(id) || id))];
+    else if (isSaveObject(payload[key])) {
+      const mapped = Object.create(null);
+      Object.entries(payload[key]).forEach(([id,value]) => {
+        const target = skill110SaveTarget(id) || id;
+        mapped[target] = typeof value === 'number' ? Math.max(Number(mapped[target]) || 0,value) : (mapped[target] || value);
+      });
+      payload[key] = mapped;
+    }
+  });
+  payload.saveMeta.migrations.push(SKILL110_SAVE_MIGRATION);
+  // Supersede previous card backfills; running them after this migration would mint/reset inventory.
+  ['equipped_skill_cards_v1','evolution_native_cards_v1'].forEach(id => {
+    if (!payload.saveMeta.migrations.includes(id)) payload.saveMeta.migrations.push(id);
+  });
+  payload.skill110Migration = {version:1,adjustedInstances:adjusted,basicAttackCompensation:compensated,
+    unresolvedIds:Object.keys(unmapped),noticePending:true};
+  report.push(`技体系を110種類へ更新。装備調整 ${adjusted}体、基本攻撃補填 ${compensated}枚。`);
+  return true;
+}
+// Run on every load, including imports carrying current migration markers.
+// Only identifier-bearing fields are visited: UIDs, prose and archival backups
+// must remain byte-for-byte unchanged. Party/expedition links already use UIDs.
+function migrateRenamedMonsterIds(payload,report=[]){
+  const monsterId=id=>typeof MONSTER_ID_ALIASES!=='undefined'&&Object.hasOwn(MONSTER_ID_ALIASES,id)?MONSTER_ID_ALIASES[id]:id;
+  const renamedSkills=new Set(typeof RENAMED_SKILL_ID_ALIASES!=='undefined'?Object.values(RENAMED_SKILL_ID_ALIASES):[]);
+  const skillId=id=>{
+    if(typeof RENAMED_SKILL_ID_ALIASES!=='undefined'&&Object.hasOwn(RENAMED_SKILL_ID_ALIASES,id))return RENAMED_SKILL_ID_ALIASES[id];
+    // Pre-110 saves have explicit historical catalog mappings for sk_ aliases.
+    // Let that migration consume each raw entry before normalizing its alias.
+    if(!isSkill110Save(payload)&&skill110MigrationAvailable()&&Object.hasOwn(SKILL110_MIGRATION_MAP,id))return id;
+    const normalized=repairSkillId(id);
+    return renamedSkills.has(normalized)?normalized:id;
+  };
+  let changed=false;
+  const mapped=(id,convert)=>{const next=convert(id);if(next!==id)changed=true;return next;};
+  const list=(values,convert)=>Array.isArray(values)?values.map(id=>mapped(id,convert)):values;
+  const record=(values,convert,merge)=>{
+    if(!isSaveObject(values))return values;
+    const result={};
+    Object.entries(values).forEach(([id,value])=>{
+      const next=mapped(id,convert);
+      result[next]=Object.hasOwn(result,next)?merge(result[next],value):value;
+    });
+    return result;
+  };
+  const sum=(a,b)=>nonNegativeInteger(a)+nonNegativeInteger(b);
+  const discovery=(a,b)=>typeof a==='number'&&typeof b==='number'?Math.max(a,b):(a||b);
+  (Array.isArray(payload.instances)?payload.instances:[]).forEach(ins=>{
+    if(!isSaveObject(ins))return;
+    ins.id=mapped(ins.id,monsterId);
+    if(Array.isArray(ins.alchemy?.exclusiveSkillIds))ins.alchemy.exclusiveSkillIds=list(ins.alchemy.exclusiveSkillIds,skillId);
+  });
+  payload.caught=list(payload.caught,monsterId);
+  if(typeof payload.homeFavoriteId==='string')payload.homeFavoriteId=mapped(payload.homeFavoriteId,monsterId);
+  for(const key of ['levels','exp'])payload[key]=record(payload[key],monsterId,discovery);
+  if(isSaveObject(payload.autoBattle?.defeated)){
+    for(const key of Object.keys(payload.autoBattle.defeated))payload.autoBattle.defeated[key]=list(payload.autoBattle.defeated[key],monsterId);
+  }
+  for(const key of ['skillCards','skill110UnmappedCards']){
+    if(isSaveObject(payload[key]))payload[key]=record(payload[key],skillId,sum);
+  }
+  if(isSaveObject(payload.equippedSkills)){
+    for(const uid of Object.keys(payload.equippedSkills))payload.equippedSkills[uid]=list(payload.equippedSkills[uid],skillId);
+  }
+  for(const key of ['skillDex','discoveredSkills','knownSkills']){
+    if(Array.isArray(payload[key]))payload[key]=[...new Set(list(payload[key],skillId))];
+    else if(isSaveObject(payload[key]))payload[key]=record(payload[key],skillId,discovery);
+  }
+  if(changed)report.push('アシュレイア・モルグラムの旧識別名を更新');
+}
+// Shared by load repair and runtime expedition normalization. Never invent rewards.
+function validateExpeditionEntry(entry){
+  if(!isSaveObject(entry)||!['active','complete'].includes(entry.status))return null;
+  const requiredWins={short:1,medium:3,long:5}[entry.distanceId];
+  if(!Number.isInteger(requiredWins)||!Number.isInteger(entry.progress)||entry.progress<0)return null;
+  const repaired={...entry,requiredWins,progress:Math.min(requiredWins,entry.progress)};
+  if(entry.status==='active'){repaired.reward=null;return repaired;}
+  const reward=entry.reward;
+  if(!isSaveObject(reward)||!Number.isInteger(reward.coins)||reward.coins<0||!Number.isInteger(reward.exp)||reward.exp<0||typeof reward.great!=='boolean')return null;
+  // Keep SEC-02's non-increasing item repair, including malformed containers.
+  const items=Object.fromEntries(Object.entries(isSaveObject(reward.items)?reward.items:{}).filter(([id])=>typeof ITEM_BY_ID!=='undefined'&&Object.hasOwn(ITEM_BY_ID,id)).map(([id,count])=>[id,nonNegativeInteger(count)]));
+  repaired.reward={...reward,items};
+  return repaired;
+}
+function quarantineExpeditionEntry(payload,entry,report=[]){
+  if(!isSaveObject(payload.quarantine))payload.quarantine={};
+  if(!Array.isArray(payload.quarantine.invalidExpeditions))payload.quarantine.invalidExpeditions=[];
+  payload.quarantine.invalidExpeditions.push(entry);
+  report.push('破損した遠征記録を隔離し、仲間を戻しました');
+}
 function repairSave(payload,report=[]){
+  captureSkill110Backup(payload);
+  migrateRenamedMonsterIds(payload,report);
+  payload.autoBattle=normalizeAutoBattle(payload.autoBattle);
+  payload.gBless=normalizeGBless(payload.gBless);
+  payload.strongIncenseRemainingDepartures=Math.min(10,nonNegativeInteger(payload.strongIncenseRemainingDepartures));
   const defaults=initSave();payload.schemaVersion=SAVE_SCHEMA_VERSION;
   if(!isSaveObject(payload.saveMeta))payload.saveMeta={...defaults.saveMeta,migrations:[]};
   if(!Array.isArray(payload.saveMeta.migrations))payload.saveMeta.migrations=[];
+  // Old receipts represent an already-claimed prefix. Defer expansion until a
+  // receiving transaction can persist the inbox-based migration atomically.
+  payload.giftReceiptVersion=payload.giftReceiptVersion===1?1:0;
+  payload.lifeQuestClaimedIds=Array.isArray(payload.lifeQuestClaimedIds)?[...new Set(payload.lifeQuestClaimedIds.filter(id=>typeof id==='string'))]:[];
+  if(payload.giftReceiptVersion!==1)payload.lifeQuestClaimedIds=payload.lifeQuestClaimedIds.slice(-500);
+  if(typeof UpdateReleases!=='undefined')payload.updateRewards=UpdateReleases.normalize(payload.updateRewards);
+  payload.giftClaimedIds=Array.isArray(payload.giftClaimedIds)?[...new Set(payload.giftClaimedIds.filter(id=>typeof id==='string'&&id))]:[];
+  payload.giftHistory=Array.isArray(payload.giftHistory)?payload.giftHistory.filter(g=>isSaveObject(g)&&typeof g.key==='string'&&Array.isArray(g.rewards)&&Number.isFinite(Date.parse(g.receivedAt))&&Date.now()-Date.parse(g.receivedAt)<=90*86400000).sort((a,b)=>Date.parse(b.receivedAt)-Date.parse(a.receivedAt)).slice(0,200):[];
   if(!isSaveObject(payload.quarantine))payload.quarantine=defaults.quarantine;
   ['unknownInstances','unknownCaughtIds','invalidExpeditions'].forEach(key=>{if(!Array.isArray(payload.quarantine[key]))payload.quarantine[key]=[];});
   const knownMonsterIds=new Set((typeof M!=='undefined'&&Array.isArray(M)?M:[]).map(mon=>mon.id));const canValidateMonsters=knownMonsterIds.size>0;
@@ -198,6 +552,7 @@ function repairSave(payload,report=[]){
     if(!instanceUid||seenUids.has(instanceUid)){instanceUid=`repair_${Date.now().toString(36)}_${index.toString(36)}`;report.push('欠損・重複した個体UIDを再発行');}
     seenUids.add(instanceUid);entry.uid=instanceUid;entry.level=clampLevel(nonNegativeInteger(entry.level,1));entry.exp=isMaxLevel(entry.level)?0:nonNegativeInteger(entry.exp);entry.locked=entry.locked===true;
     if(Array.isArray(entry.alchemy?.exclusiveSkillIds))entry.alchemy.exclusiveSkillIds=entry.alchemy.exclusiveSkillIds.map(repairSkillId).filter(x=>typeof x==='string');
+    if(typeof by==='function' && by(entry.id)?.entityKind==='monster')entry.evolutionOffset=monsterEvolutionOffset(entry);
     payload.instances.push(entry);
   });
   if(!payload.saveMeta.migrations.includes('character_first_lock_v1')){
@@ -215,11 +570,15 @@ function repairSave(payload,report=[]){
   Object.keys(payload.levels).forEach(id=>{payload.levels[id]=clampLevel(nonNegativeInteger(payload.levels[id],1));});
   payload.instances.forEach(entry=>{payload.levels[entry.id]=clampLevel(Math.max(nonNegativeInteger(payload.levels[entry.id],1),entry.level));payload.exp[entry.id]=isMaxLevel(payload.levels[entry.id])?0:Math.max(nonNegativeInteger(payload.exp[entry.id]),entry.exp);});
   payload.party=[...new Set(Array.isArray(payload.party)?payload.party:[])].filter(value=>seenUids.has(value)).slice(0,3);
+  payload.partyPresets=normalizePartyPresets(payload.partyPresets,seenUids);
   payload.items=isSaveObject(payload.items)?payload.items:{};Object.entries(defaults.items).forEach(([key,value])=>{payload.items[key]=nonNegativeInteger(payload.items[key],value);});Object.keys(payload.items).forEach(key=>{payload.items[key]=nonNegativeInteger(payload.items[key]);});
+  payload.homeMissions=normalizeHomeMissions(payload.homeMissions,payload);
   payload.coins=nonNegativeInteger(payload.coins);payload.alchemyResonance=normalizeAlchemyResonance(payload.alchemyResonance);
   payload.worldMap=normalizeWorldMapSaveState(payload.worldMap);
+  payload.mapStories=normalizeMapStories(payload.mapStories);
   payload.history=isSaveObject(payload.history)?payload.history:defaults.history;payload.history.wins=nonNegativeInteger(payload.history.wins);payload.history.logs=Array.isArray(payload.history.logs)?payload.history.logs.filter(x=>typeof x==='string').slice(-30):[];
   payload.skillCards=isSaveObject(payload.skillCards)?payload.skillCards:{};payload.equippedSkills=isSaveObject(payload.equippedSkills)?payload.equippedSkills:{};
+  migrateSkill110Save(payload,report);
   let migratedSkillIds=false;const normalizedSkillCards={};Object.entries(payload.skillCards).forEach(([id,count])=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;normalizedSkillCards[normalizedId]=Math.max(nonNegativeInteger(normalizedSkillCards[normalizedId]),nonNegativeInteger(count));});payload.skillCards=normalizedSkillCards;
   Object.keys(payload.equippedSkills).forEach(key=>{if(!seenUids.has(key))delete payload.equippedSkills[key];else payload.equippedSkills[key]=Array.isArray(payload.equippedSkills[key])?payload.equippedSkills[key].filter(x=>typeof x==='string').map(id=>{const normalizedId=repairSkillId(id);if(normalizedId!==id)migratedSkillIds=true;return normalizedId;}):[];});
   if(migratedSkillIds&&!payload.saveMeta.migrations.includes('fixed_skill_ids_v1')){payload.saveMeta.migrations.push('fixed_skill_ids_v1');report.push('旧技IDを固定skillIdへ移行');}
@@ -228,7 +587,14 @@ function repairSave(payload,report=[]){
   payload.mapDex=Array.isArray(payload.mapDex)?[...new Set(payload.mapDex.filter(id=>typeof id==='string'&&(!knownMapIds.size||knownMapIds.has(id))))]:[];
   payload.expeditions=isSaveObject(payload.expeditions)?payload.expeditions:defaults.expeditions;payload.expeditions.completedCount=nonNegativeInteger(payload.expeditions.completedCount);
   const rawExpeditions=Array.isArray(payload.expeditions.active)?payload.expeditions.active:[];
-  payload.expeditions.active=rawExpeditions.filter(entry=>{const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];const valid=isSaveObject(entry)&&typeof entry.id==='string'&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;if(!valid){payload.quarantine.invalidExpeditions.push(entry);report.push('参照切れの遠征データを隔離');return false;}entry.memberUids=members;entry.requiredWins={short:1,medium:3,long:5}[entry.distanceId];entry.progress=Math.min(entry.requiredWins,nonNegativeInteger(entry.progress));entry.status=entry.status==='complete'?'complete':'active';return true;});
+  payload.expeditions.active=rawExpeditions.flatMap(entry=>{
+    const members=Array.isArray(entry?.memberUids)?[...new Set(entry.memberUids)].filter(value=>seenUids.has(value)):[];
+    const valid=isSaveObject(entry)&&typeof entry.id==='string'&&/^[A-Za-z0-9_:-]+$/.test(entry.id)&&(!knownMapIds.size||knownMapIds.has(entry.mapId))&&validDistances.has(entry.distanceId)&&members.length>=1&&members.length<=3;
+    const repaired=valid?validateExpeditionEntry(entry):null;
+    if(!repaired){quarantineExpeditionEntry(payload,entry,report);return [];}
+    repaired.memberUids=members;
+    return [repaired];
+  });
   payload.contractor=isSaveObject(payload.contractor)?payload.contractor:contractorSaveDefaults();
   payload.contractor.systemVersion=Math.max(1,nonNegativeInteger(payload.contractor.systemVersion,1));
   payload.contractor.exp=Math.min(CONTRACTOR_SAVE_EXP_CAP,nonNegativeInteger(payload.contractor.exp));
@@ -259,14 +625,151 @@ function repairSave(payload,report=[]){
   const ownedTutorialIds=new Set(payload.instances.map(entry=>entry.id));
   if(ownedTutorialIds.has('freigal')&&ownedTutorialIds.has('aquaron'))payload.progress.tutorial.starterContractsGranted=true;
   if(ownedTutorialIds.has('elna_beginner'))payload.progress.tutorial.elnaContractGranted=true;
+  payload.prologuePart2=normalizeProloguePart2(payload.prologuePart2);
+  payload.authority=normalizeAuthoritySave(payload.authority,payload);
   payload.progress.missions=isSaveObject(payload.progress.missions)?payload.progress.missions:defaults.progress.missions;
   return payload;
 }
 function parseAndPrepareSave(raw,report=[]){const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))report.push('整合性ハッシュの不一致を検出');return repairSave(migrateSave(parsed,report),report);}
+function readSoulReplacementStorage(key){
+  try{return {ok:true,raw:localStorage.getItem(typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(key):key)};}
+  catch(_error){return {ok:false,raw:null};}
+}
+function parseSoulReplacementArchive(raw){
+  if(raw===null)return {version:1,records:[]};
+  const archive=JSON.parse(raw);
+  if(archive?.version!==1||!Array.isArray(archive.records))throw new Error('退避記録を確認できません。');
+  return archive;
+}
+function persistSoulReplacementArchive(archive){
+  archive.records=archive.records.slice(-3);
+  const key=typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SOUL_ARCHIVE_STORAGE_KEY):SOUL_ARCHIVE_STORAGE_KEY;
+  for(;;){
+    const raw=JSON.stringify(archive);
+    try{localStorage.setItem(key,raw);}catch(_error){}
+    const stored=readSoulReplacementStorage(SOUL_ARCHIVE_STORAGE_KEY);
+    if(stored.ok&&stored.raw===raw)return true;
+    if(!archive.records.length)return false;
+    archive.records.shift();
+  }
+}
+function readSoulReplacementBundle(){
+  const primary=readSoulReplacementStorage(SAVE_KEY),recovery=readSoulReplacementStorage(SOUL_RECOVERY_STORAGE_KEY),archive=readSoulReplacementStorage(SOUL_ARCHIVE_STORAGE_KEY);
+  return {ok:primary.ok&&recovery.ok&&archive.ok,primary:primary.raw,recovery:recovery.raw,archive:archive.raw};
+}
+function notifySoulReplacementBlocked(){
+  soulContractReplacementBlocked=true;
+  if(!saveRecoveryReport.includes(SOUL_REPLACEMENT_NOTICE))saveRecoveryReport.push(SOUL_REPLACEMENT_NOTICE);
+  saveTransactionNotice(SOUL_REPLACEMENT_NOTICE);refreshReplacementRecoveryStatus();
+}
+function withSoulReplacementLock(action,unsupportedNotice=true){
+  if(typeof navigator==='undefined')return action();
+  if(!navigator.locks||typeof navigator.locks.request!=='function'){
+    if(unsupportedNotice)saveTransactionNotice(SOUL_REPLACEMENT_UNSUPPORTED);
+    return false;
+  }
+  const identity=saveTransactionIdentity(),key=typeof MonsterProfiles!=='undefined'?MonsterProfiles.key(SAVE_KEY):SAVE_KEY;
+  return navigator.locks.request(`monster-rpg:character-gacha:${key}`,{mode:'exclusive'},()=>{
+    if(identity!==saveTransactionIdentity())return false;
+    return action();
+  }).catch(()=>{if(unsupportedNotice)notifySoulReplacementBlocked();return false;});
+}
+function resolveSoulReplacementPending(){
+  const state=readSoulReplacementBundle();if(!state.ok)return false;
+  let archive;try{archive=parseSoulReplacementArchive(state.archive);}catch(_error){return false;}
+  const pending=archive.pending;
+  if(pending){
+    const match=side=>Object.prototype.hasOwnProperty.call(pending,`${side}Primary`)&&
+      Object.prototype.hasOwnProperty.call(pending,`${side}Recovery`)&&
+      state.primary===pending[`${side}Primary`]&&state.recovery===pending[`${side}Recovery`];
+    if(!match('before')&&!match('after'))return false;
+    delete archive.pending;
+    if(!persistSoulReplacementArchive(archive))return false;
+  }
+  soulContractReplacementBlocked=false;refreshReplacementRecoveryStatus();return true;
+}
+function resumeSoulContractReplacement(){
+  if(!soulContractReplacementBlocked||primaryReadFailed||protectedPrimaryRaw!==null)return false;
+  return withSoulReplacementLock(()=>{
+    const state=readSoulReplacementBundle();
+    if(!state.ok||JSON.stringify(state)!==soulContractReplacementExported){
+      soulContractReplacementExported=null;refreshReplacementRecoveryStatus();
+      saveTransactionNotice('先に記録一式を書き出してください。記録が変わった場合は、もう一度書き出してください。');return false;
+    }
+    let current=null,valid=state.primary===null;
+    try{if(state.primary!==null){current=JSON.parse(state.primary);parseAndPrepareSave(state.primary,[]);valid=isSaveObject(current)&&!(current.schemaVersion>SAVE_SCHEMA_VERSION);}}catch(_error){}
+    if(!valid){
+      saveTransactionNotice('現在の主セーブを確認できません。記録を保管してセーブの復旧を行ってください。');return false;
+    }
+    if(!confirm('書き出した記録を保管しましたか？ 現在の主セーブを基準として再開します。'))return false;
+    // Recheck after the dialog: another tab may have changed the storage.
+    if(JSON.stringify(readSoulReplacementBundle())!==soulContractReplacementExported)return false;
+    let archive;try{archive=parseSoulReplacementArchive(state.archive);}catch(_error){archive={version:1,records:[]};}
+    const next=current?.soulContractAppliedId?JSON.stringify({version:1,id:current.soulContractAppliedId,
+      status:'baseline',before:current,after:current,previous:null}):null;
+    archive.pending={beforePrimary:state.primary,afterPrimary:state.primary,beforeRecovery:state.recovery,afterRecovery:next};
+    if(!persistSoulReplacementArchive(archive))return false;
+    if(!writeCharacterGachaRecovery(next)){writeCharacterGachaRecovery(state.recovery);return false;}
+    delete archive.pending;
+    if(!persistSoulReplacementArchive(archive))return false;
+    soulContractReplacementBlocked=false;soulContractReplacementExported=null;
+    refreshReplacementRecoveryStatus();location.reload();return true;
+  });
+}
 function loadSave(){
-  const raw=safeStorageGet(SAVE_KEY);if(!raw)return initSave();
-  try{const parsed=JSON.parse(raw);if(parsed?.saveMeta?.integrityHash&&parsed.saveMeta.integrityHash!==saveHash(parsed))saveRecoveryReport.push('整合性ハッシュの不一致を検出');const prepared=repairSave(migrateSave(parsed,saveRecoveryReport),saveRecoveryReport);if(!safeStorageGet(SAVE_BACKUP_KEY))safeStorageSet(SAVE_BACKUP_KEY,raw);return prepared;}
-  catch(error){safeStorageSet(SAVE_CORRUPT_KEY,raw);const backup=safeStorageGet(SAVE_BACKUP_KEY);if(backup&&typeof confirm==='function'&&confirm('セーブデータが破損しています。直前のバックアップから復旧しますか？')){try{saveRecoveryReport.push('破損データをバックアップから復旧');return parseAndPrepareSave(backup,saveRecoveryReport);}catch(_backupError){}}saveRecoveryReport.push(`破損データを隔離して初期化: ${error.message}`);if(typeof alert==='function')alert('破損したセーブを隔離し、新規データで起動します。メニューの「セーブ管理」から破損内容をコピーできます。');return initSave();}
+  protectedPrimaryRaw=null;
+  rejectedPrimaryRaw=null;
+  primaryReadFailed=false;
+  soulContractReplacementBlocked=false;
+  soulContractReplacementExported=null;
+  const archiveState=readSoulReplacementStorage(SOUL_ARCHIVE_STORAGE_KEY);
+  let archive=null,archiveInvalid=!archiveState.ok;
+  try{archive=parseSoulReplacementArchive(archiveState.raw);}catch(_error){archiveInvalid=true;}
+  lastSaveError=null;
+  const raw=safeStorageGet(SAVE_KEY);
+  if(lastSaveError){
+    primaryReadFailed=true;
+    const message='セーブを読み取れなかったため保存を停止しました。再読み込みしてください。セーブ管理から元データを書き出せます。';
+    saveRecoveryReport.push(message);
+    if(typeof alert==='function')alert(message);
+    return initSave();
+  }
+  if(archiveInvalid||archive?.pending){
+    soulContractReplacementBlocked=true;
+    if(!archiveInvalid){
+      const resolved=withSoulReplacementLock(resolveSoulReplacementPending,false);
+      if(resolved?.then)resolved.then(ok=>{if(!ok)notifySoulReplacementBlocked();});
+      else if(!resolved)notifySoulReplacementBlocked();
+    }else notifySoulReplacementBlocked();
+  }
+  if(raw===null)return initSave();
+  try{
+    const parsed=JSON.parse(raw);
+    if(Number.isInteger(parsed?.schemaVersion)&&parsed.schemaVersion>SAVE_SCHEMA_VERSION){
+      protectedPrimaryRaw=raw;
+      const message='このセーブは新しいバージョン用です。この枠の保存を停止しました。セーブ管理から元データを書き出せます。';
+      saveRecoveryReport.push(message);
+      if(typeof alert==='function')alert(message);
+      return initSave();
+    }
+    const prepared=parseAndPrepareSave(raw,saveRecoveryReport);
+    if(!safeStorageGet(SAVE_BACKUP_KEY))safeStorageSet(SAVE_BACKUP_KEY,raw);
+    return prepared;
+  }catch(error){
+    rejectedPrimaryRaw=raw;
+    if(!safeStorageSet(SAVE_CORRUPT_KEY,raw))protectedPrimaryRaw=raw;
+    const backup=safeStorageGet(SAVE_BACKUP_KEY);
+    if(backup&&typeof confirm==='function'&&confirm('セーブデータが破損しています。直前のバックアップから復旧しますか？')){
+      try{
+        const restored=parseAndPrepareSave(backup,saveRecoveryReport);
+        saveRecoveryReport.push('破損データをバックアップから復旧');
+        return restored;
+      }catch(backupError){saveRecoveryReport.push(backupError.message);}
+    }
+    saveRecoveryReport.push(error.message);
+    if(typeof alert==='function')alert(protectedPrimaryRaw!==null?'破損データを退避できません。元データを保護するため保存を停止しました。':'破損したセーブを隔離して新規データで起動します。');
+    return initSave();
+  }
 }
 let save = loadSave();
 globalThis.GameDiagnostics?.registerSaveProvider?.(() => save);
@@ -384,7 +887,118 @@ function registerMapDex(mapId){
   return true;
 }
 
-function saveGame() {
+// Transaction snapshots are memory-only. Never overwrite another tab/profile on rollback.
+function saveTransactionIdentity(){
+  return typeof MonsterProfiles!=='undefined' ? `${MonsterProfiles.key(SAVE_KEY)}:${MonsterProfiles.current()?.id||''}` : SAVE_KEY;
+}
+function captureSaveTransaction(){
+  return {raw:JSON.stringify(save),identity:saveTransactionIdentity(),report:JSON.stringify(saveRecoveryReport),
+    activeUid:typeof activeInstance!=='undefined'?activeInstance?.uid:null,
+    evolutions:typeof pendingEvolutions!=='undefined'?JSON.stringify(pendingEvolutions):null};
+}
+function rollbackSaveTransaction(snapshot){
+  if(snapshot.identity!==saveTransactionIdentity())return false;
+  save=JSON.parse(snapshot.raw);
+  saveRecoveryReport=JSON.parse(snapshot.report);
+  if(typeof activeInstance!=='undefined'&&snapshot.activeUid)activeInstance=save.instances.find(x=>x.uid===snapshot.activeUid)||(activeInstance?.guest?activeInstance:null);
+  if(typeof partyBattle!=='undefined')partyBattle.forEach(entry=>{if(entry.inst&&!entry.guest){const restored=save.instances.find(x=>x.uid===entry.inst.uid);if(restored)entry.inst=restored;}});
+  if(typeof pendingEvolutions!=='undefined'&&snapshot.evolutions)pendingEvolutions=JSON.parse(snapshot.evolutions);
+  for(const refresh of [typeof refreshContractorRankUi==='function'?refreshContractorRankUi:null,typeof updateItems==='function'?updateItems:null]){
+    try{refresh?.();}catch(error){console.error('Rollback display refresh failed:',error);}
+  }
+  return true;
+}
+function saveTransactionNotice(message){
+  try{if(typeof showUiNotice==='function')showUiNotice(message,'error');else alert(message);}
+  catch(error){console.error('Save notice failed:',error);}
+}
+function showCommittedSaveResult(render){
+  try{render();}catch(error){saveTransactionNotice('結果は保存済みです。画面を開き直して所持品をご確認ください。');console.error('Committed result display failed:',error);}
+}
+function commitSaveMutation(mutate,{requireReadable=false}={}){
+  const snapshot=captureSaveTransaction();
+  try{mutate();if(!saveGame({requireReadable}))throw new Error('save_failed');return true;}
+  catch(error){rollbackSaveTransaction(snapshot);saveTransactionNotice('保存できませんでした。今回の消費や取得は確定していません。');console.error('Save transaction failed:',error);return false;}
+}
+const SAVE_REPLACEMENT_RECOVERY_KEY='mb_v95c_replacement_recovery_v1';
+let replacementRecoveryExportedRaw=null;
+function readReplacementRecovery(){
+  lastSaveError=null;const raw=safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY);
+  if(lastSaveError)throw new Error('復旧記録を読み取れません。');
+  if(!raw)return {raw:null,record:null};
+  let record;try{record=JSON.parse(raw);}catch(_error){throw new Error('復旧記録が破損しています。書き出して保管してください。');}
+  if(record.version!==1||record.identity!==saveTransactionIdentity()||typeof record.before!=='string'||typeof record.after!=='string'||!(record.backupBefore===null||typeof record.backupBefore==='string')||!['pending','completed','acknowledged'].includes(record.status))throw new Error('復旧記録を確認できません。書き出して保管してください。');
+  return {raw,record};
+}
+function stageReplacementRecovery(before,after){
+  const existing=readReplacementRecovery();
+  if(existing.record?.status==='pending')throw new Error('未完了の復旧記録があります。セーブ管理から書き出して確認してください。');
+  lastSaveError=null;const backupBefore=safeStorageGet(SAVE_BACKUP_KEY);if(lastSaveError)throw new Error('現在のバックアップを読み取れません。');
+  const raw=JSON.stringify({version:1,identity:saveTransactionIdentity(),status:'pending',createdAt:new Date().toISOString(),before:before||'',backupBefore,after});
+  if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,raw)||safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)throw new Error('復旧用データを保管できないため、置換を中止しました。');
+  refreshReplacementRecoveryStatus();return raw;
+}
+function completeReplacementRecovery(raw){
+  if(safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)return;
+  const record=JSON.parse(raw);record.status='completed';
+  if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,JSON.stringify(record)))saveTransactionNotice('データの置換は完了しました。復旧記録は未完了表示のまま保管されています。');
+  refreshReplacementRecoveryStatus();
+}
+function replacementRecoveryStatusText(){
+  if(soulContractReplacementBlocked)return SOUL_REPLACEMENT_NOTICE;
+  try{const {record}=readReplacementRecovery();return !record?'読込・復旧用の保管記録はありません。':record.status==='pending'?'途中で止まった読込があります。セーブ管理で書き出してください。':'読込・復旧記録があります。書き出すとセーブ読込で使えます。';}
+  catch(_error){return '読込・復旧記録を確認できません。記録全体を書き出してください。';}
+}
+function refreshReplacementRecoveryStatus(){
+  try{const el=document.getElementById('replacementRecoveryStatus');if(el)el.textContent=replacementRecoveryStatusText();const button=document.getElementById('resumeSoulContractReplacement');if(button){button.hidden=!soulContractReplacementBlocked;button.disabled=!soulContractReplacementExported;}}catch(error){console.error(error);}
+}
+function exportReplacementRecovery(kind='all'){
+  try{
+    const raw=safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY);
+    if(kind==='all'){
+      const state=readSoulReplacementBundle();
+      if(!state.ok)throw new Error('記録を読み取れません。再読み込みしてから書き出してください。');
+      if(state.archive!==null||soulContractReplacementBlocked){
+        let archive=null,record=null;
+        try{archive=JSON.parse(state.archive);}catch(_error){}
+        try{record=raw?JSON.parse(raw):null;}catch(_error){}
+        downloadTextFile('monster-battle-replacement-recovery.json',JSON.stringify({...(record||{}),
+          soulContractArchive:archive,soulContractArchiveRaw:state.archive,
+          currentPrimaryRaw:state.primary,currentRecoveryRaw:state.recovery,replacementRecoveryRaw:raw}));
+        soulContractReplacementExported=JSON.stringify(state);
+        replacementRecoveryExportedRaw=raw;refreshReplacementRecoveryStatus();return true;
+      }
+      if(raw){downloadTextFile('monster-battle-replacement-recovery.json',raw);replacementRecoveryExportedRaw=raw;return true;}
+    }
+    if(!raw){saveTransactionNotice('保管された読込・復旧記録はありません。');return false;}
+    if(!['before','after','backupBefore'].includes(kind))return false;
+    const {record}=readReplacementRecovery(),candidate=record[kind];
+    if(!candidate){saveTransactionNotice('この候補のセーブデータはありません。');return false;}
+    downloadTextFile(`monster-battle-recovery-${kind}.json`,candidate);return true;
+  }catch(error){saveTransactionNotice(error.message);return false;}
+}
+function acknowledgeReplacementRecovery(){
+  try{
+    const {raw,record}=readReplacementRecovery();if(!record)return;
+    if(replacementRecoveryExportedRaw!==raw){saveTransactionNotice('先に「読込・復旧データを書き出す」で記録を保管してください。');return;}
+    if(!confirm('書き出したファイルを保管しましたか？ 現在のセーブは変更せず、次の読込・復旧を許可します。次回の読込・復旧時にこの記録は置き換わります。'))return;
+    if(safeStorageGet(SAVE_REPLACEMENT_RECOVERY_KEY)!==raw)throw new Error('記録が更新されました。もう一度確認してください。');
+    record.status='acknowledged';if(!safeStorageSet(SAVE_REPLACEMENT_RECOVERY_KEY,JSON.stringify(record)))throw new Error('確認状態を保存できませんでした。');
+    refreshReplacementRecoveryStatus();
+  }catch(error){saveTransactionNotice(error.message);}
+}
+// Persist the delivered marker and inbox IDs together before displaying new gifts.
+function saveStartupState(){
+  if(typeof UpdateReleases==='undefined')return saveGame();
+  const previous=save.updateRewards;
+  save.updateRewards=UpdateReleases.advance(previous);
+  if(saveGame())return true;
+  save.updateRewards=previous;
+  return false;
+}
+function saveGame({requireBackup=false,requireReadable=false}={}) {
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null)return false;
+  if(typeof MonsterProfiles!=='undefined'&&!MonsterProfiles.beforeSave())return false;
   ensureContractScrollItem();
   syncItemDexFromInventory();
   save.alchemyResonance = normalizeAlchemyResonance(save.alchemyResonance);
@@ -393,14 +1007,22 @@ function saveGame() {
   save.saveMeta.lastSavedAt = new Date().toISOString();
   save.saveMeta.integrityHash = saveHash(save);
   const raw=JSON.stringify(save);
+  lastSaveError=null;
   const previous=safeStorageGet(SAVE_KEY);
-  if(previous)safeStorageSet(SAVE_BACKUP_KEY,previous);
+  if(lastSaveError){saveTransactionNotice('現在のセーブを読み取れないため中止しました。');return false;}
+  let replacementRecord=null;
+  if(requireBackup){try{replacementRecord=stageReplacementRecovery(previous,raw);}catch(error){saveTransactionNotice(error.message);return false;}}
+  if(previous&&previous!==rejectedPrimaryRaw){const backedUp=safeStorageSet(SAVE_BACKUP_KEY,previous);if(requireBackup&&!backedUp){saveTransactionNotice('バックアップを保存できないため、データの置換を中止しました。');return false;}}
   if(!safeStorageSet(SAVE_KEY,raw)){
     const message='セーブの保存に失敗しました。端末の空き容量やブラウザ設定を確認し、セーブ管理からデータを書き出してください。';
-    if(typeof showUiNotice==='function')showUiNotice(message,'error');else if(typeof alert==='function')alert(message);
+    saveTransactionNotice(message);
     return false;
   }
+  rejectedPrimaryRaw=null;
+  if(replacementRecord)completeReplacementRecovery(replacementRecord);
   if(!previous)safeStorageSet(SAVE_BACKUP_KEY,raw);
+  if(typeof MonsterProfiles!=='undefined')MonsterProfiles.afterSave(raw);
+  if(typeof gameAudioPlay==='function')gameAudioPlay('save');
   return true;
 }
 
@@ -408,18 +1030,46 @@ function downloadTextFile(filename,text){
   const blob=new Blob([text],{type:'application/json'});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');
   anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function exportSaveData(){saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
+function exportSaveData(){
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false){
+    const raw=protectedPrimaryRaw??safeStorageGet(SAVE_KEY);
+    if(raw!==null)downloadTextFile('monster-battle-original-save.json',raw);
+    else if(primaryReadFailed)saveTransactionNotice('元データを読み取れません。再読み込みしてから、セーブ管理で書き出してください。');
+    return;
+  }
+  /* save-result-allow: export-current-save */saveGame();const date=new Date().toISOString().slice(0,10);downloadTextFile(`monster-battle-save-${date}.json`,JSON.stringify(save,null,2));}
 function openSaveImport(){document.getElementById('saveImportInput')?.click();}
+function replaceSaveExplicitly(replacement,report){
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null)return false;
+  const commit=()=>{
+    const snapshot=captureSaveTransaction();
+    save=replacement;saveRecoveryReport=report;
+    let saved=false;
+    try{saved=saveGame({requireBackup:true});}
+    catch(error){lastSaveError=error;}
+    // Storage can have committed before a profile/UI notification throws.
+    if(!saved){
+      lastSaveError=null;
+      saved=safeStorageGet(SAVE_KEY)===JSON.stringify(save)&&!lastSaveError;
+    }
+    if(!saved)rollbackSaveTransaction(snapshot);
+    return saved;
+  };
+  return typeof reconcileCharacterGachaRecoveryAfterReplacement==='function'
+    ?reconcileCharacterGachaRecoveryAfterReplacement(replacement,commit):commit();
+}
 async function importSaveData(input){
   const file=input?.files?.[0];if(!file)return;
+  const identity=saveTransactionIdentity();
+  let persisted=false;
   try{
     const raw=await file.text();const report=[];const imported=parseAndPrepareSave(raw,report);
+    if(identity!==saveTransactionIdentity())throw new Error('読み込み中にアカウントが変わったため中止しました。');
     if(!confirm(`セーブデータを読み込みますか？\n個体 ${imported.instances.length}体／コイン ${imported.coins}\n現在のデータはバックアップされます。`))return;
-    const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
-    save=imported;saveRecoveryReport=report.concat('ファイルからセーブデータを読込み');
-    if(!saveGame())throw lastSaveError||new Error('保存できませんでした。');
-    location.reload();
-  }catch(error){alert(`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
+    if(identity!==saveTransactionIdentity())throw new Error('アカウントが変わったため中止しました。');
+    if(!await replaceSaveExplicitly(imported,report.concat('ファイルからセーブデータを読込み')))return;
+    persisted=true;location.reload();
+  }catch(error){saveTransactionNotice(persisted?'読込結果は保存済みです。画面を再読み込みしてください。':`セーブデータを読み込めませんでした。\n${error.message}`);}finally{input.value='';}
 }
 async function copySaveText(kind='current'){
   const raw=kind==='corrupt'?safeStorageGet(SAVE_CORRUPT_KEY):(safeStorageGet(SAVE_KEY)||JSON.stringify(save));
@@ -427,9 +1077,15 @@ async function copySaveText(kind='current'){
   try{await navigator.clipboard.writeText(raw);alert('セーブデータをクリップボードへコピーしました。');}catch(_error){prompt('下の内容を長押ししてコピーしてください。',raw);}
 }
 function restoreLastKnownGood(){
-  const backup=safeStorageGet(SAVE_BACKUP_KEY);if(!backup){alert('復旧できるバックアップがありません。');return;}
-  try{const report=[];const restored=parseAndPrepareSave(backup,report);if(!confirm('直前の正常なバックアップへ戻しますか？'))return;save=restored;saveRecoveryReport=report.concat('lastKnownGoodから手動復旧');saveGame();location.reload();}
-  catch(error){alert(`バックアップを復旧できませんでした。\n${error.message}`);}
+  const identity=saveTransactionIdentity(),backup=safeStorageGet(SAVE_BACKUP_KEY);if(!backup){alert('復旧できるバックアップがありません。');return;}
+  try{
+    const report=[];const restored=parseAndPrepareSave(backup,report);
+    if(!confirm('直前の正常なバックアップへ戻しますか？'))return;
+    if(identity!==saveTransactionIdentity())throw new Error('アカウントが変わったため中止しました。');
+    const finish=saved=>{if(saved){try{location.reload();}catch(_error){saveTransactionNotice('復旧結果は保存済みです。画面を再読み込みしてください。');}}return saved;};
+    const result=replaceSaveExplicitly(restored,report.concat('lastKnownGoodから手動復旧'));
+    return result?.then?result.then(finish):finish(result);
+  }catch(error){saveTransactionNotice(`バックアップを復旧できませんでした。\n${error.message}`);return false;}
 }
 function showSaveRecoveryReport(){alert(saveRecoveryReport.length?saveRecoveryReport.join('\n'):'修復・移行の記録はありません。');}
 
@@ -450,11 +1106,28 @@ function insExp(id) {
   return ins?.exp || save.exp?.[id] || 0;
 }
 function caughtHas(id) { return save.instances.some(x => x.id === id) || save.caught.includes(id); }
+// One permanent timing offset per monster, shared by every normal evolution stage.
+// Old saves use UID only (never form ID), so reload/import cannot reroll the result.
+function monsterEvolutionOffset(ins){
+  if(by(ins?.id)?.entityKind !== 'monster')return 0;
+  if(Number.isInteger(ins.evolutionOffset) && ins.evolutionOffset>=-2 && ins.evolutionOffset<=2)return ins.evolutionOffset;
+  let hash=2166136261;
+  for(const ch of String(ins.uid||''))hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
+  return hash%5-2;
+}
+function instanceEvolutionRoutes(ins){
+  const mon=by(ins?.id);if(!mon)return [];
+  const routes=mon.evolutions || (mon.evolution?[{to:mon.evolution,level:mon.evolutionLevel}]:[]);
+  return routes.filter(route=>by(route.to)).map(route=>({
+    to:route.to,level:clampLevel(route.level+monsterEvolutionOffset(ins))
+  }));
+}
 function addInstance(id, level=1, exp=0, extraFields=null) {
   const firstRegistration=!save.caught.includes(id);
   const normalizedLevel=clampLevel(level);
   const ins = {uid:uid(), id, level:normalizedLevel, exp:isMaxLevel(normalizedLevel)?0:Math.max(0,Math.floor(Number(exp)||0)), locked:false};
   if(extraFields && typeof extraFields === 'object') Object.assign(ins, extraFields);
+  if(by(id)?.entityKind==='monster' && !Number.isInteger(ins.evolutionOffset))ins.evolutionOffset=Math.floor(Math.random()*5)-2;
   if(firstRegistration && isCharacterSaveId(id))ins.locked=true;
   normalizeInstanceSaveFields(ins);
   save.instances.push(ins);
@@ -468,17 +1141,38 @@ function addInstance(id, level=1, exp=0, extraFields=null) {
   }
   return ins;
 }
+// Resolve display metadata from trusted definitions, including evolved alchemy forms.
+function alchemyArchetypeFor(ins){
+  const pending=[ins?.id],visited=new Set();
+  while(pending.length){
+    const id=pending.shift();
+    if(!id || visited.has(id))continue;
+    visited.add(id);
+    const config=ALCHEMY_MONSTER_CONFIGS[id];
+    if(config)return config.archetypes?.find(type=>type.id===ins?.alchemy?.archetypeId) || null;
+    M.forEach(mon=>{
+      if(mon.evolution===id || (mon.evolutions||[]).some(route=>route.to===id))pending.push(mon.id);
+    });
+  }
+  return null;
+}
 function normalizeInstanceSaveFields(ins){
   if(!ins || typeof ins !== 'object') return;
   if(typeof ins.locked !== 'boolean') ins.locked = false;
+  if(by(ins.id)?.entityKind==='monster')ins.evolutionOffset=monsterEvolutionOffset(ins);
   const config = ALCHEMY_MONSTER_CONFIGS[ins.id];
-  if(!config) return;
+  if(!config){
+    if(ins.alchemy && typeof ins.alchemy==='object' && !Array.isArray(ins.alchemy)){
+      ins.alchemy.archetypeLabel=alchemyArchetypeFor(ins)?.label || '不明な錬成タイプ';
+    }
+    return;
+  }
   if(!ins.alchemy || typeof ins.alchemy !== 'object' || Array.isArray(ins.alchemy)) ins.alchemy = {};
   const fallback = config.archetypes?.[0];
   const archetype = config.archetypes?.find(type => type.id === ins.alchemy.archetypeId) || fallback;
   if(archetype){
     if(!ins.alchemy.archetypeId) ins.alchemy.archetypeId = archetype.id;
-    if(!ins.alchemy.archetypeLabel) ins.alchemy.archetypeLabel = archetype.label;
+    ins.alchemy.archetypeLabel = alchemyArchetypeFor(ins)?.label || '不明な錬成タイプ';
     if(!ins.alchemy.statModifiers || typeof ins.alchemy.statModifiers !== 'object' || Array.isArray(ins.alchemy.statModifiers)){
       ins.alchemy.statModifiers = {...archetype.modifiers};
     }else{
@@ -533,9 +1227,10 @@ function ensureContractScrollItem(){
   if(save.items.doom_fragment==null) save.items.doom_fragment=0;
 }
 function resetSave() {
+  if(primaryReadFailed||soulContractReplacementBlocked||protectedPrimaryRaw!==null||typeof MonsterProfiles!=='undefined'&&MonsterProfiles.available?.()===false)return;
   if (confirm('セーブデータを削除しますか？\n序章の最初から再スタートします。')) {
-    const current=safeStorageGet(SAVE_KEY);if(current)safeStorageSet(SAVE_BACKUP_KEY,current);
-    safeStorageRemove(SAVE_KEY);
-    location.reload();
+    const finish=saved=>{if(saved)location.reload();return saved;};
+    const result=replaceSaveExplicitly(initSave(),[]);
+    return result?.then?result.then(finish):finish(result);
   }
 }

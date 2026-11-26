@@ -12,7 +12,8 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # Request 08: allow ~2x the measured slow-preparation + complete-suite budget (~19m).
+    timeout-minutes: 40
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -25,8 +26,279 @@ jobs:
           node-version: 24
           package-manager-cache: false
 
-      - name: Validate data and image budgets
+      - name: Install isolated browser for save-failure and layout checks
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+
+      - name: Validate data, image budgets and save-failure UI
         run: npm run check
 
       - name: Compare world-map reward rules with the pre-map baseline
         run: npm run check:world-map-economy
+
+      - name: Upload save-failure UI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: save-failure-ui-evidence
+          path: artifacts/save-failure-ui
+
+      - name: Upload skill effect portrait evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-effects-portrait
+          path: artifacts/skill-effects
+
+      - name: Verify mobile skill-card layout and interactions
+        run: |
+          node scripts/test-skill-dex-portrait-browser.mjs
+          node scripts/test-skill-card-layout.mjs
+
+      - name: Verify balance changes and gameplay smoke
+        run: |
+          node scripts/test-morglum-browser.mjs
+          node scripts/test-seraphic-leaf-browser.mjs
+          node scripts/test-crash-rush-browser.mjs
+          node scripts/test-individual-evolution-browser.mjs
+          node scripts/test-evolution-skill-cards-browser.mjs
+          node scripts/test-evolution-native-card-migration-browser.mjs
+          node scripts/test-simultaneous-ko-browser.mjs
+          node scripts/test-single-hp-clamp-browser.mjs
+          node scripts/test-powered-modifiers-browser.mjs
+          node scripts/test-skill-dex-browser.mjs
+          node scripts/test-status-descriptions-browser.mjs
+          node scripts/test-normal-healing-browser.mjs
+
+      - name: Upload skill-card layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-card-layout
+          path: artifacts/skill-card-layout
+
+  monochrome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify nonbattle monochrome layout and isolation
+        run: |
+          node scripts/test-monochrome-browser.mjs
+          HOME_WATER_EVIDENCE=artifacts/nonbattle-theme/water-home node scripts/test-home-water-browser.mjs
+      - name: Upload nonbattle monochrome evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nonbattle-monochrome-evidence
+          path: artifacts/nonbattle-theme
+
+      - name: Upload nonbattle verification manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nonbattle-monochrome-manifest
+          path: artifacts/nonbattle-theme/manifest.json
+
+  soul-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify Soul Contract runtime and interruption safety
+        run: |
+          node scripts/test-soul-contract-browser.mjs
+          GACHA_EVIDENCE=artifacts/soul-contract/adopted node scripts/test-gacha-adopted-browser.mjs
+      - name: Upload Soul Contract browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: soul-contract-evidence
+          path: artifacts/soul-contract
+      - name: Upload Soul Contract manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: soul-contract-manifest
+          path: artifacts/soul-contract/manifest.json
+
+  save-transactions:
+    runs-on: ubuntu-latest
+    # Request 08: preparation alone exceeded 597s; retain room for all save checks.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify save failure boundaries in isolated profiles
+        run: |
+          node scripts/test-save-transactions-browser.mjs
+          node scripts/test-hunt-victory-save-browser.mjs
+          node scripts/test-evolution-battle-item-save-browser.mjs
+      - name: Verify integrated published save flows with isolated profiles
+        if: github.event_name == 'pull_request' && github.head_ref == 'verify/integrated-public-20261018'
+        env:
+          GAME_TEST_URL: https://pactforge-studio.github.io/monster-rpg-ver8/
+        run: |
+          node scripts/test-save-transactions-browser.mjs
+          node scripts/test-hunt-victory-save-browser.mjs
+          node scripts/test-map-story-browser.mjs
+      - name: Upload save transaction evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: save-transaction-evidence
+          path: |
+            artifacts/evolution-battle-item-save
+            artifacts/save-transactions
+            artifacts/hunt-victory-save
+
+  three-motion-compression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify adopted motion playback and fallback
+        run: node scripts/test-three-motion-compression-browser.mjs
+      # One-release readiness regression against already published, hash-verified assets.
+      - name: Verify published startup readiness without global network idle
+        if: github.event_name == 'pull_request' && github.head_ref == 'test/motion-public-ready'
+        env:
+          GAME_TEST_URL: https://pactforge-studio.github.io/monster-rpg-ver8/
+          MOTION_QA_OUT: artifacts/three-motion-public-proof
+        run: node scripts/test-three-motion-compression-browser.mjs
+      - name: Upload published startup readiness proof
+        if: always() && github.event_name == 'pull_request' && github.head_ref == 'test/motion-public-ready'
+        uses: actions/upload-artifact@v4
+        with:
+          name: three-motion-public-proof
+          path: artifacts/three-motion-public-proof
+      - name: Upload three motion browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: three-motion-compression-evidence
+          path: artifacts/three-motion-compression
+
+  map-story:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify grassland story and responsive controls
+        run: node scripts/test-map-story-browser.mjs
+      - name: Upload grassland story evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grassland-story-evidence
+          path: artifacts/skill-card-layout/grassland-story
+
+  dom-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated DOM test tools
+        run: npm install --prefix "$RUNNER_TEMP/dom-deps" --no-save --package-lock=false jsdom@26.1.0 css-tree@3.1.0
+      - name: Verify battle and motion DOM regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export NODE_PATH="$RUNNER_TEMP/dom-deps/node_modules"
+          # Explicit allowlist: test-map-story-dom.mjs is outside request 07 (story hold).
+          tests=(
+            test-traits-integration.mjs
+            test-battle-idle-lifecycle-dom.mjs
+            test-battle-idle-media-dom.mjs
+            test-battle-idle-multi-dom.mjs
+            test-battle-idle-viewport-dom.mjs
+            test-battle-journey-dom.mjs
+            test-battle-stage-dom.mjs
+            test-battle-stage-multi-dom.mjs
+            test-battle-tutorial-dom.mjs
+            test-battle-ui-dom.mjs
+            test-battle-viewport-dom.mjs
+            test-gran-volmoog-review-dom.mjs
+            test-motion-asset-review-dom.mjs
+            test-motion-catalog-dom.mjs
+            test-motion-impact-dom.mjs
+            test-motion-map-review-dom.mjs
+            test-motion-operations-dom.mjs
+          )
+          for test in "${tests[@]}"; do
+            node "scripts/$test"
+            echo "PASS $test"
+          done
+
+  feedback-thanks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install isolated browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Verify personal thank-you gifts and feedback UI
+        env:
+          FEEDBACK_EVIDENCE: artifacts/feedback-thanks
+        run: npm run check:feedback
+      - name: Upload portrait evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feedback-thanks-evidence
+          path: artifacts/feedback-thanks

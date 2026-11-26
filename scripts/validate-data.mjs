@@ -46,7 +46,13 @@ function checkAsset(label, relativePath) {
 for (const file of fs.readdirSync(path.join(root, 'js')).filter(file => file.endsWith('.js'))) {
   const relativePath = `js/${file}`;
   try {
-    new vm.Script(read(relativePath), { filename: relativePath });
+    const source=read(relativePath);
+    new vm.Script(source, { filename: relativePath });
+    // IMG maps artwork keys; ITEM_IMG, MAPIMG and other registries have different contracts.
+    for (const match of source.matchAll(/(?<![\w$])IMG\s*\[[^\[\]]*\.\s*id\s*\]/g)) {
+      const line=source.slice(0,match.index).split('\n').length;
+      fail(`${relativePath}:${line} looks up unit artwork by id: ${match[0]}`);
+    }
   } catch (error) {
     fail(`${relativePath} has invalid JavaScript syntax: ${error.message}`);
   }
@@ -59,7 +65,8 @@ try {
   vm.runInContext(
     `${dataSource}\n;globalThis.__GAME_DATA__ = {
       IMG, MAPIMG, MAPS, M, FUSIONS, SHOP_ITEMS, ITEM_DEX_EXTRA, ITEM_IMG,
-      ALCHEMY_MATERIAL_DROPS, ALCHEMY_ALL_FAILURE_CANDIDATES, ALCHEMY_RECIPES
+      ALCHEMY_MATERIAL_DROPS, ALCHEMY_ALL_FAILURE_CANDIDATES, ALCHEMY_RECIPES,
+      SKILL110_CATALOG, SKILL110_MIGRATION_MAP
     };`,
     context,
     { filename: 'js/data.js' }
@@ -70,6 +77,21 @@ try {
 
 const data = context.__GAME_DATA__;
 if (data) {
+  checkUnique('110 skill IDs',data.SKILL110_CATALOG.map(skill=>skill.id));
+  checkUnique('110 skill names',data.SKILL110_CATALOG.map(skill=>skill.name));
+  if(data.SKILL110_CATALOG.length!==110) fail('Active skill catalog must contain exactly 110 entries');
+  const tierCounts=[5,10,20,25].map((max,index)=>data.SKILL110_CATALOG.filter(skill=>skill.cost<=max&&skill.cost>[0,5,10,20][index]).length);
+  if(JSON.stringify(tierCounts)!=='[60,30,16,4]') fail('Skill tier counts must be 60/30/16/4');
+  const skill110Ids=new Set(data.SKILL110_CATALOG.map(skill=>skill.id));
+  for(const [oldId,newId] of Object.entries(data.SKILL110_MIGRATION_MAP)) {
+    if(!skill110Ids.has(newId)) fail(`Legacy skill ${oldId} maps to missing skill ${newId}`);
+    if(data.SKILL110_CATALOG.find(skill=>skill.id===newId)?.cost===25) fail(`Legacy skill ${oldId} directly grants an ultimate`);
+  }
+  for(const skill of data.SKILL110_CATALOG) {
+    if(skill.cost>20&&skill.cost!==25)fail(`Invalid adopted skill cost ${skill.id}`);
+    if(skill.exclusiveMonsterId)fail(`Adopted skill ${skill.id} cannot have individual exclusivity`);
+    if((skill.cost===25)!==(skill.acquisition==='synthesis'))fail(`Incorrect acquisition ${skill.id}`);
+  }
   const monsterIds = data.M.map(monster => monster.id);
   const monsterIdSet = new Set(monsterIds);
   const monsterRecords = data.M.filter(monster => monster.entityKind === 'monster');
@@ -98,7 +120,7 @@ if (data) {
     if (monster.entityKind === 'monster' && !Number.isInteger(monster.dexNo ?? monster.no)) {
       fail(`Monster ${monster.id} requires an integer encyclopedia number`);
     }
-    if (!monster.imgKey || !data.IMG[monster.imgKey]) {
+    if (!monster.imgKey || !Object.hasOwn(data.IMG,monster.imgKey)) {
       fail(`Monster ${monster.id} has an unknown imgKey: ${monster.imgKey}`);
     } else {
       checkAsset(`Monster ${monster.id}`, data.IMG[monster.imgKey]);
@@ -164,6 +186,11 @@ if (data) {
   }
 
   const expectedCharacters = ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari'];
+  expectedCharacters.push(...['brigitte','tobia','roden','selene','safira','bordo','lize','regus','remnes','nico','mireille'].flatMap(family=>[2,3,4].map(stage=>`character_${family}_${stage}`)));
+  expectedCharacters.push(...[3,4,5].map(stage=>`character_vera_${stage}`));
+  const prologueCharacters=characterRecords.filter(unit=>(unit.chapter||'序章')==='序章');
+  const prologueNumbers=prologueCharacters.map(unit=>unit.prologueCharacterNo??unit.characterNo).sort((a,b)=>a-b);
+  if(JSON.stringify(prologueNumbers)!==JSON.stringify(Array.from({length:50},(_,i)=>i+1))) fail('Prologue character display slots must be unique and continuous C-001–050');
   const actualCharacterIds = characterRecords.map(character => character.id);
   if (actualCharacterIds.length !== expectedCharacters.length || expectedCharacters.some(id => !actualCharacterIds.includes(id))) {
     fail(`Character dex mismatch: ${actualCharacterIds.join(', ')}`);
@@ -212,7 +239,7 @@ if (data) {
   }
   for (const recipe of data.ALCHEMY_RECIPES) {
     for (const choice of recipe.materialChoices || []) {
-      for (const itemId of [choice.normal, choice.fine]) {
+      for (const itemId of (choice.fine === null ? [choice.normal] : [choice.normal, choice.fine])) {
         if (!itemIdSet.has(itemId)) fail(`Alchemy recipe ${recipe.recipeId} uses unknown item ${itemId}`);
       }
     }
@@ -253,7 +280,8 @@ if (data) {
   notes.push(`${itemRecords.length} items`);
   notes.push(`${data.FUSIONS.length} fusions`);
   notes.push(`${data.ALCHEMY_RECIPES.length} alchemy recipes`);
-  notes.push(`${skillDefinitions.size} fixed skills`);
+  notes.push(`${data.SKILL110_CATALOG.length} active skills (normal encyclopedia/equipment catalog)`);
+  notes.push(`${skillDefinitions.size} legacy fixed skill definitions referenced by entity move records (compatibility only)`);
 }
 
 if (errors.length) {

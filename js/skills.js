@@ -1,6 +1,47 @@
 const SKILL_CARD_INVENTORY_MIGRATION = 'equipped_skill_cards_v1';
+const EVOLUTION_NATIVE_CARDS_MIGRATION = 'evolution_native_cards_v1';
+// Frozen v1 scope, audited from all evolution routes and legal levels at f2c8e8f.
+// Only cards the former default-loadout reward could omit; never infer past owners.
+const EVOLUTION_NATIVE_CARD_TARGETS = Object.freeze({
+  freiwolf: Object.freeze(["skill_freiwolf_03"]),
+  highaquaron: Object.freeze(["skill_highaquaron_03"]),
+  shenhairon: Object.freeze(["skill_orca_abyss_02"]),
+  tienhairon: Object.freeze(["skill_tienhairon_03"]),
+  thornbeat: Object.freeze(["skill_thornbeat_03"]),
+  granbeat: Object.freeze(["skill_granbeat_03"]),
+  seralphia: Object.freeze(["skill_seralphia_03"]),
+  voltax: Object.freeze(["skill_voltax_03","skill_voltax_04"]),
+  nemesia: Object.freeze(["skill_nemesia_03"]),
+  nemesion: Object.freeze(["skill_nemesion_03"]),
+  elna_middle: Object.freeze(["skill_elna_middle_03"]),
+  elna_advanced: Object.freeze(["skill_elna_advanced_03"]),
+  gran_volmoog: Object.freeze(["skill_gran_volmoog_03"]),
+  stella_wizard: Object.freeze(["skill_stella_wizard_03"]),
+  stella_sorcerer: Object.freeze(["skill_stella_sorcerer_03"]),
+  lumina_wizard: Object.freeze(["skill_stella_wizard_03"]),
+  lumina_sorcerer: Object.freeze(["skill_lumina_sorcerer_03"]),
+  orca_stream: Object.freeze(["skill_orca_abyss_02"]),
+  orca_abyss: Object.freeze(["skill_orca_abyss_03"]),
+  kimeragna_apex: Object.freeze(["skill_kimeragna_apex_02","skill_kimeragna_apex_03"]),
+  zephyray: Object.freeze(["skill_zephyray_03"]),
+  tempestray: Object.freeze(["skill_tempestray_03"]),
+  noclaid: Object.freeze(["skill_noclaid_03"]),
+  noxvelg: Object.freeze(["skill_noxvelg_02","skill_noxvelg_03"]),
+  luxiard: Object.freeze(["skill_luxiard_03"]),
+  lux_galdion: Object.freeze(["skill_lux_galdion_03"]),
+  elna_water: Object.freeze(["skill_elna_water_03"]),
+  doom_nemesion: Object.freeze(["skill_doom_nemesion_03"]),
+  elna_kaen: Object.freeze(["skill_elna_kaen_03"]),
+});
 
-function migrateSkillSystem(){
+function migrateSkillSystem(evolutionNativeInstances = save.instances || []){
+  if (typeof skill110MigrationAvailable === 'function' && skill110MigrationAvailable()) {
+    if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
+    if (!Array.isArray(save.saveMeta.migrations)) save.saveMeta.migrations = [];
+    migrateSkill110Save(save, typeof saveRecoveryReport !== 'undefined' ? saveRecoveryReport : []);
+    (save.instances || []).forEach(ins => ensureInstanceSkills(ins));
+    return;
+  }
   if (!save.saveMeta || typeof save.saveMeta !== 'object') save.saveMeta = {migrations:[]};
   if (!Array.isArray(save.saveMeta.migrations)) save.saveMeta.migrations = [];
   if (!save.equippedSkills) save.equippedSkills = {};
@@ -11,13 +52,38 @@ function migrateSkillSystem(){
     save.skillCards = Object.fromEntries(MOVE_CARDS.map(sk => [sk.id,equippedCounts[sk.id] || 0]));
     save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
     if (typeof saveRecoveryReport !== 'undefined' && Array.isArray(saveRecoveryReport)) saveRecoveryReport.push('技カード所持数を現在の装備内容から再構築');
-    return;
   }
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
   MOVE_CARDS.forEach(sk => {
     const owned = Math.max(0,Math.floor(Number(save.skillCards[sk.id]) || 0));
     save.skillCards[sk.id] = Math.max(owned,equippedCounts[sk.id] || 0);
   });
+  migrateEvolutionNativeSkillCards(evolutionNativeInstances);
+}
+function migrateEvolutionNativeSkillCards(instances = save.instances || []){
+  if (typeof isSkill110Save === 'function' && isSkill110Save(save)) return;
+  if (save.saveMeta.migrations.includes(EVOLUTION_NATIVE_CARDS_MIGRATION)) return;
+  const required = Object.create(null);
+  instances.forEach(ins => {
+    const mon = by(ins.id);
+    if (!mon) return;
+    const nativeIds = new Set(evolutionSkillCardIdsForMonster(mon));
+    const targets = new Set((EVOLUTION_NATIVE_CARD_TARGETS[mon.id] || []).map(canonicalSkillId));
+    targets.forEach(id => {
+      if (nativeIds.has(id)) required[id] = (required[id] || 0) + 1;
+    });
+  });
+  let added = 0;
+  Object.entries(required).forEach(([id,count]) => {
+    const owned = Math.max(0,Math.floor(Number(save.skillCards[id]) || 0));
+    added += Math.max(0,count-owned);
+    save.skillCards[id] = Math.max(owned,count);
+  });
+  // init.js saves inventory and marker together; profiles switch by reloading that save.
+  save.saveMeta.migrations.push(EVOLUTION_NATIVE_CARDS_MIGRATION);
+  if (typeof saveRecoveryReport !== 'undefined' && Array.isArray(saveRecoveryReport)) {
+    saveRecoveryReport.push('進化固有技の不足カードを補填: ' + added + '枚');
+  }
 }
 function equippedSkillCardCounts(){
   const counts=Object.create(null);
@@ -32,23 +98,46 @@ function grantEquippedSkillCardsForInstance(ins){
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
   ensureInstanceSkills(ins);
   (save.equippedSkills?.[ins.uid] || []).forEach(id => {
-    if (!SKILL_BY_ID[id]) return;
+    if (!SKILL_BY_ID[id] || SKILL_BY_ID[id].deprecated || SKILL_BY_ID[id].cost === 25) return;
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
   });
 }
-function grantDefaultSkillCardsForInstance(ins){
+// Evolution rewards use every declared move, independently of equipment eligibility,
+// slot count and COST. Normalize old aliases before deduplicating merged cards.
+function evolutionSkillCardIdsForMonster(mon){
+  return [...new Set((mon?.moves || []).map(skillIdFromMove).map(canonicalSkillId))]
+    .filter(id => SKILL_BY_ID[id] && !SKILL_BY_ID[id].deprecated && SKILL_BY_ID[id].cost !== 25);
+}
+function grantEvolutionSkillCardsForInstance(ins){
   if (!ins?.uid) return [];
   const mon = by(ins.id);
   if (!mon) return [];
   if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
-  const ids = defaultSkillIdsForMonster(mon, ins);
+  const ids = evolutionSkillCardIdsForMonster(mon);
   ids.forEach(id => {
-    if (!SKILL_BY_ID[id]) return;
+    if (!SKILL_BY_ID[id] || SKILL_BY_ID[id].deprecated || SKILL_BY_ID[id].cost === 25) return;
     save.skillCards[id]=Math.max(0,Math.floor(Number(save.skillCards[id]) || 0))+1;
   });
   return ids;
 }
 function ensureInstanceSkills(ins){
+  if (typeof skill110MigrationAvailable === 'function' && skill110MigrationAvailable()) {
+    if (!ins?.uid) return;
+    if (!save.equippedSkills) save.equippedSkills = {};
+    const mon = by(ins.id); if (!mon) return;
+    const current = save.equippedSkills[ins.uid];
+    if (!Array.isArray(current)) {
+      save.equippedSkills[ins.uid] = defaultSkillIdsForMonster(mon,ins).filter(id => SKILL_BY_ID[id]?.cost !== 25);
+      return;
+    }
+    let total = 0;
+    save.equippedSkills[ins.uid] = current.filter(id => {
+      const sk = SKILL_BY_ID[id];
+      if (!sk || sk.deprecated || !isSkillAllowedForMonster(id,mon) || total + sk.cost > skillCostLimitFor(mon,ins)) return false;
+      total += sk.cost; return true;
+    }).slice(0,3);
+    return;
+  }
   if (!ins || !ins.uid) return;
   if (!save.equippedSkills) save.equippedSkills = {};
   const mon = by(ins.id);
@@ -66,7 +155,18 @@ function ensureInstanceSkills(ins){
     const c = SKILL_BY_ID[id].cost;
     if (total + c <= limit) { kept.push(id); total += c; }
   });
-  save.equippedSkills[ins.uid] = kept.length ? kept : defaultSkillIdsForMonster(mon, ins);
+  // Repair only the former guard-only Golem default; preserve other custom loadouts.
+  const oldGolemDefault = mon.id === 'proto_icegolem' && arr.length === 1 &&
+    canonicalSkillId(arr[0]) === canonicalSkillId('skill_proto_icegolem_02');
+  save.equippedSkills[ins.uid] = oldGolemDefault ? defaultSkillIdsForMonster(mon, ins) :
+    (kept.length ? kept : defaultSkillIdsForMonster(mon, ins));
+  if (oldGolemDefault) {
+    if (!save.skillCards || typeof save.skillCards !== 'object') save.skillCards = {};
+    const equippedCounts = equippedSkillCardCounts();
+    save.equippedSkills[ins.uid].forEach(id => {
+      save.skillCards[id] = Math.max(Number(save.skillCards[id]) || 0, equippedCounts[id] || 0);
+    });
+  }
 }
 function getEquippedSkillIds(ins){
   ensureInstanceSkills(ins);
@@ -92,16 +192,18 @@ function renderSkillButtons(){
   const el = document.getElementById('commands');
   if (!el) return;
   const rescueBasicAttack=(typeof isTutorialRescueBattleActive==='function'&&isTutorialRescueBattleActive())||(typeof isTutorialStellaMockBattleActive==='function'&&isTutorialStellaMockBattleActive())
-    ? '<button onclick="turn(-1)" data-tutorial-normal-attack data-tutorial-stella-advantage class="skill-button normal" aria-label="通常攻撃、威力24、COST 0"><span>無属性</span><strong>通常攻撃</strong><small>威力 24 / COST 0</small></button>'
+    ? `<button onclick="turn(-1)" data-tutorial-normal-attack data-tutorial-stella-advantage class="skill-button normal" aria-label="通常攻撃、威力24、COST 0"><span>${typeChip('normal')}</span><strong>通常攻撃</strong><small>威力 24 / COST 0</small></button>`
     : '';
-  el.innerHTML = rescueBasicAttack + moves.map((mv,i) => {
+  el.innerHTML = '<p class="battle-panel-note">COSTは編成用。戦闘では減らない</p>' + rescueBasicAttack + moves.map((mv,i) => {
     const power = Number(mv[1]) || 0;
     const role = power > 0 ? `威力 ${power}` : '補助';
     const cost = Number.isFinite(mv[5]) ? Number(mv[5]) : skillCostFromMove(mv);
     const strength = power >= 50 ? ' is-strong-skill' : '';
     const stellaAdvantage=typeof isTutorialStellaMockAdvantageMove==='function'&&isTutorialStellaMockAdvantageMove(mv)?' data-tutorial-stella-advantage':'';
-    return `<button onclick="turn(${i})" data-tutorial-skill${stellaAdvantage} class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}、COST ${cost}"><span>${skillTypeLabel(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role} / <b data-tutorial-skill-cost>COST ${cost}</b></small></button>`;
+    return `<button onclick="turn(${i})" data-tutorial-skill${stellaAdvantage} class="skill-button ${skillButtonClass(moveTypes(mv))}${strength}" aria-label="${mv[0]}、${role}、COST ${cost}"><span>${skillTypeChips(moveTypes(mv))}</span><strong>${mv[0]}</strong><small>${role} / <b data-tutorial-skill-cost>COST ${cost}</b></small>${typeof battleUiSkillInfo==='function'?battleUiSkillInfo(mv):''}</button>`;
   }).join('');
+  if(!moves.length&&!rescueBasicAttack)el.innerHTML+='<p>装備中の技がありません。</p>';
+  if(typeof renewalDecorateSkills==='function')renewalDecorateSkills();
 }
 function openSkillEdit(uid){
   editingSkillUid = uid;
@@ -161,9 +263,9 @@ function renderSkillEdit({preservePosition=false}={}){
   current.innerHTML = equipped.map((id,idx) => {
     const sk = SKILL_BY_ID[id];
     const tutorialTarget=typeof shouldMarkTutorialStellaUnequip==='function'&&shouldMarkTutorialStellaUnequip(ins.uid)?' data-tutorial-stella-unequip':'';
-    return `<div class="card ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">${moveEffectText(skillToMove(id))}</p><button${tutorialTarget} onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
+    return `<div class="card ${skillCardClass(skillTypes(sk))}">${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}${skillCardEffect(skillToMove(id))}<button${tutorialTarget} onclick="unequipSkill(${idx})" style="background:linear-gradient(135deg,#7f1d1d,#991b1b)">外す</button></div>`;
   }).join('') || '<div class="card">技が未装備です。</div>';
-  const skillPool = mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS;
+  const skillPool = typeof SKILL110_CATALOG !== 'undefined' ? SKILL110_CATALOG : (mon.entityKind === 'character' ? CHARACTER_MOVE_CARDS : MONSTER_MOVE_CARDS);
   const filteredCards = skillPool.filter(sk => {
     const allowed = isSkillAllowedForMonster(sk.id, mon);
     const slotOk = equipped.length < 3;
@@ -173,7 +275,10 @@ function renderSkillEdit({preservePosition=false}={}){
     if (keyword && !sk.name.toLowerCase().includes(keyword)) return false;
     if (typeFilter !== 'all' && !skillTypes(sk).includes(typeFilter)) return false;
     if (costFilter !== 'all') {
-      if (costFilter === '5plus') {
+      if (['low','high','super','ultimate'].includes(costFilter)) {
+        const tier = sk.cost <= 5 ? 'low' : sk.cost <= 10 ? 'high' : sk.cost <= 20 ? 'super' : 'ultimate';
+        if (tier !== costFilter) return false;
+      } else if (costFilter === '5plus') {
         if (sk.cost < 5) return false;
       } else if (sk.cost !== Number(costFilter)) {
         return false;
@@ -188,14 +293,17 @@ function renderSkillEdit({preservePosition=false}={}){
     const costOk = used + sk.cost <= limit;
     const avail = availableSkillCount(sk.id);
     const can = allowed && slotOk && costOk && avail > 0;
+    const wornBySelected=equipped.includes(sk.id);
     const reasons=[];
     if(!allowed)reasons.push('この仲間の区分・属性・タグ条件に合いません');
     if(!slotOk)reasons.push('技枠満杯：装備中の技を1つ外してください');
     if(!costOk)reasons.push(`コストがあと${used+sk.cost-limit}必要`);
     if(avail<=0)reasons.push((save.skillCards[sk.id]||0)>0?'所持カードは全て使用中：同じ技を外すか追加で入手':'未所持：技カードの入手が必要');
-    const reason = can ? '装備する' : '装備できません';
     const tutorialTarget=typeof shouldMarkTutorialStellaSkillCard==='function'&&shouldMarkTutorialStellaSkillCard(sk.id,ins.uid);
-    return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${skillCardHeader(sk)}<p class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</p><p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p><p class="small">${moveEffectText(skillToMove(sk.id))}</p>${reasons.length?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:''}<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${reason}</button></div>`;
+    const status=wornBySelected?`<p class="skill-equip-reason" data-skill-equipped-status>${escapeGameHtml(mon.name)}に装備中</p>`:'';
+    const restriction=reasons.length?`<p class="skill-equip-reason">${reasons.join('<br>')}</p>`:'';
+    const action=can||!wornBySelected?`<button${tutorialTarget?' data-tutorial-stella-skill-equip':''} onclick="equipSkill('${sk.id}')" ${can?'':'disabled'}>${can?'装備する':'装備できません'}</button>`:'';
+    return `<div data-skill-card-id="${sk.id}" class="card ${skillCardClass(skillTypes(sk))} ${can?'':'is-disabled'}"${tutorialTarget?' data-tutorial-stella-skill-card':''}>${typeof tcgSkillCardMarkup==='function'?tcgSkillCardMarkup(sk):skillCardHeader(sk)+skillCardStats(sk)}<p class="small">所持:${save.skillCards[sk.id]||0} / 使用中:${countEquippedSkill(sk.id)}</p>${skillCardEffect(skillToMove(sk.id))}${status}${restriction}${action}</div>`;
   }).join('') || '<div class="card" role="status">条件に合う技カードがありません。検索・絞り込みを変更してください。</div>';
   restoreSkillEditPosition(position);
 }
@@ -217,17 +325,20 @@ function equipSkill(skillId){
   const arr = save.equippedSkills[ins.uid] || [];
   const sk = SKILL_BY_ID[skillId];
   if (!sk) return;
-  if (arr.length >= 3) { alert('技は最大3つまでです。'); return; }
-  if (!isSkillAllowedForMonster(skillId, mon)) { alert('このユニットは区分・属性・タグ条件を満たしていません。'); return; }
-  if (equippedSkillCost(ins) + sk.cost > skillCostLimitFor(mon, ins)) { alert('コスト上限を超えています。'); return; }
-  if (availableSkillCount(skillId) <= 0) { alert('この技カードの未使用分がありません。'); return; }
+  if (arr.length >= 3) { showUiNotice('技は最大3つまでです。','warning'); return; }
+  if (!isSkillAllowedForMonster(skillId, mon)) { showUiNotice('このユニットは区分・属性・タグ条件を満たしていません。','warning'); return; }
+  if (equippedSkillCost(ins) + sk.cost > skillCostLimitFor(mon, ins)) { showUiNotice('コスト上限を超えています。','warning'); return; }
+  if (availableSkillCount(skillId) <= 0) { showUiNotice('この技カードの未使用分がありません。','warning'); return; }
   const previous=[...arr];
   arr.push(skillId);
   save.equippedSkills[ins.uid] = arr;
   if(saveGame()===false){
     save.equippedSkills[ins.uid]=previous;
     if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
-    renderSkillEdit({preservePosition:true});return false;
+    renderSkillEdit({preservePosition:true});
+    // A failed write still rebuilt the buttons. Reattach guidance without advancing it.
+    if(typeof tutorialCurrentStepId==='function'&&['stella_skill_unequip','stella_skill_equip'].includes(tutorialCurrentStepId())&&typeof renderTutorialStep==='function')renderTutorialStep();
+    return false;
   }
   renderSkillEdit({preservePosition:true}); renderParty();
   if(typeof handleTutorialStellaSkillEquipped==='function')handleTutorialStellaSkillEquipped(skillId,ins.uid);
@@ -243,7 +354,10 @@ function unequipSkill(idx){
   if(saveGame()===false){
     save.equippedSkills[ins.uid]=previous;
     if(typeof showUiNotice==='function')showUiNotice('技カードを保存できませんでした。もう一度お試しください。','warning');
-    renderSkillEdit({preservePosition:true});return false;
+    renderSkillEdit({preservePosition:true});
+    // A failed write still rebuilt the buttons. Reattach guidance without advancing it.
+    if(typeof tutorialCurrentStepId==='function'&&['stella_skill_unequip','stella_skill_equip'].includes(tutorialCurrentStepId())&&typeof renderTutorialStep==='function')renderTutorialStep();
+    return false;
   }
   renderSkillEdit({preservePosition:true}); renderParty();
   if(typeof handleTutorialStellaSkillUnequipped==='function')handleTutorialStellaSkillUnequipped(ins.uid);

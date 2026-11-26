@@ -1,0 +1,12 @@
+{
+  "kind": "DOM + mocked media/IntersectionObserver; not real viewport or decoder",
+  "checks": [
+    "initial offscreen avoids source; hysteresis cancels stale timeout; same video resumes",
+    "intersection cannot override hidden or reduced-motion reasons",
+    "exit disconnects observer and rejects queued timer/observer callbacks",
+    "ordinary gran registration, shared layout, mixed species independently stop and retain HP nodes"
+  ],
+  "pass": 4,
+  "normalRegistered": 50,
+  "defaultLimit": 1
+}

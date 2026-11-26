@@ -43,7 +43,7 @@ assert.deepEqual(fresh.progress.tutorial,{
   guides:{
     threeWay:false,invasion:false,kokoroLink:false,alchemy:false,expedition:false,
     evolutionFusion:false,skillCards:false,goldenLand:false,dex:false,
-    shopItems:false,contractorRank:false
+    shopItems:false,contractorRank:false,evolution:false,skillGacha:false,battleItems:false,contractorTitles:false
   }
 });
 
@@ -69,6 +69,24 @@ assert.equal(repaired.progress.tutorial.stepId,'battle_skill','an interrupted tu
 assert.equal(repaired.progress.tutorial.guides.threeWay,true);
 assert.equal(repaired.progress.tutorial.guides.alchemy,false);
 assert.equal(repaired.progress.tutorial.guides.unknown,undefined,'unknown guide keys must not enter the save contract');
+
+const previousGuides={
+  threeWay:true,invasion:false,kokoroLink:true,alchemy:false,expedition:true,
+  evolutionFusion:true,skillCards:true,goldenLand:false,dex:false,shopItems:true,contractorRank:true
+};
+for(const stepId of ['elna_guest_join','home_requests','growth_elna_details','lumina_intro','lumina_academy_arrival']){
+  const oldSave=plain(evaluate('initSave()'));
+  oldSave.coins=426;
+  oldSave.items.monster_bone=3;
+  Object.assign(oldSave.progress.tutorial,{status:'in_progress',stepId,guides:previousGuides});
+  const upgraded=plain(prepare(oldSave));
+  assert.equal(upgraded.coins,oldSave.coins);
+  assert.deepEqual(upgraded.items,oldSave.items);
+  assert.deepEqual(upgraded.progress.tutorial,{
+    ...oldSave.progress.tutorial,
+    guides:{...previousGuides,evolution:false,skillGacha:false,battleItems:false,contractorTitles:false}
+  },`old save at ${stepId} must only gain the four unseen guide flags`);
+}
 
 resetNewSave();
 assert.equal(evaluate('tutorialShouldAutoStart()'),true);

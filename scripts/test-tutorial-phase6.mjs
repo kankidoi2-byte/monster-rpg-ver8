@@ -40,7 +40,7 @@ const requiredMainOrder=[
   'intro_gnosis','gnosis_call_2','gnosis_call_3','gnosis_reveal','gnosis_name','gnosis_contract_power','gnosis_descent','elna_encounter','gnosis_rescue_alert','gnosis_starter_contracts','starter_contracts_received','elna_guest_join','elna_rescue_start',
   'battle_enemy','battle_actor_open','battle_actor_select','battle_target','battle_attack_open','battle_normal_attack','battle_skill','battle_choose_skill','battle_free','elna_rescue_complete','elna_contract_intro','elna_contract_execute','elna_contract_body',
   'home_party','party_save','home_dex_open','menu_dex_open','growth_skill_open','stella_card_receive','stella_skill_equip','lumina_alchemy','lumina_execute','expedition_intro',
-  'expedition_dispatch','prologue_complete'
+  'expedition_dispatch','prologue_epilogue'
 ];
 let previousIndex=-1;
 requiredMainOrder.forEach(id=>{
@@ -59,15 +59,20 @@ expectedPhaseChecks.forEach(name=>{
 const requiredRegressionChecks=['save','post-battle-contract','three-way','alchemy','expedition','golden-land','contractor-rank-events','ui-contract'];
 requiredRegressionChecks.forEach(name=>assert.ok(packageJson.scripts.check.includes(`npm run check:${name}`),`integrated regression check is missing: ${name}`));
 
-const saveFullSource=read('js/save.js');
-const saveSource=saveFullSource.slice(0,saveFullSource.indexOf('/* Ver7.8:'));
 const storage=new Map();
+let activeScreen='home';
+const timers=[];
 const saveContext=vm.createContext({
   console,Date,JSON,Math,MAX_LEVEL:100,
   clampLevel:value=>Math.min(100,Math.max(1,Math.floor(Number(value)||1))),
   isMaxLevel:value=>Number(value)>=100,
   M:[{id:'elna_beginner'},{id:'freigal'},{id:'aquaron'},{id:'grassbeat'},{id:'volteck'},{id:'slime'}],
   MAPS:[{id:'grassland'}],
+  SHOP_ITEMS:[],ITEM_DEX_ITEMS:[],
+  document:{getElementById:()=>null,querySelector:selector=>selector==='.screen.active'?{id:activeScreen}:null,
+    addEventListener(){},body:{classList:{toggle(){}}}},
+  window:{addEventListener(){}},
+  setTimeout:callback=>timers.push(callback),
   localStorage:{
     getItem:key=>storage.has(key)?storage.get(key):null,
     setItem:(key,value)=>storage.set(key,String(value)),
@@ -75,13 +80,14 @@ const saveContext=vm.createContext({
   },
   confirm:()=>false,alert:()=>{}
 });
-vm.runInContext(saveSource,saveContext);
+for(const file of ['js/save.js','js/state.js','js/tutorial.js'])vm.runInContext(read(file),saveContext,{filename:file});
 const evaluate=expression=>vm.runInContext(expression,saveContext);
 const plain=value=>JSON.parse(JSON.stringify(value));
 evaluate('save=initSave()');
 evaluate("setTutorialStep('first_contract')");
-['threeWay','invasion','kokoroLink','alchemy','expedition','evolutionFusion','skillCards','goldenLand','dex','shopItems','contractorRank']
-  .forEach(id=>assert.equal(evaluate(`markTutorialGuideSeen('${id}')`),true,`could not persist guide: ${id}`));
+for(const id of evaluate('TUTORIAL_GUIDE_IDS')){
+  assert.equal(evaluate(`markTutorialGuideSeen('${id}')`),true,`could not persist guide: ${id}`);
+}
 assert.equal(evaluate('markTutorialStarterContractScrollGranted()'),true);
 assert.equal(evaluate('markTutorialFirstContractGuaranteeUsed()'),true);
 saveContext.roundTrip=plain(evaluate('save'));
@@ -96,6 +102,40 @@ const legacy=plain(evaluate('parseAndPrepareSave(legacyRaw,[])'));
 assert.equal(legacy.progress.tutorial.status,'completed','existing saves must not be forced into onboarding after integrated migration');
 assert.equal(legacy.progress.tutorial.firstContractGuaranteeUsed,true,'existing saves must not gain the tutorial guarantee');
 assert.equal(legacy.progress.tutorial.starterContractScrollGranted,true,'existing saves must not gain a tutorial scroll');
+
+const mainStep=id=>evaluate(`tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).find(step=>step.id==='${id}')`);
+assert.equal(mainStep('rescue_world_map_depart').text,'最初は難易度Ⅰで進もう。「出発」を押したら、エルナの救援戦が始まるぞ！');
+assert.equal(mainStep('growth_elna_details').text,'アイコンを押すと詳細が開く。レベルと経験値、HP・攻撃・防御・速度、装備中の技を確認できるぞ！ 「ステータス」を押せば特性も見られる！');
+assert.equal(mainStep('lumina_world_map_academy').title,'魔導学園を選ぼう');
+assert.equal(mainStep('lumina_academy_arrival').title,'魔導学園へ');
+
+const guidePairs=[
+  [['fusion','evolutionFusion','guide_evolution_fusion'],['evolution','evolution','guide_evolution']],
+  [['skillEdit','skillCards','guide_skill_cards'],['skillGacha','skillGacha','guide_skill_gacha']],
+  [['shop','shopItems','guide_shop_items'],['battleItemSelect','battleItems','guide_battle_items']],
+  [['contractorRank','contractorRank','guide_contractor_rank'],['contractorTitles','contractorTitles','guide_contractor_titles']]
+];
+function openGuideScreen(screen){
+  activeScreen=screen;
+  evaluate(`handleTutorialScreenChange('${screen}')`);
+  while(timers.length)timers.shift()();
+  return evaluate('tutorialUiState.flowId');
+}
+for(const order of [guidePairs.flat(),guidePairs.flat().reverse()]){
+  evaluate('save=initSave();completeTutorial()');
+  for(const [screen,guideId,flowId] of order){
+    assert.deepEqual(plain(evaluate(`tutorialFeatureGuideForScreen('${screen}')`)),[guideId,flowId]);
+    assert.equal(openGuideScreen(screen),flowId,`${screen}: its guide must start independently`);
+    assert.equal(evaluate(`save.progress.tutorial.guides.${guideId}`),true);
+    evaluate('finishTutorialFlow()');
+    assert.equal(openGuideScreen(screen),null,`${screen}: an already seen guide must not restart`);
+  }
+  evaluate('save=loadSave()');
+  for(const [screen,guideId] of order){
+    assert.equal(evaluate(`save.progress.tutorial.guides.${guideId}`),true);
+    assert.equal(openGuideScreen(screen),null,`${screen}: a saved guide flag must survive reload`);
+  }
+}
 
 const placementStart=tutorial.indexOf('function calculateTutorialPlacement');
 const placementEnd=tutorial.indexOf('function setTutorialShadeRect',placementStart);
@@ -135,3 +175,43 @@ assert.match(tutorialCss,/@media\(prefers-reduced-motion:reduce\)/,'reduced-moti
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1'),'the integrated tutorial engine cache key is missing');
 
 console.log(`Tutorial Phase 6 integration passed (${stepIds.length} unique steps, ${new Set(screenIds).size} screens, ${targets.length} target contracts, Android/Chromebook placement, save/reload, and full regression wiring).`);
+
+// D: the old final STEP was actually persistable through the fallback to step.id.
+// Preserve that historical checkpoint without adding/changing any save fields.
+vm.runInContext(read('js/story.js'),saveContext,{filename:'js/story.js'});
+assert.equal(evaluate("persistedTutorialStepId({id:'prologue_complete',persistAs:null})"),'prologue_complete');
+assert.equal(evaluate("tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).at(-1).id"),'prologue_epilogue');
+assert.equal(evaluate("tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).some(s=>s.id==='prologue_complete')"),false);
+assert.equal(evaluate("PROLOGUE_STORY_EPISODES[5].endStepId"),'prologue_epilogue');
+for(const checkpoint of ['expedition_intro','expedition_party_save','expedition_destination','expedition_dispatch','expedition_active','prologue_epilogue','prologue_complete']){
+  evaluate(`save=initSave();setTutorialStep('${checkpoint}')`);
+  const before=plain(evaluate('save'));
+  saveContext.roundTrip=before;
+  evaluate('save=parseAndPrepareSave(JSON.stringify(roundTrip),[])');
+  assert.equal(evaluate('currentTutorialState().stepId'),checkpoint,'existing checkpoint preserved by save decoding');
+  assert.equal(evaluate('storyEpisodeIndexForStep(currentTutorialState().stepId)'),5,`${checkpoint} resumes episode six rather than episode one`);
+  const expected=checkpoint==='prologue_complete'?'prologue_epilogue':checkpoint;
+  assert.equal(evaluate('tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID)[tutorialStepIndex(tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID),currentTutorialState().stepId)].id'),expected);
+}
+for(const status of ['completed','skipped']){
+  evaluate(`save=initSave();save.progress.tutorial.status='${status}';save.progress.tutorial.completed=${status==='completed'};save.progress.tutorial.skipped=${status==='skipped'};save.progress.tutorial.stepId=null`);
+  saveContext.roundTrip=plain(evaluate('save'));
+  evaluate('save=parseAndPrepareSave(JSON.stringify(roundTrip),[])');
+  assert.equal(evaluate('currentTutorialState().status'),status);
+  assert.equal(evaluate('storyProgressSnapshot().finished'),true);
+  for(let i=0;i<6;i++)assert.equal(evaluate(`storyEpisodeState(${i})`),status);
+}
+// Run the real final-next / completion functions; only visual shell rendering is stubbed.
+evaluate(`save=initSave();save.progress.tutorial.expeditionDispatched=true;setTutorialStep('prologue_epilogue');
+  tutorialUiState.active=true;tutorialUiState.flowId=TUTORIAL_MAIN_FLOW_ID;tutorialUiState.persist=true;
+  tutorialUiState.steps=tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID);tutorialUiState.index=tutorialUiState.steps.length-1;
+  clearTutorialUi=()=>{tutorialUiState.active=false;};updateTutorialMenuSummary=()=>{};
+  show=id=>{globalThis.finalScreen=id;};saveGame=()=>true;`);
+const rewardsBefore=plain(evaluate('({coins:save.coins,items:save.items,instances:save.instances})'));
+evaluate('tutorialNext()');
+assert.equal(evaluate('finalScreen'),'home');
+assert.equal(evaluate('currentTutorialState().status'),'completed');
+assert.equal(evaluate('tutorialUiState.active'),false);
+assert.deepEqual(plain(evaluate('({coins:save.coins,items:save.items,instances:save.instances})')),rewardsBefore,'removing the display STEP does not add rewards');
+assert.equal(evaluate('storyEpisodeState(5)'),'completed');
+console.log('D finale passed: epilogue→home, six completed episodes, completed/skipped saves, intermediate episode-six saves, removed legacy checkpoint redirect, unchanged rewards.');

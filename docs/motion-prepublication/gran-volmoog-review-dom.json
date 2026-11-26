@@ -1,0 +1,29 @@
+{
+  "scope": "Gran Volmoog isolated actual-game DOM integration; media mocked; no browser layout or performance claim",
+  "results": [
+    {
+      "mode": "ally",
+      "nodeRetention": true,
+      "itemPauseResume": true,
+      "exitAndStaleCallback": true
+    },
+    {
+      "mode": "enemy",
+      "nodeRetention": true,
+      "itemPauseResume": true,
+      "exitAndStaleCallback": true
+    },
+    {
+      "mode": "multi",
+      "nodeRetention": true,
+      "itemPauseResume": true,
+      "exitAndStaleCallback": true
+    }
+  ],
+  "maps": 19,
+  "errorFallback": true,
+  "retry": true,
+  "switchDisposal": true,
+  "sourceHash": true,
+  "normalRegistryUnchanged": true
+}

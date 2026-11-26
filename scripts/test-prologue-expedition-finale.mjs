@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {runtime} from '../tools/balance-audit/runtime.mjs';
 
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 const tutorial=read('js/tutorial.js');
@@ -13,7 +14,7 @@ const packageJson=JSON.parse(read('package.json'));
 const flowStart=tutorial.indexOf('registerTutorialFlow(TUTORIAL_MAIN_FLOW_ID');
 const flowEnd=tutorial.indexOf('registerTutorialFlow(TUTORIAL_HELP_FLOW_ID',flowStart);
 const main=tutorial.slice(flowStart,flowEnd);
-const required=['expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_home_open','expedition_destination','expedition_distance','expedition_member','expedition_suitability','expedition_dispatch','expedition_active','expedition_replay','prologue_epilogue','prologue_complete'];
+const required=['expedition_intro','expedition_party_plan','expedition_party_open','expedition_party_save','expedition_home_open','expedition_battle_open','expedition_destination','expedition_distance','expedition_member','expedition_suitability','expedition_dispatch','expedition_active','expedition_replay','prologue_epilogue'];
 let previous=-1;
 for(const id of required){const current=main.indexOf(`id:'${id}'`);assert.ok(current>previous,`expedition/finale STEP missing or out of order: ${id}`);previous=current;}
 const finale=main.slice(main.indexOf("id:'expedition_intro'"));
@@ -31,7 +32,7 @@ assert.match(finale,/id:'expedition_dispatch'[^\n]+externalAdvance:true/);
 assert.match(finale,/id:'expedition_active'[^\n]+persistAs:'prologue_epilogue'/);
 assert.match(tutorial,/\['expedition_distance','expedition_member'\]\.includes\(tutorialCurrentStepId\(\)\)[^\n]+tutorialExpeditionCandidateInstance/,'the member target must already be marked by the distance-step render');
 assert.ok(finale.includes('帰還を待たなくて大丈夫！'),'the prologue must continue without waiting for expedition return');
-assert.match(finale,/id:'prologue_complete'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'world_descent'/,'the final story scene must show Gnosis without being converted into a UI-guide step');
+assert.match(finale,/id:'prologue_epilogue'(?![^\n]+target:)[^\n]+speaker:'グノーシス'[^\n]+portrait:'images\/tutorial\/characters\/gnosis-dialogue-transparent-final\.png'[^\n]+scene:'capital'/,'the final story scene must show Gnosis without being converted into a UI-guide step');
 assert.ok(finale.trimEnd().endsWith(']);'),'the new prologue completion STEP must end the main flow');
 
 for(const token of [
@@ -65,6 +66,7 @@ function makeTutorialContext({saveSucceeds=true,replaying=false,dispatched=false
     saveGame:()=>saveSucceeds,showUiNotice:message=>context.notices.push(message),notices:[],
     tutorialNext:()=>{context.advanced=true;},queueTutorialActionAdvance:()=>true,startTutorialFlow:()=>true
   });
+  vm.runInContext(tutorial.slice(tutorial.indexOf('function tutorialMonsterInLineage'),tutorial.indexOf('function tutorialInitialPartyReady')),context);
   vm.runInContext(tutorial.slice(helperStart,helperEnd),context);
   vm.runInContext(tutorial.slice(partyGuardStart,partyGuardEnd),context);
   return context;
@@ -92,6 +94,8 @@ assert.equal(dispatch.advanced,true);
 const wrong=makeTutorialContext();
 assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',wrong)({mapId:'grassland',distanceId:'long',memberUids:['freigal']}),false,'only a short tutorial expedition may commit');
 assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',wrong)({mapId:'grassland',distanceId:'short',memberUids:['galdra']}),false,'Galdra must remain in the party instead of being dispatched');
+wrong.save.progress.tutorial.stepId='expedition_suitability';
+assert.equal(vm.runInContext('commitTutorialExpeditionDispatch',wrong)({mapId:'grassland',distanceId:'long',memberUids:['freigal']}),false,'a wrong early dispatch cannot fill the slot');
 assert.equal(wrong.save.progress.tutorial.expeditionDispatched,false);
 
 const wrongParty=makeTutorialContext();
@@ -131,7 +135,7 @@ justDispatched.save.progress.tutorial.stepId='expedition_active';
 assert.equal(vm.runInContext("resolveTutorialExpeditionResumeStep('prologue','expedition_active',false)",justDispatched),'expedition_active',
   'a newly dispatched tutorial expedition must still show its active-expedition explanation after reload');
 
-dispatch.save.progress.tutorial.stepId='prologue_complete';
+dispatch.save.progress.tutorial.stepId='prologue_epilogue';
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',dispatch),true);
 assert.equal(dispatch.save.progress.chapterId,'prologue');
 assert.equal(dispatch.save.progress.storyFlags.prologueCompleted,true);
@@ -140,7 +144,7 @@ assert.equal(dispatch.save.progress.tutorial.prologueCompleted,true);
 assert.equal(dispatch.save.progress.tutorial.status,'completed');
 
 const failed=makeTutorialContext({saveSucceeds:false,dispatched:true});
-failed.save.progress.tutorial.stepId='prologue_complete';
+failed.save.progress.tutorial.stepId='prologue_epilogue';
 const before=JSON.stringify(failed.save);
 assert.equal(vm.runInContext('commitTutorialPrologueCompletion()',failed),false);
 assert.equal(JSON.stringify(failed.save),before,'a failed final save must restore chapter, flags, and tutorial status');
@@ -162,3 +166,82 @@ assert.equal(packageJson.scripts['check:prologue-expedition-finale'],'node scrip
 assert.ok(packageJson.scripts.check.includes('npm run check:prologue-expedition-finale'));
 
 console.log('Prologue expedition/finale validation passed (exact Galdra/Aquaron/Elna party, reserve Freigal dispatch, occupied/completed legacy routing, no-wait continuation, and atomic completion).');
+
+assert.match(finale,/id:'expedition_battle_open'[^\n]+persistAs:'expedition_home_open'/,'battle hub bridge reuses existing saved checkpoint');
+
+
+// Wire the real tutorial, dispatch, persistence and reward implementations
+// together. Only DOM rendering is stubbed; each scenario uses isolated storage.
+for(const scenario of ['normal','early','reload-early','reload-legacy','reload-legacy-save-error']){
+  const r=runtime({save:source=>source+'\nglobalThis.realSaveGame=saveGame;'});
+  r.context.document.addEventListener=()=>{};
+  r.context.window={addEventListener(){}};
+  vm.runInContext(tutorial,r.context);
+  r.run(`saveGame=realSaveGame;
+    renderTutorialStep=renderExpedition=renderParty=renderPartySetup=()=>{};
+    clearTutorialUi=()=>{tutorialUiState.active=false;};
+    updateTutorialMenuSummary=()=>{};
+    save=initSave();
+    const freigal=addInstance('freigal',1),aquaron=addInstance('aquaron',1),
+      elna=addInstance('elna_beginner',1),galdra=addInstance('galdra',1);
+    save.party=[galdra.uid,aquaron.uid,elna.uid];
+    setTutorialStep('expedition_home_open');
+    expeditionSelectedMapId='grassland';expeditionSelectedDistanceId='short';expeditionSelectedUids=[freigal.uid];
+    const startingCoins=save.coins,startingItems=JSON.stringify(save.items);
+    const usedSlots=()=>save.expeditions.active.length+'/'+expeditionUnlockedSlots();
+    const reload=()=>{clearTutorialUi();save=loadSave();return resumeTutorialIfNeeded();};
+  `);
+  assert.equal(r.run('startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:"expedition_suitability",persist:true})'),true,scenario);
+  if(scenario==='normal'){
+    r.run('tutorialNext()');
+    assert.equal(r.run('tutorialCurrentStepId()'),'expedition_dispatch');
+  }
+  // Old builds left an ordinary dispatch entry and no tutorial flag; a newer
+  // build interrupted before rendering leaves a committed tutorial entry.
+  if(scenario.startsWith('reload-legacy'))r.run('commitTutorialExpeditionDispatch=()=>true;');
+  if(scenario.startsWith('reload-'))r.run('handleTutorialExpeditionStarted=()=>false;');
+  assert.equal(r.run('startExpedition()'),true,scenario);
+  const expeditionId=r.run('save.expeditions.active[0].id');
+  if(scenario.startsWith('reload-legacy')){
+    assert.equal(r.run('currentTutorialState().stepId'),'expedition_home_open');
+    assert.equal(r.run('currentTutorialState().expeditionDispatched'),false);
+    assert.notEqual(r.run('save.expeditions.active[0].tutorialPrologue'),true);
+  }
+  if(scenario==='reload-legacy-save-error'){
+    const originalSave=r.run('localStorage.getItem(SAVE_KEY)');
+    r.context.console={...console,error(){}};
+    r.run('const durableWrite=localStorage.setItem;localStorage.setItem=()=>{throw Error("quota");};');
+    assert.equal(r.run('reload()'),true,scenario);
+    assert.equal(r.run('tutorialCurrentStepId()'),'expedition_home_open');
+    assert.equal(r.run('currentTutorialState().expeditionDispatched'),false);
+    assert.notEqual(r.run('save.expeditions.active[0].tutorialPrologue'),true);
+    assert.equal(r.run('localStorage.getItem(SAVE_KEY)'),originalSave);
+    r.run('localStorage.setItem=durableWrite;');
+  }
+  if(scenario.startsWith('reload-')){
+    assert.equal(r.run('reload()'),true,scenario);
+  }
+  assert.equal(r.run('tutorialCurrentStepId()'),'expedition_active',scenario);
+  assert.equal(r.run('currentTutorialState().expeditionDispatched'),true,scenario);
+  assert.equal(r.run('save.expeditions.active[0].tutorialPrologue'),true,scenario);
+  assert.equal(r.run('save.expeditions.active[0].id'),expeditionId,scenario);
+  assert.equal(r.run('usedSlots()'),'1/1',scenario);
+  assert.equal(r.run('save.coins'),r.run('startingCoins'),scenario);
+  assert.equal(r.run('JSON.stringify(save.items)'),r.run('startingItems'),scenario);
+  r.run('expeditionSelectedUids=[freigal.uid];');
+  assert.equal(r.run('startExpedition()'),false,scenario);
+  r.run('tutorialNext()');
+  assert.equal(r.run('tutorialCurrentStepId()'),'prologue_epilogue',scenario);
+  assert.equal(r.run('commitTutorialPrologueCompletion()'),true,scenario);
+  assert.equal(r.run('currentTutorialState().prologueCompleted'),true,scenario);
+  r.run('progressActiveExpeditions(()=>0.99);');
+  const expectedCoins=r.run('startingCoins+save.expeditions.active[0].reward.coins');
+  r.run('claimExpedition(save.expeditions.active[0].id);');
+  assert.equal(r.run('usedSlots()'),'0/1',scenario);
+  assert.equal(r.run('save.coins'),expectedCoins,scenario);
+  assert.equal(r.run('save.expeditions.completedCount'),1,scenario);
+  const awarded=r.run('JSON.stringify(save)');
+  r.run(`claimExpedition(${JSON.stringify(expeditionId)});`);
+  assert.equal(r.run('JSON.stringify(save)'),awarded,scenario);
+  console.log(`First expedition dispatch/resume PASS: ${scenario}`);
+}

@@ -1,0 +1,8431 @@
+{
+  "metadata": {
+    "generatedAt": "2026-10-04T07:14:53.832Z",
+    "baseCommit": "ecc9d97621fb405d341071b75938e03db43c76df",
+    "workingHead": "ecc9d97621fb405d341071b75938e03db43c76df",
+    "sourceHashes": {
+      "data": "e58844c332ac60d4af6a7df916f14f87a0fcadab090d85ab182e3349a5503bab",
+      "core": "f52ee7e7ffe2a72376d2d369e4f49822dc0fdc557bcedc91f8243601ebd26090",
+      "save": "a598dc2ec4fade02ac526c6c959aeaceab776f72587f81cbed7daaef4209eed9",
+      "state": "7859cda8f35179884d51270e304c7627bcee43b95253607490ba9176b9635cc4",
+      "kokoro-link": "100021f8dfc4d4bde522392348d6e0e922b96da0bfe5823cc8292bb962e4ac69",
+      "skills": "685c628074d8e00eb38d4b3f98d598dc16ac0da48ca5ce265c3b07e56289d182",
+      "items": "c12debbc95a9d3b8caaa347156aa0fedc6fa53bf279367294e2ee46c5ae768c5",
+      "contract-animation": "f2bf5aa5099f01a794f4167b3d1e86bf695eeea5f4a366f45b4b4e74d922b4ab",
+      "party": "ab055176b9d52aa3056ba9d55e8beb8366062869c1a83a16b8b8fff9af506979",
+      "progression": "8d1c0fb140c2a14c9b9652a350a81be317398d0262469a8ccf59660b5e2f860c",
+      "character-gacha": "c94ae67209c05427d755395ba94645008a7b92625940654a42775f3c69b5eb11",
+      "skill-gacha": "92122c150288c5193dec2496d87aa48a1e06da4b43700cc2c1ce9d1a8bf3eff6",
+      "alchemy": "1357f384ea99011472ce36f422fe9d0f183cb54228bae231c5495be4a16d10b6",
+      "battle-view": "ba477acdf7b73773ace3502644acee2ce206bd9c328c1cf7796ae5fc94f8276b",
+      "battle-rules": "bfa7222a8cb2b7ae92d787d9b50d789b69dfa2c849729949458fcdb0dece8627",
+      "battle-flow": "4e2dd13f53327555cba69d6adf0030d6a3a88972e86e7d956982f9892254608e",
+      "multi-battle": "43fff31e4f78523947f71297509bc3718165bdd980661be439c9e4ecefa05889",
+      "expedition": "4e52b7a6c989d3ac5d3b777c07b4480bd0614e13bf5453b8f36899c6004c81d8",
+      "world-events": "e207671a30103ee4fdea5ee12d80239a02b9b1d3126c15f2df8ced4981c53b31",
+      "world-map-flow": "9823c2f63bf274776ff8d74368e9859258842cc2cedb0d4e8bbedede20661059"
+    },
+    "seed": 20261004,
+    "trials": 8,
+    "turnCap": 120,
+    "battles": 1008
+  },
+  "limitations": [
+    "Eight seeds per case, heuristic policy; not optimal-play proof or population win-rate estimate.",
+    "No items, links or voluntary switching. Newly drawn final form and explicitly built inherited/common loadouts are compared separately.",
+    "Existing peers are primarily four-star. Vera five-star is intended to exceed ordinary four-star output and costs a later evolution.",
+    "Extreme enemy retains actual Lv100; player Lv25/30 is a stress test, not a normal story-clear gate.",
+    "No new overheating/weapon-switch mechanic or undocumented flight dodge is modeled."
+  ],
+  "cases": [
+    {
+      "unit": "character_vera_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 7,
+      "capped": 0,
+      "meanTurns": 9.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 38
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 3,
+      "capped": 0,
+      "meanTurns": 6.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 12,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 11,
+          "exp": 52
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 12,
+          "exp": 43
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 22,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 52
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 2,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 7,
+      "capped": 0,
+      "meanTurns": 9.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 38
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 3,
+      "capped": 0,
+      "meanTurns": 6.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 12,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 11,
+          "exp": 52
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 12,
+          "exp": 43
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 22,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 52
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_vera_3_02",
+        "skill_character_vera_3_03"
+      ],
+      "level": 3,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 2,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_common_poison"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 7,
+      "capped": 0,
+      "meanTurns": 11.125,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 38
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_common_poison"
+      ],
+      "level": 3,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 3,
+      "capped": 0,
+      "meanTurns": 6.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 12,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 11,
+          "exp": 52
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 12,
+          "exp": 43
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_common_poison"
+      ],
+      "level": 3,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 7,
+      "capped": 0,
+      "meanTurns": 5.5,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 10,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 16,
+          "exp": 68
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 15,
+          "exp": 46
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 8,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 14,
+          "exp": 46
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_common_poison"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.125,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_3_01",
+        "skill_character_common_poison"
+      ],
+      "level": 3,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 2,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_3_01",
+        "skill_character_roden_3_02",
+        "skill_character_roden_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 7,
+      "capped": 0,
+      "meanTurns": 8.875,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 210,
+          "exp": 91
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_3_01",
+        "skill_character_roden_3_02",
+        "skill_character_roden_3_03"
+      ],
+      "level": 3,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 5.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 25,
+          "exp": 134
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 17,
+          "exp": 42
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 14,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 11,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 16,
+          "exp": 46
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_3_01",
+        "skill_character_roden_3_02",
+        "skill_character_roden_3_03"
+      ],
+      "level": 3,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 16,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 52
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_3_01",
+        "skill_character_roden_3_02",
+        "skill_character_roden_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.125,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_3_01",
+        "skill_character_roden_3_02",
+        "skill_character_roden_3_03"
+      ],
+      "level": 3,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 2.125,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_3_01",
+        "skill_character_regus_3_02",
+        "skill_character_regus_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 6,
+      "capped": 0,
+      "meanTurns": 7.75,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_3_01",
+        "skill_character_regus_3_02",
+        "skill_character_regus_3_03"
+      ],
+      "level": 3,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 3,
+      "capped": 0,
+      "meanTurns": 6,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 12,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 11,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 21,
+          "exp": 124
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_3_01",
+        "skill_character_regus_3_02",
+        "skill_character_regus_3_03"
+      ],
+      "level": 3,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.875,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 16,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_3_01",
+        "skill_character_regus_3_02",
+        "skill_character_regus_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_3_01",
+        "skill_character_regus_3_02",
+        "skill_character_regus_3_03"
+      ],
+      "level": 3,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 2.625,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 2,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_brigitte_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_brigitte_3_01",
+        "skill_character_brigitte_3_02",
+        "skill_character_brigitte_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 10.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 215,
+          "exp": 94
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_brigitte_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_brigitte_3_01",
+        "skill_character_brigitte_3_02",
+        "skill_character_brigitte_3_03"
+      ],
+      "level": 3,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 9.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 8,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 17,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 20,
+          "exp": 133
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 10,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 14,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 9,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 13,
+          "exp": 38
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 13,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_brigitte_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_brigitte_3_01",
+        "skill_character_brigitte_3_02",
+        "skill_character_brigitte_3_03"
+      ],
+      "level": 3,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 16,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_brigitte_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_brigitte_3_01",
+        "skill_character_brigitte_3_02",
+        "skill_character_brigitte_3_03"
+      ],
+      "level": 3,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 7.875,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 13,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_brigitte_3",
+      "build": "own",
+      "equipped": [
+        "skill_character_brigitte_3_01",
+        "skill_character_brigitte_3_02",
+        "skill_character_brigitte_3_03"
+      ],
+      "level": 3,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_4_02",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 9.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 217,
+          "exp": 100
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 38
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_4_02",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 10,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 27,
+          "exp": 121
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 17,
+          "exp": 42
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 14,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 15,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 16,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_4_02",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 16,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 52
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_4_02",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6.375,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_4_02",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 9.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 217,
+          "exp": 100
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 38
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 5.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 27,
+          "exp": 121
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 17,
+          "exp": 42
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 14,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 15,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 16,
+          "exp": 46
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 22,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 52
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_4_03"
+      ],
+      "level": 10,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 9.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 217,
+          "exp": 100
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 38
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 10,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 5.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 27,
+          "exp": 121
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 17,
+          "exp": 42
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 14,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 15,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 16,
+          "exp": 46
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 10,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 22,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 52
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.625,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_4_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 10,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 45
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 214,
+          "exp": 74
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 10,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 13,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 27,
+          "exp": 123
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 10,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 10,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 19,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 11,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6.125,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 10,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 4,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 80
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 57
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 10,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 10,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 21,
+          "exp": 124
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 12,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 14,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 15,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 16,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 10,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 1,
+      "capped": 0,
+      "meanTurns": 9.375,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 21,
+          "coins": 374,
+          "exp": 167
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 10,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_tobia_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_tobia_4_01",
+        "skill_character_tobia_4_02",
+        "skill_character_tobia_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 215,
+          "exp": 78
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_tobia_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_tobia_4_01",
+        "skill_character_tobia_4_02",
+        "skill_character_tobia_4_03"
+      ],
+      "level": 10,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 2,
+      "capped": 0,
+      "meanTurns": 6.75,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 27,
+          "exp": 121
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 12,
+          "exp": 50
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_tobia_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_tobia_4_01",
+        "skill_character_tobia_4_02",
+        "skill_character_tobia_4_03"
+      ],
+      "level": 10,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 12,
+          "exp": 45
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_tobia_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_tobia_4_01",
+        "skill_character_tobia_4_02",
+        "skill_character_tobia_4_03"
+      ],
+      "level": 10,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_tobia_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_tobia_4_01",
+        "skill_character_tobia_4_02",
+        "skill_character_tobia_4_03"
+      ],
+      "level": 10,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 3,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 3,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.75,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 80
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 13,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 27,
+          "exp": 118
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 10,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 37
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 8,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 1,
+      "capped": 0,
+      "meanTurns": 10.625,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 21,
+          "coins": 374,
+          "exp": 167
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 4.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 42
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 217,
+          "exp": 93
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 200,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 13,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 27,
+          "exp": 118
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 10,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 37
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 2.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 16,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 20,
+          "exp": 66
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 14,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 17,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 8,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 8,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 12,
+          "exp": 53
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 7,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 25,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 4.75,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 4,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.75,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 45
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 82
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 46
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 25,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 27,
+          "exp": 123
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 14,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 11,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 25,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 12,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 9.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 13,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 25,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.625,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 214,
+          "exp": 74
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 40
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 25,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 30,
+          "exp": 138
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 25,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.875,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 22,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 1,
+      "capped": 0,
+      "meanTurns": 13,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 13,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 28,
+          "coins": 380,
+          "exp": 178
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 25,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.875,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 80
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 57
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 25,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 10,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 21,
+          "exp": 124
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 12,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 14,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 15,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 16,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 25,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 5,
+      "capped": 0,
+      "meanTurns": 12.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 27,
+          "exp": 83
+        },
+        {
+          "outcome": "victory",
+          "turns": 21,
+          "coins": 374,
+          "exp": 167
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 29,
+          "exp": 86
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 25,
+          "exp": 85
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 27,
+          "exp": 88
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 25,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 7.875,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 209,
+          "exp": 117
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 25,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.125,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 27,
+          "exp": 123
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 25,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 8,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 12,
+          "exp": 45
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 25,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 9.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 17,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 25,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5.75,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.75,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 80
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 13,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 27,
+          "exp": 118
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 10,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 37
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.5,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 8,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 1,
+      "capped": 0,
+      "meanTurns": 11.75,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 21,
+          "coins": 374,
+          "exp": 167
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_5_02",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 42
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 217,
+          "exp": 93
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 200,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 13,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 27,
+          "exp": 118
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 10,
+          "exp": 55
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 37
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 2.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 16,
+          "exp": 35
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 20,
+          "exp": 66
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 14,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 17,
+          "exp": 57
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 8,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 8,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 2,
+          "coins": 12,
+          "exp": 53
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 10,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 15,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "inherited",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_vera_3_03",
+        "skill_character_vera_5_03"
+      ],
+      "level": 30,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.75,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 45
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 200,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 82
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 46
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 47
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 51
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 30,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 27,
+          "exp": 123
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 14,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 11,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 30,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 12,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 10.5,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 17,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 13,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "common-poison",
+      "equipped": [
+        "skill_character_vera_5_01",
+        "skill_character_common_poison",
+        "skill_character_common_debuff"
+      ],
+      "level": 30,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6.625,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 44
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 58
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 214,
+          "exp": 74
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 8,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 30,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 30,
+          "exp": 138
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 30,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.875,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 22,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 59
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 1,
+      "capped": 0,
+      "meanTurns": 16.875,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 16,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 26,
+          "coins": 383,
+          "exp": 160
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 13,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 15,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 30,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 12,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_roden_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_roden_4_01",
+        "skill_character_roden_4_02",
+        "skill_character_roden_4_03"
+      ],
+      "level": 30,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6.375,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 7.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 53
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 80
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 54
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 37
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 7,
+          "coins": 200,
+          "exp": 57
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 30,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.25,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 10,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 9,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 21,
+          "exp": 124
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 12,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 5,
+          "coins": 10,
+          "exp": 36
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 14,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 15,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 16,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 30,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.625,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 7,
+      "capped": 0,
+      "meanTurns": 12.875,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 27,
+          "exp": 83
+        },
+        {
+          "outcome": "victory",
+          "turns": 21,
+          "coins": 374,
+          "exp": 167
+        },
+        {
+          "outcome": "defeat",
+          "turns": 11,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 29,
+          "exp": 81
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 29,
+          "exp": 86
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 25,
+          "exp": 85
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 27,
+          "exp": 88
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 14,
+          "exp": 92
+        }
+      ]
+    },
+    {
+      "unit": "character_regus_4",
+      "build": "own",
+      "equipped": [
+        "skill_character_regus_4_01",
+        "skill_character_regus_4_02",
+        "skill_character_regus_4_03"
+      ],
+      "level": 30,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 8.75,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "normal",
+      "enemy": "slime_gold",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 6.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 9,
+          "coins": 209,
+          "exp": 117
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 49
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 41
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 200,
+          "exp": 55
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 30,
+      "map": "forest",
+      "difficulty": "normal",
+      "enemy": "thornbeat",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 4.125,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 50
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 10,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 27,
+          "exp": 123
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 43
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 17,
+          "exp": 39
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 13,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 4,
+          "coins": 14,
+          "exp": 42
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 30,
+      "map": "lake",
+      "difficulty": "normal",
+      "enemy": "aquaron",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "meanTurns": 3.375,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 8,
+          "exp": 48
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 6,
+          "coins": 21,
+          "exp": 65
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 40
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 15,
+          "exp": 51
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 12,
+          "exp": 45
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 9,
+          "exp": 52
+        },
+        {
+          "outcome": "victory",
+          "turns": 3,
+          "coins": 17,
+          "exp": 36
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 30,
+      "map": "grassland",
+      "difficulty": "hard",
+      "enemy": "proto_icegolem",
+      "n": 8,
+      "wins": 1,
+      "capped": 0,
+      "meanTurns": 10.25,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 8,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "victory",
+          "turns": 19,
+          "coins": 391,
+          "exp": 159
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 10,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 9,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "elna_kaen",
+      "build": "own",
+      "equipped": [
+        "skill_elna_kaen_01",
+        "skill_elna_kaen_02",
+        "skill_elna_kaen_03"
+      ],
+      "level": 30,
+      "map": "starsea",
+      "difficulty": "extreme",
+      "enemy": "doom_nemesion",
+      "n": 8,
+      "wins": 0,
+      "capped": 0,
+      "meanTurns": 6,
+      "outcomes": [
+        {
+          "outcome": "defeat",
+          "turns": 5,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 7,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        },
+        {
+          "outcome": "defeat",
+          "turns": 6,
+          "coins": 0,
+          "exp": 0
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "own-multi",
+      "level": 30,
+      "mode": "three_way",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 15,
+          "coins": 210,
+          "exp": 86
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 217,
+          "exp": 95
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 217,
+          "exp": 89
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 215,
+          "exp": 77
+        },
+        {
+          "outcome": "victory",
+          "turns": 18,
+          "coins": 214,
+          "exp": 83
+        },
+        {
+          "outcome": "victory",
+          "turns": 15,
+          "coins": 217,
+          "exp": 115
+        },
+        {
+          "outcome": "victory",
+          "turns": 16,
+          "coins": 209,
+          "exp": 93
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 217,
+          "exp": 81
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own-multi",
+      "level": 30,
+      "mode": "three_way",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 212,
+          "exp": 91
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 215,
+          "exp": 88
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 209,
+          "exp": 81
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 210,
+          "exp": 86
+        },
+        {
+          "outcome": "victory",
+          "turns": 16,
+          "coins": 210,
+          "exp": 100
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 212,
+          "exp": 81
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 212,
+          "exp": 90
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 212,
+          "exp": 96
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own-multi",
+      "level": 30,
+      "mode": "three_way",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 89
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 214,
+          "exp": 88
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 215,
+          "exp": 109
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 209,
+          "exp": 115
+        },
+        {
+          "outcome": "victory",
+          "turns": 16,
+          "coins": 214,
+          "exp": 92
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 209,
+          "exp": 108
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 214,
+          "exp": 87
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 210,
+          "exp": 78
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_3",
+      "build": "own-multi",
+      "level": 30,
+      "mode": "invasion_pending",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 15,
+          "coins": 214,
+          "exp": 96
+        },
+        {
+          "outcome": "victory",
+          "turns": 15,
+          "coins": 209,
+          "exp": 94
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 208,
+          "exp": 103
+        },
+        {
+          "outcome": "victory",
+          "turns": 18,
+          "coins": 214,
+          "exp": 91
+        },
+        {
+          "outcome": "victory",
+          "turns": 18,
+          "coins": 210,
+          "exp": 100
+        },
+        {
+          "outcome": "victory",
+          "turns": 18,
+          "coins": 216,
+          "exp": 102
+        },
+        {
+          "outcome": "victory",
+          "turns": 15,
+          "coins": 214,
+          "exp": 82
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 217,
+          "exp": 98
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_4",
+      "build": "own-multi",
+      "level": 30,
+      "mode": "invasion_pending",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 212,
+          "exp": 91
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 217,
+          "exp": 91
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 214,
+          "exp": 74
+        },
+        {
+          "outcome": "victory",
+          "turns": 15,
+          "coins": 211,
+          "exp": 100
+        },
+        {
+          "outcome": "victory",
+          "turns": 16,
+          "coins": 214,
+          "exp": 92
+        },
+        {
+          "outcome": "victory",
+          "turns": 16,
+          "coins": 212,
+          "exp": 81
+        },
+        {
+          "outcome": "victory",
+          "turns": 14,
+          "coins": 208,
+          "exp": 94
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 208,
+          "exp": 83
+        }
+      ]
+    },
+    {
+      "unit": "character_vera_5",
+      "build": "own-multi",
+      "level": 30,
+      "mode": "invasion_pending",
+      "n": 8,
+      "wins": 8,
+      "capped": 0,
+      "outcomes": [
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 210,
+          "exp": 79
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 214,
+          "exp": 87
+        },
+        {
+          "outcome": "victory",
+          "turns": 11,
+          "coins": 208,
+          "exp": 101
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 213,
+          "exp": 92
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 211,
+          "exp": 99
+        },
+        {
+          "outcome": "victory",
+          "turns": 13,
+          "coins": 208,
+          "exp": 94
+        },
+        {
+          "outcome": "victory",
+          "turns": 12,
+          "coins": 214,
+          "exp": 93
+        },
+        {
+          "outcome": "victory",
+          "turns": 10,
+          "coins": 210,
+          "exp": 84
+        }
+      ]
+    }
+  ]
+}

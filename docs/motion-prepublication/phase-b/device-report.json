@@ -1,0 +1,19 @@
+{
+  "reportedAtJST": "2026-09-29T21:48:35+09:00",
+  "source": "User: どちらも問題なし",
+  "device": "Galaxy Android; exact browser/version not confirmed",
+  "scope": [
+    "Scroll monster outside viewport, return: animation resumes",
+    "Switch to another app, return: battle remains operable"
+  ],
+  "result": "user-reported PASS for both instructed checks",
+  "notEstablished": [
+    "Measured 10-minute multi-video load/thermal/input latency",
+    "Actual browser BFCache navigation",
+    "All species/all layouts/anatomical foot anchors"
+  ],
+  "defaultVideoLimit": 1,
+  "next": "Proceed with Phase C bounded source acceptance and registrations; retain shared final acceptance conditions",
+  "mainMerge": false,
+  "publicRelease": false
+}

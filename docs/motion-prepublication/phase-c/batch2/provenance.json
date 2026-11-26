@@ -1,0 +1,52 @@
+[
+  {
+    "id": "slime_gold",
+    "version": "v1",
+    "sha256": "4d0c1b79281f690010190a1c4ffb7ab89b280e75d62a10ce513c658604024850",
+    "bytes": 2194184,
+    "zipOutput": "slime-gold/outputs/slime-gold-idle-8s-v1.webm",
+    "zipOutputMatch": true,
+    "sourceReencoded": false,
+    "fullAcceptance": "pending",
+    "android": "pending",
+    "remoteBytesVerified": true,
+    "posterBytes": 54646,
+    "orientation": "front-facing; no flip",
+    "zipDriveId": "1j91Akt9u9WKitLQ0207Y8wRr47I7_76k",
+    "videoDriveId": "1XP9TbMVQZvzP0rMuWI_yb8SJvqlz0IWD",
+    "assetCommit": "f17876ebd3f1d3125a5c53cee78abe0cd6d8b2d3"
+  },
+  {
+    "id": "false_dragon_beta",
+    "version": "v2",
+    "sha256": "e83837f58d9f70ec058d16d5f5286923c617362802e8e3b895e1fc660519c797",
+    "bytes": 5893596,
+    "zipOutput": "ashreia-motion-v2/ashreia-idle-8s-v2.webm",
+    "zipOutputMatch": true,
+    "sourceReencoded": false,
+    "fullAcceptance": "pending",
+    "android": "pending",
+    "remoteBytesVerified": true,
+    "posterBytes": 181230,
+    "orientation": "source left; flip ally",
+    "zipDriveId": "1-7fYWdyn5t0w4bTvpweomHqlje4Z2yhd",
+    "videoDriveId": "11_kLRRcivZhQJz1ViT2PDreNZjhkJ1Iq",
+    "assetCommit": "f17876ebd3f1d3125a5c53cee78abe0cd6d8b2d3"
+  },
+  {
+    "id": "false_dragon_gamma",
+    "version": "v1",
+    "sha256": "d07509725eac02f79bddfe90e011b427415896ddbb4f0d8a0ebaec466e842a27",
+    "bytes": 2333820,
+    "zipOutput": "morgram-motion-v1/morgram-idle-8s-v1.webm",
+    "zipOutputMatch": true,
+    "sourceReencoded": false,
+    "fullAcceptance": "pending",
+    "android": "pending",
+    "remoteBytesVerified": true,
+    "posterBytes": 219510,
+    "orientation": "source right; flip enemy",
+    "zipDriveId": "1FRJVikQ0z57-tcdSELoVjsfpLOtD87f3",
+    "assetCommit": "f17876ebd3f1d3125a5c53cee78abe0cd6d8b2d3"
+  }
+]

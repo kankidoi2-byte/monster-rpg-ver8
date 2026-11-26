@@ -1,0 +1,1 @@
+PASS battle tutorial: current HUD/image/pad highlights; real switch/normal attack/equipped skill; operation waits; stable resume checkpoint; multi-target and evolution instructions. DOM only, no pixel-layout assertion.

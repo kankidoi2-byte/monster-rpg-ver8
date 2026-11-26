@@ -1,0 +1,44 @@
+{
+  "scope": "candidate bytes, current identity and static registration-route preflight only",
+  "result": "PASS",
+  "sha256": "1546cc7f824110e77e71daf0fa02f6b1c5bc68886e48815da885105867cb5e00",
+  "bytes": 1758952,
+  "identity": {
+    "count": 1,
+    "id": "gran_volmoog",
+    "no": 35,
+    "dexNo": 28,
+    "imgKey": "gran_volmoog",
+    "poster": "images/monsters/gran_volmoog_20260920.webp"
+  },
+  "posterTreeEntry": "100644 blob 4f75aa4194f067a805fabf33e78c099d64e0da22\timages/monsters/gran_volmoog_20260920.webp",
+  "posterValidation": "tracked Git tree entry only; image rendering not tested",
+  "registeredIds": [
+    "volmoog"
+  ],
+  "defaultVideoLimit": 1,
+  "candidateReviewRoute": "/motion-review-assets/gran_volmoog_v18.webm",
+  "normalRuntimeRegistration": "absent",
+  "routeReachability": "not tested; URL reference alone does not prove delivery",
+  "inheritedAlphaEvidence": {
+    "file": "gran-volmoog-alpha.json",
+    "frames": 240,
+    "edgeTouchFrames": 66,
+    "remeasured": false
+  },
+  "notVerified": [
+    "footing",
+    "anchor",
+    "facing and reflection in battle",
+    "full-loop battle occupancy and HUD gaps",
+    "HTTP MIME/Range",
+    "actual browser playback",
+    "Android quantitative performance"
+  ],
+  "publication": "forbidden",
+  "recordedDateJST": "2026-09-27",
+  "sourceCommit": "99c728fabb73b7f51960eff04ebc4482b59d544b",
+  "command": "node scripts/audit-gran-volmoog-registration.mjs <adopted-gran-volmoog-v18.webm>",
+  "candidateProvenance": "Existing local candidate at /workspace/scratch/0fb3b157a47b/gran-work/tools/motion-review/assets/gran_volmoog_v18_alpha.webm; bytes matched archived adopted SHA256. No new Drive/ZIP retrieval.",
+  "initialAttempt": "Failed local poster-existence assertion because the inherited checkout excludes images. Corrected to verify tracked Git tree entry; no image-rendering claim."
+}

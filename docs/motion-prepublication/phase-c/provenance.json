@@ -1,0 +1,40 @@
+[
+  {
+    "id": "shenhairon",
+    "version": "v5",
+    "bytes": 5075081,
+    "sha256": "9cf6f7fc8e6748e6c324bdceb26b379c06223dcd1facf96656babcba0b5df659",
+    "zipOutputMatch": true,
+    "zipSource": "motion_v5/source/shenhairon.png",
+    "zipOutput": "motion_v5/output/shenhairon-idle-8s-alpha.webm",
+    "sourceZipDriveId": "1ykJyrbCpLFenFn9czQdlOE9dxFa7cYAa",
+    "sourceVideoDriveId": "1n4HttKag-8h7x7qPWRBVgFVuu8QysjU4",
+    "assetCommit": "d85990609f75e045170668a77c721a078700f27d",
+    "remoteBytesVerified": true,
+    "fullAssetAcceptance": "pending",
+    "android": "pending",
+    "sourceReencoded": false,
+    "posterDerivation": "libvpx decoded first RGBA frame, WebP quality90",
+    "posterBytes": 207528,
+    "posterSha256": "afdef5ad9a0900cfa9ad48776b9a2bcd47d01ff862a06d2d0592b7b16e60f44b"
+  },
+  {
+    "id": "tienhairon",
+    "version": "v5",
+    "bytes": 5418360,
+    "sha256": "4e046fcc3d7c67c77ab0ff1fb5477cc09ceef696b56eaf2c6713729d1b5eb747",
+    "zipOutputMatch": true,
+    "zipSource": "motion_v5/source/tienhairon.png",
+    "zipOutput": "motion_v5/output/tienhairon-idle-8s-alpha.webm",
+    "sourceZipDriveId": "1ykJyrbCpLFenFn9czQdlOE9dxFa7cYAa",
+    "sourceVideoDriveId": "1Y128cPMwr8zkaNI1usJaQ5Xws6AJUIsb",
+    "assetCommit": "d85990609f75e045170668a77c721a078700f27d",
+    "remoteBytesVerified": true,
+    "fullAssetAcceptance": "pending",
+    "android": "pending",
+    "sourceReencoded": false,
+    "posterDerivation": "libvpx decoded first RGBA frame, WebP quality90",
+    "posterBytes": 196942,
+    "posterSha256": "551ef339f168c3ffbcbff9f56bfebe71cb67752bfa157038a6adf4e91ca1a31a"
+  }
+]

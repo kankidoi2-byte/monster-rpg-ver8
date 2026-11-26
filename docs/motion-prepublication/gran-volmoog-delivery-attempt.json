@@ -1,0 +1,17 @@
+{
+  "dateJST": "2026-09-29",
+  "scope": "HTTP checks on existing owner-private review; not browser playback",
+  "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site/game/tools/motion-review/assets/gran_volmoog_v18_alpha.webm",
+  "results": [
+    {
+      "request": "full",
+      "status": 401,
+      "error": "HTTP response rejected; no redirect followed"
+    },
+    {
+      "request": "range",
+      "status": 401,
+      "error": "HTTP response rejected; no redirect followed"
+    }
+  ]
+}

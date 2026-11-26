@@ -42,7 +42,7 @@ try {
   assert.equal(JSON.stringify(health).includes('token'), false);
 
   const postResponse = await fetch(base + '/healthz', { method: 'POST' });
-  assert.equal(postResponse.status, 404);
+  assert.equal(postResponse.status, 403);
   const dashboardResponse = await fetch(base + '/');
   assert.equal(dashboardResponse.status, 200);
   assert.equal(dashboardResponse.headers.get('content-security-policy').includes("default-src 'none'"), true);

@@ -14,7 +14,8 @@ const motion = vm.runInContext(`({
   skillToMove,
   skillBattleMotionForMove,
   by,
-  cards:MOVE_CARDS
+  cards:MOVE_CARDS.filter(card=>!card.id.startsWith('s110_')&&!card.sourceUnitId.startsWith('character_')),
+  newCards:SKILL110_CATALOG
 })`, context);
 
 const breathMove = motion.skillToMove('skill_nemes_03');
@@ -33,13 +34,13 @@ const bodyMove = motion.skillToMove('skill_slime_01');
 const tailMove = motion.skillToMove('skill_aquaron_02');
 const hornMove = motion.skillToMove('skill_thornbeat_01');
 const fistMove = motion.skillToMove('skill_icegolem_01');
-const wingMove = motion.skillToMove('skill_false_dragon_beta_02');
+const wingMove = motion.skillToMove('skill_ashleia_02');
 const finMove = motion.skillToMove('skill_sylphin_01');
 const legMove = motion.skillToMove('skill_astralepis_01');
 const beakMove = motion.skillToMove('skill_volteck_01');
 const clubMove = motion.skillToMove('skill_goblin_01');
 const daggerMove = motion.skillToMove('skill_goblin_03');
-const roarMove = motion.skillToMove('skill_false_dragon_gamma_02');
+const roarMove = motion.skillToMove('skill_morglum_02');
 const roarSupportMove = motion.skillToMove('skill_freiwolf_03');
 const genericMotionCases = [
   ['skill_grassbeat_01','blade'],
@@ -88,7 +89,7 @@ for(const [skillId,form] of genericMotionCases){
   assert.equal(descriptor.animated, true, `${skillId} must receive a supplemented attack motion`);
 }
 
-const originalBreath = motion.by('nemes').moves.find(move => move[0] === 'コスモブレス');
+const originalBreath = motion.by('nemes').legacyMoves.find(move => move[0] === 'コスモブレス');
 assert(originalBreath, 'the source monster must still expose its original breath move');
 assert.equal(motion.skillBattleMotionForMove(originalBreath).skillId, 'skill_nemes_03', 'original monster moves must resolve through the existing move-to-skill bridge');
 assert.equal(motion.skillBattleMotionForMove(originalBreath).animated, true);
@@ -109,14 +110,15 @@ const genericDamageCards = motion.cards
   .filter(card => card.tags.includes('role:damage') && card.tags.includes('form:generic'));
 const damageCards = motion.cards.filter(card => card.tags.includes('role:damage'));
 const supportCards = motion.cards.filter(card => card.tags.includes('role:support'));
-assert.equal(projectileCards.length, 9, 'the tagged catalog must include the expected breath and beam attack set');
+assert.equal(projectileCards.length, 8, 'the tagged catalog must include the expected breath and beam attack set');
 assert.equal(meleeCards.length, 29, 'the tagged catalog must include the expected sword, claw, and fang attack set');
 assert.equal(rangedCards.length, 42, 'the tagged catalog must include the expected magic and flying-blade attack set');
-assert.equal(impactCards.length, 20, 'the tagged catalog must include the expected charge, strike, and body attack set');
+assert.equal(impactCards.length, 21, 'the tagged catalog must include the expected charge, strike, and body attack set');
 assert.equal(anatomyCards.length, 22, 'the tagged catalog must include the expected anatomy and weapon attack set');
 assert.equal(roarCards.length, 3, 'the tagged catalog must include the expected damage roar set');
 assert.equal(genericDamageCards.length, 35, 'the catalog must retain the expected generic attack set without changing card taxonomy');
-assert.equal(damageCards.length, 160, 'the catalog must retain the complete attack set');
+assert.equal(motion.cards.filter(card=>['projectile','wave'].includes(card.form)).length,2,'Morgram has two ID-defined ranged motions');
+assert.equal(damageCards.length, 162, 'the catalog must retain the complete attack set');
 assert.equal(supportCards.length, 40, 'the catalog must retain the complete support set');
 const supportCounts=Object.create(null);
 for(const card of supportCards){
@@ -144,7 +146,7 @@ for(const card of supportCards){
   assert(['guard','heal','buff','shield','sleep'].includes(descriptor.form),`${card.id} must resolve to a support motion family`);
   assert(card.types.every(type=>descriptor.types.includes(type)),`${card.id} must preserve its support attribute colors`);
 }
-assert.equal(damageCards.length+supportCards.length,200,'all fixed skills must be covered by battle motion validation');
+assert.equal(damageCards.length+supportCards.length,202,'all fixed skills must be covered by battle motion validation');
 
 const battleView = read('js/battle-view.js');
 const battleRules = read('js/battle-rules.js');
@@ -178,6 +180,7 @@ context.document = {
   }
 };
 context.matchMedia = () => ({matches:false});
+context.clearTimeout = () => {};
 context.setTimeout = callback => { callback(); return 1; };
 vm.runInContext(battleView, context, {filename:'js/battle-view.js'});
 const rendered = await vm.runInContext("playBattleSkillMotion('sourceVis','targetVis',skillToMove('skill_nemes_03'))", context);
@@ -207,7 +210,7 @@ for (const [skillId,form] of [['skill_aquaron_01','magic'],['skill_tienhairon_02
   assert.equal(rangedEffect.removed, true, `${form} must be removed after its animation`);
 }
 
-const roarRendered = await vm.runInContext("playBattleSkillMotion('sourceVis','targetVis',skillToMove('skill_false_dragon_gamma_02'))", context);
+const roarRendered = await vm.runInContext("playBattleSkillMotion('sourceVis','targetVis',skillToMove('skill_morglum_02'))", context);
 const roarEffect = stage.appended;
 assert.equal(roarRendered, true, 'damage roar must travel toward the target');
 assert(roarEffect.className.includes('battle-skill-motion') && roarEffect.className.includes('is-roar'), 'roar must use its dedicated shockwave class');
@@ -262,7 +265,7 @@ assert.equal(source.classList.contains('battle-charge-cast'), false, 'the charge
 assert.deepEqual(sourceStyle.values, {}, 'temporary charge direction variables must be cleared');
 
 for (const [skillId,form,family] of [
-  ['skill_aquaron_02','tail','sweep'],['skill_false_dragon_beta_02','wing','sweep'],['skill_sylphin_01','fin','sweep'],['skill_astralepis_01','leg','sweep'],
+  ['skill_aquaron_02','tail','sweep'],['skill_ashleia_02','wing','sweep'],['skill_sylphin_01','fin','sweep'],['skill_astralepis_01','leg','sweep'],
   ['skill_thornbeat_01','horn','pierce'],['skill_volteck_01','beak','pierce'],['skill_goblin_03','dagger','pierce'],
   ['skill_icegolem_01','fist','blunt'],['skill_goblin_01','club','blunt']
 ]) {
@@ -277,11 +280,11 @@ for (const [skillId,form,family] of [
 
 assert(battleView.includes('async function playBattleSkillMotion'), 'the battle view must expose the projectile renderer');
 assert(battleView.includes('BATTLE_MOTION_DURATIONS'), 'each battle motion must use an explicit duration');
-assert(battleRules.includes("await playBattleSkillMotion(sourceId,targetId,mv)"), 'single battles must await the tagged motion before impact');
-assert(battleRules.includes("await playBattleSkillMotion(sourceId,supportTargetId,mv)"), 'single battles must await self- or enemy-targeted support motion before applying the effect');
+assert(battleRules.includes("await playBattleSkillMotion(sourceId,targetId,mv,{untilImpact:true})"), 'single battles must await the tagged motion before impact');
+assert(battleRules.includes("await playBattleSkillMotion(sourceId,supportTargetId,mv,{untilImpact:true})"), 'single battles must await self- or enemy-targeted support motion before applying the effect');
 assert(battleFlow.includes('await performAction(enemy,player,enemyAction.move,false)'), 'manual-switch retaliation must await its attack motion');
-assert(multiBattle.includes('await playBattleSkillMotion(sourceId,impactTargetId,move)'), 'multi battles must target the selected combatant');
-assert(multiBattle.includes('await playBattleSkillMotion(sourceId,supportTargetId,move)'), 'multi battles must await support motion on the correct combatant');
+assert(multiBattle.includes('await playBattleSkillMotion(sourceId,impactTargetId,move,{untilImpact:true})'), 'multi battles must target the selected combatant');
+assert(multiBattle.includes('await playBattleSkillMotion(sourceId,supportTargetId,move,{untilImpact:true})'), 'multi battles must await support motion on the correct combatant');
 assert(css.includes('.battle-skill-motion.is-beam') && css.includes('@keyframes battleSkillBeam'), 'beam styling is missing');
 assert(css.includes('.battle-skill-motion.is-breath') && css.includes('@keyframes battleSkillBreath'), 'breath styling is missing');
 assert(css.includes('.battle-melee-motion.is-sword') && css.includes('@keyframes battleSwordCut'), 'sword styling is missing');
@@ -309,3 +312,6 @@ assert(css.includes('.battle-support-motion.is-sleep') && css.includes('@keyfram
 assert(css.includes('.battle-skill-motion,.battle-melee-motion,.battle-impact-motion,.battle-anatomy-motion,.battle-arcane-motion,.battle-support-motion{display:none}'), 'reduced-motion users must be able to skip all battle motion');
 
 console.log(`Battle skill motion validation passed (all ${damageCards.length} attacks and ${supportCards.length} support skills, ${damageCards.length+supportCards.length} total; normal and multi-battle wiring, reduced-motion fallback).`);
+
+for(const card of motion.newCards){const motionInfo=motion.skillBattleMotionForMove(motion.skillToMove(card.id));assert.equal(motionInfo.animated,true,card.id+' new skill animation');assert.equal(motionInfo.role,card.power>0?'damage':'support');}
+console.log('PASS all 110 new skills have compatible battle motion descriptors');

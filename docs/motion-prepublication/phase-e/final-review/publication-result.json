@@ -1,0 +1,28 @@
+{
+  "ownerAuthorization": "2026-10-02 07:58 JST: 許可する。このまま進めて。必要なら、もう本編公開まで進めて。",
+  "publication": "published",
+  "mainBefore": "60e4e15171ff6fb2f98361e5c37aa2e4f0609b6a",
+  "approvedHead": "181a7d81cb111b7d03e370c2b271bd9212092c5e",
+  "mainMerge": "de0f1e324349d4f0abaacb772a92cf5b26da3ce3",
+  "pr": 220,
+  "mainCI": {
+    "runId": 36938288039,
+    "conclusion": "success"
+  },
+  "pages": {
+    "runId": 36938287874,
+    "conclusion": "success",
+    "url": "https://kankidoi2-byte.github.io/monster-rpg-ver8/"
+  },
+  "httpVerification": {
+    "checked": 148,
+    "videos": 50,
+    "posters": 50,
+    "issues": 0,
+    "sourceAndPosterBytesMatch": true,
+    "videoRanges": "50/50 status206 bytes0-1023; verified video MIME",
+    "report": "publication-http.json"
+  },
+  "remaining": "Production Galaxy first launch/existing save/real decoding not inspected by agent. Known full-loop rectangle0px and non-exhaustive original recipe/50x19 conditions remain; owner-authorized publication does not mean all conditions PASS.",
+  "recordStorage": "Post-publication evidence on feature branch; main runtime not changed by this evidence commit."
+}

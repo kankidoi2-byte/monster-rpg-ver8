@@ -12,7 +12,7 @@ const notices=read('js/notices-data.js');
 const index=read('index.html');
 
 assert.match(saveSource,/const SAVE_KEY = 'mb_v95c'/,'the established save key must not change');
-assert.ok(tutorial.includes("Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'easy'})"),'the guaranteed target must be the existing grassland Slime');
+assert.ok(tutorial.includes("Object.freeze({mapId:'grassland',enemyId:'slime',difficultyId:'d1'})"),'the guaranteed target must be the existing grassland Slime');
 assert.ok(tutorial.includes("save.saveMeta.migrations.includes('v3_to_v4_tutorial_state')"),'migrated existing saves must be excluded explicitly');
 assert.ok(tutorial.includes("tutorial.status!=='in_progress'||tutorial.completed||tutorial.skipped"),'only an active, unskipped required tutorial may use the guarantee');
 assert.ok(tutorial.includes("!['first_contract','contract_confirm'].includes(tutorial.stepId)"),'the guarantee must be restricted to the first-contract checkpoint');
@@ -28,7 +28,7 @@ const freshSave=()=>({
   progress:{tutorial:{status:'in_progress',stepId:'first_contract',completed:false,skipped:false,replaying:false,firstContractGuaranteeUsed:false,starterContractScrollGranted:false}}
 });
 const context=vm.createContext({
-  TUTORIAL_FIRST_HUNT:{mapId:'grassland',enemyId:'slime',difficultyId:'easy'},
+  TUTORIAL_FIRST_HUNT:{mapId:'grassland',enemyId:'slime',difficultyId:'d1'},
   save:freshSave(),enemy:{id:'slime'},selectedMap:{id:'grassland'},saveOk:true,saveCalls:0,
   currentTutorialState:()=>context.save.progress.tutorial,
   ensureContractScrollItem:()=>{context.save.items??={};context.save.items.contract_scroll??=0;},
@@ -76,9 +76,9 @@ assert.equal(evaluate("commitTutorialFirstContract('contract_scroll',{id:'slime'
 assert.equal(JSON.stringify(context.save),beforeFailure,'a failed durable save must roll back grant, use, join, progression, and flags');
 assert.equal(context.saveCalls,1,'the failed atomic write must not be retried invisibly');
 
-assert.ok(items.includes('const animationStage = guaranteed?3:contractAnimationStage(roll, rate)'),'the tutorial success must enter the established successful animation path');
-assert.ok(items.includes("commitTutorialFirstContract(itemId,enemy)"),'confirmation must use the atomic tutorial transaction');
-assert.ok(items.includes("show('contractConfirm')")&&items.includes('契約状態を保存できませんでした'),'a failed transaction must remain safely retryable');
+assert.ok(items.includes('const stage=guaranteed?3:contractAnimationStage(Math.random(),rate)'),'the tutorial success must enter the established successful animation path');
+assert.ok(items.includes("commitTutorialFirstContract(itemId,target)"),'confirmation must use the atomic tutorial transaction');
+assert.ok(items.includes("show('contractConfirm')")&&items.includes('singleBattleContractAttempted=false')&&items.includes('契約結果を保存できませんでした'),'a failed transaction must remain safely retryable');
 assert.ok(animation.includes('const zoomLevels = [1.16, 1.32, 1.48]')&&animation.includes("paper.classList.add('is-stamping')"),'the existing three zoom pulses and paw-stamp success animation must remain in use');
 assert.ok(tutorial.includes("input:'elna_contract'")&&tutorial.includes('if(tutorialStepRequiresAction(step)&&actionCompleted!==true)return'),'the guide must not advance before the Elna contract commits');
 assert.ok(!items.includes('tutorialNext(true)'),'contract confirmation must not bypass the external-step transaction guard');
@@ -90,7 +90,7 @@ for(const id of ['first_contract','contract_confirm','contract_success','contrac
   assert.ok(tutorial.includes(`${id}:`),`an interrupted old save needs a redirect: ${id}`);
 }
 assert.ok(tutorial.includes("target:'#growthMonsterButton'")&&tutorial.includes("target:'#homePartyEditButton'"),'growth and party editing must use their real controls');
-assert.ok(tutorial.includes("id:'prologue_complete',screenId:'home'")&&tutorial.includes('completeTutorial()'),'the required tutorial must finish on the prologue completion scene');
+assert.ok(tutorial.includes("id:'prologue_epilogue',screenId:'home'")&&tutorial.includes('completeTutorial()'),'the required tutorial must finish on the prologue completion scene');
 assert.ok(party.includes('data-tutorial-contract-instance="true"')&&party.includes('data-tutorial-contract-party="true"'),'the joined instance must be addressable in roster and party setup without changing its ID');
 ['growthMonsterButton','homePartyEditButton','contractConfirmAcceptButton'].forEach(id=>assert.ok(index.includes(`id="${id}"`),`missing real UI anchor: #${id}`));
 assert.ok(notices.includes("id: '20260829-tutorial-first-contract'"),'the player-facing update must have a stable notice ID');

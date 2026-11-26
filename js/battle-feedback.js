@@ -16,7 +16,7 @@ function battleHistoryEntry(text,kind='result'){
     const row=document.createElement('li');row.textContent=`${turn?`T${turn}`:'開始'} · ${text}`;list.appendChild(row);
     while(list.children.length>BATTLE_HISTORY_LIMIT)list.firstElementChild.remove();
   }
-  const count=document.getElementById('battleHistoryCount');if(count)count.textContent=`${battleFeedback.history.length}件（最新${BATTLE_HISTORY_LIMIT}件まで）`;
+  const count=document.getElementById('battleHistoryCount');if(count)count.textContent=`${battleFeedback.history.length}件`;
 }
 function captureBattleLog(){
   const log=document.getElementById('log');if(!log)return;
@@ -32,7 +32,12 @@ function captureBattleLog(){
   refreshBattleFeedback(message);
 }
 function resetBattleFeedback(){
-  if(typeof BattleAudio!=='undefined')BattleAudio.reset();
+  if(typeof gameAudioResetBattle==='function')gameAudioResetBattle();
+  if(typeof disposeBattleIdleMedia==='function')disposeBattleIdleMedia();
+  if(typeof battleUiClear==='function')battleUiClear();
+  if(typeof clearBattleStageAction==='function')clearBattleStageAction();
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
+  if(typeof renewalReset==='function')renewalReset();
   battleFeedback.history=[];battleFeedback.lastLog='';battleFeedback.action='';battleFeedback.finished=false;
   battleFeedback.hp.clear();battleFeedback.states.clear();battleFeedback.results.clear();battleFeedback.sequence++;
   const log=document.getElementById('log');if(log)log.innerHTML='';
@@ -41,19 +46,28 @@ function resetBattleFeedback(){
   document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
 }
 function beginBattleAction(actor,move,isPlayer){
+  if(typeof battleUiClear==='function')battleUiClear();
+  if(typeof clearBattleStageAction==='function')clearBattleStageAction();
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   battleFeedback.results.clear();document.querySelectorAll('.battle-hp-result').forEach(el=>el.remove());
   const log=document.getElementById('log');if(log)log.innerHTML='';battleFeedback.lastLog='';
-  battleFeedback.action=`${isPlayer?'味方':'敵'}・${actor.name}の「${move[0]}」`;
+  battleFeedback.action=`${typeof autoSpeed==='function'&&autoRun?.phase==='fight'&&!autoRun.manual?'[AUTO] ':''}${isPlayer?'味方':'敵'}・${actor.name}の「${move[0]}」`;
   battleHistoryEntry(battleFeedback.action,'action');
   renderBattleInputState();
+}
+function showSingleBattleActionTarget(targetId){
+  if(multiBattle?.active||!battleFeedback.action)return;
+  const target=battleCombatants().find(unit=>unit.vis===targetId);
+  if(target){battleFeedback.action=battleFeedback.action.split(' → ')[0]+` → ${target.name}`;renderBattleInputState();}
 }
 function renderBattleInputState(){
   const screen=document.getElementById('battle');if(!screen)return;
   const finished=battleFeedback.finished||screen.classList.contains('is-finished');
   const processing=busy||finished;
+  if(typeof gameAudioBattleInput==='function'&&screen.classList.contains('active'))gameAudioBattleInput(processing,finished);
   screen.classList.toggle('is-processing',processing);
   const dock=screen.querySelector('.battle-command-dock');
-  if(dock){dock.inert=processing;dock.setAttribute('aria-busy',String(busy&&!finished));}
+  if(dock){dock.inert=processing&&!(typeof autoRun!=='undefined'&&autoRun?.phase==='fight'&&!autoRun.manual);dock.setAttribute('aria-busy',String(busy&&!finished));}
   const label=document.getElementById('battleInputLabel');if(label)label.textContent=finished?'戦闘終了':busy?'行動中':'操作可能';
   const title=document.getElementById('battleCommandTitle');
   const selecting=!document.getElementById('commands')?.classList.contains('hidden');
@@ -61,22 +75,26 @@ function renderBattleInputState(){
   const text=finished?'戦闘終了・履歴を確認できます':busy?(battleFeedback.action||'行動を処理しています'):target?'対象を選んでください':selecting?'技を選んでください':'コマンドを選んでください';
   if(title)title.textContent=text;
   const status=document.getElementById('battleActionStatus');if(status)status.textContent=text;
-  if(!busy)battleFeedback.action='';
+  if(!busy||finished){battleFeedback.action='';if(typeof clearBattleStageAction==='function')clearBattleStageAction();}
+  if(typeof syncBattleStageInput==='function')syncBattleStageInput(processing);
+  if(typeof syncBattleUi==='function')syncBattleUi();
+  if(typeof syncBattleIdleMedia==='function')syncBattleIdleMedia();
 }
 function battleCombatants(){
   if(!player||!enemy)return [];
-  const units=[{key:`player:${activeInstance?.uid||activePartyIdx}`,vis:'pVis',name:player.name,hp:pHp,max:playerMaxHp(),statusId:'pBattleStatus',status:pStatus,poison:pPoisonTurns,paralysis:pParalysisTurns,sleep:pSleepTurns,confusion:pConfusionTurns,guard:pGuard,shield:pAquaShield,charge:pFlareCharge,attack:pAtk,link:typeof kokoroLinkStatusHtml==='function'?kokoroLinkStatusHtml():''}];
-  if(multiBattle?.active){for(const e of multiBattle.enemies)units.push({key:e.id,vis:`${e.id}Vis`,name:e.mon.name,hp:e.hp,max:e.maxHp,statusId:`${e.id}Status`,status:e.status,poison:e.poisonTurns,paralysis:e.paralysisTurns,sleep:e.sleepTurns,confusion:e.confusionTurns,guard:e.guard,shield:e.aquaShield,charge:e.flareCharge,attack:e.attack,link:enemyKokoroLinkStatusHtml(e.id)});}
-  else units.push({key:`single:${enemy.id}`,vis:'eVis',name:enemy.name,hp:eHp,max:enemyMaxHp(),statusId:'eBattleStatus',status:eStatus,poison:ePoisonTurns,paralysis:eParalysisTurns,sleep:eSleepTurns,confusion:eConfusionTurns,guard:eGuard,shield:eAquaShield,charge:eFlareCharge,attack:eAtk,link:enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())});
+  const units=[{key:`player:${activeInstance?.uid||activePartyIdx}`,vis:'pVis',name:player.name,hp:pHp,max:playerMaxHp(),statusId:'pBattleStatus',status:pStatus,poison:pPoisonTurns,paralysis:pParalysisTurns,sleep:pSleepTurns,freeze:typeof pFreezeTurns==='undefined'?0:pFreezeTurns,confusion:pConfusionTurns,guard:pGuard,shield:pAquaShield,charge:pFlareCharge,attack:pAtk,link:typeof kokoroLinkStatusHtml==='function'?kokoroLinkStatusHtml():''}];
+  if(multiBattle?.active){for(const e of multiBattle.enemies)units.push({key:e.id,vis:`${e.id}Vis`,name:e.mon.name,hp:e.hp,max:e.maxHp,statusId:`${e.id}Status`,status:e.status,poison:e.poisonTurns,paralysis:e.paralysisTurns,sleep:e.sleepTurns,freeze:e.freezeTurns,confusion:e.confusionTurns,guard:e.guard,shield:e.aquaShield,charge:e.flareCharge,attack:e.attack,link:enemyKokoroLinkStatusHtml(e.id)});}
+  else units.push({key:`single:${enemy.id}`,vis:'eVis',name:enemy.name,hp:eHp,max:enemyMaxHp(),statusId:'eBattleStatus',status:eStatus,poison:ePoisonTurns,paralysis:eParalysisTurns,sleep:eSleepTurns,freeze:typeof eFreezeTurns==='undefined'?0:eFreezeTurns,confusion:eConfusionTurns,guard:eGuard,shield:eAquaShield,charge:eFlareCharge,attack:eAtk,link:enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())});
   return units;
 }
 function battleStateLabels(u){
   if(u.hp<=0)return ['戦闘不能'];
   const labels=[];
-  if(u.status==='poison'&&u.poison>0)labels.push(`☠ 毒 ${u.poison}T`);
-  if(u.paralysis>0)labels.push(`⚡ 麻痺 ${u.paralysis}T`);
+  if(u.status==='poison'&&u.poison>0)labels.push(`毒 ${u.poison}T`);
+  if(u.paralysis>0)labels.push(`麻痺 ${u.paralysis}T`);
   if(u.sleep>0)labels.push(`眠り ${u.sleep}T`);
   if(u.confusion>0)labels.push(`混乱 ${u.confusion}T`);
+  if(u.freeze>0)labels.push(`凍結 ${u.freeze}T`);
   if(u.guard)labels.push('防御 次の被弾');
   if(u.shield)labels.push('水の盾 次の被弾');
   if(u.charge)labels.push('溜め 次の攻撃+20%');
@@ -90,18 +108,50 @@ function battleHpResult(vis,before,after,{label='HP',damage=null,barrier=0,reduc
   const over=damage===null?0:Math.max(0,damage-Math.max(0,before));
   const text=`${label} ${loss<0||/回復|吸収|再生/.test(label)?'+':'−'}${amount}${reduced?` / 軽減 ${reduced}`:''}${barrier?` / 障壁 ${barrier}`:''}${over?` / 超過 ${over}`:''}`;
   battleFeedback.hp.set(u.key,Math.max(0,after));
-  battleHistoryEntry(`${u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
-  if(typeof BattleAudio!=='undefined')BattleAudio.hp(before,after,{impact,effectiveness});
-  if(impact&&typeof playBattleImpact==='function')playBattleImpact(vis,amount,effectiveness,types,power);
+  const effectsStage=typeof setBattleSkillHpTrailTiming==='function'?document.querySelector('#battle .battle-arena'):null;
+  const effectsRate=typeof activeBattleSkillEffect!=='undefined'&&activeBattleSkillEffect?.rate||(typeof autoSpeed==='function'?autoSpeed():1);
+  if(effectsStage)setBattleSkillHpTrailTiming(effectsStage,effectsRate,battleVisuals,{healed:loss<0});
+  renderBattleHpAtImpact(u,after);
+  if(loss<0&&typeof gameAudioPlay==='function')gameAudioPlay('heal');
+  battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${text}（HP ${Math.max(0,before)} → ${Math.max(0,after)}）`,'hp');
+  let rendered=impact&&typeof playBattleImpact==='function'&&playBattleImpact(vis,amount,effectiveness,types,power);
+  const suppress=typeof battleSkillEffectsSuppressed==='function'&&battleSkillEffectsSuppressed();
+  if(!impact&&!suppress&&typeof renderBattleSkillHpDelta==='function'){
+    const target=document.getElementById(vis),stage=document.querySelector('#battle .battle-arena');
+    if(target&&stage&&amount>0){
+      const effect=typeof activeBattleSkillEffect==='undefined'?null:activeBattleSkillEffect;
+      const key=label==='吸収'?'drain':label==='反動'?'recoil':null;
+      const display=()=>renderBattleSkillHpDelta({stage,target,loss,label,rate:effectsRate,cleanupRegistry:battleVisuals});
+      if(key&&effect?.source===target&&effect.profile.extras.includes(key)&&effect.controller.whenHpCue){
+        effect.controller.whenHpCue(key).then(ready=>{if(ready&&target.isConnected)display();});
+        rendered=true;
+      }else rendered=display();
+    }
+  }
   const queue=battleFeedback.results.get(u.key)||[];queue.push(text);if(queue.length>3)queue.shift();battleFeedback.results.set(u.key,queue);
   renderBattleHpResults(u,queue);
+  if(typeof renewalHpFeedback==='function')renewalHpFeedback(u,loss,{label,effectiveness,showNumber:!rendered&&!suppress});
+}
+// Update only presentation here: do not clamp game state or run turn logic.
+// A repeat attack must visibly consume HP once per hit, before its final update().
+function renderBattleHpAtImpact(u,after){
+  const hp=Math.max(0,after),pct=hp/u.max*100;
+  const prefix=u.vis==='pVis'?'p':u.vis==='eVis'?'e':null;
+  const host=prefix?null:document.getElementById(u.vis)?.closest?.('.multi-enemy-card');
+  const bar=prefix?document.getElementById(`${prefix}HpBar`):host?.querySelector('.hp');
+  const trail=prefix?document.getElementById(`${prefix}HpTrail`):host?.querySelector('.hp-trail');
+  const label=prefix?document.getElementById(`${prefix}HpText`):host?.querySelector('.battle-hp-line span');
+  if(bar){bar.style.width=`${pct}%`;bar.className='hp'+(pct<25?' hp-danger':pct<50?' hp-warn':'');bar.setAttribute('aria-valuenow',String(hp));}
+  if(trail)trail.style.width=`${pct}%`;
+  if(label)label.textContent=`${hp} / ${u.max}`;
 }
 function renderBattleHpResults(u,queue){
   const target=document.getElementById(u.vis);if(!target)return;
-  const host=target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
-  let result=host.querySelector('.battle-hp-result');
-  if(!result){result=document.createElement('div');result.className='battle-hp-result';host.appendChild(result);}
-  const text=queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
+  const single=document.getElementById('battle')?.classList.contains('is-battle-stage');
+  const host=single?document.getElementById('battleStageResults'):target.closest('.battle-combatant,.multi-enemy-card');if(!host)return;
+  let result=host.querySelector(single?`[data-result-vis="${u.vis}"]`:'.battle-hp-result');
+  if(!result){result=document.createElement('div');result.className='battle-hp-result';result.dataset.resultVis=u.vis;host.appendChild(result);}
+  const text=(single?`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：`:'')+queue.join(' ／ ');if(result.textContent!==text){result.textContent=text;result.classList.remove('is-new-result');void result.offsetWidth;result.classList.add('is-new-result');}
 }
 function refreshBattleFeedback(message=''){
   for(const u of battleCombatants()){
@@ -112,10 +162,14 @@ function refreshBattleFeedback(message=''){
     }else battleFeedback.hp.set(u.key,hp);
     const labels=battleStateLabels(u),state=labels.join('・');
     const prior=battleFeedback.states.get(u.key);
-    if(prior!==undefined&&prior!==state)battleHistoryEntry(`${u.name}：${state||'状態正常（効果解除）'}`,'status');
+    if(prior!==undefined&&prior!==state){battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');if(typeof renewalStatusFeedback==='function')renewalStatusFeedback(labels,prior);}
     battleFeedback.states.set(u.key,state);
     const el=document.getElementById(u.statusId);
-    if(el){el.classList.toggle('is-normal',labels.length===0);el.replaceChildren();for(const label of labels.length?labels:['状態正常']){const chip=document.createElement('span');chip.textContent=label;el.appendChild(chip);}}
+    if(el){
+      const chips=battleStateChips(u);
+      el.classList.toggle('is-normal',!chips);
+      if(el.innerHTML!==chips)el.innerHTML=chips;
+    }
     const queue=battleFeedback.results.get(u.key);if(queue)renderBattleHpResults(u,queue);
   }
   renderBattleInputState();
@@ -135,6 +189,7 @@ function reconcileBattleNode(node,next){
   children.slice(incoming.length).forEach(child=>child.remove());
 }
 function renderMultiBattleCards(html){
+  if(typeof renderMultiBattleStageCards==='function'){renderMultiBattleStageCards(html);return;}
   const grid=document.getElementById('multiEnemyGrid');if(!grid)return;
   const template=document.createElement('div');template.innerHTML=html;
   for(const next of [...template.children]){
@@ -149,6 +204,7 @@ function renderMultiBattleCards(html){
   [...grid.children].forEach(node=>{if(!ids.has(node.id))node.remove();});
 }
 function forgetBattleEnemyFeedback(){
+  if(typeof clearBattleVisuals==='function')clearBattleVisuals();
   document.getElementById('singleEnemyBox')?.querySelector('.battle-hp-result')?.remove();
   for(const map of [battleFeedback.hp,battleFeedback.states,battleFeedback.results])for(const key of map.keys())if(key.startsWith('single:'))map.delete(key);
   battleFeedback.action='';

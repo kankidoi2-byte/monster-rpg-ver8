@@ -1,0 +1,50 @@
+[
+  {
+    "test": "test-battle-stage-dom",
+    "chunk_id": "e7a61c",
+    "wall_time_seconds": 0.000010217,
+    "exit_code": 0,
+    "original_token_count": 54,
+    "output": "PASS Phase3A DOM: stable media/HP, fixed IDs, five command entrypoints, busy, item return, replacement, retreat/victory/next, multi stage return, character static/error fallback. Layout and real browser NOT tested.\n"
+  },
+  {
+    "test": "test-battle-stage-multi-dom",
+    "chunk_id": "60dd1a",
+    "wall_time_seconds": 0.000011296,
+    "exit_code": 0,
+    "original_token_count": 56,
+    "output": "PASS Phase3B DOM: same-species identity, real enemy->enemy attack and impact HP isolation, stable images, targets, knockout, busy recovery, item return, switch, retreat/victory/next, invasion, generation and image fallback.\n"
+  },
+  {
+    "test": "test-battle-idle-media-dom",
+    "chunk_id": "f2ae3f",
+    "wall_time_seconds": 0.000023458,
+    "exit_code": 0,
+    "original_token_count": 133,
+    "output": "PASS shared size policy: 7500 species-pair/viewport cases; equal ally/enemy geometry and contained enemy tracks\nPASS Phase4A DOM: node/time retention; temporary pause/resume; switch disposal and stale callback; five exits; simulated rejection/no retry loop/user retry; victory/next. Media API mocked, real decode is browser evidence.\nPASS Phase D bounds: 400 numeric containment/aspect cases for 50 species; resize, zero-size fallback, observer disposal/stale callback. No physical foot or real browser/Galaxy layout acceptance.\n"
+  },
+  {
+    "test": "test-battle-idle-multi-dom",
+    "chunk_id": "e18e8f",
+    "wall_time_seconds": 0.000011929,
+    "exit_code": 0,
+    "original_token_count": 195,
+    "output": "{\n  \"kind\": \"Media API mocked; not Android/decoder performance\",\n  \"checks\": [\n    \"three independent same-species records; HP/HUD updates retain all nodes and clocks\",\n    \"one enemy failure and manual retry leave other lifetimes intact; stale event ignored\",\n    \"stable budget 3→1→3, invalid upper bound rejected; dropped resources released\",\n    \"three independent videos obey overlapping screen/hidden/reduced reasons\",\n    \"one enemy knockout and ally switch dispose only affected lifetimes\",\n    \"50 three-video battle/exit cycles release all owned resources\",\n    \"actual invasion keeps HP/status/attack/guard, removes old video, and does not start an extra turn\",\n    \"media knockout disposal preserves game object and contract/reward eligibility\"\n  ],\n  \"pass\": 8\n}\n"
+  },
+  {
+    "test": "test-battle-idle-lifecycle-dom",
+    "chunk_id": "4bf384",
+    "wall_time_seconds": 0.000020826,
+    "exit_code": 0,
+    "original_token_count": 254,
+    "output": "{\n  \"kind\": \"Media API and lifecycle events mocked; not real playback/BFCache\",\n  \"checks\": [\n    \"foreground budget excludes 60 seconds offscreen; overlapping reasons; obsolete timer ignored\",\n    \"timeout keeps commands usable; 20 retry clicks create one attempt; stale media events ignored\",\n    \"switch during retry disposes source, handlers, timer and ignores delayed Promise\",\n    \"HP/status/panel and temporary screen keep video and position\",\n    \"simulated persisted pagehide disposes; pageshow reconciles current state once (not real BFCache)\",\n    \"five battle-operation-exit-next cycles release owned resources\",\n    \"play refusal static fallback, no auto retry, one successful manual retry\",\n    \"simulated media error keeps battle commands usable\",\n    \"initial reduced setting avoids fetching; change restores playback\",\n    \"same-species candidates keep selected instance even after candidate order changes\",\n    \"leave during loading ignores delayed error and play rejection\"\n  ],\n  \"pass\": 11\n}\n"
+  },
+  {
+    "test": "test-battle-idle-viewport-dom",
+    "chunk_id": "1f0689",
+    "wall_time_seconds": 0.000015601,
+    "exit_code": 0,
+    "original_token_count": 127,
+    "output": "{\n  \"kind\": \"DOM + mocked media/IntersectionObserver; not real viewport or decoder\",\n  \"checks\": [\n    \"initial offscreen avoids source; hysteresis cancels stale timeout; same video resumes\",\n    \"intersection cannot override hidden or reduced-motion reasons\",\n    \"exit disconnects observer and rejects queued timer/observer callbacks\",\n    \"ordinary gran registration, shared layout, mixed species independently stop and retain HP nodes\"\n  ],\n  \"pass\": 4,\n  \"normalRegistered\": 50,\n  \"defaultLimit\": 1\n}\n"
+  }
+]

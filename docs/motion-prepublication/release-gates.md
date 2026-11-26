@@ -1,0 +1,97 @@
+# 最新判定：2026-10-01 JST — Phase E 検査・サイズ採用
+
+最新ゲームcommit d3e671fba20bd385f32cd933459216ccf825fe4b。★1補正後のサイズは本人採用済み。npm run check はpostcheckを含めPASS、モーション専用6検査PASS。50体通常登録、19背景接続・混成表示、400包含例・7500組合せ例の自動検査結果を確認。
+
+本人の採用判断はサイズ設定に限定し、全50体・19背景・画面向き・文字拡大・実測負荷の全網羅合格とは扱わない。次は通常戦闘経路の実機確認と残る視覚・負荷項目。記録は [phase-e/README.md](phase-e/README.md)、[検査結果](phase-e/validation.json)、[サイズ採用](phase-e/size-owner-acceptance.md)。
+
+本編mainへのマージ・一般公開・閲覧範囲変更は禁止のまま。以下は過去時点の履歴として保持する。
+
+---
+
+最新：Phase Bで評価branchの通常経路登録2/50、通常予算1。最終受入は未完了。phase-b/implementation.mdを優先。
+
+# 最新判定：2026-09-29 Phase A
+
+全50体＋バトル画面改修がゴール。最新一覧は [phase-a-baseline.md](phase-a-baseline.md) と [phase-a-species-status.json](phase-a-species-status.json)。以下の2026-09-27表は履歴。
+
+- 通常登録1/50、グランは隔離QAのみ。3条件のGalaxy配置・レビューMIME/Rangeは記録済み。
+- グランの本人の見た目確認は完了。66フレームの右端接触だけを登録不可の理由にしない。アンカー/反転・未確認幅/行動占有・共通負荷/停止条件を保持。
+- ボルテックの案内した素材外観も本人確認済み。原本照合・通常登録とは区別。
+- 2026-09-27以降の本人明示許可によりfeature branchへの保存は許可・実施済み。末尾の「保存許可待ち」は当時の履歴で、再承認は不要。
+- 本編mainへのマージ・一般公開・閲覧範囲変更は禁止のまま。
+
+---
+
+# Prepublication gates — 2026-09-27 JST
+
+Latest update: Android instructed same-asset 1/3 scenarios reported without problems by user. Browser supplied as placeholder "〇〇", model not supplied. See phase8-user-report.json and phase9-progress.md. This is scoped user evidence, not measured decoder performance.
+
+The user's current instruction permits continuing phases and updating the existing owner-only review. It forbids main merge, game publication, audience expansion. It does not turn unmet acceptance conditions into PASS.
+
+|Phase|Current status|Remaining acceptance|
+|---|---|---|
+|4C|Independent up-to-3 evaluation implemented; default1; 8 mocked groups pass|user reported instructed 1/3 playback/recovery without problems; detailed alpha/layout, delivery MIME/Range, quantified 1→3 load; offscreen hysteresis policy before default/broad expansion|
+|5|5 integrated HP/handler groups and existing impact regressions pass|visual timing on real video/device|
+|6|eligible-media operation regression and full existing suite pass|touch journey/special-link branches on real browser/device|
+|7|actual invasion state transfer/ownership and eligibility checks pass|visual poison/3-way/invasion plus device acceptance|
+|8|User report: instructed Android 1/3 scenarios without problems; bounded candidate work proceeds, default1|Actual browser/model; unmeasured performance/delivery; special cases not explicitly covered|
+|9|4 candidates streamed through full240-frame preflight; gran blocked on edge contact; 3 birds have no edge contact; review tools implemented|Bird source ZIP identity blocked by access error; individual visual/runtime/device acceptance. No additional normal registrations|
+|10|19 map DOM bindings, node retention and release pass in batches≤3; 19 map file references exist; no missing assets|per-map horizon/anchor and animated full-body collision checks in batches3–5; depends on accepted body bounds|
+|11|current full check including postcheck PASS|final 50-species/19-map regressions and devices; current success is not final-content acceptance|
+|12|rollback/release checklist prepared only|all prior gates, current-main integration review/CI, explicit user publication instruction|
+
+## Combined Android check (same device/browser for both sizes)
+
+Use the existing private review. In 1-body page and 3-body page, wait 10 seconds, use skills three times, visit item screen twice, leave to another app for 10 seconds, lock for 10 seconds and return. Check correct ally/enemy A/enemy B; HP and targeting remain usable; no ghost/duplicate video, freezes or unexpected extra actions. Repeat landscape and 200% text; all buttons reachable by scrolling. Test reduced animation and one failed-video manual retry. Record model/browser, 1 or 3 bodies, action, observed pause/stutter/heat and whether controls work. Browser benchmarks are single-sample diagnostics, not pass/fail by themselves.
+
+Do not run the automatic browser suites while manually interacting or measuring performance. Automatic 3-video/performance scripts are prepared but not run here because of the browser policy block.
+
+## Release/rollback (not executed)
+
+Keep Phase4B 32f8f9b2409de37b62262cb7453f9cdf3776f3b5 and private review source75ac540d741b9a519db57806ad761cad27f7b5a9. To restore private review use its saved prior version without changing access. For game code, checkout the previous feature branch or revert on a new branch; never reset/force-push main. Media cap can return to1 without changing game/save state. No production video position/generation is persisted.
+
+Before any future merge: review diff against then-current main, preserve mb_v95c/IDs/save schema, resolve any conflicts with permission, full check on final candidate, observe required CI and device gates, obtain explicit publication permission. Do not invoke Phase12 publication under the current instruction.
+
+## Save boundary
+
+GitHub push of the new feature branch was automatically rejected: external repository ownership/privacy and write authorization were considered insufficiently explicit in user-authored text. Do not retry through a connector or another route. Local commits and a base-relative recovery bundle preserve this task pending explicit approval to save to kankidoi2-byte/monster-rpg-ver8 feature branch. Owner-only Sites source save is separately explicitly authorized by the current user instruction.
+
+
+## 2026-09-29 Phase C 第1便
+
+シェンハイロン・ティエンハイロンv5の採用版一致、全240フレームalpha検査、GitHub実ファイル送信とバイト照合を完了。評価用通常登録4/50。残り46、最終受入未完了。詳細はphase-c/implementation.mdとprovenance.json。Phase D/E/Fや本編公開を完了扱いにしない。
+
+
+## 2026-09-29 Phase C第2便・まとめて確認
+通常登録7/50、残り43体。追加はゴールデンスライムv1、アシュレイアv2、モルグラムv1。原本ZIP出力とWebMのSHA一致、各240フレームの透過・bbox・端接触を検査。動画再圧縮なし。正面／左向き／右向きに合わせ反転し、横長素材の確認用bbox計算を補正。
+50体一覧に検索、登録待ち表示、1体ずつの再生、端末内確認メモ、まとめてコピーを追加。動画は選択時だけ取得し、閉じる／切替で破棄。ゲームセーブには触れない。
+全個体の素材検査は作業側で行う。利用者による全50体の味方・敵・3体テストは必須にしない。代表例と例外を絞って実機確認し、一覧では気になる個体だけ報告できる。端末内の「問題なし」は最終受入判定とは別。旧来の個別確認依頼より、この運用を優先する。
+前便に対する利用者報告は「確認出来た」。詳細項目の全合格と推定しない。新3体の実機視覚・負荷は未確認。Phase C全体、Phase D戦闘画面改修、E/F統合受入は未完了。本編main未反映。詳細はphase-c/batch2を参照。
+
+
+## 2026-09-30 Phase C第3便
+ゴブリンv1、ナイトメアv1、アストラレピスv1を通常経路へ評価登録。登録10/50、残り40体。採用READMEのSHA-256、Drive動画、制作ZIP内の動画を再照合し一致。再エンコードなし。各240フレームで透明・不透明画素を確認し、bboxは端に接触しない。先頭静止の向きに基づきゴブリン・ナイトメアは味方側、アストラレピスは敵側を反転。全個体の自然さ／足場／色縁／実機負荷の受入とは別。
+カタログは全50体中登録10体を表示。通常の再生上限1、確認画面のみ3体を維持。全個体の手動味方・敵・3体テストは必須にしない。代表例・例外をまとめて確認する運用を継続。Phase D戦闘画面改修、E/F統合受入は未完了。
+新3体の実端末描画・発熱・長時間負荷は未確認。本編mainへのマージ・一般公開なし。結果はphase-c/batch3を参照。
+
+
+## 2026-09-30 JST — Phase C第4便
+ネメスv1・ネメシアv1・ネメシオンv1を評価用通常登録。13/50、残り37体。採用READMEのSHA-256、制作ZIP内外動画の全バイト一致、全240フレームの透過・外接矩形を検査。3体ともキャンバス端接触なし。動画は再生成・再エンコードせず保存し、先頭透過フレームからWebP代替画像を作成。
+原本の右向きネメスは敵側、左向きネメシア・ネメシオンは味方側で反転。足場はキャンバス配置であり、解剖学的な接地点の確定ではない。全個体の手動戦闘確認を必須にせず、一覧のまとめ確認と問題個体・代表配置の戦闘検査を継続。実機表示・負荷・最終受入はpending。本編mainへのマージ・一般公開はしない。
+第3便の進捗台帳に残っていた未登録の古いstatus文言も、登録済み・実機未確認へ訂正。
+
+
+## 2026-09-30 JST — Phase C第5便
+滅亡の星ネメシオンv5・偽竜Code Alfa v1・ボルテックv4・スパクインv4・ボルタックスv5を評価用通常登録。18/50、残り32体。採用版と制作ZIP内外動画の全バイト一致、全240フレームの透過・外接矩形を検査。5体ともキャンバス端接触なし。動画は再エンコードせず保存、先頭透過フレームからWebP代替画像を作成。原本はいずれも左向きで味方側のみ反転。足場確定・実機表示・負荷・最終受入はPhase D/Eで別途検証。mainへのマージ・一般公開はしない。
+
+
+## 2026-09-30 JST — Phase C第6便
+フレイガルv2・フレイウルフv2・アクアロンv3・ハイアクアロンv3を評価用通常登録。22/50、残り28体。採用ZIP内外MP4の全バイト一致を確認。ZIPには透過WebMがなく、既存render.pyのtransparent=Trueから新規WebMを書き出した派生物。採用texture・rig・motion・render.pyは無変更。採用MP4全240フレームとの数値比較、透過と元背景再合成の差（最大0または2階調）、元描画0秒/8秒の完全一致、派生動画全240フレームの透過・外接矩形を検査。全4体に端接触なし。圧縮後RGBは完全同一ではなく、画質・実機の最終受入はpending。背景抜きの再生成や色キー処理は行わない。再現手順はbatch6/README.md。足場・反転・最終配置・負荷はPhase D/Eで検証。mainへのマージ・一般公開なし。
+
+
+## 2026-09-30 JST — Phase C第7便
+グラスビートv1・ソーンビートv1・グランビートv4・リカシーフv1を評価用通常登録。26/50、残り24体。採用ZIP内外MP4の全バイト一致を確認。ZIPには透過WebMがなく、既存render.pyのtransparent=Trueから新規WebMを書き出した派生物。採用texture・rig・motion・render.pyは無変更。採用MP4全240フレームとの数値比較、透過と元背景再合成の差（最大0階調）、元描画0秒/8秒の完全一致、派生動画全240フレームの透過・外接矩形を検査。全4体に端接触なし。圧縮後RGBは完全同一ではなく、画質・実機の最終受入はpending。背景抜きの再生成や色キー処理は行わない。再現手順はbatch7/README.md。足場・反転・最終配置・負荷はPhase D/Eで検証。mainへのマージ・一般公開なし。
+
+
+## 2026-09-30 JST — Phase C第8便
+セラルフィアv1・シルフィンv1・ゼファーレイv1・テンペストレイv1を評価用通常登録。30/50、残り20体。採用ZIP内外MP4の全バイト一致を確認。ZIPには透過WebMがなく、既存render.pyのtransparent=Trueから新規WebMを書き出した派生物。採用texture・rig・motion・render.pyは無変更。採用MP4全240フレームとの数値比較、透過と元背景再合成の差（最大0階調）、元描画0秒/8秒の完全一致、派生動画全240フレームの透過・外接矩形を検査。全4体に端接触なし。圧縮後RGBは完全同一ではなく、画質・実機の最終受入はpending。背景抜きの再生成や色キー処理は行わない。再現手順はbatch8/README.md。足場・反転・最終配置・負荷はPhase D/Eで検証。mainへのマージ・一般公開なし。

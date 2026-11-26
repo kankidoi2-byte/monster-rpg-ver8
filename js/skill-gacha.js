@@ -1,23 +1,23 @@
 const SKILL_GACHA_SINGLE_COST = 100;
 const SKILL_GACHA_TEN_COST = 900;
-const SKILL_GACHA_RARITY_WEIGHTS = Object.freeze({1:50,2:27,3:13,4:7,5:2.5,6:0.5});
+const SKILL_GACHA_COST_WEIGHTS = Object.freeze({1:30,2:20,3:15,4:10,5:5,6:2,7:7,8:3,9:3,10:2,12:0.3,15:1.2,16:0.5,17:0.3,20:0.7});
 const SKILL_GACHA_PRESENTATION_DELAYS = Object.freeze({
   standard:Object.freeze({intro:620,card:135}),
   quick:Object.freeze({intro:120,card:0})
 });
 const SKILL_GACHA_KINDS = Object.freeze({
-  monster:Object.freeze({label:'モンスター技', pool:MONSTER_MOVE_CARDS}),
-  character:Object.freeze({label:'キャラクター技', pool:CHARACTER_MOVE_CARDS})
+  monster:Object.freeze({label:'共通技', pool:MONSTER_MOVE_CARDS}),
+  character:Object.freeze({label:'共通技', pool:CHARACTER_MOVE_CARDS})
 });
 let skillGachaPresentationSpeed='standard';
 let skillGachaPresentationToken=0;
 let activeSkillGachaPresentation=null;
 
 function skillGachaKind(kind){ return SKILL_GACHA_KINDS[kind] ? kind : null; }
-function skillGachaPool(kind){ return SKILL_GACHA_KINDS[skillGachaKind(kind)]?.pool || []; }
+function skillGachaPool(kind){ return (SKILL_GACHA_KINDS[skillGachaKind(kind)]?.pool || []).filter(card=>!card.deprecated&&card.cost<=20&&card.acquisition!=='synthesis'); }
 function skillGachaCostEntries(kind,minCost=1){
   const pool=skillGachaPool(kind);
-  return Object.entries(SKILL_GACHA_RARITY_WEIGHTS)
+  return Object.entries(SKILL_GACHA_COST_WEIGHTS)
     .map(([cost,weight])=>({cost:Number(cost),weight,cards:pool.filter(card=>card.cost===Number(cost))}))
     .filter(entry=>entry.cost>=minCost && entry.cards.length);
 }
@@ -30,14 +30,23 @@ function pickSkillGachaCard(kind,minCost=1,randomFn=Math.random){
   const entries=skillGachaCostEntries(kind,minCost);
   const total=entries.reduce((sum,entry)=>sum+entry.weight,0);
   if(!total) return null;
-  let rarityRoll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0))*total;
+  let costRoll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0))*total;
   let selected=entries[entries.length-1];
   for(const entry of entries){
-    rarityRoll-=entry.weight;
-    if(rarityRoll<0){selected=entry;break;}
+    costRoll-=entry.weight;
+    if(costRoll<0){selected=entry;break;}
   }
   const cardRoll=Math.max(0,Math.min(0.999999999999,Number(randomFn())||0));
   return selected.cards[Math.floor(cardRoll*selected.cards.length)] || selected.cards[0] || null;
+}
+// Shared acquisition path for skill gacha and present rewards. Ownership is
+// also the runtime's skill encyclopedia discovery source.
+function grantSkillCards(id,count=1){
+  if(!Object.hasOwn(SKILL_BY_ID,id)||SKILL_BY_ID[id].deprecated||!Number.isSafeInteger(count)||count<=0)throw Error('技カードの内容が不正です。');
+  if(!save.skillCards||typeof save.skillCards!=='object')save.skillCards={};
+  const next=Math.max(0,Math.floor(Number(save.skillCards[id])||0))+count;
+  if(!Number.isSafeInteger(next))throw Error('技カードの所持数が上限を超えています。');
+  save.skillCards[id]=next;
 }
 function performSkillGacha(kind,count,randomFn=Math.random){
   const normalizedKind=skillGachaKind(kind);
@@ -45,17 +54,20 @@ function performSkillGacha(kind,count,randomFn=Math.random){
   const coinCost=drawCount===10 ? SKILL_GACHA_TEN_COST : drawCount===1 ? SKILL_GACHA_SINGLE_COST : 0;
   if(!normalizedKind || !drawCount) return {ok:false,error:'ガチャの種類または回数が正しくありません。',cards:[]};
   if((save.coins||0)<coinCost) return {ok:false,error:`コインが${coinCost-(save.coins||0)}枚足りません。`,cards:[]};
-  const cards=Array.from({length:drawCount},()=>pickSkillGachaCard(normalizedKind,1,randomFn)).filter(Boolean);
-  if(cards.length!==drawCount) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
-  if(drawCount===10 && !cards.some(card=>card.cost>=2)) cards[cards.length-1]=pickSkillGachaCard(normalizedKind,2,randomFn);
+  const cards=Array.from({length:drawCount},()=>pickSkillGachaCard(normalizedKind,1,randomFn));
+  if(cards.some(card=>!card)) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
+  if(drawCount===10 && !cards.some(card=>card.cost>=6)){
+    cards[cards.length-1]=pickSkillGachaCard(normalizedKind,6,randomFn);
+  }
+  if(cards.length!==drawCount || cards.some(card=>!card)) return {ok:false,error:'排出できる技カードがありません。',cards:[]};
   if(!save.skillCards || typeof save.skillCards!=='object') save.skillCards={};
   save.coins-=coinCost;
-  cards.forEach(card=>{save.skillCards[card.id]=Math.max(0,Math.floor(Number(save.skillCards[card.id])||0))+1;});
+  cards.forEach(card=>grantSkillCards(card.id));
   return {ok:true,kind:normalizedKind,count:drawCount,coinCost,cards};
 }
 function showSkillGacha(){ show('skillGacha'); }
-function skillGachaRarityLabel(cost){ return `COST ${cost}${cost>=5?'・最高級':cost>=3?'・希少':'・基本'}`; }
-function skillGachaRarityTier(cost){ return cost>=6?'mythic':cost>=5?'legendary':cost>=3?'rare':'basic'; }
+function skillGachaRarityLabel(cost){ return `COST ${cost}・${cost===25?'最強':cost>10?'超級':cost>5?'上級':'低級'}`; }
+function skillGachaRarityTier(cost){ return cost===25?'mythic':cost>10?'legendary':cost>5?'rare':'basic'; }
 function skillGachaInventorySnapshots(cards,beforeInventory={}){
   const counts={...beforeInventory};
   return cards.map(card=>{
@@ -80,17 +92,17 @@ function setSkillGachaPresentationSpeed(speed){
 function skillGachaCardMarkup(entry,index,faceDown=false){
   const card=entry.card;
   const acquisition=entry.isNew?'<span class="skill-gacha-new">NEW</span>':`<span class="skill-gacha-owned">所持 ×${entry.after}</span>`;
-  return `<article class="skill-gacha-reveal-card skill-gacha-tier-${entry.tier}${faceDown?' is-facedown':''}" data-skill-gacha-card="${index}" data-cost="${card.cost}" role="button" tabindex="${faceDown?'-1':'0'}" aria-expanded="false" onclick="openSkillGachaCardDetail(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSkillGachaCardDetail(${index});}"><div class="skill-gacha-card-inner"><div class="skill-gacha-card-back"><span>✦</span><small>技紋</small></div><div class="skill-gacha-card-front card ${skillCardClass(skillTypes(card))}">${acquisition}${skillCardHeader(card)}<p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p class="small">${moveEffectText(skillToMove(card.id))}</p></div></div></article>`;
+  return `<article class="skill-gacha-reveal-card skill-gacha-tier-${entry.tier}${faceDown?' is-facedown':''}" data-skill-gacha-card="${index}" data-cost="${card.cost}" role="button" tabindex="${faceDown?'-1':'0'}" aria-expanded="false" onclick="openSkillGachaCardDetail(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSkillGachaCardDetail(${index});}"><div class="skill-gacha-card-inner"><div class="skill-gacha-card-back"><small>技紋</small></div><div class="skill-gacha-card-front card ${skillCardClass(skillTypes(card))}">${acquisition}${skillCardHeader(card)}${skillCardStats(card)}${skillCardEffect(skillToMove(card.id))}</div></div></article>`;
 }
 function renderSkillGacha(){
   const coin=document.getElementById('skillGachaCoinView');
   if(coin) coin.textContent=Number(save.coins||0).toLocaleString('ja-JP');
   const rates=document.getElementById('skillGachaRateList');
   if(!rates) return;
-  rates.innerHTML=Object.entries(SKILL_GACHA_KINDS).map(([kind,config])=>{
-    const rows=skillGachaRates(kind).map(entry=>`<li><b>COST ${entry.cost}</b><span>${(entry.rate*100).toFixed(1)}%</span><small>${entry.cards.length}種類・1枚あたり約${(entry.rate/entry.cards.length*100).toFixed(2)}%</small></li>`).join('');
-    return `<article class="skill-gacha-pool"><h2>${kind==='monster'?'🐾':'⚔️'} ${config.label}ガチャ</h2><p>${config.pool.length}種類から抽選</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('${kind}',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('${kind}',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・COST 2以上1枚保証</small></button></div><ul>${rows}</ul></article>`;
-  }).join('');
+  const kind='monster';
+  const rows=skillGachaRates(kind).map(entry=>`<li><b>COST ${entry.cost}</b><span>${(entry.rate*100).toFixed(1)}%</span><small>${entry.cards.length}種類・1枚あたり約${(entry.rate/entry.cards.length*100).toFixed(2)}%</small></li>`).join('');
+  rates.innerHTML=`<article class="skill-gacha-pool"><h2>技カードガチャ</h2><p>モンスター・キャラクター共通の${skillGachaPool(kind).length}種類。装備できる技は属性・武器・身体で異なります。</p><div class="skill-gacha-actions"><button onclick="rollSkillGacha('monster',1)">1回<br><small>${SKILL_GACHA_SINGLE_COST}コイン</small></button><button onclick="rollSkillGacha('monster',10)">10回<br><small>${SKILL_GACHA_TEN_COST}コイン・上級以上1枚保証</small></button></div><details class="ui-copy-details"><summary>詳細（コスト別の提供割合）</summary><p class="small">以下は通常抽選の確率です。10枚とも低級だった場合、最後の1枚を上級・超級から再抽選します。最強4技は合成限定です。「育成」の「技合成」で作成できます。</p><ul>${rows}</ul></details></article>`;
+
 }
 function closeSkillGachaCardDetail(){
   if(typeof document==='undefined') return;
@@ -112,15 +124,15 @@ function openSkillGachaCardDetail(index){
   closeSkillGachaCardDetail();
   const card=entry.card;
   const acquisition=entry.isNew?'NEW・初獲得':`所持 ×${entry.after}`;
-  detail.innerHTML=`<div>${skillCardHeader(card)}<b>${acquisition}</b></div><p class="skill-type-line ${skillTypes(card)[0]}">${skillTypeLabel(skillTypes(card))} / 威力${card.power}</p><p>${moveEffectText(skillToMove(card.id))}</p><button type="button" onclick="closeSkillGachaCardDetail()">詳細を閉じる</button>`;
+  detail.innerHTML=`<div>${skillCardHeader(card)}<b>${acquisition}</b></div>${skillCardStats(card)}${skillCardEffect(skillToMove(card.id))}<button type="button" onclick="closeSkillGachaCardDetail()">詳細を閉じる</button>`;
   detail.hidden=false;
   cardElement.classList.add('is-selected');
   cardElement.setAttribute('aria-expanded','true');
 }
 function skillGachaProphecy(highestCost){
-  if(highestCost>=6) return {label:'虹の技紋――最高位の力を感知',tier:'mythic'};
-  if(highestCost>=5) return {label:'金の技紋――強大な力を感知',tier:'legendary'};
-  if(highestCost>=3) return {label:'銀の技紋――希少な力を感知',tier:'rare'};
+  if(highestCost>=25) return {label:'虹の技紋――最高位の力を感知',tier:'mythic'};
+  if(highestCost>10) return {label:'金の技紋――強大な力を感知',tier:'legendary'};
+  if(highestCost>5) return {label:'銀の技紋――希少な力を感知',tier:'rare'};
   return {label:'技紋が空のカードへ宿っていく',tier:'basic'};
 }
 function pulseSkillGachaCard(card){
@@ -164,6 +176,10 @@ function revealSkillGachaCards(token,index=0){
   setTimeout(()=>revealSkillGachaCards(token,index+1),delay+(entries[index].card.cost>=5?180:0));
 }
 function presentSkillGachaResult(result,entries){
+  if(typeof playGachaCinema==='function'){
+    const owner=save;
+    playGachaCinema('skill',result,entries,()=>{if(save===owner)showGachaResult('skill',result,entries);});return;
+  }
   if(typeof document==='undefined') return;
   const overlay=document.getElementById('skillGachaPresentation');
   const cards=document.getElementById('skillGachaPresentationCards');
@@ -223,11 +239,25 @@ function openSkillInventoryFromGacha(){
   if(typeof showUiNotice==='function') showUiNotice('仲間を選び「技変更」から装備できます。');
 }
 function rollSkillGacha(kind,count){
+  const beforeCoins=save.coins;
+  const hadInventory=Object.prototype.hasOwnProperty.call(save,'skillCards');
   const beforeInventory={...(save.skillCards||{})};
+  const hadMeta=Object.prototype.hasOwnProperty.call(save,'saveMeta');
+  const beforeMeta=save.saveMeta ? {...save.saveMeta} : save.saveMeta;
   const result=performSkillGacha(kind,count);
-  if(!result.ok){alert(result.error);return;}
+  if(!result.ok){showUiNotice(result.error,'warning');return;}
   const entries=skillGachaInventorySnapshots(result.cards,beforeInventory);
-  saveGame();
+  let persisted=false;
+  try{persisted=saveGame()!==false;}catch(error){persisted=false;}
+  if(!persisted){
+    save.coins=beforeCoins;
+    if(hadInventory)save.skillCards=beforeInventory;else delete save.skillCards;
+    if(hadMeta)save.saveMeta=beforeMeta;else delete save.saveMeta;
+    renderSkillGacha();
+    if(typeof updateAppResourceBar==='function') updateAppResourceBar();
+    showUiNotice('技ガチャの結果を保存できなかったため、抽選を取り消しました。コインと技カードは抽選前の状態です。','error');
+    return;
+  }
   renderSkillGacha();
   if(typeof updateAppResourceBar==='function') updateAppResourceBar();
   presentSkillGachaResult(result,entries);

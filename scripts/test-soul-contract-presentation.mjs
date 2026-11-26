@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const js=fs.readFileSync('js/soul-contract.js','utf8'),css=fs.readFileSync('css/soul-contract.css','utf8'),html=fs.readFileSync('index.html','utf8');
+assert(!/\b(saveGame|addInstance|performCharacterGacha|pickCharacterGachaUnit|localStorage)\s*\(/.test(js),'renderer cannot transact');
+assert(!/\.coins\s*[-+=]/.test(js));
+const ctx=vm.createContext({});vm.runInContext(js,ctx);
+for(let i=1;i<=5;i++)assert.equal(vm.runInContext(`soulContractRarity({rarity:'${'★'.repeat(i)}'})`,ctx),i);
+const paper=vm.runInContext('soulContractGlyphs()',ctx);assert(paper.includes('soul-glyph'));assert(!paper.includes('<text'));
+assert(paper.match(/class="soul-glyph"/g).length>120);assert.match(js,/rarity===3/,'only adopted rarity3 turns gold');
+for(const token of ['clearTimeout(timer)','cancelAnimationFrame(raf)',"removeEventListener('resize'","removeEventListener('pagehide'",'overlay.remove()','previousOverflow','inertState','previousFocus'])assert(js.includes(token),`cleanup ${token}`);
+assert.match(css,/prefers-reduced-motion/);assert.match(css,/min-height:44px/);assert.match(css,/orientation:landscape/);
+assert.match(html,/js\/soul-contract.js\?v=/);assert.match(html,/css\/soul-contract.css\?v=/);
+assert(!/世界の狭間|<h[1-6]/.test(js),'no unapproved top heading');
+console.log('PASS Soul Contract presentation isolation, glyphs, rarity, lifecycle, responsive contract');

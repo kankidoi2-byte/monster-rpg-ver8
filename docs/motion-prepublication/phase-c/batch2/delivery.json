@@ -1,0 +1,15 @@
+{
+  "siteProject": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+  "siteSourceCommit": "7c66009ee52527e1322993089b8bc5ff83d60e90",
+  "deployment": "appgdep_6abbc23e29bc81918093b9c6d5c71fe0",
+  "status": "succeeded",
+  "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+  "catalogPath": "/game/tools/motion-review/catalog.html",
+  "audience": "owner-private retained",
+  "githubAssetCommit": "f17876ebd3f1d3125a5c53cee78abe0cd6d8b2d3",
+  "githubCodeSave": "User explicitly authorized 2026-09-29 23:05 JST; submitted with this batch to feat/phase4c-prepublication. Verify remote branch contains this record.",
+  "mainMerged": false,
+  "registered": 7,
+  "remaining": 43,
+  "priorApprovalBlock": "Automatic review initially rejected destination authorization; user then explicitly authorized saving the prepared change."
+}

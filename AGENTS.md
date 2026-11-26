@@ -14,6 +14,15 @@
 - Item assets live in `images/items/`.
 - Map assets live in `images/maps/`.
 
+## Public hosting after the URL migration
+
+- Public game: https://pactforge-studio.github.io/monster-rpg-ver8/
+- This repository remains the game development source. The old Pages URL is a transfer entry point; `?legacy=1` keeps its recovery game accessible.
+- The deployment repository is `pactforge-studio/monster-rpg-ver8`. Its `source-ref.txt` pins a source commit, and its Actions workflow validates and publishes runtime files with the save-transfer overlay.
+- A player-facing source update is not fully published until the new host has been updated. After the source PR merges and main passes validation, `.github/workflows/propose-deploy.yml` opens or refreshes the deployment PR (branch `deploy/auto-source-ref`) that pins `source-ref.txt` to the validated SHA. It only proposes: never merge that PR without the owner's explicit approval. After approval, observe the current-head validation, merge, wait for successful Pages deployment, and verify the new public URL. If the workflow cannot run (for example the `DEPLOY_REPO_TOKEN` secret is missing or expired), create the same PR by hand. Changes outside `index.html`, `url-transfer.html`, `js/`, `css/`, `images/`, `english/` and `life-quest/` do not produce a deployment PR.
+- Preserve the old redirect and transfer files. Never replace newer saves with an old bookmark's data. Existing destination saves must remain protected.
+- The new URL removes the personal account name from the game address; public source history and the redirect still connect the two sites. Do not describe this setup as anonymous.
+
 ## Hard compatibility rules
 
 - Never change the save key `mb_v95c`.
@@ -48,7 +57,8 @@
 
 ## Required checks
 
-- Run `npm run check` after changing JavaScript, game data, or image assets.
+- During implementation, run the checks relevant to the affected code or assets. Once a coherent change to JavaScript, game data, or image assets is ready for final validation, run the full `npm run check` before proposing a merge.
+- Reuse successful results for unchanged inputs and environment. Rerun checks when subsequent changes affect their coverage, a failure needs verification, or a concrete unresolved risk remains. Required CI checks must still pass on the current PR head.
 - Fix all validation failures before proposing a merge.
 - For gameplay changes, smoke-test title screen, home, party selection, hunt selection, battle start, affected feature, save, and reload.
 - Report the files changed, checks run, and anything that still needs manual Android or Chromebook verification.
@@ -56,11 +66,19 @@
 ## Player-facing notices
 
 - Player-facing notices live in `js/notices-data.js` and must remain newest first.
+- Set the notice `date` to the release date (merge into `main`) in Japan Standard Time (Asia/Tokyo), regardless of when work started.
+- When releasing a player-visible change, append a release row to `js/update-releases.js` and update its cache version in `index.html` as described in `docs/update-rewards.md`.
 - Every feature, balance change, content addition, player-visible performance improvement, or bug fix must add or update a concise notice in the same branch.
 - Do not announce refactors, test-only changes, future unused assets, documentation-only work, or other changes players cannot observe.
 - Use a new stable notice `id`; never rename or reuse a published notice ID.
 - Write the title and body for players rather than copying commit messages or implementation details.
 - Run `npm run check:notices` as part of `npm run check`. If no notice is needed, state why in the pull request.
+
+## Task completion
+
+- Match the stopping point to the user's request: planning requests end with an actionable plan and material open decisions; implementation requests include implementation, relevant verification, and fixes for failures caused by the change; publication requests include the existing merge gates and verification of the published result.
+- Continue authorized work through that stopping point without requesting confirmation for each routine step. Apply the existing risk-based approval contract and stop conditions; this section does not expand publication or other permissions.
+- If blocked, report the concrete blocker, completed work, and remaining step. Do not report unperformed verification or publication as complete.
 
 ## Git workflow
 

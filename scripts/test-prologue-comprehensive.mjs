@@ -28,7 +28,12 @@ for(const [id,file] of [
   const png=fs.readFileSync(new URL(`../images/tutorial/characters/${file}`,import.meta.url));
   assert.ok(png.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),`${id} must be a decoded PNG`);
   assert.equal(png[25],6,`${id} must use RGBA color type`);
-  assert.ok(main.includes(`images/tutorial/characters/${file}`),`${id} transparent portrait must be runtime-referenced`);
+  assert.equal(asset.runtimeImage,asset.cutout.replace(/\.png$/,'.compact.png'));
+  const delivered=fs.readFileSync(new URL('../'+asset.runtimeImage,import.meta.url));
+  assert(delivered.subarray(0,8).equals(png.subarray(0,8)),id+' must use PNG');
+  assert.equal(crypto.createHash('sha256').update(delivered).digest('hex'),asset.runtimeSha256);
+  assert(delivered.length<png.length);
+  assert.ok(main.includes(asset.cutout),`${id} transparent portrait must be runtime-referenced`);
 }
 assert.equal(manifest.characters.find(entry=>entry.id==='gnosis')?.dexRegistered,false,'Gnosis must stay outside the dex');
 const elnaAsset=manifest.characters.find(entry=>entry.id==='elna_beginner');
@@ -63,7 +68,7 @@ assert.equal(dialogueContext.persisted,true);assert.equal(dialogueContext.render
 assert.equal(vm.runInContext('tutorialDialogueSkipTargetIndex()',dialogueContext),-1,'an operation wait must never be bypassed');
 
 const skipStart=tutorial.indexOf('function tutorialSkipRewardInstance');
-const skipEnd=tutorial.indexOf('function requestTutorialSkip',skipStart);
+const skipEnd=tutorial.indexOf('async function requestTutorialSkip',skipStart);
 assert.ok(skipStart>=0&&skipEnd>skipStart);
 const requiredFlags=['starterContractsGranted','elnaContractGranted','stellaSkillCardGranted','alchemySuppliesGranted','alchemyLessonPrepared','alchemyLessonCompleted','expeditionDispatched','prologueCompleted'];
 function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress',instances=[],flags={}}={}){
@@ -71,9 +76,9 @@ function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress'
   const tutorialState={status,stepId:'gnosis_name',completed:status==='completed',skipped:status==='skipped',replaying,elnaGuestActive:true,...Object.fromEntries(requiredFlags.map(flag=>[flag,false])),...flags};
   const context=vm.createContext({
     console:{error:()=>{}},
-    TUTORIAL_STARTER_CONTRACT_IDS:['freigal','aquaron'],TUTORIAL_STELLA_SKILL_ID:'skill_elna_middle_01',
+    TUTORIAL_STARTER_CONTRACT_IDS:['freigal','aquaron'],TUTORIAL_STELLA_SKILL_ID:'s110_041',
     TUTORIAL_LUMINA_ALCHEMY:{resultId:'galdra'},TUTORIAL_REQUIRED_SKIP_FLAGS:requiredFlags,
-    SKILL_BY_ID:{skill_elna_middle_01:{id:'skill_elna_middle_01'}},
+    SKILL_BY_ID:{s110_041:{id:'s110_041'}},
     tutorialBattleSession:{active:true,kind:'elna_rescue',enemyQueue:['slime']},
     save:{instances:structuredClone(instances),caught:instances.map(entry=>entry.id),party:[],skillCards:{},equippedSkills:{},progress:{chapterId:'prologue',storyFlags:{},tutorial:tutorialState}},
     currentTutorialState:()=>context.save.progress.tutorial,
@@ -85,6 +90,7 @@ function makeSkipContext({saveSucceeds=true,replaying=false,status='in_progress'
     updateParty:()=>{},renderParty:()=>{},renderDex:()=>{},updateItems:()=>{},updateAppResourceBar:()=>{},
     showUiNotice:message=>context.notices.push(message),notices:[]
   });
+  vm.runInContext(tutorial.slice(tutorial.indexOf('function tutorialMonsterInLineage'),tutorial.indexOf('function tutorialInitialPartyReady')),context);
   vm.runInContext(tutorial.slice(skipStart,skipEnd),context);
   return context;
 }
@@ -96,7 +102,7 @@ assert.deepEqual(Array.from(fresh.save.party,uid=>fresh.save.instances.find(entr
   'full skip must leave the same active party as a normally completed prologue');
 assert.ok(fresh.save.instances.some(entry=>entry.id==='freigal'&&!fresh.save.party.includes(entry.uid)),
   'full skip must retain Freigal in reserve without silently creating an expedition');
-assert.equal(fresh.save.skillCards.skill_elna_middle_01,1);
+assert.equal(fresh.save.skillCards.s110_041,1);
 for(const flag of requiredFlags)assert.equal(fresh.save.progress.tutorial[flag],true,`full skip must finalize ${flag}`);
 assert.equal(fresh.save.progress.tutorial.status,'skipped');
 assert.equal(fresh.save.progress.chapterId,'prologue');
@@ -105,7 +111,7 @@ assert.equal(fresh.save.progress.tutorial.elnaGuestActive,false);
 assert.equal(fresh.tutorialBattleSession.active,false);
 assert.equal(vm.runInContext('commitTutorialFullSkip()',fresh),true);
 assert.equal(fresh.save.instances.length,4,'repeating a full skip must not duplicate mandatory companions');
-assert.equal(fresh.save.skillCards.skill_elna_middle_01,1,'repeating a full skip must not duplicate the Stella card');
+assert.equal(fresh.save.skillCards.s110_041,1,'repeating a full skip must not duplicate the Stella card');
 
 const partial=makeSkipContext({instances:[{uid:'owned_freigal',id:'freigal',level:7,exp:3,locked:false}],flags:{starterContractsGranted:true}});
 assert.equal(vm.runInContext('commitTutorialFullSkip()',partial),true);
@@ -114,7 +120,7 @@ assert.ok(['aquaron','elna_beginner','galdra'].every(id=>partial.save.instances.
 
 const repairedCard=makeSkipContext({flags:{stellaSkillCardGranted:true}});
 assert.equal(vm.runInContext('commitTutorialFullSkip()',repairedCard),true);
-assert.equal(repairedCard.save.skillCards.skill_elna_middle_01,1,'a migrated reward flag must repair a missing mandatory Stella card');
+assert.equal(repairedCard.save.skillCards.s110_041,1,'a migrated reward flag must repair a missing mandatory Stella card');
 
 const failed=makeSkipContext({saveSucceeds:false});
 const failedBefore=JSON.stringify(failed.save);

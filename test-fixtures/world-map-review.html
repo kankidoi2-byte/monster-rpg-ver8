@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"><title>World map review fixtures</title>
+<style>body{font:14px system-ui;background:#ddd;margin:8px}button{padding:8px;margin:2px}iframe{display:block;border:0;background:white;margin-top:6px}p{margin:4px}</style>
+<p>開発用・架空のテストデータ。ゲーム本編には含めない。各場面は独立した使い捨てセーブです。</p>
+<div id="scenarios"></div><div id="sizes"></div><p id="status"></p>
+<iframe id="game"  width="412" height="650"></iframe>
+<script>
+const frame=document.getElementById('game');
+// terminal.local uses HTTP; provide the UUID primitive only in this disposable
+// review frame before the real profile/save code boots. Production stays untouched.
+fetch('../index.html').then(r=>r.text()).then(html=>{
+ const uuid=`<script>if(!crypto.randomUUID)crypto.randomUUID=()=> '10000000-1000-4000-8000-100000000000'.replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));<`+`/script>`;
+ frame.srcdoc=html.replace('<head>','<head><base href="'+new URL('../',location.href).href+'">'+uuid);
+});
+const setup=`clearTutorialUi(); save=initSave(); ensureTutorialStarterContracts(); save.progress.tutorial.status='completed'; save.progress.tutorial.completed=true; save.progress.tutorial.stepId='prologue_complete'; save.contractor.exp=0;save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden'); document.body.classList.remove('title-mode'); document.getElementById('titleScreen').style.display='none';document.body.classList.remove('title-mode'); worldMapNavigationHydrated=false; worldMapSelectedId=null; worldMapSelectedEvent=null; worldMapSelectedDifficulty=null;`;
+const scenes={
+ '通常地図':`showBattleChoices();`,
+ '異変と全特殊入口':`for(const key of WORLD_EVENT_KEYS)save.worldMap.active[key]=normalizeWorldEventEntry(key,{});showBattleChoices();`,
+ '黄金郷・地図と自然入口':`save.items.golden_land_map=2; save.goldenLandMapReady=true;save.worldMap.active.golden_land=normalizeWorldEventEntry('golden_land',{});showBattleChoices();`,
+ '新しい場所':`showBattleChoices();save.worldMap.active.water_secret=normalizeWorldEventEntry('water_secret',{});save.worldMap.active.golden_land=normalizeWorldEventEntry('golden_land',{});renderWorldMap(document.getElementById('battleChoiceList'));`,
+ '草原救援案内':`save.progress.tutorial.status='in_progress';save.progress.tutorial.completed=false;save.progress.tutorial.stepId='rescue_world_map_grassland';startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'rescue_world_map_grassland',persist:true});`,
+ '王都・学園案内':`save.progress.tutorial.status='in_progress';save.progress.tutorial.completed=false;save.progress.tutorial.stepId='stella_world_map_city';startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'stella_world_map_city',persist:true});`,
+ '工房・途中再開':`save.progress.tutorial.status='in_progress';save.progress.tutorial.completed=false;save.progress.tutorial.stepId='lumina_world_map_visit';startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'lumina_world_map_visit',persist:true});`
+};
+function scene(name){
+ const w=frame.contentWindow,s=w.document.createElement('script');s.textContent=setup+scenes[name];w.document.body.append(s);s.remove();document.getElementById('status').textContent=name;
+}
+for(const name of Object.keys(scenes)){const b=document.createElement('button');b.textContent=name;b.onclick=()=>scene(name);document.getElementById('scenarios').append(b);}
+for(const [width,height] of [[412,650],[390,844],[360,600],[844,390]]){const b=document.createElement('button');b.textContent=`${width}×${height}`;b.onclick=()=>{frame.width=width;frame.height=height};document.getElementById('sizes').append(b);}
+</script>

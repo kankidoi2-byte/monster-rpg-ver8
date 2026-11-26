@@ -182,11 +182,12 @@
       element('h2','',statusLabel),
       element('p','',`検出事項 ${count(health.issueCount)}件・JavaScriptエラー ${count(health.errorCount)}件`)
     );
-    hero.append(element('div','diagnostics-status-icon',status==='ok'?'✓':status==='warning'?'!':'×'),heroCopy);
+    const emblem=element('div','diagnostics-status-icon',status==='ok'?'正常':status==='warning'?'!':'×');
+    emblem.setAttribute('aria-hidden','true');
+    hero.append(emblem,heroCopy);
 
     const summary=element('pre','diagnostics-summary');
     summary.textContent=api.formatDiagnosticSummary(report);
-    const privacy=element('p','diagnostics-privacy','この画面の情報は端末内で生成され、外部へ自動送信されません。');
     const grid=element('div','diagnostics-grid');
 
     const environment=report?.environment||{};
@@ -232,7 +233,7 @@
     ]);
     renderErrors(grid,report?.errors||{});
 
-    container.append(hero,summary,privacy,grid);
+    container.append(hero,summary,grid);
     return true;
   }
 

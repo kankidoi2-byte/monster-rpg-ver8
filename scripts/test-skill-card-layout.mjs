@@ -1,0 +1,199 @@
+// Run in the isolated CI browser; never use or modify a player's stored save.
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {spawn} from 'node:child_process';
+const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4175'],{stdio:['ignore','pipe','inherit']});
+await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
+const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
+const out='artifacts/skill-card-layout';fs.mkdirSync(out,{recursive:true});
+const results=[];
+try{
+ for(const [width,height] of [[320,568],[360,640],[390,844],[412,915],[430,932],[844,390]]){
+  const page=await browser.newPage({viewport:{width:width+32,height:height+250},reducedMotion:'reduce'});
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  // Fixture loads the real entry's scripts/CSS and replaces only init with isolated memory setup.
+  await page.goto('http://127.0.0.1:4175/scripts/skill-loadout-browser.html');
+  const frame=page.frames().find(f=>f!==page.mainFrame());
+  await frame.waitForFunction(()=>typeof window.runSkillQA==='function');
+  // Test actual viewport, independently of the wrapper's default iframe size.
+  await page.locator('#game').evaluate((el,size)=>{el.width=size.width;el.height=size.height;},{width,height});
+  await page.locator('[data-case="suite"]').click();
+  await page.waitForFunction(()=>document.querySelector('#report').textContent.includes('チュートリアル装備から属性案内')||document.querySelector('#report').textContent.includes('FAIL'));
+  await page.waitForFunction(()=>document.querySelector('#report').textContent.includes('第4話の装備直後にエルナの装備中表示')||document.querySelector('#report').textContent.includes('FAIL'));
+  const suite=await page.locator('#report').textContent();assert(!suite.includes('FAIL'),suite);
+  await frame.evaluate(()=>{
+   clearTutorialUi();save.tutorial=tutorialSaveDefaults({legacy:true});
+   const ins=save.instances[0];editingSkillUid=ins.uid;show('skillEdit');renderSkillEdit();
+  });
+  assert.equal(await frame.evaluate(()=>innerWidth),width,'fixture uses the exact requested viewport');
+  assert.equal(await frame.evaluate(()=>innerHeight),height,'fixture uses the exact requested height');
+  const inspect=async selector=>frame.locator(selector).evaluateAll(elements=>elements.map(el=>{
+   const head=el.querySelector('.skill-card-head'),title=el.querySelector('.skill-card-title'),cost=el.querySelector('.skill-cost-badge');
+   const rect=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};};
+   const lines=el.querySelectorAll('.skill-type-line'),effect=el.querySelector('.skill-effect-text');
+   return {text:el.textContent,lines:lines.length,head:rect(head),title:rect(title),cost:rect(cost),titleOverflow:title.scrollWidth>title.clientWidth+1,effect:effect?.textContent||'',effectOverflow:effect?effect.scrollWidth>effect.clientWidth+1:false};
+  }));
+  function check(rows,label){assert(rows.length,label+' cards exist');for(const row of rows){assert.equal(row.lines,1,label);assert(!row.text.includes('威力0')&&!row.text.includes('属性 /'),label);assert(!row.titleOverflow&&!row.effectOverflow,label+' text overflow');assert(row.title.right<=row.cost.left+1,label+' COST overlap');assert(row.head.right<=width+1&&row.head.left>=-1,label+' viewport overflow');}}
+  check(await inspect('#skillEditCurrent .skill-card, #skillCardList .skill-card'),'equipment');
+  // Long name, compound elements, support, exclusive and conditional/recoil cards on both dex paths.
+  for(const [screen,detail,unit] of [['dex','dexDetail','alchemion'],['dex','dexDetail','kimeragna'],['characterDex','characterDexDetail','character_vera_5'],['characterDex','characterDexDetail','character_nico_4']]){
+   await frame.evaluate(({screen,detail,unit})=>{
+    const mon=by(unit);if(!mon)throw Error('missing QA unit '+unit);
+    show(screen);renderUnitDexDetail(mon.id,detail,()=>'',renderUnitSkillList);
+   },{screen,detail,unit});
+   check(await inspect('#'+detail+' .skill-card'),unit+' dex');
+  }
+  await frame.evaluate(()=>{
+   show('skillEdit');const ins=save.instances[0];editingSkillUid=ins.uid;
+   const sk=MONSTER_MOVE_CARDS[0];sk.name='天空を巡る白金の守護者・超長名称の複合属性専用技';renderSkillEdit();
+  });
+  check(await inspect('#skillEditCurrent .skill-card, #skillCardList .skill-card'),'long name');
+  await frame.evaluate(()=>{document.getElementById('skillCostFilter').value='25';renderSkillEdit();});
+  assert.equal(await frame.locator('#skillCardList [data-skill-card-id]').count(),4);
+  check(await inspect('#skillCardList .skill-card'),'COST25');
+  await frame.evaluate(()=>{document.getElementById('skillCostFilter').value='all';renderSkillEdit();});
+  // The growing fixture report can move the entire iframe below the parent viewport.
+  // Bring both scroll containers into view before testing real pointer hit targets.
+  await page.locator('#game').scrollIntoViewIfNeeded();
+  const buttonLocators=frame.locator('#skillEditCurrent button, #skillCardList button:not([disabled])');
+  const buttons=[];
+  for(let index=0;index<Math.min(4,await buttonLocators.count());index++){
+   const button=buttonLocators.nth(index);
+   await button.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+   await page.locator('#game').scrollIntoViewIfNeeded();
+   const measurement=await button.evaluate(async el=>{
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const b=el.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;
+    const hit=document.elementFromPoint(x,y);
+    return {text:el.textContent,visible:b.top>=0&&b.bottom<=innerHeight&&b.left>=0&&b.right<=innerWidth,
+     uncovered:hit===el||el.contains(hit),rect:{left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height},
+     viewport:{width:innerWidth,height:innerHeight},scrollY,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className,text:hit.textContent?.slice(0,80)}:null};
+   });
+   measurement.parent=await page.locator('#game').evaluate((iframe,rect)=>{
+    const b=iframe.getBoundingClientRect(),x=b.left+(rect.left+rect.right)/2,y=b.top+(rect.top+rect.bottom)/2;
+    const hit=document.elementFromPoint(x,y);
+    return {iframeRect:{left:b.left,top:b.top,right:b.right,bottom:b.bottom},viewport:{width:innerWidth,height:innerHeight},scrollY,
+     uncovered:hit===iframe,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null};
+   },measurement.rect);
+   buttons.push(measurement);
+  }
+  assert(buttons.length&&buttons.every(b=>b.visible&&b.uncovered&&b.parent.uncovered),`operation buttons visible and uncovered: ${JSON.stringify(buttons)}`);
+  await page.screenshot({path:`${out}/${width}x${height}.png`,fullPage:true});
+  assert.equal(errors.length,0,errors.join('\n'));
+  results.push({width,height,result:'PASS',existingInteractionChecks:suite.split('\n').length,buttons});
+  await page.close();
+ }
+ // Exercise the approved COST adjustment through the real entry and save path.
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.dismiss());
+ await page.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
+ assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.evaluate(()=>{
+  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  // Returning-player flow: feature-guide tutorials are exercised separately in every iframe width.
+  Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
+  save.instances=[];save.party=[];
+  const ins=addInstance('freigal',100);save.party=[ins.uid];
+  save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(sk=>[sk.id,7]));save.equippedSkills[ins.uid]=[];show('home');
+ });
+ assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));
+ assert(await page.locator('#partySet').isVisible());await page.evaluate(()=>openSkillEdit(save.instances[0].uid));
+ await page.locator('#skillEdit .skill-filter-panel > summary').click();
+ await page.locator('#skillCostFilter').selectOption('25');
+ assert.equal(await page.locator('#skillCardList [data-skill-card-id]').count(),4);
+ assert((await page.locator('[data-skill-card-id="s110_107"]').textContent()).includes('COST 25'));
+ assert(await page.evaluate(()=>[...document.querySelectorAll('[data-skill-card-id]')].every(el=>!SKILL_BY_ID[el.dataset.skillCardId].deprecated)));
+ const loadout=await page.evaluate(()=>{
+  const over=equipSkill('s110_107'),basic=equipSkill('s110_001');
+  return {over,basic,total:equippedSkillCost(save.instances[0]),limit:skillCostLimitFor(by('freigal'),save.instances[0])};
+ });
+ assert.equal(loadout.over,true);assert.equal(loadout.basic,true);assert.equal(loadout.total,26);assert(loadout.limit>=26);
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'COST25 equipment overflow');
+ const saved=await page.evaluate(()=>{
+  if(!saveGame())throw Error('save failed');
+  return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills});
+ });
+ await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})),saved);
+ await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
+ await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+ assert((await page.locator('#commands').textContent()).includes('オーバーブレイク'));
+ assert.equal(errors.length,0,errors.join('\n'));
+ results.push({scenario:'Freigal Lv100 COST25: title, home, party, equipment, save/reload, hunt, battle',result:'PASS',loadout});
+ await page.close();
+
+ const equipPage=await browser.newPage({viewport:{width:412,height:915},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ const equipErrors=[];
+ equipPage.on('pageerror',error=>equipErrors.push(error.message));
+ const leaveTitle=async()=>{
+  await equipPage.locator('#titleScreen').tap();
+  await equipPage.locator('#titleScreen').waitFor({state:'detached'});
+ };
+ await equipPage.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
+ await leaveTitle();
+ const wearer=await equipPage.evaluate(()=>{
+  clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);
+  save.progress.tutorial=tutorialSaveDefaults({legacy:true});
+  Object.keys(save.progress.tutorial.guides).forEach(id=>{save.progress.tutorial.guides[id]=true;});
+  save.instances=[];save.party=[];save.equippedSkills={};
+  const elna=addInstance('elna_beginner',100),other=addInstance('elna_middle',100);
+  save.party=[elna.uid,other.uid];save.equippedSkills[elna.uid]=[];save.equippedSkills[other.uid]=[];
+  save.skillCards.s110_041=1;
+  openSkillEdit(elna.uid);
+  return by(elna.id).name;
+ });
+ const searchForSkill=()=>equipPage.evaluate(()=>{
+  document.getElementById('skillSearchInput').value='連続斬り';
+  renderSkillEdit();
+ });
+ await searchForSkill();
+ const skillCard=equipPage.locator('#skillCardList [data-skill-card-id="s110_041"]');
+ const equippedStatus=skillCard.locator('[data-skill-equipped-status]');
+ const equipButton=skillCard.getByRole('button',{name:'装備する',exact:true});
+ const assertEquipped=async (counts)=>{
+  assert.equal(await equippedStatus.textContent(),wearer+'に装備中');
+  assert((await skillCard.textContent()).includes(counts));
+  assert(!((await skillCard.textContent()).includes('装備できません')));
+ };
+ await equipButton.tap();
+ await assertEquipped('所持:1 / 使用中:1');
+ await equipPage.reload({waitUntil:'networkidle'});
+ await leaveTitle();
+ await equipPage.evaluate(()=>openSkillEdit(save.instances.find(ins=>ins.id==='elna_beginner').uid));
+ await searchForSkill();
+ await assertEquipped('所持:1 / 使用中:1');
+ await equipPage.evaluate(()=>openSkillEdit(save.instances.find(ins=>ins.id==='elna_middle').uid));
+ assert.equal(await equippedStatus.count(),0);
+ assert(await skillCard.getByRole('button',{name:'装備できません',exact:true}).isDisabled());
+ assert((await skillCard.textContent()).includes('所持:1 / 使用中:1'));
+
+ await equipPage.evaluate(()=>{
+  save.skillCards.s110_041=2;
+  openSkillEdit(save.instances.find(ins=>ins.id==='elna_beginner').uid);
+ });
+ await assertEquipped('所持:2 / 使用中:1');
+ assert(await equipButton.isEnabled());
+ await equipButton.tap();
+ await assertEquipped('所持:2 / 使用中:2');
+ assert.equal(await equipButton.count(),0);
+ assert.deepEqual(await equipPage.evaluate(()=>save.equippedSkills[editingSkillUid]),['s110_041','s110_041']);
+ assert.equal(equipErrors.length,0,equipErrors.join('\n'));
+ results.push({scenario:'412x915 Elna skill card: equip, reload, switch companion, and legitimately equip an extra copy',result:'PASS'});
+ await equipPage.close();
+ fs.writeFileSync(`${out}/results.json`,JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
+}catch(error){
+ // Capture before closing contexts, including failures in the first 320px case.
+ const failures=[];
+ const pages=browser.contexts().flatMap(context=>context.pages()).filter(page=>!page.isClosed());
+ for(const [index,page] of pages.entries()){
+  const file=`failure-${index+1}.png`;
+  const diagnostic={url:page.url(),viewport:page.viewportSize(),screenshot:file};
+  try{await page.screenshot({path:`${out}/${file}`,fullPage:true,timeout:10000});}
+  catch(captureError){diagnostic.screenshotError=captureError.message;}
+  try{diagnostic.fixtureReport=await page.locator('#report').textContent({timeout:1000});}catch{}
+  failures.push(diagnostic);
+ }
+ fs.writeFileSync(`${out}/failure.json`,JSON.stringify({error:error.stack||String(error),completed:results,pages:failures},null,2));
+ throw error;
+}finally{await browser.close();server.kill();}

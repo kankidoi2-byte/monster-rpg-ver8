@@ -1,0 +1,27 @@
+{
+  "checkedHead": "873867a682599958df5e353434b5ed677ed7f326",
+  "main": "60e4e15171ff6fb2f98361e5c37aa2e4f0609b6a",
+  "behindAhead": [
+    "0",
+    "99"
+  ],
+  "fullCheck": {
+    "exitCode": 0,
+    "logSha256": "30e96363f4a65734b5bb974ddb1b2f43a7cc45f45010a10d9a9be62324a6b6e2"
+  },
+  "economyCheck": {
+    "initialExitCode": 1,
+    "fixedExitCode": 0,
+    "reason": "Comparison included presentation-only evolution timer relocation; exclude exact audited timer/comment only. Reward sources and deterministic twenty-win comparison remain."
+  },
+  "githubBeforePR": {
+    "actionsRuns": 0,
+    "checkRuns": 0,
+    "statusCount": 0,
+    "combinedState": "pending",
+    "reason": "Workflow runs on pull_request or push to main; no open PR."
+  },
+  "publication": "forbidden",
+  "final50SpeciesGate": "pending",
+  "next": "Draft PR for CI without merge; observe current-head CI separately."
+}

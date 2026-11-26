@@ -4,12 +4,19 @@ function initSaveManagementUi(){
   if(!resetButton||document.querySelector('#moreMenu .save-management'))return;
   const panel=document.createElement('details');
   panel.className='save-management';
-  panel.innerHTML=`<summary>💾 セーブ管理</summary>
+  panel.innerHTML=`<summary>セーブ管理</summary>
     <p>機種変更や破損に備えて、セーブデータを端末へ保存できます。</p>
+    <p id="replacementRecoveryStatus">${replacementRecoveryStatusText()}</p>
     <div class="save-management-actions">
       <button type="button" onclick="exportSaveData()">セーブを書き出す</button>
       <button type="button" onclick="openSaveImport()">セーブを読み込む</button>
       <button type="button" onclick="restoreLastKnownGood()">直前のバックアップへ戻す</button>
+      <button type="button" onclick="exportReplacementRecovery()">読込・復旧の記録全体を書き出す</button>
+      <button type="button" onclick="exportReplacementRecovery('before')">置換前のセーブを書き出す</button>
+      <button type="button" onclick="exportReplacementRecovery('after')">置換後候補のセーブを書き出す</button>
+      <button type="button" onclick="exportReplacementRecovery('backupBefore')">元のバックアップを書き出す</button>
+      <button type="button" onclick="acknowledgeReplacementRecovery()">書き出した復旧記録を確認済みにする</button>
+      <button type="button" id="resumeSoulContractReplacement" onclick="resumeSoulContractReplacement()" ${soulContractReplacementBlocked?'':'hidden'} disabled>現在の主セーブを基準として再開する</button>
       <button type="button" onclick="showSaveRecoveryReport()">修復・移行記録を見る</button>
       <button type="button" onclick="copySaveText('current')">現在の内容をコピー</button>
       <button type="button" onclick="copySaveText('corrupt')">破損内容をコピー</button>
@@ -18,41 +25,22 @@ function initSaveManagementUi(){
   resetButton.before(panel);
 }
 initSaveManagementUi();
+if(typeof MonsterProfiles!=='undefined')MonsterProfiles.mount();
+if(typeof MonsterAnalytics!=='undefined')MonsterAnalytics.start();
+if(typeof MonsterFeedback!=='undefined')MonsterFeedback.start();
+if(typeof PersonalGifts!=='undefined')PersonalGifts.start();
+// Backfill only actual loaded individuals, before legacy starter reconstruction
+// can create individuals from encyclopedia history alone.
+const evolutionNativeMigrationInstances = [...(save.instances || [])];
 initStarters();
-migrateSkillSystem();
-saveGame();
+migrateSkillSystem(evolutionNativeMigrationInstances);
+saveStartupState();
 renderParty();
 
-function chooseDifferentTitleMap(){
-  const candidates=MAPS.filter(map=>map && map.image);
-  if(!candidates.length) return null;
-  let last='';
-  try{ last=localStorage.getItem(TITLE_LAST_MAP_KEY)||''; }catch(_e){}
-  const pool=candidates.length>1 ? candidates.filter(map=>map.id!==last) : candidates;
-  const selected=pool[Math.floor(Math.random()*pool.length)] || candidates[0];
-  try{ localStorage.setItem(TITLE_LAST_MAP_KEY,selected.id); }catch(_e){}
-  return selected;
-}
-function chooseTitleMonster(map){
-  const ids=[...(map?.enemyIds||[])];
-  const unique=[...new Set(ids)];
-  const mapMonsters=unique.map(id=>M.find(mon=>mon.id===id)).filter(mon=>mon?.imgKey && IMG[mon.imgKey]);
-  const all=M.filter(mon=>mon?.imgKey && IMG[mon.imgKey]);
-  const pool=mapMonsters.length ? mapMonsters : all;
-  return pool.length ? pool[Math.floor(Math.random()*pool.length)] : null;
-}
 function initTitleScreen(){
   try{
     const screen=document.getElementById('titleScreen');
     if(!screen) return;
-    const map=chooseDifferentTitleMap();
-    const monster=chooseTitleMonster(map);
-    const bg=document.getElementById('titleBg');
-    const mon=document.getElementById('titleMonster');
-    const scene=document.getElementById('titleSceneName');
-    if(bg && map?.image) bg.style.backgroundImage=`url("${map.image}")`;
-    if(mon && monster){mon.src=IMG[monster.imgKey];mon.alt=monster.name;mon.hidden=false;}
-    if(scene) scene.textContent=map ? `${map.name}${monster ? ' — '+monster.name : ''}` : '';
     const begin=()=>startFromTitle();
     screen.addEventListener('click',begin,{once:true});
     screen.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&!titleStarted){event.preventDefault();begin();}});
@@ -71,15 +59,26 @@ function initTitleScreen(){
     }
   }
 }
+function showSkill110MigrationNotice(){
+  if(!save.skill110Migration?.noticePending)return;
+  const message='技体系を110種類に更新しました。所持カードを引き継ぎ、属性・装備コストに合わせて技装備を調整しました。技図鑑と装備画面をご確認ください。';
+  if(typeof showUiNotice!=='function')return;
+  showUiNotice(message,'info');
+  save.skill110Migration.noticePending=false;
+  if(!saveGame())save.skill110Migration.noticePending=true;
+}
 function startFromTitle(){
   if(titleStarted) return;
   titleStarted=true;
+  if(typeof gameAudioPlay==='function')gameAudioPlay('start');
   const screen=document.getElementById('titleScreen');
   if(screen) screen.classList.add('title-leaving');
   setTimeout(()=>{
     document.body.classList.remove('title-mode');
     if(screen) screen.remove();
     show('home');
+    showSkill110MigrationNotice();
+    if(typeof autoResumeSavedRun==='function'&&autoResumeSavedRun())return;
     if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
   },620);
 }

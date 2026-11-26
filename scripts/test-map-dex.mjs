@@ -5,6 +5,7 @@ const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 const dataSource=read('js/data.js');
 const context=vm.createContext({console});
 const dex=read('js/dex.js');
+const uiCss=read('css/ui-redesign.css');
 vm.runInContext(`${dataSource}\nfunction by(id){return M.find(unit=>unit.id===id);}\n${dex}\nglobalThis.__maps=MAPS;globalThis.__ecosystemProfile=mapDexEcosystemProfile;`,context);
 const maps=context.__maps;
 const ecosystemProfile=context.__ecosystemProfile;
@@ -58,6 +59,9 @@ if(grassland?.ecosystemDiagram){
 expect(dex.includes('function renderDexHub'),'dex hub renderer is missing');
 expect(dex.includes('function renderMapDex'),'map dex renderer is missing');
 expect(dex.includes('function showMapDexDetail'),'map detail renderer is missing');
+expect(dex.includes('function openMapArtwork')&&dex.includes('map-dex-hero-stage'),'map full-artwork viewer is missing');
+expect(uiCss.includes('.map-dex-hero-stage')&&uiCss.includes('object-fit:contain!important'),'map detail artwork must preserve the full portrait composition');
+expect(uiCss.includes('.map-dex-visual img')&&uiCss.includes('object-fit:cover'),'map list thumbnails must retain their compact crop');
 expect(dex.includes('map-dex-ecosystem')&&dex.includes('属性傾向')&&dex.includes('主な生息種'),'map ecosystem detail UI is missing');
 expect(dex.includes('function mapDexEcosystemDiagram')&&dex.includes('map-dex-pyramid'),'map ecosystem diagram UI is missing');
 expect(dex.includes('function openMapFromMonsterDex')&&dex.includes('function openUnitFromMapDex'),'dex cross-links are missing');

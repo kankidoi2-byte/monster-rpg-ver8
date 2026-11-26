@@ -1,3 +1,5 @@
+import {applyRenamedMonsterIds} from './renamed-monster-baseline.mjs';
+import {legacyUnitProjection} from './skill110-legacy-projection.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -16,27 +18,74 @@ const records = context.__MONSTERS__;
 const characters = records.filter(record => record.entityKind === 'character').sort((a,b) => a.characterNo - b.characterNo);
 const characterIds = Array.from(characters, record => record.id);
 
-assert.deepEqual(characterIds, ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari']);
-assert.deepEqual(Array.from(characters, record => record.characterNo), [1,2,3,4,5,6,7,8,9,10,11,12,13,14]);
+assert.deepEqual(characterIds.slice(0,14), ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen','stella_apprentice','stella_wizard','stella_sorcerer','lumina_apprentice','lumina_wizard','lumina_sorcerer','elysia','elysia_prayer','hikari']);
+assert.deepEqual(Array.from(characters, record => record.characterNo), [...Array.from({length:47},(_,i)=>i+1),51,52,53]);
 assert(records.filter(record => record.entityKind === 'character').every(record => record.contractable === false));
 assert(records.filter(record => record.entityKind === 'character').every(record => Object.entries(record.eligibility).every(([key,value]) => value === (key === 'alchemyCatalyst'))));
 assert.equal(records.find(record => record.id === 'elna_beginner').no, 21);
 assert.equal(records.find(record => record.id === 'elna_water').no, 25);
 assert.equal(records.find(record => record.id === 'elna_kaen').no, 46);
 assert.deepEqual(Array.from(records.filter(record => record.entityKind === 'monster').map(record => record.dexNo ?? record.no).sort((a,b)=>a-b)),Array.from({length:50},(_,index)=>index+1));
-assert.equal(records.find(record => record.id === 'sylphin').dexNo,21);
-assert.equal(records.find(record => record.id === 'tempestray').dexNo,23);
-assert.equal(records.find(record => record.id === 'nocle').dexNo,36);
-assert.equal(records.find(record => record.id === 'noxvelg').dexNo,38);
-assert.equal(records.find(record => record.id === 'luxseed').dexNo,39);
-assert.equal(records.find(record => record.id === 'lux_galdion').dexNo,41);
-assert.equal(records.find(record => record.id === 'astralepis').dexNo,16);
-assert.equal(records.find(record => record.id === 'galdra').dexNo,46);
-assert.equal(records.find(record => record.id === 'kimeragna_apex').dexNo,49);
-assert.equal(records.find(record => record.id === 'elixion').dexNo,50);
+const expectedMonsterDexOrder = [
+  'freigal',
+  'freiwolf',
+  'aquaron',
+  'highaquaron',
+  'shenhairon',
+  'tienhairon',
+  'grassbeat',
+  'thornbeat',
+  'granbeat',
+  'rikasheef',
+  'seralphia',
+  'volteck',
+  'spaquinn',
+  'voltax',
+  'sylphin',
+  'zephyray',
+  'tempestray',
+  'luxseed',
+  'luxiard',
+  'lux_galdion',
+  'nocle',
+  'noclaid',
+  'noxvelg',
+  'orcana',
+  'orca_stream',
+  'orca_abyss',
+  'volmoog',
+  'gran_volmoog',
+  'slime',
+  'slime_gold',
+  'goblin',
+  'ignaros',
+  'tsubaki',
+  'suiren',
+  'proto_icegolem',
+  'icegolem',
+  'nightmare',
+  'astralepis',
+  'ashleia',
+  'morglum',
+  'nemes',
+  'nemesia',
+  'nemesion',
+  'doom_nemesion',
+  'false_dragon_alfa',
+  'galdra',
+  'alchemion',
+  'kimeragna',
+  'kimeragna_apex',
+  'elixion'
+];
+const actualMonsterDexOrder = Array.from(
+  records.filter(record => record.entityKind === 'monster').sort((a,b)=>(a.dexNo??a.no)-(b.dexNo??b.no)),
+  record => record.id
+);
+assert.deepEqual(actualMonsterDexOrder, expectedMonsterDexOrder);
 assert(records.filter(record => record.id.startsWith('stella_') || record.id.startsWith('lumina_') || record.id.startsWith('elysia') || record.id === 'hikari').every(record => record.entityKind === 'character'));
 assert.match(dexSource, /M\.filter\(m=>!isCharacterUnit\(m\)\)/);
-assert.match(dexSource, /M\.filter\(isCharacterUnit\)/);
+assert.match(dexSource, /isCharacterUnit\(unit\)/);
 assert.match(dexSource, /function monsterDexNumber/);
 assert.match(coreSource, /function isContractableUnit/);
 assert.match(itemsSource, /!isContractableUnit\(enemy\)/);
@@ -57,39 +106,48 @@ Object.assign(context,{
   ITEM_DEX_ITEMS:[],
   save:{itemDex:[],mapDex:[]}
 });
+vm.runInContext(coreSource,context);
+vm.runInContext(fs.readFileSync(new URL('../js/skill-dex.js',import.meta.url),'utf8'),context);
 vm.runInContext(dexSource,context);
 const entries=vm.runInContext('characterDexEntries()',context);
 assert.equal(entries.length,50);
-assert.deepEqual(Array.from(entries,e=>e.characterNo),Array.from({length:50},(_,i)=>i+1));
-const reserved=entries.filter(e=>e.planned);
-assert.equal(reserved.length,36);
-assert.deepEqual(Array.from(reserved.filter(e=>e.imgKey),e=>e.characterNo),[15,16,17,27,28,29,30,31,32,39,40,41]);
-assert.equal(new Set(reserved.map(e=>e.slotId)).size,36);
-assert.equal(reserved[0].name,'接雷の従士ブリジット');
-assert.equal(reserved.at(-1).name,'地脈の導標師ノアム');
-assert(reserved.every(e=>e.chapter==='序章'&&!records.some(m=>m.id===e.slotId)));
-assert.equal(reserved.filter(e=>e.rarity==='★★').length,12);
-assert.equal(reserved.filter(e=>e.rarity==='★★★').length,12);
-assert.equal(reserved.filter(e=>e.rarity==='★★★★').length,12);
+assert.deepEqual(Array.from(entries,e=>e.prologueCharacterNo??e.characterNo),Array.from({length:50},(_,i)=>i+1));
+assert.equal(entries.filter(e=>e.planned).length,0);
+assert.equal(entries[14].name,'接雷の従士ブリジット');
+assert.equal(entries.at(-1).name,'終焉の殲滅姫ヴェーラ');
 vm.runInContext('renderCharacterDex();renderDexHub()',context);
 assert.equal((elements.characterDexList.innerHTML.match(/<button /g)||[]).length,50);
-assert.equal((elements.characterDexList.innerHTML.match(/character-dex-planned/g)||[]).length,36);
+assert.equal((elements.characterDexList.innerHTML.match(/character-dex-planned/g)||[]).length,0);
 assert.match(elements.dexHubGrid.innerHTML,/1 \/ 50/);
-for(const slot of reserved){
-  context.testSlotId=slot.slotId;
-  vm.runInContext('showCharacterDexSlot(testSlotId)',context);
-  assert(elements.characterDexDetail.innerHTML.includes(slot.name));
-  assert.match(elements.characterDexDetail.innerHTML,/現在は入手・対戦できません/);
-  if(slot.imgKey){
-    const imagePath=vm.runInContext('IMG',context)[slot.imgKey];
-    assert(fs.existsSync(new URL('../'+imagePath,import.meta.url)));
-    assert(elements.characterDexDetail.innerHTML.includes(imagePath));
-    assert(elements.characterDexList.innerHTML.includes(imagePath));
-  }else assert.doesNotMatch(elements.characterDexDetail.innerHTML,/<img/);
+console.log('Character dex validation passed: 50 prologue display forms, empty chapter-one roster; existing IDs and monster numbers preserved.');
+
+// Every retired reservation is already represented by the same implemented form.
+const {execFileSync}=await import('node:child_process');
+const baseline=applyRenamedMonsterIds(execFileSync('git',['show','accc2c5187ddd627c2ea8fbe35f91ece48eeb9d1:js/data.js'],{encoding:'utf8'}));
+const oldContext=vm.createContext({});vm.runInContext(baseline,oldContext);
+const retired=vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS',oldContext);
+assert.equal(retired.length,36);
+for(const slot of retired){
+ const mon=characters.find(m=>m.characterNo===slot.characterNo);
+ assert(mon,`implemented equivalent for ${slot.slotId}`);
+ for(const field of ['name','rarity','types','imgKey','chapter'])assert.equal(JSON.stringify(mon[field]),JSON.stringify(slot[field]),`${slot.slotId}: ${field}`);
+ assert.equal(mon.prologueCharacterNo??mon.characterNo,slot.prologueCharacterNo??slot.characterNo);
 }
-// Future implementation replaces its reservation without increasing the denominator.
-vm.runInContext("M.push({id:'test_future_character',entityKind:'character',characterNo:15});",context);
-assert.equal(vm.runInContext('characterDexEntries().length',context),50);
-assert.equal(vm.runInContext('characterDexEntries()[14].id',context),'test_future_character');
-vm.runInContext('M.pop()',context);
-console.log('Character dex validation passed (14 playable forms + 36 reserved slots, stable IDs/numbers, replacement, rendering and acquisition isolation).');
+assert.equal(vm.runInContext('CHARACTER_DEX_RESERVED_SLOTS.length',context),0);
+const oldUnits=vm.runInContext('M',oldContext);
+const retiredIcons=new Set(['🛡️','📮','⚒️','💧','🔱','🍲','🃏','🗡️','⚙️','🔧','🎭']);
+const expectedUnits=oldUnits.map(unit=>retiredIcons.has(unit.icon)?{...unit,icon:''}:unit);
+assert(records.every(unit=>!retiredIcons.has(unit.icon)),'historical unit emoji are no longer shown');
+assert.equal(JSON.stringify(records.map((unit,i)=>legacyUnitProjection(unit,expectedUnits[i]))),JSON.stringify(expectedUnits),'all historical unit data except retired emoji preserved; live110 loadouts tested separately');
+assert(!elements.dexHubGrid.innerHTML.includes('登場予定'),'no stale coming-soon label');
+// Keep genuine future plans visible, read-only and out of the battle roster.
+const future=vm.createContext({...context});
+const futureData=dataSource.replace('const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([]);',`const CHARACTER_DEX_RESERVED_SLOTS = Object.freeze([{slotId:'test_future',characterNo:999,name:'未来の予約',rarity:'★★',types:['star'],chapter:'序章',planned:true}]);`);
+vm.runInContext(futureData,future);vm.runInContext(coreSource,future);vm.runInContext(fs.readFileSync(new URL('../js/skill-dex.js',import.meta.url),'utf8'),future);vm.runInContext(dexSource,future);
+assert.equal(vm.runInContext('characterDexEntries().length',future),51);
+assert.equal(vm.runInContext('M.some(m=>m.characterNo===999)',future),false);
+vm.runInContext('renderCharacterDex();renderDexHub();showCharacterDexSlot("test_future")',future);
+assert(elements.dexHubGrid.innerHTML.includes('登場予定'));
+assert(elements.characterDexDetail.innerHTML.includes('現在は入手・対戦できません'));
+assert.equal((elements.characterDexList.innerHTML.match(/character-dex-planned/g)||[]).length,1);
+console.log('PASS retired reservations: 36 exact implemented equivalents, unchanged M, preserved future planned-slot rendering');

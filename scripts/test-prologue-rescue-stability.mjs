@@ -41,12 +41,14 @@ const makeWaveContext=({missing=false,brokenSetup=false}={})=>{
     structuredClone:value=>({...value}),
     enemy:null,eHp:0,eAtk:0,eGuard:false,eStatus:null,
     ePoisonTurns:0,eParalysisTurns:0,eConfusionTurns:0,eSleepTurns:0,eFlareCharge:false,eAquaShield:false,
-    battleRewardGranted:true,busy:false,
+    battleRewardGranted:true,busy:false,resetCount:0,
+    resetBattleTransientEffects(){this.resetCount++;},
     enemyMaxHp(){return 30;},
     setupBattle(){if(brokenSetup)throw new Error('setup_failed');},
     document:{getElementById(){return {innerHTML:''};}},
     showBattleOutcome(value){outcomes.push(value);}
   });
+  context.resetBattleTransientEffects=()=>{context.resetCount++;};
   context.isTutorialRescueBattleActive=()=>context.tutorialBattleSession.active&&context.tutorialBattleSession.kind==='elna_rescue';
   context.handleTutorialBattleOutcome=kind=>{outcomes.push({tutorial:kind});context.tutorialBattleSession.active=false;return true;};
   vm.runInContext(tutorial.slice(waveStart,waveEnd),context);
@@ -60,6 +62,7 @@ assert.equal(success.context.busy,false);
 assert.equal(success.context.battleRewardGranted,false);
 assert.equal(success.context.tutorialBattleSession.enemyQueue.length,0,'queue consumption must happen after the next Slime is ready');
 assert.equal(success.outcomes.length,0);
+assert.equal(success.context.resetCount,0,'successful wave keeps current combat effects');
 
 for(const options of [{missing:true},{brokenSetup:true}]){
   const failure=makeWaveContext(options);

@@ -1,0 +1,144 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {spawn} from 'node:child_process';
+import {chromium} from 'playwright';
+const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4249'],{stdio:['ignore','pipe','inherit']});let browser;
+// Historical saved configuration; new installs must not seed these quests.
+const configuredQuests=[
+  {id:"q1",nm:"筋トレ",sub:"心も体も、より強く",cat:"str",unit:"分",step:5,per:20,exp:80,cost:20},
+  {id:"q2",nm:"ランニング",sub:"一歩ずつ、遠くへ",cat:"end",unit:"分",step:5,per:30,exp:90,cost:30},
+  {id:"q3",nm:"単語・熟語",sub:"言葉で、世界を広げる",cat:"int",unit:"分",step:5,per:15,exp:50,cost:15,subject:"英語",node:"単語・熟語"},
+  {id:"q4",nm:"Part5 文法",sub:"型を体に入れる",cat:"int",unit:"問",step:1,per:10,exp:50,cost:15,subject:"英語",node:"文法 Part5"},
+  {id:"q5",nm:"学科の復習",sub:"免許まで、あと少し",cat:"int",unit:"分",step:5,per:20,exp:60,cost:20,subject:"運転免許",node:"学科"},
+  {id:"q6",nm:"創作",sub:"つくることで、人生を豊かに",cat:"cre",unit:"分",step:10,per:30,exp:70,cost:30},
+  {id:"q7",nm:"部屋を整える",sub:"足場を固める",cat:"life",unit:"回",step:1,per:1,exp:30,cost:10},
+  {id:"q8",nm:"休養も冒険の準備",sub:"よく休み、また進もう",cat:"rest",unit:"回",step:1,per:1,exp:30,cost:0,max:1}
+];
+const out='/tmp/life-quest-qa';fs.mkdirSync(out,{recursive:true});
+try{
+ await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject)});
+ browser=await chromium.launch({headless:true});
+ for(const viewport of [{width:360,height:640},{width:412,height:915}]){
+  const context=await browser.newContext({viewport,reducedMotion:'reduce',timezoneId:'Asia/Tokyo'});
+  const page=await context.newPage(),errors=[],messages=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>{messages.push(d.message());d.accept()});
+  await page.clock.install({time:new Date('2026-11-01T23:50:00+09:00')});
+  await page.goto('http://127.0.0.1:4249/?legacy=1',{waitUntil:'networkidle'});
+  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.evaluate(()=>{
+   clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
+   save=initSave();save.giftClaimedIds=DEV_GIFTS.map(g=>g.id);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];addInstance('aquaron',5);save.party=[save.instances[0].uid];save.coins=17;
+   if(!saveGame())throw Error('fixture save');show('home');
+  });
+  const before=await page.evaluate(()=>localStorage.getItem(MonsterProfiles.key(SAVE_KEY)));
+  await page.evaluate(()=>show('moreMenu'));await page.locator('#englishStudyMenuButton').click();await page.waitForURL('**/life-quest/');
+  assert.equal(await page.locator('.tile').count(),0,'fresh install has no default quests');
+  assert.match(await page.locator('.qhead').innerText(),/0\/0 達成/);
+  assert.equal(await page.locator('#lvnum').textContent(),'1');
+  await page.screenshot({path:out+'/empty-'+viewport.width+'.png'});
+  await page.locator('[data-tab="skill"]').click();assert.equal(await page.locator('.tree').count(),0);
+  await page.locator('[data-tab="quest"]').click();assert.equal(await page.locator('.qrow').count(),0);
+  await page.locator('#f-nm').fill('自分のクエスト');await page.locator('#addq button').click();
+  await page.locator('.qrow').filter({hasText:'自分のクエスト'}).waitFor();
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),1);assert.match(await page.locator('.tile').innerText(),/自分のクエスト/);
+  assert.equal(await page.locator('#lvnum').textContent(),'1');
+  // Previously auto-created defaults are cleared only when untouched and unrecorded.
+  await page.evaluate(quests=>localStorage.setItem('lifequest.v1',JSON.stringify({v:2,sample:false,quests,hist:{}})),configuredQuests);
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),0,'untouched stored defaults also become empty');
+  await page.evaluate(quests=>localStorage.setItem('lifequest.v1',JSON.stringify({v:2,sample:false,quests,hist:{'2026-11-01':{q1:5}}})),configuredQuests);
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),8,'recorded defaults must remain');
+  assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/5\/20/);
+  await page.evaluate(quests=>{quests[0].nm='自分の筋トレ';localStorage.setItem('lifequest.v1',JSON.stringify({v:2,sample:false,quests,hist:{}}))},configuredQuests);
+  await page.reload({waitUntil:'networkidle'});
+  assert.equal(await page.locator('.tile').count(),8,'customized saved quests must remain');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth),true,'phone has no page scroll');
+  await page.addLocatorHandler(page.locator('.overlay:has(.lvup)').first(),async()=>{
+   await page.locator('.overlay:has(.lvup)').first().click();
+  });
+  const click=async(id,n)=>{for(let i=0;i<n;i++)await page.locator('.tile[data-inc="'+id+'"]').click();};
+  await click('q1',1);
+  await page.waitForFunction(()=>document.querySelector('.tile[data-inc="q1"] .amt b').textContent==='5');
+  assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/5\/20/);
+  await page.locator('.minus[data-inc="q1"]').click();
+  await page.waitForFunction(()=>document.querySelector('.tile[data-inc="q1"] .amt b').textContent==='0');
+  assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/0\/20/);
+  // The toast lasts 3.6 seconds; observe its actual insertion so slow test
+  // machines need not finish twenty independent clicks before it disappears.
+  await page.evaluate(()=>{
+   window.lifeQuestToastSeen=false;window.lifeQuestLevelUpSeen=false;
+   new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes){
+    if(n.nodeType!==1)continue;
+    if(n.matches('.toast')&&n.getBoundingClientRect().height>0)window.lifeQuestToastSeen=true;
+    if(n.matches('.lvup')||n.querySelector('.lvup'))window.lifeQuestLevelUpSeen=true;
+   }}).observe(document.body,{childList:true});
+  });
+  await click('q1',20); // 5 achievements displayed, only 3 count for rewards.
+  await page.waitForFunction(()=>window.lifeQuestToastSeen&&window.lifeQuestLevelUpSeen);assert(await page.evaluate(()=>lifeQuestLevelUpSeen&&lifeQuestToastSeen));
+  assert.match(await page.locator('.tile[data-inc="q1"] .amt').innerText(),/100\/20/);
+  assert.match(await page.locator('.reward-next').innerText(),/720枚/);
+  await page.locator('.overlay').evaluateAll(els=>els.forEach(e=>e.remove()));
+  assert.equal(await page.locator('.tile[data-inc="q1"] .isdone').count(),0);
+  assert.equal(await page.locator('.tile[data-inc="q1"]').getAttribute('class').then(s=>s.includes('isdone')),true);
+  await page.locator('.toast,.float').evaluateAll(els=>els.forEach(e=>e.remove()));
+  await page.screenshot({path:out+'/home-'+viewport.width+'.png'});
+  assert.equal(await page.evaluate(()=>localStorage.getItem('mb_v95c')),before,'Life Quest leaves Monster save byte-identical');
+  const state=await page.evaluate(()=>JSON.parse(localStorage.getItem('lifequest.v1')));assert.equal(Object.keys(state.hist).length,1,'no sample days');
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('lifequest_rewards_v1')).entries.some(e=>e.source==='daily')),false);
+  await page.locator('[data-tab="skill"]').click();assert.equal(await page.locator('.tree').count(),2);
+  await page.locator('[data-tab="log"]').click();assert(await page.locator('#bk-out').isVisible());
+  await page.locator('[data-tab="quest"]').click();await page.locator('#f-nm').fill('テスト読書');await page.locator('#f-unit').selectOption('ページ');await page.locator('#addq button').click();await page.locator('.qrow').filter({hasText:'テスト読書'}).waitFor();assert.equal(await page.locator('.qrow').count(),9);
+  // Return straight to Monster Battle after midnight, without revisiting Life Quest.
+  await page.clock.setFixedTime(new Date('2026-11-02T00:05:00+09:00'));
+  await page.goto('http://127.0.0.1:4249/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('home')});
+  assert(await page.locator('#giftUnreadCount').isVisible());
+  await page.locator('#homeGiftButton').click();
+  assert(await page.locator('#giftBox').isVisible());
+  const amounts=await page.evaluate(()=>{const e=JSON.parse(localStorage.getItem('lifequest_rewards_v1')).entries;return {daily:e.find(e=>e.id==='daily-2026-11-01').coins,coins:save.coins,rainbow:save.items.rainbow_contract_scroll,expected:e.reduce((n,e)=>n+e.coins,0)}});
+  assert.equal(amounts.daily,720);
+  await page.locator('#giftClaimAll').click();
+  const snapshot=await page.evaluate(()=>JSON.stringify(save));
+  await page.evaluate(()=>{window.realLQSet=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===MonsterProfiles.key(SAVE_KEY))throw Error('quota');return window.realLQSet.call(this,k,v)}});
+  assert.equal(await page.evaluate(()=>claimGifts(pendingGifts().map(g=>g.key))),false);assert.equal(await page.evaluate(()=>JSON.stringify(save)),snapshot);
+  await page.evaluate(()=>Storage.prototype.setItem=window.realLQSet);
+  await page.locator('#giftDialogClaim').click();
+  await page.getByRole('heading',{name:'受け取りました',exact:true}).waitFor();
+  assert.equal(await page.evaluate(()=>save.coins),amounts.coins+amounts.expected);assert.equal(await page.evaluate(()=>save.items.rainbow_contract_scroll),amounts.rainbow+1);
+  await page.locator('#giftDialogClose').click();
+  assert.equal(await page.locator('#giftUnreadCount').isVisible(),false);
+  const claimed=await page.evaluate(()=>JSON.stringify(save));await page.evaluate(()=>show('home'));assert.equal(await page.evaluate(()=>JSON.stringify(save)),claimed);
+  await page.screenshot({path:out+'/claimed-'+viewport.width+'.png'});
+  // Current schema save with the additive field missing must load safely.
+  await page.evaluate(()=>{const old=JSON.parse(JSON.stringify(save));delete old.lifeQuestClaimedIds;old.saveMeta.integrityHash=saveHash(old);localStorage.setItem(MonsterProfiles.key(SAVE_KEY),JSON.stringify(old));});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  assert.equal(await page.evaluate(()=>Array.isArray(save.lifeQuestClaimedIds)&&save.lifeQuestClaimedIds.length===0),true);
+  assert.equal(await page.evaluate(()=>save.coins),amounts.coins+amounts.expected);
+  // Existing gameplay smoke: home / party / hunt / battle / save / reload.
+  await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);show('partySet')});assert(await page.locator('#partySet').isVisible());
+  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
+  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
+  assert.equal(await page.evaluate(()=>saveGame()),true);
+  assert.deepEqual(errors,[]);assert.equal(fs.existsSync('english/index.html'),true);
+  console.log('PASS Life Quest browser '+viewport.width+': entry, no-scroll HUD, tap/minus/progression/FX, tabs/add, sample-free, isolated save, midnight direct-home claim, rollback/retry/no duplicate, old-save migration and gameplay smoke.');
+  // Two independent pages must preserve both additions to the same existing day.
+  const second=await context.newPage();
+  await Promise.all([page,second].map(p=>p.goto('http://127.0.0.1:4249/life-quest/')));
+  const date='2026-11-03';
+  await page.clock.setFixedTime(new Date(date+'T12:00:00+09:00'));
+  await second.clock.install({time:new Date(date+'T12:00:00+09:00')});
+  await Promise.all([page,second].map(p=>p.reload()));
+  await Promise.all([page,second].map(p=>p.locator('.tile[data-inc="q1"]').click()));
+  await page.waitForFunction(date=>JSON.parse(localStorage.getItem('lifequest.v1')).hist[date]?.q1===10,date);
+  const saved=await page.evaluate(()=>localStorage.getItem('lifequest.v1'));
+  await page.locator('[data-tab="log"]').click();
+  for(const invalid of [{per:0},{unit:'<img onerror=bad()>'},{exp:1e300}]){
+    const bad=JSON.parse(saved);Object.assign(bad.quests[0],invalid);
+    await page.locator('#bk-in').fill(JSON.stringify(bad));await page.locator('[data-act="import"]').click();
+    assert.equal(await page.locator('.overlay.confirm').count(),0);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('lifequest.v1')),saved);
+  }
+  await context.close();
+ }
+}finally{await browser?.close();server.kill();}

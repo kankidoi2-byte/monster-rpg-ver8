@@ -35,7 +35,7 @@ for(const id of ['stella_mock_enemy','stella_mock_skill_open','stella_mock_advan
   assert.match(mockFlow,new RegExp(`id:'${id}'[^\\n]+persistAs:'stella_mock_battle'`),`interruption must resume from the mock battle checkpoint: ${id}`);
 }
 
-assert.ok(tutorial.includes("TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'easy'})"));
+assert.ok(tutorial.includes("TUTORIAL_STELLA_MOCK=Object.freeze({mapId:'magic_academy',enemyId:'stella_apprentice',difficultyId:'d1'})"));
 assert.ok(tutorial.includes("request.tutorialStellaMock=true"),'the mock request needs a stable non-reward identity');
 assert.ok(tutorial.includes("tutorialBattleSession.kind='stella_mock'")&&tutorial.includes("tutorialBattleSession.advantageUsed=false"));
 assert.ok(tutorial.includes("player?.id&&partyBattle.length>0")&&tutorial.includes("enemy?.id===TUTORIAL_STELLA_MOCK.enemyId"),'the real battle must start with a party against Stella');

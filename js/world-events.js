@@ -6,7 +6,7 @@
  * Callers exclude tutorial/event battles. Use world-victory:<lifetime wins> receipts.
  */
 const WORLD_EVENT_KEYS = Object.freeze(['elysia','crisis','rift','water_secret','starsea','golden_land']);
-const WORLD_FALSE_DRAGONS = Object.freeze(['false_dragon_alfa','false_dragon_beta','false_dragon_gamma']);
+const WORLD_FALSE_DRAGONS = Object.freeze(['false_dragon_alfa']);
 const WORLD_EVENT_GUIDE_KEYS = Object.freeze(['map_intro','elysia','crisis','rift','special_entrance']);
 const WORLD_SPECIAL_ENTRANCE_KEYS = Object.freeze(['water_secret','starsea','golden_land']);
 const WORLD_EVENT_BATTLE_LIMITS = Object.freeze({elysia:3,crisis:3,rift:3,water_secret:2,starsea:2,golden_land:2});
@@ -16,7 +16,7 @@ function normalizeWorldEventEntry(key,value){
   if(!worldEventObject(value))return null;
   const entry={...value};
   const maps={elysia:'light_plain',crisis:'starsea',rift:'world_between',water_secret:'water_secret',starsea:'starsea',golden_land:'golden_land'};
-  const monsters={elysia:['hikari'],crisis:['doom_nemesion'],rift:WORLD_FALSE_DRAGONS,water_secret:['elna_water','suiren'],starsea:['nemesion'],golden_land:['slime_gold']};
+  const monsters={elysia:['hikari'],crisis:['doom_nemesion'],rift:WORLD_FALSE_DRAGONS,water_secret:['elna_water','suiren','tienhairon'],starsea:['nemesion'],golden_land:['slime_gold']};
   entry.mapId=maps[key];
   const limit=WORLD_EVENT_BATTLE_LIMITS[key];
   entry.remainingBattles=Number.isSafeInteger(entry.remainingBattles)&&entry.remainingBattles>0
@@ -87,14 +87,14 @@ function rollWorldEventsAfterVictory(raw,details={},randomFn=Math.random){
     const roll=Number(randomFn());
     if(Number.isFinite(roll)&&roll>=0&&roll<rate)next.active[key]={...event,remainingBattles:WORLD_EVENT_BATTLE_LIMITS[key],source:'ordinary_victory',discoveredAtVictory:next.normalVictories};
   };
-  const difficulty=details.difficultyId;
-  const eligible=['normal','hard','extreme'].includes(difficulty);
+  const difficulty=huntDifficulty(details.difficultyId).id;
+  const eligible=['d2','d3','d4','d5','extreme'].includes(difficulty);
   if(!eligible)return next;
   if(details.mapId==='light_plain')add('elysia',.08,{mapId:'light_plain',monsterId:'hikari'});
   add('crisis',.03,{mapId:'starsea',monsterId:'doom_nemesion'});
   add('water_secret',.12,{mapId:'water_secret'});
   add('starsea',.10,{mapId:'starsea',monsterId:'nemesion'});
-  add('golden_land',{normal:.03,hard:.05,extreme:.08}[difficulty],{mapId:'golden_land'});
+  add('golden_land',huntDifficulty(difficulty).goldenLandRate,{mapId:'golden_land'});
   return next;
 }
 function resolveWorldEvent(raw,key,outcome='defeat'){

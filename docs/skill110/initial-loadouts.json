@@ -1,0 +1,3241 @@
+[
+  {
+    "unitId": "freigal",
+    "name": "フレイガル",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_046",
+        "name": "火炎牙",
+        "cost": 2
+      },
+      {
+        "id": "s110_043",
+        "name": "フレイムクロー",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_046",
+      "s110_043",
+      "s110_015"
+    ]
+  },
+  {
+    "unitId": "freiwolf",
+    "name": "フレイウルフ",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_043",
+        "name": "フレイムクロー",
+        "cost": 2
+      },
+      {
+        "id": "s110_008",
+        "name": "気合溜め",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_048",
+      "s110_015",
+      "s110_008"
+    ]
+  },
+  {
+    "unitId": "aquaron",
+    "name": "アクアロン",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_016",
+        "name": "水流弾",
+        "cost": 1
+      },
+      {
+        "id": "s110_049",
+        "name": "しっぽ打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_016",
+      "s110_049",
+      "s110_017"
+    ]
+  },
+  {
+    "unitId": "highaquaron",
+    "name": "ハイアクアロン",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_049",
+        "name": "しっぽ打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_088",
+      "s110_069",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "shenhairon",
+    "name": "シェンハイロン",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_017",
+        "name": "大波召喚",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_017",
+      "s110_039",
+      "s110_069"
+    ]
+  },
+  {
+    "unitId": "tienhairon",
+    "name": "ティエンハイロン",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_017",
+        "name": "大波召喚",
+        "cost": 3
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_017",
+      "s110_004",
+      "s110_083"
+    ]
+  },
+  {
+    "unitId": "grassbeat",
+    "name": "グラスビート",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_019",
+        "name": "リーフカッター",
+        "cost": 1
+      },
+      {
+        "id": "s110_020",
+        "name": "森の一撃",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_019",
+      "s110_020",
+      "s110_021"
+    ]
+  },
+  {
+    "unitId": "thornbeat",
+    "name": "ソーンビート",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_052",
+        "name": "ソーンホーン",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_052",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "granbeat",
+    "name": "グランビート",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_052",
+        "name": "ソーンホーン",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_052",
+      "s110_003",
+      "s110_071"
+    ]
+  },
+  {
+    "unitId": "rikasheef",
+    "name": "リカシーフ",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_059",
+        "name": "若葉の突進",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_059",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "seralphia",
+    "name": "セラルフィア",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_020",
+        "name": "森の一撃",
+        "cost": 3
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_020",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "nightmare",
+    "name": "ナイトメア",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_031",
+        "name": "影打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_032",
+        "name": "闇の波動",
+        "cost": 3
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_031",
+      "s110_033",
+      "s110_032"
+    ]
+  },
+  {
+    "unitId": "volteck",
+    "name": "ボルテック",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_022",
+        "name": "雷撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_025",
+        "name": "突風",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_022",
+      "s110_025",
+      "s110_023"
+    ]
+  },
+  {
+    "unitId": "spaquinn",
+    "name": "スパクイン",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_022",
+        "name": "雷撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_025",
+        "name": "突風",
+        "cost": 1
+      },
+      {
+        "id": "s110_023",
+        "name": "雷光弾",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_022",
+      "s110_025",
+      "s110_023"
+    ]
+  },
+  {
+    "unitId": "voltax",
+    "name": "ボルタックス",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_023",
+        "name": "雷光弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_023",
+      "s110_075",
+      "s110_073"
+    ]
+  },
+  {
+    "unitId": "icegolem",
+    "name": "アイスゴーレム",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_055",
+        "name": "氷の拳",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_055",
+      "s110_003",
+      "s110_017"
+    ]
+  },
+  {
+    "unitId": "proto_icegolem",
+    "name": "ゴーレム",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_056",
+        "name": "石造拳",
+        "cost": 4
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_056",
+      "s110_003",
+      "s110_090"
+    ]
+  },
+  {
+    "unitId": "elysia",
+    "name": "エリシア",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_028",
+        "name": "光雫弾",
+        "cost": 1
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_028",
+      "s110_004",
+      "s110_008"
+    ]
+  },
+  {
+    "unitId": "elysia_prayer",
+    "name": "光祈の巫女エリシア",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_029",
+        "name": "祈光弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_029",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "hikari",
+    "name": "光の女神エリシア",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 8,
+    "skills": [
+      {
+        "id": "s110_029",
+        "name": "祈光弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_029",
+      "s110_004",
+      "s110_077"
+    ]
+  },
+  {
+    "unitId": "nemes",
+    "name": "ネメス",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_034",
+        "name": "星屑弾",
+        "cost": 1
+      },
+      {
+        "id": "s110_044",
+        "name": "竜のひっかき",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_034",
+      "s110_044",
+      "s110_035"
+    ]
+  },
+  {
+    "unitId": "nemesia",
+    "name": "ネメシア",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_045",
+        "name": "星雲の爪",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_045",
+      "s110_038",
+      "s110_081"
+    ]
+  },
+  {
+    "unitId": "nemesion",
+    "name": "ネメシオン",
+    "entityKind": "monster",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 7,
+    "skills": [
+      {
+        "id": "s110_045",
+        "name": "星雲の爪",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_045",
+      "s110_083",
+      "s110_081"
+    ]
+  },
+  {
+    "unitId": "doom_nemesion",
+    "name": "滅亡の星 ネメシオン",
+    "entityKind": "monster",
+    "rarity": "★★★★★",
+    "level": 1,
+    "costLimit": 10,
+    "totalCost": 10,
+    "skills": [
+      {
+        "id": "s110_081",
+        "name": "アストラルフレア",
+        "cost": 7
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_081",
+      "s110_099",
+      "s110_105"
+    ]
+  },
+  {
+    "unitId": "elna_beginner",
+    "name": "初級剣士エルナ",
+    "entityKind": "character",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_040",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "elna_middle",
+    "name": "中級剣士エルナ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_041",
+        "name": "連続斬り",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_041",
+      "s110_003",
+      "s110_002"
+    ]
+  },
+  {
+    "unitId": "elna_advanced",
+    "name": "上級剣士エルナ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_002",
+        "name": "強打",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_002",
+      "s110_008",
+      "s110_085"
+    ]
+  },
+  {
+    "unitId": "suiren",
+    "name": "水の精霊スイレン",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_017",
+        "name": "大波召喚",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_017",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "elna_water",
+    "name": "流水の剣士エルナ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_055",
+        "name": "氷の拳",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_069",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "slime",
+    "name": "スライム",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_058",
+      "s110_003",
+      "s110_001"
+    ]
+  },
+  {
+    "unitId": "slime_gold",
+    "name": "スライムゴールド",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_058",
+      "s110_003",
+      "s110_001"
+    ]
+  },
+  {
+    "unitId": "goblin",
+    "name": "ゴブリン",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_001",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "false_dragon_alfa",
+    "name": "偽竜 code:alfa",
+    "entityKind": "monster",
+    "rarity": "★★★★★",
+    "level": 1,
+    "costLimit": 10,
+    "totalCost": 10,
+    "skills": [
+      {
+        "id": "s110_077",
+        "name": "ジャッジメント",
+        "cost": 7
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_077",
+      "s110_096",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "false_dragon_beta",
+    "name": "アシュレイア",
+    "entityKind": "monster",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_043",
+        "name": "フレイムクロー",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_067",
+      "s110_091",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "false_dragon_gamma",
+    "name": "モルグラム",
+    "entityKind": "monster",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_059",
+        "name": "若葉の突進",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_071",
+      "s110_093",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "volmoog",
+    "name": "ボルモーグ",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_023",
+        "name": "雷光弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_023",
+      "s110_003",
+      "s110_086"
+    ]
+  },
+  {
+    "unitId": "gran_volmoog",
+    "name": "グランボルモーグ",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_023",
+        "name": "雷光弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_023",
+      "s110_003",
+      "s110_086"
+    ]
+  },
+  {
+    "unitId": "stella_apprentice",
+    "name": "見習い魔法使いステラ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_034",
+        "name": "星屑弾",
+        "cost": 1
+      },
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_008",
+        "name": "気合溜め",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_034",
+      "s110_001",
+      "s110_008"
+    ]
+  },
+  {
+    "unitId": "stella_wizard",
+    "name": "魔法使いステラ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_035",
+        "name": "スターライトレイ",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_035",
+      "s110_081",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "stella_sorcerer",
+    "name": "魔導師ステラ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 7,
+    "skills": [
+      {
+        "id": "s110_002",
+        "name": "強打",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_002",
+      "s110_098",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "lumina_apprentice",
+    "name": "見習い魔法使いルミナ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_034",
+        "name": "星屑弾",
+        "cost": 1
+      },
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_008",
+        "name": "気合溜め",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_034",
+      "s110_001",
+      "s110_008"
+    ]
+  },
+  {
+    "unitId": "lumina_wizard",
+    "name": "魔法使いルミナ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_035",
+        "name": "スターライトレイ",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_035",
+      "s110_081",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "lumina_sorcerer",
+    "name": "魔導師ルミナ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 7,
+    "skills": [
+      {
+        "id": "s110_002",
+        "name": "強打",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_002",
+      "s110_081",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "orcana",
+    "name": "オルカーナ",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_049",
+        "name": "しっぽ打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_060",
+        "name": "蒼海の突進",
+        "cost": 4
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_060",
+      "s110_051",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "orca_stream",
+    "name": "オルカストリーム",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_051",
+        "name": "ストリームテイル",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_051",
+      "s110_069",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "orca_abyss",
+    "name": "オルカアビス",
+    "entityKind": "monster",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 7,
+    "skills": [
+      {
+        "id": "s110_051",
+        "name": "ストリームテイル",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_051",
+      "s110_069",
+      "s110_092"
+    ]
+  },
+  {
+    "unitId": "tsubaki",
+    "name": "炎の精霊ツバキ",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_013",
+        "name": "火花の舞",
+        "cost": 1
+      },
+      {
+        "id": "s110_014",
+        "name": "火炎弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_013",
+      "s110_014",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "elna_kaen",
+    "name": "華炎の剣士エルナ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_067",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "alchemion",
+    "name": "錬核獣アルケミオン",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_104",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "kimeragna",
+    "name": "混成翼竜キメラグナ",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_058",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "sylphin",
+    "name": "シルフィン",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_025",
+        "name": "突風",
+        "cost": 1
+      },
+      {
+        "id": "s110_008",
+        "name": "気合溜め",
+        "cost": 3
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_025",
+      "s110_008",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "zephyray",
+    "name": "ゼファーレイ",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_026",
+        "name": "ゼファーカッター",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_026",
+      "s110_003",
+      "s110_075"
+    ]
+  },
+  {
+    "unitId": "tempestray",
+    "name": "テンペストレイ",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_026",
+        "name": "ゼファーカッター",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_026",
+      "s110_003",
+      "s110_075"
+    ]
+  },
+  {
+    "unitId": "ignaros",
+    "name": "イグナロス",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_053",
+        "name": "溶岩角",
+        "cost": 4
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_053",
+      "s110_003",
+      "s110_089"
+    ]
+  },
+  {
+    "unitId": "nocle",
+    "name": "ノクル",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_047",
+        "name": "影牙",
+        "cost": 2
+      },
+      {
+        "id": "s110_037",
+        "name": "夜滑り",
+        "cost": 1
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_047",
+      "s110_037",
+      "s110_008"
+    ]
+  },
+  {
+    "unitId": "noclaid",
+    "name": "ノクレイド",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_047",
+        "name": "影牙",
+        "cost": 2
+      },
+      {
+        "id": "s110_044",
+        "name": "竜のひっかき",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_047",
+      "s110_044",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "noxvelg",
+    "name": "ノクスヴェルグ",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_047",
+        "name": "影牙",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_087",
+      "s110_084",
+      "s110_079"
+    ]
+  },
+  {
+    "unitId": "luxseed",
+    "name": "ルクシード",
+    "entityKind": "monster",
+    "rarity": "★",
+    "level": 1,
+    "costLimit": 4,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_028",
+        "name": "光雫弾",
+        "cost": 1
+      },
+      {
+        "id": "s110_050",
+        "name": "幼竜の尾",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_028",
+      "s110_050",
+      "s110_004"
+    ]
+  },
+  {
+    "unitId": "luxiard",
+    "name": "ルクシアード",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_044",
+        "name": "竜のひっかき",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:horn"
+    ],
+    "level100Default": [
+      "s110_054",
+      "s110_044",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "lux_galdion",
+    "name": "ルクスガルディオン",
+    "entityKind": "monster",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_049",
+        "name": "しっぽ打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_088",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "astralepis",
+    "name": "アストラレピス",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_035",
+        "name": "スターライトレイ",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_035",
+      "s110_008",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "galdra",
+    "name": "ガルドラ",
+    "entityKind": "monster",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_049",
+        "name": "しっぽ打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_103",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "kimeragna_apex",
+    "name": "キメラグナ・アペクス",
+    "entityKind": "monster",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_095",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "elixion",
+    "name": "賢金神竜エリクシオン",
+    "entityKind": "monster",
+    "rarity": "★★★★★",
+    "level": 1,
+    "costLimit": 10,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_049",
+        "name": "しっぽ打ち",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [],
+    "level100Default": [
+      "s110_103",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "character_brigitte_2",
+    "name": "接雷の従士ブリジット",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_040",
+      "s110_102",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_brigitte_3",
+    "name": "雷壁騎士ブリジット",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_002",
+        "name": "強打",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_024",
+      "s110_008",
+      "s110_002"
+    ]
+  },
+  {
+    "unitId": "character_brigitte_4",
+    "name": "城塞隊長ブリジット",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_040",
+      "s110_101",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_tobia_2",
+    "name": "風便見習いトビア",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_027",
+      "s110_064",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_tobia_3",
+    "name": "峡谷便使いトビア",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_076",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_tobia_4",
+    "name": "天路伝令長トビア",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_095",
+      "s110_102",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_roden_2",
+    "name": "流炉職人ローデン",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_068",
+      "s110_064",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_roden_3",
+    "name": "戦炉術師ローデン",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_015",
+      "s110_010",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_roden_4",
+    "name": "百錬の炉匠ローデン",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_089",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_selene_2",
+    "name": "巡回水医セレネ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_055",
+        "name": "氷の拳",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_055",
+      "s110_066",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_selene_3",
+    "name": "水脈医セレネ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_055",
+        "name": "氷の拳",
+        "cost": 2
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_078",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_selene_4",
+    "name": "命泉の医導師セレネ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_055",
+        "name": "氷の拳",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_070",
+      "s110_066",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_safira_2",
+    "name": "隊商槍士サフィラ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_013",
+        "name": "火花の舞",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_013",
+      "s110_102",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_safira_3",
+    "name": "砂嵐槍士サフィラ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_058",
+      "s110_010",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_safira_4",
+    "name": "紅砂護商長サフィラ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_068",
+      "s110_101",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_bordo_2",
+    "name": "新入りのボルド",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_059",
+        "name": "若葉の突進",
+        "cost": 2
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_021",
+      "s110_066",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_bordo_3",
+    "name": "熟練のボルド",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_001",
+        "name": "一撃",
+        "cost": 1
+      },
+      {
+        "id": "s110_004",
+        "name": "小回復",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_001",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_bordo_4",
+    "name": "司厨長ボルド",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 8,
+    "skills": [
+      {
+        "id": "s110_061",
+        "name": "捨て身打ち",
+        "cost": 6
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_061",
+      "s110_004",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_lize_2",
+    "name": "札売り娘リゼ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_009",
+        "name": "威圧",
+        "cost": 4
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_058",
+      "s110_009",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_lize_3",
+    "name": "影札師リゼ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_097",
+      "s110_003",
+      "s110_010"
+    ]
+  },
+  {
+    "unitId": "character_lize_4",
+    "name": "千契の奇術頭リゼ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_097",
+      "s110_064",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_regus_2",
+    "name": "傷負いの剣士レグス",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_033",
+      "s110_066",
+      "s110_106"
+    ]
+  },
+  {
+    "unitId": "character_regus_3",
+    "name": "呪鉄剣士レグス",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_097",
+      "s110_010",
+      "s110_106"
+    ]
+  },
+  {
+    "unitId": "character_regus_4",
+    "name": "断呪の紫刃レグス",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_065",
+      "s110_102",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_remnes_2",
+    "name": "レムネス",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_058",
+      "s110_102",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_remnes_3",
+    "name": "記憶騎装レムネス",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_058",
+      "s110_066",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_remnes_4",
+    "name": "星鎧のレムナント",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_040",
+        "name": "斬りつけ",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge",
+      "weapon:sword"
+    ],
+    "level100Default": [
+      "s110_065",
+      "s110_064",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_nico_2",
+    "name": "もの作り少年ニコ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_024",
+      "s110_064",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_nico_3",
+    "name": "蒼電機巧師ニコ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_074",
+      "s110_010",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_nico_4",
+    "name": "蒼雷の発明王ニコ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_094",
+      "s110_102",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_mireille_2",
+    "name": "流れ芸人ミレーユ",
+    "entityKind": "character",
+    "rarity": "★★",
+    "level": 1,
+    "costLimit": 5,
+    "totalCost": 5,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_009",
+        "name": "威圧",
+        "cost": 4
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_036",
+      "s110_009",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_mireille_3",
+    "name": "幻術師ミレーユ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 4,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_082",
+      "s110_066",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_mireille_4",
+    "name": "幻惑の女王ミレーユ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 7,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_009",
+        "name": "威圧",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_058",
+      "s110_009",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_vera_3",
+    "name": "人間兵器ヴェーラ",
+    "entityKind": "character",
+    "rarity": "★★★",
+    "level": 1,
+    "costLimit": 6,
+    "totalCost": 6,
+    "skills": [
+      {
+        "id": "s110_014",
+        "name": "火炎弾",
+        "cost": 3
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_014",
+      "s110_097",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_vera_4",
+    "name": "黒炎戦姫ヴェーラ",
+    "entityKind": "character",
+    "rarity": "★★★★",
+    "level": 1,
+    "costLimit": 8,
+    "totalCost": 7,
+    "skills": [
+      {
+        "id": "s110_058",
+        "name": "たいあたり",
+        "cost": 1
+      },
+      {
+        "id": "s110_009",
+        "name": "威圧",
+        "cost": 4
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_065",
+      "s110_009",
+      "s110_003"
+    ]
+  },
+  {
+    "unitId": "character_vera_5",
+    "name": "終焉の殲滅姫ヴェーラ",
+    "entityKind": "character",
+    "rarity": "★★★★★",
+    "level": 1,
+    "costLimit": 10,
+    "totalCost": 8,
+    "skills": [
+      {
+        "id": "s110_015",
+        "name": "爆炎チャージ",
+        "cost": 5
+      },
+      {
+        "id": "s110_003",
+        "name": "身構える",
+        "cost": 2
+      },
+      {
+        "id": "s110_010",
+        "name": "集中",
+        "cost": 1
+      }
+    ],
+    "tagsAdded": [
+      "anatomy:fist",
+      "capability:charge"
+    ],
+    "level100Default": [
+      "s110_015",
+      "s110_065",
+      "s110_106"
+    ]
+  }
+]

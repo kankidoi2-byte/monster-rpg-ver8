@@ -1,0 +1,28 @@
+{
+  "dateJST": "2026-10-01",
+  "baseCommit": "2edddc3ced58b54efedd4b185160f72a23c10759",
+  "scaleByStars": {
+    "1": 0.3,
+    "2": 0.5,
+    "3": 0.75,
+    "4": 1,
+    "5": 1.2
+  },
+  "reference": "Shared stage unit, max 280px at 100%; nominal 60% stage width; multi-enemy group fits together and all actors use same unit; transient per-slot safety cap remains. Not absolute physical body height.",
+  "static": "All registered visible species use transparent poster and same size regardless of video budget; no extra decoder allocation.",
+  "checks": {
+    "relatedDOMTestsPassed": 6,
+    "notices": 152,
+    "syntax": true,
+    "containmentAspectAndBottomCases": 400,
+    "sameSpeciesAllyEnemyAndEnemyTrackCases": 7500,
+    "19Maps": true,
+    "fullNpmCheckOnThisRevision": "not run; only restored relevant sources/tests in pruned workspace; no merge proposed"
+  },
+  "siteSourceCommit": "d888914f2a5bc7e35c33b1238483ded87569a74e",
+  "archiveSourceMatched": true,
+  "realGalaxyNewSizeAcceptance": "pending",
+  "mainMerge": false,
+  "generalPublication": false,
+  "previousUserEvidence": "Orca abyss too small; original motion/clipping acceptance predates new geometry; screenshots are user evidence, not an exhaustive device test."
+}

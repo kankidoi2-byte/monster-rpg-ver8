@@ -1,3 +1,4 @@
+import { fetchGitHubText } from './github-request.mjs';
 const API_BASE = 'https://api.github.com';
 const MAX_RESPONSE_CHARS = 1_000_000;
 const NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
@@ -138,14 +139,13 @@ export function createGitHubPagesReader(options = {}) {
       'X-GitHub-Api-Version': '2022-11-28'
     };
     if (token) headers.Authorization = 'Bearer ' + token;
-    let response;
+    let response, text;
     try {
-      response = await fetchImpl(url, { method: 'GET', headers, redirect: 'error' });
-    } catch {
-      throw new GitHubPagesReadError('github_unavailable');
+      ({ response, text } = await fetchGitHubText(fetchImpl, url, { method: 'GET', headers, redirect: 'error' }, { timeoutMs: options.readTimeoutMs }));
+    } catch (error) {
+      throw new GitHubPagesReadError(error?.code === 'github_timeout' ? 'github_timeout' : 'github_unavailable');
     }
     if (!response?.ok) throw new GitHubPagesReadError(responseErrorCode(response), response?.status);
-    const text = await response.text();
     if (text.length > MAX_RESPONSE_CHARS) throw new GitHubPagesReadError('github_response_too_large', response.status);
     try {
       return { value: JSON.parse(text), rateLimit: rateLimitFrom(response.headers) };

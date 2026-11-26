@@ -25,7 +25,7 @@ assert.equal(contract.rules.caps.waterMirrorReductionRate,.30);
 assert.equal(contract.rules.caps.costReduction,1);
 assert.equal(contract.rules.caps.minimumBattleCost,1);
 
-const attributeIds=['normal','fire','water','grass','thunder','wind','light','dark','star','dragon'];
+const attributeIds=['normal','fire','water','ice','grass','thunder','wind','light','dark','star','dragon'];
 assert.deepEqual(Object.keys(contract.rules.attributes).sort(),attributeIds.sort());
 for(const type of attributeIds){
   const matrix=contract.rules.attributes[type];
@@ -67,4 +67,4 @@ assert.equal(malformedPlan.abilityId,'origin_weaken');
 assert.equal(contract.buildKokoroLinkAbilityPlan(null),null);
 assert.equal(contract.buildKokoroLinkAbilityPlan({rarity:5,primaryType:'normal',abilityEligible:false}),null);
 
-console.log('Kokoro Link Phase 4-0 ability rules passed (10 attributes, rarity bands, primary-type routing, boss resistance, caps, deferral, and ★4/★5 exclusion).');
+console.log('Kokoro Link Phase 4-0 ability rules passed (11 attributes, rarity bands, primary-type routing, boss resistance, caps, deferral, and ★4/★5 exclusion).');

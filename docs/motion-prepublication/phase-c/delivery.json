@@ -1,0 +1,30 @@
+{
+  "deployment": {
+    "id": "appgdep_6abbb991856081918b3f5f00b484e909",
+    "project_id": "appgprj_6ab633e827b88191a02afee54e11cbc7",
+    "title": "モンスターバトル Phase3A 検証",
+    "version_id": "appgprj_6ab633e827b88191a02afee54e11cbc7~appgver_2f1abe940ea88191aa8130dc4013753d",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://monster-phase3a-review.kanki-doi-2.chatgpt.site",
+    "has_mcp": false,
+    "screenshot_asset_pointer": null,
+    "provider_deployment_id": "site---6ab633e827b88191a02afee54e11cbc7",
+    "failure_message": null,
+    "env_set_revision": 0,
+    "updated_at": "2026-09-29T13:14:14.677445+00:00"
+  },
+  "siteSourceCommit": "87071ef78690f2235623d2a88dbaf801afebe1a4",
+  "githubAssetsCommit": "d85990609f75e045170668a77c721a078700f27d",
+  "githubImplementationCommit": "29f22dd6211563f345409825d355681354b4a821",
+  "expandedBytes": 71614506,
+  "sharedAssetBytesSaved": 200100596,
+  "sharedImageReferencesChecked": 1262,
+  "ownerPrivatePreserved": true,
+  "normalRegistered": 4,
+  "target": 50,
+  "phaseCComplete": false,
+  "newPairDeviceCheck": "pending",
+  "browserQA": "not performed: Sites managed preview requires unavailable control-browser skill; no alternate live browser QA",
+  "next": "Open existing owner-private review; choose Phase C link, select each dragon and inspect ally/enemy/multi. Continue remaining46; bird ZIP retrieval pending."
+}

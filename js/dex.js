@@ -12,7 +12,7 @@ function renderItemDex(){
     const unlocked = save.itemDex.includes(it.id);
     const count = Number(save.items?.[it.id] || 0);
     return `<div class="item-dex-card ${unlocked ? '' : 'locked'}" onclick="showItemDexDetail('${it.id}')">
-      <div class="item-dex-image">${itemDexVisual(it, !unlocked)}</div>
+      <div class="item-dex-image">${itemDexVisual(it, !unlocked, true)}</div>
       <span class="item-category">${unlocked ? itemDexCategory(it) : '未入手'}</span>
       <h2 style="margin:8px 0 4px">${unlocked ? it.name : '？？？'}</h2>
       <div class="small">${unlocked ? `所持数：${count}` : 'まだ入手していません'}</div>
@@ -31,6 +31,7 @@ function showItemDexDetail(itemId){
       <h2 style="text-align:center">？？？</h2>
       <p class="small" style="text-align:center">このアイテムはまだ入手していません。</p>
     </div>`;
+    detail.scrollIntoView?.({behavior:'smooth',block:'start'});
     return;
   }
 
@@ -44,12 +45,14 @@ function showItemDexDetail(itemId){
     ${it.battleDesc ? `<p><b>戦闘効果：</b>${it.battleDesc}</p>` : ''}
     ${it.expItem ? `<p><b>経験値：</b>EXP +${it.expAmount}</p>` : ''}
     ${it.price > 0 ? `<p><b>価格：</b>コイン${it.price}枚</p>` : ''}
-    ${it.usableFromDex ? `<button onclick="useGoldenLandMap()" ${goldenLandMapIsReady()?'disabled':''}>${goldenLandMapIsReady()?'地図使用中（黄金郷を予約済み）':'この地図を使う'}</button>` : ''}
+    ${it.id==='strong_incense' ? `<p>香りの残り：${save.strongIncenseRemainingDepartures||0}回</p><button onclick="useStrongIncense()">使う</button>` : ''}
+    ${it.id==='golden_land_map' && it.usableFromDex ? `<button onclick="useGoldenLandMap()" ${goldenLandMapIsReady()?'disabled':''}>${goldenLandMapIsReady()?'地図使用中（黄金郷を予約済み）':'この地図を使う'}</button>` : ''}
   </div>`;
+  detail.scrollIntoView?.({behavior:'smooth',block:'start'});
 }
 function renderUnitSkillList(m) {
   return `<h3>技一覧</h3>
-    ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}<div class="skill-type-line ${skillTypes(sk)[0]}">${skillTypeLabel(skillTypes(sk))} / 威力${sk.power}</div><div style="font-size:12px;color:#aab3cc">${moveEffectText(mv)}</div></div>`;}).join('')}`;
+    ${m.moves.map(mv=>{const fallbackTypes=moveTypes(mv); const sk=SKILL_BY_ID[skillIdFromMove(mv)]||{name:mv[0],type:fallbackTypes[0],types:fallbackTypes,power:mv[1],cost:'-'}; return `<div class="move-box ${skillCardClass(skillTypes(sk))}">${skillCardHeader(sk)}${skillCardStats(sk)}${skillCardEffect(mv)}<button class="skill-dex-open" onclick="openSkillDex('${canonicalSkillId(skillIdFromMove(mv))}')">技図鑑で詳しく見る ›</button></div>`;}).join('')}`;
 }
 function dexRegisteredCount(units){
   return units.filter(unit=>typeof caughtHas==='function'&&caughtHas(unit.id)).length;
@@ -58,55 +61,56 @@ function renderDexHub(){
   syncItemDexFromInventory();
   const grid=document.getElementById('dexHubGrid');if(!grid)return;
   const monsters=M.filter(unit=>!isCharacterUnit(unit));
-  const characters=M.filter(isCharacterUnit);
+  const characters=M.filter(unit=>isCharacterUnit(unit) && (unit.chapter||'序章')==='序章');
   const itemCount=ITEM_DEX_ITEMS.filter(item=>save.itemDex.includes(item.id)).length;
   const mapCount=MAPS.filter(map=>save.mapDex?.includes(map.id)).length;
   const cards=[
-    {id:'dexHubMonsterButton',screen:'dex',icon:'🐉',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
-    {id:'dexHubCharacterButton',screen:'characterDex',icon:'👤',title:'キャラクター図鑑',desc:'仲間と成長形態（登場予定を含む）',count:dexRegisteredCount(characters),total:characterDexEntries().length},
-    {screen:'mapDex',icon:'🗺️',title:'マップ図鑑',desc:'土地・生息種・特殊イベント',count:mapCount,total:MAPS.length},
-    {screen:'itemDex',icon:'🎒',title:'アイテム図鑑',desc:'入手した道具と素材',count:itemCount,total:ITEM_DEX_ITEMS.length}
+    {id:'dexHubMonsterButton',screen:'dex',title:'モンスター図鑑',desc:'生態と出現・入手方法',count:dexRegisteredCount(monsters),total:monsters.length},
+    {id:'dexHubCharacterButton',screen:'characterDex',title:'キャラクター図鑑',desc:characterDexEntries().some(entry=>entry.planned)?'仲間と成長形態（登場予定を含む）':'仲間と成長形態',count:dexRegisteredCount(characters),total:characterDexEntries().length},
+    {screen:'skillDex',title:'技図鑑',desc:'全技の性能・効果・使用キャラ',count:skillDexEntries().length,total:skillDexEntries().length},
+    {screen:'mapDex',title:'マップ図鑑',desc:'土地・生息種・特殊イベント',count:mapCount,total:MAPS.length},
+    {screen:'itemDex',title:'アイテム図鑑',desc:'入手した道具と素材',count:itemCount,total:ITEM_DEX_ITEMS.length}
   ];
-  grid.innerHTML=cards.map(card=>`<button${card.id?` id="${card.id}"`:''} onclick="show('${card.screen}')"><span>${card.icon}</span><strong>${card.title}</strong><small>${card.desc}</small><b class="dex-hub-count">${card.count} / ${card.total}</b></button>`).join('');
+  grid.innerHTML=cards.map(card=>`<button${card.id?` id="${card.id}"`:''} onclick="show('${card.screen}')"><strong>${card.title}</strong><small>${card.desc}</small><b class="dex-hub-count">${card.count} / ${card.total}</b></button>`).join('');
 }
 function monsterMapEncounterNote(map, monster=null) {
-  if (map.id==='light_plain' && monster?.id==='hikari') return '光の平原のNormal・Hard探索勝利後、まれに降臨（Hard限定・戦闘後の契約不可）';
-  if (map.id==='starsea' && monster?.id==='doom_nemesion') return '通常探索のNormal・Hard勝利後、まれに世界の危機として出現（Extreme限定）';
+  if (map.id==='light_plain' && monster?.id==='hikari') return '光の平原の難易度Ⅱ〜Ⅴ・Extreme探索勝利後、まれに降臨（難易度Ⅳ・Ⅴ・戦闘後の契約不可）';
+  if (map.id==='starsea' && monster?.id==='doom_nemesion') return '通常探索の難易度Ⅱ〜Ⅴ・Extreme勝利後、まれに世界の危機として出現（Extreme限定）';
   if (map.id==='world_between') return '世界の危機を討伐、または対処を任せると残る偽竜の痕跡から遭遇（Extreme限定）';
   if (map.goldenLand) return '通常探索勝利で入口を発見、または地図を使用して入場（出発時に1枚消費）';
-  if (map.id==='starsea') return '通常探索のNormal・Hard勝利後、星の海への入口を発見すると遭遇（Hard限定）';
-  if (map.id==='water_secret') return '通常探索のNormal・Hard勝利後、秘境への入口を発見すると遭遇（Hard限定）';
+  if (map.id==='starsea') return '通常探索の難易度Ⅱ〜Ⅴ・Extreme勝利後、星の海への入口を発見すると遭遇（難易度Ⅳ・Ⅴ）';
+  if (map.id==='water_secret') return '通常探索の難易度Ⅱ〜Ⅴ・Extreme勝利後、秘境への入口を発見すると遭遇（難易度Ⅳ・Ⅴ）';
   if (map.bossOnly || map.rareOnly) return '特殊な入口から探索すると出現';
   return '世界地図からこの場所を選んで探索すると出現';
 }
 function monsterObtainEntries(m) {
   const entries = [];
-  if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',icon:'✨',title:'キャラクターガチャ',note:'その他メニューから召喚・Lv.1で加入'});
+  if(typeof characterGachaPool==='function' && characterGachaPool().some(unit=>unit.id===m.id)) entries.push({kind:'gacha',title:'キャラクターガチャ',note:'ガチャ→キャラクター・Lv.1で加入'});
   if (INITIAL_PARTY_IDS.includes(m.id)) entries.push({
-    kind:'initial',icon:'🎒',title:'初期メンバー',note:'ゲーム開始時から仲間'
+    kind:'initial',title:'初期メンバー',note:'ゲーム開始時から仲間'
   });
   MAPS.filter(map=>(map.enemyIds||[]).includes(m.id)).forEach(map=>{
     const unlocked=mapDexUnlocked(map.id);
-    entries.push({kind:'map',mapId:map.id,image:unlocked?map.image:null,icon:'🔒',title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map,m):'探索先や特殊な入口を発見すると詳細が登録されます'});
+    entries.push({kind:'map',mapId:map.id,image:unlocked?mapPortraitImage(map):null,title:unlocked?map.name:'未発見のマップ',note:unlocked?monsterMapEncounterNote(map,m):'探索先や特殊な入口を発見すると詳細が登録されます'});
   });
   M.forEach(from=>{
-    if (from.evolution === m.id) entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:`Lv.${from.evolutionLevel}で進化`});
-    (from.evolutions||[]).filter(e=>e.to===m.id).forEach(e=>entries.push({kind:'evolution',icon:'✨',title:`${from.name}から進化`,note:`Lv.${e.level}で分岐進化`}));
+    if (from.evolution === m.id) entries.push({kind:'evolution',title:`${from.name}から進化`,note:'育成によって進化'});
+    (from.evolutions||[]).filter(e=>e.to===m.id).forEach(e=>entries.push({kind:'evolution',title:`${from.name}から進化`,note:'育成によって分岐進化'}));
   });
   FUSIONS.filter(recipe=>recipe.to===m.id).forEach(recipe=>entries.push({
-    kind:'fusion',icon:'🔮',title:`${by(recipe.from)?.name||recipe.from}から特殊進化`,note:`${recipe.itemName} × ${recipe.count}を使用`
+    kind:'fusion',title:`${by(recipe.from)?.name||recipe.from}から特殊進化`,note:`${recipe.itemName} × ${recipe.count}を使用`
   }));
   const alchemySuccess = ALCHEMY_RECIPES.some(recipe=>(recipe.successCandidates||[]).some(candidate=>candidate.monsterId===m.id));
   const alchemyFailure = ALCHEMY_RECIPES.some(recipe=>(recipe.failureCandidates||[]).some(candidate=>candidate.monsterId===m.id));
-  if (alchemySuccess) entries.push({kind:'alchemy',icon:'⚗️',title:'錬核錬成',note:'錬成成功時に入手'});
-  if (alchemyFailure) entries.push({kind:'alchemy',icon:'🧪',title:'錬核錬成',note:'錬成失敗時に生成されることがある'});
+  if (alchemySuccess) entries.push({kind:'alchemy',title:'錬核錬成',note:'錬成成功時に入手'});
+  if (alchemyFailure) entries.push({kind:'alchemy',title:'錬核錬成',note:'錬成失敗時に生成されることがある'});
   return entries;
 }
 function renderMonsterObtainSection(m) {
   const entries = monsterObtainEntries(m);
   return `<h3>出現・入手方法</h3><div class="dex-obtain-grid">${entries.length ? entries.map(entry=>`<${entry.mapId?'button':'div'} class="dex-obtain-card dex-obtain-${entry.kind}"${entry.mapId?` onclick="openMapFromMonsterDex('${entry.mapId}')"`:''}>
-    ${entry.image?`<img src="${entry.image}" alt="${entry.title}">`:`<span class="dex-obtain-icon">${entry.icon}</span>`}
-    <div><strong>${entry.title}</strong><small>${entry.note}${entry.mapId?'・マップ詳細を見る ›':''}</small></div>
+    ${entry.image?`<img src="${entry.image}" alt="${entry.title}">`:''}
+    <div${entry.image?'':' style="grid-column:1/-1"'}><strong>${entry.title}</strong><small>${entry.note}${entry.mapId?'・マップ詳細を見る ›':''}</small></div>
   </${entry.mapId?'button':'div'}>`).join('') : '<p class="dex-obtain-empty">現在確認できる出現・入手方法はありません。</p>'}</div>`;
 }
 function renderUnitDexDetail(id, targetId, numberLabel, detailSection=renderUnitSkillList) {
@@ -119,14 +123,16 @@ function renderUnitDexDetail(id, targetId, numberLabel, detailSection=renderUnit
   </div>`;
   detail.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function characterDexSlotNo(m){return m.prologueCharacterNo ?? m.characterNo;}
 function characterDexNumber(m) {
-  return `C-${String(m.characterNo).padStart(3,'0')}`;
+  if(m.chapter==='第1章')return '第1章・図鑑番号未定';
+  return `C-${String(characterDexSlotNo(m)).padStart(3,'0')}`;
 }
 function characterDexEntries() {
-  const characters=M.filter(isCharacterUnit);
+  const characters=M.filter(unit=>isCharacterUnit(unit) && (unit.chapter||'序章')==='序章');
   const assigned=new Set(characters.map(unit=>unit.characterNo));
   return [...characters,...CHARACTER_DEX_RESERVED_SLOTS.filter(slot=>!assigned.has(slot.characterNo))]
-    .sort((a,b)=>a.characterNo-b.characterNo);
+    .sort((a,b)=>characterDexSlotNo(a)-characterDexSlotNo(b));
 }
 function characterDexSlotVisual(slot, lazy=false) {
   if(slot.imgKey && IMG[slot.imgKey]) return `<img class="character-dex-slot-image" src="${IMG[slot.imgKey]}" alt="${slot.name}"${lazy?' loading="lazy"':''} decoding="async">`;
@@ -139,8 +145,8 @@ function showCharacterDexSlot(slotId) {
   detail.innerHTML=`<div class="dex-detail ui-dex-detail">
     ${characterDexSlotVisual(slot)}<h2>${slot.name}</h2>
     <p>${characterDexNumber(slot)} / <span class="rarity">${slot.rarity}</span> ${typesHtml(slot.types)}</p>
-    <p><b>登場予定</b> · 序章</p>
-    <p>${slot.rarity.length===2?'キャラクターガチャで加入する基本形です。':'育成で解放する進化形です。'}</p>
+    <p><b>登場予定</b> · ${slot.chapter}</p>
+    <p>${(slot.baseForm ?? slot.rarity.length===2)?'キャラクターガチャで加入する基本形です。':'育成で解放する進化形です。'}</p>
     <p>今後の登場に向けて図鑑の枠を用意しています。現在は入手・対戦できません。</p>
   </div>`;
   detail.scrollIntoView({behavior:'smooth',block:'start'});
@@ -149,7 +155,7 @@ function monsterDexNumber(m) {
   return m.dexNo ?? m.no;
 }
 function showDexDetail(id) {
-  renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, renderMonsterObtainSection);
+  renderUnitDexDetail(id, 'dexDetail', m => `No.${monsterDexNumber(m)}`, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m));
 }
 function showCharacterDexDetail(id) {
   renderUnitDexDetail(id, 'characterDexDetail', characterDexNumber, m=>renderUnitSkillList(m)+renderMonsterObtainSection(m));
@@ -159,17 +165,17 @@ function mapDexUnlocked(mapId){return typeof save!=='undefined'&&Array.isArray(s
 // Do not use worldMapAvailableDifficulties here: it depends on the current save.
 function mapDexDifficulties(map){return availableHuntDifficulties(map).map(difficulty=>difficulty.label);}
 function mapDexEvents(map){
-  if(map.goldenLand)return ['探索勝利で入口発見・地図でも入場可能','地図は出発時に1枚消費','Hardコインボーナス'];
-  if(map.id==='starsea')return ['探索勝利で星の海への入口発見（Hard）','滅亡の星 ネメシオンの危機（Extreme）','入口・危機は画面を閉じても保持'];
+  if(map.goldenLand)return ['探索勝利で入口発見・地図でも入場可能','地図は出発時に1枚消費','難易度Ⅳコインボーナス'];
+  if(map.id==='starsea')return ['探索勝利で星の海への入口発見（難易度Ⅳ・Ⅴ）','滅亡の星 ネメシオンの危機（Extreme）','入口・危機は画面を閉じても保持'];
   if(map.id==='world_between')return ['危機を討伐しても対処を任せても偽竜の痕跡が残る','偽竜との遭遇（Extreme）','痕跡は画面を閉じても保持'];
-  if(map.id==='water_secret')return ['探索勝利で秘境への入口発見（Hard）','入口は画面を閉じても保持'];
+  if(map.id==='water_secret')return ['探索勝利で秘境への入口発見（難易度Ⅳ・Ⅴ）','入口は画面を閉じても保持'];
   const events=['三つ巴バトル','戦闘中の乱入'];
-  if(map.id==='light_plain')events.unshift('Normal・Hard探索勝利後、光の女神エリシアがまれに降臨（Hard・契約不可）');
+  if(map.id==='light_plain')events.unshift('難易度Ⅱ〜Ⅴ・Extreme探索勝利後、光の女神エリシアがまれに降臨（難易度Ⅳ・Ⅴ・契約不可）');
   else if(map.bossOnly||map.rareOnly)events.unshift('特殊な入口から探索');
   return events;
 }
 function mapEnemyFrequencyLabel(map,id){
-  if(map.id==='light_plain'&&id==='hikari')return 'まれに降臨・Hard限定';
+  if(map.id==='light_plain'&&id==='hikari')return 'まれに降臨・難易度Ⅳ・Ⅴ';
   if(map.id==='starsea'&&id==='doom_nemesion')return '世界の危機・Extreme限定';
   if(map.id==='world_between')return '危機後の痕跡・Extreme限定';
   if(map.bossOnly||map.rareOnly||map.goldenLand)return '特殊な入口から遭遇';
@@ -213,19 +219,45 @@ function mapDexEcosystemDiagram(map){
   const cycles=(diagram.cycles||[]).map(entry=>`<div class="map-dex-ecosystem-cycle"><strong>${entry.role}</strong><div>${mapDexEcosystemMembers(entry)}</div><small>${entry.detail||''}</small></div>`).join('');
   return `<section class="map-dex-pyramid" aria-labelledby="mapDexPyramidHeading"><div class="map-dex-pyramid-heading"><h4 id="mapDexPyramidHeading">${diagram.heading||'生態系ピラミッド'}</h4><span>図説</span></div><p>${diagram.note||''}</p><div class="map-dex-pyramid-layers">${layers}</div>${cycles?`<div class="map-dex-ecosystem-cycles">${cycles}</div>`:''}</section>`;
 }
+function closeMapArtwork(){
+  const dialog=document.getElementById('mapArtworkDialog');
+  if(!dialog)return;
+  if(typeof dialog.close==='function')dialog.close();
+  else dialog.removeAttribute('open');
+}
+function ensureMapArtworkDialog(){
+  let dialog=document.getElementById('mapArtworkDialog');
+  if(dialog)return dialog;
+  dialog=document.createElement('dialog');
+  dialog.id='mapArtworkDialog';
+  dialog.className='map-artwork-dialog';
+  dialog.setAttribute('aria-label','マップ全景');
+  dialog.innerHTML='<button type="button" class="map-artwork-dialog-close" onclick="closeMapArtwork()" aria-label="全景表示を閉じる">×</button><img alt="">';
+  dialog.addEventListener('click',event=>{if(event.target===dialog)closeMapArtwork();});
+  document.body.appendChild(dialog);
+  return dialog;
+}
+function openMapArtwork(mapId){
+  const map=MAPS.find(entry=>entry.id===mapId);if(!map)return;
+  const dialog=ensureMapArtworkDialog(),image=dialog.querySelector('img');
+  image.src=mapPortraitImage(map);
+  image.alt=`${map.name}の全景`;
+  if(typeof dialog.showModal==='function')dialog.showModal();
+  else dialog.setAttribute('open','');
+}
 function showMapDexDetail(mapId){
   const map=MAPS.find(entry=>entry.id===mapId),detail=document.getElementById('mapDexDetail');
   if(!map||!detail)return;
   if(!mapDexUnlocked(mapId)){
-    detail.innerHTML='<div class="dex-detail ui-dex-detail map-dex-locked-detail"><span>🔒</span><h2>未発見のマップ</h2><p>討伐依頼でこの土地を発見すると、詳しい情報が登録されます。</p></div>';
+    detail.innerHTML='<div class="dex-detail ui-dex-detail map-dex-locked-detail"><h2>未発見のマップ</h2><p>討伐依頼でこの土地を発見すると、詳しい情報が登録されます。</p></div>';
     return;
   }
-  const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean),ecosystem=mapDexEcosystemProfile(map);
+  const enemies=[...new Set(map.enemyIds||[])].map(by).filter(Boolean),ecosystem=mapDexEcosystemProfile(map),mapImage=mapPortraitImage(map);
   detail.innerHTML=`<article class="dex-detail ui-dex-detail map-dex-detail">
-    <img class="map-dex-hero" src="${map.image}" alt="${map.name}"><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
+    <button type="button" class="map-dex-hero-stage" onclick="openMapArtwork('${map.id}')" aria-label="${map.name}の全景を表示" aria-haspopup="dialog"><span class="map-dex-hero-backdrop" style="background-image:url('${mapImage}')" aria-hidden="true"></span><img class="map-dex-hero" src="${mapImage}" alt="${map.name}"><span class="map-dex-hero-hint" aria-hidden="true">全景を見る</span></button><div class="map-dex-detail-body"><span class="map-dex-region">${map.chapter||'章未設定'}・${map.region||'地域未設定'}</span><h2>${map.name}</h2><p>${map.desc||'この土地の記録はまだ整理されていません。'}</p>
     <section class="map-dex-ecosystem" aria-labelledby="mapDexEcosystemHeading"><h3 id="mapDexEcosystemHeading">生態系</h3><p>${map.ecosystem||mapDexEcosystemFallback(map,ecosystem)}</p>
     ${mapDexEcosystemDiagram(map)}
-    <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${skillTypeIcon(entry.type)} ${TN[entry.type]||entry.type}<small>${entry.rate}%</small></span>`).join('')}</div>
+    <h4>属性傾向</h4><div class="map-dex-ecosystem-types">${ecosystem.typeTrends.slice(0,4).map(entry=>`<span>${typeChip(entry.type)}<small>${entry.rate}%</small></span>`).join('')}</div>
     <h4>主な生息種</h4><div class="map-dex-ecosystem-species">${ecosystem.species.slice(0,5).map(entry=>`<span>${entry.unit.name}<small>${mapEnemyFrequencyLabel(map,entry.unit.id)}</small></span>`).join('')}</div></section>
     <h3>挑戦できる難易度</h3><div class="map-dex-tags">${mapDexDifficulties(map).map(label=>`<span>${label}</span>`).join('')}</div>
     <h3>特殊イベント</h3><div class="map-dex-tags">${mapDexEvents(map).map(label=>`<span>${label}</span>`).join('')}</div>
@@ -244,7 +276,7 @@ function renderMapDex(){
   document.getElementById('mapDexDetail').innerHTML='';
   document.getElementById('mapDexList').innerHTML=MAPS.map(map=>{
     const unlocked=mapDexUnlocked(map.id);
-    return `<button class="map-dex-card ${unlocked?'':'locked'}" onclick="showMapDexDetail('${map.id}')"><div class="map-dex-visual">${unlocked?`<img src="${map.image}" alt="${map.name}" loading="lazy" decoding="async">`:'<span>🔒</span>'}</div><div><small>${unlocked?`${map.chapter||'章未設定'}・${map.region||'地域未設定'}`:'未発見'}</small><strong>${unlocked?map.name:'？？？'}</strong><span>${unlocked?`${new Set(map.enemyIds||[]).size}種を確認`:'討伐依頼で発見できます'}</span></div></button>`;
+    return `<button class="map-dex-card ${unlocked?'':'locked'}" onclick="showMapDexDetail('${map.id}')"><div class="map-dex-visual">${unlocked?`<img src="${mapPortraitImage(map)}" alt="${map.name}" loading="lazy" decoding="async">`:`<span aria-hidden="true">${typeof gameLineIcon==='function'?gameLineIcon('lock'):'未'}</span>`}</div><div><small>${unlocked?`${map.chapter||'章未設定'}・${map.region||'地域未設定'}`:'未発見'}</small><strong>${unlocked?map.name:'？？？'}</strong><span>${unlocked?`${new Set(map.enemyIds||[]).size}種を確認`:'討伐依頼で発見できます'}</span></div></button>`;
   }).join('');
 }
 function renderDex() {

@@ -1,0 +1,70 @@
+{
+  "dateJST": "2026-09-30",
+  "npmCheckExitCode": 0,
+  "catalog": {
+    "total": 50,
+    "registered": 33,
+    "noVideoPrefetch": true,
+    "singlePlayer": true,
+    "sourceRelease": true,
+    "hiddenPause": true,
+    "errorFallback": true,
+    "reviewPersistence": true,
+    "assetVersionInvalidatesMark": true,
+    "unregisteredNotAccepted": true,
+    "saveUntouched": true,
+    "scope": "DOM and mocked media; real device appearance/decoder not tested"
+  },
+  "battleDom": {
+    "scope": "Gran Volmoog isolated actual-game DOM integration; media mocked; no browser layout or performance claim",
+    "results": [
+      {
+        "mode": "ally",
+        "nodeRetention": true,
+        "itemPauseResume": true,
+        "exitAndStaleCallback": true
+      },
+      {
+        "mode": "enemy",
+        "nodeRetention": true,
+        "itemPauseResume": true,
+        "exitAndStaleCallback": true
+      },
+      {
+        "mode": "multi",
+        "nodeRetention": true,
+        "itemPauseResume": true,
+        "exitAndStaleCallback": true
+      }
+    ],
+    "maps": 19,
+    "errorFallback": true,
+    "retry": true,
+    "switchDisposal": true,
+    "sourceHash": true,
+    "normalRegistryUsed": true
+  },
+  "viewportDom": {
+    "kind": "DOM + mocked media/IntersectionObserver; not real viewport or decoder",
+    "checks": [
+      "initial offscreen avoids source; hysteresis cancels stale timeout; same video resumes",
+      "intersection cannot override hidden or reduced-motion reasons",
+      "exit disconnects observer and rejects queued timer/observer callbacks",
+      "ordinary gran registration, shared layout, mixed species independently stop and retain HP nodes"
+    ],
+    "pass": 4,
+    "normalRegistered": 33,
+    "defaultLimit": 1
+  },
+  "resourceResolution": {
+    "loadGuardSuccessAndFailure": true,
+    "resourceLoads": 44,
+    "missing": [],
+    "scriptErrors": [],
+    "battleActive": true,
+    "controls": 7,
+    "stylesheets": 9,
+    "scope": "local file resource resolution and execution; not hosted authentication or actual video decode"
+  },
+  "scope": "DOM/media mocked; full alpha decode separate; real Galaxy acceptance pending"
+}

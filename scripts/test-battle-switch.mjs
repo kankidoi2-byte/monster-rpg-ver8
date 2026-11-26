@@ -12,7 +12,7 @@ const context = vm.createContext({
   structuredClone,
   setTimeout:callback => callback(),
   document:{getElementById:element},
-  vis:monster => monster.name,
+  battleFieldVisual:monster => monster.name,
   renderSkillButtons(){},
   renderKokoroLinkPanel(){},
   renderBattleSwitchButton(){},

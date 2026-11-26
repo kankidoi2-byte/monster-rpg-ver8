@@ -1,0 +1,61 @@
+{
+  "dateJST": "2026-10-02",
+  "phase": "post-publication maintenance",
+  "publication": "published",
+  "ownerAuthorization": "2026-10-02 07:58 JST main merge and public release authorized",
+  "firstPublication": {
+    "mainMerge": "de0f1e324349d4f0abaacb772a92cf5b26da3ce3",
+    "mainCI": 36938288039,
+    "pages": 36938287874,
+    "bothConclusion": "success",
+    "httpVerified": 148,
+    "videos": 50,
+    "posters": 50
+  },
+  "mainMerge": true,
+  "generalPublication": true,
+  "report": "README.md",
+  "loadAudit": "media-load-review.md",
+  "followupFix": "Static fallback releases source/handlers with load, retains an empty node for manual retry eligibility; no geometry/save/rule change. Current PR/CI records the followup deployment.",
+  "checks": [
+    {
+      "log": "post-publication-lifecycle.log",
+      "exitCode": 0,
+      "sha256": "a95ecca88c3a9773f286ab033bb57537cb7ac63ecaa658718807440e3345d4fd"
+    },
+    {
+      "log": "post-test-battle-idle-media-dom.mjs.log",
+      "exitCode": 0,
+      "sha256": "6c27faa22e122c3ae1196ea397288f81f58455d0b1fd28da6bd89c98c7163405"
+    },
+    {
+      "log": "post-test-battle-idle-multi-dom.mjs.log",
+      "exitCode": 0,
+      "sha256": "70ee7516a7cd99acc04f64ae4716ed4194e7178ed6e63b78c5dac88e93882698"
+    },
+    {
+      "log": "post-test-battle-idle-viewport-dom.mjs.log",
+      "exitCode": 0,
+      "sha256": "82c809b1ba54d5ae06a03cfc7c73b074db6d75e8c3701f6f112902345cbdd4e4"
+    },
+    {
+      "log": "post-publication-full-check-final.log",
+      "exitCode": 0,
+      "sha256": "e7cd9048f80cc714ae526859a4331caf6981cc5e9ec3e7602e9d9dee8a92b687"
+    },
+    {
+      "log": "post-publication-economy.log",
+      "exitCode": 0,
+      "sha256": "670c7195f0c206b08dd04744e6a25e9c5fb81fb303e514207abdfbfdbb311e68"
+    }
+  ],
+  "ownerAcceptedScope": "size/UI, normal journey, tutorial, instructed overlap/continuous playback/app return; no duplicate acceptance requested",
+  "final50SpeciesGate": "pending only remaining exhaustive device/source reproducibility conditions; publication explicitly authorized separately",
+  "remaining": [
+    "real browser memory/decoder/fetch measurements beyond DOM mocks",
+    "exhaustive 50-species/19-background/width/orientation/200% device matrix",
+    "source version/alpha export recipe recovery for slime/kimeragna",
+    "production device first launch/existing save after published updates"
+  ],
+  "notices": "20261002-motion-static-release"
+}

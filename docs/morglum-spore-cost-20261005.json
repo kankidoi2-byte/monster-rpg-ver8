@@ -1,0 +1,476 @@
+{
+  "baseline": "7bb99c2ca690b02a2cbabc589d7bf523d72d6283",
+  "changedDefaults": [
+    {
+      "unit": "false_dragon_gamma",
+      "level": 1,
+      "before": [
+        "skill_false_dragon_gamma_01"
+      ],
+      "after": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02"
+      ]
+    },
+    {
+      "unit": "false_dragon_gamma",
+      "level": 2,
+      "before": [
+        "skill_false_dragon_gamma_01"
+      ],
+      "after": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02"
+      ]
+    },
+    {
+      "unit": "false_dragon_gamma",
+      "level": 3,
+      "before": [
+        "skill_false_dragon_gamma_01"
+      ],
+      "after": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02"
+      ]
+    },
+    {
+      "unit": "false_dragon_gamma",
+      "level": 16,
+      "before": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02"
+      ],
+      "after": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02",
+        "skill_false_dragon_gamma_03"
+      ]
+    },
+    {
+      "unit": "false_dragon_gamma",
+      "level": 17,
+      "before": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02"
+      ],
+      "after": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02",
+        "skill_false_dragon_gamma_03"
+      ]
+    },
+    {
+      "unit": "false_dragon_gamma",
+      "level": 18,
+      "before": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02"
+      ],
+      "after": [
+        "skill_false_dragon_gamma_01",
+        "skill_false_dragon_gamma_02",
+        "skill_false_dragon_gamma_03"
+      ]
+    }
+  ],
+  "comparison": [
+    {
+      "name": "胞子弾",
+      "rawId": "skill_false_dragon_gamma_01",
+      "rawPower": 82,
+      "card": {
+        "id": "skill_false_dragon_gamma_01",
+        "name": "胞子弾",
+        "power": 82,
+        "type": "grass",
+        "types": [
+          "grass"
+        ],
+        "effect": null,
+        "chance": null,
+        "cost": 4,
+        "customDesc": "巨大な菌傘から森の力を宿した胞子の塊を放つ。",
+        "exclusiveMonsterId": null,
+        "desc": "森属性 / 威力 82。巨大な菌傘から森の力を宿した胞子の塊を放つ。",
+        "sourceUnitId": "false_dragon_gamma",
+        "sourceEntityKind": "monster",
+        "form": "projectile",
+        "tactical": null,
+        "commonCharacterSkill": false,
+        "tags": [
+          "source:monster",
+          "role:damage",
+          "form:projectile",
+          "element:grass"
+        ],
+        "requirements": {
+          "entityKinds": [
+            "monster"
+          ],
+          "requiredAll": []
+        },
+        "canonicalId": "skill_false_dragon_gamma_01",
+        "deprecated": false
+      },
+      "allowed": [
+        {
+          "id": "grassbeat",
+          "name": "グラスビート"
+        },
+        {
+          "id": "thornbeat",
+          "name": "ソーンビート"
+        },
+        {
+          "id": "granbeat",
+          "name": "グランビート"
+        },
+        {
+          "id": "rikasheef",
+          "name": "リカシーフ"
+        },
+        {
+          "id": "seralphia",
+          "name": "セラルフィア"
+        },
+        {
+          "id": "false_dragon_gamma",
+          "name": "モルグラム"
+        }
+      ],
+      "sources": [
+        {
+          "id": "false_dragon_gamma",
+          "name": "モルグラム"
+        }
+      ]
+    },
+    {
+      "name": "ガイアスラッシュ",
+      "rawId": "skill_granbeat_03",
+      "rawPower": 72,
+      "card": {
+        "id": "skill_granbeat_03",
+        "name": "ガイアスラッシュ",
+        "power": 72,
+        "type": "grass",
+        "types": [
+          "grass"
+        ],
+        "effect": null,
+        "chance": null,
+        "cost": 4,
+        "customDesc": "",
+        "exclusiveMonsterId": null,
+        "desc": "森属性 / 威力 72",
+        "sourceUnitId": "granbeat",
+        "sourceEntityKind": "monster",
+        "form": "charge",
+        "tactical": null,
+        "commonCharacterSkill": false,
+        "tags": [
+          "source:monster",
+          "role:damage",
+          "form:charge",
+          "element:grass"
+        ],
+        "requirements": {
+          "entityKinds": [
+            "monster"
+          ],
+          "requiredAll": [
+            "capability:charge"
+          ]
+        },
+        "canonicalId": "skill_granbeat_03",
+        "deprecated": false
+      },
+      "allowed": [
+        {
+          "id": "grassbeat",
+          "name": "グラスビート"
+        },
+        {
+          "id": "thornbeat",
+          "name": "ソーンビート"
+        },
+        {
+          "id": "granbeat",
+          "name": "グランビート"
+        },
+        {
+          "id": "rikasheef",
+          "name": "リカシーフ"
+        },
+        {
+          "id": "seralphia",
+          "name": "セラルフィア"
+        },
+        {
+          "id": "false_dragon_gamma",
+          "name": "モルグラム"
+        }
+      ],
+      "sources": [
+        {
+          "id": "granbeat",
+          "name": "グランビート"
+        }
+      ]
+    },
+    {
+      "name": "セラフィックリーフ",
+      "rawId": "skill_seralphia_03",
+      "rawPower": 68,
+      "card": {
+        "id": "skill_seralphia_03",
+        "name": "セラフィックリーフ",
+        "power": 68,
+        "type": "grass",
+        "types": [
+          "grass"
+        ],
+        "effect": null,
+        "chance": null,
+        "cost": 4,
+        "customDesc": "",
+        "exclusiveMonsterId": null,
+        "desc": "森属性 / 威力 68",
+        "sourceUnitId": "seralphia",
+        "sourceEntityKind": "monster",
+        "form": "generic",
+        "tactical": null,
+        "commonCharacterSkill": false,
+        "tags": [
+          "source:monster",
+          "role:damage",
+          "form:generic",
+          "element:grass"
+        ],
+        "requirements": {
+          "entityKinds": [
+            "monster"
+          ],
+          "requiredAll": []
+        },
+        "canonicalId": "skill_seralphia_03",
+        "deprecated": false
+      },
+      "allowed": [
+        {
+          "id": "grassbeat",
+          "name": "グラスビート"
+        },
+        {
+          "id": "thornbeat",
+          "name": "ソーンビート"
+        },
+        {
+          "id": "granbeat",
+          "name": "グランビート"
+        },
+        {
+          "id": "rikasheef",
+          "name": "リカシーフ"
+        },
+        {
+          "id": "seralphia",
+          "name": "セラルフィア"
+        },
+        {
+          "id": "false_dragon_gamma",
+          "name": "モルグラム"
+        }
+      ],
+      "sources": [
+        {
+          "id": "seralphia",
+          "name": "セラルフィア"
+        }
+      ]
+    },
+    {
+      "name": "古森の波動",
+      "rawId": "skill_false_dragon_gamma_03",
+      "rawPower": 100,
+      "card": {
+        "id": "skill_false_dragon_gamma_03",
+        "name": "古森の波動",
+        "power": 100,
+        "type": "grass",
+        "types": [
+          "grass"
+        ],
+        "effect": null,
+        "chance": null,
+        "cost": 5,
+        "customDesc": "根と菌糸に蓄えた森の力を大きな波動として放つ。",
+        "exclusiveMonsterId": null,
+        "desc": "森属性 / 威力 100。根と菌糸に蓄えた森の力を大きな波動として放つ。",
+        "sourceUnitId": "false_dragon_gamma",
+        "sourceEntityKind": "monster",
+        "form": "wave",
+        "tactical": null,
+        "commonCharacterSkill": false,
+        "tags": [
+          "source:monster",
+          "role:damage",
+          "form:wave",
+          "element:grass"
+        ],
+        "requirements": {
+          "entityKinds": [
+            "monster"
+          ],
+          "requiredAll": []
+        },
+        "canonicalId": "skill_false_dragon_gamma_03",
+        "deprecated": false
+      },
+      "allowed": [
+        {
+          "id": "grassbeat",
+          "name": "グラスビート"
+        },
+        {
+          "id": "thornbeat",
+          "name": "ソーンビート"
+        },
+        {
+          "id": "granbeat",
+          "name": "グランビート"
+        },
+        {
+          "id": "rikasheef",
+          "name": "リカシーフ"
+        },
+        {
+          "id": "seralphia",
+          "name": "セラルフィア"
+        },
+        {
+          "id": "false_dragon_gamma",
+          "name": "モルグラム"
+        }
+      ],
+      "sources": [
+        {
+          "id": "false_dragon_gamma",
+          "name": "モルグラム"
+        }
+      ]
+    }
+  ],
+  "gacha": {
+    "before": [
+      {
+        "cost": 1,
+        "count": 20,
+        "weight": 50,
+        "rate": 0.5,
+        "perCard": 0.025,
+        "target": false
+      },
+      {
+        "cost": 2,
+        "count": 57,
+        "weight": 27,
+        "rate": 0.27,
+        "perCard": 0.004736842105263158,
+        "target": false
+      },
+      {
+        "cost": 3,
+        "count": 23,
+        "weight": 13,
+        "rate": 0.13,
+        "perCard": 0.005652173913043478,
+        "target": false
+      },
+      {
+        "cost": 4,
+        "count": 24,
+        "weight": 7,
+        "rate": 0.07,
+        "perCard": 0.002916666666666667,
+        "target": false
+      },
+      {
+        "cost": 5,
+        "count": 8,
+        "weight": 2.5,
+        "rate": 0.025,
+        "perCard": 0.003125,
+        "target": true
+      },
+      {
+        "cost": 6,
+        "count": 6,
+        "weight": 0.5,
+        "rate": 0.005,
+        "perCard": 0.0008333333333333334,
+        "target": false
+      }
+    ],
+    "after": [
+      {
+        "cost": 1,
+        "count": 20,
+        "weight": 50,
+        "rate": 0.5,
+        "perCard": 0.025,
+        "target": false
+      },
+      {
+        "cost": 2,
+        "count": 57,
+        "weight": 27,
+        "rate": 0.27,
+        "perCard": 0.004736842105263158,
+        "target": false
+      },
+      {
+        "cost": 3,
+        "count": 23,
+        "weight": 13,
+        "rate": 0.13,
+        "perCard": 0.005652173913043478,
+        "target": false
+      },
+      {
+        "cost": 4,
+        "count": 25,
+        "weight": 7,
+        "rate": 0.07,
+        "perCard": 0.0028000000000000004,
+        "target": true
+      },
+      {
+        "cost": 5,
+        "count": 7,
+        "weight": 2.5,
+        "rate": 0.025,
+        "perCard": 0.0035714285714285718,
+        "target": false
+      },
+      {
+        "cost": 6,
+        "count": 6,
+        "weight": 0.5,
+        "rate": 0.005,
+        "perCard": 0.0008333333333333334,
+        "target": false
+      }
+    ]
+  },
+  "checks": {
+    "cardFieldsExceptCostUnchanged": true,
+    "monsterFieldsExceptCostUnchanged": true,
+    "allInitialLoadouts": 10000,
+    "level1ComboCost": 8,
+    "saveReloadPreserved": true,
+    "noAutomaticSkillAddition": true,
+    "damageComparisons": 90
+  }
+}

@@ -1,0 +1,72 @@
+#skillDex.nonbattle-screen #skillDexCount{display:table;max-width:100%;box-sizing:border-box;padding:.4rem .65rem;background:#fff;color:#17263f;border:1px solid #aa8b46;border-radius:6px;line-height:1.5;overflow-wrap:anywhere}
+.skill-dex-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.skill-dex-filters label{display:grid;gap:4px;font-size:13px;min-width:0}
+.skill-dex-filters label:first-child{grid-column:1/-1}
+.skill-dex-filters input,.skill-dex-filters select{width:100%;min-width:0;box-sizing:border-box;min-height:44px;font-size:16px;background:#171e30;color:#fff;border:1px solid #64708e;border-radius:8px;padding:9px}
+/* List cards only. Detail, equipment and battle card styles are unchanged.
+ * Portrait proportions are a guide: content controls height without a forced aspect ratio.
+ * rem-based minimum columns allow larger user text to reflow to one column. */
+#skillDex.nonbattle-screen #skillDexList{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.25rem),1fr));gap:12px;align-items:stretch}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card{
+  display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;
+  width:100%;min-width:0;min-height:clamp(15rem,64vw,17rem);height:auto;aspect-ratio:auto;box-sizing:border-box;
+  margin:0;padding:.65rem .65rem;text-align:left;cursor:pointer;
+  background:linear-gradient(135deg,var(--dex-fill-a) 0 50%,var(--dex-fill-b) 50% 100%)!important;
+  border:2px solid var(--dex-edge)!important;border-radius:12px;
+  color:#fff!important;overflow:visible;white-space:normal;line-height:1.55;
+  box-shadow:none;text-shadow:none;
+}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card::before{display:none}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card>*{flex-shrink:0;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;color:#fff;background:none;margin:0;text-shadow:none}
+#skillDex.nonbattle-screen #skillDexList .skill-card-title{font-size:1.1rem;font-weight:850;line-height:1.4;-webkit-text-fill-color:currentColor}
+#skillDex.nonbattle-screen #skillDexList .skill-cost-badge{font-size:.8rem;line-height:1.4;min-height:1.55rem;height:auto;padding:.2rem .55rem;background:#080b10;color:#fff;border:1px solid #ffffff70;box-shadow:none;white-space:nowrap;flex-shrink:0}
+#skillDex.nonbattle-screen #skillDexList .skill-type-line{font-size:.95rem;font-weight:800;line-height:1.5;padding:0;border:0;border-radius:0}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-performance{align-self:stretch;padding:.3rem 0;border-block:1px solid #ffffff60;font-size:.95rem;line-height:1.4}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-performance strong{font-size:1.3em;font-weight:850}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-description{font-size:.9rem;line-height:1.5}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-cta{align-self:flex-end;margin-top:auto;padding-top:.25rem;font-size:.9rem;font-weight:800;line-height:1.6}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card:hover{border-color:#fff!important}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card:focus-visible{outline:3px solid #17263f;outline-offset:3px;box-shadow:0 0 0 3px #fff!important}
+#skillDex.nonbattle-screen #skillDexList .skill-dex-card.skill-card:active{transform:translateY(1px)}
+@media(min-width:480px){#skillDex.nonbattle-screen #skillDexList{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}}
+.skill-dex-units{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.skill-dex-unit{min-height:44px;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.skill-dex-unit small{display:block}
+#skillDexDetail:empty{display:none}
+#skillDexDetail{scroll-margin-top:80px;outline-offset:4px}
+#skillDexDetail details summary{cursor:pointer;min-height:44px;padding-top:10px}
+.skill-dex-open{min-height:44px;margin-top:8px}
+@media(min-width:700px){.skill-dex-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.skill-synthesis-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.skill-synthesis-card{min-width:0;overflow-wrap:anywhere}
+.skill-synthesis-card button{width:100%;min-height:48px;white-space:normal}
+.skill-synthesis-card summary{min-height:44px;cursor:pointer}
+.skill-synthesis-materials{list-style:none;padding:0;margin:12px 0}
+.skill-synthesis-materials li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;padding:8px 0;border-bottom:1px solid #64708e}
+.skill-synthesis-card .skill-card-title{white-space:normal;overflow-wrap:anywhere}
+.skill-dex-numbers{white-space:normal;overflow-wrap:anywhere;line-height:1.7}
+
+/* Tier synthesis: selection and result stay within the mobile content column. */
+#skillSynthesisList{grid-template-columns:minmax(0,1fr)}
+.synthesis-tier-picker,.synthesis-material-grid{display:grid;gap:12px}
+.synthesis-tier-picker{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}
+.synthesis-material-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}
+.synthesis-tier-picker button{min-width:0;min-height:64px;display:grid;gap:4px}
+.synthesis-tier-picker button[aria-pressed="true"]{outline:3px solid #19283c;outline-offset:-3px;background:#eee9dd}
+.synthesis-rules,.synthesis-selection,.synthesis-confirm-panel{overflow-wrap:anywhere}
+.synthesis-rules p,.synthesis-selection p,.synthesis-material p{margin:8px 0}
+.synthesis-selection{padding:14px;border:1px solid #aa9663;border-radius:12px;background:#fff;color:#19283c}
+.synthesis-material{min-width:0;margin:0;display:grid;gap:8px;align-content:start;overflow-wrap:anywhere}
+.synthesis-material>strong{font-size:1rem}.synthesis-material>small{line-height:1.5}
+.synthesis-material p{font-size:.8rem}
+.synthesis-quantity{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px}
+.synthesis-quantity button{min-width:44px;min-height:44px;margin:0;padding:8px}
+.synthesis-quantity span{font-weight:700}
+.synthesis-confirm-panel button{min-height:48px;max-width:100%;white-space:normal}
+.synthesis-result{position:relative;overflow-wrap:anywhere;text-align:center}
+.synthesis-flash{display:block;font-size:2rem;animation:synthesis-reveal .25s ease both}
+.synthesis-result-tier{font-weight:700;animation:synthesis-reveal .25s .25s ease both}
+.synthesis-result-card{animation:synthesis-reveal .3s .6s ease both}
+@keyframes synthesis-reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:359px){.synthesis-material-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.synthesis-flash,.synthesis-result-tier,.synthesis-result-card{animation:none}}

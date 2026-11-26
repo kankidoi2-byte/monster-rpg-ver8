@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runtime} from './runtime.mjs';
 const r=runtime(),run=r.run;
-run(`save=initSave();save.instances=[];save.party=[];['freigal','highaquaron'].forEach(id=>{const i=addInstance(id,30);save.party.push(i.uid)});prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[]);activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='seralphia';activeHuntRequest.invasionTurn=1;eHp=enemyMaxHp();battleTurnCount=1;var result=activateKokoroLinkSource(partyBattle[1].uid,partyBattle,0,{maxHp:playerMaxHp(),speed:monSpd(player,activeInstance)});applyKokoroLinkStatusAbilityForBattle(result.link,null,()=>0);`);
+run(`save=initSave();save.instances=[];save.party=[];['freigal','highaquaron'].forEach(id=>{const i=addInstance(id,30);save.party.push(i.uid)});prepareBattleParty();selectedMap=MAPS[0];enemy=by('slime');activeHuntRequest=createHuntRequest(selectedMap,enemy,'normal',[],{allowOvertier:false});activeHuntRequest.battleMode='invasion_pending';activeHuntRequest.invasionEnemyId='seralphia';activeHuntRequest.invasionTurn=1;eHp=enemyMaxHp();battleTurnCount=1;var result=activateKokoroLinkSource(partyBattle[1].uid,partyBattle,0,{maxHp:playerMaxHp(),speed:monSpd(player,activeInstance)});applyKokoroLinkStatusAbilityForBattle(result.link,null,()=>0);`);
 const before=JSON.parse(JSON.stringify(run(`({effects:kokoroLinkEnemyEffectsFor('single'),multiplier:kokoroLinkEnemySpeedMultiplierFor('single')})`)));
 run('triggerInvasionIfDue()');
 const after=JSON.parse(JSON.stringify(run(`({effects:kokoroLinkEnemyEffectsFor('enemy_a'),multiplier:kokoroLinkEnemySpeedMultiplierFor('enemy_a')})`)));

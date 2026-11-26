@@ -1,0 +1,232 @@
+[
+  {
+    "result": "PASS",
+    "battles": 12,
+    "results": [
+      {
+        "enemy": "slime",
+        "mode": "single",
+        "level": 10,
+        "seed": 17,
+        "outcome": "victory",
+        "turns": 2,
+        "coins": 9,
+        "exp": 56
+      },
+      {
+        "enemy": "slime",
+        "mode": "single",
+        "level": 10,
+        "seed": 193,
+        "outcome": "victory",
+        "turns": 2,
+        "coins": 6,
+        "exp": 56
+      },
+      {
+        "enemy": "goblin",
+        "mode": "single",
+        "level": 10,
+        "seed": 17,
+        "outcome": "victory",
+        "turns": 6,
+        "coins": 5,
+        "exp": 10
+      },
+      {
+        "enemy": "goblin",
+        "mode": "single",
+        "level": 10,
+        "seed": 193,
+        "outcome": "victory",
+        "turns": 6,
+        "coins": 5,
+        "exp": 10
+      },
+      {
+        "enemy": "goblin",
+        "mode": "three_way",
+        "level": 30,
+        "seed": 17,
+        "outcome": "victory",
+        "turns": 5,
+        "coins": 15,
+        "exp": 90
+      },
+      {
+        "enemy": "goblin",
+        "mode": "three_way",
+        "level": 30,
+        "seed": 193,
+        "outcome": "victory",
+        "turns": 5,
+        "coins": 13,
+        "exp": 90
+      },
+      {
+        "enemy": "goblin",
+        "mode": "invasion_pending",
+        "level": 20,
+        "seed": 17,
+        "outcome": "victory",
+        "turns": 5,
+        "coins": 13,
+        "exp": 90
+      },
+      {
+        "enemy": "goblin",
+        "mode": "invasion_pending",
+        "level": 20,
+        "seed": 193,
+        "outcome": "victory",
+        "turns": 5,
+        "coins": 19,
+        "exp": 90
+      },
+      {
+        "enemy": "doom_nemesion",
+        "mode": "single",
+        "level": 100,
+        "seed": 17,
+        "outcome": "victory",
+        "turns": 16,
+        "coins": 42,
+        "exp": 159
+      },
+      {
+        "enemy": "doom_nemesion",
+        "mode": "single",
+        "level": 100,
+        "seed": 193,
+        "outcome": "defeat",
+        "turns": 17,
+        "coins": 0,
+        "exp": 0
+      },
+      {
+        "enemy": "nemesion",
+        "mode": "single",
+        "level": 30,
+        "seed": 17,
+        "outcome": "defeat",
+        "turns": 18,
+        "coins": 0,
+        "exp": 0
+      },
+      {
+        "enemy": "nemesion",
+        "mode": "single",
+        "level": 30,
+        "seed": 193,
+        "outcome": "defeat",
+        "turns": 17,
+        "coins": 0,
+        "exp": 0
+      }
+    ]
+  },
+  {
+    "result": "PASS",
+    "resetCases": 6,
+    "scope": "victory/defeat/retreat clears transient buffs in single and multi, preserving reward/contract records"
+  },
+  {
+    "result": "PASS",
+    "supportBattles": 6,
+    "policyCounts": {
+      "attack": 13,
+      "heal": 86,
+      "guard": 52
+    },
+    "results": [
+      {
+        "enemy": "goblin",
+        "level": 20,
+        "seed": 31,
+        "outcome": "victory",
+        "turns": 9,
+        "coins": 5,
+        "exp": 10
+      },
+      {
+        "enemy": "goblin",
+        "level": 20,
+        "seed": 47,
+        "outcome": "defeat",
+        "turns": 15,
+        "coins": 0,
+        "exp": 0
+      },
+      {
+        "enemy": "nemesion",
+        "level": 50,
+        "seed": 31,
+        "outcome": "defeat",
+        "turns": 27,
+        "coins": 0,
+        "exp": 0
+      },
+      {
+        "enemy": "nemesion",
+        "level": 50,
+        "seed": 47,
+        "outcome": "defeat",
+        "turns": 38,
+        "coins": 0,
+        "exp": 0
+      },
+      {
+        "enemy": "doom_nemesion",
+        "level": 100,
+        "seed": 31,
+        "outcome": "victory",
+        "turns": 22,
+        "coins": 48,
+        "exp": 132
+      },
+      {
+        "enemy": "doom_nemesion",
+        "level": 100,
+        "seed": 47,
+        "outcome": "victory",
+        "turns": 40,
+        "coins": 30,
+        "exp": 177
+      }
+    ],
+    "scope": "legal real forest-unit poison/heal/guard rotation against actual enemy AI; no completion timeout"
+  },
+  {
+    "result": "KNOWN_SPEC_LIMIT",
+    "noAttackFindings": [
+      {
+        "policy": "heal-only",
+        "outcome": "capped",
+        "turns": 100,
+        "coins": 0,
+        "exp": 0,
+        "finalHp": 1266,
+        "maximum": 1298
+      },
+      {
+        "policy": "guard-only",
+        "outcome": "defeat",
+        "turns": 156,
+        "coins": 0,
+        "exp": 0,
+        "finalHp": 0,
+        "maximum": 1298
+      },
+      {
+        "policy": "debuff-only",
+        "outcome": "defeat",
+        "turns": 67,
+        "coins": 0,
+        "exp": 0,
+        "finalHp": 0,
+        "maximum": 1298
+      }
+    ],
+    "reason": "Unlimited healing with no resource cost can sustain indefinitely against weak attacks; fixed skill values left unchanged; cooldown/resource/turn-limit requires user decision"
+  }
+]

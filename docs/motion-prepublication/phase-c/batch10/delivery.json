@@ -1,0 +1,22 @@
+{
+  "dateJST": "2026-09-30",
+  "registered": 36,
+  "remaining": 14,
+  "publication": "existing owner-private review only",
+  "deploymentSucceeded": true,
+  "gameSourceCommit": "58dd2ff3ad3d1806f93f755a69f64a19ce4444cb",
+  "archiveBytes": 56906343,
+  "archiveSha256": "7786ddd0ccfd542daae8cd23cce5ca16ae3765e7c1d142dc509c19a11a4babbf",
+  "archiveFullReadVerified": true,
+  "archiveFiles": 609,
+  "bundledAdoptedWebmCount": 0,
+  "all36FullBytesSha256Verified": true,
+  "range206": true,
+  "head200": true,
+  "newPostersVerified": 3,
+  "anonymousRejected": true,
+  "realGalaxyAcceptance": "pending",
+  "next": "Continue remaining 14 adopted assets; then Phase D battle screen redesign and E/F integration/acceptance",
+  "mainMerged": false,
+  "generalRelease": false
+}
