@@ -22,6 +22,7 @@ try {
       page.on('pageerror',error=>errors.push(error.message));
       await page.goto(origin+'/?legacy=1');
       await page.locator('#titleScreen').tap();
+      await page.locator('#titleScreen').tap();
       await page.locator('#titleScreen').waitFor({state:'detached'});
       const uid=await page.evaluate(()=>{
         clearTutorialUi();show('home');save=initSave();

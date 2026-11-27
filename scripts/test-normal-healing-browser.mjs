@@ -18,7 +18,7 @@ try{
  await page.goto(publicUrl||'http://127.0.0.1:4190/?legacy=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof normalBattleHealing==='function'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'));
  assert(await page.locator('#titleScreen').isVisible());
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
   Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);
@@ -94,7 +94,7 @@ try{
  const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof normalBattleHealing==='function'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'));
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});
  assert.deepEqual(JSON.parse(after),JSON.parse(before));assert.deepEqual(errors,[]);
  fs.writeFileSync(`${out}/results.json`,JSON.stringify({result:'PASS',cases:results.length,errors,results},null,2));

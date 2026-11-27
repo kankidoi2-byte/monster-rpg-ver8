@@ -145,7 +145,7 @@
     "check:battle-flow-b01-b05": "node scripts/test-auto-stall-b01.mjs && node scripts/test-multi-flow-b02-b04.mjs && node scripts/test-single-flow-b05.mjs",
     "check:traits": "node scripts/test-traits-data.mjs && node scripts/test-traits-rewards.mjs && node scripts/test-traits-multi-hooks.mjs && node scripts/test-traits-combat.mjs",
     "analyze:traits": "node scripts/sim-traits.mjs",
-    "check:sound": "node scripts/test-game-audio.mjs && node scripts/test-game-audio-integration.mjs && node scripts/test-game-audio-browser.mjs",
+    "check:sound": "node scripts/test-game-audio.mjs && node scripts/test-game-audio-integration.mjs && node scripts/test-game-audio-browser.mjs && node scripts/test-title-audio-browser.mjs chromium",
     "check:battle-items-browser": "node scripts/test-added-battle-items-browser.mjs && node scripts/test-bulk-items-dialogs-browser.mjs",
     "check:authority": "node scripts/test-authority.mjs && node scripts/test-authority-browser.mjs",
     "check:story-presentation": "node scripts/test-story-presentation.mjs"

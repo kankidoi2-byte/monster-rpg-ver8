@@ -22,7 +22,7 @@ try{
    await summary.click();
   };
   await page.goto(process.env.GAME_TEST_URL||'http://127.0.0.1:4188/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();migrateSkillSystem();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('freigal',1).uid];show('home');});
   assert(await page.locator('#home').isVisible());
   const rows=await page.evaluate(()=>SKILL110_CATALOG.filter(s=>s.tactical?.status||s.tactical?.cleanse?.includes('confusion')).map(s=>({

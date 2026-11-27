@@ -15,7 +15,7 @@ const {chromium}=require('playwright');
     await page.locator('#contractorRankUpOverlay button').click();
    });
    await page.goto('http://127.0.0.1:4218/?legacy=1',{waitUntil:'networkidle'});
-   await page.locator('#titleScreen').click();
+   await page.locator('#titleScreen').dblclick();
    const results=await page.evaluate(()=>{
     clearTutorialUi();const results=[];
     for(const f of ['freigal','freiwolf'])for(const a of ['aquaron','highaquaron','shenhairon','tienhairon'])for(const e of ['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen']){
@@ -46,7 +46,7 @@ const {chromium}=require('playwright');
     setTutorialStep('expedition_party_save');if(!saveGame())throw Error('seed save');
     return {f:f.uid,a:a.uid,e:e.uid,g:g.uid};
    });
-   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();
    await page.evaluate(()=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'expedition_party_save',persist:true}));
    await page.locator('#partySetupSaveButton').click();
    await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_home_open');
@@ -66,7 +66,7 @@ const {chromium}=require('playwright');
    await page.locator('#expeditionStartButton').click();
    assert.equal(await page.evaluate(()=>save.expeditions.active.length),1);
    assert.equal(await page.evaluate(()=>save.expeditions.active[0].memberUids[0]),uids.f);
-   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();
    assert.equal(await page.evaluate(()=>save.expeditions.active.length),1);
    assert.deepEqual(await page.evaluate(()=>save.instances.map(x=>x.id)),['freiwolf','tienhairon','elna_water','galdra']);
    // Both spotlight and real click follow the same evolved Elna instance.

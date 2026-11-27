@@ -42,6 +42,7 @@ async function verify(page,width){
   await page.addLocatorHandler(rank,()=>rank.getByRole('button',{name:'冒険を続ける',exact:true}).tap());
   const title=page.locator('#titleScreen');
   await title.tap();
+  await title.tap();
   await title.waitFor({state:'detached'});
   await page.evaluate(()=>{
     clearTutorialUi();
@@ -58,6 +59,7 @@ async function verify(page,width){
   await shot('mission');
   await row.getByRole('button',{name:'受け取る'}).tap();
   await page.reload();
+  await title.tap();
   await title.tap();
   await missions.tap();
   assert.match(await row.innerText(),/受け取り済み/);

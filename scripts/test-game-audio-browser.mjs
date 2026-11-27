@@ -65,9 +65,10 @@ try {
   assert.equal(await page.evaluate(() => GameAudio.debugState().unlocked), false);
   assert.deepEqual(await page.evaluate(() => GameAudio.getSettings()), { bgmVolume: 0.5, seVolume: 0.8, bgmMuted: false, seMuted: false });
 
-  // Exercise the actual title enable button and trusted-input listener rather
-  // than calling unlock through evaluate. The button must retain the title.
-  await page.locator('#titleScreen button[data-sound="none"]').click();
+  const screen = page.locator('#titleScreen');
+  assert.equal(await screen.getByText(/画面をタップ|音を有効にする/).count(), 0);
+  await screen.click({ position: { x: 10, y: 10 } });
+  assert.equal(await screen.evaluate(el => el.classList.contains('title-leaving')), false);
   await page.waitForFunction(() => GameAudio.debugState().currentTrack === 'title' && GameAudio.debugState().seBuffers.length === 24, null, { timeout: 60000 });
   assert.equal(await page.locator('#titleScreen').count(), 1);
   assert.equal(await page.evaluate(() => GameAudio.debugState().contextState), 'running');

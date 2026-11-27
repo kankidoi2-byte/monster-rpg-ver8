@@ -19,7 +19,7 @@ try{
   await context.addInitScript(slot=>sessionStorage.setItem('mb_profile_tab_v1',String(slot)),slot);
   const page=await context.newPage();page.on('dialog',d=>d.accept());page.on('pageerror',e=>report.errors.push(e.message));
   await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(font=>{document.documentElement.style.fontSize=font+'%';clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('aquaron',by('aquaron').evolutionLevel-1,needExp(by('aquaron').evolutionLevel-1)-1,{evolutionOffset:0}).uid];save.items.contract_scroll=5;/* Acknowledge ranks earned while constructing this disposable party. */ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');saveGame();show('home');},font);
   for(const screen of ['home','partySet','battleChoices']){await page.evaluate(id=>show(id),screen);assert(await page.locator(`#${screen}`).isVisible());}
   const failure=await page.evaluate(async()=>{
@@ -75,7 +75,7 @@ try{
   await context.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.abort());
   await context.addInitScript(slot=>sessionStorage.setItem('mb_profile_tab_v1',String(slot)),slot);
   const page=await context.newPage();page.on('dialog',d=>d.accept());page.on('pageerror',e=>report.errors.push(e.message));
-  await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const result=await page.evaluate(async kind=>{
    clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('aquaron',1).uid];const member=addInstance('freigal',1);save.expeditions.active=[{id:'browser-exp',mapId:'grassland',distanceId:'short',memberUids:[member.uid],progress:0,requiredWins:1,status:'active',suitability:{greatRate:0},reward:null}];saveGame();prepareBattleParty();const request=createHuntRequest(MAPS.find(m=>m.id==='grassland'),by('slime'),'normal',[],{allowOvertier:false});request.battleMode='single';request.invasionEnemyId=null;request.secondEnemyId=null;beginChosenBattle('grassland','slime','normal',request);
    activeHuntRequest.worldMapExploration=true;

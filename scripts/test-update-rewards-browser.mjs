@@ -43,8 +43,8 @@ try{
   const boot=async(page, key)=>{
     await page.goto(origin,{waitUntil:'domcontentloaded'});
     const title=page.locator('#titleScreen');
-    if(key) await title.press(key);
-    else await title.click();
+    if(key){await title.press(key);await title.press(key);}
+    else await title.dblclick();
     await page.locator('#titleScreen').waitFor({state:'detached'});
   };
   const open=page=>page.evaluate(()=>{clearTutorialUi();showGiftBox();});
@@ -98,9 +98,13 @@ try{
   await legacy.locator('#giftDialogClose').click();
   await legacy.evaluate(()=>showNotices());
   const noticeList=legacy.locator('#noticeList');
-  assert.equal(await noticeList.getByText(patch.change,{exact:true}).count(),1);
-  assert.equal(await noticeList.getByRole('heading',{name:'アップデート（11/21）',exact:true}).count(),3);
-  assert.equal(await noticeList.getByRole('heading',{name:'アップデート（11/22）',exact:true}).count(),1);
+  assert.equal(await noticeList.getByText(patch.change,{exact:true}).count(),0, 'a reward row alone must not create a second article');
+  const soundNotice=noticeList.locator('.notice-entry.notice-update').filter({has:legacy.getByRole('heading',{name:'効果音を追加しました',exact:true})});
+  assert.equal(await soundNotice.count(),1);
+  assert.equal(await soundNotice.locator('time').getAttribute('datetime'),'2026-11-27');
+  assert.equal(await soundNotice.locator('.notice-entry-meta span').innerText(),'✨ アップデート');
+  assert.equal(await noticeList.locator('.notice-entry-meta b').count(),1);
+  assert(await legacy.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   assert.doesNotMatch(await noticeList.innerText(),/Ver\d/i);
   await open(legacy);
   assert.equal(await legacy.evaluate(async()=>{

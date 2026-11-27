@@ -19,7 +19,7 @@ try{
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{await page.getByRole('button',{name:'冒険を続ける',exact:true}).click();});
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.goto('http://127.0.0.1:4389/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(ids=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.contractor.pendingRankUps=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.itemDex=save.itemDex.filter(id=>!ids.includes(id));for(const id of ids)save.items[id]=0;show('itemDex');},ids);
   for(const id of ids) assert.equal(await page.locator(`.item-dex-card[onclick="showItemDexDetail('${id}')"] img`).count(),0);
   await page.evaluate(ids=>{for(const id of ids)save.items[id]=2;saveGame();renderItemDex();},ids);
@@ -42,7 +42,7 @@ try{
   // Repeated navigation and reload preserve quantities and registration.
   await page.evaluate(()=>{show('home');show('itemDex');show('home');show('itemDex');});
   await page.reload({waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.deepEqual(await page.evaluate(ids=>ids.map(id=>save.items[id]),ids),ids.map(()=>2));
   assert(await page.evaluate(ids=>ids.every(id=>save.itemDex.includes(id)),ids));
   await page.evaluate(()=>{

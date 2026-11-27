@@ -15,7 +15,7 @@ try{
   const context=await browser.newContext({viewport:{width,height},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:4199/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.addStyleTag({content:`#tutorialBubble p{font-size:${fontSize}px}`});
   const early=width===412;
   await page.evaluate(early=>{
@@ -45,7 +45,7 @@ try{
     return {id:entry.id,coins:save.coins,completed:save.expeditions.completedCount};
    });
    await page.reload({waitUntil:'networkidle'});
-   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+   await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
    await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_active');
    await page.locator('[data-tutorial-expedition-active]').waitFor({state:'visible'});
    await page.addStyleTag({content:`#tutorialBubble p{font-size:${fontSize}px}`});

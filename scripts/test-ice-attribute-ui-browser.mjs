@@ -22,7 +22,7 @@ try{
     page.on('pageerror',error=>errors.push(error.message));
     await page.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
     await page.goto(url);
-    await page.locator('#titleScreen').click();
+    await page.locator('#titleScreen').dblclick();
     await page.locator('#titleScreen').waitFor({state:'detached'});
     const uid=await page.evaluate(()=>{
       clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});

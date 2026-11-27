@@ -15,7 +15,7 @@ try{
   const page=await context.newPage();page.on('dialog',d=>d.accept());
   await page.addInitScript(slot=>sessionStorage.setItem('mb_profile_tab_v1',String(slot)),slot);
   await page.goto(publicUrl||'http://127.0.0.1:4198/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.coins=20000;const unit=addInstance('aquaron',1);save.party=[unit.uid];migrateSkillSystem();ensureContractorState().pendingRankUps=[];saveGame();show('home');});
   for(const screen of ['home','partySet','battleChoices']){await page.evaluate(screen=>show(screen),screen);assert(await page.locator(`#${screen}`).isVisible());}
   const result=await page.evaluate(async()=>{
@@ -30,7 +30,7 @@ try{
   const committed=await page.evaluate(async()=>{const animation=playContractAnimation;playContractAnimation=async()=>{throw Error('Injected animation rejection')};const before=save.instances.length;try{await useContractScrollConfirmed();}finally{playContractAnimation=animation;}return {delta:save.instances.length-before,scrolls:save.items.contract_scroll,attempt:singleBattleContractAttempted,busy:postBattleContractBusy};});
   assert.equal(committed.delta,1);assert.equal(committed.scrolls,2);assert(committed.attempt&&!committed.busy);
   await page.reload({waitUntil:'networkidle'});assert.equal(await page.evaluate(()=>save.items.contract_scroll),2);assert.equal(await page.evaluate(()=>save.instances.filter(x=>x.id==='freigal').length),1);
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   // The preceding successful contract earned rank notices; acknowledge them before
   // the next, unrelated tutorial save-failure fixture (and before fault injection).
   await page.evaluate(()=>{ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');if(!saveGame())throw Error('Rank notice fixture save failed');});
@@ -41,7 +41,7 @@ try{
   await retry.click();await page.waitForFunction(()=>save.progress.tutorial.firstContractGuaranteeUsed);
   await page.evaluate(()=>{playContractAnimation=window.testAnimation;clearTutorialUi();save.progress.tutorial=tutorialSaveDefaults({legacy:true});ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');saveGame();});
   await page.evaluate(async()=>{show('moreMenu');const old=initSave();old.coins=7;safeStorageSet(SAVE_BACKUP_KEY,JSON.stringify(old));const key=MonsterProfiles.key(SAVE_KEY),set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k===key)throw new DOMException('Injected quota','QuotaExceededError');return set.call(this,k,v)};try{await restoreLastKnownGood();}finally{Storage.prototype.setItem=set;}document.querySelector('.save-management').open=true;});
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>{clearTutorialUi();show('moreMenu');document.querySelector('.save-management').open=true;});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>{clearTutorialUi();show('moreMenu');document.querySelector('.save-management').open=true;});
   assert.match(await page.locator('#replacementRecoveryStatus').textContent(),/途中で止まった読込があります。セーブ管理で書き出してください。/);
   for(const [kind,coins] of [['before',20000],['after',7],['backupBefore',7]]){
    const button=page.locator(`button[onclick="exportReplacementRecovery('${kind}')"]`);await button.scrollIntoViewIfNeeded();

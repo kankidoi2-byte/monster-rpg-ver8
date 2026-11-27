@@ -14,7 +14,7 @@ try{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
  const open=async()=>{
   await page.goto('http://127.0.0.1:4179/?legacy=1',{waitUntil:'networkidle'});
-  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.addScriptTag({path:'scripts/simultaneous-ko-fixture.js'});
  };
  await open();
@@ -41,7 +41,7 @@ try{
     if(cause==='poison'&&reserve){
       await page.screenshot({path:`${out}/${mode}-poison-reserve.png`,fullPage:true});
       const before=await page.evaluate(()=>JSON.stringify({coins:save.coins,wins:save.history.wins,party:save.party,instances:save.instances,items:save.items,progress:save.progress}));
-      await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+      await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
       assert.equal(await page.evaluate(()=>JSON.stringify({coins:save.coins,wins:save.history.wins,party:save.party,instances:save.instances,items:save.items,progress:save.progress})),before,'reload preserves victory save');
       await page.addScriptTag({path:'scripts/simultaneous-ko-fixture.js'});
       // Post-reload party is usable in a new hunt; battle transient state is reset.

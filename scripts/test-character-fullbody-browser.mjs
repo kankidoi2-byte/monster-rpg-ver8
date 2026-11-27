@@ -14,7 +14,7 @@ try{
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
  await page.goto('http://127.0.0.1:4302/?legacy=1',{waitUntil:'networkidle'});
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  const elnaIds=['elna_beginner','elna_middle','elna_advanced','elna_water','elna_kaen'];
  const stellaIds=['stella_apprentice','stella_wizard','stella_sorcerer'];
  const luminaIds=['lumina_apprentice','lumina_wizard','lumina_sorcerer'];
@@ -102,7 +102,7 @@ try{
  assert.equal(await page.evaluate(()=>battleIdleSizeDisplays.size),0);
  for(const id of ['lumina_sorcerer',...elysiaIds,...brigitteIds,...tobiaIds,...rodenIds,...seleneIds,...safiraIds,...bordoIds,...lizeIds,...regusIds]){
   assert.equal(await page.evaluate(id=>{save.homeFavoriteId=id;return saveGame();},id),true);
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();
   await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.equal(await page.evaluate(()=>save.homeFavoriteId),id);
   const img=page.locator('#home .home-water-monster img');

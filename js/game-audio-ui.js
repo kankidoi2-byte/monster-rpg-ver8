@@ -47,10 +47,6 @@ function gameAudioMoveImpact(move,actualLoss,effectiveness){
   const keys=gameAudioMoveKeys(move);
   GameAudio.playImpactGroup(keys.length?keys:['hit']);
 }
-function gameAudioEnable(button){
-  button.textContent='音を準備しています';
-  GameAudio.unlock().then(ok=>{button.textContent=ok&&!GameAudio.debugState().lastError?'音を有効にしました':'音を読み込めませんでした。もう一度タップ';});
-}
 function renderGameAudioSettings(){
   if(typeof GameAudio==='undefined')return;
   const settings=GameAudio.getSettings();
@@ -83,9 +79,10 @@ function gameAudioUiKey(element){
   const playUi=key=>{if(key){lastUiSoundAt=Date.now();GameAudio.playSe(key);}};
   document.addEventListener('click',event=>{
     if(!event.isTrusted)return;
-    GameAudio.unlock();
     const control=event.target.closest?.('button,a,[role="button"],[role="tab"],input,select,summary');
-    if(control?.id==='titleScreen'||control?.tagName==='SUMMARY')return;
+    if(control?.id==='titleScreen')return; // The title handles its own first gesture.
+    GameAudio.unlock();
+    if(control?.tagName==='SUMMARY')return;
     // Native disabled buttons do not dispatch a trusted click on all browsers.
     if(control?.disabled)return;
     playUi(gameAudioUiKey(control));
@@ -96,7 +93,7 @@ function gameAudioUiKey(element){
     if(gameAudioUiKey(control)==='error')playUi('error');
   },true);
   document.addEventListener('keydown',event=>{
-    if(event.isTrusted&&(event.key==='Enter'||event.key===' '))GameAudio.unlock();
+    if(event.isTrusted && !event.target.closest?.('#titleScreen') && (event.key==='Enter'||event.key===' '))GameAudio.unlock();
   },true);
   // Native dialog dismissal (Escape / Android back) also gets its adopted sound.
   document.addEventListener('close',event=>{if(event.target?.tagName==='DIALOG'&&Date.now()-lastUiSoundAt>50)playUi('menuClose');},true);

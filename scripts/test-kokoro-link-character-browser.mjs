@@ -21,6 +21,7 @@ try {
       page.on('pageerror',error=>errors.push(error.message));
       await page.goto(origin+'/?legacy=1');
       await page.locator('#titleScreen').tap();
+      await page.locator('#titleScreen').tap();
       await page.locator('#titleScreen').waitFor({state:'detached'});
       await run(page);
       assert.deepEqual(errors,[],'no uncaught browser error');

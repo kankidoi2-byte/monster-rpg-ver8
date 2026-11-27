@@ -13,7 +13,7 @@ try{
   const context=await browser.newContext({viewport,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
   await page.goto('http://127.0.0.1:4221/?legacy=1',{waitUntil:'networkidle'});
-  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const uid=await page.evaluate(()=>{
    clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
    Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
@@ -47,7 +47,7 @@ try{
   assert.equal(await page.locator('#dexDetail .dex-obtain-evolution small').innerText(),'育成によって分岐進化');
   await page.evaluate(()=>{show('characterDex');showCharacterDexDetail('elna_middle')});
   assert.equal(await page.locator('#characterDexDetail .dex-obtain-evolution small').innerText(),'育成によって進化');
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const restored=await page.evaluate(uid=>getInstance(uid),uid);
   assert.deepEqual(restored,evolved,'saved individual and offset survive reload');
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');show('home')});

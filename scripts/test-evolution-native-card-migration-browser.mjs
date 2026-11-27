@@ -44,7 +44,7 @@ try{
  assert(await page.evaluate(()=>save.instances.every(ins=>getEquippedSkillIds(ins).some(id=>SKILL_BY_ID[id].power>0)&&equippedSkillCost(ins)<=skillCostLimitFor(by(ins.id),ins))));
  assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('mb_v95c')).saveMeta.migrations.includes('skill_system_110_v1')));
  assert(await page.evaluate(()=>save.skill110MigrationBackup.skillCards.skill_orca_abyss_02===5));
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>{show('partySet');renderParty();renderDex();});assert(await page.locator('#partySet').isVisible());
  await page.reload({waitUntil:'domcontentloaded'});assert.deepEqual(await snapshot(),first,'reload must not mint cards');
  await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded'}),page.evaluate(()=>MonsterProfiles.switchTo(2))]);
@@ -72,7 +72,7 @@ try{
  const reimported=await snapshot();assert.equal(reimported.coins,exported.coins);
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('mb_v95c')).coins),exported.coins,'current import sentinel persisted');
  assert.deepEqual(reimported.cards,first.cards,'reimport cannot duplicate compensation');
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
  assert.deepEqual(errors,[]);

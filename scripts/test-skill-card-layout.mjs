@@ -88,7 +88,7 @@ try{
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
  const errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.dismiss());
  await page.goto('http://127.0.0.1:4175/?legacy=1',{waitUntil:'networkidle'});
- assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{
   clearTutorialUi();save=initSave();save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.progress.tutorial=tutorialSaveDefaults({legacy:true});
   // Returning-player flow: feature-guide tutorials are exercised separately in every iframe width.
@@ -114,7 +114,7 @@ try{
   if(!saveGame())throw Error('save failed');
   return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills});
  });
- await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills})),saved);
  await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());
  await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());
@@ -127,6 +127,7 @@ try{
  const equipErrors=[];
  equipPage.on('pageerror',error=>equipErrors.push(error.message));
  const leaveTitle=async()=>{
+  await equipPage.locator('#titleScreen').tap();
   await equipPage.locator('#titleScreen').tap();
   await equipPage.locator('#titleScreen').waitFor({state:'detached'});
  };
