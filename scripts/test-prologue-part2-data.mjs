@@ -5,6 +5,15 @@ const context={};vm.createContext(context);
 vm.runInContext(fs.readFileSync('js/data.js','utf8')+';globalThis.master=M;',context);
 vm.runInContext(fs.readFileSync('js/prologue-part2-data.js','utf8'),context);
 const d=context.PROLOGUE_PART2_DATA;
+// Keep the speaking cards and the on-stage cast on the same reviewed character form.
+const fullBodyCast = {
+  'トビア':'tobia_2', 'ボルド':'bordo_3', 'リゼ':'lize_2', 'ブリジット':'brigitte_3',
+  'セレネ':'selene_2', 'ローデン':'roden_3', 'サフィラ':'safira_2', 'レグス':'regus_2'
+};
+for (const [speaker, form] of Object.entries(fullBodyCast)) {
+  const portrait = d.portraits[speaker];
+  assert.match(portrait, new RegExp(`^images/monsters/character_${form}_fullbody_[0-9]{8}\\.webp$`), speaker);
+}
 assert.equal(d.episodes.length,17);
 assert.equal(Object.keys(d.battles).length,15);
 assert.equal(d.episodes.reduce((s,e)=>s+e.rewards.exp,0),6120);
@@ -18,6 +27,7 @@ for(const ep of d.episodes){
  assert(fs.existsSync(ep.background),ep.background);
  for(const step of ep.steps){
   if(step.background)assert(fs.existsSync(step.background),step.background);
+  if(step.kind==='dialogue' && fullBodyCast[step.speaker])assert.equal(step.portrait,d.portraits[step.speaker],step.id);
   if(step.portrait)assert(fs.existsSync(step.portrait),step.portrait);
   if(step.kind==='battle')assert(d.battles[step.battleId]);
   if(step.kind==='production')assert.equal(step.display,false);

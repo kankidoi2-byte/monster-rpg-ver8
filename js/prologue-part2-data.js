@@ -111,7 +111,7 @@
           "sourceText": "トビア：た、大変だ！荷車が！ まだ届けてない荷物なんだ！",
           "sourceLine": 223,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_pre_10",
@@ -242,7 +242,7 @@
           "sourceText": "トビア：ありがとうございます！ オレ、風便見習いのトビアです。これ、王都の食堂に届ける荷物で……。",
           "sourceLine": 235,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_post_03",
@@ -252,7 +252,7 @@
           "sourceText": "トビア：いつもの道なのに、こんなの初めてですよ。",
           "sourceLine": 236,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_post_04",
@@ -272,7 +272,7 @@
           "sourceText": "トビア:ここは人通りが多いからモンスターもあまり近寄ってこないんですよ。オレみたいな見習いでも、この道なら大丈夫って聞いてたんだけどなぁ…",
           "sourceLine": 238,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_post_06",
@@ -292,7 +292,7 @@
           "sourceText": "トビア：あ、そうだ。これ見てください。ここへ来る途中、森へ曲がる分かれ道のそばで拾ったんです。",
           "sourceLine": 240,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_post_08",
@@ -332,7 +332,7 @@
           "sourceText": "トビア：拾った辺りにも、見慣れないモンスターがいたんですよ。よかったら、これ持っていきませんか？",
           "sourceLine": 244,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_post_12",
@@ -378,7 +378,7 @@
           "sourceText": "トビア：あ、お腹すきました？ 王都ならボルドさんの食堂がありますよ！",
           "sourceLine": 248,
           "background": "images/maps/grassland.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_07_post_16",
@@ -433,7 +433,7 @@
           "sourceText": "ボルド：トビア！ モンスターに襲われたって聞いたぞ！無事だったか？ってお前！モンスターと一緒か！それも2匹！",
           "sourceLine": 257,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_03",
@@ -453,7 +453,7 @@
           "sourceText": "トビア：助けてもらったんですよ！それにこのモンスターは襲ってこない良いモンスターなんですよ！",
           "sourceLine": 259,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_08_pre_05",
@@ -473,7 +473,7 @@
           "sourceText": "ボルド：なんだ、そういうことかい。じゃあ今日は、俺から礼をさせてくれ。",
           "sourceLine": 261,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_06a",
@@ -483,7 +483,7 @@
           "sourceText": "ボルド：それと、これは旅の足しにしてくれ。トビアの荷を守ってくれた礼だ。",
           "sourceLine": 262,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_receive_stipend",
@@ -520,7 +520,7 @@
           "sourceText": "ボルド：慌てるな。熱いうちがうまいが、やけどしちゃ台無しだ。",
           "sourceLine": 265,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_10",
@@ -530,7 +530,7 @@
           "sourceText": "ボルド：それにしても隊商が来ねえ。森の道で足止めでも食らってるのかね……。",
           "sourceLine": 266,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_11",
@@ -549,7 +549,7 @@
           "sourceText": "ボルド：さぁ、どうだろうな。だが明日もこうなら、献立を変えるしかない。",
           "sourceLine": 268,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_13",
@@ -569,7 +569,7 @@
           "sourceText": "ボルド:お、いい食いっぷりだな！",
           "sourceLine": 270,
           "background": "images/maps/bg_hearth_dining_hall.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_15",
@@ -588,7 +588,7 @@
           "sourceText": "リゼ：そこの旅人さん。出発前の買い忘れはない？",
           "sourceLine": 272,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/lize_vendor_star2_20261004.webp"
+          "portrait": "images/monsters/character_lize_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_17",
@@ -608,7 +608,7 @@
           "sourceText": "リゼ：ちょっとぉ。聞くのが早くない？アタシ、せっかちは嫌いなんだよなぁ。",
           "sourceLine": 274,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/lize_vendor_star2_20261004.webp"
+          "portrait": "images/monsters/character_lize_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_19",
@@ -628,7 +628,7 @@
           "sourceText": "リゼ：使う道具を一つ選んで。見た目が似てても、できることは違うの。",
           "sourceLine": 276,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/lize_vendor_star2_20261004.webp"
+          "portrait": "images/monsters/character_lize_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_08_pre_21",
@@ -657,7 +657,7 @@
           "sourceText": "リゼ：購入時「毎度あり！次もご贔屓に～！」／未購入時「あら、今日は見るだけ？ 次はちゃんと買ってってね～！」",
           "sourceLine": 280,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/lize_vendor_star2_20261004.webp",
+          "portrait": "images/monsters/character_lize_2_fullbody_20261123.webp",
           "variants": {
             "purchased": "毎度あり！次もご贔屓に～！",
             "notPurchased": "あら、今日は見るだけ？ 次はちゃんと買ってってね～！"
@@ -866,7 +866,7 @@
           "sourceText": "ブリジット：門の中央を空けろ！ 人は壁沿いに下がれ！",
           "sourceLine": 304,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_09_pre_03",
@@ -916,7 +916,7 @@
           "sourceText": "ブリジット：私はこいつらを引き受ける。荷車の前を頼めるか！",
           "sourceLine": 309,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_09_pre_08",
@@ -955,7 +955,7 @@
           "sourceText": "リゼ：お客さんたち、こっち！ 店の奥なら隠れられるよ！",
           "sourceLine": 313,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/lize_vendor_star2_20261004.webp"
+          "portrait": "images/monsters/character_lize_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_09_pre_12",
@@ -965,7 +965,7 @@
           "sourceText": "ボルド：騒がしいから来てみれば、街の中にまでモンスターだと！？動けない人は俺が運ぶ！ トビア、先に道を見てくれ！",
           "sourceLine": 314,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_09_pre_13",
@@ -975,7 +975,7 @@
           "sourceText": "トビア：は、はい！ こっち、通れます！",
           "sourceLine": 315,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_09_pre_14",
@@ -1025,7 +1025,7 @@
           "sourceText": "ブリジット：次の放電が来る！ 私の盾の後ろへ！",
           "sourceLine": 321,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_09_post_04",
@@ -1079,7 +1079,7 @@
           "sourceText": "ブリジット：追う必要はない。まず、倒れている者を運ぶべきだ。",
           "sourceLine": 326,
           "background": "images/maps/bg_city_gate.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_09_post_09",
@@ -1154,7 +1154,7 @@
           "sourceText": "セレネ：暴れていなければ患者よ。その布を取って。",
           "sourceLine": 337,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/selene_patrol_star2_20261004.webp"
+          "portrait": "images/monsters/character_selene_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_10_pre_04",
@@ -1174,7 +1174,7 @@
           "sourceText": "セレネ：この擦り傷には乾いた泥が入っている。街で付いたばかりの傷じゃないわ。",
           "sourceLine": 339,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/selene_patrol_star2_20261004.webp"
+          "portrait": "images/monsters/character_selene_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_10_pre_06",
@@ -1184,7 +1184,7 @@
           "sourceText": "トビア：森の坂道、今ぬかるんでます。車輪が取られるくらい。",
           "sourceLine": 340,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_10_pre_07",
@@ -1194,7 +1194,7 @@
           "sourceText": "セレネ：それだけで場所は決められないわ。でも、街へ来る前から傷ついていたのは確かね。",
           "sourceLine": 341,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/selene_patrol_star2_20261004.webp"
+          "portrait": "images/monsters/character_selene_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_10_pre_08",
@@ -1214,7 +1214,7 @@
           "sourceText": "ブリジット：ならば門を固めるだけでは終わらんな。",
           "sourceLine": 343,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_10_pre_10",
@@ -1224,7 +1224,7 @@
           "sourceText": "セレネ：手当ての薬なら、市場の店でも買えるわ。旅に出るなら揃えておきなさい。",
           "sourceLine": 344,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/selene_patrol_star2_20261004.webp"
+          "portrait": "images/monsters/character_selene_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_10_pre_11",
@@ -1263,7 +1263,7 @@
           "sourceText": "セレネ：よく見て選ぶこと。それから、ここで休むのも治療のうちよ。",
           "sourceLine": 349,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/selene_patrol_star2_20261004.webp"
+          "portrait": "images/monsters/character_selene_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_10_post_03",
@@ -1293,7 +1293,7 @@
           "sourceText": "トビア：隊商が遅れてるのも、同じ道です。森へ入る橋の先で…。",
           "sourceLine": 352,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_10_post_06",
@@ -1303,7 +1303,7 @@
           "sourceText": "ブリジット：私は王都を離れられない。調べてきてもらえるか。危険なら引き返してくれ。",
           "sourceLine": 353,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_10_post_07",
@@ -1546,7 +1546,7 @@
           "sourceText": "ローデン:おぉ、ルミナか。どうした。また錬成か？ん？なんだ、今日は1人じゃないのか。",
           "sourceLine": 381,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_pre_19",
@@ -1576,7 +1576,7 @@
           "sourceText": "ローデン：寄越せ。……削り屑じゃねえ。叩いて割れた跡とも違うな。",
           "sourceLine": 384,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_pre_22",
@@ -1596,7 +1596,7 @@
           "sourceText": "ローデン：まだそうは言ってねえ。分からんことを先に決めるな。",
           "sourceLine": 386,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_pre_24",
@@ -1616,7 +1616,7 @@
           "sourceText": "ローデン:ニコ、急に横から割って入るな。まぁいい。調べてみないことには分からんからな。",
           "sourceLine": 388,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_pre_26",
@@ -1686,7 +1686,7 @@
           "sourceText": "ローデン：森に行くなら、技も見直していけ。技は組み合わせ次第で、今より使える技になる。ほら、この三枚で一度やってみろ。",
           "sourceLine": 395,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_battle",
@@ -1712,7 +1712,7 @@
           "sourceText": "ローデン：ほう、上級の「捨て身打ち」か。いつも上の級になるわけじゃねえが……お前たち、運がいいな。しかし反動がある。ここぞってときに使え。",
           "sourceLine": 398,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_post_02",
@@ -1757,7 +1757,7 @@
           "sourceText": "ローデン：その技カードは持ってけ。袋の口は閉めとけよ。森で落としたら拾いにゃ行かねえぞ。",
           "sourceLine": 402,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_11_post_06",
@@ -1833,7 +1833,7 @@
           "sourceText": "サフィラ：荷車のそばから動くな！ 後ろのヤツも！ そっちの茂みにもいるぞ！",
           "sourceLine": 413,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_pre_03",
@@ -1853,7 +1853,7 @@
           "sourceText": "サフィラ：こっちだって届けたいさ！ 見ろ、前にも後ろにもモンスターだらけだ！",
           "sourceLine": 415,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_pre_05",
@@ -1883,7 +1883,7 @@
           "sourceText": "サフィラ：私は荷車につく！ あんたたち、先頭の車が通れるだけでいいから、道を空けて！",
           "sourceLine": 418,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_pre_08",
@@ -1932,7 +1932,7 @@
           "sourceText": "サフィラ：今だ、進め！ 王都は左だ！",
           "sourceLine": 424,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_post_03",
@@ -1951,7 +1951,7 @@
           "sourceText": "サフィラ：…分かってる！",
           "sourceLine": 426,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_post_05",
@@ -1971,7 +1971,7 @@
           "sourceText": "サフィラ：聞こえてるよ！",
           "sourceLine": 428,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_post_07",
@@ -1991,7 +1991,7 @@
           "sourceText": "サフィラ：あのナイトメアは奥から出てきたんだ。あんなに手前で見たのは、私も初めて。",
           "sourceLine": 430,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_post_09",
@@ -2011,7 +2011,7 @@
           "sourceText": "サフィラ：奥へ行くのか？ じゃあ気をつけな。木のてっぺんより高いところで、大きな影が動いてた。",
           "sourceLine": 432,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_post_11",
@@ -2030,7 +2030,7 @@
           "sourceText": "サフィラ：荷物は王都まで送り届ける。……橋を戻って、右！",
           "sourceLine": 434,
           "background": "images/maps/forest.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_12_complete",
@@ -2370,7 +2370,7 @@
           "sourceText": "レグス：止まれ。まだこっちは通れない。",
           "sourceLine": 475,
           "background": "images/maps/ruined_village.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_14_pre_03",
@@ -2390,7 +2390,7 @@
           "sourceText": "レグス：俺はいい。歩けるやつから、柵の外へ連れていけ。",
           "sourceLine": 477,
           "background": "images/maps/ruined_village.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_14_pre_05",
@@ -2419,7 +2419,7 @@
           "sourceText": "レグス：……それなら前を頼む。俺はこいつらを守る。",
           "sourceLine": 480,
           "background": "images/maps/ruined_village.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_14_pre_08",
@@ -2483,7 +2483,7 @@
           "sourceText": "レグス：話はあとだ。まだ村の外に出ていない。",
           "sourceLine": 490,
           "background": "images/maps/ruined_village.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_14_post_06",
@@ -2522,7 +2522,7 @@
           "sourceText": "レグス：まだ残っているな。俺は先に、この人たちを運ぶ。頼めるか？",
           "sourceLine": 494,
           "background": "images/maps/ruined_village.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_14_post_10",
@@ -2541,7 +2541,7 @@
           "sourceText": "レグス：あぁ、気をつけろ。",
           "sourceLine": 496,
           "background": "images/maps/ruined_village.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_14_complete",
@@ -2735,7 +2735,7 @@
           "sourceText": "レグス：片づいたか。",
           "sourceLine": 520,
           "background": "images/maps/bg_ruined_chapel.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_15_post_10",
@@ -2764,7 +2764,7 @@
           "sourceText": "レグス：なら、拾ったものを持って戻れ。怪我人もいる。ここで答えが出るまで待つ気か。",
           "sourceLine": 522,
           "background": "images/maps/bg_ruined_chapel.webp",
-          "portrait": "images/monsters/regus_wounded_star2_20261004.webp"
+          "portrait": "images/monsters/character_regus_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_15_post_12",
@@ -2819,7 +2819,7 @@
           "sourceText": "ボルド：おお、来た来た！ これで鍋をもう一つ出せるぞ。腹すかせた奴は並んでくれ！",
           "sourceLine": 531,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/bordo_veteran_star3_20261004.webp"
+          "portrait": "images/monsters/character_bordo_3_fullbody_20261123.webp"
         },
         {
           "id": "pb_16_pre_03",
@@ -2829,7 +2829,7 @@
           "sourceText": "サフィラ：言っただろ、届けるって。荷物を下ろすまでが私の仕事だ！",
           "sourceLine": 532,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_16_pre_04",
@@ -2839,7 +2839,7 @@
           "sourceText": "リゼ：はい、その袋は厨房。こっちの包みは救護所ね！ 運ぶ人が通るから、ちょっと道を空けてくれる？",
           "sourceLine": 533,
           "background": "images/maps/bg_market_square.webp",
-          "portrait": "images/monsters/lize_vendor_star2_20261004.webp"
+          "portrait": "images/monsters/character_lize_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_16_pre_05",
@@ -2859,7 +2859,7 @@
           "sourceText": "セレネ：おかえり。歩けるからって平気とは限らないわ。話はあと。先に診せて。",
           "sourceLine": 535,
           "background": "images/maps/bg_medical_tent.webp",
-          "portrait": "images/monsters/selene_patrol_star2_20261004.webp"
+          "portrait": "images/monsters/character_selene_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_16_pre_07",
@@ -2968,7 +2968,7 @@
           "sourceText": "トビア：東の平原なら、高原を越えた先です！ 遺跡までなら配達で通ります。地図、描きましょうか？",
           "sourceLine": 546,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_16_pre_17",
@@ -2978,7 +2978,7 @@
           "sourceText": "ローデン：なら、行き先は決まりだ。地図ができる間に、工房で支度を済ませとけ。",
           "sourceLine": 547,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_16_pre_18",
@@ -3076,7 +3076,7 @@
           "sourceText": "ローデン：支度ができたら、仲間の技も見直しとけ。ここまでの戦いで、次に備えることも分かっただろ。",
           "sourceLine": 558,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/roden_battle_star3_20261004.webp"
+          "portrait": "images/monsters/character_roden_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_16_post_10",
@@ -3086,7 +3086,7 @@
           "sourceText": "ブリジット：王都の安全は私たちに任せて、気をつけて行ってこい。",
           "sourceLine": 559,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/brigitte_knight_star3_20261004.webp"
+          "portrait": "images/monsters/character_brigitte_3_fullbody_20261122.webp"
         },
         {
           "id": "pb_16_post_11",
@@ -3106,7 +3106,7 @@
           "sourceText": "トビア：お待たせしました！ これが遺跡までの道順です。あ、サフィラさんの地図だけは、曲がり角の矢印を大きくしてありますからね。",
           "sourceLine": 561,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/tobia_apprentice_star2_20261004.webp"
+          "portrait": "images/monsters/character_tobia_2_fullbody_20261122.webp"
         },
         {
           "id": "pb_16_post_13",
@@ -3116,7 +3116,7 @@
           "sourceText": "サフィラ：一言余計だぞ、トビア！",
           "sourceLine": 562,
           "background": "images/maps/bg_alchemy_workshop.webp",
-          "portrait": "images/monsters/safira_caravan_star2_20261004.webp"
+          "portrait": "images/monsters/character_safira_2_fullbody_20261123.webp"
         },
         {
           "id": "pb_16_post_14",
@@ -6026,16 +6026,16 @@
     }
   },
   "portraits": {
-    "ボルド": "images/monsters/bordo_veteran_star3_20261004.webp",
-    "リゼ": "images/monsters/lize_vendor_star2_20261004.webp",
+    "ボルド": "images/monsters/character_bordo_3_fullbody_20261123.webp",
+    "リゼ": "images/monsters/character_lize_2_fullbody_20261123.webp",
     "ミレーユ": "images/monsters/mireille_performer_star2_20261004.webp",
-    "トビア": "images/monsters/tobia_apprentice_star2_20261004.webp",
-    "ブリジット": "images/monsters/brigitte_knight_star3_20261004.webp",
-    "セレネ": "images/monsters/selene_patrol_star2_20261004.webp",
-    "ローデン": "images/monsters/roden_battle_star3_20261004.webp",
+    "トビア": "images/monsters/character_tobia_2_fullbody_20261122.webp",
+    "ブリジット": "images/monsters/character_brigitte_3_fullbody_20261122.webp",
+    "セレネ": "images/monsters/character_selene_2_fullbody_20261123.webp",
+    "ローデン": "images/monsters/character_roden_3_fullbody_20261122.webp",
     "ニコ": "images/monsters/nico_maker_star2_20261004.webp",
-    "サフィラ": "images/monsters/safira_caravan_star2_20261004.webp",
-    "レグス": "images/monsters/regus_wounded_star2_20261004.webp",
+    "サフィラ": "images/monsters/character_safira_2_fullbody_20261123.webp",
+    "レグス": "images/monsters/character_regus_2_fullbody_20261123.webp",
     "レムネス": "images/monsters/remnes_memory_star3_20261004.webp",
     "ネメシオン": "images/monsters/nemesion_20260920.webp",
     "グノーシス": "images/tutorial/characters/gnosis-dialogue-transparent-final.png",
