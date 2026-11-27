@@ -267,9 +267,12 @@ function renewalAutoBetween(outcome,pause){
   renewalEl('battle').classList.add('br-auto-between');
   renewalEl('battleOutcomeNote').textContent=pause?'契約のチャンス！':`EXP +${outcome.exp} · 契約は見送り · 次の戦闘へ`;
 }
-function renewalStatusFeedback(labels,prior){
-  const status=labels.find(s=>{const name=s.match(/毒|麻痺|眠り|混乱|凍結/)?.[0];return name&&!prior.includes(name);});
-  if(status)renewalBanner(status,'status');
+function renewalStatusFeedback(statuses,prior){
+  for(const [kind,turns] of statuses){
+    if(prior.has(kind))continue;
+    renewalBanner(battleTimedStatusLabel(kind,turns),'status');
+    break;
+  }
 }
 function renewalKoClone(){
   const visual=renewalEl('pVis'),slot=renewalEl('pBattleSlot');if(!visual||!slot)return;

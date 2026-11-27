@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const PLAYER_NOTICES = Object.freeze([
+  {id:'20261127-battle-status-names',date:'2026-11-28',category:'fix',title:'状態異常の名前を「ねむり」「こんらん」に統一しました',body:'戦闘の札・通知・履歴と技の説明で、同じ状態異常を同じ名前で表示します。'},
   {id:'20261127-title-first-tap',date:'2026-11-27',category:'update',title:'最初のタップでタイトル曲が流れるようになりました',body:'タイトル画面のどこを押しても、1回目でタイトル曲が流れ、2回目でゲームが始まります。BGMや効果音はメニューの「設定」から消音できます。'},
   {id:'20261127-prologue-transparent-portraits',date:'2026-11-27',category:'fix',title:'序章の会話で立ち絵の背景が重なる不具合を修正しました',body:'トビアなど8人の会話用の立ち絵を変更しました。2人が並んだときも、隣の人物や風景が見えるようになりました。'},
   {id:'20261127-prologue-dialogue-speaker',date:'2026-11-27',category:'fix',title:'序章後半の会話で発言者の立ち絵を修正しました',body:'複数人の会話で、再び話し始めた人物の立ち絵が画面から外れることがあったため修正しました。'},
