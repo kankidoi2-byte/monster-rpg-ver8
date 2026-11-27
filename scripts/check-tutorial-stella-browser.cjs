@@ -24,9 +24,9 @@ const assert=require('node:assert/strict');
       const paint=async()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       const at=async id=>{await page.waitForFunction(id=>tutorialCurrentStepId()===id,id);await paint();await page.evaluate(()=>tutorialPresentation.writer?.finish());};
       const next=async()=>{await page.waitForTimeout(300);await page.evaluate(()=>tutorialPresentation.writer?.finish());if(await page.locator('#tutorialNextButton').isVisible())await page.locator('#tutorialNextButton').click();else await page.locator('#tutorialText').click();await paint();await page.evaluate(()=>tutorialPresentation.writer?.finish());};
-      const reload=async()=>{await page.reload({waitUntil:'networkidle'});if(await page.locator('#titleScreen').isVisible())await page.locator('#titleScreen').click();};
+      const reload=async()=>{await page.reload({waitUntil:'networkidle'});if(await page.locator('#titleScreen').isVisible())await page.locator('#titleScreen').dblclick();};
       await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
-      await page.locator('#titleScreen').click();
+      await page.locator('#titleScreen').dblclick();
       await at('intro_gnosis');
       await page.evaluate(()=>{
         setTutorialPlayerName('対決テスト');ensureTutorialStarterContracts();commitTutorialElnaContract();

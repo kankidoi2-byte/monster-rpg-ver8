@@ -35,7 +35,7 @@ async function openPage({width=390,height=844,reducedMotion='no-preference',fail
   await page.goto(gameUrl.href,{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>typeof startFromTitle==='function'&&typeof beginChosenBattle==='function'&&typeof syncBattleIdleMedia==='function'&&typeof BATTLE_IDLE_MEDIA!=='undefined'&&typeof save!=='undefined'&&!!document.getElementById('titleScreen'),null,{timeout:30000});
   await page.locator('#titleScreen').waitFor({state:'visible',timeout:30000});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  }catch(error){
   report.startupFailure={viewport:{width,height},reducedMotion,fail,pending:[...pending.values()].slice(0,40),failed};
   throw error;

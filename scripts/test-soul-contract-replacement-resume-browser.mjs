@@ -13,7 +13,7 @@ const server=publicUrl?null:spawn(process.execPath,['scripts/dev-server.mjs','--
 let browser;
 async function enter(page){
   const title=page.locator('#titleScreen');
-  if(await title.count()){await title.click();await title.waitFor({state:'detached'});}
+  if(await title.count()){await title.dblclick();await title.waitFor({state:'detached'});}
 }
 async function observations(page){return page.evaluate(()=>JSON.parse(sessionStorage.getItem('resume-test-lock-observations')||'[]'));}
 try{

@@ -17,7 +17,7 @@ try{
    if(u.pathname==='/api/gifts/claimed'){if(failAck)return r.abort();ack.push(r.request().postDataJSON());gifts=[];return r.fulfill({json:{ok:true}});}
    return r.abort();
   });
-  await page.goto('http://127.0.0.1:4266/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.goto('http://127.0.0.1:4266/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   // The unrelated rank-up dialog must not compete with the gift history test,
   // including after the intentional title reload and save migration.
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.exp=CONTRACTOR_MAX_EXP;save.contractor.pendingRankUps=[];save.giftClaimedIds=DEV_GIFTS.map(g=>g.id);save.coins=7;saveGame();show('feedbackBox');});
@@ -34,7 +34,7 @@ try{
   assert.equal(await page.evaluate(async()=>{const real=saveGame;saveGame=()=>false;try{return await claimGifts(['developer:pg-browser']);}finally{saveGame=real;}}),false);assert.equal(await page.evaluate(()=>JSON.stringify(save)),before);
   assert.equal(await page.evaluate(()=>claimGifts(['developer:pg-browser'])),true);await page.locator('#giftDialogClose').click();assert.equal(await page.evaluate(()=>save.coins),507);assert.equal(await page.evaluate(()=>claimGifts(['developer:pg-browser'])),false);
   // Lost ACK + reload cannot re-award; server record is retried after local receipt has persisted.
-  failAck=false;await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  failAck=false;await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>PersonalGifts.sync());assert.equal(await page.evaluate(()=>save.coins),507);assert.equal(await page.evaluate(()=>PersonalGifts.entries().length),0);assert(ack.some(x=>x.ids.includes('pg-browser')));
   await page.evaluate(()=>{clearTutorialUi();showGiftBox();});await page.locator('#giftHistoryTab').click();assert(await page.locator('[data-gift-detail="developer:pg-browser"]').isVisible());
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);await context.close();

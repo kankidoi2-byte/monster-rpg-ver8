@@ -12,7 +12,7 @@ try{
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.route('**/status-screen-reference.html',r=>r.fulfill({contentType:'text/html',body:fs.readFileSync('scripts/fixtures/status-screen-prototype.html','utf8')}));
   await page.goto('http://127.0.0.1:4341/status-screen-reference.html');await page.evaluate(()=>showView('status'));await page.screenshot({path:out+'/prototype-'+viewport.width+'.png'});
-  await page.goto('http://127.0.0.1:4341/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.goto('http://127.0.0.1:4341/?legacy=1');await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const fixture=await page.evaluate(()=>{
    clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);
    save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
@@ -67,7 +67,7 @@ try{
   await page.locator('.status-dark').click();assert(await page.locator('#skillEdit.active').isVisible());
   await page.evaluate(()=>show('party'));assert(!await page.locator('#party').evaluate(el=>el.inert));
   await page.evaluate(uid=>{openRosterDetail(uid);openMonsterStatus(uid);},fixture.character);await page.keyboard.press('Escape');assert.equal(await page.locator('#monsterStatus').count(),0);
-  await page.reload();await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload();await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(uid=>{show('party');setRosterView('filter','all');openRosterDetail(uid);openMonsterStatus(uid);},fixture.first);assert.match(await page.locator('#monsterStatus h2').innerText(),/フレイガル/);
   assert.deepEqual(errors,[]);await page.close();
  }

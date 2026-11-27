@@ -38,26 +38,24 @@ saveStartupState();
 renderParty();
 
 function initTitleScreen(){
-  try{
-    const screen=document.getElementById('titleScreen');
-    if(!screen) return;
-    const begin=()=>startFromTitle();
-    screen.addEventListener('click',begin,{once:true});
-    screen.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&!titleStarted){event.preventDefault();begin();}});
-  }catch(err){
-    // Ver7.6: 演出の組み立てに失敗しても、最低限タップで開始できる状態は保つ
-    console.error('titleScreen init failed, falling back:', err);
-    try{
-      const screen=document.getElementById('titleScreen');
-      if(screen) screen.addEventListener('click',()=>startFromTitle(),{once:true});
-    }catch(_e){
-      document.body.classList.remove('title-mode');
-      const screen=document.getElementById('titleScreen');
-      if(screen) screen.remove();
-      if (typeof show === 'function') show('home');
-      if (typeof resumeTutorialIfNeeded === 'function') setTimeout(resumeTutorialIfNeeded,0);
+  const screen=document.getElementById('titleScreen');
+  if(!screen)return;
+  let firstInput=true;
+  function activate(event){
+    if(firstInput){
+      firstInput=false;
+      screen.setAttribute('aria-label','ゲームを開始');
+      if(event.isTrusted && typeof GameAudio!=='undefined')GameAudio.unlock();
+      return;
     }
+    startFromTitle();
   }
+  screen.addEventListener('click',activate);
+  screen.addEventListener('keydown',event=>{
+    if(event.key!=='Enter' && event.key!==' ')return;
+    event.preventDefault();
+    if(!event.repeat)activate(event);
+  });
 }
 function showSkill110MigrationNotice(){
   if(!save.skill110Migration?.noticePending)return;

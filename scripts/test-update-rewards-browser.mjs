@@ -43,8 +43,8 @@ try{
   const boot=async(page, key)=>{
     await page.goto(origin,{waitUntil:'domcontentloaded'});
     const title=page.locator('#titleScreen');
-    if(key) await title.press(key);
-    else await title.click();
+    if(key){await title.press(key);await title.press(key);}
+    else await title.dblclick();
     await page.locator('#titleScreen').waitFor({state:'detached'});
   };
   const open=page=>page.evaluate(()=>{clearTutorialUi();showGiftBox();});

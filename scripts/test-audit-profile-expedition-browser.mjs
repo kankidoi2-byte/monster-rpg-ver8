@@ -10,7 +10,7 @@ const report={cases:[],errors:[],limitations:['Chromium mobile emulation, not ph
 fs.mkdirSync(output,{recursive:true});
 let browser,server,activePage;
 async function start(page){
-  await page.locator('#titleScreen').click();
+  await page.locator('#titleScreen').dblclick();
   await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');});
 }

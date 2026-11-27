@@ -18,7 +18,7 @@ const assert=require('node:assert/strict');
       page.on('pageerror',error=>errors.push(error.message));
       await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
       await page.waitForFunction(()=>typeof startTutorialFlow==='function');
-      await page.locator('#titleScreen').click();
+      await page.locator('#titleScreen').dblclick();
       await page.waitForFunction(()=>!document.body.classList.contains('title-mode'));
       if(textScale===2)await page.addStyleTag({content:'.tutorial-bubble p{font-size:26px!important} #tutorialTitle{font-size:36px!important} .tutorial-dialogue-choices button{font-size:32px!important}'});
       await page.evaluate(()=>{

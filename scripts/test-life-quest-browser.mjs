@@ -23,7 +23,7 @@ try{
   const page=await context.newPage(),errors=[],messages=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>{messages.push(d.message());d.accept()});
   await page.clock.install({time:new Date('2026-11-01T23:50:00+09:00')});
   await page.goto('http://127.0.0.1:4249/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{
    clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
    save=initSave();save.giftClaimedIds=DEV_GIFTS.map(g=>g.id);save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];addInstance('aquaron',5);save.party=[save.instances[0].uid];save.coins=17;
@@ -91,7 +91,7 @@ try{
   await page.locator('[data-tab="quest"]').click();await page.locator('#f-nm').fill('テスト読書');await page.locator('#f-unit').selectOption('ページ');await page.locator('#addq button').click();await page.locator('.qrow').filter({hasText:'テスト読書'}).waitFor();assert.equal(await page.locator('.qrow').count(),9);
   // Return straight to Monster Battle after midnight, without revisiting Life Quest.
   await page.clock.setFixedTime(new Date('2026-11-02T00:05:00+09:00'));
-  await page.goto('http://127.0.0.1:4249/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.goto('http://127.0.0.1:4249/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('home')});
   assert(await page.locator('#giftUnreadCount').isVisible());
   await page.locator('#homeGiftButton').click();
@@ -112,7 +112,7 @@ try{
   await page.screenshot({path:out+'/claimed-'+viewport.width+'.png'});
   // Current schema save with the additive field missing must load safely.
   await page.evaluate(()=>{const old=JSON.parse(JSON.stringify(save));delete old.lifeQuestClaimedIds;old.saveMeta.integrityHash=saveHash(old);localStorage.setItem(MonsterProfiles.key(SAVE_KEY),JSON.stringify(old));});
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.equal(await page.evaluate(()=>Array.isArray(save.lifeQuestClaimedIds)&&save.lifeQuestClaimedIds.length===0),true);
   assert.equal(await page.evaluate(()=>save.coins),amounts.coins+amounts.expected);
   // Existing gameplay smoke: home / party / hunt / battle / save / reload.

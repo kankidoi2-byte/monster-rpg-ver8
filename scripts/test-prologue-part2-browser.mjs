@@ -12,7 +12,7 @@ try{
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
- const boot=async()=>{await page.goto('http://127.0.0.1:4387/?legacy=1');await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
+ const boot=async()=>{await page.goto('http://127.0.0.1:4387/?legacy=1');await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});};
  await boot();
  const openingPortrait=page.locator('#tutorialCast img.is-speaking');
  await openingPortrait.waitFor({state:'visible'});
@@ -132,16 +132,9 @@ try{
  const firstBattleCursor=await page.evaluate(()=>prologuePart2Episode('pb_07').steps.find(s=>s.battleId==='p2_07_a').id);
  const ordinaryState=()=>page.evaluate(()=>({coins:save.coins,history:JSON.stringify(save.history),autoBattle:JSON.stringify(save.autoBattle),mapStories:JSON.stringify(save.mapStories),expeditions:JSON.stringify(save.expeditions),instances:JSON.stringify(save.instances),scroll:save.items.contract_scroll}));
  const confirmScene=page.getByRole('button',{name:'契約を確認',exact:true});
- // A legitimate queued rank-up can surface between the contract prompt and
- // its click. Dismiss only if visible, using the same button a player uses.
- const openContractScene=async()=>{
-  const rankUp=page.locator('#contractorRankUpOverlay:not(.hidden)');
-  await page.addLocatorHandler(rankUp,async()=>{
-   await rankUp.getByRole('button',{name:'冒険を続ける',exact:true}).click();
-  });
-  try{await confirmScene.click();}
-  finally{await page.removeLocatorHandler(rankUp);}
- };
+ // A queued rank-up may appear before or after the contract prompt.
+ const rankUp=page.locator('body:not(:has(dialog:modal)) #contractorRankUpOverlay:not(.hidden)');
+ await page.addLocatorHandler(rankUp,()=>rankUp.getByRole('button',{name:'冒険を続ける',exact:true}).click());
  const choice=page.locator('#prologueContractChoice');
  const recap=choice.locator('[data-prologue-contract-recap]');
  async function winSlimeWithSwitch(){
@@ -185,7 +178,7 @@ try{
   return {before,actual};
  }
  const {before:normalBefore,actual}=await winSlimeWithSwitch();
- await openContractScene();
+ await confirmScene.click();
  assert(await choice.isVisible());
  assert(await choice.getByRole('heading',{name:'契約候補：スライム'}).isVisible());
  assert(await choice.getByText(`契約書：${normalBefore.scroll+1}枚`,{exact:false}).isVisible());
@@ -194,7 +187,7 @@ try{
  await page.screenshot({path:`${out}/chapter7-contract-fresh.png`});
  // A reload retains the earned contract option but has no trustworthy transient turn/HP values.
  await boot();await page.evaluate(()=>{clearTutorialUi();openProloguePart2('pb_07')});
- await openContractScene();
+ await confirmScene.click();
  assert.equal(await recap.innerText(),'王都外・街道');
  assert(!/草原|0ターン|決着時|HP/.test(await choice.innerText()));
  await page.screenshot({path:`${out}/chapter7-contract-reloaded.png`});
@@ -224,7 +217,7 @@ try{
  assert.deepEqual(await page.evaluate(()=>save.prologuePart2.episodes.pb_07.wonBattleIds),['p2_07_a','p2_07_b']);
  assert.deepEqual(await page.evaluate(()=>({coins:save.coins,history:JSON.stringify(save.history),autoBattle:JSON.stringify(save.autoBattle),mapStories:JSON.stringify(save.mapStories),expeditions:JSON.stringify(save.expeditions),instances:JSON.stringify(save.instances),scroll:save.items.contract_scroll})),{...normalBefore,scroll:normalBefore.scroll+1});
  const {before:contractBefore}=await winSlimeWithSwitch();
- await openContractScene();
+ await confirmScene.click();
  await choice.getByRole('button',{name:'スライムと契約',exact:true}).click();
  await page.locator('#contractConfirm').getByRole('button',{name:'いいえ',exact:true}).click();
  assert(await choice.isVisible(),'cancelling the scroll screen restores the contract choice');
@@ -560,7 +553,7 @@ try{
    if(!saveGame())throw Error('Unable to save isolated scroll fixture');
   },{tier,ids:kinds.map(([id])=>id)});
   const before=await inventoryState();
-  await openContractScene();
+  await confirmScene.click();
   const offer=page.getByRole('button',{name:'スライムと契約',exact:true});
   const text=page.locator('#contractConfirmText');
   const assertPrompt=async()=>{

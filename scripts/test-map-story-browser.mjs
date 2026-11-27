@@ -18,7 +18,7 @@ try{
  await page.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',route=>route.fulfill({status:200,contentType:'application/json',body:'{}'}));
  await page.goto(publicUrl||'http://127.0.0.1:4199/?legacy=1',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.instances=[];save.party=[];['galdra','freigal','aquaron'].forEach(id=>save.party.push(addInstance(id,1).uid));save.contractor.pendingRankUps=[];if(contractorRankUpTimer)clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;closeContractorRankUp();saveGame();show('home');});
  await page.locator('#homePartyEditButton').click();assert(await page.locator('#party').isVisible());await page.locator('#rosterActions [data-roster-party]').click();assert(await page.locator('#partySet').isVisible());await page.locator('#partySetupSaveButton').click();
  // Notifications intentionally destined for the shop are not dropped by navigation.
@@ -135,7 +135,7 @@ try{
  const savedNode=await page.evaluate(()=>mapStoryState().resume.nodeId);
  await page.locator('.map-story-close').click();assert(await page.locator('.app-topbar').isVisible());assert(await page.locator('.app-bottom-nav').isVisible());
  await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof openMapStory==='function'&&typeof save!=='undefined');
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>openMapStory());await page.locator('#mapStory button[onclick="startMapStoryEpisode(\'gl_01\')"]').click();
  assert.equal(await page.evaluate(()=>mapStoryState().resume.nodeId),savedNode);
  for(let number=1;number<=11;number++){
@@ -158,7 +158,7 @@ try{
   await checkCompletedEpisode(number,11,returnedFromParty);
  }
  await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>typeof mapStoryState==='function'&&mapStoryState().episodes.gl_11?.completed===true);
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>openMapStory());
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>openMapStory());
  assert((await page.locator('#mapStory').innerText()).includes('11/11 完了'));await page.screenshot({path:`${out}/completed.png`,fullPage:true});
  await page.locator('#mapStory button[onclick="returnToStoryMapCatalog()"] ').click();
  assert(await page.locator('#storyPanel-map').isVisible());assert((await page.locator('#storyMapList').innerText()).includes('11/11 完了'));
@@ -213,7 +213,7 @@ try{
    await nextPage();
    const resume=await page.evaluate(()=>JSON.stringify(mapStoryState().resume));
    await page.reload({waitUntil:'domcontentloaded'});
-   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+   await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
    await page.locator('#homeAdventureButton').click();await page.locator('#storyCategory-map').click();
    await storyButton('volcano_breath').click();
    await page.getByRole('button',{name:'戦闘後から再開',exact:true}).click();

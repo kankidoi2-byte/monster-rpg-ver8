@@ -20,6 +20,7 @@ try {
       page.on('dialog',async dialog=>{native.push(dialog.type()+': '+dialog.message());await dialog.dismiss();});
       await page.goto(origin+'/?legacy=1');
       await page.locator('#titleScreen').tap();
+      await page.locator('#titleScreen').tap();
       await page.locator('#titleScreen').waitFor({state:'detached'});
       const seed=await page.evaluate(()=>{
         clearTutorialUi();show('home');save=initSave();

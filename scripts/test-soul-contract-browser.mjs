@@ -8,7 +8,7 @@ const write=()=>fs.writeFileSync(`${out}/manifest.json`,JSON.stringify(report,nu
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--host','127.0.0.1','--port','4192'],{stdio:['ignore','pipe','inherit']});let browser;
 const origin='http://127.0.0.1:4192';
 async function fixture(page){
- await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.coins=10000;save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);if(!saveGame())throw Error('fixture save failed');show('characterGacha');});
 }
 async function fixedDraw(page,ids){
@@ -64,7 +64,7 @@ try{
  }
  // Recovery + save failure are exercised against real storage, no acquired result may vanish.
  const context=await browser.newContext({viewport:{width:390,height:844}});await context.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());const page=await context.newPage();page.on('dialog',d=>{report.cases.push({dialog:d.message()});d.dismiss();});page.on('console',m=>{if(m.type()==='warning'||m.type()==='error')console.log('BROWSER',m.text());});page.on('pageerror',e=>report.errors.push(e.message));await fixture(page);
- const before=await fixedDraw(page,['elna_beginner']);await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>show('characterGacha'));
+ const before=await fixedDraw(page,['elna_beginner']);await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>show('characterGacha'));
  assert.equal(await page.evaluate(()=>save.coins),before.coins-100);assert.equal(await page.evaluate(()=>save.instances.length),before.count+1);assert.equal(await page.locator('#characterGachaResult article').count(),1);report.cases.push({name:'reload-recovers-paid-result-on-gacha-entry',result:'PASS'});
  const failed=await page.evaluate(async()=>{const original=safeStorageSet;const before=JSON.stringify(save);safeStorageSet=(key,value)=>key===SAVE_KEY?false:original(key,value);try{await rollCharacterGacha(1);}finally{safeStorageSet=original;}return {same:JSON.stringify(save)===before,overlay:!!document.querySelector('#soulContractPresentation')};});assert(failed.same&&!failed.overlay,'failed save rolls back and starts no cinematic');report.cases.push({name:'storage-failure-rollback',result:'PASS'});
  // Canvas initialization failure must keep a usable skip path and release inert.
@@ -89,7 +89,7 @@ try{
  const exports=await m.evaluate(()=>window.recoveryDownloads.map(d=>JSON.parse(d.text)));
  assert.equal(exports[0].coins,mixedBefore.coins-100);assert.equal(exports[0].instances.length,mixedBefore.count+1);assert.equal(exports[0].soulContractAppliedId,JSON.parse(recoveryRaw).id);
  assert.deepEqual(exports[1],JSON.parse(stale));assert.equal(await m.evaluate(()=>safeStorageGet(SAVE_KEY)),stale);
- await screenshot(m,'320-conflict-recovery');await m.reload({waitUntil:'networkidle'});await m.locator('#titleScreen').click();await m.locator('#titleScreen').waitFor({state:'detached'});await m.evaluate(()=>show('characterGacha'));
+ await screenshot(m,'320-conflict-recovery');await m.reload({waitUntil:'networkidle'});await m.locator('#titleScreen').dblclick();await m.locator('#titleScreen').waitFor({state:'detached'});await m.evaluate(()=>show('characterGacha'));
  assert(await m.evaluate(()=>inspectCharacterGachaRecovery().blocked));assert.equal(await m.evaluate(()=>save.instances.length),mixedBefore.count);assert.equal((await m.evaluate(()=>rollCharacterGacha(1))).ok,false);
  report.cases.push({name:'mixed-ordinary-write-preserves-recovery-and-current-history-no-regrant',result:'PASS'});await mixed.close();
  // A fresh-device import explicitly establishes a local baseline without grants.
@@ -104,8 +104,8 @@ try{
  // Deterministic real two-page competition under the production Web Lock.
  const race=await browser.newContext({viewport:{width:390,height:844}});await race.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
  await race.addInitScript(()=>{const NativeDate=Date;globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[1791630000000]));}static now(){return 1791630000000;}};});
- const a=await race.newPage();a.on('dialog',d=>d.dismiss());await fixture(a);await a.reload({waitUntil:'networkidle'});await a.locator('#titleScreen').click();await a.locator('#titleScreen').waitFor({state:'detached'});await a.evaluate(()=>show('characterGacha'));
- const b=await race.newPage();b.on('dialog',d=>d.dismiss());await b.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await b.locator('#titleScreen').click();await b.locator('#titleScreen').waitFor({state:'detached'});await b.evaluate(()=>show('characterGacha'));
+ const a=await race.newPage();a.on('dialog',d=>d.dismiss());await fixture(a);await a.reload({waitUntil:'networkidle'});await a.locator('#titleScreen').dblclick();await a.locator('#titleScreen').waitFor({state:'detached'});await a.evaluate(()=>show('characterGacha'));
+ const b=await race.newPage();b.on('dialog',d=>d.dismiss());await b.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});await b.locator('#titleScreen').dblclick();await b.locator('#titleScreen').waitFor({state:'detached'});await b.evaluate(()=>show('characterGacha'));
  assert(await a.evaluate(()=>MonsterProfiles.beforeSave()),'A same baseline');assert(await b.evaluate(()=>MonsterProfiles.beforeSave()),'B same baseline');
  const raceBefore=await a.evaluate(()=>({coins:save.coins,count:save.instances.length,raw:safeStorageGet(SAVE_KEY)}));
  await a.evaluate(()=>{window.lockHeld=false;navigator.locks.request(`monster-rpg:character-gacha:${characterGachaStorageKey()}`,()=>new Promise(resolve=>{window.releaseDrawLock=resolve;window.lockHeld=true;}));});await a.waitForFunction(()=>window.lockHeld);

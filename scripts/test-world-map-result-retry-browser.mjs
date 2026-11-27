@@ -15,7 +15,7 @@ try{
     page.on('dialog',d=>d.accept());
     await context.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
     await page.goto('http://127.0.0.1:'+port+'/?legacy=1');
-    await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+    await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
     await page.evaluate(({multi,outcome})=>{
       clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
       save.progress.tutorial.guides.threeWay=true;

@@ -15,7 +15,7 @@ const {chromium}=require('playwright');
    await context.addInitScript(slot=>sessionStorage.setItem('mb_profile_tab_v1',String(slot)),slot);
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
    await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{await page.locator('#contractorRankUpOverlay button').click()});
-   await page.goto('http://127.0.0.1:4219/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+   await page.goto('http://127.0.0.1:4219/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();
    const ids=await page.evaluate(slot=>{
     clearTutorialUi();save=initSave();ensureTutorialStarterContracts();commitTutorialElnaContract();
     const f=tutorialOwnedStarterInstance('freigal'),a=tutorialOwnedStarterInstance('aquaron'),e=tutorialElnaContractInstance();
@@ -55,7 +55,7 @@ const {chromium}=require('playwright');
    assert.deepEqual(await page.evaluate(()=>save.party),[ids.f,ids.a,ids.e]);await restoreSave();
    await targetButton().click();await assertTarget(ids.g);
    // Resume from the real saved intermediate party, without closing the guide.
-   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();
    await page.evaluate(()=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'expedition_party_save',persist:true}));
    await assertTarget(ids.g);
    await failSave();await targetButton().click();await assertTarget(ids.g);
@@ -85,7 +85,7 @@ const {chromium}=require('playwright');
    await page.waitForFunction(()=>tutorialCurrentStepId()==='expedition_dispatch');
    await page.locator('#expeditionStartButton').click();
    assert.equal(await page.evaluate(()=>save.expeditions.active[0].memberUids[0]),ids.f);
-   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();
+   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();
    assert.equal(await page.evaluate(()=>save.expeditions.active.length),1);
    assert.deepEqual(await page.evaluate(()=>save.party),[ids.a,ids.e,ids.g]);
    assert.deepEqual(errors,[]);

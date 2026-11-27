@@ -24,7 +24,7 @@ function durable(raw){
 }
 
 async function startPage(page){
-  await page.locator('#titleScreen').click();
+  await page.locator('#titleScreen').dblclick();
   await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>clearTutorialUi());
 }

@@ -13,10 +13,10 @@ try{
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   // Persist a progressed, populated save, reload it, then observe every storage write while browsing.
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];save.coins=12345;save.items.upper_potion=7;saveGame();});
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const before=await page.evaluate(()=>{clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('moreMenu');clearTimeout(contractorRankUpTimer);save.contractor.pendingRankUps=[];document.getElementById('contractorRankUpOverlay').classList.add('hidden');saveGame();window.roadmapWrites=[];const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(!k.startsWith('mb_analytics_'))roadmapWrites.push(k);return set.call(this,k,v);};return {save:JSON.stringify(save),storage:JSON.stringify(Object.fromEntries(Object.entries(localStorage).filter(([k])=>!k.startsWith('mb_analytics_')).sort(([a],[b])=>a.localeCompare(b))))};});
   assert.equal(await page.locator('#feedbackMenuButton + #roadmapMenuButton').count(),1);
   await page.locator('#roadmapMenuButton').click();assert(await page.locator('#roadmap.active').isVisible());
@@ -89,7 +89,7 @@ try{
  await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
  assert.equal(await page.locator('[data-id="material"]').evaluate(c=>c.closest('.cell').style.gridRow),'6');
  assert.equal(await page.locator('#doneList>div').first().locator('span').nth(1).innerText(),'追加テスト');
- await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();show('moreMenu');});await page.locator('#roadmapMenuButton').click();
  assert(await page.locator('#roadmap.active').isVisible());
  assert.equal(await page.locator('#roadmap [data-roadmap-goal],#roadmap .roadmap-goal-connector').count(),0);

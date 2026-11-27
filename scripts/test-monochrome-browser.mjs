@@ -259,7 +259,7 @@ try{
   await context.route('**/*',request=>new URL(request.request().url()).origin===origin?request.continue():request.fulfill({status:204,body:''}));
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.dismiss());
   await page.goto(`${origin}/?legacy=1`,{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const baselineContext=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
   await baselineContext.route('**/*',async request=>{
    const url=new URL(request.request().url());
