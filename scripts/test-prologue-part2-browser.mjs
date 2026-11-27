@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
+import {readDialoguePortraits,checkDialoguePortraits} from './check-prologue-dialogue-portraits.mjs';
 const out='artifacts/prologue-part2';fs.mkdirSync(out,{recursive:true});
 const server=spawn(process.execPath,['scripts/dev-server.mjs','--port','4387'],{stdio:['ignore','pipe','inherit']});
 let browser;
@@ -109,6 +110,8 @@ try{
  assert.equal(await card(),'pb_07_pre_01');
  assert.equal(await page.evaluate(()=>save.prologuePart2.completed),false);
  assert(!(await page.locator('body').innerText()).includes('序章完了！'));
+ await seed('pb_07');
+ checkDialoguePortraits(await readDialoguePortraits(page));
  await seed('pb_07');
  assert.equal(await card(),'pb_07_pre_01');
  assert.equal(await page.evaluate(()=>authorityUnlocked()),false);

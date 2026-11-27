@@ -6,6 +6,7 @@ const NOTICE_CATEGORIES = Object.freeze({
 });
 
 const PLAYER_NOTICES = Object.freeze([
+  {id:'20261127-prologue-dialogue-speaker',date:'2026-11-27',category:'fix',title:'序章後半の会話で発言者の立ち絵を修正しました',body:'複数人の会話で、再び話し始めた人物の立ち絵が画面から外れることがあったため修正しました。'},
   {id:'20261127-battle-result-sounds',date:'2026-11-27',category:'update',title:'命中・弱点・HP回復を音で聞き分けられるようになりました',body:'戦闘で弱点を突くと専用の効果音が鳴ります。これまで命中音がなかった技にも打撃音を加え、HPが回復したときは短い上昇音が鳴ります。'},
   {id:'20261126-prologue-mission-retreat-cue',date:'2026-11-26',category:'fix',title:'序章のミッションと第13話の案内、会話送りを修正しました',body:'ミッションに第6話までが対象と表示します。第13話ではモルグラムのHPを0にすると退避できることを案内します。終幕などで会話送りボタンが動いても画面内で押せるようになりました。'},
   {id:'20261125-battle-display-size',date:'2026-11-25',category:'fix',title:'バトル中の味方と敵の表示サイズを修正しました',body:'大型の仲間に交代しても、目の前の敵は同じ大きさで表示されます。大型の敵と戦うときも、味方の大きさを保ちます。'},

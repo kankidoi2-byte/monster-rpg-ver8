@@ -344,6 +344,16 @@ function prologuePart2EventMarkup(step){
   if(action==='joinHands')return button(action,'手を重ねる');
   return button(action,prologuePart2Escape(step.label||'次へ'));
 }
+function prologuePart2Cast(episode,step,index,portraits){
+  if(Array.isArray(step.cast))return step.cast.filter(name=>portraits[name]).slice(-3);
+  const recent=episode.steps.slice(Math.max(0,index-4),index+1)
+    .map(card=>card.speaker).filter(name=>portraits[name]);
+  const names=[...new Set(recent)];
+  if(step.kind!=='dialogue'||!portraits[step.speaker])return names.slice(-2);
+  const partner=recent.findLast(name=>name!==step.speaker);
+  // Keep the existing left-to-right order of the selected pair.
+  return names.filter(name=>name===step.speaker||name===partner);
+}
 function prologuePart2Presentation(episode,step,index){
   if(prologuePart2Ui?.tutorialReplay)return {
     background:step.background,
@@ -351,9 +361,7 @@ function prologuePart2Presentation(episode,step,index){
   };
   const portraits=prologuePart2Data().portraits;
   const background=step.background||episode.background||'images/maps/world_between.webp';
-  const earlier=episode.steps.slice(Math.max(0,index-4),index+1);
-  const cast=[...new Set(earlier.map(s=>s.speaker).filter(name=>portraits[name]))].slice(-2);
-  const shown=(Array.isArray(step.cast)?step.cast.filter(name=>portraits[name]):cast).slice(-3);
+  const shown=prologuePart2Cast(episode,step,index,portraits);
   return {background,portraits:shown.map((name,i)=>{
     const x=shown.length===1?50:shown.length===2?(i===0?27:73):[20,50,80][i];
     return `<img class="map-story-speaker story-scene-portrait${name===step.speaker?' is-speaking':''}" style="left:${x}%" src="${prologuePart2Escape(dialoguePortraitUrl(portraits[name]))}" alt="${prologuePart2Escape(name)}">`;
