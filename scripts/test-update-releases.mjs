@@ -11,7 +11,6 @@ assert(run(`UPDATE_RELEASES.every((r,i,rows)=>UpdateReleases.parts(r.version)&&
   (r.extraRewards===undefined||Array.isArray(r.extraRewards)&&r.extraRewards.every(giftRewardValid))&&
   (!i||UpdateReleases.compare(rows[i-1].version,r.version)<0&&rows[i-1].date<=r.date))`),
   'release history needs increasing unique versions, non-decreasing JST dates, one-line notes and valid reward IDs');
-assert(run(`UpdateReleases.notices().every(n=>n.title==='アップデート（'+n.date.slice(5).split('-').map(Number).join('/')+'）')`));
 assert.equal(run("UpdateReleases.giftTitle('8.0.6','2026-10-31T15:00:00Z')"),'アップデート報酬（11/22）','catalog date takes precedence');
 assert.equal(run("UpdateReleases.giftTitle('99.0','2026-11-20T15:00:00Z')"),'アップデート報酬（11/21）','unknown receipt uses JST date');
 assert.equal(run("UpdateReleases.giftTitle('99.0','2026-11-20T15:00:00')"),'アップデート報酬','timestamp without zone is not reliable');

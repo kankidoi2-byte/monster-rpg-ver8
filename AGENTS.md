@@ -70,6 +70,7 @@
 - When releasing a player-visible change, append a release row to `js/update-releases.js` and update its cache version in `index.html` as described in `docs/update-rewards.md`.
 - Every feature, balance change, content addition, player-visible performance improvement, or bug fix must add or update a concise notice in the same branch.
 - Do not announce refactors, test-only changes, future unused assets, documentation-only work, or other changes players cannot observe.
+- Before adding an entry, check the same JST date for the same change. Keep one article per change with one category (bug fix: `fix`; new feature or sound: `update`) and a descriptive title. Release reward rows do not generate notices.
 - Use a new stable notice `id`; never rename or reuse a published notice ID.
 - Write the title and body for players rather than copying commit messages or implementation details.
 - Run `npm run check:notices` as part of `npm run check`. If no notice is needed, state why in the pull request.

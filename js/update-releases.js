@@ -21,7 +21,8 @@ const UPDATE_RELEASES = [
   {version:'8.0.15',date:'2026-11-27',change:'命中音のなかった技と弱点命中、HP回復に効果音を追加しました。'},
   {version:'8.0.16',date:'2026-11-27',change:'序章後半の会話で、再び話し始めた人物の立ち絵が表示されるようになりました。'},
   {version:'8.0.17',date:'2026-11-27',change:'序章の会話で、トビアなど8人の立ち絵の背景が隣の人物や風景を隠す不具合を修正しました。'},
-  {version:'8.0.18',date:'2026-11-27',change:'タイトル画面の最初のタップで曲が流れ、2回目でゲームが始まるようになりました。'}
+  {version:'8.0.18',date:'2026-11-27',change:'タイトル画面の最初のタップで曲が流れ、2回目でゲームが始まるようになりました。'},
+  {version:'8.0.19',date:'2026-11-27',change:'お知らせを以前のカード表示に戻し、同じ変更が重複して表示される不具合を修正しました。'}
 ];
 
 const UpdateReleases = (() => {
@@ -87,11 +88,5 @@ const UpdateReleases = (() => {
       };
     }).filter(Boolean).reverse();
   }
-  function notices(){
-    return UPDATE_RELEASES.slice().reverse().map(r=>({
-      id:r.date.replaceAll('-','')+'-release-'+r.version.replaceAll('.','-'),
-      date:r.date,category:'update',title:'アップデート（'+monthDay(r.date)+'）',body:r.change
-    }));
-  }
-  return {current,parts,compare,normalize,advance,gifts,notices,giftTitle};
+  return {current,parts,compare,normalize,advance,gifts,giftTitle};
 })();

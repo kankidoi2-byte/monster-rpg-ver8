@@ -41,7 +41,7 @@ for (let i = 1; i < playerNotices.length; i++) {
 const ids = new Set();
 let previousDate = '9999-12-31';
 
-notices.forEach((notice, index) => {
+playerNotices.forEach((notice, index) => {
   const label = `notice ${index + 1}`;
   expect(notice && typeof notice === 'object', `${label} must be an object`);
   expect(typeof notice.id === 'string' && /^[0-9]{8}-[a-z0-9-]+$/.test(notice.id), `${label} has an invalid id`);
@@ -51,9 +51,33 @@ notices.forEach((notice, index) => {
   expect(notice.date <= previousDate, `${label} is not in newest-first order`);
   previousDate = notice.date;
   expect(Object.hasOwn(categories, notice.category), `${label} has an unknown category`);
+  const titleText = notice.title.normalize('NFKC').replace(/(?:アップデート|不具合修正|お知らせ|更新情報|重要)/gu, '');
+  expect(!/^[\s\d年月日()/.・-]*$/u.test(titleText), `${notice.id} needs a descriptive title`);
   expect(typeof notice.title === 'string' && notice.title.trim().length > 0, `${label} title is empty`);
   expect(typeof notice.body === 'string' && notice.body.trim().length > 0, `${label} body is empty`);
 });
+
+for (const notice of playerNotices) {
+  expect(notices.includes(notice), `${notice.id} duplicates another article on ${notice.date}`);
+}
+
+const update = {date:'2026-11-27', category:'update', body:'第７話の会話でトビアの立ち絵が隠れる問題を修正しました。'};
+const fix = {...update, category:'fix', body:'第7話の会話で、トビアの立ち絵が隠れる不具合を修正した。'};
+const smallEdit = {...fix, body:fix.body.replace('会話で', '会話では')};
+const otherCharacter = {...fix, body:fix.body.replace('トビア', 'セレネ')};
+const otherEpisode = {...fix, body:fix.body.replace('第7話', '第8話')};
+const nextDay = {...fix, date:'2026-11-28'};
+for (const group of [[update, fix, smallEdit], [fix, update, smallEdit]]) {
+  const result = context.distinctGameNotices([...group, otherCharacter, otherEpisode, nextDay]);
+  expect(result.length === 4 && result[0] === fix && result.includes(nextDay) &&
+    result.includes(otherCharacter) && result.includes(otherEpisode), 'collapse same-day variants, prefer fix, keep other subjects and dates');
+}
+const dated = notices.filter(n => n.date === '2026-11-27');
+for (const id of ['20261127-prologue-transparent-portraits','20261127-prologue-dialogue-speaker']) {
+  expect(dated.some(n => n.id === id && n.category === 'fix'), `missing portrait correction: ${id}`);
+}
+expect(dated.some(n => n.id === '20261127-battle-result-sounds' && n.category === 'update' &&
+  n.title === '効果音を追加しました'), 'sound update needs its descriptive title');
 
 expect(index.includes('js/notices-data.js') && index.includes('js/notices.js'), 'notice scripts are not loaded by index.html');
 expect(index.indexOf('js/notices-data.js') < index.indexOf('js/notices.js'), 'notice data must load before notice UI');
