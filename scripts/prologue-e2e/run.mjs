@@ -143,7 +143,7 @@ async function journey(page, log) {
   const startTime=Date.now();
   await page.locator('#titleScreen').waitFor();
   await log.shot('title');
-  await tap('#titleScreen');
+  await tap('#titleScreen');await tap('#titleScreen');
   await page.locator('#titleScreen').waitFor({state:'detached'});
   for(;;){
     await page.waitForTimeout(90);
@@ -214,7 +214,7 @@ async function journey(page, log) {
       const saved=await snapshot();
       assert(saved.complete && saved.authority);
       await page.reload();
-      await tap('#titleScreen');
+      await tap('#titleScreen');await tap('#titleScreen');
       await page.locator('#titleScreen').waitFor({state:'detached'});
       await page.locator('#home.active').waitFor();
       const reloaded=await snapshot();

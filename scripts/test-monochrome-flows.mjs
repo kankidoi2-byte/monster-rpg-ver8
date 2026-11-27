@@ -124,7 +124,7 @@ export async function runMonochromeFlows(page,out,record){
   if(!saveGame())throw Error('functional flow save failed');
   return JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills,coins:save.coins,items:save.items,expeditions:save.expeditions});
  });
- await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert.equal(await page.evaluate(()=>JSON.stringify({instances:save.instances,party:save.party,skillCards:save.skillCards,equippedSkills:save.equippedSkills,coins:save.coins,items:save.items,expeditions:save.expeditions})),saved);
  assert.equal(await page.evaluate(()=>MonsterProfiles.current().name),'Monochrome QA');
  await page.evaluate(()=>{show('moreMenu');document.querySelector('#moreMenu .save-management').open=true;});

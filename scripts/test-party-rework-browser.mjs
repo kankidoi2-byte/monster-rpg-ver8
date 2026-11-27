@@ -21,6 +21,7 @@ try {
     const boot=async()=>{
       await page.goto(url);
       await page.locator('#titleScreen').tap();
+      await page.locator('#titleScreen').tap();
       await page.locator('#titleScreen').waitFor({state:'detached'});
     };
     await boot();

@@ -15,7 +15,7 @@ try{
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>page.locator('#contractorRankUpOverlay button').first().click());
   await page.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
   await page.goto(publicUrl||'http://127.0.0.1:4377/?legacy=1');
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);closeContractorRankUp();show('home');});
   const start=async(id,persist=false)=>{await page.evaluate(({id,persist})=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:id,persist}),{id,persist});};
   const finish=()=>page.evaluate(()=>tutorialPresentationFinishTyping());
@@ -57,7 +57,7 @@ try{
   await start('gnosis_name');await page.evaluate(()=>{tutorialPresentation.auto=true;renderTutorialStep();});assert.equal(await page.evaluate(()=>tutorialPresentation.auto),false);
   await start('gnosis_contract_power',true);await finish();
   const saved=await page.evaluate(()=>{saveGame();return currentTutorialState().stepId;});
-  await page.reload();await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload();await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.equal(await page.evaluate(()=>currentTutorialState().stepId),saved,'reload retains tutorial checkpoint');
   await page.evaluate(()=>{save.progress.tutorial.expeditionDispatched=true;});
   await start('prologue_epilogue',true);await finish();await shot('epilogue');
@@ -125,7 +125,7 @@ try{
  const motionPage=await motionContext.newPage();
  await motionPage.route('https://monster-battle-records.kanki-doi-2.chatgpt.site/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
  await motionPage.goto(publicUrl||'http://127.0.0.1:4377/?legacy=1');
- await motionPage.locator('#titleScreen').click();await motionPage.locator('#titleScreen').waitFor({state:'detached'});
+ await motionPage.locator('#titleScreen').dblclick();await motionPage.locator('#titleScreen').waitFor({state:'detached'});
  await motionPage.evaluate(()=>{clearTutorialUi();save=initSave();save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);closeContractorRankUp();show('home');startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'gnosis_descent',persist:false});tutorialPresentationFinishTyping();});
  await motionPage.waitForTimeout(700);
  await motionPage.evaluate(()=>startTutorialFlow(TUTORIAL_MAIN_FLOW_ID,{stepId:'elna_encounter',persist:false}));

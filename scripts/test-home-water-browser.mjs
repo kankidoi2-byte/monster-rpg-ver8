@@ -13,7 +13,7 @@ try{
  const page=await browser.newPage({viewport:{width:412,height:650},isMobile:true,hasTouch:true});
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
  await page.route('**/*',route=>new URL(route.request().url()).origin===new URL(origin).origin?route.continue():route.abort());
- await page.goto(origin,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.goto(origin,{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();completeTutorial();Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save.instances=[];save.party=[];for(const id of ['freigal','aquaron','elna_beginner']){const ins=addInstance(id,1);save.party.push(ins.uid);}for(const id of Object.keys(BATTLE_IDLE_MEDIA))if(!save.instances.some(i=>i.id===id))save.instances.push({uid:'home-test-'+id,id,level:1,exp:0,locked:false,evolutionOffset:0});save.homeFavoriteId='freigal';save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');saveGame();show('home');});
  for(const [width,height] of [[360,640],[390,844],[412,780],[430,932],[844,390]]){
   await page.setViewportSize({width,height});
@@ -93,7 +93,7 @@ try{
  await page.evaluate(()=>show('home'));await page.locator('#homeNamePlate').click();assert(await page.locator('#homeFavoriteSelect').isVisible());
  await page.locator('.home-favorite-option').filter({has:page.locator('strong',{hasText:'スライムゴールド'})}).click();
  assert(await page.locator('#homeNamePlate').innerText().then(t=>t.includes('スライムゴールド')));
- await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  assert.equal(await page.evaluate(()=>save.homeFavoriteId),'slime_gold');report.checks.push('favorite selection/save/reload');
  for(const [selector,screen] of [['#homeNoticePreview button','notices'],['#homeGiftButton','giftBox'],['.contractor-rank','contractorRank']]){
   await page.evaluate(()=>show('home'));await page.locator(selector).click();assert(await page.locator('#'+screen).isVisible());assert.equal(await page.evaluate(()=>waterHomeRecord),null);
@@ -131,6 +131,7 @@ try{
  gesture.on('pageerror',e=>errors.push(e.message));
  await gesture.route('**/*',route=>new URL(route.request().url()).origin===new URL(origin).origin?route.continue():route.abort());
  await gesture.goto(origin,{waitUntil:'networkidle'});
+ await gesture.locator('#titleScreen').tap();
  await gesture.locator('#titleScreen').tap();
  await gesture.locator('#titleScreen').waitFor({state:'detached'});
  await gesture.evaluate(()=>{

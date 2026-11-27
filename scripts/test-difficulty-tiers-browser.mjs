@@ -13,7 +13,7 @@ try{
   const page=await browser.newPage({viewport,reducedMotion:'reduce'}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
-  const boot=async()=>{await page.goto(url,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
+  const boot=async()=>{await page.goto(url,{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});};
   await boot();
   await page.evaluate(()=>{
    clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});

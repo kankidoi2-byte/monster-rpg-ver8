@@ -15,7 +15,7 @@ try{
   await page.addLocatorHandler(page.locator('#contractorRankUpOverlay:not(.hidden)'),async()=>{await page.locator('#contractorRankUpOverlay button').click()});
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>{dialogs.push(d.message());d.accept()});
   await page.goto('http://127.0.0.1:4232/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   const ids=await page.evaluate(()=>{
    clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});
    for(const k in save.progress.tutorial.guides)save.progress.tutorial.guides[k]=true;
@@ -53,7 +53,7 @@ try{
   assert(await page.evaluate(uid=>Boolean(getInstance(uid)),ids.strong));
   await page.locator('[aria-label="並び替え"]').selectOption('level');
   const committed=await page.evaluate(()=>({count:save.instances.length,coins:save.coins,kilo:save.items.kilo_data}));
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);show('party')});
   assert.deepEqual(await page.evaluate(()=>({count:save.instances.length,coins:save.coins,kilo:save.items.kilo_data})),committed);
   assert.equal(await page.locator('[aria-label="並び替え"]').inputValue(),'level');assert.equal(await page.getByRole('button',{name:'重複',exact:true}).getAttribute('aria-pressed'),'true');
@@ -84,7 +84,7 @@ try{
   assert.equal(await page.evaluate(()=>JSON.stringify(save)),conflict.before);
   assert.equal(await page.evaluate(()=>localStorage.getItem(MonsterProfiles.key(SAVE_KEY))),conflict.disk);
   assert.equal(await page.evaluate(k=>localStorage.getItem(k),conflict.otherKey),conflict.other);
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
   // Home / party / exploration / battle entry smoke.
   await page.evaluate(()=>{show('home')});assert(await page.locator('#home').isVisible());
@@ -106,7 +106,7 @@ try{
  }
  // Accessibility reflow in a very short landscape/split viewport.
  const tinyContext=await browser.newContext({viewport:{width:422,height:195},reducedMotion:'reduce'}),tiny=await tinyContext.newPage();
- tiny.on('dialog',d=>d.accept());await tiny.goto('http://127.0.0.1:4232/?legacy=1',{waitUntil:'networkidle'});await tiny.locator('#titleScreen').click();await tiny.locator('#titleScreen').waitFor({state:'detached'});
+ tiny.on('dialog',d=>d.accept());await tiny.goto('http://127.0.0.1:4232/?legacy=1',{waitUntil:'networkidle'});await tiny.locator('#titleScreen').dblclick();await tiny.locator('#titleScreen').waitFor({state:'detached'});
  await tiny.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});for(let i=0;i<10;i++)addInstance('freigal');save.contractor.pendingRankUps=[];clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('party')});
  for(const control of await tiny.locator('.roster-chips button,#rosterActions button').all()){
   await control.evaluate(el=>el.scrollIntoView({block:'center',inline:'center',behavior:'instant'}));

@@ -227,7 +227,6 @@ body.title-mode>.menu,body.title-mode>.screen{visibility:hidden;pointer-events:n
 .title-spacer{flex:1 1 auto;min-height:12px}
 .title-touch{width:min(78vw,720px);height:auto;max-height:18vh;object-fit:contain;filter:drop-shadow(0 4px 10px #000);animation:titleTouchIn 1s ease .7s both,titleTouchPulse 2.1s ease-in-out 1.7s infinite}
 .title-scene-name{position:absolute;left:14px;bottom:max(10px,env(safe-area-inset-bottom));font-size:11px;letter-spacing:.08em;color:#b9c6df;text-shadow:0 1px 5px #000;opacity:.55}
-.title-skip-hint{position:absolute;top:max(10px,env(safe-area-inset-top));right:13px;font-size:10px;color:#aebad3;opacity:.45}
 @keyframes titleBgDrift{from{transform:scale(1.08) translate3d(-1.2%,0,0)}to{transform:scale(1.14) translate3d(1.2%,-1%,0)}}
 @keyframes titleMonsterFloat{0%,100%{transform:translate(-50%,-49%) scale(.98)}50%{transform:translate(-50%,-52%) scale(1.02)}}
 @keyframes titleLogoIn{from{opacity:0;transform:translateY(-20px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}

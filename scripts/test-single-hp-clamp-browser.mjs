@@ -11,7 +11,7 @@ try{
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
  await page.goto('http://127.0.0.1:4180/?legacy=1',{waitUntil:'networkidle'});
- assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  const loadFixtures=async()=>{for(const name of ['single-hp-clamp','simultaneous-ko'])await page.addScriptTag({path:`scripts/${name}-fixture.js`});};
  await loadFixtures();
  await page.evaluate(()=>{
@@ -35,7 +35,7 @@ try{
      assert(await page.locator('#battle.is-finished').isVisible());
      if(cause==='player-recoil'&&reserve&&!enemiesRemain){
        const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save failed');const {saveMeta,...data}=save;return JSON.stringify(data);});
-       await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+       await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
        // Startup legitimately updates save timestamps/hash; all gameplay fields must match.
        const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});
        fs.writeFileSync(`${out}/reload-before.json`,before);fs.writeFileSync(`${out}/reload-after.json`,after);

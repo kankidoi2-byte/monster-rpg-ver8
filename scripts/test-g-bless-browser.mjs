@@ -12,7 +12,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.clock.setFixedTime(new Date('2026-11-03T12:00:00+09:00'));
-  await page.goto('http://127.0.0.1:4268/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.goto('http://127.0.0.1:4268/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.contractor.pendingRankUps=[];show('home');updateAppResourceBar()});
   assert(await page.locator('#gBlessChip').isHidden());
   await page.evaluate(()=>{save.progress.tutorial=tutorialSaveDefaults({legacy:true});saveGame();updateAppResourceBar()});
@@ -62,7 +62,7 @@ try{
   // Actual weekly reset on both sides of Monday 04:00 JST.
   await page.clock.setFixedTime(new Date('2026-11-09T03:59:59+09:00'));await page.evaluate(()=>{save.gBless={v:1,on:true,weekKey:'2026-11-02',week:0,reserve:17};renderGBless()});assert.equal(await page.evaluate(()=>save.gBless.week),0);
   await page.clock.setFixedTime(new Date('2026-11-09T04:00:00+09:00'));await page.evaluate(()=>renderGBless());assert.equal(await page.evaluate(()=>save.gBless.week),100);assert.equal(await page.evaluate(()=>save.gBless.reserve),17);
-  await page.evaluate(()=>saveGame());await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>save.gBless.reserve),17);
+  await page.evaluate(()=>saveGame());await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>save.gBless.reserve),17);
   // All header controls remain reachable on floating headers and at 200% zoom/reflow.
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);save.contractor.pendingRankUps=[];document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
   const settleHeader=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

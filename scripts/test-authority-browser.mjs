@@ -13,7 +13,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.goto('http://127.0.0.1:4376/?legacy=1');
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{
    clearTutorialUi();save=initSave();show('home');show('growthHub');
   });
@@ -47,7 +47,7 @@ try{
   for(let i=0;i<3;i++)await page.evaluate(()=>{show('home');show('growthHub')});
   assert.deepEqual(await page.evaluate(()=>({coins:save.coins,items:JSON.stringify(save.items),cleared:save.authority.clearedChapters})),{coins:fixture.coins,items:fixture.items,cleared:[]});
   await page.evaluate(()=>saveGame());
-  await page.reload();await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload();await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();show('growthHub')});
   assert(await page.locator('#authoritySection').isVisible());
   assert.equal(await page.evaluate(()=>save.authority.unlocked),true);

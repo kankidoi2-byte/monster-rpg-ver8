@@ -5,7 +5,7 @@ try{
  await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});browser=await chromium.launch({headless:true});
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'no-preference'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
- await page.goto('http://127.0.0.1:4181/?legacy=1',{waitUntil:'networkidle'});assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.goto('http://127.0.0.1:4181/?legacy=1',{waitUntil:'networkidle'});assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  await page.addScriptTag({path:'scripts/powered-modifier-fixture.js'});
  await page.evaluate(()=>{clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(key=>save.progress.tutorial.guides[key]=true);save.instances=[];save.party=[addInstance('shenhairon',10).uid];save.skillCards=Object.fromEntries(SKILL110_CATALOG.map(s=>[s.id,3]));show('home');});
  assert(await page.locator('#home').isVisible());await page.evaluate(()=>show('partySet'));assert(await page.locator('#partySet').isVisible());
@@ -32,7 +32,7 @@ try{
   if(opts.skillId==='skill_shenhairon_02'&&opts.direction==='player')await page.screenshot({path:`${out}/${opts.mode}.png`,fullPage:true});
  }
  const before=await page.evaluate(()=>{initStarters();migrateLegacyContractorProgress();syncContractorRankTitles();migrateSkillSystem();if(!saveGame())throw Error('save');const {saveMeta,...data}=save;return JSON.stringify(data);});
- await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+ await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
  const after=await page.evaluate(()=>{const {saveMeta,...data}=save;return JSON.stringify(data);});assert.deepEqual(JSON.parse(after),JSON.parse(before));assert.deepEqual(errors,[]);
  fs.writeFileSync(`${out}/results.json`,JSON.stringify({result:'PASS',cases:results.length,errors,results},null,2));console.log(`PASS ${results.length} actual browser attacks, motion targets, logs, equipment/dex, title/home/party/hunt/battle and save/reload`);
 }catch(error){if(browser){const pages=browser.contexts().flatMap(c=>c.pages());if(pages[0]){console.log(await pages[0].evaluate(()=>({party:save.party,instances:save.instances.map(i=>({id:i.id,uid:i.uid})),active:[...document.querySelectorAll('.screen.active')].map(e=>e.id),tutorial:save.progress.tutorial})));await pages[0].screenshot({path:`${out}/failure.png`,fullPage:true});}}throw error;}finally{if(browser)await browser.close();server.kill();}

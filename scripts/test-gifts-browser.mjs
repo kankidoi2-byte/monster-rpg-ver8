@@ -19,7 +19,7 @@ try{
   });
   await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
   await page.clock.setFixedTime(new Date('2026-11-02T03:00:00+09:00'));
-  await page.goto(origin,{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.goto(origin,{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   // Use the shipped record itself before isolating the generic receiver fixtures.
   const shipped=await page.evaluate(()=>{
    clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');
@@ -36,7 +36,7 @@ try{
   assert.equal(await page.evaluate(()=>save.coins),shipped.before.coins+5000);
   for(const [id,count] of Object.entries({rainbow_contract_scroll:3,giga_data:5,upper_potion:10,fine_magic_crystal:2}))assert.equal(await page.evaluate(id=>save.items[id],id),(shipped.before.items[id]||0)+count,id);
   assert.equal(await page.evaluate(()=>save.giftHistory.length),1);assert.equal(await page.evaluate(()=>claimGifts(['developer:20261102-present-box-open'])),false);
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   assert.equal(await page.evaluate(()=>save.giftClaimedIds.includes('20261102-present-box-open')),true);assert.equal(await page.evaluate(()=>developerGiftEntries().length),0);
   await page.evaluate(()=>{
    DEV_GIFTS.splice(0,DEV_GIFTS.length);
@@ -90,7 +90,7 @@ try{
   assert.equal(await page.locator('#giftUnreadCount').isHidden(),true);
   await page.locator('#giftHistoryTab').click();assert.equal(await page.locator('.gift-row').count(),3);await page.locator('[data-gift-detail="developer:test-mixed"]').click();assert.equal(await page.locator('#giftDialogClaim').isHidden(),true);assert.match(await page.locator('.gift-letter').innerText(),/<script>bad<\/script>/);await page.locator('#giftDialogClose').click();
   // Reload persists receipts and history.
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');showGiftBox()});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');showGiftBox()});
   assert.equal(await page.evaluate(()=>save.coins),5977);assert.equal(await page.evaluate(()=>pendingGifts().length),0);assert.equal(await page.evaluate(()=>giftHistoryEntries().length),3);
   // More than 500 individual receipts must survive repair/save/reload.
   assert(await page.evaluate(()=>{
@@ -112,12 +112,12 @@ try{
   await page.evaluate(()=>{const b=LifeQuestRewards.readBox();b.entries.push({id:'focus',coins:1,items:{}});localStorage.setItem('lifequest_rewards_v1',JSON.stringify(b));window.dispatchEvent(new Event('focus'))});assert.equal(await page.locator('#giftUnreadCount').innerText(),'1');
   // Two actual tabs share a profile. Web Locks serialize claims; stale save loses.
   assert.equal(await page.evaluate(()=>saveGame()),true);
-  const other=await context.newPage();other.on('dialog',d=>d.accept());other.on('pageerror',e=>errors.push(e.message));await other.goto(origin,{waitUntil:'networkidle'});await other.locator('#titleScreen').click();await other.locator('#titleScreen').waitFor({state:'detached'});await other.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
+  const other=await context.newPage();other.on('dialog',d=>d.accept());other.on('pageerror',e=>errors.push(e.message));await other.goto(origin,{waitUntil:'networkidle'});await other.locator('#titleScreen').dblclick();await other.locator('#titleScreen').waitFor({state:'detached'});await other.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden')});
   const settled=await Promise.all([page.evaluate(()=>claimGifts(['lifequest:focus'])),other.evaluate(()=>claimGifts(['lifequest:focus']))]);assert.equal(settled.filter(Boolean).length,1);
   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem(MonsterProfiles.key(SAVE_KEY))).lifeQuestClaimedIds.filter(id=>id==='focus').length),1);
   await other.close();
   // Existing game smoke (fresh disposable profile state).
-  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('home');const i=addInstance('aquaron',5);save.party=[i.uid];show('partySet')});assert(await page.locator('#partySet').isVisible());await page.evaluate(()=>startBattleFromParty());assert(await page.locator('#battleChoices').isVisible());await page.evaluate(()=>startChosenBattle('grassland','slime','easy'));assert(await page.locator('#battle').isVisible());assert.equal(await page.evaluate(()=>saveGame()),true);
   console.log('PASS gifts browser '+viewport.width+': five-column layout, tutorial guard, mixed grant/dex/NEW, atomic quota rollback, one save, double click, out-of-order + bulk, history/reload, 500+ migration, focus and real concurrent tabs, game smoke.');
   await context.close();

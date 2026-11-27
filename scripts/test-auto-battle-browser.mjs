@@ -13,7 +13,7 @@ try{
  });
  const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(e.message)});
  await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
- const boot=async()=>{await page.goto('http://127.0.0.1:4298/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});};
+ const boot=async()=>{await page.goto('http://127.0.0.1:4298/?legacy=1',{waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});};
  async function assertMobileLayout(selector){
    for(const width of [360,412,430]){
      await page.setViewportSize({width,height:800});

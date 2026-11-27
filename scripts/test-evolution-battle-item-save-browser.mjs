@@ -18,7 +18,7 @@ try{
   await context.addInitScript(slot=>sessionStorage.setItem('mb_profile_tab_v1',String(slot)),slot);
   const page=await context.newPage();page.on('dialog',d=>d.accept());page.on('pageerror',e=>report.errors.push(e.message));
   await page.goto(origin+'/?legacy=1',{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
+  await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(font=>{document.documentElement.style.fontSize=font+'%';clearTutorialUi();save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('aquaron',50).uid];save.items.potion=3;/* Acknowledge ranks earned by the synthetic Lv50 party before testing evolution controls. */ensureContractorState().pendingRankUps=[];clearTimeout(contractorRankUpTimer);contractorRankUpTimer=null;document.getElementById('contractorRankUpOverlay')?.classList.add('hidden');saveGame();show('home');},font);
   for(const screen of ['home','partySet','battleChoices']){await page.evaluate(id=>show(id),screen);assert(await page.locator('#'+screen).isVisible());}
   await page.evaluate(()=>{

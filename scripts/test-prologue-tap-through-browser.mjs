@@ -53,7 +53,7 @@ try{
   },stored);
   let alchemyBefore;
   await page.goto(`http://127.0.0.1:${port}/?legacy=1`,{waitUntil:'networkidle'});
-  await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
+  await tap('#titleScreen');await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
   const longestGuide=await page.evaluate(()=>tutorialFlowSteps(TUTORIAL_MAIN_FLOW_ID).filter(s=>s.target).sort((a,b)=>tutorialResolvedText(b).length-tutorialResolvedText(a).length)[0].id);
   let longestGuideCaptured=false;
   let last='',repeats=0,complete=false,expectedRetryFree=null;
@@ -134,7 +134,7 @@ try{
    if(['menu_dex_open','expedition_destination','stella_skill_open','stella_attribute_intro','lumina_execute','expedition_dispatch'].includes(state.id))await page.screenshot({path:`${out}/${width}-${state.id}.png`});
    if(process.env.PROLOGUE_TEST_RELOAD==='1'&&['battle_choose_skill','battle_free','growth_skill_open','stella_skill_equip','stella_mock_free','lumina_execute','lumina_wait','expedition_member','expedition_active'].includes(state.id)&&!reloaded.has(state.id)){
     reloaded.add(state.id);report.reloads.push({from:state.id,saved:await page.evaluate(()=>currentTutorialState().stepId)});
-    await page.reload({waitUntil:'networkidle'});await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
+    await page.reload({waitUntil:'networkidle'});await tap('#titleScreen');await tap('#titleScreen');await page.locator('#titleScreen').waitFor({state:'detached'});await page.waitForTimeout(150);
     const saved=report.reloads.at(-1).saved;
     await page.waitForFunction(id=>tutorialCurrentStepId()===id,saved);continue;
    }

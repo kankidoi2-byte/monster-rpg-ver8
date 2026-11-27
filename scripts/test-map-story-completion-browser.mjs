@@ -14,7 +14,7 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   page.on('dialog',dialog=>dialog.accept());
   await page.goto(url,{waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();
+  await page.locator('#titleScreen').dblclick();
   await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{
     clearTutorialUi();
@@ -41,7 +41,7 @@ try{
   assert.equal(await page.evaluate(()=>save.coins),coinsBefore+reward.coins);
   // Victory has already saved its reward. Reload before finishing the dialogue.
   await page.reload({waitUntil:'networkidle'});
-  await page.locator('#titleScreen').click();
+  await page.locator('#titleScreen').dblclick();
   await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();openMapStory('grassland_whose');});
   await root.getByRole('button',{name:'戦闘後から再開'}).click();
