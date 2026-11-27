@@ -1,15 +1,15 @@
 /* Player-facing update notices. Keep newest entries first. */
 const NOTICE_CATEGORIES = Object.freeze({
-  update: Object.freeze({ label: 'アップデート' }),
-  fix: Object.freeze({ label: '不具合修正' }),
-  important: Object.freeze({ label: '重要' })
+  update: Object.freeze({ label: 'アップデート', icon: '✨' }),
+  fix: Object.freeze({ label: '不具合修正', icon: '🛠️' }),
+  important: Object.freeze({ label: '重要', icon: '⚠️' })
 });
 
 const PLAYER_NOTICES = Object.freeze([
   {id:'20261127-title-first-tap',date:'2026-11-27',category:'update',title:'最初のタップでタイトル曲が流れるようになりました',body:'タイトル画面のどこを押しても、1回目でタイトル曲が流れ、2回目でゲームが始まります。BGMや効果音はメニューの「設定」から消音できます。'},
   {id:'20261127-prologue-transparent-portraits',date:'2026-11-27',category:'fix',title:'序章の会話で立ち絵の背景が重なる不具合を修正しました',body:'トビアなど8人の会話用の立ち絵を変更しました。2人が並んだときも、隣の人物や風景が見えるようになりました。'},
   {id:'20261127-prologue-dialogue-speaker',date:'2026-11-27',category:'fix',title:'序章後半の会話で発言者の立ち絵を修正しました',body:'複数人の会話で、再び話し始めた人物の立ち絵が画面から外れることがあったため修正しました。'},
-  {id:'20261127-battle-result-sounds',date:'2026-11-27',category:'update',title:'命中・弱点・HP回復を音で聞き分けられるようになりました',body:'戦闘で弱点を突くと専用の効果音が鳴ります。これまで命中音がなかった技にも打撃音を加え、HPが回復したときは短い上昇音が鳴ります。'},
+  {id:'20261127-battle-result-sounds',date:'2026-11-27',category:'update',title:'効果音を追加しました',body:'戦闘で弱点を突くと専用の効果音が鳴ります。これまで命中音がなかった技にも打撃音を加え、HPが回復したときは短い上昇音が鳴ります。'},
   {id:'20261126-prologue-mission-retreat-cue',date:'2026-11-26',category:'fix',title:'序章のミッションと第13話の案内、会話送りを修正しました',body:'ミッションに第6話までが対象と表示します。第13話ではモルグラムのHPを0にすると退避できることを案内します。終幕などで会話送りボタンが動いても画面内で押せるようになりました。'},
   {id:'20261125-battle-display-size',date:'2026-11-25',category:'fix',title:'バトル中の味方と敵の表示サイズを修正しました',body:'大型の仲間に交代しても、目の前の敵は同じ大きさで表示されます。大型の敵と戦うときも、味方の大きさを保ちます。'},
   {id:'20261125-battle-field-portraits',date:'2026-11-25',category:'fix',title:'バトル開始時から全身立ち絵を表示するようにしました',body:'全身立ち絵がある仲間や敵は、登場時からフィールドに立ち絵で表示されます。交代やバトル画面への復帰時に、札の絵が一瞬映る現象も修正しました。'},
@@ -18,12 +18,23 @@ const PLAYER_NOTICES = Object.freeze([
   {id:'20261124-menu-log-icons',date:'2026-11-24',category:'update',title:'メニューや戦闘ログの装飾用絵文字を整理しました',body:'メニューや世界地図、戦闘ログから飾りの絵文字を減らしました。選択・ロック・編集の操作は、文字や線画のアイコンで示します。'},
   {id:'20261122-type-status-chips',date:'2026-11-24',category:'update',title:'属性と状態異常の表示を、色の札で見やすくしました。',body:'札には属性や状態異常の名前を表示します。'},
   {id:'20261122-bulk-items-dialogs',date:'2026-11-24',category:'update',title:'経験値データをまとめて使えるように、ショップでまとめて買えるようにしました。',body:'使った後のレベルや、購入後に残るコインを確定前に確認できます。'},
+  {id:'20261123-release-8-0-11',date:'2026-11-23',category:'update',title:'レグスの3形態に全身立ち絵を追加しました',body:'傷負いの剣士レグス、呪鉄剣士レグス、断呪の紫刃レグスの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261123-release-8-0-10',date:'2026-11-23',category:'update',title:'リゼの3形態に全身立ち絵を追加しました',body:'札売り娘リゼ、影札師リゼ、千契の奇術頭リゼの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261123-release-8-0-9',date:'2026-11-23',category:'update',title:'ボルドの3形態に全身立ち絵を追加しました',body:'新入りのボルド、熟練のボルド、司厨長ボルドの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261123-release-8-0-8',date:'2026-11-23',category:'update',title:'サフィラの3形態に全身立ち絵を追加しました',body:'隊商槍士サフィラ、砂嵐槍士サフィラ、紅砂護商長サフィラの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261123-release-8-0-7',date:'2026-11-23',category:'update',title:'セレネの3形態に全身立ち絵を追加しました',body:'巡回水医セレネ、水脈医セレネ、命泉の医導師セレネの立ち絵をホームと戦闘に追加しました。'},
   {id:'20261123-battle-switch-sheet',date:'2026-11-23',category:'update',title:'バトルの交代パネルを変更しました',body:'「交代」を押すと仲間の札が開きます。札で名前やHPを確認でき、パネルを閉じればフィールドが広く見えます。'},
   {id:'20261123-god-core-elixion',date:'2026-11-23',category:'update',title:'「神核」を追加しました',body:'光の平原の「女神の降臨」で、光の女神エリシアに勝つとまれに手に入ります。エリクシオンの錬成には、毒虫の甲殻の代わりに神核が必要です。'},
   {id:'20261123-wording-notifications',date:'2026-11-23',category:'fix',title:'画面の表記をそろえ、バトル中の通知の重なりを修正しました',body:'薬の説明やプレゼントBOXの受け取り日などの表記をそろえました。戦闘や進化の開始時に前の通知が消え、戦闘中の通知が相手の情報に重ならなくなりました。'},
+  {id:'20261122-release-8-0-6',date:'2026-11-22',category:'update',title:'ローデンの3形態に全身立ち絵を追加しました',body:'流炉職人ローデン、戦炉術師ローデン、百錬の炉匠ローデンの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261122-release-8-0-5',date:'2026-11-22',category:'update',title:'トビアの3形態に全身立ち絵を追加しました',body:'風便見習いトビア、峡谷便使いトビア、天路伝令長トビアの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261122-release-8-0-4',date:'2026-11-22',category:'update',title:'ブリジットの3形態に全身立ち絵を追加しました',body:'接雷の従士ブリジット、雷壁騎士ブリジット、城塞隊長ブリジットの立ち絵をホームと戦闘に追加しました。'},
+  {id:'20261122-release-8-0-3',date:'2026-11-22',category:'update',title:'エリシアの3形態に全身立ち絵を追加しました',body:'エリシア、光祈の巫女エリシア、光の女神エリシアの立ち絵をホームと戦闘に追加しました。'},
   {id:'20261122-character-kokoro-link',date:'2026-11-22',category:'update',title:'キャラクターもココロリンクできるようになりました。',body:'控えのキャラクターから力を借りたり、戦闘中のキャラクターへ仲間の力をつないだりできます。'},
   {id:'20261122-party-rework',date:'2026-11-22',category:'update',title:'パーティー編成を改良しました',body:'並び替え・プリセット・絞り込みに対応し、世界地図からも編成できます。'},
   {id:'20261122-sound-pack-02',date:'2026-11-22',category:'update',title:'戦闘BGMと効果音を追加しました',body:'火山・湖の戦闘と、格上・ヌシとの遭遇に専用BGMが流れます。会話やタブの切り替え、敵との遭遇などにも効果音を追加しました。音量はサウンド設定で調整できます。'},
+  {id:'20261121-release-8-0-2',date:'2026-11-21',category:'update',title:'タイトル・会話・編成の画像表示を高速化しました',body:'画質を保ったまま、タイトルや会話、仲間の編成で画像を読み込む待ち時間を短くしました。'},
+  {id:'20261121-release-8-0-1',date:'2026-11-21',category:'update',title:'アップデート報酬をプレゼントBOXに追加しました',body:'アップデートごとにプレゼントBOXへ報酬が届くようになりました。'},
   {id:'20261121-lumina-fullbody',date:'2026-11-21',category:'update',title:'ルミナの3形態に全身立ち絵を追加しました',body:'見習い魔法使いルミナ・魔法使いルミナ・魔導師ルミナの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261121-stella-fullbody',date:'2026-11-21',category:'update',title:'ステラの3形態に全身立ち絵を追加しました',body:'見習い魔法使いステラ・魔法使いステラ・魔導師ステラの全身立ち絵が、ホームのお気に入り表示とバトルに登場します。'},
   {id:'20261119-prologue-battle-prep-opponents',date:'2026-11-19',category:'fix',title:'物語の戦闘前に対戦相手の名前を表示します',body:'第7話以降の戦闘準備で対戦相手が分かるようになり、戦闘を始めるボタン名を「戦闘開始」に統一しました。契約できない戦闘の案内も短くしました。'},
@@ -805,7 +816,44 @@ const PLAYER_NOTICES = Object.freeze([
   })
 ]);
 
-const GAME_NOTICES = Object.freeze([
-  ...(typeof UpdateReleases!=='undefined'?UpdateReleases.notices():[]),
-  ...PLAYER_NOTICES
-].sort((a,b)=>b.date.localeCompare(a.date)));
+// Compare wording only within the same release date. Keep names, numbers and
+// subjects distinct when several characters receive the same kind of change.
+function noticeBodyKey(body) {
+  return body.normalize('NFKC').toLowerCase()
+    .replace(/[\s\p{P}]+/gu, '')
+    .replace(/(?:不具合|問題)(?=を修正)/gu, '不具合')
+    .replace(/(?:いたしました|しました|した)$/u, '');
+}
+
+function similarNoticeBodies(a, b) {
+  if (a === b) return true;
+  const length = Math.max(a.length, b.length);
+  if (length < 18 || a.replace(/[ぁ-ゖ]/gu, '') !== b.replace(/[ぁ-ゖ]/gu, '')) return false;
+  const shorter = Math.min(a.length, b.length);
+  let start = 0, end = 0;
+  while (start < shorter && a[start] === b[start]) start++;
+  while (end < shorter - start && a.at(-1 - end) === b.at(-1 - end)) end++;
+  return length - start - end <= Math.min(5, Math.floor(length * 0.12));
+}
+
+function distinctGameNotices(notices) {
+  const days = new Map();
+  const result = [];
+  for (const notice of notices) {
+    if (!days.has(notice.date)) days.set(notice.date, []);
+    const entries = days.get(notice.date);
+    const key = noticeBodyKey(notice.body);
+    const match = entries.find(entry => similarNoticeBodies(entry.key, key));
+    if (match) {
+      if (notice.category === 'fix' && result[match.index].category === 'update') {
+        result[match.index] = notice;
+      }
+    } else {
+      entries.push({ key, index: result.length });
+      result.push(notice);
+    }
+  }
+  return result;
+}
+
+const GAME_NOTICES = Object.freeze(distinctGameNotices(PLAYER_NOTICES));

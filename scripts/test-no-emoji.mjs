@@ -103,6 +103,9 @@ function scan(path,source){
       if(hit[0]==='○'&&changed[hit.index-1]==='第'&&changed[hit.index+1]==='話')continue;
       const relative=value===changed?hit.index:Math.min(value.length,hit.index);
       const index=offset+relative;
+      // Keep only the original three notice category markers.
+      if(path==='js/notices-data.js' && ['✨','🛠️','⚠️'].includes(value) &&
+        /(?:update|fix|important): Object\.freeze\(\{ label: '[^']+', icon: '$/.test(source.slice(0,offset)))continue;
       if(allowedItemIcon(path,source,offset,hit[0]))continue;
       const line=source.slice(0,index).split('\n').length;
       issues.push({path,line,glyph:hit[0],text:source.split('\n')[line-1].trim().slice(0,180)});
