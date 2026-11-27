@@ -25,7 +25,15 @@ try{
   await page.locator('#titleScreen').click();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();migrateSkillSystem();save.instances=[];save.party=[];save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.party=[addInstance('freigal',1).uid];show('home');});
   assert(await page.locator('#home').isVisible());
-  const rows=await page.evaluate(()=>SKILL110_CATALOG.filter(s=>s.tactical?.status).map(s=>({id:s.id,source:M.find(m=>isSkillAllowedForMonster(s.id,m)).id,text:s.customDesc,detail:s.detailedDesc,chance:s.tactical.status.chance})));assert.equal(rows.length,6);
+  const rows=await page.evaluate(()=>SKILL110_CATALOG.filter(s=>s.tactical?.status||s.tactical?.cleanse?.includes('confusion')).map(s=>({
+   id:s.id,source:M.find(m=>isSkillAllowedForMonster(s.id,m)).id,text:s.customDesc,detail:s.detailedDesc,
+   chance:s.tactical.status?.chance,confusion:s.tactical.status?.kind==='confusion'||s.tactical.cleanse?.includes('confusion')
+  })));
+  assert.equal(rows.filter(row=>row.chance!=null).length,6);
+  const confusionRows=rows.filter(row=>row.confusion);
+  assert.equal(confusionRows.length,8);
+  for(const row of confusionRows){assert.match(row.detail,/こんらん/);assert.doesNotMatch(row.text+row.detail,/混乱/);}
+
   const check=async(selector,text)=>{const el=page.locator(selector).filter({hasText:text}).first();assert(await el.isVisible(),selector);const box=await el.evaluate(el=>({overflow:el.scrollWidth>el.clientWidth+1,clip:['hidden','clip'].includes(getComputedStyle(el).overflowY)&&el.scrollHeight>el.clientHeight+1,text:el.textContent}));assert(!box.overflow&&!box.clip,selector+' readable');assert(box.text.includes(text));};
   await page.evaluate(()=>show('skillDex'));await clickSummary(page.locator('#skillDexStatusHelp summary'));
   for(const text of ['しばらくの間、少しずつHPが減る。','体がしびれて、動けないことがある。','行動に失敗したり、自分を攻撃してしまうことがある。','しばらく眠ってしまい、行動できない。'])await check('#skillDexStatusHelp dd',text);
@@ -33,7 +41,7 @@ try{
    await page.evaluate(id=>{show('skillDex');showSkillDexDetail(id,false);},row.id);await check('#skillDexDetail article > p',row.text);
    await clickSummary(page.locator('#skillDexDetail summary').filter({hasText:'数値・詳しい効果'}));
    await check('#skillDexDetail .skill-dex-numbers',row.detail);
-   assert(row.detail.includes(`${Math.round(row.chance*100)}%`),'numeric status probability is present');
+   if(row.chance!=null)assert(row.detail.includes(`${Math.round(row.chance*100)}%`),'numeric status probability is present');
    await page.evaluate(source=>{clearTutorialUi();save.instances=[];save.party=[];const ins=addInstance(source,100);save.party=[ins.uid];save.skillCards=Object.fromEntries(EQUIPPABLE_MOVE_CARDS.map(s=>[s.id,10]));openSkillEdit(ins.uid);},row.source);await check(`#skillCardList [data-skill-card-id="${row.id}"] .tcg-description`,row.text);
    const equipmentDetail=page.locator(`#skillCardList [data-skill-card-id="${row.id}"] .skill-numeric-detail`);
    assert.equal(await equipmentDetail.evaluate(el=>el.open),false,'equipment detail starts collapsed');
@@ -51,7 +59,7 @@ try{
   const saved=await page.evaluate(()=>{saveGame();return JSON.stringify({party:save.party,instances:save.instances,equippedSkills:save.equippedSkills,skillCards:save.skillCards});});await page.reload({waitUntil:'networkidle'});assert.equal(await page.evaluate(()=>JSON.stringify({party:save.party,instances:save.instances,equippedSkills:save.equippedSkills,skillCards:save.skillCards})),saved);
   assert.deepEqual(errors,[]);await page.close();
  }
- console.log('PASS status browser: 6 adopted status skills × dex/equipment/battle × 320/390/430/landscape; unclipped wrapping, title/home/party/hunt/battle/save/reload, no page errors');
+ console.log('PASS status browser: status skills including all 8 confusion descriptions × dex/equipment/battle × 320/390/430/landscape; unclipped wrapping, title/home/party/hunt/battle/save/reload, no page errors');
 }catch(error){
  const pages=browser?browser.contexts().flatMap(context=>context.pages()).filter(page=>!page.isClosed()):[];
  const diagnostics=[];

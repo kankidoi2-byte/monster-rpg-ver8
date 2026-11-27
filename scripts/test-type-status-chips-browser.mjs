@@ -97,6 +97,61 @@ try {
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no page-wide horizontal overflow');
       }
 
+      // Use the battle action resolver so turn counts, notifications and history come from gameplay.
+      if(viewport.width===412){
+        for(const [kind,label,moveId] of [['sleep','ねむり','skill_grassbeat_05'],['confusion','こんらん','s110_036']]){
+          const shown=page.locator('#renewalBanner.on.status').filter({hasText:label+' 2T'});
+          const chip=page.locator('#pBattleStatus .status-chip--'+kind);
+          const notification=shown.waitFor({state:'visible'}).then(async ()=>{
+            assert.equal(await chip.innerText(),label+' 2');
+            assert.equal(await shown.innerText(),label+' 2T');
+          });
+          await Promise.all([notification,page.evaluate(async moveId=>{
+            endPartyRecovery();prepareBattleParty();
+            const map=MAPS.find(m=>m.id==='grassland'),mon=by('grassbeat');
+            const request=createHuntRequest(map,mon,'normal',[],{allowOvertier:false});
+            request.battleMode='single';
+            beginChosenBattle(map.id,mon.id,'normal',request);
+            const random=combatRandom;
+            try{
+              combatRandom=()=>0.1;
+              startBattleTurn();
+              await performAction(enemy,player,skillToMove(moveId),false);
+            }finally{combatRandom=random;}
+          },moveId)]);
+          assert.equal(await chip.innerText(),label+' 2');
+          assert.equal(await page.locator('#renewalBanner').textContent(),label+' 2T');
+          const turn=await page.locator('#renewalHeader .br-location small b').first().innerText();
+          await page.getByRole('button',{name:'戦闘の履歴'}).tap();
+          const history=page.locator('#renewalSheet .br-history p');
+          const applied=history.filter({hasText:label+' 2T'}).first();
+          assert(await applied.isVisible());
+          assert.equal(await applied.locator('small').innerText(),'ターン '+turn);
+          console.log(`PASS turn ${turn}: ${await chip.innerText()} / ${await page.locator('#renewalBanner').textContent()} / ${await applied.textContent()}`);
+          await page.locator('#renewalSheet').getByRole('button',{name:'閉じる'}).tap();
+
+          // A countdown is not another application. Drive both affected actions through natural expiry.
+          await page.evaluate(async ()=>{
+            const random=combatRandom;
+            try{
+              combatRandom=()=>0.8;
+              for(let i=0;i<2;i++){
+                completeBattleTurn();startBattleTurn();
+                await performAction(player,enemy,skillToMove('s110_001'),true);
+              }
+            }finally{combatRandom=random;}
+          });
+          assert.equal(await chip.count(),0);
+          assert.equal(await page.locator('#renewalBanner').textContent(),label+' 2T');
+          await page.getByRole('button',{name:'戦闘の履歴'}).tap();
+          const released=await history.allTextContents();
+          assert(released.some(text=>text.includes(kind==='sleep'?'目を覚ました':'こんらんが治った')));
+          assert(released.some(text=>text.includes('状態正常（効果解除）')));
+          if(kind==='confusion')assert(released.some(text=>text.includes('こんらん −')));
+          await page.locator('#renewalSheet').getByRole('button',{name:'閉じる'}).tap();
+        }
+      }
+
       await page.evaluate(()=>show('party'));
       await page.locator(`[data-instance-uid="${uid}"]`).tap();
       const roster=page.locator('.roster-sheet');

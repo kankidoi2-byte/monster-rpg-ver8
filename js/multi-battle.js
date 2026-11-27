@@ -239,7 +239,9 @@ async function runMultiActions(actions,index) {
       if(roll>=.50&&roll<.75){appendMultiLog(`${player.name}はこんらんして動けない！`);canAct=false;}
       if(roll>=.75){
         const raw=confusionSelfDamage(player,activeInstance?.level,pAtk*playerAttackInstanceMultiplier(),playerLinkDefenseMultiplier(true)),barrier=resolvePlayerIncomingDamage(raw),dmg=barrier.hpDamage,defense=kokoroLinkDefenseMessage(barrier);
+        const before=pHp;
         pHp=Math.max(0,pHp-dmg);
+        if(dmg>0&&typeof battleHpResult==='function')battleHpResult('pVis',before,pHp,{label:BATTLE_STATUS_CHIP_NAMES.confusion});
         if(partyBattle[activePartyIdx])partyBattle[activePartyIdx].hp=pHp;
         appendMultiLog(`${player.name}はこんらんして自分に${dmg}ダメージ！${defense?`<br>${defense}`:''}`);
         canAct=false;
@@ -286,7 +288,15 @@ async function performMultiAttackBase(actor,target,move) {
     actor.confusionTurns--;
     const roll=combatRandom();
     if(roll>=.50&&roll<.75){appendMultiLog(`${a.name}はこんらんして動けない！`);return;}
-    if(roll>=.75){const dmg=confusionSelfDamage(a,actor.level,actor.attack*(actor.attackMultiplier??huntDifficulty(activeHuntRequest?.difficultyId).attackMultiplier)*enemyKokoroLinkAttackMultiplier(actor.id));actor.hp=Math.max(0,actor.hp-dmg);appendMultiLog(`${a.name}はこんらんして自分に${dmg}ダメージ！`);if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}return;}
+    if(roll>=.75){
+      const dmg=confusionSelfDamage(a,actor.level,actor.attack*(actor.attackMultiplier??huntDifficulty(activeHuntRequest?.difficultyId).attackMultiplier)*enemyKokoroLinkAttackMultiplier(actor.id));
+      const before=actor.hp;
+      actor.hp=Math.max(0,actor.hp-dmg);
+      if(dmg>0&&typeof battleHpResult==='function')battleHpResult(`${actor.id}Vis`,before,actor.hp,{label:BATTLE_STATUS_CHIP_NAMES.confusion});
+      appendMultiLog(`${a.name}はこんらんして自分に${dmg}ダメージ！`);
+      if(actor.hp<=0){actor.alive=false;actor.defeatedByPlayer=false;}
+      return;
+    }
   }
   if(typeof battleFeedback!=='undefined'){
     const label=entry=>entry.kind==='player'?`味方・${player.name}`:`敵${multiBattle.enemies.indexOf(entry)===0?'A':'B'}・${entry.mon.name}`;

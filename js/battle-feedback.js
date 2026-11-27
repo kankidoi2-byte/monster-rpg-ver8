@@ -87,14 +87,20 @@ function battleCombatants(){
   else units.push({key:`single:${enemy.id}`,vis:'eVis',name:enemy.name,hp:eHp,max:enemyMaxHp(),statusId:'eBattleStatus',status:eStatus,poison:ePoisonTurns,paralysis:eParalysisTurns,sleep:eSleepTurns,freeze:typeof eFreezeTurns==='undefined'?0:eFreezeTurns,confusion:eConfusionTurns,guard:eGuard,shield:eAquaShield,charge:eFlareCharge,attack:eAtk,link:enemyKokoroLinkStatusHtml(singleEnemyKokoroLinkKey())});
   return units;
 }
-function battleStateLabels(u){
+function battleTimedStatuses(u){
+  const statuses=new Map();
+  if(u.hp<=0)return statuses;
+  for(const kind of ['poison','paralysis','sleep','confusion','freeze']){
+    if(u[kind]>0&&(kind!=='poison'||u.status==='poison'))statuses.set(kind,u[kind]);
+  }
+  return statuses;
+}
+function battleTimedStatusLabel(kind,turns){
+  return `${BATTLE_STATUS_CHIP_NAMES[kind]} ${turns}T`;
+}
+function battleStateLabels(u,statuses=battleTimedStatuses(u)){
   if(u.hp<=0)return ['戦闘不能'];
-  const labels=[];
-  if(u.status==='poison'&&u.poison>0)labels.push(`毒 ${u.poison}T`);
-  if(u.paralysis>0)labels.push(`麻痺 ${u.paralysis}T`);
-  if(u.sleep>0)labels.push(`眠り ${u.sleep}T`);
-  if(u.confusion>0)labels.push(`混乱 ${u.confusion}T`);
-  if(u.freeze>0)labels.push(`凍結 ${u.freeze}T`);
+  const labels=Array.from(statuses,([kind,turns])=>battleTimedStatusLabel(kind,turns));
   if(u.guard)labels.push('防御 次の被弾');
   if(u.shield)labels.push('水の盾 次の被弾');
   if(u.charge)labels.push('溜め 次の攻撃+20%');
@@ -157,13 +163,23 @@ function refreshBattleFeedback(message=''){
   for(const u of battleCombatants()){
     const before=battleFeedback.hp.get(u.key),hp=Math.max(0,u.hp);
     if(before!==undefined&&hp!==before){
-      const label=hp>before?(/吸収/.test(message)?'吸収':'回復'):/反動/.test(message)?'反動':/毒|状態異常/.test(message)?'継続':/こんらん/.test(message)?'混乱':'HP';
+      const label=hp>before?(/吸収/.test(message)?'吸収':'回復'):/反動/.test(message)?'反動':/毒|状態異常/.test(message)?'継続':'HP';
       battleHpResult(u.vis,before,hp,{label});
     }else battleFeedback.hp.set(u.key,hp);
-    const labels=battleStateLabels(u),state=labels.join('・');
+    const statuses=battleTimedStatuses(u);
+    const state=battleStateLabels(u,statuses).join('・');
+    // Link poison has its own turn counter and already appears in the link history text.
+    if(u.hp>0&&u.vis!=='pVis'&&!statuses.has('poison')){
+      const targetKey=u.vis==='eVis'?singleEnemyKokoroLinkKey():u.key;
+      const poison=kokoroLinkEnemyEffectsFor(targetKey).find(effect=>effect.category==='poison');
+      if(poison?.remainingTurns>0)statuses.set('poison',poison.remainingTurns);
+    }
     const prior=battleFeedback.states.get(u.key);
-    if(prior!==undefined&&prior!==state){battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');if(typeof renewalStatusFeedback==='function')renewalStatusFeedback(labels,prior);}
-    battleFeedback.states.set(u.key,state);
+    if(prior){
+      if(prior.text!==state)battleHistoryEntry(`${typeof battleStageName==='function'?battleStageName(u.vis):u.name}：${state||'状態正常（効果解除）'}`,'status');
+      if(typeof renewalStatusFeedback==='function')renewalStatusFeedback(statuses,prior.statuses);
+    }
+    battleFeedback.states.set(u.key,{text:state,statuses});
     const el=document.getElementById(u.statusId);
     if(el){
       const chips=battleStateChips(u);

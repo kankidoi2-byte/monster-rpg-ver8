@@ -261,12 +261,14 @@ function tryConfusionAction(isPlayer) {
     const rawDamage = confusionSelfDamage(actor, level, atkMultiplier,playerLinkDefenseMultiplier(isPlayer));
     const barrier = isPlayer ? resolvePlayerIncomingDamage(rawDamage) : {hpDamage:rawDamage,absorbed:0};
     const damage = barrier.hpDamage;
+    const before=isPlayer?pHp:eHp;
     if (isPlayer) {
       pHp = Math.max(0, pHp - damage);
       if (partyBattle[activePartyIdx]) partyBattle[activePartyIdx].hp = pHp;
     } else {
       eHp = Math.max(0, eHp - damage);
     }
+    if(damage>0&&typeof battleHpResult==='function')battleHpResult(isPlayer?'pVis':'eVis',before,isPlayer?pHp:eHp,{label:BATTLE_STATUS_CHIP_NAMES.confusion});
     result = {canAct:false, selfHit:true, message:`${actor.name}はこんらんして自分を攻撃した！ <b>${damage}</b>ダメージ！${barrier.absorbed?`<br>ココロ障壁が${barrier.absorbed}ダメージを防いだ！`:''}`};
   }
   if (turns === 0) result.message += `<br>${actor.name}のこんらんが治った！`;
