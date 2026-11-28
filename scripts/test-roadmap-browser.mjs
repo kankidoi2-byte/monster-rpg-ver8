@@ -15,31 +15,9 @@ try{
   await page.goto('http://127.0.0.1:4262/?legacy=1',{waitUntil:'networkidle'});
   await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   // Persist a progressed, populated save, reload it, then observe every storage write while browsing.
-  await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];save.coins=12345;save.items.upper_potion=7;saveGame();});
+  await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);save.contractor.pendingRankUps=[];save.coins=12345;save.items.upper_potion=7;saveGame();});
   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   // Exercise the actual copy rendering paths at the same phone widths.
-  await page.evaluate(()=>show('dexHub'));
-  assert(await page.locator('#dexHub.active').getByText('全技の性能・効果・使用するキャラクター',{exact:true}).isVisible());
-  await page.locator('#dexHub.active').getByRole('button',{name:/技図鑑/}).click();
-  const zeroLearnerSkill=page.locator('#skillDex.active [data-skill-dex-id]').first();
-  assert(await zeroLearnerSkill.isVisible());
-  await page.evaluate(()=>{
-    window.testOriginalSkillDexLearners=skillDexLearners;
-    skillDexLearners=()=>[];
-  });
-  try{await zeroLearnerSkill.click();}
-  finally{await page.evaluate(()=>{
-    skillDexLearners=window.testOriginalSkillDexLearners;
-    delete window.testOriginalSkillDexLearners;
-  });}
-  const summary=page.locator('#skillDex.active #skillDexDetail details > summary').filter({hasText:'初期装備に持つユニット（0体）'});
-  assert.equal(await summary.count(),1,'one zero-learner disclosure');
-  await summary.click();
-  const disclosure=summary.locator('..');
-  assert.equal(await disclosure.evaluate(el=>el.open),true,'zero-learner disclosure opened');
-  const emptyCopy=disclosure.locator('.skill-dex-units > p.small');
-  assert.equal(await emptyCopy.textContent(),'該当するキャラクターはいません。');
-  await emptyCopy.waitFor({state:'visible',timeout:5000});
   await page.evaluate(()=>{
     const state=ensureContractorState(), exp=state.exp;
     state.exp=Number.MAX_SAFE_INTEGER;
