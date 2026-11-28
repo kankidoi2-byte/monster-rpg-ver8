@@ -20,19 +20,18 @@ try{
   // Exercise the actual copy rendering paths at the same phone widths.
   await page.evaluate(()=>show('dexHub'));
   assert(await page.locator('#dexHub.active').getByText('全技の性能・効果・使用するキャラクター',{exact:true}).isVisible());
-  await page.evaluate(()=>{
-    show('skillDex');
-    const entry=skillDexEntries().find(sk=>!skillDexLearners(sk).length);
-    if(entry){
-      showSkillDexDetail(entry.id);
-      const learnerGroup=[...document.querySelectorAll('#skillDexDetail details')].find(el=>el.querySelector('summary')?.textContent==='初期装備に持つユニット（0体）');
-      if(!learnerGroup)throw new Error('Expected zero-learner skill detail');
-      learnerGroup.open=true;
-    }else{
-      document.getElementById('skillDexDetail').innerHTML=skillDexUnitLinks([]);
-    }
-  });
-  assert(await page.locator('#skillDexDetail').getByText('該当するキャラクターはいません。',{exact:true}).first().isVisible());
+  await page.locator('#dexHub.active').getByRole('button',{name:/技図鑑/}).click();
+  const skillWithoutLearners=await page.evaluate(()=>skillDexEntries().find(sk=>!skillDexLearners(sk).length)?.id);
+  assert(skillWithoutLearners,'The live catalog needs a zero-learner skill for the empty-state test');
+  await page.locator(`#skillDex.active [data-skill-dex-id="${skillWithoutLearners}"]`).click();
+  const summary=page.locator('#skillDex.active #skillDexDetail details > summary').filter({hasText:'初期装備に持つユニット（0体）'});
+  assert.equal(await summary.count(),1,'one zero-learner disclosure');
+  await summary.click();
+  const disclosure=summary.locator('..');
+  assert.equal(await disclosure.evaluate(el=>el.open),true,'zero-learner disclosure opened');
+  const emptyCopy=disclosure.locator('.skill-dex-units > p.small');
+  assert.equal(await emptyCopy.textContent(),'該当するキャラクターはいません。');
+  await emptyCopy.waitFor({state:'visible',timeout:5000});
   await page.evaluate(()=>{
     const state=ensureContractorState(), exp=state.exp;
     state.exp=Number.MAX_SAFE_INTEGER;
