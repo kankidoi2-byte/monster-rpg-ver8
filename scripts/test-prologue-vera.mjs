@@ -51,17 +51,28 @@ for(const [sourceIndex,id] of veraIds.entries()){
 
 }
 // Real weighted draw, costs, save, three-form chain, retained UID/equipment and boundary levels.
-run("save=initSave();save.coins=1000;var draw=performCharacterGacha(1,()=>.99);var v=draw.entries[0].instance;save.party=[v.uid];");
+run("save=initSave();save.coins=1000;var draw=performCharacterGacha(1,()=>.99);var v=draw.entries[0].instance;save.party=[v.uid];save.homeFavoriteId=v.id;");
 assert.equal(run('v.id'),veraIds[0]);assert.equal(run('save.coins'),900);
 const vUid=run('v.uid'),vGear=plain(run('getEquippedSkillIds(v)'));
 for(const [level,from,to] of [[10,veraIds[0],veraIds[1]],[25,veraIds[1],veraIds[2]]]){
  run(`v.level=${level-1}`);assert.equal(run('getEvoCandidates(v).length'),0);
  run(`v.level=${level};currentEvolution={uid:v.uid,from:v.id,choices:getEvoCandidates(v)};confirmEvolution(currentEvolution.choices[0]);`);
+ assert.equal(run('save.homeFavoriteId'),to,'favorite follows the last owned copy through evolution');
  assert.equal(run('v.id'),to);assert.equal(run('v.uid'),vUid);assert.deepEqual(plain(run('getEquippedSkillIds(v)')),vGear);
 }
 assert.equal(run('getEvoCandidates(v).length'),0);
 run('save=parseAndPrepareSave(JSON.stringify(save),[]);migrateSkillSystem();');
 assert.equal(run('getInstance(save.party[0]).id'),veraIds[2]);
+assert.equal(run('save.homeFavoriteId'),veraIds[2],'favorite survives reload');
+for (const [favorite, duplicate] of [[veraIds[0], true], ['freigal', false], [null, false]]) {
+ r.context.favorite = favorite;
+ r.context.duplicate = duplicate;
+ run(`save=initSave();addInstance('freigal');var testVera=addInstance('character_vera_3',10);
+      if(duplicate)addInstance('character_vera_3');save.homeFavoriteId=favorite;
+      checkEvolution(testVera);currentEvolution=pendingEvolutions.shift();confirmEvolution('character_vera_4');`);
+ assert.equal(run('testVera.id'),veraIds[1]);
+ assert.equal(run('save.homeFavoriteId'),favorite,'preserve another owned favorite or no selection');
+}
 // Build an actual historical Noam save without reintroducing playable records.
 run("save=initSave();save.instances=[];save.party=[];save.caught=[];save.skillCards={};save.equippedSkills={};save.saveMeta.migrations.push(SKILL_CARD_INVENTORY_MIGRATION);save.coins=4321;");
 for(const [i,id] of noamIds.entries()){
