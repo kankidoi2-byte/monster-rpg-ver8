@@ -9,15 +9,32 @@ try{
  browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
  for(const [width,height] of [[320,568],[390,844],[430,932],[844,390]]){
   const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.dismiss());
+  await page.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
   await page.goto('http://127.0.0.1:4184/?legacy=1',{waitUntil:'networkidle'});
   assert(await page.locator('#titleScreen').isVisible());await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
   await page.evaluate(()=>{clearTutorialUi();save=initSave();save.party=[addInstance('freigal',1).uid];migrateSkillSystem();save.progress.tutorial=tutorialSaveDefaults({legacy:true});Object.keys(save.progress.tutorial.guides).forEach(k=>save.progress.tutorial.guides[k]=true);show('home');saveGame();});
   assert(await page.locator('#home').isVisible());
   await page.evaluate(()=>show('dexHub'));
+  await page.locator('#dexHub.active').getByText('全技の性能・効果・使用するキャラクター',{exact:true}).waitFor({state:'visible'});
   const before=await page.evaluate(()=>JSON.stringify(save));
   await page.locator('#dexHubGrid button').filter({hasText:'技図鑑'}).click();
   assert(await page.locator('#skillDex').isVisible());assert.equal(await page.locator('[data-skill-dex-id]').count(),await page.evaluate(()=>skillDexEntries().length));
   await page.locator('#skillDexSearch').fill('命流採水');assert.equal(await page.locator('[data-skill-dex-id]').count(),1);
+  // Isolate the no-learner wording on the same skill and navigation path.
+  const emptyResult=await page.evaluate(()=>{
+    const original=skillDexLearners;
+    try{
+      skillDexLearners=()=>[];
+      document.querySelector('#skillDex.active [data-skill-dex-id]').click();
+      const group=[...document.querySelectorAll('#skillDexDetail details')]
+        .find(d=>d.querySelector('summary')?.textContent==='初期装備に持つユニット（0体）');
+      if(!group)return null;
+      group.open=true;
+      return group.querySelector('.skill-dex-units > p.small')?.textContent;
+    }finally{skillDexLearners=original;}
+  });
+  assert.equal(emptyResult,'該当するキャラクターはいません。');
+  await page.locator('#skillDexDetail details[open] .skill-dex-units > .small').waitFor({state:'visible'});
   await page.locator('[data-skill-dex-id]').click();assert.match(await page.locator('#skillDexDetail').textContent(),/30%/);
   await page.locator('#skillDexDetail details').last().locator('summary').click();
   await page.locator('#skillDexDetail .skill-dex-unit:visible').first().click();assert(await page.locator('#dex').isVisible());
