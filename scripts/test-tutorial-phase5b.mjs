@@ -73,7 +73,7 @@ assert.ok(skills.includes('availableSkillCount')&&skills.includes("if (arr.lengt
 assert.match(skillGacha,/SKILL_GACHA_SINGLE_COST = 100/,'single skill-gacha cost changed');
 assert.match(skillGacha,/SKILL_GACHA_TEN_COST = 900/,'ten-pull skill-gacha cost changed');
 assert.ok(state.includes('consumeReservedGoldenLandMap')&&battleFlow.includes('if (activeHuntRequest.goldenLandMapEntry)'),'Golden Land maps must still be consumed on departure');
-assert.ok(ui.includes('Rankで能力や機能は変わらない')&&index.includes('称号を1つ選んで飾る(能力は変わらない)'),'titles must remain cosmetic only');
+assert.ok(ui.includes('ランクで能力や機能は変わらない')&&index.includes('称号を1つ選んで飾る(能力は変わらない)'),'titles must remain cosmetic only');
 assert.ok(notices.includes("id: '20260829-tutorial-growth-collection-guides'"),'the player-facing update must have a stable notice ID');
 assert.ok(index.includes('js/tutorial.js?v=prologue-rescue-stability-1')&&index.includes('tutorial-action-guidance-1'),'changed browser scripts must have refreshed cache keys');
 
