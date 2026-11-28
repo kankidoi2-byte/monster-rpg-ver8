@@ -145,6 +145,9 @@ function confirmEvolution(toId) {
   try {
   if(!commitSaveMutation(()=>{
   ins.id = toId;
+  if (save.homeFavoriteId === from.id && !save.instances.some(other => other.id === from.id)) {
+    save.homeFavoriteId = toId;
+  }
   if (typeof ensureInstanceSkills === 'function') ensureInstanceSkills(ins);
   if (typeof grantEvolutionSkillCardsForInstance === 'function') grantEvolutionSkillCardsForInstance(ins);
   if (firstRegistration) {
