@@ -192,7 +192,8 @@ function refreshGiftUi(){
   const badge=document.getElementById('giftUnreadCount');if(!badge)return;
   try{
     const entries=pendingGifts();badge.hidden=!entries.length;badge.textContent=entries.length>99?'99+':String(entries.length);
-    badge.parentElement.parentElement.setAttribute('aria-label','プレゼントBOX 未受け取り'+entries.length+'件');
+    const warning=globalThis.PersonalGifts?.warning?.()||'';
+    badge.parentElement.parentElement.setAttribute('aria-label',warning?'プレゼントBOX 確認済みの未受け取り'+entries.length+'件。'+warning:'プレゼントBOX 未受け取り'+entries.length+'件');
     if(document.getElementById('giftBox')?.classList.contains('active'))renderGiftBox(entries);
   }catch(error){badge.hidden=true;if(document.getElementById('giftBox')?.classList.contains('active'))document.getElementById('giftList').textContent='プレゼントを読み込めません。開き直してください。';}
 }
@@ -200,13 +201,20 @@ function renderGiftBox(entries){
   try{
     entries=entries||pendingGifts();const history=giftTab==='history',all=history?giftHistoryEntries():entries;
     document.getElementById('giftSourceWarning').hidden=!lifeGiftReadFailed;
+    const personalFilter=!history&&(giftFilter==='all'||giftFilter==='developer');
+    const warning=personalFilter?globalThis.PersonalGifts?.warning?.():'';
+    const personalWarning=document.getElementById('personalGiftWarning');
+    personalWarning.hidden=!warning;
+    personalWarning.textContent=warning?warning+'プレゼントBOXを開き直すと再試行します。':'';
     const filtered=all.filter(g=>giftFilter==='all'||g.source===giftFilter);
     document.getElementById('giftPendingTab').innerHTML='受け取れる <b'+(entries.length?'':' hidden')+'>'+entries.length+'</b>';
     for(const [id,active] of [['giftPendingTab',!history],['giftHistoryTab',history]])document.getElementById(id).setAttribute('aria-selected',String(active));
     document.getElementById('giftFilters').innerHTML=[['all','すべて'],['developer','開発者'],['lifequest','Life Quest'],...(all.some(g=>g.source==='update')||giftFilter==='update'?[['update','アップデート']]:[])].map(([id,label])=>`<button type="button" data-gift-filter="${id}" aria-pressed="${id===giftFilter}">${label} <span>${all.filter(g=>id==='all'||g.source===id).length}</span></button>`).join('');
-    document.getElementById('giftList').innerHTML=filtered.length?filtered.map(g=>giftRow(g,history)).join(''):'<p class="gift-empty">'+(history?'受け取り履歴はありません。':'受け取れるプレゼントはありません。')+'</p>';
+    const list=document.getElementById('giftList');
+    list.innerHTML=filtered.map(g=>giftRow(g,history)).join('');
+    if(!filtered.length&&!warning)list.innerHTML='<p class="gift-empty">'+(history?'受け取り履歴はありません。':'受け取れるプレゼントはありません。')+'</p>';
     document.getElementById('giftClaimHint').hidden=giftReceivingUnlocked();
-    document.getElementById('giftCount').textContent=filtered.length+'件';
+    document.getElementById('giftCount').textContent=(warning?'確認済み ':'')+filtered.length+'件';
     const button=document.getElementById('giftClaimAll');button.hidden=history;button.disabled=giftClaimBusy||!giftReceivingUnlocked()||!filtered.length;
   }catch(error){document.getElementById('giftList').textContent='プレゼントを読み込めません。開き直してください。';document.getElementById('giftClaimAll').disabled=true;}
 }
