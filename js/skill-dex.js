@@ -29,7 +29,7 @@ function skillDexLearners(sk){
 }
 function skillDexEligibleUnits(sk){return M.filter(m=>isSkillAllowedForMonster(sk.id,m));}
 function skillDexUnitLinks(units){
-  return units.length?units.map(m=>`<button class="skill-dex-unit" onclick="openUnitFromSkillDex('${m.id}')">${m.name}<small>${m.rarity} · ${m.chapter||'序章'}</small></button>`).join(''):'<p class="small">該当するキャラはいません。</p>';
+  return units.length?units.map(m=>`<button class="skill-dex-unit" onclick="openUnitFromSkillDex('${m.id}')">${m.name}<small>${m.rarity} · ${m.chapter||'序章'}</small></button>`).join(''):'<p class="small">該当するキャラクターはいません。</p>';
 }
 // Presentation-only colors: same element hues as the existing skill-card palette.
 // Kept out of the skill data so performance, eligibility and acquisition stay unchanged.

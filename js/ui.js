@@ -281,27 +281,27 @@ function renderContractorRank(){
     <section class="contractor-rank-hero">
       <span>CONTRACTOR STATUS</span><strong>Rank ${progress.rank}</strong><p>${equipped?.name||'称号未設定'}</p><button type="button" class="contractor-title-link" onclick="showContractorTitles()">称号を変更 ›</button>
       <div class="contractor-rank-progress" role="progressbar" aria-label="次の契約者ランクまで" aria-valuemin="0" aria-valuemax="${progress.requiredExp||1}" aria-valuenow="${progress.isMax?1:progress.currentExp}"><i style="width:${Math.round(progress.ratio*100)}%"></i></div>
-      <div class="contractor-rank-progress-copy"><span>${progressText}</span><span>${progress.isMax?'最高Rank到達':`あと ${progress.remainingExp.toLocaleString('ja-JP')} EXP`}</span></div>
+      <div class="contractor-rank-progress-copy"><span>${progressText}</span><span>${progress.isMax?'最高ランク到達':`あと ${progress.remainingExp.toLocaleString('ja-JP')} EXP`}</span></div>
       <small>累計 ${progress.totalExp.toLocaleString('ja-JP')} EXP</small>
     </section>
     ${migration}
     <section class="contractor-rank-card contractor-reward-preview">
-      <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">RANK REWARDS</span><h2>Rank報酬</h2></div><b>${pendingRewardRanks.length?`未受取 ${pendingRewardRanks.length}件`:'未受取なし'}</b></div>
+      <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">RANK REWARDS</span><h2>ランク報酬</h2></div><b>${pendingRewardRanks.length?`未受取 ${pendingRewardRanks.length}件`:'未受取なし'}</b></div>
       ${pendingRewardRanks.length?`<p>${pendingRewardRanks.length===1?`Rank ${pendingRewardRanks[0]}の報酬`:`Rank ${pendingRewardRanks[0]}など${pendingRewardRanks.length}件`}を受け取れます。</p><button type="button" onclick="claimAllContractorRewardsUi()">未受取をまとめて受け取る</button>`:nextReward?`<p>次はRank ${nextReward.rank}で新しい報酬を受け取れます。</p>`:'<p>Rank 50までの報酬をすべて受け取りました。</p>'}
       <button type="button" class="secondary-button" onclick="showContractorRankRewards()">報酬一覧を見る ›</button>
     </section>
     <section class="contractor-rank-card">
       <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">NEXT TITLE</span><h2>次の称号</h2></div><b>${unlockedRankTitles.length} / ${CONTRACTOR_TITLE_CATALOG.length}</b></div>
-      ${nextTitle?`<div class="contractor-next-title"><span>Rank ${nextTitle.rank}</span><div><strong>${nextTitle.name}</strong><small>${nextTitle.description}</small></div></div>`:`<div class="contractor-next-title is-complete"><span>★</span><div><strong>すべてのRank称号を獲得</strong><small>星を結ぶ契約者として歩み続けましょう。</small></div></div>`}
+      ${nextTitle?`<div class="contractor-next-title"><span>Rank ${nextTitle.rank}</span><div><strong>${nextTitle.name}</strong><small>${nextTitle.description}</small></div></div>`:`<div class="contractor-next-title is-complete"><span>★</span><div><strong>ランクの称号をすべて獲得</strong><small>星を結ぶ契約者として歩み続けましょう。</small></div></div>`}
     </section>
     <section class="contractor-rank-card">
       <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">RECENT EXP</span><h2>最近の契約者EXP</h2></div></div>
       <div class="contractor-exp-history">${recent.length?recent.map(entry=>`<div><span>＋${Number(entry.amount||0).toLocaleString('ja-JP')}</span><strong>${contractorExpSourceLabel(entry.source)}</strong><small>${contractorRecentExpTime(entry.awardedAt)}</small></div>`).join(''):'<p>まだ契約者EXPの獲得記録はありません。</p>'}</div>
     </section>
     <section class="contractor-rank-card contractor-exp-guide">
-      <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">HOW TO GROW</span><h2>Rankを上げる方法</h2></div></div>
+      <div class="contractor-rank-card-heading"><div><span class="ui-eyebrow">HOW TO GROW</span><h2>契約者ランクの上げ方</h2></div></div>
       <div><span><strong>討伐・ボス撃破</strong></span><span><strong>契約・図鑑登録</strong></span><span><strong>進化・錬成</strong></span><span><strong>遠征完了</strong></span></div>
-      <p>Rankで能力や機能は変わらない</p>
+      <p>ランクで能力や機能は変わらない</p>
     </section>`;
 }
 function contractorRewardItemMeta(itemId){return (typeof ITEM_BY_ID!=='undefined'&&ITEM_BY_ID[itemId])||{id:itemId,name:itemId,icon:'🎁'};}
@@ -349,7 +349,7 @@ function contractorClaimNotice(result){
   if(result.coins>0)parts.push(`コイン${result.coins.toLocaleString('ja-JP')}枚`);
   const itemCount=Object.values(result.items||{}).reduce((sum,value)=>sum+Number(value||0),0);
   if(itemCount)parts.push(`アイテム${itemCount}個`);
-  return `Rank報酬${count>1?`${count}件`:''}を受け取りました${parts.length?`（${parts.join('・')}）`:''}。`;
+  return `ランク報酬${count>1?`${count}件`:''}を受け取りました${parts.length?`（${parts.join('・')}）`:''}。`;
 }
 function finishContractorRewardClaim(claimReward){
   let result,committed=false;

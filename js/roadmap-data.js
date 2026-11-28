@@ -45,7 +45,7 @@ const ROADMAP = (function(){
     {id:'bgmscenes',lane:'art',stage:'later',title:'場面ごとのBGM',sub:'ストーリー・ボス戦・ガチャなど',
       lead:'バトル以外の場面にも音楽を追加します。',points:['ストーリーの会話や大事な場面に曲を','ボス戦やEXTREMEに専用の曲','ガチャやショップにも音楽を']},
 
-    {id:'evo',lane:'sys',stage:'now',wip:true,title:'キャラクターの進化レベル',sub:'キャラも個体ごとの進化に',iconImg:'images/monsters/elna_middle_20261004.webp',
+    {id:'evo',lane:'sys',stage:'now',wip:true,title:'キャラクターの進化レベル',sub:'キャラクターも個体ごとに進化',iconImg:'images/monsters/elna_middle_20261004.webp',
       lead:'モンスターと同じように、キャラクターの進化にも個体差を取り入れます。',points:['同じキャラクターでも、進化するタイミングが少しずつ違う','育てながら進化の瞬間を見つける楽しみ']},
     {id:'material',lane:'sys',stage:'now',wip:true,title:'素材クエスト',sub:'育成素材を集めやすく',iconImg:'images/items/mega_data_art_v1.webp',
       lead:'経験値データや錬成素材が手に入りやすいクエストを追加します。',

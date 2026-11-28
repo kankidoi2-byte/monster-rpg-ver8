@@ -17,9 +17,37 @@ try{
   // Persist a progressed, populated save, reload it, then observe every storage write while browsing.
   await page.evaluate(()=>{clearTutorialUi();clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');save=initSave();save.progress.tutorial=tutorialSaveDefaults({legacy:true});save.contractor.pendingRankUps=[];save.coins=12345;save.items.upper_potion=7;saveGame();});
   await page.reload({waitUntil:'networkidle'});await page.locator('#titleScreen').dblclick();await page.locator('#titleScreen').waitFor({state:'detached'});
+  // Exercise the actual copy rendering paths at the same phone widths.
+  await page.evaluate(()=>show('dexHub'));
+  assert(await page.locator('#dexHub.active').getByText('全技の性能・効果・使用するキャラクター',{exact:true}).isVisible());
+  await page.evaluate(()=>{
+    show('skillDex');
+    const entry=skillDexEntries().find(sk=>!skillDexLearners(sk).length);
+    if(entry){
+      showSkillDexDetail(entry.id);
+      document.querySelector('#skillDexDetail details').open=true;
+    }else{
+      document.getElementById('skillDexDetail').innerHTML=skillDexUnitLinks([]);
+    }
+  });
+  assert(await page.locator('#skillDexDetail').getByText('該当するキャラクターはいません。',{exact:true}).first().isVisible());
+  await page.evaluate(()=>{
+    const state=ensureContractorState(), exp=state.exp;
+    state.exp=Number.MAX_SAFE_INTEGER;
+    showContractorRank();
+    state.exp=exp;
+  });
+  assert(await page.locator('#contractorRank.active').getByRole('heading',{name:'契約者ランク',exact:true}).isVisible());
+  assert(await page.locator('#contractorRankContent').getByText('最高ランク到達',{exact:true}).isVisible());
+  assert(await page.locator('#contractorRankContent').getByRole('heading',{name:'ランク報酬',exact:true}).isVisible());
+  await page.evaluate(()=>showContractorRankRewards());
+  assert(await page.locator('#contractorRankRewards.active').getByRole('heading',{name:'ランク報酬',exact:true}).isVisible());
+  await page.evaluate(()=>show('notices'));
+  assert(await page.locator('#noticeList').getByText('図鑑とランク報酬の表記をそろえました',{exact:true}).isVisible());
   const before=await page.evaluate(()=>{clearTimeout(contractorRankUpTimer);document.getElementById('contractorRankUpOverlay').classList.add('hidden');show('moreMenu');clearTimeout(contractorRankUpTimer);save.contractor.pendingRankUps=[];document.getElementById('contractorRankUpOverlay').classList.add('hidden');saveGame();window.roadmapWrites=[];const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(!k.startsWith('mb_analytics_'))roadmapWrites.push(k);return set.call(this,k,v);};return {save:JSON.stringify(save),storage:JSON.stringify(Object.fromEntries(Object.entries(localStorage).filter(([k])=>!k.startsWith('mb_analytics_')).sort(([a],[b])=>a.localeCompare(b))))};});
   assert.equal(await page.locator('#feedbackMenuButton + #roadmapMenuButton').count(),1);
   await page.locator('#roadmapMenuButton').click();assert(await page.locator('#roadmap.active').isVisible());
+  assert(await page.locator('#roadmap [data-id="evo"]').getByText('キャラクターも個体ごとに進化',{exact:true}).isVisible());
   assert.equal(await page.locator('#roadmap .lh').count(),3);assert.equal(await page.locator('#roadmap .band').count(),3);assert.equal(await page.locator('#roadmap .cell').count(),9);
   assert(await page.locator('#roadmap .rail').evaluateAll(rails=>rails.every(r=>{const b=r.parentElement.getBoundingClientRect(),x=r.getBoundingClientRect();const last=[...r.parentElement.querySelectorAll('.cell')].slice(-3).find(c=>c.style.gridColumn===r.style.gridColumn).getBoundingClientRect();return Math.abs(x.top-b.top)<2&&Math.abs(x.bottom-last.bottom)<2;})));
   const goal=page.locator('#roadmap button[data-roadmap-goal="app"]');
