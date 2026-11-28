@@ -482,8 +482,8 @@ function viewHome(C){
   <div class="hero">
     <div class="holo">${holoSVG(C.stats)}</div>
     <div class="vitals">
-      <div class="meter hp"><div class="row"><span style="color:#5cc8ff">♥ HP</span><span>${C.hp} / ${C.hpMax}</span></div><div class="bar"><i class="${hpLow?"low":""}" style="width:${C.hp/C.hpMax*100}%"></i></div><div class="why">${C.hpWhy}</div></div>
-      <div class="meter sta"><div class="row"><span style="color:#d39bff">◎ スタミナ</span><span>${C.st} / ${C.stMax}</span></div><div class="bar"><i style="width:${C.st/C.stMax*100}%"></i></div><div class="why">${C.stWhy}</div></div>
+      <div class="meter hp"><div class="row"><span style="color:#5cc8ff">HP</span><span>${C.hp} / ${C.hpMax}</span></div><div class="bar"><i class="${hpLow?"low":""}" style="width:${C.hp/C.hpMax*100}%"></i></div><div class="why">${C.hpWhy}</div></div>
+      <div class="meter sta"><div class="row"><span style="color:#d39bff">スタミナ</span><span>${C.st} / ${C.stMax}</span></div><div class="bar"><i style="width:${C.st/C.stMax*100}%"></i></div><div class="why">${C.stWhy}</div></div>
       <div class="chips">${chips}</div>
     </div>
   </div>
