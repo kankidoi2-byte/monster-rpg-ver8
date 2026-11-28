@@ -25,7 +25,9 @@ try{
     const entry=skillDexEntries().find(sk=>!skillDexLearners(sk).length);
     if(entry){
       showSkillDexDetail(entry.id);
-      document.querySelector('#skillDexDetail details').open=true;
+      const learnerGroup=[...document.querySelectorAll('#skillDexDetail details')].find(el=>el.querySelector('summary')?.textContent==='初期装備に持つユニット（0体）');
+      if(!learnerGroup)throw new Error('Expected zero-learner skill detail');
+      learnerGroup.open=true;
     }else{
       document.getElementById('skillDexDetail').innerHTML=skillDexUnitLinks([]);
     }
