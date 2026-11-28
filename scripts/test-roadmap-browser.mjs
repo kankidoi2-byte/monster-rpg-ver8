@@ -21,9 +21,17 @@ try{
   await page.evaluate(()=>show('dexHub'));
   assert(await page.locator('#dexHub.active').getByText('全技の性能・効果・使用するキャラクター',{exact:true}).isVisible());
   await page.locator('#dexHub.active').getByRole('button',{name:/技図鑑/}).click();
-  const skillWithoutLearners=await page.evaluate(()=>skillDexEntries().find(sk=>!skillDexLearners(sk).length)?.id);
-  assert(skillWithoutLearners,'The live catalog needs a zero-learner skill for the empty-state test');
-  await page.locator(`#skillDex.active [data-skill-dex-id="${skillWithoutLearners}"]`).click();
+  const zeroLearnerSkill=page.locator('#skillDex.active [data-skill-dex-id]').first();
+  assert(await zeroLearnerSkill.isVisible());
+  await page.evaluate(()=>{
+    window.testOriginalSkillDexLearners=skillDexLearners;
+    skillDexLearners=()=>[];
+  });
+  try{await zeroLearnerSkill.click();}
+  finally{await page.evaluate(()=>{
+    skillDexLearners=window.testOriginalSkillDexLearners;
+    delete window.testOriginalSkillDexLearners;
+  });}
   const summary=page.locator('#skillDex.active #skillDexDetail details > summary').filter({hasText:'初期装備に持つユニット（0体）'});
   assert.equal(await summary.count(),1,'one zero-learner disclosure');
   await summary.click();
